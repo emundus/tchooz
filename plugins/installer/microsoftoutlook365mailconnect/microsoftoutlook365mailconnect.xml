@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="4.0" type="plugin" group="installer" method="upgrade">
+	<name>PLG_INSTALLER_MICROSOFTOUTLOOK365MAILCONNECT</name>
+	<author>Web357 (Yiannis Christodoulou)</author>
+	<creationDate>2026-02-03</creationDate>
+	<copyright>Copyright: (©) 2014-2024 Web357. All rights reserved.</copyright>
+	<license>GNU/GPLv3, https://www.gnu.org/licenses/gpl-3.0.html</license>
+	<authorEmail>support@web357.com</authorEmail>
+	<authorUrl>https://www.web357.com</authorUrl>
+	<version>1.0.8</version>
+	<variant>pro</variant>
+	<description>A Joomla plugin that enables secure email delivery via Microsoft 365/Outlook Mail servers using OAuth 2.0. Designed as the Outlook equivalent of our Gmail SMTP Connect plugin, it ensures compliance with Microsoft’s modern authentication and improves email reliability.</description>
+	
+	<files>
+		<folder>language</folder>
+		<filename plugin="microsoftoutlook365mailconnect">microsoftoutlook365mailconnect.php</filename>
+		<filename>script.install.helper.php</filename>
+	</files>
+	
+	<scriptfile>script.install.php</scriptfile>
+
+	<updateservers><server type="extension" priority="1" name="Microsoft/Outlook 365 Mail Connect (pro version)">https://updates.web357.com/microsoftoutlook365mailconnect/microsoftoutlook365mailconnect_pro.xml</server></updateservers>
+
+</extension>

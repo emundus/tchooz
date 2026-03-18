@@ -342,4 +342,5 @@ return [
 	'Joomla\\Plugin\\Workflow\\Publishing\\' => [JPATH_PLUGINS . '/workflow/publishing/src'],
 	'SecuritycheckExtensions\\Component\\SecuritycheckPro\\Administrator\\' => [JPATH_ADMINISTRATOR . '/components/com_securitycheckpro/src'],
 	'SecuritycheckExtensions\\Component\\SecuritycheckPro\\Site\\' => [JPATH_SITE . '/components/com_securitycheckpro/src'],
+	'Web357\\Plugin\\System\\Microsoftoutlook365mailconnect\\' => [JPATH_PLUGINS . '/system/microsoftoutlook365mailconnect/src'],
 ];

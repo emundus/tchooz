@@ -15,6 +15,7 @@
 							:documentIndex="index + 1"
 							:totalDocuments="requiredDocuments.length"
 							:profile_id="profile_id"
+							:can-update="canUpdate"
 							@edit-document="editDocument(document)"
 							@delete-document="deleteDocument"
 							@move-document="moveDocument"
@@ -23,7 +24,7 @@
 					</transition-group>
 				</draggable>
 			</div>
-			<div v-if="requiredDocuments.length < 1" class="empty-documents tw-mb-4 tw-mt-4">
+			<div v-if="canUpdate && requiredDocuments.length < 1" class="empty-documents tw-mb-4 tw-mt-4">
 				<draggable
 					:list="emptyDocuments"
 					group="form-builder-documents"
@@ -38,7 +39,12 @@
 					</transition-group>
 				</draggable>
 			</div>
-			<button id="add-document" class="tw-btn-primary tw-rounded-coordinator tw-px-6 tw-py-3" @click="addDocument('1')">
+			<button
+				v-if="canUpdate"
+				id="add-document"
+				class="tw-btn-primary tw-rounded-coordinator tw-px-6 tw-py-3"
+				@click="addDocument('1')"
+			>
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_REQUIRED_DOCUMENT') }}
 			</button>
 		</div>
@@ -56,6 +62,7 @@
 							:documentIndex="index + 1"
 							:totalDocuments="optionalDocuments.length"
 							:profile_id="profile_id"
+							:can-update="canUpdate"
 							@edit-document="editDocument(document)"
 							@delete-document="deleteDocument"
 							@move-document="moveDocument"
@@ -79,7 +86,12 @@
 					</transition-group>
 				</draggable>
 			</div>
-			<button id="add-document" class="tw-btn-primary tw-rounded-coordinator tw-px-6 tw-py-3" @click="addDocument('0')">
+			<button
+				v-if="canUpdate"
+				id="add-document"
+				class="tw-btn-primary tw-rounded-coordinator tw-px-6 tw-py-3"
+				@click="addDocument('0')"
+			>
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_OPTIONAL_DOCUMENT') }}
 			</button>
 		</div>
@@ -106,6 +118,10 @@ export default {
 		campaign_id: {
 			type: Number,
 			required: true,
+		},
+		canUpdate: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	data() {

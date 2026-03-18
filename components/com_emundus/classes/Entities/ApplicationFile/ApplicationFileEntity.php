@@ -34,6 +34,11 @@ class ApplicationFileEntity
 	private ?User $updated_by;
 
 	/**
+	 * @var array<ApplicationChoicesEntity>
+	 */
+	private ?array $applicationChoices = null;
+
+	/**
 	 * @var bool Indicates if the application file content is anonymous (true) or identifiable (false). If true, the application file content will not be identifiable to a specific user, even if the application file is created by a registered user.
 	 */
 	private bool $isAnonymous;
@@ -221,6 +226,16 @@ class ApplicationFileEntity
 	public function setUpdatedBy(User $updated_by): void
 	{
 		$this->updated_by = $updated_by;
+	}
+
+	public function getApplicationChoices(): ?array
+	{
+		return $this->applicationChoices;
+	}
+
+	public function setApplicationChoices(array $applicationChoices): void
+	{
+		$this->applicationChoices = $applicationChoices;
 	}
 
 	public function isAnonymous(): bool

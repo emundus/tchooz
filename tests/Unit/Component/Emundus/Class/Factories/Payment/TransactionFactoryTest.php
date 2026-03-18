@@ -18,7 +18,7 @@ class TransactionFactoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TransactionFactory::getTransactionTitle
+	 * @covers \Tchooz\Factories\Payment\TransactionFactory::getTransactionTitle
 	 */
 	public function testGetTransactionTitle()
 	{

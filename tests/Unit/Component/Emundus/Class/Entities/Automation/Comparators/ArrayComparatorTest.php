@@ -2,7 +2,6 @@
 
 namespace Unit\Component\Emundus\Class\Entities\Automation\Comparators;
 
-
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Automation\Comparators\ArrayComparator;
 use Tchooz\Enums\Automation\ConditionMatchModeEnum;
@@ -19,7 +18,7 @@ class ArrayComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ArrayComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\ArrayComparator::supports
 	 * @return void
 	 */
 	public function testSupportsArrayValues(): void
@@ -28,7 +27,7 @@ class ArrayComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ArrayComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\ArrayComparator::supports
 	 * @return void
 	 */
 	public function testAnyMode(): void
@@ -39,7 +38,7 @@ class ArrayComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ArrayComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\ArrayComparator::supports
 	 * @return void
 	 */
 	public function testAllMode(): void
@@ -50,7 +49,7 @@ class ArrayComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ArrayComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\ArrayComparator::supports
 	 * @return void
 	 */
 	public function testExactMode(): void
@@ -61,7 +60,7 @@ class ArrayComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ArrayComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\ArrayComparator::supports
 	 * @return void
 	 */
 	public function testNotEqualsMode(): void
@@ -72,7 +71,7 @@ class ArrayComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ArrayComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\ArrayComparator::supports
 	 * @return void
 	 */
 	public function testNotEqualsModeFails(): void
@@ -83,7 +82,7 @@ class ArrayComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ArrayComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\ArrayComparator::supports
 	 * @return void
 	 */
 	public function testNotEqualsAllModeFails(): void
@@ -94,7 +93,7 @@ class ArrayComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ArrayComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\ArrayComparator::supports
 	 * @return void
 	 */
 	public function testNotEqualsAllModeSucceeds(): void
@@ -105,7 +104,7 @@ class ArrayComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ArrayComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\ArrayComparator::supports
 	 * @return void
 	 */
 	public function testNotEqualsExactModeFails(): void
@@ -116,7 +115,7 @@ class ArrayComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ArrayComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\ArrayComparator::supports
 	 * @return void
 	 */
 	public function testNotEqualsExactModeSucceeds(): void

@@ -101,7 +101,7 @@ class OrganizationRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers \Tchooz\Repositories\Contacts\OrganizationRepository::getOrganizationById
+	 * @covers \Tchooz\Repositories\Contacts\OrganizationRepository::getById
 	 * @return void
 	 */
 	public function testGetOrganizationById()

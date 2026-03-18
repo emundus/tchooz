@@ -1,6 +1,6 @@
 <template>
 	<div id="events-list">
-		<list :default-lists="configString" :default-type="'events'"></list>
+		<list :default-lists="configString" :default-type="'events'" :crud="crud"></list>
 	</div>
 </template>
 
@@ -9,6 +9,12 @@ import list from '@/views/list.vue';
 
 export default {
 	name: 'Events',
+	props: {
+		crud: {
+			type: Object,
+			default: [],
+		},
+	},
 	components: {
 		list,
 	},
@@ -32,6 +38,7 @@ export default {
 									controller: 'events',
 									name: 'add',
 									type: 'redirect',
+									acl: 'event|c',
 								},
 								{
 									action: 'duplicateevent',
@@ -39,6 +46,7 @@ export default {
 									controller: 'events',
 									name: 'duplicate',
 									method: 'post',
+									acl: 'event|c',
 								},
 								{
 									action: 'index.php?option=com_emundus&view=events&layout=add&event=%id%',
@@ -46,6 +54,7 @@ export default {
 									controller: 'events',
 									type: 'redirect',
 									name: 'edit',
+									acl: 'event|u',
 								},
 								{
 									action: 'deleteevent',
@@ -60,17 +69,70 @@ export default {
 										operator: '<',
 										value: '1',
 									},
+									acl: 'event|d',
+								},
+								{
+									action: 'show',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_SHOW_DETAILS',
+									type: 'modal',
+									component: 'EventDetails',
+									name: 'show',
+								},
+								{
+									action: 'unpublishevent',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH',
+									controller: 'events',
+									name: 'unpublishevent',
+									multiple: true,
+									method: 'post',
+									confirm: 'COM_EMUNDUS_ONBOARD_EVENT_UNPUBLISH_CONFIRM',
+									showConfirmOn: {
+										key: 'upcoming_registrant_count',
+										operator: '>=',
+										value: '1',
+									},
+									showon: {
+										key: 'published',
+										operator: '=',
+										value: '1',
+									},
+								},
+								{
+									action: 'publishevent',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_PUBLISH',
+									controller: 'events',
+									name: 'publishevent',
+									multiple: true,
+									method: 'post',
+									showon: {
+										key: 'published',
+										operator: '=',
+										value: '0',
+									},
 								},
 							],
 							filters: [
 								{
-									label: 'COM_EMUNDUS_ONBOARD_EVENT_LOCATIONS',
-									allLabel: 'COM_EMUNDUS_ONBOARD_EVENT_LOCATIONS_ALL',
-									getter: 'getlocations',
-									controller: 'events',
-									key: 'location',
+									label: 'COM_EMUNDUS_EVENTS_FILTER_PUBLISH',
+									allLabel: 'COM_EMUNDUS_ONBOARD_FILTER_ALL',
 									alwaysDisplay: true,
-									values: null,
+									getter: '',
+									key: 'published',
+									values: [
+										{
+											label: 'COM_EMUNDUS_ONBOARD_FILTER_ALL',
+											value: 'all',
+										},
+										{
+											label: 'COM_EMUNDUS_ONBOARD_FILTER_PUBLISH',
+											value: 'true',
+										},
+										{
+											label: 'COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH',
+											value: 'false',
+										},
+									],
+									default: 'true',
 								},
 							],
 						},

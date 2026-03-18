@@ -18,6 +18,7 @@ use Joomla\Database\QueryInterface;
 use phpDocumentor\Reflection\Types\Self_;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
+use Tchooz\Entities\List\ListResult;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Enums\Campaigns\StatusEnum;
 use Tchooz\Factories\ApplicationFile\ApplicationChoicesFactory;
@@ -36,7 +37,6 @@ use function Symfony\Component\String\s;
 		'fnum',
 		'user_id',
 		'state',
-		'order',
 	]
 )]
 class ApplicationChoicesRepository extends EmundusRepository implements RepositoryInterface
@@ -82,7 +82,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 			];
 
 
-			if(!$this->db->insertObject($this->tableName, $insert))
+			if (!$this->db->insertObject($this->tableName, $insert))
 			{
 				throw new \Exception('Failed to insert ApplicationChoicesEntity');
 			}
@@ -107,7 +107,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		}
 
 		// If state is confirmed, move application to the campaign confirmed
-		if(
+		if (
 			$entity->getState() === ChoicesStateEnum::CONFIRMED &&
 			(
 				empty($old_data) || ($old_data->getState() !== ChoicesStateEnum::CONFIRMED)
@@ -122,7 +122,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 			$m_application->moveApplication($entity->getFnum(), $entity->getFnum(), $entity->getCampaign()->getId());
 		}
 		// If old state was confirmed and new state is not, move application back to parent campaign
-		elseif(
+		elseif (
 			!empty($old_data) && $old_data->getState() === ChoicesStateEnum::CONFIRMED && $entity->getState() !== ChoicesStateEnum::CONFIRMED && !empty($entity->getCampaign()->getParent()))
 		{
 			if (!class_exists('EmundusModelApplication'))
@@ -168,8 +168,9 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 
 		$query = $this->db->getQuery(true);
 		$query->select($this->columns)
+			->select('ROW_NUMBER() OVER (PARTITION BY eccc.fnum ORDER BY eccc.order ASC) AS `order`')
 			->from($this->db->quoteName($this->tableName, $this->alias))
-			->where($this->alias.'.id = ' . $this->db->quote($id));
+			->where($this->alias . '.id = ' . $this->db->quote($id));
 		$this->db->setQuery($query);
 		$application_choice = $this->db->loadAssoc();
 
@@ -181,6 +182,132 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		return $application_choice_entity;
 	}
 
+	public function getAllChoices(
+		$sort = 'ASC',
+		$search = '',
+		$lim = 25,
+		$page = 0,
+		$order_by = 't.id',
+		array $user_programs = [],
+		ChoicesStateEnum|array|null $state = null,
+		int $more_form_id = 0,
+		array $campaigns = [],
+		array $orderings = [],
+		array $fileStatuses = [],
+		array $moreFilters = [],
+		array $ids = []
+	): ListResult
+	{
+		$result = new ListResult([], 0);
+
+		if (empty($lim) || $lim == 'all')
+		{
+			$limit = '';
+		}
+		else
+		{
+			$limit = $lim;
+		}
+
+		if (empty($page) || empty($limit))
+		{
+			$offset = 0;
+		}
+		else
+		{
+			$offset = ($page - 1) * $limit;
+		}
+
+		if (empty($sort))
+		{
+			$sort = 'ASC';
+		}
+
+		$elements   = $this->getChoicesMoreElements($more_form_id);
+		$table_name = $this->getMoreTableName($more_form_id);
+
+		$query = $this->buildQuery('', $user_programs, $state, $campaigns, $search, $orderings, $fileStatuses, $ids, $order_by, $sort);
+
+		$application_choices_count = 0;
+		$this->db->setQuery($query);
+		if (empty($moreFilters))
+		{
+			$application_choices_count = sizeof($this->db->loadObjectList());
+
+			$this->db->setQuery($query, $offset, $limit);
+		}
+		$application_choices = $this->db->loadObjectList();
+
+		$applicationChoicesObjects = [];
+		foreach ($application_choices as $application_choice)
+		{
+			$application_choice->more_data = $this->getMoreData((int) $application_choice->id, $more_form_id, $elements, $table_name);
+
+			// If there are more filters, apply them on the more data
+			if (!empty($moreFilters))
+			{
+				$match = true;
+				foreach ($moreFilters as $key => $value)
+				{
+					if(!isset($application_choice->more_data[$key]))
+					{
+						$match = false;
+						break;
+					}
+
+					// Value can be array in case of multi select, check if at least one value matches
+					if (is_array($value) && is_array($application_choice->more_data[$key]) && count(array_intersect($application_choice->more_data[$key], $value)) === 0)
+					{
+						$match = false;
+						break;
+					}
+					elseif(is_array($value) && !is_array($application_choice->more_data[$key]) && !in_array($application_choice->more_data[$key], $value))
+					{
+						$match = false;
+						break;
+					}
+					elseif (!is_array($value) && is_array($application_choice->more_data[$key]) && !in_array($value, $application_choice->more_data[$key]))
+					{
+						$match = false;
+						break;
+					}
+					elseif (!is_array($value) && !is_array($application_choice->more_data[$key]) && $application_choice->more_data[$key] != $value)
+					{
+						$match = false;
+						break;
+					}
+				}
+
+				if (!$match)
+				{
+					continue;
+				}
+
+				$application_choices_count++;
+			}
+
+			// Apply limit and offset after filtering
+			if (!empty($moreFilters))
+			{
+				if (empty($limit) || ($application_choices_count > $offset && $application_choices_count <= ($offset + $limit)))
+				{
+					$applicationChoicesObjects[] = $application_choice;
+				}
+			}
+			else
+			{
+				$applicationChoicesObjects[] = $application_choice;
+			}
+		}
+
+		$application_choices_entity  = $this->factory->fromDbObjects($applicationChoicesObjects, $this->withRelations, [], null, $elements);
+
+		$result->setItems($application_choices_entity);
+		$result->setTotalItems($application_choices_count);
+
+		return $result;
+	}
+
 	/**
 	 * @return ApplicationChoicesEntity[]
 	 */
@@ -188,6 +315,10 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 	{
 		$application_choices_entity = [];
 
+		if(empty($more_form_id))
+		{
+			$more_form_id = $this->getMoreFormId();
+		}
 		$elements   = $this->getChoicesMoreElements($more_form_id);
 		$table_name = $this->getMoreTableName($more_form_id);
 
@@ -332,7 +463,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 				->where('t.parent_id = ' . $this->db->quote($parent_id));
 			$this->db->setQuery($query);
 			$more_data = $this->db->loadAssoc();
-			
+
 			foreach ($elements as $element)
 			{
 				if (in_array($element['id'], array_keys($join_tables)))
@@ -344,7 +475,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 						->bind(':id', $more_data['id'], ParameterType::INTEGER);
 					$this->db->setQuery($query);
 					$values = $this->db->loadColumn();
-					
+
 					$more_data[$element['name']] = [];
 					foreach ($values as $value)
 					{
@@ -361,35 +492,104 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		return !empty($more_data) ? $more_data : [];
 	}
 
-	public function buildQuery(string $fnum = '', array $user_programs = [], ChoicesStateEnum $state = null): QueryInterface
+	public function buildQuery(
+		string $fnum = '',
+		array $user_programs = [],
+		ChoicesStateEnum|array|null $state = null,
+		array $campaigns = [],
+		string $search = '',
+		array $orderings = [],
+		array $fileStatuses = [],
+		array $ids = [],
+		string $order_by = 'eccc.order',
+		string $sort = 'ASC'
+	): QueryInterface
 	{
 		$query = $this->db->getQuery(true);
 
 		$query->select($this->columns)
+			->select('ROW_NUMBER() OVER (PARTITION BY eccc.fnum ORDER BY eccc.order ASC) AS `order`')
 			->from($this->db->quoteName($this->tableName, $this->alias))
-			->order($this->alias.'.order ASC');
+			->leftJoin(
+				$this->db->quoteName($this->getTableName(ApplicationFileRepository::class), 'af') .
+				' ON ' .
+				$this->db->quoteName('af.fnum') . ' = ' . $this->db->quoteName($this->alias . '.fnum'));
 
-		if(!empty($fnum))
+		if(empty($order_by) || !in_array($order_by, ['eccc.id', 'eccc.order', 'c.label', 'u.name', 'af.fnum']))
 		{
-			$query->where($this->alias.'.fnum = ' . $this->db->quote($fnum));
+			$order_by = 'eccc.order';
+		}
+		if(empty($sort) || !in_array(strtoupper($sort), ['ASC', 'DESC']))
+		{
+			$sort = 'ASC';
+		}
+
+		if (!empty($fnum))
+		{
+			$query->where($this->alias . '.fnum = ' . $this->db->quote($fnum));
+		}
+
+		if(!empty($user_programs) || $order_by === 'c.label')
+		{
+			$query->leftJoin(
+				$this->db->quoteName($this->getTableName(CampaignRepository::class), 'c') .
+				' ON ' .
+				$this->db->quoteName('c.id') . ' = ' . $this->db->quoteName($this->alias . '.campaign_id'));
 		}
 
 		if (!empty($user_programs))
 		{
-			$query->leftJoin(
-				$this->db->quoteName($this->getTableName(ApplicationFileRepository::class), 'af') .
-				' ON ' .
-				$this->db->quoteName('af.fnum') . ' = ' . $this->db->quoteName($this->alias.'.fnum'))
-				->leftJoin(
-					$this->db->quoteName($this->getTableName(CampaignRepository::class), 'c') .
-					' ON ' .
-					$this->db->quoteName('c.id') . ' = ' . $this->db->quoteName($this->alias.'.campaign_id'))
-				->where('c.training IN (' . implode(',', array_map([$this->db, 'quote'], $user_programs)) . ')');
+			$query->where('c.training IN (' . implode(',', array_map([$this->db, 'quote'], $user_programs)) . ')');
 		}
 
 		if (!empty($state))
 		{
-			$query->where($this->alias.'.state = ' . $this->db->quote($state->value));
+			if(is_array($state)) {
+				$query->where($this->alias . '.state IN (' . implode(',', array_map([$this->db, 'quote'], array_map(fn($s) => $s->value, $state))) . ')');
+			}
+			else
+			{
+				$query->where($this->alias . '.state = ' . $this->db->quote($state->value));
+			}
+		}
+
+		if (!empty($campaigns))
+		{
+			$query->where($this->alias . '.campaign_id IN (' . implode(',', array_map([$this->db, 'quote'], $campaigns)) . ')');
+		}
+
+		if(!empty($search) || $order_by === 'u.name')
+		{
+			$query->leftJoin(
+					$this->db->quoteName('#__users', 'u') .
+					' ON ' .
+					$this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('af.applicant_id'));
+		}
+
+		if(!empty($search))
+		{
+			// Search in applicant name
+			$query->where('u.name LIKE ' . $this->db->quote('%' . $search . '%', false) . ' OR u.email LIKE ' . $this->db->quote('%' . $search . '%', false) . ' OR af.fnum LIKE ' . $this->db->quote('%' . $search . '%', false));
+		}
+
+		if(!empty($orderings)) {
+			$query->where($this->alias . '.order IN (' . implode(',', array_map([$this->db, 'quote'], $orderings)) . ')');
+		}
+
+		if(!empty($fileStatuses)) {
+			$query->where('af.status IN (' . implode(',', array_map([$this->db, 'quote'], $fileStatuses)) . ')');
+		}
+
+		if(!empty($ids))
+		{
+			$query->where($this->alias . '.id IN (' . implode(',', array_map([$this->db, 'quote'], $ids)) . ')');
+		}
+
+		$query->order($order_by . ' ' . $sort);
+		if($order_by !== 'eccc.order')
+		{
+			// Add it always as secondary order to keep a consistent order
+			$query->order('eccc.order ' . $sort);
 		}
 
 		return $query;
@@ -441,5 +641,10 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		}
 
 		return true;
+	}
+
+	public function getFactory(): ?object
+	{
+		return $this->factory;
 	}
 }

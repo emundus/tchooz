@@ -125,6 +125,9 @@ export default {
 							this.fields[2].value = paramsResponse.data.mfaForSso;
 
 							this.loading = false;
+						} else {
+							console.error('Error fetching 2FA parameters:', paramsResponse);
+							this.loading = false;
 						}
 					});
 				}

@@ -20,6 +20,7 @@ use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Factories\TransformerFactory;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Label\LabelRepository;
@@ -192,6 +193,42 @@ class Export
 				}
 
 				return $result;
+			}
+
+			if(str_starts_with($elementId, 'application_choice_more_'))
+			{
+				$elementParts = explode('_', $elementId);
+				$moreFieldId  = (int) end($elementParts);
+				if (!empty($moreFieldId))
+				{
+					$element = $this->fabrikRepository->getElementById($moreFieldId);
+					if (!empty($element))
+					{
+						$result['label'] = Text::_($element->getLabel());
+						foreach ($files as $file)
+						{
+							if (is_null($file->getApplicationChoices()))
+							{
+								$applicationChoicesRepository = new ApplicationChoicesRepository();
+								$moreFormId                   = $applicationChoicesRepository->getMoreFormId();
+								$choices                      = $applicationChoicesRepository->getChoicesByFnum($file->getFnum(), [], null, $moreFormId);
+
+								$file->setApplicationChoices($choices);
+							}
+
+							$result['data'][$file->getFnum()] = [];
+							foreach ($file->getApplicationChoices() as $applicationChoice)
+							{
+								if (!empty($applicationChoice->getMoreProperties()) && in_array($element->getName(), array_keys($applicationChoice->getMoreProperties())))
+								{
+									$result['data'][$file->getFnum()][] = $applicationChoice->getMoreProperties()[$element->getName()]['formatted_value'] ?? '';
+								}
+							}
+
+							$result['data'][$file->getFnum()] = !empty($result['data'][$file->getFnum()]) ? implode('; ', $result['data'][$file->getFnum()]) : '';
+						}
+					}
+				}
 			}
 
 			if (str_starts_with($elementId, 'campaign_more_'))
@@ -606,6 +643,55 @@ class Export
 		];
 	}
 
+	public static function getApplicationChoiceColumns(): array
+	{
+		$elements = [
+			[
+				'id'    => 'application_choice_campaign',
+				'label' => Text::_('COM_EMUNDUS_CAMPAIGN'),
+			],
+			[
+				'id'    => 'application_choice_status',
+				'label' => Text::_('COM_EMUNDUS_APPLICATION_CHOICE_STATUS'),
+			],
+		];
+		$applicationChoicesRepository = new ApplicationChoicesRepository();
+		$formId = $applicationChoicesRepository->getMoreFormId();
+		if(!empty($formId))
+		{
+			$moreElements = $applicationChoicesRepository->getChoicesMoreElements($formId);
+			foreach ($moreElements as $element)
+			{
+				if($element['hidden'])
+				{
+					continue;
+				}
+
+				$elements[] = [
+					'id'    => 'application_choice_more_' . $element['id'],
+					'label' => Text::_($element['label']),
+				];
+			}
+		}
+
+		return [
+			'label'      => Text::_('COM_EMUNDUS_ADDONS_CHOICES'),
+			'profile_id' => 'application_choices',
+			'forms'      => [
+				'application_choices_general' => [
+					'id'     => 'application_choices_general',
+					'label'  => Text::_('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL'),
+					'groups' => [
+						1 => [
+							'label'    => '',
+							'elements' => $elements
+						]
+					]
+				]
+			]
+		];
+	}
+
 	public static function getColumnFromKey(string $key): ?array
 	{
 		$allColumns = array_merge(
@@ -613,7 +699,8 @@ class Export
 			[self::getProgramColumns()],
 			[self::getMiscellaneousColumns()],
 			[self::getManagementColumns()],
-			[self::getUserColumns()]
+			[self::getUserColumns()],
+			[self::getApplicationChoiceColumns()]
 		);
 
 		foreach ($allColumns as $section)

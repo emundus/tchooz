@@ -69,9 +69,13 @@ $tchooz_list = array();
 if (isset($user->menutype) && empty($user->applicant) || isset($user->menutype) && !empty($user->applicant) && empty($applicant_menu)) {
 	$list            = EmundusmenuHelper::getList($params);
 	$current_profile = $m_profile->getProfileById($user->profile);
-	if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) && $current_profile->applicant == 0) {
+	
+	if ((EmundusHelperAccess::asPartnerAccessLevel($user->id) && $current_profile->applicant == 0)) {
 		$tchooz_list = EmundusmenuHelper::getList($params, 'onboardingmenu');
 	}
+
+	// TODO: For each menu item, check if we have access
+
 	$help_list = EmundusmenuHelper::getList($params, 'usermenu');
 }
 elseif (!empty($applicant_menu)) {

@@ -21,6 +21,8 @@ use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
+use Web357\Plugin\System\Microsoftoutlook365mailconnect\Extension\Microsoftoutlook365mailconnect;
+use Web357\Plugin\System\Microsoftoutlook365mailconnect\Helper\MicrosoftOutlookApplicationHelper;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -94,6 +96,42 @@ final class Oauth2 extends CMSPlugin implements SubscriberInterface
 	public function onAfterRoute(Event $event)
 	{
 		$app = $this->getApplication();
+
+		$url = (string)($_SERVER['REQUEST_URI'] ?? '');
+		$url = explode('ms365', $url);
+
+		if (isset($url[1]) && substr($url[1], 0, 45) === '/microsoft-outlook-365-mail-connect-authorize') {
+
+			if(MicrosoftOutlookApplicationHelper::getInstance()->authorize($_GET['code'] ?? ''))
+			{
+				// Enable plugin if not enabled
+				if(!Microsoftoutlook365mailconnect::isEnabled())
+				{
+					// Enable plugin
+					$db = Factory::getContainer()->get('DatabaseDriver');
+					$query = $db->getQuery(true)
+						->update($db->quoteName('#__extensions'))
+						->set($db->quoteName('enabled') . ' = 1')
+						->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+						->where($db->quoteName('folder') . ' = ' . $db->quote('system'))
+						->where($db->quoteName('element') . ' = ' . $db->quote('microsoftoutlook365mailconnect'));
+					$db->setQuery($query)->execute();
+				}
+				$app->enqueueMessage('Demande d\'autorisation réussie avec Microsoft.', 'success');
+
+				$menu = Factory::getApplication()->getMenu()->getItems('link', 'index.php?option=com_emundus&view=settings', true);
+				if (!empty($menu) && !empty($menu->route))
+				{
+					$app->redirect('/'.$menu->route);
+
+					return;
+				}
+			}
+
+			// Redirect to settings page
+			$app->redirect('index.php');
+			return;
+		}
 
 		$uri = clone Uri::getInstance();
 		$queries = $uri->getQuery(true);

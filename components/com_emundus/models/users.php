@@ -1270,7 +1270,10 @@ class EmundusModelUsers extends ListModel
 			$this->db->execute();
 
 			$this->app->triggerEvent('onAfterSaveEmundusUser', [$user_id, $params]);
-			$this->app->triggerEvent('onCallEventHandler', ['onAfterSaveEmundusUser', ['user_id' => $user_id, 'params' => $params]]);
+			$this->app->triggerEvent('onCallEventHandler', [
+				'onAfterSaveEmundusUser',
+				['user_id' => $user_id, 'params' => $params]
+			]);
 
 
 			if (!empty($groups)) {
@@ -3734,10 +3737,6 @@ class EmundusModelUsers extends ListModel
 			$subject = Text::sprintf($subject, $data['sitename']);
 			$body    = Text::sprintf($body, $data['sitename'], $data['token'], $data['link_html']);
 
-			$tags = $m_emails->setTags($user->id, $post, null, '', $subject . $body);
-
-			$subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
-
 			// Get and apply the template.
 			$query->clear()
 				->select($this->db->quoteName('Template'))
@@ -3759,6 +3758,10 @@ class EmundusModelUsers extends ListModel
 			}
 
 			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/", "/\[SITE_NAME\]/"], [$subject, $body, $data['sitename']], $template);
+
+			$tags = $m_emails->setTags($user->id, $post, null, '', $subject . $body, false, true);
+
+			$subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
 			$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
 			// Set sender

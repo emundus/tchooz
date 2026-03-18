@@ -29,7 +29,7 @@ class ConditionsQueryFactoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ConditionsQueryFactory::buildConditionsQuery
+	 * @covers \Tchooz\Factories\Automation\ConditionsQueryFactory::buildConditionsQuery
 	 */
 	public function testBuildConditionsQuery(): void
 	{
@@ -67,7 +67,7 @@ class ConditionsQueryFactoryTest extends UnitTestCase
 	/**
 	 * @return void
 	 * @throws \Exception
-	 * @covers ConditionsQueryFactory::buildConditionsQuery
+	 * @covers \Tchooz\Factories\Automation\ConditionsQueryFactory::buildConditionsQuery
 	 */
 	public function testBuildConditionsQueryWithMultipleConditions(): void
 	{
@@ -93,7 +93,7 @@ class ConditionsQueryFactoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ConditionsQueryFactory::buildConditionsQuery
+	 * @covers \Tchooz\Factories\Automation\ConditionsQueryFactory::buildConditionsQuery
 	 * @return void
 	 */
 	public function testBuildConditionsQueryWithMultipleTargetTypes(): void
@@ -121,7 +121,7 @@ class ConditionsQueryFactoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ConditionsQueryFactory::buildConditionsQuery
+	 * @covers \Tchooz\Factories\Automation\ConditionsQueryFactory::buildConditionsQuery
 	 * @return void
 	 */
 	public function testBuildConditionsQueryWithUserData(): void
@@ -158,7 +158,7 @@ class ConditionsQueryFactoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ConditionsQueryFactory::buildConditionsQuery
+	 * @covers \Tchooz\Factories\Automation\ConditionsQueryFactory::buildConditionsQuery
 	 * @return void
 	 */
 	public function testBuildConditionsQueryWithUserDataOnProfile()
@@ -179,7 +179,7 @@ class ConditionsQueryFactoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ConditionsQueryFactory::buildConditionsQuery
+	 * @covers \Tchooz\Factories\Automation\ConditionsQueryFactory::buildConditionsQuery
 	 * @return void
 	 */
 	public function testBuildConditionsQueryWithUserTarget()
@@ -203,7 +203,7 @@ class ConditionsQueryFactoryTest extends UnitTestCase
 
 	/**
 	 * Tester de récupérer des utilisateurs ayant un dossier sur la campagne X
-	 * @covers ConditionsQueryFactory::buildConditionsQuery
+	 * @covers \Tchooz\Factories\Automation\ConditionsQueryFactory::buildConditionsQuery
 	 */
 	public function testBuildConditionsQueryWithUserHavingFileOnCampaign(): void
 	{
@@ -226,7 +226,7 @@ class ConditionsQueryFactoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ConditionsQueryFactory::buildConditionsQuery
+	 * @covers \Tchooz\Factories\Automation\ConditionsQueryFactory::buildConditionsQuery
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -262,7 +262,7 @@ class ConditionsQueryFactoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ConditionsQueryFactory::buildConditionsQuery
+	 * @covers \Tchooz\Factories\Automation\ConditionsQueryFactory::buildConditionsQuery
 	 * @return void
 	 */
 	public function testBuildConditionQueryOnFormDataWithComplexFields(): void
@@ -299,7 +299,7 @@ class ConditionsQueryFactoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ConditionsQueryFactory::buildConditionsQuery
+	 * @covers \Tchooz\Factories\Automation\ConditionsQueryFactory::buildConditionsQuery
 	 * @return void
 	 * @throws \Exception
 	 */

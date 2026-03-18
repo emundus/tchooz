@@ -15,36 +15,34 @@ use Joomla\Database\DatabaseInterface;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Programs\ProgramEntity;
 use Tchooz\Factories\Programs\ProgramFactory;
+use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Traits\TraitTable;
 
-#[TableAttribute(table: '#__emundus_setup_programmes')]
-class ProgramRepository
+#[TableAttribute(
+	table: '#__emundus_setup_programmes',
+	alias: 'esp',
+	columns: [
+		'id',
+		'code',
+		'label',
+		'notes',
+		'published',
+		'programmes',
+		'synthesis',
+		'apply_online',
+		'ordering',
+		'logo',
+		'color'
+	]
+)
+]
+class ProgramRepository extends EmundusRepository
 {
-	use TraitTable;
-
-	private DatabaseInterface $db;
-
 	private ProgramFactory $factory;
 
-	private const COLUMNS = [
-		't.id',
-		't.code',
-		't.label',
-		't.notes',
-		't.published',
-		't.programmes',
-		't.synthesis',
-		't.apply_online',
-		't.ordering',
-		't.logo',
-		't.color'
-	];
-
-
-	public function __construct()
+	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		Log::addLogger(['text_file' => 'com_emundus.repository.program.php'], Log::ALL, ['com_emundus.repository.program']);
-		$this->db = Factory::getContainer()->get('DatabaseDriver');
+		parent::__construct($withRelations, $exceptRelations, 'programme', self::class);
 		$this->factory = new ProgramFactory();
 	}
 
@@ -53,14 +51,14 @@ class ProgramRepository
 		$program_entity = null;
 
 		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->where('t.id = ' . $this->db->quote($id));
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->where('id = ' . $this->db->quote($id));
 		$this->db->setQuery($query);
 		$program = $this->db->loadAssoc();
 
 		if (!empty($program)) {
-			$program_entity = $this->factory->fromDbObject($program);
+			$program_entity = $this->factory::fromDbObject($program);
 		}
 
 		return $program_entity;
@@ -71,14 +69,14 @@ class ProgramRepository
 		$program_entity = null;
 
 		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->where('t.code = ' . $this->db->quote($code));
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->where('code = ' . $this->db->quote($code));
 		$this->db->setQuery($query);
 		$program = $this->db->loadAssoc();
 
 		if (!empty($program)) {
-			$program_entity = $this->factory->fromDbObject($program);
+			$program_entity = $this->factory::fromDbObject($program);
 		}
 
 		return $program_entity;
@@ -90,13 +88,41 @@ class ProgramRepository
 
 		if (!empty($ids)) {
 			$query = $this->db->getQuery(true);
-			$query->select('t.code')
-				->from($this->db->quoteName($this->getTableName(self::class), 't'))
-				->where('t.id IN (' . implode(',', array_map([$this->db, 'quote'], $ids)) . ')');
+			$query->select('code')
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->where('id IN (' . implode(',', array_map([$this->db, 'quote'], $ids)) . ')');
 			$this->db->setQuery($query);
 			$codes = $this->db->loadColumn();
 		}
 
 		return $codes;
+	}
+
+	public function getCategories(): array
+	{
+		$cacheKey = 'program_categories';
+		if ($this->cache && $this->cache->contains($cacheKey)) {
+			return $this->cache->get($cacheKey);
+		}
+
+		$query = $this->db->getQuery(true);
+		$query->select('programmes')
+			->from($this->db->quoteName($this->tableName))
+			->where('published = 1')
+			->order('programmes ASC');
+		$this->db->setQuery($query);
+		$categories = $this->db->loadColumn();
+		$categories = array_filter(array_unique($categories));
+
+		if ($this->cache && !empty($categories)) {
+			$this->cache->store($categories, $cacheKey);
+		}
+
+		return $categories;
+	}
+
+	public function getFactory(): ProgramFactory
+	{
+		return $this->factory;
 	}
 }

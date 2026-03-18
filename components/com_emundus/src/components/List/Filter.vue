@@ -15,9 +15,18 @@ export default {
 	},
 	created() {
 		if (this.filter.type === 'multiselect' && this.filter.value && typeof this.filter.value !== 'object') {
-			const matched = this.filter.options.find((opt) => opt.value == this.filter.value);
-			if (matched) {
-				this.filter.value = matched;
+			if (this.filter.multiple) {
+				this.filter.value = this.filter.value.split(',').map((val) => {
+					const matched = this.filter.options.find((opt) => opt.value == val);
+					return matched ? matched : null;
+				});
+
+				this.filter.value = this.filter.value.filter((v) => v !== null);
+			} else {
+				const matched = this.filter.options.find((opt) => opt.value == this.filter.value);
+				if (matched) {
+					this.filter.value = matched;
+				}
 			}
 		}
 	},
@@ -70,7 +79,7 @@ export default {
 			<multiselect
 				v-model="filter.value"
 				:options="filter.options"
-				:multiple="false"
+				:multiple="filter.multiple || false"
 				:searchable="true"
 				:close-on-select="true"
 				:clear-on-select="false"
@@ -82,6 +91,7 @@ export default {
 				label="label"
 				track-by="value"
 				@select="onChangeFilter(filter)"
+				@remove="onChangeFilter(filter)"
 			>
 				<template #noResult>{{ translate('COM_EMUNDUS_MULTISELECT_NORESULTS') }}</template>
 			</multiselect>

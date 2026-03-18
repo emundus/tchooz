@@ -52,7 +52,7 @@ class CampaignStepDateRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers CampaignStepDateRepository::save
+	 * @covers \Tchooz\Repositories\Workflow\CampaignStepDateRepository::save
 	 * @return void
 	 */
 	public function testSave()
@@ -79,7 +79,7 @@ class CampaignStepDateRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers CampaignStepDateRepository::getCampaignsDatesByStepId
+	 * @covers \Tchooz\Repositories\Workflow\CampaignStepDateRepository::getCampaignsDatesByStepId
 	 * @return void
 	 */
 	public function testGetCampaignsDatesByStepId(): void

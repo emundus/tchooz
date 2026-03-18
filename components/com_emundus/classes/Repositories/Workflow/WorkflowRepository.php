@@ -98,7 +98,7 @@ class WorkflowRepository
 	 *
 	 * @return array<WorkflowEntity>
 	 */
-	public function getWorkflowsByFnums(array $fnums): array
+	public function getWorkflowsByFnums(array $fnums, bool $loadChilds = false): array
 	{
 		$workflows = [];
 
@@ -122,7 +122,7 @@ class WorkflowRepository
 
 				if ($results)
 				{
-					$workflows = WorkflowFactory::fromDbObjects($results);
+					$workflows = WorkflowFactory::fromDbObjects($results, $loadChilds);
 				}
 			}
 			catch (\Exception $e)
@@ -347,6 +347,10 @@ class WorkflowRepository
 			Log::add('Exception saving workflow ' . $workflow->getLabel() . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.workflow');
 			$saved = false;
 		}
+
+		// purge cache of 'workflow_programs'
+		$hCache = new \EmundusHelperCache();
+		$hCache->set('workflow_programs', null);
 
 		return $saved;
 	}

@@ -13,12 +13,6 @@ use Joomla\Tests\Unit\UnitTestCase;
 
 require_once JPATH_ROOT . '/components/com_emundus/mapper/ApiMapper.php';
 
-/**
- * @package     Unit\Component\Emundus\Helper
- *
- * @since       version 1.0.0
- * @covers      \classes\api\FileSynchronizer
- */
 class ApiMapperTest extends UnitTestCase
 {
 	public function __construct(?string $name = null, array $data = [], $dataName = '')

@@ -25,7 +25,7 @@ class ExportRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ExportRepository::flush()
+	 * @covers \Tchooz\Repositories\Export\ExportRepository::flush
 	 * @return void
 	 */
 	public function testFlush(): void
@@ -37,7 +37,7 @@ class ExportRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ExportRepository::getById()
+	 * @covers \Tchooz\Repositories\Export\ExportRepository::getById()
 	 * @return void
 	 */
 	public function testGetById(): void
@@ -51,7 +51,7 @@ class ExportRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ExportRepository::isCancelled()
+	 * @covers \Tchooz\Repositories\Export\ExportRepository::isCancelled()
 	 * @return void
 	 */
 	public function testVerifyIsCancelled(): void

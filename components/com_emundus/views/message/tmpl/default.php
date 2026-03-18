@@ -256,7 +256,7 @@ $alias_menu = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emundus
                 </div>
 
                 <!-- List of users / their emails, gotten from the fnums selected. -->
-                <div class="tw-flex tw-justify-between tw-items-center">
+                <div class="tw-flex tw-justify-between tw-items-center tw-flex-wrap">
                     <div class="tw-flex tw-items-center">
                         <label class='em-mr-8 em-cursor-text mb-0'><?= Text::_('COM_EMUNDUS_TO'); ?> :</label>
 

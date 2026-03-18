@@ -1,5 +1,6 @@
 <script>
 import signService from '@/services/sign.js';
+import applicationService from '@/services/application.js';
 import Modal from '@/components/Modal.vue';
 import Info from '@/components/Utils/Info.vue';
 import Parameter from '@/components/Utils/Parameter.vue';
@@ -40,6 +41,8 @@ export default {
 		displaySigners: false,
 
 		thumbnail: null,
+		thumbnailGrid: {},
+		pageThumbGrid: {},
 		noPages: 0,
 		currentContact: 0,
 		currentSigner: 0,
@@ -213,7 +216,7 @@ export default {
 		},
 
 		// Form
-		saveRequest() {
+		async saveRequest() {
 			this.submitted = true;
 			let request_created = {};
 
@@ -344,6 +347,21 @@ export default {
 				);
 				this.submitted = false;
 				return;
+			}
+
+			if (this.fields.find((f) => f.param === 'connector')?.value.value === 'docaposte') {
+				const uploadId = this.getMultiselectValue(this.fields.find((f) => f.param === 'upload')?.value);
+
+				const response = await applicationService.getUploadById(uploadId);
+
+				if (response.status === true && response.data?.isSigned) {
+					this.alertError(
+						'COM_EMUNDUS_ONBOARD_REQUEST_ALREADY_SIGNED_ERROR_TITLE',
+						'COM_EMUNDUS_ONBOARD_REQUEST_ALREADY_SIGNED_ERROR_TEXT',
+					);
+					this.submitted = false;
+					return;
+				}
 			}
 
 			if (this.item) {
@@ -512,13 +530,27 @@ export default {
 				});
 			}
 			this.signers.push(new_signer);
+
+			this.thumbnailGrid[new_signer.id] = this.thumbnail;
+
+			const page = new_signer.fields.find((f) => f.param === 'page').value;
+			if (page && page !== 1) this.fetchGridThumbnail(new_signer, page);
+
+			this.applyConnectorRules();
 		},
 
 		removeRepeatBlock(signer_id) {
 			const key = this.signers.findIndex((signer) => signer.id === signer_id);
 			this.signers.splice(key, 1);
 
+			delete this.thumbnailGrid[signer_id];
+
 			this.$forceUpdate();
+		},
+
+		gridImageForSigner(signer) {
+			const b64 = this.thumbnailGrid?.[signer.id] || this.thumbnail;
+			return b64 ? `data:image/png;base64,${b64}` : '/media/com_emundus/images/document_mockup.png';
 		},
 
 		// Hooks
@@ -600,8 +632,9 @@ export default {
 				if (typeof value !== 'undefined' && value && value !== 0 && value !== '') {
 					settingsService.getFileInfosFromUploadId(this.getMultiselectValue(value)).then((response) => {
 						if (response.status === true) {
-							this.displaySigners = true;
 							this.thumbnail = response.data.thumbnail;
+							this.thumbnailGrid = {};
+							this.displaySigners = true;
 
 							if (response.data.pages_length) {
 								this.noPages = response.data.pages_length;
@@ -638,6 +671,32 @@ export default {
 					this.displaySigners = false;
 				}
 			}
+
+			if (parameter.param === 'connector') {
+				this.applyConnectorRules();
+			}
+		},
+		applyConnectorRules() {
+			const subjectField = this.fields.find((f) => f.param === 'subject');
+			if (!subjectField) return;
+
+			let value = this.fields.find((f) => f.param === 'connector')?.value ?? null;
+
+			const connectorValue = value && typeof value === 'object' ? value.value : value;
+
+			const isDocaposte = connectorValue === 'docaposte';
+			subjectField.displayed = !isDocaposte;
+
+			if (isDocaposte) subjectField.value = '';
+
+			this.signers.forEach((signer) => {
+				const authField = signer.fields.find((f) => f.param === 'authentication_level');
+				if (!authField) return;
+
+				if (isDocaposte) authField.value = 'electronic_signature';
+
+				authField.displayed = !isDocaposte;
+			});
 		},
 		getMultiselectValue(value) {
 			if (value && typeof value === 'object') {
@@ -658,6 +717,32 @@ export default {
 		updatePosition(position, signer_id) {
 			this.signers.find((s) => s.id === signer_id).fields.find((f) => f.param === 'position').value = position;
 			this.signers.find((s) => s.id === signer_id).fields.find((f) => f.param === 'position').reload++;
+		},
+		async fetchGridThumbnail(signer, page) {
+			const uploadId = this.getMultiselectValue(this.fields.find((f) => f.param === 'upload')?.value);
+			if (!uploadId) return;
+
+			page = Math.max(1, page);
+			const pageThumbKey = `${uploadId}:${page}`;
+
+			const cachedB64 = this.pageThumbGrid[pageThumbKey];
+			if (cachedB64) {
+				this.thumbnailGrid[signer.id] = cachedB64;
+				return;
+			}
+
+			const res = await settingsService.getFileThumbnail(uploadId, page);
+			const b64 = res?.data?.thumbnail ?? res?.data ?? '';
+			if (!b64) return;
+
+			this.pageThumbGrid[pageThumbKey] = b64;
+			this.thumbnailGrid[signer.id] = b64;
+		},
+
+		onSignerValueUpdated(signer, parameter, oldValue, value) {
+			if (parameter.param !== 'page') return;
+
+			this.fetchGridThumbnail(signer, value);
 		},
 	},
 	computed: {
@@ -773,6 +858,7 @@ export default {
 								:parameter-object="field"
 								:multiselect-options="field.multiselectOptions ? field.multiselectOptions : null"
 								@ajax-options-loaded="onAjaxOptionsLoaded"
+								@value-updated="(param, oldVal, val) => onSignerValueUpdated(signer, param, oldVal, val)"
 							/>
 
 							<button
@@ -807,7 +893,7 @@ export default {
 								:columns="['A', 'B', 'C']"
 								:rows="[1, 2, 3]"
 								:current-position="field.value"
-								:image="'data:image/png;base64,' + thumbnail"
+								:image="gridImageForSigner(signer)"
 								@update-position="(position) => updatePosition(position, signer.id)"
 								class="tw-w-fit"
 							/>

@@ -29,6 +29,8 @@ class EmundusViewEvaluation extends JViewLegacy
 	protected bool $use_module_for_filters = true;
 	protected bool $open_file_in_modal;
 
+	protected bool $can_share_filters = false;
+
 	protected $modal_tabs = null;
 	protected string $modal_ratio = '66/33';
 	public function __construct($config = array())
@@ -85,6 +87,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 	public function display($tpl = null)
 	{
+		$current_user = $this->app->getIdentity();
 		$app = Factory::getApplication();
 
 		$this->itemId = $app->input->getInt('Itemid', null);
@@ -112,6 +115,7 @@ class EmundusViewEvaluation extends JViewLegacy
 				$this->quick_search_filters = $m_filters->getQuickSearchFilters();
 				$this->count_filter_values  = $menu_params->get('count_filter_values', 0);
 				$this->allow_add_filter     = $menu_params->get('allow_add_filter', 1);
+				$this->can_share_filters    = (EmundusHelperAccess::asAccessAction('share_filters', 'c', $current_user->id) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) ? 1 : 0;
 			}
 			catch (Exception $e)
 			{

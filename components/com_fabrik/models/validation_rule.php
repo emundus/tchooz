@@ -262,8 +262,20 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 		$hiddenElements = ArrayHelper::getValue($this->formModel->formData, 'hiddenElements', '[]');
 		$hiddenElements = json_decode($hiddenElements);
 
-		return !in_array($name, $hiddenElements);
+		// Element can be repeated and current iteration can be deleted so check if the element with this repeat counter is in formData
+		if(!in_array($name, $hiddenElements) && $this->elementModel->getGroup()->canRepeat() && $repeatCounter > 0)
+		{
+			$fullName = $this->elementModel->getFullName(true, false);
+			if(isset($this->formModel->formData[$fullName]) && is_array($this->formModel->formData[$fullName]) && array_key_exists($repeatCounter, $this->formModel->formData[$fullName]))
+			{
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
 
+		return !in_array($name, $hiddenElements);
 	}
 
 	/**

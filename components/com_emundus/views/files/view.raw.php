@@ -32,7 +32,7 @@ use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 class EmundusViewFiles extends JViewLegacy
 {
 	private $app;
-	private $user;
+	protected $user;
 
 	protected $itemId;
 	protected $cfnum;
@@ -119,13 +119,13 @@ class EmundusViewFiles extends JViewLegacy
 		switch ($layout)
 		{
 			case 'export':
-				$actionRepository   = new AccessActionRepository();
-				$exportAction = $actionRepository->getByName('export');
+				$actionRepository = new AccessActionRepository();
+				$exportAction     = $actionRepository->getByName('export');
 
 				$fnum_array = [];
 
-				$post = file_get_contents("php://input");
-				$post = json_decode($post, true);
+				$post  = file_get_contents("php://input");
+				$post  = json_decode($post, true);
 				$fnums = $post['fnums'];
 
 				if ($fnums == 'all')
@@ -436,13 +436,13 @@ class EmundusViewFiles extends JViewLegacy
 						}
 					}
 
-					$unread_messages   = array();
-					if(!class_exists(JPATH_SITE.'/components/com_emundus/models/messenger.php'))
+					$unread_messages = array();
+					if (!class_exists(JPATH_SITE . '/components/com_emundus/models/messenger.php'))
 					{
 						require_once JPATH_SITE . '/components/com_emundus/models/messenger.php';
 					}
 					$m_messenger = new EmundusModelMessenger();
-					if($m_messenger->checkMessengerState())
+					if ($m_messenger->checkMessengerState())
 					{
 						$unread_messages[] = $m_files->getUnreadMessages($this->user->id);
 						$unread_messages   = $h_files->createUnreadMessageList($unread_messages[0]);
@@ -485,15 +485,16 @@ class EmundusViewFiles extends JViewLegacy
 								$userObj->user->name      = $user['name'];
 								$userObj->unread_messages = !empty($unread_messages) ? $unread_messages[$value] : '';
 
-								if ($user['is_anonym']) {
-									$userObj->user->name = $value;
+								if ($user['is_anonym'])
+								{
+									$userObj->user->name  = $value;
 									$userObj->user->email = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
 								}
 								elseif (EmundusHelperAccess::isDataAnonymized(Factory::getApplication()->getIdentity()->id))
 								{
-									$userObj->user->name = $value;
+									$userObj->user->name  = $value;
 									$userObj->user->email = '';
-									$userObj->user->id = '';
+									$userObj->user->id    = '';
 								}
 
 								$line['fnum'] = $userObj;
@@ -536,9 +537,9 @@ class EmundusViewFiles extends JViewLegacy
 								{
 									if (array_key_exists($user['fnum'], $obj))
 									{
-										$userObj->val                     = $obj[$user['fnum']];
-										$userObj->type                    = 'html';
-										$userObj->fnum                    = $user['fnum'];
+										$userObj->val                    = $obj[$user['fnum']];
+										$userObj->type                   = 'html';
+										$userObj->fnum                   = $user['fnum'];
 										$line[Text::_(strtoupper($key))] = $userObj;
 									}
 									else
@@ -605,7 +606,7 @@ class EmundusViewFiles extends JViewLegacy
 							$choicesHtml = '<ul>';
 							foreach ($applicationChoices as $key => $choice)
 							{
-								$choicesHtml .= '<li>' .Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', ($key+1)) . ' : ' . htmlspecialchars($choice->getCampaign()->getLabel()) . '</li>';
+								$choicesHtml .= '<li>' . Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', ($key + 1)) . ' : ' . htmlspecialchars($choice->getCampaign()->getLabel()) . '</li>';
 							}
 							$choicesHtml .= '</ul>';
 

@@ -26,7 +26,7 @@ use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Factories\Automation\AutomationFactory;
 use Tchooz\Repositories\Automation\AutomationRepository;
 use Tchooz\Repositories\Automation\EventsRepository;
-use Tchooz\Response;
+use Tchooz\EmundusResponse;
 use Tchooz\Services\Automation\Condition\FormDataConditionResolver;
 use Tchooz\Services\Automation\ConditionRegistry;
 use Tchooz\Services\Automation\TargetPredefinitionRegistry;
@@ -600,7 +600,7 @@ class EmundusControllerAutomation extends BaseController
 
 			if($user->guest || empty($eSession) || empty($eSession->fnum) || !in_array($type, $typesAllowed, true))
 			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
 			$fnum = $eSession->fnum;
@@ -610,7 +610,7 @@ class EmundusControllerAutomation extends BaseController
 
 			if(!$actionInstance)
 			{
-				throw new Exception(Text::_('COM_EMUNDUS_AUTOMATION_ACTION_NOT_FOUND'), Response::HTTP_NOT_FOUND);
+				throw new Exception(Text::_('COM_EMUNDUS_AUTOMATION_ACTION_NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
 			}
 
 			$actionTarget = new ActionTargetEntity($user, $fnum);
@@ -618,16 +618,16 @@ class EmundusControllerAutomation extends BaseController
 
 			if($executed !== ActionExecutionStatusEnum::COMPLETED)
 			{
-				throw new Exception(Text::_('COM_EMUNDUS_AUTOMATION_ACTION_EXECUTION_FAILED'), Response::HTTP_INTERNAL_SERVER_ERROR);
+				throw new Exception(Text::_('COM_EMUNDUS_AUTOMATION_ACTION_EXECUTION_FAILED'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 			}
 
 			$result = $actionInstance->getResult();
 
-			$response = Response::ok($result, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_EXECUTED_SUCCESS'));
+			$response = EmundusResponse::ok($result, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_EXECUTED_SUCCESS'));
 		}
 		catch (Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);

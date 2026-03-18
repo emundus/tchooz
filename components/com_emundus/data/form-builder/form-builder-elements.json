@@ -143,5 +143,11 @@
     "icon": "fork_right",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_APPLICATIONCHOICES",
     "published": true
-  }
+  },
+	{
+		"value": "orderlist",
+		"icon": "sort",
+		"name": "COM_EMUNDUS_ONBOARD_TYPE_ORDERLIST",
+		"published": true
+	}
 ]

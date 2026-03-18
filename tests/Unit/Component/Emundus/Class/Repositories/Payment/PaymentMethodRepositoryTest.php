@@ -17,7 +17,7 @@ class PaymentMethodRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers PaymentMethodRepository::getAll
+	 * @covers \Tchooz\Repositories\Payment\PaymentMethodRepository::getAll
 	 * @return void
 	 */
 	public function testGetAll()
@@ -29,7 +29,7 @@ class PaymentMethodRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers PaymentMethodRepository::getById
+	 * @covers \Tchooz\Repositories\Payment\PaymentMethodRepository::getById
 	 * @return void
 	 */
 	public function testGetById(): void

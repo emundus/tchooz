@@ -1,0 +1,12 @@
+.web357-microsoft-login-btn {
+    width: 215px;
+    height: 41px;
+    display: inline-block;
+    background-image: url('../images/ms-symbollockup_signin_light.svg'); /* Default light */
+}
+
+html[data-bs-theme="dark"] {
+    .web357-microsoft-login-btn {
+        background-image: url('../images/ms-symbollockup_signin_dark.svg'); /* Dark mode */
+    }
+}

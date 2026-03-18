@@ -13,7 +13,7 @@ use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Automation\ActionMessageTypeEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Factories\Task\TaskFactory;
-use Tchooz\Response;
+use Tchooz\EmundusResponse;
 use Tchooz\Traits\TraitTable;
 
 #[TableAttribute(table: 'jos_emundus_task')]
@@ -254,7 +254,7 @@ class TaskRepository
 
 		if (empty($task->getUserId()))
 		{
-			throw new \InvalidArgumentException('Task must have a valid user ID and action before saving.', Response::HTTP_BAD_REQUEST);
+			throw new \InvalidArgumentException('Task must have a valid user ID and action before saving.', EmundusResponse::HTTP_BAD_REQUEST);
 		}
 
 		try

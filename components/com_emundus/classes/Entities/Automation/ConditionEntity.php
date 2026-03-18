@@ -6,11 +6,13 @@ use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Automation\Comparators\ArrayComparator;
 use Tchooz\Entities\Automation\Comparators\DateComparator;
 use Tchooz\Entities\Automation\Comparators\ScalarComparator;
+use Tchooz\Entities\Transformation\TransformationEntity;
 use Tchooz\Enums\Automation\ConditionMatchModeEnum;
 use Tchooz\Enums\Automation\ConditionOperatorEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Services\Automation\Condition\ConditionTargetResolverInterface;
 use Tchooz\Services\Automation\ConditionRegistry;
+use Tchooz\Services\Transformation\TransformationEngine;
 
 class ConditionEntity
 {
@@ -28,9 +30,14 @@ class ConditionEntity
 
 	private ConditionMatchModeEnum $matchMode;
 
+	/**
+	 * @var array<TransformationEntity> $transformations
+	 */
+	private array $transformations = [];
+
 	public CONST SAME_AS_CURRENT_FILE = '__SAME_AS_CURRENT_FILE__';
 
-	public function __construct(int $id, int $group_id, ConditionTargetTypeEnum $targetType, string $field, ConditionOperatorEnum $operator, mixed $value, ConditionMatchModeEnum $matchMode = ConditionMatchModeEnum::ANY)
+	public function __construct(int $id, int $group_id, ConditionTargetTypeEnum $targetType, string $field, ConditionOperatorEnum $operator, mixed $value, ConditionMatchModeEnum $matchMode = ConditionMatchModeEnum::ANY, array $transformations = [])
 	{
 		$this->id         = $id;
 		$this->group_id   = $group_id;
@@ -39,6 +46,7 @@ class ConditionEntity
 		$this->operator   = $operator;
 		$this->value      = $value;
 		$this->matchMode  = $matchMode;
+		$this->setTransformations($transformations);
 
 		Log::addLogger(['text_file' => 'com_emundus.condition.entity.log.php'], Log::ALL, ['com_emundus.condition.entity']);
 	}
@@ -113,6 +121,29 @@ class ConditionEntity
 		$this->matchMode = $matchMode;
 	}
 
+	/**
+	 * @return TransformationEntity[]
+	 */
+	public function getTransformations(): array
+	{
+		return $this->transformations;
+	}
+
+	/**
+	 * @param array<TransformationEntity> $transformations
+	 * @return self
+	 */
+	public function setTransformations(array $transformations): self
+	{
+		foreach ($transformations as $transformation)
+		{
+			assert($transformation instanceof TransformationEntity);
+		}
+		$this->transformations = $transformations;
+
+		return $this;
+	}
+
 	public function isSatisfied(ActionTargetEntity $context): bool
 	{
 		$satisfied = false;
@@ -123,6 +154,20 @@ class ConditionEntity
 		{
 			try {
 				$foundValue = $resolver->resolveValue($context, $this->field);
+
+				if (!empty($this->getTransformations()))
+				{
+					$transformationEngine = new TransformationEngine($foundValue, $this->getTransformations());
+
+					if ($transformationEngine->transformValue())
+					{
+						$foundValue = $transformationEngine->getValue();
+					}
+					else
+					{
+						Log::add('No transformations were applied to the condition value.', Log::WARNING, 'com_emundus.condition.entity');
+					}
+				}
 			} catch (\Exception $e) {
 				Log::add('Error resolving condition value: ' . $e->getMessage(), Log::ERROR, 'com_emundus.condition.entity');
 				return false;
@@ -184,7 +229,8 @@ class ConditionEntity
 			{
 				throw new \Exception('Cannot use SAME_AS_CURRENT_FILE when there is no original context available.');
 			}
-		} else if (is_array($this->getValue()) && in_array(self::SAME_AS_CURRENT_FILE, $this->getValue()))
+		}
+		else if (is_array($this->getValue()) && in_array(self::SAME_AS_CURRENT_FILE, $this->getValue()))
 		{
 			if (!empty($context->getOriginalContext()))
 			{

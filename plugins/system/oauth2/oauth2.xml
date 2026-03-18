@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension version="2.0.0" type="plugin" group="system" method="upgrade">
-    <name>System - OAuth 2 routing</name>
+    <name>PLG_SYSTEM_OAUTH2</name>
     <author>Hugo Moracchini</author>
     <creationDate>November 2018</creationDate>
     <copyright>Copyright (C) 2019 eMundus All rights reserved.</copyright>
@@ -8,10 +8,11 @@
     <authorEmail>dev@emundus.fr</authorEmail>
     <authorUrl>emundus.fr</authorUrl>
     <version>2.0.0</version>
-    <description>Routing for OAuth2 authentication</description>
+    <description>PLG_SYSTEM_OAUTH2_DESC</description>
     <namespace path="src">Joomla\Plugin\System\Oauth2</namespace>
     <files>
         <folder plugin="oauth2">services</folder>
+        <folder>language</folder>
         <folder>src</folder>
     </files>
     <config>

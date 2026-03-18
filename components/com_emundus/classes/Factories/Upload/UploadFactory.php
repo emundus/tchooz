@@ -13,7 +13,7 @@ class UploadFactory
 	 *
 	 * @return array<UploadEntity>
 	 */
-	public function fromDbObjects(array $dbObjects): array
+	public static function fromDbObjects(array $dbObjects): array
 	{
 		$entities = [];
 

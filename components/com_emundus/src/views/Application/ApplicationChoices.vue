@@ -307,32 +307,23 @@ export default {
 			).then(async (result) => {
 				if (result.isConfirmed) {
 					applicationService.updateStatus(id, result.value).then(async (res) => {
-						this.loading = true;
-						await this.getChoicesConfiguration(fnum);
-						await this.getApplicationChoices(fnum);
-						await this.getAvailableChoices(fnum);
-						this.loading = false;
+						if (res.status) {
+							this.loading = true;
+							await this.getChoicesConfiguration(fnum);
+							await this.getApplicationChoices(fnum);
+							await this.getAvailableChoices(fnum);
+							this.loading = false;
 
-						/*if(result.value === 'confirmed')
-            {
-              this.loading = true;
-              await this.getChoicesConfiguration(fnum);
-              await this.getApplicationChoices(fnum);
-              await this.getAvailableChoices(fnum);
-              this.loading = false;
-            }
-            else {
-              const choiceIndex = this.choices.findIndex((choice) => choice.id === id);
-              if (choiceIndex !== -1) {
-                this.choices[choiceIndex].state = res.data.state;
-                this.choices[choiceIndex].state_html = res.data.state_html;
-              }
-            }*/
-
-						this.alertSuccess(
-							'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_SUCCESS_TITLE',
-							'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_SUCCESS_TEXT',
-						);
+							this.alertSuccess(
+								'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_SUCCESS_TITLE',
+								'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_SUCCESS_TEXT',
+							);
+						} else {
+							this.alertError(
+								'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_ERROR_TITLE',
+								res.error || 'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_ERROR_TEXT',
+							);
+						}
 					});
 				}
 			});
@@ -531,7 +522,8 @@ export default {
 		</modal>
 
 		<Back class="tw-mb-4" link="index.php" v-if="!$props.fnum" />
-		<h1>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_TITLE') }}</h1>
+		<h1 v-if="!$props.fnum && canBeConfirm">{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_TITLE_CONFIRM') }}</h1>
+		<h1 v-else>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_TITLE') }}</h1>
 
 		<div class="tw-mt-4" v-if="canBeCreate">
 			<Button
@@ -549,8 +541,9 @@ export default {
 		</div>
 
 		<!-- Intro -->
-		<div class="tw-mt-4">
-			<p>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_DESCRIPTION').replace('%s', configuration.max) }}</p>
+		<div class="tw-mt-4" v-if="!$props.fnum && canBeUpdate">
+			<p v-if="canBeConfirm">{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_DESCRIPTION_CONFIRM') }}</p>
+			<p v-else>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_DESCRIPTION').replace('%s', configuration.max) }}</p>
 			<p v-if="configuration.can_be_ordering === 1">
 				{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_DESCRIPTION_REORDER') }}
 			</p>

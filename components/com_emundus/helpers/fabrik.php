@@ -628,7 +628,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			$params['bootstrap_class']         = 'input-xxlarge';
 		}
 
-		if ($plugin == 'dropdown' || $plugin == 'checkbox' || $plugin == 'radiobutton')
+		if ($plugin == 'dropdown' || $plugin == 'checkbox' || $plugin == 'radiobutton' || $plugin === 'orderlist')
 		{
 			$params['sub_options']       = array(
 				'sub_values'            => array(),

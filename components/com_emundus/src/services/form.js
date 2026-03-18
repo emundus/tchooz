@@ -17,18 +17,6 @@ export default {
 			};
 		}
 	},
-	async getFilesByForm(id) {
-		try {
-			return await fetchClient.get('getfilesbyform', {
-				pid: id,
-			});
-		} catch (error) {
-			return {
-				status: false,
-				error: error,
-			};
-		}
-	},
 	async getSubmissionPage(id) {
 		try {
 			return await fetchClient.get('getsubmittionpage', {
@@ -222,22 +210,6 @@ export default {
 
 		try {
 			const response = await client().post(baseUrl + '&task=addDocument', formData);
-
-			return response;
-		} catch (error) {
-			return {
-				status: false,
-				error: error,
-			};
-		}
-	},
-	async getAssociatedCampaigns(id) {
-		try {
-			const response = client().get(baseUrl + '&task=getassociatedcampaign', {
-				params: {
-					pid: id,
-				},
-			});
 
 			return response;
 		} catch (error) {

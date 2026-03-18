@@ -26,8 +26,8 @@ class FabrikFormEventDefinition extends EventDefinition
 	{
 		$options = [];
 
-		$h_cache = new EmundusHelperCache();
-		$forms   = $h_cache->get('fabrik_forms_list_with_label');
+		$hCache = new EmundusHelperCache('com_emundus.forms');
+		$forms   = $hCache->get('fabrik_forms_list_with_label');
 
 		if (empty($forms))
 		{
@@ -64,7 +64,7 @@ class FabrikFormEventDefinition extends EventDefinition
 				}
 			}
 
-			$h_cache->set('fabrik_forms_list_with_label', $forms);
+			$hCache->set('fabrik_forms_list_with_label', $forms);
 		}
 
 		foreach ($forms as $form)

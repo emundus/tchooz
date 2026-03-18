@@ -134,7 +134,7 @@ requirejs(['fab/fabrik'], function () {
     var user_items = document.querySelectorAll('#userDropdown a');
     var flow_items = document.querySelectorAll('.mod_emundus_flow___intro a');
     var footer_items = document.querySelectorAll('#g-footer a');
-    var back_button_form = document.querySelectorAll('.fabrikActions .goback-btn');
+    var back_button_form = document.querySelectorAll('.goback-btn');
 
     links = [...checklist_items, ...menu_items, ...user_items, ...flow_items, ...logo, ...footer_items, ...back_button_form];
 
@@ -234,7 +234,7 @@ requirejs(['fab/fabrik'], function () {
     if (!form_loaded) {
       setTimeout(() => {
         fetch('/index.php?option=com_emundus&controller=form&task=getjsconditions&form_id=' + form.id).then(response => response.json()).then(data => {
-          if (data.status) {
+          if (data.status && data.data && data.data.conditions) {
             js_rules = data.data.conditions;
 
             // First check rules based on user data
@@ -406,6 +406,8 @@ requirejs(['fab/fabrik'], function () {
         let condition_state = [];
 
         rule.conditions.forEach((condition) => {
+          condition.params = condition.params && typeof condition.params === 'string' ? JSON.parse(condition.params) : condition.params;
+
           if (condition.group && !condition_state[condition.group]) {
             condition_state[condition.group] = {
               'type': condition.group_type,
@@ -433,7 +435,20 @@ requirejs(['fab/fabrik'], function () {
               let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
 
               if (name == condition.field && elt.getRepeatNum() == element.getRepeatNum()) {
-                if (operators[condition.state](elt.get('value'), condition.values, elt.plugin)) {
+                let value = elt.get('value');
+
+                // todo: it would be better to check the plugin of the element and transform the value accordingly instead of this workaround for options
+                if (condition.params && condition.params.option)
+                {
+                  // value is the index of the option selected, transform value into array, and get index of condition.params.option
+                  const orderedValues = value.split(',').map(v => v.replaceAll('"', ''));
+
+                  const optionIndex = orderedValues.findIndex(orderedValue => orderedValue == condition.params.option);
+
+                  value = optionIndex !== -1 ? optionIndex+1 : '';
+                }
+
+                if (operators[condition.state](value, condition.values, elt.plugin)) {
                   if (condition.group) {
                     condition_state[condition.group].states.push(true);
                   } else {
@@ -513,7 +528,7 @@ requirejs(['fab/fabrik'], function () {
                     case 'show_options':
                       addOption(elt, action.params);
                       if (clear) {
-                        sortSelect(elt.element);
+                        sortSelect(elt);
                       }
                       break;
                     case 'hide_options':
@@ -539,7 +554,9 @@ requirejs(['fab/fabrik'], function () {
               });
             }
           });
-        } else {
+        }
+        else
+        {
           let opposite_action = 'hide';
 
           rule.actions.forEach((action) => {
@@ -593,7 +610,7 @@ requirejs(['fab/fabrik'], function () {
                     case 'show_options':
                       addOption(elt, action.params);
                       if (clear) {
-                        sortSelect(elt.element);
+                        sortSelect(elt);
                       }
                       break;
                     case 'hide_options':
@@ -668,58 +685,121 @@ requirejs(['fab/fabrik'], function () {
 
   function addOption(field, params) {
     params = JSON.parse(params);
-    const options = field.element.options;
 
-    params.forEach((p) => {
-      // Check if option already exists
-      var exists = false;
-      [...options].map((o) => {
-        if (o.value == p.primary_key) {
-          exists = true;
+    if(field.plugin === 'fabrikcheckbox')
+    {
+      const options = field.subElements;
+      params.forEach((p) => {
+        // Check if option already exists
+        var exists = false;
+        var optionToInsert = null;
+
+        const options = field.subElements;
+        for (let i = options.length - 1; i >= 0; i--) {
+          if (p.primary_key == options[i].value) {
+            // Check if id exist
+            exists = document.getElementById(options[i].id) !== null;
+            optionToInsert = options[i];
+          }
+        }
+
+        if (!exists) {
+          var parentDiv = document.createElement("div");
+          parentDiv.classList.add('tw-grid', 'tw-grid-cols-1', 'md:tw-grid-cols-2','lg:tw-grid-cols-1', 'tw-gap-4');
+          parentDiv.appendChild(createElementFromHTML(optionToInsert.parentElement.outerHTML));
+          field.element.appendChild(parentDiv);
         }
       });
-      if (!exists) {
-        var option = document.createElement("option");
-        option.text = p.value;
-        option.value = p.primary_key;
-        field.element.add(option);
-      }
-    });
+    }
+    else
+    {
+      const options = field.element.options;
+
+      params.forEach((p) => {
+        // Check if option already exists
+        var exists = false;
+        [...options].map((o) => {
+          if (o.value == p.primary_key) {
+            exists = true;
+          }
+        });
+        if (!exists) {
+          var option = document.createElement("option");
+          option.text = p.value;
+          option.value = p.primary_key;
+          field.element.add(option);
+        }
+      });
+    }
+  }
+
+  function createElementFromHTML(htmlString) {
+    var div = document.createElement('div');
+    div.innerHTML = htmlString.trim();
+
+    // Change this to div.childNodes to support multiple top-level nodes.
+    return div.firstChild;
   }
 
   function removeOption(field, params) {
     params = JSON.parse(params);
 
-    const options = field.element.options;
     const values = params.map((param) => {
       return param.primary_key.toString();
     });
+    if(field.plugin === 'fabrikcheckbox')
+    {
+      const options = field.subElements;
+      for (let i = options.length - 1; i >= 0; i--) {
+        if (values.includes(options[i].value)) {
+          if(document.getElementById(options[i].id)) {
+            document.getElementById(options[i].id).parentElement.parentElement.remove();
+          }
+        }
+      }
+    }
+    else
+    {
+      const options = field.element.options;
 
-    for (let i = options.length - 1; i >= 0; i--) {
-      if (values.includes(options[i].value)) {
-        field.element.remove(i);
+      for (let i = options.length - 1; i >= 0; i--) {
+        if (values.includes(options[i].value)) {
+          field.element.remove(i);
+        }
       }
     }
   }
 
-  function sortSelect(selElem) {
-    var tmpAry = new Array();
-    for (var i = 0; i < selElem.options.length; i++) {
-      tmpAry[i] = new Array();
-      tmpAry[i][0] = selElem.options[i].text;
-      tmpAry[i][1] = selElem.options[i].value;
+  function sortSelect(field) {
+    let selElem = field.element;
+    if(field.plugin === 'fabrikcheckbox')
+    {
+      let subOptionsInOrder = field.subElements;
+      for (let i = 0; i <= subOptionsInOrder.length - 1; i++) {
+        const div = document.getElementById(subOptionsInOrder[i].id).parentElement.parentElement;
+        if (div) field.element.appendChild(div);
+      }
     }
-    tmpAry.sort((a, b) => {
-      // Sort by value
-      return a[1].localeCompare(b[1]);
-    });
-    while (selElem.options.length > 0) {
-      selElem.options[0] = null;
+    else {
+      var tmpAry = new Array();
+      for (var i = 0; i < selElem.options.length; i++) {
+        tmpAry[i] = new Array();
+        tmpAry[i][0] = selElem.options[i].text;
+        tmpAry[i][1] = selElem.options[i].value;
+      }
+      tmpAry.sort((a, b) => {
+        // Sort by value
+        return a[1].localeCompare(b[1]);
+      });
+      while (selElem.options.length > 0) {
+        selElem.options[0] = null;
+      }
+      for (var i = 0; i < tmpAry.length; i++) {
+        var op = new Option(tmpAry[i][0], tmpAry[i][1]);
+        selElem.options[i] = op;
+      }
     }
-    for (var i = 0; i < tmpAry.length; i++) {
-      var op = new Option(tmpAry[i][0], tmpAry[i][1]);
-      selElem.options[i] = op;
-    }
+
     return;
   }
 

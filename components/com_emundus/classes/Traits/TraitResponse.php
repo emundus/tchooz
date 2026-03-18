@@ -9,26 +9,36 @@
 
 namespace Tchooz\Traits;
 
-use Tchooz\Response;
+use Tchooz\EmundusResponse;
 
 trait TraitResponse
 {
-	public function sendJsonResponse(array|Response $response): void
+	public function sendJsonResponse(array|EmundusResponse|null $response): void
 	{
 		header('Content-Type: application/json; charset=utf-8');
 
-		$code = 400;
-		if ($response instanceof Response) {
-			$code = $response->code;
+		if(empty($response))
+		{
+			$response = EmundusResponse::fail('An unknown error occurred.', 500);
 		}
-		else {
-			if (isset($response['code'])) {
-				$code = $response['code'];
+		else
+		{
+			$code = 400;
+			if ($response instanceof EmundusResponse)
+			{
+				$code = $response->code;
 			}
-		}
+			else
+			{
+				if (isset($response['code']))
+				{
+					$code = $response['code'];
+				}
+			}
 
-		$header = 'HTTP/1.1 ' . $code . ' ' . Response::$statusTexts[$code];
-		header($header);
+			$header = 'HTTP/1.1 ' . $code . ' ' . EmundusResponse::$statusTexts[$code];
+			header($header);
+		}
 
 		echo json_encode($response);
 		exit;

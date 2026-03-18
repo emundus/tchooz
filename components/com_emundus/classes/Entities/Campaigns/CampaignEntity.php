@@ -18,6 +18,8 @@ class CampaignEntity
 {
 	private int $id;
 
+	private int $createdBy;
+
 	private string $label;
 
 	private ?string $description;
@@ -48,6 +50,8 @@ class CampaignEntity
 
 	private string $timezone;
 
+	private int $files_count = 0;
+
 	// TODO: Refactor when Fabrik was moved into Entities
 	private ?array $moreProperties;
 
@@ -56,35 +60,42 @@ class CampaignEntity
 	 */
 	private bool $isPublic;
 
-	public function __construct(string $label, DateTime $start_date, DateTime $end_date, ?ProgramEntity $program , string $year , ?string $description = '', ?string $short_description = '', int $profile_id = 0, bool $published = true, bool $pinned = false, ?string $alias = '', bool $visible = true, ?CampaignEntity $parent = null, int $id = 0, array $moreProperties = [], bool $isPublic = false)
+	public function __construct(string $label, DateTime $start_date, DateTime $end_date, ?ProgramEntity $program, string $year, ?string $description = '', ?string $short_description = '', int $profile_id = 0, bool $published = true, bool $pinned = false, ?string $alias = '', bool $visible = true, ?CampaignEntity $parent = null, int $id = 0, array $moreProperties = [], int $files_count = 0, int $createdBy = 0, bool $isPublic = false)
 	{
-		$this->id = $id;
-		$this->label = $label;
-		$this->description = $description;
+		$this->id                = $id;
+		$this->label             = $label;
+		$this->description       = $description;
 		$this->short_description = $short_description;
-		$this->start_date = $start_date;
-		$this->end_date = $end_date;
-		$this->profile_id = $profile_id;
-		$this->program = $program;
-		$this->year = $year;
-		$this->published = $published;
-		$this->pinned = $pinned;
-		$this->alias = $alias;
-		$this->visible = $visible;
-		$this->parent = $parent;
-		$this->moreProperties = $moreProperties;
-		$this->isPublic = $isPublic;
+		$this->start_date        = $start_date;
+		$this->end_date          = $end_date;
+		$this->profile_id        = $profile_id;
+		$this->program           = $program;
+		$this->year              = $year;
+		$this->published         = $published;
+		$this->pinned            = $pinned;
+		$this->alias             = $alias;
+		$this->visible           = $visible;
+		$this->parent            = $parent;
+		$this->moreProperties    = $moreProperties;
+		$this->files_count       = $files_count;
+		$this->createdBy         = $createdBy;
+		$this->isPublic          = $isPublic;
 
 		// Determine status based on dates
 		$this->timezone = Factory::getApplication()->get('offset', 'Europe/Paris');
-		$timezone = $this->timezone ? new \DateTimeZone($this->timezone) : new \DateTimeZone(date_default_timezone_get());
-		
+		$timezone       = $this->timezone ? new \DateTimeZone($this->timezone) : new \DateTimeZone(date_default_timezone_get());
+
 		$currentDate = new DateTime('now', $timezone);
-		if ($currentDate < $this->start_date) {
+		if ($currentDate < $this->start_date)
+		{
 			$this->status = StatusEnum::UPCCOMING;
-		} elseif ($currentDate >= $this->start_date && $currentDate <= $this->end_date) {
+		}
+		elseif ($currentDate >= $this->start_date && $currentDate <= $this->end_date)
+		{
 			$this->status = StatusEnum::OPEN;
-		} else {
+		}
+		else
+		{
 			$this->status = StatusEnum::CLOSED;
 		}
 	}
@@ -97,6 +108,16 @@ class CampaignEntity
 	public function setId(int $id): void
 	{
 		$this->id = $id;
+	}
+
+	public function getCreatedBy(): int
+	{
+		return $this->createdBy;
+	}
+
+	public function setCreatedBy(int $createdBy): void
+	{
+		$this->createdBy = $createdBy;
 	}
 
 	public function getLabel(): string
@@ -259,6 +280,16 @@ class CampaignEntity
 		$this->moreProperties = $moreProperties;
 	}
 
+	public function getFilesCount(): int
+	{
+		return $this->files_count;
+	}
+
+	public function setFilesCount(int $files_count): void
+	{
+		$this->files_count = $files_count;
+	}
+
 	public function isPublic(): bool
 	{
 		return $this->isPublic;
@@ -272,7 +303,7 @@ class CampaignEntity
 	public function __serialize(): array
 	{
 		$serialize = get_object_vars($this);
-		if(!empty($this->program))
+		if (!empty($this->program))
 		{
 			$serialize['program'] = $this->program->__serialize();
 		}

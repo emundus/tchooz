@@ -184,6 +184,13 @@ abstract class MappingTranformer
 		return $entities;
 	}
 
+	public function reset(): self
+	{
+		$this->parametersValues = [];
+		$this->withEntities = [];
+
+		return $this;
+	}
 
 	public function serialize(): array
 	{

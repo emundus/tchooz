@@ -9,7 +9,7 @@ use Tchooz\Factories\Upload\UploadFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
 
-#[TableAttribute(table: '#__emundus_uploads', alias: 'upload', columns: ['id', 'fnum', 'attachment_id'])]
+#[TableAttribute(table: '#__emundus_uploads', alias: 'upload', columns: ['id', 'timedate', 'user_id', 'fnum', 'attachment_id', 'filename', 'local_filename', 'campaign_id', 'description', 'can_be_deleted', 'can_be_viewed', 'is_validated'])]
 class UploadRepository extends EmundusRepository implements RepositoryInterface
 {
 	private UploadFactory $factory;
@@ -24,6 +24,11 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 		);
 
 		$this->factory = new UploadFactory();
+	}
+
+	public function getFactory(): UploadFactory
+	{
+		return $this->factory;
 	}
 
 	public function delete(int $id): bool
@@ -56,7 +61,7 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 
 		if (!empty($objects))
 		{
-			$entities = $this->factory->fromDbObjects($objects);
+			$entities = $this->factory::fromDbObjects($objects);
 		}
 
 		return $entities;
@@ -74,7 +79,7 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 		$objects = $this->getItemsByFields($params);
 		if (!empty($objects))
 		{
-			$entities = $this->factory->fromDbObjects($objects);
+			$entities = $this->factory::fromDbObjects($objects);
 		}
 
 		return $entities;
@@ -92,7 +97,7 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 
 		if (!empty($object))
 		{
-			$entities = $this->factory->fromDbObjects([$object]);
+			$entities = $this->factory::fromDbObjects([$object]);
 			$entity = $entities[0];
 		}
 
@@ -150,14 +155,14 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 				'local_filename' => $entity->getLocalFilename(),
 				'size' => $entity->getSize(),
 				'is_validated' => $entity->getValidationStatus()->value,
-				'is_signed' => $entity->isSigned() ? 1 : 0,
+				'signed_file' => $entity->isSigned() ? 1 : 0,
 				'thumbnail' => $entity->getThumbnail(),
 				'can_be_deleted' => (int) $entity->canBeDeleted(),
 				'can_be_viewed' => (int) $entity->canBeViewed(),
 				'modified' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
 				'modified_by' => $entity->getModifiedBy() ?: null,
 			];
-
+			
 			$flushed = $this->db->updateObject($this->tableName, $object, 'id');
 		}
 

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="system" method="upgrade">
+    <name>PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT</name>
+    <author>Web357 (Yiannis Christodoulou)</author>
+    <creationDate>2026-02-03</creationDate>
+    <copyright>Copyright: (©) 2014-2024 Web357. All rights reserved.</copyright>
+    <license>GNU/GPLv3, https://www.gnu.org/licenses/gpl-3.0.html</license>
+    <authorEmail>support@web357.com</authorEmail>
+    <authorUrl>https://www.web357.com</authorUrl>
+    <version>1.0.8</version>
+    <variant>pro</variant>
+    <description>PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_XML_DESCRIPTION</description>
+
+    <namespace path="src">Web357\Plugin\System\Microsoftoutlook365mailconnect</namespace>
+
+    <files>
+        <folder plugin="microsoftoutlook365mailconnect">services</folder>
+        <folder>asset</folder>
+        <folder>forms</folder>
+        <folder>language</folder>
+        <folder>services</folder>
+        <folder>src</folder>
+        <filename>index.html</filename>
+        <filename>script.install.helper.php</filename>
+    </files>
+
+    <scriptfile>script.install.php</scriptfile>
+
+    <config>
+        <fields name="params">
+
+            <!-- ::: PLUGIN ::: -->
+            <fieldset name="basic" addfieldprefix="Web357\Plugin\System\Microsoftoutlook365mailconnect\Field">
+            <field 
+                    name="w357frmrk" 
+                    id="w357frmrk" 
+                    type="w357frmrk"
+            />
+            <field
+                addfieldprefix="Web357Framework\Field"
+                    type="registerasset">
+                    <asset>\Web357\Plugin\System\Microsoftoutlook365mailconnect\Asset\PluginConfigurationAsset</asset>
+            </field>
+            <field
+                    name="main_guide"
+                    type="note"
+                    class="alert alert-info"
+                    label="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_GUIDE_LABEL"
+                    description="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_GUIDE_DESC"
+                    showon=""
+            />
+            <field
+                    name="oauth_redirect_url"
+                    type="msoutlook365authorizationurl"
+                    label="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_REDIRECT_URI_LABEL"
+                    description="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_REDIRECT_URI_DESC"
+                    readonly="true"
+            />
+            <field
+                    name="oauth_application_id"
+                    type="text"
+                    label="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_APPLICATION_ID_LABEL"
+                    description="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_APPLICATION_ID_DESC"
+                    hint="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_APPLICATION_ID_DESC"
+            />
+            <field
+                    name="oauth_client_secret"
+                    type="msoutlook365password"
+                    label="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_APPLICATION_SECRET_LABEL"
+                    description="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_APPLICATION_SECRET_DESC"
+                    hint="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_APPLICATION_SECRET_DESC"
+            />
+            <field
+                    name="oauth_button"
+                    type="msoutlook365authorizationbutton"
+                    label="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_AUTHENTICATE_LABEL"
+                    description="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_AUTHENTICATE_DESC"
+                    hint="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_AUTHENTICATE_DESC"
+            />
+            <field
+                    name="oauth_access_token"
+                    type="hidden"
+            />
+     
+            <!-- BEGIN: Version Check -->
+            <field type="header" class="w357_large_header" label="W357FRM_HEADER_VERSION_CHECK" />
+            <field name="info" id="info" type="info" extension_type="plugin" extension_name="microsoftoutlook365mailconnect" real_name="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT" plugin_type="system" label="" addfieldpath="/plugins/system/web357framework/elements" />
+            <!-- END: Version Check -->
+
+            <!-- BEGIN: JED Review -->
+            <field type="header" class="w357_large_header" label="W357FRM_HEADER_JED_REVIEW_AND_RATING" />
+            <field name="jedreview" id="jedreview" type="jedreview" extension_type="module" extension_name="microsoftoutlook365mailconnect" real_name="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT" plugin_type="system" addfieldpath="/plugins/system/web357framework/elements" label="" description="" jed_url="https://extensions.joomla.org/extension/microsoft-outlook-365-mail-connect/"/>
+            <!-- END: JED Review -->
+            </fieldset>
+
+            <!-- ::: ADVANCED SETTINGS ::: -->
+            <fieldset name="advanced" label="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_TAB_ADVANCED_SETTINGS">
+                <field
+                        name="advanced_guide"
+                        type="note"
+                        class="alert alert-info w-100 mb-0 "
+                        label="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_ADVANCED_GUIDE_DESC_TITLE"
+                        description="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_ADVANCED_GUIDE_DESC"
+                />
+                <field
+                        name="oauth_from_email"
+                        type="text"
+                        label="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_FROM_EMAIL_LABEL"
+                        description="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_FROM_EMAIL_HINT"
+                        hint="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_FROM_EMAIL_HINT"
+                        placeholder="account@example.com"
+                />
+                <field
+                        name="oauth_tenant_id"
+                        type="text"
+                        label="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_TENANT_ID_LABEL"
+                        description="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_TENANT_ID_DESCRIPTION"
+                        hint="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_TENANT_ID_HINT"
+                />
+            </fieldset>
+
+            <!-- ::: DESCRIPTION ::: -->
+            <fieldset name="description" label="W357FRM_HEADER_DESCRIPTION">
+
+                    <!-- BEGIN: Description -->
+                    <field type="header" class="w357_large_header" label="W357FRM_HEADER_DESCRIPTION" />
+                    <field name="description" id="description" type="description" extension_type="plugin" extension_name="microsoftoutlook365mailconnect" real_name="PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT" plugin_type="system" label="" addfieldpath="/plugins/system/web357framework/elements" />
+                    <!-- END: Description -->
+            
+            </fieldset>
+            
+            <!-- ::: ABOUT ::: -->
+            <fieldset name="about" label="W357FRM_HEADER_ABOUT_WEB357">
+                    
+                    <!-- BEGIN: About Web357 -->
+                    <field type="header" class="w357_large_header" label="W357FRM_HEADER_ABOUT_WEB357" />
+                    <field name="about" id="about" type="about" label="" addfieldpath="/plugins/system/web357framework/elements" />
+                    <!-- END: About Web357 -->
+                    
+            </fieldset>
+        </fields>
+    </config>
+
+    <updateservers><server type="extension" priority="1" name="Microsoft/Outlook 365 Mail Connect (pro version)">https://updates.web357.com/microsoftoutlook365mailconnect/microsoftoutlook365mailconnect_pro.xml</server></updateservers>
+</extension>

@@ -55,6 +55,7 @@
 							:coordinatorAccess="true"
 							:actualLanguage="actualLanguage"
 							:manyLanguages="manyLanguages"
+							:crud="crud"
 							@nextSection="next"
 							@getInformations="initInformations"
 							@updateHeader="updateHeader"
@@ -140,6 +141,7 @@ export default {
 
 	props: {
 		index: Number,
+		crud: Object,
 	},
 	mixins: [mixin],
 
@@ -252,6 +254,8 @@ export default {
 					}
 				});
 			}
+
+			this.tabs.find((tab) => tab.code === 'steps').displayed = this.crud.workflow.r;
 
 			// First found tab displayed and set active
 			let firstTabDisplayed = this.tabs.find((tab) => tab.displayed);
@@ -369,7 +373,7 @@ export default {
 
 					if (this.program.id) {
 						programmeService.getCampaignsByProgram(this.program.id).then((resp) => {
-							this.campaignsByProgram = resp.campaigns;
+							this.campaignsByProgram = resp.data;
 						});
 					}
 				})

@@ -1027,7 +1027,7 @@ function runAction(action, url = '', option = '') {
             break;
 
         // Adding rights to the selected files
-        case 11:
+        case 'access_file':
             var groupeEval = $('#em-access-groups-eval').val();
             var evaluators = $('#em-access-evals').val();
 
@@ -3941,7 +3941,7 @@ $(document).ready(function() {
                 break;
 
             // Define access on file(s)
-            case 11:
+            case 'access_file':
                 addLoader();
 
                 fnums = getUserCheckArray();

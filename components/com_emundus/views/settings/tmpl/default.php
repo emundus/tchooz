@@ -8,7 +8,9 @@
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
 use Tchooz\Factories\LayoutFactory;
 
 defined('_JEXEC') or die('Restricted Access');
@@ -350,7 +352,7 @@ Text::script('COM_EMUNDUS_TAGS');
 #Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL'); --- déjà fait plus haut
 
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_SHARE_FILE');
-Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_MAIL_GENERATION/PUBLISHING');
+Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_MAIL_GENERATION_PUBLISHING');
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_EXPERT_INVITE');
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_RULES_OF_PAY_PRODUCT');
 
@@ -371,9 +373,9 @@ Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SITE_TIMEZONE'); // Fuseau horaire
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SITE_TIMEZONE_LAND'); // Pays
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SITE_TIMEZONE_CITY'); // Ville
 Text::script('COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT'); // Format de date
-Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SITE_DATE_FORMAT_D/M/Y'); // Format de date
-Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SITE_DATE_FORMAT_M/D/Y'); // Format de date
-Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SITE_DATE_FORMAT_Y/M/D'); // Format de date
+Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SITE_DATE_FORMAT_D_M_Y'); // Format de date
+Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SITE_DATE_FORMAT_M_D_Y'); // Format de date
+Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SITE_DATE_FORMAT_Y_M_D'); // Format de date
 Text::script('COM_EMUNDUS_ATTACHMENTS_KEYWORDS'); // Mots clés
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SITE_NUMBER_LINES_LISTES'); // Nombre de lignes dans les listes
 
@@ -471,6 +473,13 @@ Text::script('COM_EMUNDUS_GLOBAL_WEB_SECURITY_NEW_ADDRESS_WARNING_2');
 Text::script('COM_EMUNDUS_GLOBAL_WEB_SECURITY_OWN_SSL_ASK');
 Text::script('COM_EMUNDUS_GLOBAL_EMAIL_ERRORS_DETAILS');
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING_SEE_ALL');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SERVER_TYPE');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_REDIRECT_URI');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_APPLICATION_ID');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_CLIENT_SECRET');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_HELPTEXT');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_LOGIN_WITH');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_LOGIN_HELPTEXT');
 
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_REPLYTO_ADRESS_HELPTEXT');
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_REPLYTO_HELPTEXT');
@@ -743,19 +752,23 @@ Text::script('COM_EMUNDUS_SETTINGS_ANALYTICS_PERIOD_LAST_7_DAYS');
 Text::script('COM_EMUNDUS_SETTINGS_ANALYTICS_PERIOD_TODAY');
 Text::script('COM_EMUNDUS_SETTINGS_ANALYTICS_INFO');
 
+Text::script('COM_EMUNDUS_SETTINGS_THEME_HIDE_TCHOOZY');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OFFLINE');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OFFLINE_DESC');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_OFFLINE_MESSAGE');
+
 $data = LayoutFactory::prepareVueData();
+
+$baseUrl = rtrim(Uri::root(), '/') . '/';
+$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+$wa->registerAndUseStyle('web357.microsoft-outlook.css.configuration.style', $baseUrl . 'plugins/system/microsoftoutlook365mailconnect/asset/css/web357-microsoft-oulook-configuration.min.css')
 ?>
 
 <style link="media/com_emundus_vue/app_emundus.css?<?php echo $data['hash'] ?>"></style>
 
 <div id="em-component-vue"
      component="Settings"
-     shortLang="<?= $data['short_lang'] ?>"
-     currentLanguage="<?= $data['current_lang'] ?>"
-     defaultLang="<?= $data['default_lang'] ?>"
-     coordinatorAccess="<?= $data['coordinator_access'] ?>"
-     sysadminAccess="<?= $data['sysadmin_access'] ?>"
-     manyLanguages="<?= $data['many_languages'] ?>"
+     data="<?= htmlspecialchars(json_encode($data), ENT_QUOTES, 'UTF-8'); ?>"
 ></div>
 
 <script src="media/com_emundus/js/settings.js?<?php echo $data['hash'] ?>"></script>

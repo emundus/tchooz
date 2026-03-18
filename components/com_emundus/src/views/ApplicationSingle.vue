@@ -134,17 +134,14 @@
 <script>
 import axios from 'axios';
 import Attachments from '@/views/Attachments.vue';
-import Evaluations from '@/components/Files/Evaluations.vue';
+import Evaluations from '@/views/Evaluations.vue';
 import filesService from '@/services/files.js';
 import errors from '@/mixins/errors.js';
 import Comments from '@/views/Comments.vue';
 import Modal from '@/components/Modal.vue';
-import evaluationService from '@/services/evaluation.js';
 import fileService from '@/services/file.js';
-import EvaluationList from '@/components/Files/EvaluationList.vue';
 import Messages from './Messenger/Messages.vue';
 import Synthesis from '@/components/Files/Synthesis.vue';
-import WorkflowStepsTimeline from '@/views/Workflows/WorkflowStepsTimeline.vue';
 
 export default {
 	name: 'ApplicationSingle',
@@ -475,6 +472,10 @@ export default {
 			return url.replace('{fnum}', this.selectedFile.fnum);
 		},
 		updateTab(tabName) {
+			if (tabName === 'application') {
+				this.getApplicationForm();
+			}
+
 			this.selected = tabName;
 
 			let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');

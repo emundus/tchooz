@@ -16,7 +16,7 @@ class CurrencyRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers CurrencyRepository::getCurrencyById
+	 * @covers \Tchooz\Repositories\Payment\CurrencyRepository::getCurrencyById
 	 * @return void
 	 */
 	public function testGetCurrencyById()
@@ -30,7 +30,7 @@ class CurrencyRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers CurrencyRepository::getCurrencies
+	 * @covers \Tchooz\Repositories\Payment\CurrencyRepository::getCurrencies
 	 * @return void
 	 */
 	public function testGetCurrencies()

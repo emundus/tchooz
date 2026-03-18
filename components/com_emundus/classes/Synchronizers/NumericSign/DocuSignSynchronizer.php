@@ -387,7 +387,7 @@ class DocuSignSynchronizer
 		]);
 
 		$eventNotification = new EventNotification([
-			'url'                    => JUri::base() . DS . 'index.php?option=com_emundus&controller=sign&task=docusigncallback&format=raw',
+			'url'                    => JUri::root() . 'index.php?option=com_emundus&controller=sign&task=docusigncallback&format=raw',
 			'logging_enabled'        => 'true',
 			'require_acknowledgment' => 'true',
 			'envelope_events'        => [
@@ -409,6 +409,11 @@ class DocuSignSynchronizer
 		$uploadRepository = new UploadRepository();
 		$upload           = $uploadRepository->getById($request->getUploadId());
 		$content          = $upload->getContent();
+
+		if (empty($content))
+		{
+			throw new \RuntimeException("Failed to read content of the document to be signed for upload ID " . $upload->getId() . " at path " . $upload->getFileInternalPath());
+		}
 
 		// File to sign
 		$document = new Document([

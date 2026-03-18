@@ -38,7 +38,7 @@ class ProductRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ProductRepository::flush
+	 * @covers \Tchooz\Repositories\Payment\ProductRepository::flush
 	 * @return void
 	 */
 	public function testFlush()
@@ -50,7 +50,7 @@ class ProductRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ProductRepository::getProductById
+	 * @covers \Tchooz\Repositories\Payment\ProductRepository::getProductById
 	 * @return void
 	 */
 	public function testGetProductById()
@@ -67,7 +67,7 @@ class ProductRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ProductRepository::createCart
+	 * @covers \Tchooz\Repositories\Payment\ProductRepository::getProducts
 	 * @return void
 	 */
 	public function testGetProducts()

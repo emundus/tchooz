@@ -32,15 +32,16 @@ class ApplicationChoicesEntity
 	// TODO: Refactor when Fabrik was moved into Entities
 	private ?array $moreProperties;
 
-	public function __construct(string $fnum, User $user, ?CampaignEntity $campaign, int $order = 0, ChoicesStateEnum $state = ChoicesStateEnum::DRAFT, int $id = 0, $moreProperties = [])
+	public function __construct(string $fnum, User $user, ?CampaignEntity $campaign, int $order = 0, ChoicesStateEnum $state = ChoicesStateEnum::DRAFT, int $id = 0, $moreProperties = [], ?ApplicationFileEntity $application_file = null)
 	{
-		$this->fnum = $fnum;
-		$this->user = $user;
-		$this->campaign = $campaign;
-		$this->order = $order;
-		$this->id = $id;
-		$this->moreProperties = $moreProperties;
-		$this->state = $state;
+		$this->fnum             = $fnum;
+		$this->user             = $user;
+		$this->campaign         = $campaign;
+		$this->order            = $order;
+		$this->id               = $id;
+		$this->moreProperties   = $moreProperties;
+		$this->state            = $state;
+		$this->application_file = $application_file;
 	}
 
 	public function getId(): int
@@ -125,13 +126,13 @@ class ApplicationChoicesEntity
 
 	public function __serialize(): array
 	{
-		$serialize = get_object_vars($this);
+		$serialize             = get_object_vars($this);
 		$serialize['campaign'] = $this->campaign->__serialize();
-		$serialize['state'] = ['name' => $this->state->name, 'value' => $this->state->value];
-		$serialize['user'] = [
-			'id'       => $this->user->id,
-			'name'     => $this->user->name,
-			'email'    => $this->user->email,
+		$serialize['state']    = ['name' => $this->state->name, 'value' => $this->state->value];
+		$serialize['user']     = [
+			'id'    => $this->user->id,
+			'name'  => $this->user->name,
+			'email' => $this->user->email,
 		];
 
 		return $serialize;

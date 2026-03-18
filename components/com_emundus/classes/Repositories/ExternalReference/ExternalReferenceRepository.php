@@ -75,9 +75,20 @@ class ExternalReferenceRepository extends EmundusRepository implements Repositor
 		return $externalReference;
 	}
 
+	/**
+	 * @param   ExternalReferenceEntity  $externalReference
+	 *
+	 * @return bool Returns true if the reference was successfully saved, false otherwise
+	 */
 	public function flush(ExternalReferenceEntity $externalReference): bool
 	{
 		$query = $this->db->createQuery();
+
+		// column, intern_id and reference are required to be able to save an external reference, otherwise we can t be sure about what we are saving and we can t check for existing references
+		if (empty($externalReference->getReference()) || empty($externalReference->getColumn()) || empty($externalReference->getInternId()))
+		{
+			return false;
+		}
 
 		if (empty($externalReference->getId()))
 		{

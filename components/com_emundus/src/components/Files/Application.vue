@@ -77,7 +77,7 @@ import filesService from '@/services/files.js';
 import errors from '@/mixins/errors.js';
 import Comments from '@/views/Comments.vue';
 import Modal from '@/components/Modal.vue';
-import Evaluations from '@/components/Files/Evaluations.vue';
+import Evaluations from '@/views/Evaluations.vue';
 import Synthesis from '@/components/Files/Synthesis.vue';
 
 export default {

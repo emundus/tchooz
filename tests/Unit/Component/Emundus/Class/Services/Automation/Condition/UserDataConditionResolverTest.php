@@ -27,7 +27,7 @@ class UserDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers UserDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\UserDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValue(): void

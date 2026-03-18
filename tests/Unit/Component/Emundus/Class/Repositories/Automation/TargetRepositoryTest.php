@@ -21,7 +21,7 @@ class TargetRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TargetRepository::saveTarget
+	 * @covers \Tchooz\Repositories\Automation\TargetRepository::saveTarget
 	 * @return void
 	 */
 	public function testSaveTarget(): void
@@ -40,7 +40,7 @@ class TargetRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TargetRepository::getTargetById
+	 * @covers \Tchooz\Repositories\Automation\TargetRepository::getTargetById
 	 * @return void
 	 */
 	public function testGetTargetById(): void

@@ -3,8 +3,10 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Factories\LayoutFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 Text::script('SAVE');
 Text::script('BACK');
@@ -71,12 +73,27 @@ Text::script('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_SENT');
 
 $data = LayoutFactory::prepareVueData();
 
+$user = Factory::getApplication()->getIdentity();
+
+$actionRepository = new ActionRepository();
+$workflowAction   = $actionRepository->getByName('workflow');
+
+$data['crud'] = [
+    'workflow' => [
+        'u' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($workflowAction->getId(), 'u', $user->id),
+    ]
+];
+
+$datas = [
+    ...$data,
+    'workflowId' => $this->current_workflow_id,
+    'readonly' => $this->readOnly,
+];
+
 ?>
 
 <div id="em-component-vue" component="Workflows/WorkflowEdit"
-     workflowId="<?= $this->current_workflow_id; ?>"
-     shortLang="<?= $data['short_lang'] ?>"
-     currentLanguage="<?= $data['current_lang'] ?>"
+     data="<?= htmlspecialchars(json_encode($datas), ENT_QUOTES, 'UTF-8'); ?>"
 >
 </div>
 

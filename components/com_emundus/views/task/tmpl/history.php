@@ -11,7 +11,10 @@ Text::script('COM_EMUNDUS_TASKS_INTRO');
 Text::script('COM_EMUNDUS_NO_TASKS');
 Text::script('COM_EMUNDUS_TASK_STATUS');
 Text::script('COM_EMUNDUS_ONBOARD_FILTER_ALL');
+Text::script('COM_EMUNDUS_ONBOARD_VISUALIZE');
 Text::script('COM_EMUNDUS_TASK_EXECUTION_PREVIEW');
+Text::script('COM_EMUNDUS_TASK_EXECUTION_FAILED_FOR_SOME_TASKS');
+Text::script('COM_EMUNDUS_LIST_CLOSE_PREVIEW');
 
 $datas = [
     'statuses' => array_map(function (TaskStatusEnum $status) {

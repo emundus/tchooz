@@ -16,28 +16,36 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Utilities\ArrayHelper;
+use Tchooz\Attributes\AccessAttribute;
+use Tchooz\EmundusResponse;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
+use Tchooz\Entities\List\AdditionalColumn;
+use Tchooz\Entities\List\AdditionalColumnTag;
+use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Enums\List\ListColumnTypesEnum;
+use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\Label\LabelRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
-use Tchooz\Response;
-use Tchooz\Traits\TraitResponse;
+use Tchooz\Repositories\Upload\UploadRepository;
+use Tchooz\Repositories\User\EmundusUserRepository;
+use Tchooz\Controller\EmundusController;
 
-class EmundusControllerApplication extends BaseController
+class EmundusControllerApplication extends EmundusController
 {
-	use TraitResponse;
-
 	/**
 	 * @var User|mixed|null
 	 */
@@ -49,10 +57,6 @@ class EmundusControllerApplication extends BaseController
 	{
 		parent::__construct($config);
 
-		if (!class_exists('EmundusHelperAccess'))
-		{
-			require_once(JPATH_BASE . DS . '/components/com_emundus/helpers/access.php');
-		}
 		if (!class_exists('EmundusHelperExport'))
 		{
 			require_once(JPATH_BASE . DS . '/components/com_emundus/helpers/export.php');
@@ -529,6 +533,15 @@ class EmundusControllerApplication extends BaseController
 
 		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum))
 		{
+			if(!class_exists('EmundusModelWorkflow'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			}
+			$m_workflow = new EmundusModelWorkflow();
+
+			$actionRepository = new ActionRepository();
+			$paymentAction = $actionRepository->getByName('payment');
+
 			$m_application = $this->getModel('Application');
 			$menus         = $m_application->getApplicationMenu($this->_user->id, $fnum);
 			$ccid          = EmundusHelperFiles::getIdFromFnum($fnum);
@@ -573,6 +586,15 @@ class EmundusControllerApplication extends BaseController
 							$m_comments             = $this->getModel('Comments');
 							$notifications_comments = sizeof($m_comments->getComments($ccid, $this->_user->id, false, [], 0, 1));
 							$menu['notifications']  = $notifications_comments;
+						}
+						if($action_id == $paymentAction->getId())
+						{
+							// Check if we have a payment step for this fnum
+							$paymentStep = $m_workflow->getPaymentStepFromFnum($fnum);
+							if(empty($paymentStep))
+							{
+								continue;
+							}
 						}
 
 						$menu_application[] = $menu;
@@ -767,8 +789,12 @@ class EmundusControllerApplication extends BaseController
 	{
 		$fnum = $this->input->getString('fnum', null);
 
-		if (EmundusHelperAccess::asAccessAction(11, 'u', $this->_user->id, $fnum))
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
+			$actionRepository       = new ActionRepository();
+			$accessFileGroupsAction = $actionRepository->getByName('access_file');
+			$accessFileUsersAction  = $actionRepository->getByName('access_file_users');
+
 			$state         = $this->input->getInt('state', null);
 			$accessid      = explode('-', $this->input->getString('access_id', null));
 			$type          = $this->input->getString('type', null);
@@ -776,11 +802,17 @@ class EmundusControllerApplication extends BaseController
 			$res           = new stdClass();
 			if ($type == 'groups')
 			{
-				$res->status = $m_application->updateGroupAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
+				if (EmundusHelperAccess::asAccessAction($accessFileGroupsAction->getId(), CrudEnum::UPDATE->value, $this->_user->id, $fnum))
+				{
+					$res->status = $m_application->updateGroupAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
+				}
 			}
 			else
 			{
-				$res->status = $m_application->updateUserAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
+				if (EmundusHelperAccess::asAccessAction($accessFileUsersAction->getId(), CrudEnum::UPDATE->value, $this->_user->id, $fnum))
+				{
+					$res->status = $m_application->updateUserAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
+				}
 			}
 			echo json_encode($res);
 			exit();
@@ -804,19 +836,29 @@ class EmundusControllerApplication extends BaseController
 	{
 		$fnum = $this->input->getString('fnum', null);
 
-		if (EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $fnum))
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
+			$actionRepository       = new ActionRepository();
+			$accessFileGroupsAction = $actionRepository->getByName('access_file');
+			$accessFileUsersAction  = $actionRepository->getByName('access_file_users');
+
 			$id            = $this->input->getString('id', null);
 			$type          = $this->input->getString('type', null);
 			$m_application = $this->getModel('Application');
 			$res           = new stdClass();
 			if ($type == 'groups')
 			{
-				$res->status = $m_application->deleteGroupAccess($fnum, (int)$id);
+				if (EmundusHelperAccess::asAccessAction($accessFileGroupsAction->getId(), CrudEnum::DELETE->value, $this->_user->id, $fnum))
+				{
+					$res->status = $m_application->deleteGroupAccess($fnum, (int) $id);
+				}
 			}
 			else
 			{
-				$res->status = $m_application->deleteUserAccess($fnum, $id);
+				if (EmundusHelperAccess::asAccessAction($accessFileUsersAction->getId(), CrudEnum::DELETE->value, $this->_user->id, $fnum))
+				{
+					$res->status = $m_application->deleteUserAccess($fnum, $id);
+				}
 			}
 			echo json_encode($res);
 			exit();
@@ -1719,26 +1761,54 @@ class EmundusControllerApplication extends BaseController
 		echo json_encode($response);
 		exit;
 	}
-	
+
 	public function getchoicesstates(): void
 	{
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
 		}
 
-		$choices_states          = ChoicesStateEnum::cases();
-		$data = [];
+		$choices_states = ChoicesStateEnum::cases();
+		$data           = [];
 		foreach ($choices_states as $state)
 		{
 			$data[strtolower($state->name)] = $state->getLabel();
 		}
 
-		$response = [];
+		$response           = [];
+		$response['code']   = 200;
+		$response['status'] = true;
+		$response['data']   = $data;
+		$this->sendJsonResponse($response);
+	}
+
+	public function getchoicesstatesforfilter(): void
+	{
+		if ($this->_user->guest)
+		{
+			$response['code']    = 403;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$choices_states = ChoicesStateEnum::cases();
+		$data           = [];
+		foreach ($choices_states as $state)
+		{
+			$data[] = [
+				'label' => $state->getLabel(),
+				'value' => $state->value,
+			];
+		}
+
+		$response           = [];
 		$response['code']   = 200;
 		$response['status'] = true;
 		$response['data']   = $data;
@@ -1750,7 +1820,7 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -1789,7 +1859,7 @@ class EmundusControllerApplication extends BaseController
 		{
 			$choicesConfiguration['can_be_updated']   = 0;
 			$choicesConfiguration['can_be_confirmed'] = 0;
-			$choicesConfiguration['can_be_sent'] = 0;
+			$choicesConfiguration['can_be_sent']      = 0;
 		}
 		$choicesConfiguration['crud'] = [];
 		if (!empty($fnum))
@@ -1815,7 +1885,7 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -1845,7 +1915,7 @@ class EmundusControllerApplication extends BaseController
 
 			if (!empty($step_id))
 			{
-				$step_data  = $m_workflow->getStepData($step_id);
+				$step_data = $m_workflow->getStepData($step_id);
 
 				if (!empty($step_data) && !empty($step_data->programs))
 				{
@@ -1897,17 +1967,17 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
 		}
 
 		$checkRules = true;
-		$fnum = $this->input->getString('fnum');
+		$fnum       = $this->input->getString('fnum');
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'c', $this->_user->id, $fnum))
 		{
-			$checkRules = false;
+			$checkRules   = false;
 			$current_fnum = $fnum;
 		}
 		else
@@ -1973,7 +2043,7 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2056,7 +2126,7 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2131,7 +2201,7 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2184,9 +2254,9 @@ class EmundusControllerApplication extends BaseController
 		{
 			require_once JPATH_SITE . '/components/com_emundus/models/groups.php';
 		}
-		$m_groups = new EmundusModelGroups();
-		$eMConfig                       = ComponentHelper::getParams('com_emundus');
-		$all_rights_group_id            = $eMConfig->get('all_rights_group', 1);
+		$m_groups            = new EmundusModelGroups();
+		$eMConfig            = ComponentHelper::getParams('com_emundus');
+		$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
 
 		$repository = new ApplicationChoicesRepository();
 		$choices    = $repository->getChoicesByFnum($current_fnum);
@@ -2195,11 +2265,11 @@ class EmundusControllerApplication extends BaseController
 			$groups = $m_groups->getGroupsIdByCourse($choice->getCampaign()->getProgram()->getCode());
 			$groups = array_column($groups, 'id');
 			$groups = array_diff($groups, [$all_rights_group_id]);
-			if(!empty($groups))
+			if (!empty($groups))
 			{
 				$actions = [
-					['id' => 1,'r' => 1,'c' => 0,'u' => 0,'d' => 0],
- 				];
+					['id' => 1, 'r' => 1, 'c' => 0, 'u' => 0, 'd' => 0],
+				];
 				$m_files->shareGroups($groups, $actions, [$current_fnum]);
 			}
 
@@ -2215,9 +2285,9 @@ class EmundusControllerApplication extends BaseController
 			$redirect_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $current_fnum;
 		}
 
-		$response['code']    = 200;
-		$response['status']  = true;
-		$response['message'] = 'Choices step email sent successfully.';
+		$response['code']     = 200;
+		$response['status']   = true;
+		$response['message']  = 'Choices step email sent successfully.';
 		$response['redirect'] = $redirect_url;
 		$this->sendJsonResponse($response);
 	}
@@ -2227,17 +2297,22 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
 		}
 
-		$id     = $this->input->getInt('id', 0);
+		$ids = $this->input->getString('id', '');
+		$ids = explode(',', $ids);
+		$ids = array_filter($ids, function ($id) {
+			return is_numeric($id) && !empty($id);
+		});
+
 		$status = $this->input->getString('status', '');
 		$status = ChoicesStateEnum::isValidState($status);
 
-		if (empty($id) || empty($status))
+		if (!is_array($ids) || empty($ids) || empty($status))
 		{
 			$response['code']    = 400;
 			$response['message'] = 'Missing parameters.';
@@ -2246,48 +2321,54 @@ class EmundusControllerApplication extends BaseController
 			return;
 		}
 
-		$repository = new ApplicationChoicesRepository();
-		$choice     = $repository->getById($id);
-
-		if (empty($choice))
+		$choicesObjects = [];
+		foreach ($ids as $id)
 		{
-			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
-			$this->sendJsonResponse($response);
+			$repository = new ApplicationChoicesRepository();
+			$choice     = $repository->getById($id);
 
-			return;
+			if (empty($choice))
+			{
+				$response['code']    = 403;
+				$response['message'] = Text::_('ACCESS_DENIED');
+				$this->sendJsonResponse($response);
+
+				return;
+			}
+
+			if (!EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'u', $this->_user->id, $choice->getFnum()))
+			{
+				$response['code']    = 403;
+				$response['message'] = Text::_('ACCESS_DENIED');
+				$this->sendJsonResponse($response);
+
+				return;
+			}
+
+			$old_status = $choice->getState();
+
+			$choice->setState($status);
+
+			if (!$repository->flush($choice, false))
+			{
+				$response['code']    = 500;
+				$response['message'] = 'Failed to update choice status.';
+				$this->sendJsonResponse($response);
+
+				return;
+			}
+
+			EmundusModelLogs::log($this->_user->id, $this->_user->id, $choice->getFnum(), $this->applicationChoicesAction->getId(), 'u', 'COM_EMUNDUS_LOGS_UPDATE_STATUS_CHOICE', json_encode(['updated' => [['old' => $old_status->getLabel(), 'new' => $status->getLabel()]]]));
+
+			$choiceObject               = $choice->__serialize();
+			$choiceObject['state_html'] = $choice->getState()->getHtmlBadge();
+
+			$choicesObjects[] = $choiceObject;
 		}
-
-		if (!EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'u', $this->_user->id, $choice->getFnum()))
-		{
-			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
-			$this->sendJsonResponse($response);
-
-			return;
-		}
-
-		$old_status = $choice->getState();
-
-		$choice->setState($status);
-
-		if (!$repository->flush($choice, false))
-		{
-			$response['code']    = 500;
-			$response['message'] = 'Failed to update choice status.';
-			$this->sendJsonResponse($response);
-
-			return;
-		}
-
-		EmundusModelLogs::log($this->_user->id, $this->_user->id, $choice->getFnum(), $this->applicationChoicesAction->getId(), 'u', 'COM_EMUNDUS_LOGS_UPDATE_STATUS_CHOICE', json_encode(['updated' => [['old' => $old_status->getLabel(), 'new' => $status->getLabel()]]]));
-
-		$choiceObject               = $choice->__serialize();
-		$choiceObject['state_html'] = $choice->getState()->getHtmlBadge();
 
 		$response['code']    = 200;
 		$response['status']  = true;
-		$response['data']    = $choiceObject;
+		$response['data']    = $choicesObjects;
 		$response['message'] = 'Choice status updated successfully.';
 		$this->sendJsonResponse($response);
 	}
@@ -2297,7 +2378,7 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2339,7 +2420,7 @@ class EmundusControllerApplication extends BaseController
 		if (empty($choice))
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2371,7 +2452,7 @@ class EmundusControllerApplication extends BaseController
 		{
 			require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
 		}
-		$m_workflow  = new EmundusModelWorkflow();
+		$m_workflow = new EmundusModelWorkflow();
 
 		$choicesStep = $m_workflow->getChoicesStepFromFnum($current_fnum);
 
@@ -2381,7 +2462,7 @@ class EmundusControllerApplication extends BaseController
 		$choiceObject               = $choice->__serialize();
 		$choiceObject['state_html'] = $choice->getState()->getHtmlBadge();
 
-		$m_workflow = new EmundusModelWorkflow();
+		$m_workflow    = new EmundusModelWorkflow();
 		$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($current_fnum);
 
 		$redirect_url = 'index.php';
@@ -2390,10 +2471,10 @@ class EmundusControllerApplication extends BaseController
 			$redirect_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $current_fnum;
 		}
 
-		$response['code']    = 200;
-		$response['status']  = true;
-		$response['data']    = $choiceObject;
-		$response['message'] = 'Choice confirmed successfully.';
+		$response['code']     = 200;
+		$response['status']   = true;
+		$response['data']     = $choiceObject;
+		$response['message']  = 'Choice confirmed successfully.';
 		$response['redirect'] = $redirect_url;
 		$this->sendJsonResponse($response);
 	}
@@ -2403,7 +2484,7 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2445,7 +2526,7 @@ class EmundusControllerApplication extends BaseController
 		if (empty($choice))
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2461,6 +2542,452 @@ class EmundusControllerApplication extends BaseController
 		$response['status']  = true;
 		$response['data']    = $choiceObject;
 		$response['message'] = 'Choice refused successfully.';
+		$this->sendJsonResponse($response);
+	}
+
+	public function getuploadbyid(): void
+	{
+		$response = new EmundusResponse(false, Text::_('ACCESS_DENIED'), 403);
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$id = $this->input->getInt('id', 0);
+
+			try
+			{
+				$uploadRepository = new UploadRepository();
+				$upload           = $uploadRepository->getById($id);
+
+				if (EmundusHelperAccess::asAccessAction(4, 'r', $this->_user->id, $upload->getFnum()))
+				{
+					$response = $response::ok($upload->serialize());
+				}
+
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = $e->getCode();
+				$response['message'] = $e->getMessage();
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => 'application_choices', 'mode' => CrudEnum::READ]
+	])]
+	public function getallapplicationchoices(): EmundusResponse
+	{
+		$filter    = $this->input->getString('filter', '');
+		$sort      = $this->input->getString('sort', 'ASC');
+		$recherche = $this->input->getString('recherche', '');
+		$lim       = $this->input->getInt('lim', 0);
+		$page      = $this->input->getInt('page', 0);
+		$order_by  = $this->input->getString('order_by', 'af.fnum');
+		$order_by  = $order_by == 'label' ? 'eccc.order' : $order_by;
+
+		$campaignsFilter = [];
+		$campaigns       = $this->input->getString('campaign', '');
+		if (!empty($campaigns))
+		{
+			$campaigns       = explode(',', $campaigns);
+			$campaignsFilter = $campaigns;
+		}
+
+		$statesFilter = [];
+		$states       = $this->input->getString('state', '');
+		$states       = explode(',', $states);
+		if (!empty($states))
+		{
+			foreach ($states as $state)
+			{
+				if (is_numeric($state))
+				{
+					$statesFilter[] = ChoicesStateEnum::tryFrom($state);
+				}
+			}
+			$statesFilter = array_filter($statesFilter);
+		}
+
+		$indexesFilter = [];
+		$indexes       = $this->input->getString('index', '');
+		if (!empty($indexes))
+		{
+			$indexes       = explode(',', $indexes);
+			$indexesFilter = $indexes;
+		}
+
+		$fileStatusesFilter = [];
+		$fileStatuses       = $this->input->getString('file_status', '');
+		$fileStatuses       = explode(',', $fileStatuses);
+		if (!empty($fileStatuses))
+		{
+			foreach ($fileStatuses as $fileStatus)
+			{
+				if (is_numeric($fileStatus))
+				{
+					$fileStatusesFilter[] = $fileStatus;
+				}
+			}
+			$fileStatusesFilter = array_filter($fileStatusesFilter);
+		}
+
+		$applicationChoicesRepository = new ApplicationChoicesRepository();
+		$emundusUserRepository        = new EmundusUserRepository();
+		$labelRepository = new LabelRepository();
+
+		$userPrograms = $emundusUserRepository->getUserProgramsCodes($this->_user->id);
+		if (!empty($program) && $program != 'all')
+		{
+			$userPrograms = array_intersect($userPrograms, [$program]);
+		}
+
+		$moreFormId   = $applicationChoicesRepository->getMoreFormId();
+		$moreElements = $applicationChoicesRepository->getChoicesMoreElements($moreFormId);
+
+		$moreElementsFilters = [];
+		$filters       = $this->input->getArray();
+		foreach ($filters as $key => $value)
+		{
+			if (str_starts_with($key, 'more_'))
+			{
+				$element_name = str_replace('more_', '', $key);
+				foreach ($moreElements as $moreElement)
+				{
+					if ($moreElement['name'] == $element_name && in_array($moreElement['plugin'], ['dropdown', 'databasejoin']))
+					{
+						$moreElementsFilters[$element_name] = explode(',', $value);
+						break;
+					}
+				}
+			}
+		}
+
+		$applicationChoices = $applicationChoicesRepository->getAllChoices($sort, $recherche, $lim, $page, $order_by, $userPrograms, $statesFilter, $moreFormId, $campaignsFilter, $indexesFilter, $fileStatusesFilter, $moreElementsFilters);
+
+		$applicationChoicesSerialized = [
+			'datas' => [],
+			'count' => $applicationChoices->getTotalItems()
+		];
+
+		// Search for a files or evaluation view
+		$menu        = Factory::getApplication()->getMenu();
+		$emundusUser = $this->app->getSession()->get('emundusUser');
+		$files_menu  = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
+		if (empty($files_menu))
+		{
+			$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=evaluation', $emundusUser->menutype], 'true');
+		}
+
+		foreach ($applicationChoices->getItems() as $key => $applicationChoice)
+		{
+			if (empty($applicationChoice->getApplicationFile()))
+			{
+				continue;
+			}
+
+			assert($applicationChoice instanceof ApplicationChoicesEntity);
+
+			$applicationChoiceObject        = new stdClass();
+			$applicationChoiceObject->id    = $applicationChoice->getId();
+			$applicationChoiceObject->label = ['fr' => $applicationChoice->getOrder(), 'en' => $applicationChoice->getOrder()];
+
+			$labels = $labelRepository->getByFnum($applicationChoice->getApplicationFile()->getFnum());
+
+			// Add more elements
+			$applicationChoiceObject->additional_columns = [
+				new AdditionalColumn(
+					Text::_('COM_EMUNDUS_APPLICATION_CHOICE_CAMPAIGN'),
+					'',
+					ListDisplayEnum::ALL,
+					'c.label',
+					$applicationChoice->getCampaign()->getLabel()
+				),
+				new AdditionalColumn(
+					Text::_('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_STATUS'),
+					'',
+					ListDisplayEnum::ALL,
+					'',
+					'',
+					[
+						new AdditionalColumnTag(
+							Text::_('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_STATUS'),
+							$applicationChoice->getState()->getLabel(),
+							'',
+							$applicationChoice->getState()->getCssClasses()
+						)
+					],
+					ListColumnTypesEnum::TAGS
+				),
+				new AdditionalColumn(
+					Text::_('COM_EMUNDUS_REGISTRANTS_USER'),
+					'',
+					ListDisplayEnum::ALL,
+					'u.name',
+					!empty($files_menu) ? '<a class="tw-cursor-pointer hover:tw-underline" href="' . $files_menu->route . '#' . $applicationChoice->getFnum() . '" target="_blank">' . $applicationChoice->getUser()->name . '</a>' : $applicationChoice->getUser()->name
+				),
+				new AdditionalColumn(
+					Text::_('COM_EMUNDUS_ACCESS_STATUS'),
+					'',
+					ListDisplayEnum::ALL,
+					'',
+					'',
+					[
+						new AdditionalColumnTag(
+							Text::_('COM_EMUNDUS_ACCESS_STATUS'),
+							$applicationChoice->getApplicationFile()->getStatus()->getLabel(),
+							'',
+							'label label-' . $applicationChoice->getApplicationFile()->getStatus()->getColor()
+						)
+					],
+					ListColumnTypesEnum::TAGS
+				),
+				new AdditionalColumn(
+					Text::_('COM_EMUNDUS_FILES_TAGS'),
+					'',
+					ListDisplayEnum::ALL,
+					'',
+					'',
+					array_map(function ($label) {
+						return new AdditionalColumnTag(
+							Text::_('COM_EMUNDUS_FILES_TAGS'),
+							$label->getLabel(),
+							'',
+							'label ' . $label->getClass()
+						);
+					}, $labels),
+					ListColumnTypesEnum::TAGS
+				),
+			];
+
+			foreach ($moreElements as $moreElement)
+			{
+				if ($moreElement['hidden'] == 1)
+				{
+					continue;
+				}
+
+				$applicationChoiceObject->additional_columns[] = new AdditionalColumn(
+					$moreElement['label'],
+					'',
+					ListDisplayEnum::ALL,
+					'',
+					(isset($applicationChoice->getMoreProperties()[$moreElement['name']]) && !empty($applicationChoice->getMoreProperties()[$moreElement['name']]['formatted_value'])) ? $applicationChoice->getMoreProperties()[$moreElement['name']]['formatted_value'] : '-'
+				);
+			}
+
+			$applicationChoicesSerialized['datas'][$key] = $applicationChoiceObject;
+		}
+
+		return EmundusResponse::ok($applicationChoicesSerialized, Text::_('APPLICATION_CHOICES_RETRIEVED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getapplicationchoicesmorefilters(): EmundusResponse
+	{
+		$applicationChoicesRepository = new ApplicationChoicesRepository();
+
+		$moreFormId   = $applicationChoicesRepository->getMoreFormId();
+		$moreElements = $applicationChoicesRepository->getChoicesMoreElements($moreFormId);
+
+		$filters = [];
+		if(!empty($moreElements))
+		{
+			if(!class_exists('EmundusModelForm'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/form.php';
+			}
+			$mForm = new EmundusModelForm();
+
+			foreach ($moreElements as $moreElement)
+			{
+				if ($moreElement['hidden'] == 1 || !in_array($moreElement['plugin'], ['dropdown', 'databasejoin']))
+				{
+					continue;
+				}
+
+				$options = [];
+				if ($moreElement['plugin'] === 'databasejoin')
+				{
+					$params = json_decode($moreElement['params']);
+					try
+					{
+						$databasejoin_options = $mForm->getDatabaseJoinOptions($params->join_db_name, $params->join_key_column, $params->join_val_column);
+						foreach ($databasejoin_options as $db_option)
+						{
+							$option        = new stdClass();
+							$option->value = $db_option->primary_key;
+							$option->label = $db_option->value;
+							$options[]     = $option;
+						}
+					}
+					catch (Exception $e)
+					{
+						continue;
+					}
+				}
+
+				$filters[] =
+					[
+						'label'         => $moreElement['label'],
+						'allLabel'      => '',
+						'alwaysDisplay' => true,
+						'key'           => 'more_'.$moreElement['name'],
+						'values'        => $options,
+						'multiple'      => true,
+						'multiselect'   => true,
+						'default'       => '',
+					];
+			}
+		}
+
+		return EmundusResponse::ok($filters);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => 'campaign', 'mode' => CrudEnum::READ],
+		['id' => 'application_choices', 'mode' => CrudEnum::READ]
+	])]
+	public function getallcampaignsforfilter(): EmundusResponse
+	{
+		$emundusUserRepository = new EmundusUserRepository();
+		$userPrograms          = $emundusUserRepository->getUserProgramsCodes($this->user->id);
+
+		$campaignRepository = new CampaignRepository();
+		$campaigns          = $campaignRepository->getChildrenCampaigns();
+
+		$data = [];
+		foreach ($campaigns as $campaign)
+		{
+			if (!in_array($campaign->getProgram()->getCode(), $userPrograms))
+			{
+				continue;
+			}
+
+			$data[] = [
+				'value' => $campaign->getId(),
+				'label' => $campaign->getLabel(),
+			];
+		}
+
+		return EmundusResponse::ok($data, Text::_('CAMPAIGNS_RETRIEVED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getapplicationstatusforfilter(): EmundusResponse
+	{
+		$statusRepository = new StatusRepository();
+		$statuses         = $statusRepository->getAll();
+
+		$data = [];
+		foreach ($statuses as $status)
+		{
+			$data[] = [
+				'value' => $status->getStep(),
+				'label' => $status->getLabel(),
+			];
+		}
+
+		return EmundusResponse::ok($data, Text::_('STATUSES_RETRIEVED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => 'application_choices', 'mode' => CrudEnum::READ]
+	])]
+	public function exportapplicationchoices(): EmundusResponse
+	{
+		$response['code']    = 200;
+		$response['status']  = true;
+		$response['message'] = Text::_('COM_EMUNDUS_APPLICATION_CHOICES_EXPORT_EXCEL_SUCCESS');
+
+		$ids                         = $this->input->getString('ids', '');
+		if (!empty($ids))
+		{
+			$ids = explode(',', $ids);
+		}
+		else
+		{
+			$ids = [];
+		}
+
+		$applicationChoicesRepository = new ApplicationChoicesRepository();
+
+		$moreFormId   = $applicationChoicesRepository->getMoreFormId();
+		$moreElements = $applicationChoicesRepository->getChoicesMoreElements($moreFormId);
+
+		$applicationChoices           = $applicationChoicesRepository->getAllChoices('DESC', '', 0, 0, 't.id', [], null, $moreFormId, [], [], [], [], $ids);
+
+		if(!empty($applicationChoices->getItems()))
+		{
+			$excel_filename = 'export_application_choices_' . date('Ymd_His') . '.csv';
+			$excel_filepath = JPATH_SITE . '/tmp/' . $excel_filename;
+			$fp             = fopen($excel_filepath, 'w');
+
+			$columns = [
+				Text::_('COM_EMUNDUS_APPLICATION_CHOICE_CAMPAIGN'),
+				Text::_('COM_EMUNDUS_APPLICATION_CHOICE_STATUS'),
+				Text::_('COM_EMUNDUS_REGISTRANTS_USER'),
+				Text::_('COM_EMUNDUS_ACCESS_STATUS'),
+			];
+			foreach ($moreElements as $moreElement)
+			{
+				if($moreElement['hidden'] == 1)
+				{
+					continue;
+				}
+
+				$columns[] = $moreElement['label'];
+			}
+			fputcsv($fp, $columns, ';');
+
+			$rows = [];
+			foreach ($applicationChoices->getItems() as $applicationChoice)
+			{
+				$row = [
+					$applicationChoice->getCampaign()->getLabel(),
+					$applicationChoice->getState()->getLabel(),
+					$applicationChoice->getApplicationFile()->getUser()->name,
+					$applicationChoice->getApplicationFile()->getStatus()->getLabel(),
+				];
+				foreach ($moreElements as $moreElement)
+				{
+					if($moreElement['hidden'] == 1)
+					{
+						continue;
+					}
+
+					$row[] = (isset($applicationChoice->getMoreProperties()[$moreElement['name']]) && !empty($applicationChoice->getMoreProperties()[$moreElement['name']]['formatted_value'])) ? $applicationChoice->getMoreProperties()[$moreElement['name']]['formatted_value'] : '';
+				}
+				$rows[] = $row;
+
+				fputcsv($fp, $row, ';');
+			}
+
+			fclose($fp);
+
+			$nb_cols = count($columns);
+			$nb_rows = count($rows);
+
+			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/users.php');
+			$m_users  = new EmundusModelUsers();
+			$xls_file = $m_users->convertCsvToXls($excel_filename, $nb_cols, $nb_rows, 'export_application_choices_' . date('Ymd_His'), ';');
+
+			$excel_filepath = '';
+			if (!empty($xls_file))
+			{
+				$excel_filepath = JPATH_SITE . '/tmp/' . $xls_file;
+			}
+
+			header('Content-Type: application/vnd.ms-excel');
+			header('Content-Disposition: attachment; filename="' . basename($excel_filepath) . '"');
+			header('Content-Length: ' . filesize($excel_filepath));
+
+			$response['download_file'] = Uri::root() . 'tmp/' . basename($excel_filepath);
+		}
+
 		$this->sendJsonResponse($response);
 	}
 

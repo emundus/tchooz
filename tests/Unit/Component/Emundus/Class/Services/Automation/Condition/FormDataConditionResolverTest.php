@@ -46,12 +46,13 @@ class FormDataConditionResolverTest extends UnitTestCase
 				'2023-07-13 00:00:00',
 				'["0","1"]',
 				0,
-				''
+				'',
+				'"3","2","1"',
 			]);
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValue(): void
@@ -68,7 +69,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueDatabaseJoinElement(): void
@@ -85,7 +86,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueFormattedDatabaseJoinElement(): void
@@ -105,7 +106,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueWithInvalidField(): void
@@ -117,7 +118,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueFieldElement(): void
@@ -134,7 +135,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueTextAreaElement(): void
@@ -151,7 +152,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueCheckboxElement(): void
@@ -163,7 +164,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueRadioElement(): void
@@ -175,7 +176,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueDropdownElement(): void
@@ -187,7 +188,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueDbJoinElement(): void
@@ -199,7 +200,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueDisplayElement(): void
@@ -211,7 +212,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueDisplay2Element(): void
@@ -223,7 +224,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueYesNoElement(): void
@@ -235,7 +236,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueBirthdayElement(): void
@@ -247,7 +248,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueDateElement(): void
@@ -259,7 +260,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueDropdownMultiElement(): void
@@ -271,7 +272,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueDbJoinMultiElement(): void
@@ -280,6 +281,19 @@ class FormDataConditionResolverTest extends UnitTestCase
 		$fieldName = $this->unitTesFormId . '.' . $elementId;
 		$value = $this->resolver->resolveValue($this->context, $fieldName);
 		$this->assertEquals(17, $value);
+	}
+
+	/**
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
+	 * @return void
+	 */
+	public function testResolveValueOrderListElement(): void
+	{
+		$elementId = $this->h_dataset->getFormElementForTest($this->unitTesFormId, $this->h_dataset::FORM_KEYS['ELEMENT_ORDERLIST']);
+		$fieldName = $this->unitTesFormId . '.' . $elementId;
+
+		$value = $this->resolver->resolveValue($this->context, $fieldName);
+		$this->assertEquals([3, 2, 1], $value);
 	}
 
 	/**
@@ -321,7 +335,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FormDataConditionResolver::searchFieldValues
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::searchFieldValues
 	 * @return void
 	 */
 	public function testSearchFieldValues()

@@ -8,8 +8,10 @@
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Factories\LayoutFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 defined('_JEXEC') or die('Restricted Access');
 require_once(JPATH_BASE . '/components/com_emundus/helpers/access.php');
@@ -109,16 +111,25 @@ Text::script('COM_EMUNDUS_PAGINATION_DISPLAY');
 Text::script('COM_EMUNDUS_ONBOARD_FORMS_FILTER_PUBLISH');
 
 $data = LayoutFactory::prepareVueData();
+
+$user = Factory::getApplication()->getIdentity();
+
+$actionRepository = new ActionRepository();
+$formAction   = $actionRepository->getByName('form');
+
+$data['crud'] = [
+    'form' => [
+        'c' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($formAction->getId(), 'c', $user->id),
+        'r' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($formAction->getId(), 'r', $user->id),
+        'u' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($formAction->getId(), 'u', $user->id),
+        'd' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($formAction->getId(), 'd', $user->id),
+    ]
+];
 ?>
 
 <div id="em-component-vue"
      component="Forms"
-     coordinatorAccess="<?= $data['coordinator_access'] ?>"
-     sysadminAccess="<?= $data['sysadmin_access'] ?>"
-     shortLang="<?= $data['short_lang'] ?>"
-     currentLanguage="<?= $data['current_lang'] ?>"
-     manyLanguages="<?= $data['many_languages'] ?>"
-     defaultLang="<?= $data['default_lang'] ?>"
+     data="<?= htmlspecialchars(json_encode($data), ENT_QUOTES, 'UTF-8'); ?>"
 >
 </div>
 

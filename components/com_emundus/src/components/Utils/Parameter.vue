@@ -576,6 +576,7 @@ export default {
 			} else {
 				this.multiOptions = this.$props.multiselectOptions.options;
 			}
+
 			if (!this.multiselectOptions.multiple) {
 				let found = null;
 
@@ -598,9 +599,16 @@ export default {
 			} else {
 				// Check if values are not already object
 				if (this.parameter.value && this.parameter.value.length > 0 && typeof this.parameter.value[0] !== 'object') {
-					this.value = this.multiOptions.filter((option) =>
-						this.parameter.value.includes(option[this.$props.multiselectOptions.trackBy]),
-					);
+					if (Array.isArray(this.parameter.value)) {
+						this.value = this.multiOptions.filter((option) =>
+							this.parameter.value.includes(option[this.$props.multiselectOptions.trackBy].toString()),
+						);
+					} else {
+						let valueString = this.parameter.value.split(',');
+						this.value = this.multiOptions.filter((option) =>
+							valueString.includes(option[this.$props.multiselectOptions.trackBy].toString()),
+						);
+					}
 				} else {
 					this.value = this.parameter.value;
 				}

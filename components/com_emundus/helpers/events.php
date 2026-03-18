@@ -25,7 +25,9 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterStatusChangeDefinition;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Exception\EmundusException;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 
 defined('_JEXEC') or die('Restricted access');
@@ -621,7 +623,9 @@ class EmundusHelperEvents
 			$tmpl    = $jinput->getString('tmpl', '');
 			$reload++;
 
-			if ($preview == 1 && EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+			$actionRepository = new ActionRepository();
+			$formAction = $actionRepository->getByName('form');
+			if ($preview == 1 && (EmundusHelperAccess::asCoordinatorAccessLevel($user->id) || EmundusHelperAccess::asAccessAction($formAction->getId(), CrudEnum::READ->value, $user->id)))
 			{
 				return true;
 			}
@@ -1051,11 +1055,16 @@ class EmundusHelperEvents
 
 					foreach ($elements as $element)
 					{
+						assert($element instanceof PlgFabrik_Element);
+						if($element->getName() === 'PlgFabrik_ElementEmundus_fileupload')
+						{
+							continue;
+						}
 						$fullName = $element->getFullName();
 
 						if (in_array($fullName, $session_elements))
 						{
-							if (!empty($session_datas[$fullName]))
+							if (!empty($session_datas[$fullName]) )
 							{
 								$formModel->data[$fullName]          = $session_datas[$fullName];
 								$formModel->data[$fullName . '_raw'] = $session_datas[$fullName];

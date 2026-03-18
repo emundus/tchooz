@@ -45,6 +45,7 @@ Text::script('COM_EMUNDUS_CART_PAYMENT_RULES');
 Text::script('COM_EMUNDUS_CART_PAYMENT_PAY_ADVANCE_OR_TOTAL_LABEL');
 Text::script('COM_EMUNDUS_CART_PAYMENT_PAY_ADVANCE');
 Text::script('COM_EMUNDUS_CART_PAYMENT_PAY_TOTAL');
+Text::script('COM_EMUNDUS_CART_NO_PAYMENT_STEP');
 
 $data = LayoutFactory::prepareVueData();
 
@@ -56,15 +57,28 @@ if (!class_exists('EmundusModelWorkflow')) {
 }
 $m_workflow = new \EmundusModelWorkflow();
 $step = $m_workflow->getPaymentStepFromFnum($this->fnum);
-$cart = $cart_repository->getCartByFnum($this->fnum, $step->id);
 
-$datas = [
-    'fnum' => $this->fnum,
-	'cart' => $cart->serialize(),
-    'paymentMethods' => array_map(function ($method) { return $method->serialize(); }, $payment_repository->getPaymentMethods()),
-    'readOnly' => !$cart_repository->canUserUpdateCart($cart, Factory::getApplication()->getIdentity()->id),
-    ...$data
-];
+if (!empty($step))
+{
+    $cart = $cart_repository->getCartByFnum($this->fnum, $step->id);
+    $datas = [
+        'fnum' => $this->fnum,
+        'cart' => $cart->serialize(),
+        'paymentMethods' => array_map(function ($method) { return $method->serialize(); }, $payment_repository->getPaymentMethods()),
+        'readOnly' => !$cart_repository->canUserUpdateCart($cart, Factory::getApplication()->getIdentity()->id),
+        ...$data
+    ];
+}
+else
+{
+    $datas = [
+        'fnum' => $this->fnum,
+        'cart' => null,
+        'paymentMethods' => array_map(function ($method) { return $method->serialize(); }, $payment_repository->getPaymentMethods()),
+        'readOnly' => true,
+        ...$data
+    ];
+}
 PluginHelper::importPlugin('emundus');
 $dispatcher         = Factory::getApplication()->getDispatcher();
 $onBeforeRenderCart = new GenericEvent('onCallEventHandler', ['onBeforeRenderCart', ['fnum' => $this->fnum]]);

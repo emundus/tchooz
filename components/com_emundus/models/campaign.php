@@ -32,14 +32,6 @@ use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 
-require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
-require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
-
-/**
- * Emundus Component Campaign Model
- *
- * @since  1.0.0
- */
 class EmundusModelCampaign extends ListModel
 {
 	/**
@@ -74,17 +66,22 @@ class EmundusModelCampaign extends ListModel
 
 	private EmundusHelperCache $h_cache;
 
-	private ?AddonEntity $importAddon = null;
-
-	private ?int $importActionId = null;
-
 	function __construct()
 	{
 		parent::__construct();
 		global $option;
 
-		if (!class_exists('AddonEntity')) {
-			require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/Settings/AddonEntity.php');
+		if(!class_exists('EmundusHelperMenu'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+		}
+		if(!class_exists('EmundusHelperCache'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
+		}
+		if (!class_exists('HtmlSanitizerSingleton'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
 		}
 
 		Log::addLogger([
@@ -103,8 +100,6 @@ class EmundusModelCampaign extends ListModel
 		$this->config   = $this->app->getConfig();
 		$this->h_cache  = new EmundusHelperCache();
 
-		$this->setImportAddon();
-
 		// Get pagination request variables
 		$filter_order     = $this->app->getUserStateFromRequest($option . 'filter_order', 'filter_order', 'label', 'cmd');
 		$filter_order_Dir = $this->app->getUserStateFromRequest($option . 'filter_order_Dir', 'filter_order_Dir', 'desc', 'word');
@@ -116,11 +111,6 @@ class EmundusModelCampaign extends ListModel
 		$this->setState('filter_order_Dir', $filter_order_Dir);
 		$this->setState('limit', $limit);
 		$this->setState('limitstart', $limitstart);
-
-		if (!class_exists('HtmlSanitizerSingleton'))
-		{
-			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
-		}
 	}
 
 	/**
@@ -1318,6 +1308,9 @@ class EmundusModelCampaign extends ListModel
 
 				if ($deleted)
 				{
+					$campaignRepository = new CampaignRepository();
+					$campaignRepository->cleanCache();
+
 					$onAfterCampaignDeleteEventHandler = new GenericEvent(
 						'onCallEventHandler',
 						['onAfterCampaignDelete',
@@ -1415,6 +1408,9 @@ class EmundusModelCampaign extends ListModel
 							$this->_db->updateObject('#__menu', $update, 'id');
 						}
 					}
+
+					$campaignRepository = new CampaignRepository();
+					$campaignRepository->cleanCache();
 
 					$onAfterCampaignUnpublishEventHandler = new GenericEvent(
 						'onCallEventHandler',
@@ -1565,6 +1561,9 @@ class EmundusModelCampaign extends ListModel
 						}
 					}
 
+					$campaignRepository = new CampaignRepository();
+					$campaignRepository->cleanCache();
+
 					$onAfterCampaignPublishEventHandler = new GenericEvent(
 						'onCallEventHandler',
 						['onAfterCampaignPublish',
@@ -1648,6 +1647,9 @@ class EmundusModelCampaign extends ListModel
 
 				if ($duplicated)
 				{
+					$campaignRepository = new CampaignRepository();
+					$campaignRepository->cleanCache();
+
 					$new_campaign_id = $this->_db->insertid();
 
 					if (!empty($new_campaign_id))
@@ -1854,13 +1856,6 @@ class EmundusModelCampaign extends ListModel
 					}
 					if ($key == 'profile_id' && empty($data['profile_id']))
 					{
-						$forms = $m_form->getAllFormsPublished($user_id, 'id', SORT_DESC, [1]);
-
-						if (!empty($forms))
-						{
-							$data['profile_id'] = $forms[0]->id;
-						}
-
 						if (empty($data['profile_id']))
 						{
 							$data['profile_id'] = 1000;
@@ -1910,6 +1905,9 @@ class EmundusModelCampaign extends ListModel
 
 					if ($inserted)
 					{
+						$campaignRepository = new CampaignRepository();
+						$campaignRepository->cleanCache();
+
 						$campaign_id = $this->_db->insertid();
 						if (!empty($campaign_id))
 						{
@@ -2218,6 +2216,9 @@ class EmundusModelCampaign extends ListModel
 			{
 				if ($updated = $this->_db->updateObject('#__emundus_setup_campaigns', $fields, 'id'))
 				{
+					$campaignRepository = new CampaignRepository();
+					$campaignRepository->cleanCache();
+
 					Log::add('User ' . $user_id . ' updated campaign ' . $cid . ' ' . date('d/m/Y H:i:s') . ' query ' . $query->__toString(), Log::INFO, 'com_emundus.campaign');
 
 					$query->clear()
@@ -2536,6 +2537,9 @@ class EmundusModelCampaign extends ListModel
 				// Create teaching unity
 				$this->createYear($old_data, $profile);
 				//
+
+				$campaignRepository = new CampaignRepository();
+				$campaignRepository->cleanCache();
 
 				$new_data               = $old_data;
 				$new_data['profile_id'] = $profile;
@@ -2914,6 +2918,25 @@ class EmundusModelCampaign extends ListModel
 
 			if (!empty($params['file']) && $params['has_sample'])
 			{
+				// Delete old file if exist
+				$subQuery = $this->_db->getQuery(true);
+				$subQuery->clear()
+					->select('sample_filepath')
+					->from($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
+					->where($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($pid))
+					->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($did));
+				$this->_db->setQuery($subQuery);
+				$sampleFilename = $this->_db->loadResult();
+
+				if(!empty($sampleFilename))
+				{
+					$filepath = JPATH_ROOT . "/images/custom/attachments/$did/$pid/" . basename($sampleFilename);
+					if(file_exists($filepath))
+					{
+						unlink($filepath);
+					}
+				}
+
 				$allowed_ext = array('jpg', 'jpeg', 'png', 'doc', 'docx', 'pdf', 'xls', 'xlsx');
 				$ext         = strtolower(pathinfo($params['file']['name'], PATHINFO_EXTENSION));
 				if (in_array($ext, $allowed_ext))
@@ -2963,9 +2986,32 @@ class EmundusModelCampaign extends ListModel
 			{
 				$query->clear()
 					->update($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
-					->set('has_sample = 0')
+					->set('has_sample = ' . $params['has_sample'])
 					->where($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($pid))
 					->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($did));
+
+				if($params['has_sample'] == 0)
+				{
+					$query->set($this->_db->quoteName('sample_filepath') . ' = null');
+
+					$subQuery = $this->_db->getQuery(true);
+					$subQuery->clear()
+						->select('sample_filepath')
+						->from($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
+						->where($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($pid))
+						->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($did));
+					$this->_db->setQuery($subQuery);
+					$sampleFilename = $this->_db->loadResult();
+
+					if(!empty($sampleFilename))
+					{
+						$filepath = JPATH_ROOT . "/images/custom/attachments/$did/$pid/" . basename($sampleFilename);
+						if(file_exists($filepath))
+						{
+							unlink($filepath);
+						}
+					}
+				}
 
 				$this->_db->setQuery($query);
 				$this->_db->execute();
@@ -3517,6 +3563,9 @@ class EmundusModelCampaign extends ListModel
 					$db->setQuery($query);
 
 					$pinned = $db->execute();
+
+					$campaignRepository = new CampaignRepository();
+					$campaignRepository->cleanCache();
 				}
 				catch (Exception $e)
 				{
@@ -3554,6 +3603,9 @@ class EmundusModelCampaign extends ListModel
 			{
 				$db->setQuery($query);
 				$unpinned = $db->execute();
+
+				$campaignRepository = new CampaignRepository();
+				$campaignRepository->cleanCache();
 			}
 			catch (Exception $e)
 			{
@@ -4319,83 +4371,6 @@ class EmundusModelCampaign extends ListModel
 		}
 
 		return ['files_imported' => $files_imported, 'files_not_imported' => $files_not_imported];
-	}
-
-	private function setImportAddon(): void
-	{
-		$cache_import_addon =$this->h_cache->get('import_addon');
-
-		if (!empty($cache_import_addon)) {
-			$this->importAddon = new AddonEntity(
-				$cache_import_addon->name,
-				$cache_import_addon->type,
-				$cache_import_addon->icon,
-				$cache_import_addon->description,
-				$cache_import_addon->configuration,
-				$cache_import_addon->enabled,
-				$cache_import_addon->displayed
-			);
-		}
-
-		$query = $this->_db->createQuery();
-
-		if (empty($this->importAddon)) {
-			$query->select($this->_db->quoteName('value'))
-				->from($this->_db->quoteName('#__emundus_setup_config'))
-				->where($this->_db->quoteName('namekey') . ' = ' . $this->_db->quote('import'));
-			try {
-				$this->_db->setQuery($query);
-				$config = $this->_db->loadResult();
-
-				if (!empty($config)) {
-					$config = json_decode($config, true);
-					$this->importAddon = new AddonEntity(
-						'COM_EMUNDUS_ADDONS_IMPORT',
-						'import',
-						'drive_folder_upload',
-						'COM_EMUNDUS_ADDONS_IMPORT_DESC',
-						'',
-						(bool)$config['enabled'],
-						(bool)$config['displayed']
-					);
-
-					$configuration = [];
-
-					$this->importAddon->setConfiguration($configuration);
-
-					$this->h_cache->set('import_addon', $this->importAddon);
-				} else {
-					$this->importAddon = new AddonEntity(
-						'COM_EMUNDUS_ADDONS_IMPORT',
-						'import',
-						'drive_folder_upload',
-						'COM_EMUNDUS_ADDONS_IMPORT_DESC',
-						'',
-						false,
-						false
-					);
-				}
-			} catch (\Exception $e) {
-				Log::add('Error on load import addon : ' . $e->getMessage(), Log::ERROR, 'com_emundus.campaign');
-			}
-		}
-
-		$query->clear()
-			->select('id')
-			->from($this->_db->quoteName('#__emundus_setup_actions'))
-			->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote('import'));
-		$this->_db->setQuery($query);
-		$this->importActionId = $this->_db->loadResult();
-	}
-
-	public function getImportAddon(): AddonEntity
-	{
-		return $this->importAddon;
-	}
-
-	public function getImportActionId(): int
-	{
-		return $this->importActionId;
 	}
 
 	public function getAllCampaignElements(): array

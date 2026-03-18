@@ -310,42 +310,6 @@ class TransactionRepository extends EmundusRepository
 			$payment_repository = new PaymentRepository();
 
 			if (!empty($old_data)) {
-				if ($old_data['status'] !== $transaction->getStatus()->value) {
-					switch ($transaction->getStatus()) {
-						case TransactionStatus::CONFIRMED:
-							try {
-								$payment_step = $payment_repository->getPaymentStepById($transaction->getStepId());
-
-								if (!is_null($payment_step->getOutputStatus()))
-								{
-									if (!class_exists('EmundusModelFiles')) {
-										require_once (JPATH_ROOT . '/components/com_emundus/models/files.php');
-									}
-									$m_files = new \EmundusModelFiles();
-									$m_files->updateState([$transaction->getFnum()], $payment_step->getOutputStatus(), $user_id);
-								}
-
-								$applicationRepository = new ApplicationFileRepository();
-								$applicationFile = $applicationRepository->getByFnum($transaction->getFnum());
-								$applicationFile->setDateSubmitted(new \Datetime());
-								$applicationRepository->flush($applicationFile, $user_id);
-
-								$cart_repository = new CartRepository();
-								$cart = $cart_repository->getCartById($transaction->getCartId());
-								$reset = $cart_repository->resetCart($cart, $user_id);
-
-								if (!$reset)
-								{
-									Log::add('Failed to reset cart ' . $transaction->getCartId(), Log::ERROR, 'com_emundus.repository.transaction');
-								}
-							} catch (\Exception $e) {
-								Log::add('Error updating transaction data: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.transaction');
-							}
-
-							break;
-					}
-				}
-
 				$details = ['updated' => []];
 
 				if (isset($old_data['status']) && $old_data['status'] != $transaction->getStatus()->value) {
@@ -359,8 +323,13 @@ class TransactionRepository extends EmundusRepository
 				if (!empty($old_data['amount']) && $old_data['amount'] != $transaction->getAmount()) {
 					$details['updated'][] = ['old' => $old_data['amount'], 'new' => $transaction->getAmount()];
 				}
-			} else {
-				$details = [];
+			}
+			else
+			{
+				$details = ['updated' => []];
+				$details['updated'][] = ['old' => null, 'new' => $transaction->getStatus()->value];
+				$details['updated'][] = ['old' => null, 'new' => $transaction->getExternalReference()];
+				$details['updated'][] = ['old' => null, 'new' => $transaction->getAmount()];
 			}
 
 			if (!class_exists('EmundusModelLogs')) {
@@ -372,26 +341,73 @@ class TransactionRepository extends EmundusRepository
 			$applicant_id = \EmundusHelperFiles::getApplicantIdFromFnum($transaction->getFnum());
 			\EmundusModelLogs::log($user_id, $applicant_id, $transaction->getFnum(), $payment_repository->getActionId(), 'u', 'COM_EMUNDUS_TRANSACTION_SAVED', json_encode($details));
 
-			PluginHelper::importPlugin('emundus');
-			$dispatcher = Factory::getApplication()->getDispatcher();
-			$onAfterEmundusCartUpdate = new GenericEvent('onCallEventHandler', [
-				'onAfterEmundusTransactionUpdate',
-				[
-					'fnum' => $transaction->getFnum(),
-					'transaction' => $transaction,
-					'context' => new EventContextEntity(
-						Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id),
-						[$transaction->getFnum()],
-						[],
-						[
-							onAfterEmundusTransactionUpdateDefinition::TRANSACTION_STATUS_PARAMETER => $transaction->getStatus()->value,
-							onAfterEmundusTransactionUpdateDefinition::OLD_TRANSACTION_STATUS_PARAMETER => !empty($old_data['status']) ? $old_data['status'] : null,
-							onAfterEmundusTransactionUpdateDefinition::TRANSACTION_STEP_ID_PARAMETER => $transaction->getStepId(),
-						]
-					)
-				]
-			]);
-			$dispatcher->dispatch('onCallEventHandler', $onAfterEmundusCartUpdate);
+			try {
+				PluginHelper::importPlugin('emundus');
+				$dispatcher = Factory::getApplication()->getDispatcher();
+				$onAfterEmundusCartUpdate = new GenericEvent('onCallEventHandler', [
+					'onAfterEmundusTransactionUpdate',
+					[
+						'fnum' => $transaction->getFnum(),
+						'transaction' => $transaction,
+						'context' => new EventContextEntity(
+							Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id),
+							[$transaction->getFnum()],
+							[],
+							[
+								onAfterEmundusTransactionUpdateDefinition::TRANSACTION_STATUS_PARAMETER => $transaction->getStatus()->value,
+								onAfterEmundusTransactionUpdateDefinition::OLD_TRANSACTION_STATUS_PARAMETER => !empty($old_data['status']) ? $old_data['status'] : null,
+								onAfterEmundusTransactionUpdateDefinition::TRANSACTION_STEP_ID_PARAMETER => $transaction->getStepId(),
+							]
+						)
+					]
+				]);
+				$dispatcher->dispatch('onCallEventHandler', $onAfterEmundusCartUpdate);
+			}
+			catch (\Exception $e)
+			{
+				Log::add('Error triggering onAfterEmundusTransactionUpdate event: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.transaction');
+			}
+
+			if (!empty($old_data['status'])
+				&& $old_data['status'] !== $transaction->getStatus()->value
+				&& $transaction->getStatus() === TransactionStatus::CONFIRMED)
+			{
+				try
+				{
+					$cart_repository = new CartRepository();
+					$cart            = $cart_repository->getCartById($transaction->getCartId());
+					$reset           = $cart_repository->resetCart($cart, $user_id);
+
+					if (!$reset)
+					{
+						Log::add('Failed to reset cart ' . $transaction->getCartId(), Log::ERROR, 'com_emundus.repository.transaction');
+					}
+
+					$payment_step = $payment_repository->getPaymentStepById($transaction->getStepId());
+					if (!empty($payment_step) && !is_null($payment_step->getOutputStatus()))
+					{
+						$applicationRepository = new ApplicationFileRepository();
+						$applicationFile       = $applicationRepository->getByFnum($transaction->getFnum());
+						$applicationFile->setDateSubmitted(new \Datetime());
+						$applicationRepository->flush($applicationFile, $user_id);
+
+						if (!class_exists('EmundusModelFiles'))
+						{
+							require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+						}
+						$m_files = new \EmundusModelFiles();
+						$m_files->updateState([$transaction->getFnum()], $payment_step->getOutputStatus(), $user_id);
+					}
+				}
+				catch (\Exception $e)
+				{
+					Log::add('Error updating transaction data: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.transaction');
+				}
+			}
+		}
+		else
+		{
+			Log::add('Failed to save transaction ' . $transaction->getId(), Log::ERROR, 'com_emundus.repository.transaction');
 		}
 
 		return $saved;

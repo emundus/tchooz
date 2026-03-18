@@ -34,8 +34,9 @@ $sef    = $config->get('sef');
 
 $e_user   = $session->get('emundusUser');
 $app_prof = $m_profiles->getApplicantsProfilesArray();
+$tmpl = $params->get('mod_em_campaign_layout');
 
-if ($user->guest || in_array($e_user->profile, $app_prof))
+if ($user->guest || in_array($e_user->profile, $app_prof) || $tmpl === 'tchooz_single_campaign')
 {
 	$wa->registerAndUseScript('jquery-cookie', 'media/com_emundus/js/jquery.cookie.js');
 

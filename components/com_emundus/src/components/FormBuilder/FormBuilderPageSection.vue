@@ -11,8 +11,10 @@
 				<span class="material-symbols-outlined tw-ml-2 tw-text-white" v-show="!closedSection">unfold_less</span>
 				<span class="material-symbols-outlined tw-ml-2 tw-text-white" v-show="closedSection">unfold_more</span>
 			</div>
+
 			<div class="section-content em-p-32 tw-w-full" :class="{ closed: closedSection }">
 				<div
+					v-if="canUpdate"
 					class="tw-flex tw-cursor-pointer tw-flex-col tw-rounded-coordinator tw-border-2 tw-border-transparent tw-p-2 hover:tw-border-profile-full hover:tw-bg-neutral-300"
 				>
 					<div class="tw-flex tw-w-full tw-items-center tw-justify-between">
@@ -57,13 +59,17 @@
 						v-html="section.params.intro"
 					></div>
 				</div>
+				<div v-else>
+					<h4>{{ section.label !== '' ? section.label : translate('COM_EMUNDUS_FORM_BUILDER_UNNAMED_SECTION') }}</h4>
+					<p v-html="section.params.intro"></p>
+				</div>
 
 				<transition name="slide-down">
 					<div v-show="!closedSection">
 						<draggable
 							v-model="elements"
 							group="form-builder-section-elements"
-							:sort="true"
+							:sort="canUpdate"
 							class="draggables-list"
 							@end="onDragEnd"
 							handle=".handle"
@@ -76,6 +82,7 @@
 									v-for="element in elements"
 									:key="element.id"
 									:element="element"
+									:can-update="canUpdate"
 									@open-element-properties="$emit('open-element-properties', element)"
 									@delete-element="deleteElement"
 									@cancel-delete-element="cancelDeleteElement"
@@ -84,7 +91,8 @@
 								</form-builder-page-section-element>
 							</transition-group>
 						</draggable>
-						<div v-if="publishedElements.length < 1" class="empty-section-element">
+
+						<div v-if="canUpdate && publishedElements.length < 1" class="empty-section-element">
 							<draggable
 								:list="emptySection"
 								group="form-builder-section-elements"
@@ -141,6 +149,10 @@ export default {
 		totalSections: {
 			type: Number,
 			default: 0,
+		},
+		canUpdate: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	mixins: [formBuilderMixin, globalMixin],

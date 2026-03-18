@@ -20,1137 +20,625 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Symfony\Component\OptionsResolver\Exception\AccessException;
+use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
-use Tchooz\Response;
+use Tchooz\EmundusResponse;
 use Tchooz\Services\Automation\Condition\FormDataConditionResolver;
 use Tchooz\Traits\TraitResponse;
+use Tchooz\Controller\EmundusController;
 
-/**
- * Form Controller
- *
- * @package    Joomla
- * @subpackage eMundus
- * @since      5.0.0
- */
-class EmundusControllerForm extends BaseController
+class EmundusControllerForm extends EmundusController
 {
-	use TraitResponse;
-
-	protected $app;
-
-	private $_user;
 	private $m_form;
 
 	private FabrikRepository $fabrikRepository;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     \JController
-	 * @since   1.0.0
-	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
 
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
-
-		$this->app   = Factory::getApplication();
-		$this->_user = $this->app->getIdentity();
-
 		$this->m_form = $this->getModel('Form');
 
 		$this->fabrikRepository = new FabrikRepository();
-		$fabrikFactory    = new FabrikFactory($this->fabrikRepository);
+		$fabrikFactory          = new FabrikFactory($this->fabrikRepository);
 		$this->fabrikRepository->setFactory($fabrikFactory);
 	}
 
-	public function getallform()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getallform(): EmundusResponse
 	{
-		$tab = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+		$actionRepository = new ActionRepository();
+		$campaignAction = $actionRepository->getByName('campaign');
+		$campaignAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::READ->value, $this->user->id);
+		$campaignEditAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::UPDATE->value, $this->user->id);
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$page      = $this->input->getInt('page', 0);
+		$lim       = $this->input->getInt('lim', 0);
+		$filter    = $this->input->getString('filter', '');
+		$sort      = $this->input->getString('sort', '');
+		$recherche = $this->input->getString('recherche', '');
+		$order_by  = $this->input->getString('order_by', '');
+
+		$data = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page, $this->user->id, $order_by);
+
+		foreach ($data['datas'] as $form)
 		{
-			$page      = $this->input->getInt('page', 0);
-			$lim       = $this->input->getInt('lim', 0);
-			$filter    = $this->input->getString('filter', '');
-			$sort      = $this->input->getString('sort', '');
-			$recherche = $this->input->getString('recherche', '');
-			$order_by  = $this->input->getString('order_by', '');
+			if(!$campaignAccess) {
+				continue;
+			}
 
-			$data = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page, $this->_user->id, $order_by);
-			
-			foreach ($data['datas'] as $key => $form)
+			// find campaigns associated with form
+			$campaigns = $this->m_form->getAssociatedCampaign($form->id, $this->user->id);
+
+			if (!empty($campaigns))
 			{
-				// find campaigns associated with form
-				$campaigns = $this->m_form->getAssociatedCampaign($form->id, $this->_user->id);
-
-				if (!empty($campaigns))
+				if (count($campaigns) < 2)
 				{
-					if (count($campaigns) < 2)
+					$short_tags = $campaignEditAccess ? '<a href="' . EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaigns[0]->id) . '" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-font-semibold hover:tw-font-semibold hover:tw-underline tw-text-neutral-900 tw-text-sm em-campaign-tag"> ' . $campaigns[0]->label . '</a>' : $campaigns[0]->label;
+				}
+				else
+				{
+					$tags       = '<div>';
+					$short_tags = $tags;
+					$tags       .= '<h2 class="tw-mb-8 tw-text-center">' . Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE') . '</h2>';
+					$tags       .= '<div class="tw-flex tw-flex-wrap">';
+					foreach ($campaigns as $campaign)
 					{
-						$short_tags = '<a href="'.EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid='.$campaigns[0]->id).'" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-font-semibold hover:tw-font-semibold hover:tw-underline tw-text-neutral-900 tw-text-sm em-campaign-tag"> ' . $campaigns[0]->label . '</a>';
+						$tags .= $campaignEditAccess ? '<a href="' . EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaign->id) . '" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-font-semibold hover:tw-font-semibold tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator em-campaign-tag"> ' . $campaign->label . '</a>' : '<span class="tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-font-semibold tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator em-campaign-tag"> ' . $campaign->label . '</span>';
 					}
-					else
-					{
-						$tags       = '<div>';
-						$short_tags = $tags;
-						$tags       .= '<h2 class="tw-mb-8 tw-text-center">' . Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE') . '</h2>';
-						$tags       .= '<div class="tw-flex tw-flex-wrap">';
-						foreach ($campaigns as $campaign)
-						{
-							$tags .= '<a href="'.EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid='.$campaign->id).'" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-font-semibold hover:tw-font-semibold tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator em-campaign-tag"> ' . $campaign->label . '</a>';
-						}
-						$tags .= '</div>';
+					$tags .= '</div>';
 
-						$short_tags .= '<span class="tw-w-fit tw-cursor-pointer tw-text-profile-full tw-flex tw-items-center tw-justify-center tw-text-sm hover:!tw-underline tw-font-semibold">' . count($campaigns) . Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') . '</span>';
-						$short_tags .= '</div>';
-						$tags       .= '</div>';
-					}
+					$short_tags .= '<span class="tw-w-fit tw-cursor-pointer tw-text-profile-full tw-flex tw-items-center tw-justify-center tw-text-sm hover:!tw-underline tw-font-semibold">' . count($campaigns) . Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') . '</span>';
+					$short_tags .= '</div>';
+					$tags       .= '</div>';
 				}
-				else
-				{
-					$short_tags = Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_NOT');
-				}
-
-				$new_column = [
-					'key'     => Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE'),
-					'value'   => $short_tags,
-					'classes' => '',
-					'display' => 'all'
-				];
-
-				if (isset($tags))
-				{
-					$new_column['long_value'] = $tags;
-				}
-
-				$form->additional_columns = [
-					$new_column
-				];
-			}
-
-			if (!empty($data))
-			{
-				$tab = array('status' => true, 'msg' => Text::_('FORM_RETRIEVED'), 'data' => $data);
 			}
 			else
 			{
-				$tab['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_FORM');
+				$short_tags = Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_NOT');
 			}
+
+			$new_column = [
+				'key'     => Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE'),
+				'value'   => $short_tags,
+				'classes' => '',
+				'display' => 'all'
+			];
+
+			if (isset($tags))
+			{
+				$new_column['long_value'] = $tags;
+			}
+
+			$form->additional_columns = [
+				$new_column
+			];
 		}
 
-		echo json_encode((object) $tab);
-		exit;
+		return EmundusResponse::ok($data, Text::_('FORM_RETRIEVED'));
 	}
 
-	public function getallgrilleEval()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getallgrilleEval(): EmundusResponse
 	{
+		$page      = $this->input->getInt('page', 0);
+		$lim       = $this->input->getInt('lim', 0);
+		$filter    = $this->input->getString('filter', '');
+		$sort      = $this->input->getString('sort', '');
+		$recherche = $this->input->getString('recherche', '');
+		$order_by  = $this->input->getString('order_by', '');
 
-		$tab = array('status' => false, 'msg' => Text::_("ACCESS_DENIED"));
+		$forms = $this->m_form->getAllGrilleEval($filter, $sort, $recherche, $lim, $page, $this->user->id, $order_by);
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		// this data formatted is used in onboarding lists
+		foreach ($forms['datas'] as $form)
 		{
-
-			$page      = $this->input->getInt('page', 0);
-			$lim       = $this->input->getInt('lim', 0);
-			$filter    = $this->input->getString('filter', '');
-			$sort      = $this->input->getString('sort', '');
-			$recherche = $this->input->getString('recherche', '');
-			$order_by  = $this->input->getString('order_by', '');
-
-			$forms = $this->m_form->getAllGrilleEval($filter, $sort, $recherche, $lim, $page, $this->_user->id, $order_by);
-
-			if (count($forms) > 0)
-			{
-				// this data formatted is used in onboarding lists
-				foreach ($forms['datas'] as $key => $form)
-				{
-					$form->additional_columns = [
-						[
-							'key'     => Text::_('COM_EMUNDUS_FORM_ASSOCIATED_PROGRAMS'),
-							'value'   => $form->programs_count . ' ' . Text::_('COM_EMUNDUS_FORM_ASSOCIATED_PROGRAMS'),
-							'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label',
-							'display' => 'blocs'
-						],
-					];
-				}
-				$tab = array('status' => true, 'msg' => Text::_('FORM_RETRIEVED'), 'data' => $forms);
-			}
-			else
-			{
-				$tab['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_FORM');
-			}
+			$form->additional_columns = [
+				[
+					'key'     => Text::_('COM_EMUNDUS_FORM_ASSOCIATED_PROGRAMS'),
+					'value'   => $form->programs_count . ' ' . Text::_('COM_EMUNDUS_FORM_ASSOCIATED_PROGRAMS'),
+					'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label',
+					'display' => 'blocs'
+				],
+			];
 		}
-		echo json_encode((object) $tab);
-		exit;
+
+		return EmundusResponse::ok($forms, Text::_('FORM_RETRIEVED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getallformpublished(): EmundusResponse
+	{
+		$forms = $this->m_form->getAllFormsPublished();
+
+		return EmundusResponse::ok($forms, Text::_('FORM_RETRIEVED'));
 	}
 
 
-	public function getallformpublished()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::DELETE]])]
+	public function deleteform(): EmundusResponse
 	{
-		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$data = $this->input->getInt('id');
+		if (empty($data))
 		{
-			$forms = $this->m_form->getAllFormsPublished();
-
-			if (!empty($forms))
-			{
-				$response = array('status' => 1, 'msg' => Text::_('FORM_RETRIEVED'), 'data' => $forms);
-			}
-			else
-			{
-				$response['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_FORM');
-			}
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_FORM_NOT_FOUND'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$forms = $this->m_form->deleteForm($data);
+
+		if (!$forms)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_DELETE_FORM'));
+		}
+
+		return EmundusResponse::ok($forms, Text::_('FORM_DELETED'));
 	}
 
-
-	public function deleteform()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function unpublishform(): EmundusResponse
 	{
-		$response = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$id = $this->input->getInt('id', 0);
+		if (empty($id))
 		{
-			$data  = $this->input->getInt('id');
-			$forms = $this->m_form->deleteForm($data);
-
-			if ($forms)
-			{
-				$response = array('status' => 1, 'msg' => Text::_('FORM_DELETED'), 'data' => $forms);
-			}
-			else
-			{
-				$response = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_DELETE_FORM'), 'data' => $forms);
-			}
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_FORM_NOT_FOUND'));
 		}
-		echo json_encode((object) $response);
-		exit;
+
+		$result = $this->m_form->unpublishForm([$id]);
+		if (!$result['status'])
+		{
+			throw new RuntimeException(!empty($result['msg']) ? Text::_($result['msg']) : Text::_('ERROR_CANNOT_UNPUBLISH_FORM'));
+		}
+
+		return EmundusResponse::ok([], Text::_('FORM_UNPUBLISHED'));
 	}
 
-
-	public function unpublishform()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function unpublishFabrikForm(): EmundusResponse
 	{
-		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$ids = $this->input->getString('ids', '');
+		if (!empty($ids))
 		{
-
-			$id = $this->input->getInt('id', 0);
-
-			$result = $this->m_form->unpublishForm([$id]);
-
-			if ($result['status'])
-			{
-				$response = array('status' => 1, 'msg' => Text::_('FORM_UNPUBLISHED'));
-			}
-			else
-			{
-				$response = array('status' => 0, 'msg' => !empty($result['msg']) ? Text::_($result['msg']) : Text::_('ERROR_CANNOT_UNPUBLISH_FORM'));
-			}
+			$ids = explode(',', $ids);
+		}
+		else
+		{
+			$id  = $this->input->getInt('id', 0);
+			$ids = [$id];
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		if (empty($ids))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_FORM_NOT_FOUND'));
+		}
+
+		$unpublishedAll = [];
+		foreach ($ids as $id)
+		{
+			$unpublishedAll[] = $this->m_form->unpublishFabrikForm((int) $id);
+		}
+		$unpublished = !in_array(false, $unpublishedAll, true);
+
+		if (!$unpublished)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_UNPUBLISH_FORM'));
+		}
+
+		return EmundusResponse::ok([], Text::_('FORM_UNPUBLISHED'));
 	}
 
-	public function unpublishFabrikForm(): void
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function publishform(): EmundusResponse
 	{
-		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$id = $this->input->getInt('id');
+		if (empty($id))
 		{
-			$ids = $this->input->getString('ids', '');
-			if (!empty($ids))
-			{
-				$ids = explode(',', $ids);
-			}
-			else
-			{
-				$id = $this->input->getInt('id', 0);
-				$ids = [$id];
-			}
-
-
-			if (!empty($ids))
-			{
-				$unpublishedAll = [];
-
-				foreach($ids as $id)
-				{
-					$unpublishedAll[] = $this->m_form->unpublishFabrikForm((int)$id);
-				}
-				$unpublished = !in_array(false, $unpublishedAll, true);
-
-				if ($unpublished)
-				{
-					$response = ['status' => true, 'msg' => Text::_('FORM_UNPUBLISHED'), 'code' => 200];
-				}
-				else
-				{
-					$response = ['status' => false, 'msg' => Text::_('ERROR_CANNOT_UNPUBLISH_FORM'), 'code' => 500];
-				}
-			}
-			else
-			{
-				$response = ['status' => false, 'msg' => Text::_('MISSING_PARAMS'), 'code' => 400];
-			}
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_FORM_NOT_FOUND'));
 		}
+
+		if (!$this->m_form->publishForm([$id]))
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_PUBLISH_FORM'));
+		}
+
+		return EmundusResponse::ok([], Text::_('FORM_PUBLISHED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function publishFabrikForm(): EmundusResponse
+	{
+		$ids = $this->input->getString('ids', '');
+		if (!empty($ids))
+		{
+			$ids = explode(',', $ids);
+		}
+		else
+		{
+			$id  = $this->input->getInt('id', 0);
+			$ids = [$id];
+		}
+
+		if (empty($ids))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_FORM_NOT_FOUND'));
+		}
+
+		$publishedAll = [];
+		foreach ($ids as $id)
+		{
+			$publishedAll[] = $this->m_form->publishFabrikForm((int) $id);
+		}
+		$published = !in_array(false, $publishedAll, true);
+
+		if (!$published)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_PUBLISH_FORM'));
+		}
+
+		return EmundusResponse::ok([], Text::_('FORM_PUBLISHED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::CREATE]])]
+	public function duplicateform(): EmundusResponse
+	{
+		$data = $this->input->getInt('id', 0);
+		if (empty($data))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_FORM_NOT_FOUND'));
+		}
+
+		$form = $this->m_form->duplicateForm($data);
+		if (!$form)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_DUPLICATE_FORM'));
+		}
+
+		return EmundusResponse::ok($form, Text::_('FORM_DUPLICATED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::CREATE]])]
+	public function duplicateFabrikForm(): EmundusResponse
+	{
+		$formId = $this->input->getInt('id', 0);
+		if (empty($formId))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_FORM_NOT_FOUND'));
+		}
+
+		if (!class_exists('EmundusModelFormBuilder'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
+		}
+		$m_formbuilder    = new EmundusModelFormBuilder();
+		$duplicatedFormId = $m_formbuilder->duplicateFabrikForm($formId, $this->user->id, ['keep_structure' => false]);
+
+		if (empty($duplicatedFormId))
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_DUPLICATE_FORM'));
+		}
+
+		return EmundusResponse::ok($duplicatedFormId, Text::_('FORM_DUPLICATED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::CREATE]])]
+	public function createform(): void
+	{
+		$result = $this->m_form->createApplicantProfile();
+		if (!$result)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_ADD_FORM'));
+		}
+
+		$response = array('status' => true, 'msg' => Text::_('FORM_ADDED'), 'data' => $result, 'redirect' => 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' . $result, 'code' => EmundusResponse::HTTP_OK);
 
 		$this->sendJsonResponse($response);
 	}
 
-
-	public function publishform()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::CREATE]])]
+	public function createformeval(): void
 	{
-		$response = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$form_id = $this->m_form->createFormEval($this->user);
+		if (empty($form_id))
 		{
-			$id    = $this->input->getInt('id');
-			$forms = $this->m_form->publishForm([$id]);
-
-			if ($forms)
-			{
-				$response = array('status' => 1, 'msg' => Text::_('FORM_PUBLISHED'), 'data' => $forms);
-			}
-			else
-			{
-				$response['msg'] = Text::_('ERROR_CANNOT_PUBLISH_FORM');
-			}
-		}
-		echo json_encode((object) $response);
-		exit;
-	}
-
-	public function publishFabrikForm(): void
-	{
-		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$ids = $this->input->getString('ids', '');
-
-			if (!empty($ids))
-			{
-				$ids = explode(',', $ids);
-			}
-			else
-			{
-				$id = $this->input->getInt('id', 0);
-				$ids = [$id];
-			}
-
-			if (!empty($ids))
-			{
-				$publishedAll = [];
-
-				foreach($ids as $id)
-				{
-					$publishedAll[] = $this->m_form->publishFabrikForm((int)$id);
-				}
-				$published = !in_array(false, $publishedAll, true);
-
-				if ($published)
-				{
-					$response = ['status' => true, 'msg' => Text::_('FORM_PUBLISHED'), 'code' => 200];
-				}
-				else
-				{
-					$response = ['status' => false, 'msg' => Text::_('ERROR_CANNOT_PUBLISH_FORM'), 'code' => 500];
-				}
-			}
-			else
-			{
-				$response = ['status' => false, 'msg' => Text::_('MISSING_PARAMS'), 'code' => 400];
-			}
+			throw new RuntimeException(Text::_('ERROR_CANNOT_ADD_FORM'));
 		}
 
+		$response = array('status' => true, 'msg' => Text::_('FORM_ADDED'), 'data' => $form_id, 'redirect' => 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' . $form_id . '&mode=eval', 'code' => EmundusResponse::HTTP_OK);
 		$this->sendJsonResponse($response);
 	}
 
-
-	public function duplicateform()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function updateform(): EmundusResponse
 	{
-		$tab = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$data = $this->input->getRaw('body');
+		$pid  = $this->input->getInt('pid');
+		if (empty($pid))
 		{
-
-			$data = $this->input->getInt('id', 0);
-
-			if (!empty($data))
-			{
-				$form = $this->m_form->duplicateForm($data);
-				if ($form)
-				{
-					$tab = array('status' => true, 'msg' => Text::_('FORM_DUPLICATED'), 'data' => $form);
-				}
-				else
-				{
-					$tab['msg'] = Text::_('ERROR_CANNOT_DUPLICATE_FORM');
-				}
-			}
-			else
-			{
-				$tab['msg'] = Text::_('MISSING_PARAMS');
-			}
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_FORM_NOT_FOUND'));
 		}
 
-		echo json_encode((object) $tab);
-		exit;
+		$result = $this->m_form->updateForm($pid, $data);
+		if (!$result)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_UPDATE_FORM'));
+		}
+
+		return EmundusResponse::ok($result, Text::_('FORM_UPDATED'));
 	}
 
-	public function duplicateFabrikForm() : void
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function updateformlabel(): EmundusResponse
 	{
-		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$prid  = $this->input->getInt('prid', 0);
+		$label = $this->input->getString('label');
+		if (empty($prid))
 		{
-			$formId = $this->input->getInt('id', 0);
-
-			if ($formId > 0)
-			{
-				if (!class_exists('EmundusModelFormBuilder'))
-				{
-					require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
-				}
-				$m_formbuilder = new EmundusModelFormBuilder();
-				$duplicatedFormId = $m_formbuilder->duplicateFabrikForm($formId, $this->_user->id, ['keep_structure' => false]);
-
-				if ($duplicatedFormId)
-				{
-					$response = ['status' => true, 'msg' => Text::_('FORM_DUPLICATED'), 'data' => $duplicatedFormId, 'code' => 200];
-				}
-				else
-				{
-					$response = ['status' => false, 'msg' => Text::_('ERROR_CANNOT_DUPLICATE_FORM'), 'code' => 500];
-				}
-			}
-			else
-			{
-				$response = ['status' => false, 'msg' => Text::_('MISSING_PARAMS'), 'code' => 400];
-			}
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_FORM_NOT_FOUND'));
 		}
 
-		$this->sendJsonResponse($response);
+		$result = $this->m_form->updateFormLabel($prid, $label);
+		if (!$result)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_UPDATE_FORM'));
+		}
+
+		return EmundusResponse::ok($result, Text::_('FORM_UPDATED'));
 	}
 
-
-	public function createform()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getformbyid(): EmundusResponse
 	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$id = $this->input->getInt('id');
+		if (empty($id))
 		{
-			$result = $this->m_form->createApplicantProfile();
-
-			if ($result)
-			{
-				$response = array('status' => true, 'msg' => Text::_('FORM_ADDED'), 'data' => $result, 'redirect' => 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' . $result);
-			}
-			else
-			{
-				$response['msg'] = Text::_('ERROR_CANNOT_ADD_FORM');
-			}
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_FORM_NOT_FOUND'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$form = $this->m_form->getFormById($id);
+		if (empty($form))
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_FORM'));
+		}
+
+		return EmundusResponse::ok($form, Text::_('FORM_RETRIEVED'));
 	}
 
-	public function createformeval()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getFormByFabrikId(): EmundusResponse
 	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$id = $this->input->getInt('form_id');
+		if (empty($id))
 		{
-			try
-			{
-				$form_id = $this->m_form->createFormEval($this->_user);
-
-				if ($form_id > 0)
-				{
-					$response = array('status' => true, 'msg' => Text::_('FORM_ADDED'), 'data' => $form_id, 'redirect' => 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' . $form_id . '&mode=eval');
-				}
-				else
-				{
-					$response['msg'] = Text::_('ERROR_CANNOT_ADD_FORM');
-				}
-			}
-			catch (Exception $e)
-			{
-				$response['msg'] = $e->getMessage();
-			}
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$form = $this->m_form->getFormByFabrikId($id);
+		if (empty($form))
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_FORM'));
+		}
+
+		return EmundusResponse::ok($form, Text::_('FORM_RETRIEVED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getalldocuments(): EmundusResponse
+	{
+		$prid = $this->input->getInt('prid');
+		$cid  = $this->input->getInt('cid');
+		if (empty($prid) || empty($cid))
+		{
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
+		}
+
+		$form = $this->m_form->getAllDocuments($prid, $cid);
+		if ($form === false)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_DOCUMENTS'));
+		}
+
+		return EmundusResponse::ok($form, Text::_('DOCUMENTS_FOUND'));
 	}
 
 
-	public function updateform()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getundocuments(): EmundusResponse
 	{
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$form = $this->m_form->getUnDocuments();
+		if ($form === false)
 		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
+			throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_DOCUMENTS'));
 		}
-		else
-		{
 
-
-			$data = $this->input->getRaw('body');
-			$pid  = $this->input->getInt('pid');
-
-			$result = $this->m_form->updateForm($pid, $data);
-
-			if ($result)
-			{
-				$tab = array('status' => 1, 'msg' => Text::_('FORM_ADDED'), 'data' => $result);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => Text::_('FORM'), 'data' => $result);
-			}
-		}
-		echo json_encode((object) $tab);
-		exit;
+		return EmundusResponse::ok($form, Text::_('DOCUMENTS_FOUND'));
 	}
 
-	public function updateformlabel()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getAttachments(): EmundusResponse
 	{
+		$attachments = $this->m_form->getAttachments();
 
-		$tab = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-
-			$prid  = $this->input->getInt('prid', 0);
-			$label = $this->input->getString('label');
-
-			$result = $this->m_form->updateFormLabel($prid, $label);
-
-			if ($result)
-			{
-				$tab = array('status' => 1, 'msg' => Text::_('FORM_UPDATED'), 'data' => $result);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => Text::_('FORM_NOT_UPDATED'), 'data' => $result);
-			}
-		}
-
-		echo json_encode((object) $tab);
-		exit;
+		return EmundusResponse::ok($attachments, Text::_('DOCUMENTS_RETRIEVED'));
 	}
 
-
-	public function getformbyid()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getdocumentsusage(): EmundusResponse
 	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$document_ids = $this->input->getString('documentIds', '');
+		if (empty($document_ids))
 		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
-		else
+
+		$document_ids = explode(',', $document_ids);
+		$forms        = $this->m_form->getDocumentsUsage($document_ids);
+		if (empty($forms))
 		{
-
-
-			$id = $this->input->getInt('id');
-
-			$form = $this->m_form->getFormById($id);
-			if (!empty($form))
-			{
-				$tab = array('status' => 1, 'msg' => Text::_('FORM_RETRIEVED'), 'data' => $form);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_FORM'), 'data' => $form);
-			}
+			throw new RuntimeException(Text::_('ERROR_GETTING_DOCUMENT_USAGE'));
 		}
-		echo json_encode((object) $tab);
-		exit;
+
+		return EmundusResponse::ok($forms, Text::_('DOCUMENTS_FOUND'));
 	}
 
-	public function getFormByFabrikId()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::CREATE]])]
+	public function adddocument(): EmundusResponse
 	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+		$did  = $this->input->getInt('did');
+		$prid = $this->input->getInt('prid');
+		$cid  = $this->input->getInt('cid');
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		if (empty($did) || empty($prid) || empty($cid))
 		{
-
-			$id = $this->input->getInt('form_id');
-
-			if (!empty($id))
-			{
-				$form = $this->m_form->getFormByFabrikId($id);
-				if (!empty($form))
-				{
-					$response = array('status' => true, 'msg' => Text::_('FORM_RETRIEVED'), 'data' => $form);
-				}
-				else
-				{
-					$response['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_FORM');
-				}
-			}
-			else
-			{
-				$response['msg'] = Text::_('MISSING_PARAMS');
-			}
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$documents = $this->m_form->addDocument($did, $prid, $cid);
+		if (!$documents)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_UPDATE_DOCUMENTS'));
+		}
+
+		return EmundusResponse::ok($documents, Text::_('DOCUMENTS_UPDATED'));
 	}
 
-	public function getalldocuments()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getFormsByProfileId(): EmundusResponse
 	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$profile_id = $this->input->getInt('profile_id');
+		if (empty($profile_id))
 		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'), EmundusResponse::HTTP_BAD_REQUEST);
 		}
-		else
+
+		$forms = $this->m_form->getFormsByProfileId($profile_id);
+		if (empty($forms))
 		{
-
-
-			$prid = $this->input->getInt('prid');
-			$cid  = $this->input->getInt('cid');
-
-			$form = $this->m_form->getAllDocuments($prid, $cid);
-
-			if (!empty($form))
-			{
-				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENTS_RETRIEVED'), 'data' => $form);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_DOCUMENTS'), 'data' => $form);
-			}
+			throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_FORM'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 		}
-		echo json_encode((object) $tab);
-		exit;
+
+		return EmundusResponse::ok($forms);
 	}
 
-
-	public function getundocuments()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getDocuments(): EmundusResponse
 	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$profile_id = $this->input->getInt('pid');
+		if (empty($profile_id))
 		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
-		else
-		{
-			$form = $this->m_form->getUnDocuments();
 
-			if (!empty($form))
-			{
-				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENTS_RETRIEVED'), 'data' => $form);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_DOCUMENTS'), 'data' => $form);
-			}
-		}
-		echo json_encode((object) $tab);
-		exit;
+		$documents = $this->m_form->getDocumentsByProfile($profile_id);
+
+		return EmundusResponse::ok($documents, Text::_('DOCUMENTS_FOUND'));
 	}
 
-	public function getAttachments()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function reorderDocuments(): EmundusResponse
 	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$documents = $this->input->getString('documents');
+		if (empty($documents))
 		{
-			$attachments = $this->m_form->getAttachments();
-			if (!empty($attachments))
-			{
-				$response['status'] = true;
-				$response['msg']    = Text::_('DOCUMENTS_RETRIEVED');
-				$response['data']   = $attachments;
-			}
-			else
-			{
-				$response['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_DOCUMENTS');
-			}
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$documents = json_decode($documents, true);
+		$documents = $this->m_form->reorderDocuments($documents);
+
+		return EmundusResponse::ok($documents, Text::_('DOCUMENTS_FOUND'));
 	}
 
-	public function getdocumentsusage()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function removeDocumentFromProfile(): EmundusResponse
 	{
-		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$did = $this->input->getInt('did');
+		if (empty($did))
 		{
-			$document_ids = $this->input->getString('documentIds', '');
-
-			if (!empty($document_ids))
-			{
-				$document_ids = explode(',', $document_ids);
-				$forms        = $this->m_form->getDocumentsUsage($document_ids);
-
-				if (!empty($forms))
-				{
-					$response['status'] = 1;
-					$response['msg']    = 'SUCCESS';
-					$response['data']   = $forms;
-				}
-				else
-				{
-					$response['msg'] = Text::_('ERROR_GETTING_DOCUMENT_USAGE');
-				}
-			}
-			else
-			{
-				$response['msg'] = Text::_('MISSING_PARAMS');
-			}
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$result = $this->m_form->removeDocumentFromProfile($did);
+		if (!$result)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_UPDATE_DOCUMENTS'));
+		}
+
+		return EmundusResponse::ok($result, Text::_('DOCUMENTS_UPDATED'));
 	}
 
-	public function updatemandatory()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getProfileLabelByProfileId(): EmundusResponse
 	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$profile_id = $this->input->getInt('profile_id');
+		if (empty($profile_id))
 		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-
-
-			$did  = $this->input->getInt('did');
-			$prid = $this->input->getInt('prid');
-			$cid  = $this->input->getInt('cid');
-
-			$documents = $this->m_form->updateMandatory($did, $prid, $cid);
-
-			if ($documents)
-			{
-				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENTS_UPDATED'), 'data' => $documents);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
-			}
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		echo json_encode((object) $tab);
-		exit;
+		$form = $this->m_form->getProfileLabelByProfileId($profile_id);
+		if ($form === false)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_PROFILE_LABEL'));
+		}
+
+		return EmundusResponse::ok($form, Text::_('PROFILE_LABEL_RETRIEVED'));
 	}
 
-	public function adddocument()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getsubmittionpage(): EmundusResponse
 	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$prid = $this->input->getInt('prid');
+		if (empty($prid))
 		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-
-
-			$did  = $this->input->getInt('did');
-			$prid = $this->input->getInt('prid');
-			$cid  = $this->input->getInt('cid');
-
-			$documents = $this->m_form->addDocument($did, $prid, $cid);
-
-			if ($documents)
-			{
-				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENTS_UPDATED'), 'data' => $documents);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
-			}
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		echo json_encode((object) $tab);
-		exit;
+		$submittionpage = $this->m_form->getSubmittionPage($prid);
+		if ($submittionpage === false)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_SUBMISSION_PAGE'));
+		}
+
+		return EmundusResponse::ok($submittionpage, Text::_('SUBMISSION_PAGE_RETRIEVED'));
 	}
 
-
-	public function removedocument()
+	/**
+	 *
+	 *
+	 * @deprecated This method is deprecated and should not be used anymore. It is recommended to handle access control using the AccessAttribute on each method instead of calling this method directly.
+	 */
+	public function getAccess(): void
 	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-
-
-			$did  = $this->input->getInt('did');
-			$prid = $this->input->getInt('prid');
-			$cid  = $this->input->getInt('cid');
-
-			$documents = $this->m_form->removeDocument($did, $prid, $cid);
-
-			if ($documents)
-			{
-				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENTS_UPDATED'), 'data' => $documents);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
-			}
-		}
-
-		echo json_encode((object) $tab);
-		exit;
-	}
-
-
-	public function deletedocument()
-	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-
-
-			$did = $this->input->getInt('did');
-
-			$state = $this->m_form->deleteDocument($did);
-
-			$tab = array('status' => $state, 'msg' => Text::_('DOCUMENT_DELETED'));
-
-		}
-
-		echo json_encode((object) $tab);
-		exit;
-	}
-
-
-	public function getFormsByProfileId()
-	{
-		try
-		{
-			if(!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
-			}
-
-			$profile_id = $this->input->getInt('profile_id');
-			if(empty($profile_id))
-			{
-				throw new InvalidArgumentException(Text::_('MISSING_PARAMS'), Response::HTTP_BAD_REQUEST);
-			}
-
-			$forms = $this->m_form->getFormsByProfileId($profile_id);
-			if(empty($forms))
-			{
-				throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_FORM'), Response::HTTP_INTERNAL_SERVER_ERROR);
-			}
-
-			$response = Response::ok($forms);
-		}
-		catch (Exception $e)
-		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
-		}
-
-		$this->sendJsonResponse($response);
-	}
-
-	public function getDocuments()
-	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$profile_id = $this->input->getInt('pid');
-
-			if (!empty($profile_id))
-			{
-				$documents = $this->m_form->getDocumentsByProfile($profile_id);
-
-				if (!empty($documents))
-				{
-					$response = array('status' => true, 'msg' => 'worked', 'data' => $documents);
-				}
-				else
-				{
-					$response = array('status' => true, 'msg' => 'No documents attached to profile found', 'data' => $documents);
-				}
-			}
-			else
-			{
-				$response = array('status' => false, 'msg' => 'Missing parameters');
-			}
-		}
-
-		echo json_encode((object) $response);
-		exit;
-	}
-
-	public function reorderDocuments()
-	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-
-
-			$documents = $this->input->getString('documents');
-			$documents = json_decode($documents, true);
-			$documents = $this->m_form->reorderDocuments($documents);
-
-			if (!empty($documents))
-			{
-				$tab = array('status' => 1, 'msg' => 'worked', 'data' => $documents);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => 'Doesn t worked', 'data' => $documents);
-			}
-		}
-		echo json_encode((object) $tab);
-		exit;
-	}
-
-	public function removeDocumentFromProfile()
-	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-
-
-			$did = $this->input->getInt('did');
-
-			$result = $this->m_form->removeDocumentFromProfile($did);
-
-			if (!empty($result))
-			{
-				$tab = array('status' => 1, 'msg' => 'worked', 'data' => $result);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => 'Doesn t worked', 'data' => $result);
-			}
-		}
-		echo json_encode((object) $tab);
-		exit;
-	}
-
-	public function getgroupsbyform()
-	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-
-
-			$form_id = $this->input->getInt('form_id');
-
-			$form = $this->m_form->getGroupsByForm($form_id);
-
-			if (!empty($form))
-			{
-				$tab = array('status' => 1, 'msg' => 'worked', 'data' => $form);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => 'Doesn t worked', 'data' => $form);
-			}
-		}
-		echo json_encode((object) $tab);
-		exit;
-	}
-
-
-	public function getProfileLabelByProfileId()
-	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-
-
-			$profile_id = $this->input->getInt('profile_id');
-
-			$form = $this->m_form->getProfileLabelByProfileId($profile_id);
-
-			if (!empty($form))
-			{
-				$tab = array('status' => 1, 'msg' => 'worked', 'data' => $form);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => 'Doesn t worked', 'data' => $form);
-			}
-		}
-		echo json_encode((object) $tab);
-		exit;
-	}
-
-
-	public function getfilesbyform()
-	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-
-
-			$profile_id = $this->input->getInt('pid');
-
-			$files = $this->m_form->getFilesByProfileId($profile_id);
-
-			$tab = array('status' => 1, 'msg' => 'worked', 'data' => $files);
-		}
-		echo json_encode((object) $tab);
-		exit;
-	}
-
-
-	public function getassociatedcampaign()
-	{
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-			$profile_id = $this->input->getInt('pid');
-
-			$campaigns = $this->m_form->getAssociatedCampaign($profile_id, $this->_user->id);
-
-			$tab = array('status' => 1, 'msg' => 'worked', 'data' => $campaigns);
-		}
-		echo json_encode((object) $tab);
-		exit;
-	}
-
-	public function getassociatedprogram()
-	{
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-			$form_id = $this->input->getInt('fid');
-
-			$campaigns = $this->m_form->getAssociatedProgram($form_id);
-
-			$tab = array('status' => 1, 'msg' => 'worked', 'data' => $campaigns);
-		}
-		echo json_encode((object) $tab);
-		exit;
-	}
-
-
-	public function affectcampaignstoform()
-	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-
-
-			$prid      = $this->input->getInt('prid');
-			$campaigns = $this->input->getRaw('campaigns');
-
-			$changeresponse = $this->m_form->affectCampaignsToForm($prid, $campaigns);
-		}
-		echo json_encode((object) $changeresponse);
-		exit;
-	}
-
-	public function getsubmittionpage()
-	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-
-
-			$prid = $this->input->getInt('prid');
-
-			$submittionpage = $this->m_form->getSubmittionPage($prid);
-		}
-		echo json_encode((object) $submittionpage);
-		exit;
-	}
-
-	public function getAccess()
-	{
-
-
-		if (EmundusHelperAccess::asAdministratorAccessLevel($this->_user->id))
+		if (EmundusHelperAccess::asAdministratorAccessLevel($this->user->id))
 		{
 			$response = array('status' => 1, 'msg' => Text::_("ACCESS_SYSADMIN"), 'access' => true);
 		}
@@ -1162,299 +650,187 @@ class EmundusControllerForm extends BaseController
 		exit;
 	}
 
-	public function getActualLanguage()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function deletemodeldocument(): void
 	{
-		$lang = JFactory::getLanguage();
-
-		if ($lang)
+		$did = $this->input->getInt('did');
+		if (empty($did))
 		{
-			$response = array('status' => 1, 'msg' => substr($lang->getTag(), 0, 2));
-		}
-		else
-		{
-			$response = array('status' => 0, 'msg' => Text::_("ACCESS_REFUSED"));
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$result = $this->m_form->deleteModelDocument($did);
+
+		$response = array('allowed' => $result, 'msg' => 'worked', 'status' => $result, 'code' => $result ? EmundusResponse::HTTP_OK : EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
+		$this->sendJsonResponse($response);
 	}
 
-	public function deletemodeldocument()
-	{
-
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-
-
-			$did = $this->input->getInt('did');
-
-			$result = $this->m_form->deleteModelDocument($did);
-
-			$changeresponse = array('allowed' => $result, 'msg' => 'worked');
-		}
-		echo json_encode((object) $changeresponse);
-		exit;
-	}
-
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
 	public function getdatabasejoinoptions()
 	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+		$response = ['status' => true, 'msg' => '', 'options' => []];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$table_name   = $this->input->getString('table_name');
+		$column_name  = $this->input->getString('column_name');
+		$value        = $this->input->getString('value');
+		$concat_value = $this->input->getString('concat_value');
+		$where_clause = $this->input->getString('where_clause');
+
+		try
 		{
-			$table_name   = $this->input->getString('table_name');
-			$column_name  = $this->input->getString('column_name');
-			$value        = $this->input->getString('value');
-			$concat_value = $this->input->getString('concat_value');
-			$where_clause = $this->input->getString('where_clause');
-
-			try
-			{
-				$options  = $this->m_form->getDatabaseJoinOptions($table_name, $column_name, $value, $concat_value, $where_clause);
-				$response = ['status' => true, 'msg' => 'worked', 'options' => $options];
-			}
-			catch (Exception $e)
-			{
-				$response['status'] = false;
-				$response['msg']    = $e->getMessage();
-			}
+			$options  = $this->m_form->getDatabaseJoinOptions($table_name, $column_name, $value, $concat_value, $where_clause);
+			$response = ['status' => true, 'msg' => 'worked', 'options' => $options, 'code' => EmundusResponse::HTTP_OK];
+		}
+		catch (Exception $e)
+		{
+			$response['status'] = false;
+			$response['msg']    = $e->getMessage();
+			$response['code']   = EmundusResponse::HTTP_INTERNAL_SERVER_ERROR;
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$this->sendJsonResponse($response);
 	}
 
-	public function checkcandocbedeleted()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function checkcandocbedeleted(): EmundusResponse
 	{
-		$response = array('status' => 0, 'msg' => Text::_("ACCESS_DENIED"));
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$docid = $this->input->getInt('docid');
+		$prid  = $this->input->getInt('prid');
+		if (empty($prid) || empty($docid))
 		{
-
-			$docid = $this->input->getInt('docid');
-			$prid  = $this->input->getInt('prid');
-
-			if (!empty($prid) && !empty($docid))
-			{
-				$canBeDeleted = $this->m_form->checkIfDocCanBeRemovedFromCampaign($docid, $prid);
-
-				$response['status'] = 1;
-				$response['msg']    = Text::_("SUCCESS");
-				$response['data']   = $canBeDeleted;
-			}
-			else
-			{
-				$response['msg'] = Text::_("MISSING_PARAMS");
-			}
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$canBeDeleted = $this->m_form->checkIfDocCanBeRemovedFromCampaign($docid, $prid);
+
+		return EmundusResponse::ok($canBeDeleted);
 	}
 
-	public function getpagegroups()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getpagegroups(): EmundusResponse
 	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$formId = $this->input->getInt('form_id');
+		if (empty($formId))
 		{
-
-			$formId = $this->input->getInt('form_id');
-
-			if (!empty($formId))
-			{
-				$groups = $this->m_form->getGroupsByForm($formId);
-
-				if ($groups !== false)
-				{
-					$response['msg']    = Text::_('SUCCESS');
-					$response['status'] = true;
-					$response['data']   = ['groups' => $groups];
-				}
-				else
-				{
-					$response['msg'] = Text::_('FAILED');
-				}
-			}
-			else
-			{
-				$response['msg'] = Text::_('MISSING_PARAMS');
-			}
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$groups = $this->m_form->getGroupsByForm($formId);
+		if ($groups === false)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_GROUPS'));
+		}
+
+		return EmundusResponse::ok(['groups' => $groups], Text::_('GROUPS_RETRIEVED'));
 	}
 
-	public function getjsconditions()
+	public function getjsconditions(): EmundusResponse
 	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []);
-
 		$formId = $this->input->getInt('form_id');
 		$format = $this->input->getString('format', 'raw');
 
-		if (!empty($formId))
+		if (empty($formId))
 		{
-			$conditions = $this->m_form->getJSConditionsByForm($formId, $format);
-
-			$response['msg']    = Text::_('SUCCESS');
-			$response['status'] = true;
-			$response['data']   = ['conditions' => $conditions];
-		}
-		else
-		{
-			$response['msg'] = Text::_('MISSING_PARAMS');
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$conditions = $this->m_form->getJSConditionsByForm($formId, $format);
 
+		return EmundusResponse::ok(['conditions' => $conditions]);
 	}
 
-	public function addRule()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function addRule(): EmundusResponse
 	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+		$form_id    = $this->input->getInt('form_id');
+		$conditions = $this->input->getString('conditions');
+		$actions    = $this->input->getString('actions');
+		$group      = $this->input->getString('group');
+		$label      = $this->input->getString('label');
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		if (empty($form_id) || empty($conditions) || empty($actions))
 		{
-			$form_id    = $this->input->getInt('form_id');
-			$conditions = $this->input->getString('conditions');
-			$actions    = $this->input->getString('actions');
-			$group      = $this->input->getString('group');
-			$label      = $this->input->getString('label');
-
-			if (!empty($form_id) && !empty($conditions) && !empty($actions))
-			{
-				$rule_added = $this->m_form->addRule($form_id, $conditions, $actions, 'js', $group, $label);
-
-				if ($rule_added !== false)
-				{
-					$response['msg']    = Text::_('SUCCESS');
-					$response['status'] = true;
-				}
-				else
-				{
-					$response['msg'] = Text::_('FAILED');
-				}
-			}
-			else
-			{
-				$response['msg'] = Text::_('MISSING_PARAMS');
-			}
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$rule_added = $this->m_form->addRule($form_id, $conditions, $actions, 'js', $group, $label);
+		if ($rule_added === false)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_ADD_RULE'));
+		}
+
+		return EmundusResponse::ok($rule_added);
 	}
 
-	public function editRule()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function editRule(): EmundusResponse
 	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+		$rule_id    = $this->input->getInt('rule_id');
+		$conditions = $this->input->getRaw('conditions');
+		$actions    = $this->input->getString('actions');
+		$group      = $this->input->getString('group');
+		$label      = $this->input->getString('label');
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		if (empty($rule_id) || empty($conditions) || empty($actions))
 		{
-			$rule_id    = $this->input->getInt('rule_id');
-			$conditions = $this->input->getRaw('conditions');
-			$actions    = $this->input->getString('actions');
-			$group      = $this->input->getString('group');
-			$label      = $this->input->getString('label');
-
-			if (!empty($rule_id) && !empty($conditions) && !empty($actions))
-			{
-				$rule_edited = $this->m_form->editRule($rule_id, $conditions, $actions, $group, $label);
-
-				if ($rule_edited !== false)
-				{
-					$response['msg']    = Text::_('SUCCESS');
-					$response['status'] = true;
-				}
-				else
-				{
-					$response['msg'] = Text::_('FAILED');
-				}
-			}
-			else
-			{
-				$response['msg'] = Text::_('MISSING_PARAMS');
-			}
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$rule_edited = $this->m_form->editRule($rule_id, $conditions, $actions, $group, $label);
+		if ($rule_edited === false)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_EDIT_RULE'));
+		}
+
+		return EmundusResponse::ok($rule_edited);
 	}
 
-	public function deleteRule()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function deleteRule(): EmundusResponse
 	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
-
-		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		$rule_id = $this->input->getInt('rule_id');
+		if (empty($rule_id))
 		{
-			$rule_id = $this->input->getInt('rule_id');
-
-			if (!empty($rule_id))
-			{
-				$rule_deleted = $this->m_form->deleteRule($rule_id);
-
-				if ($rule_deleted !== false)
-				{
-					$response['msg']    = Text::_('SUCCESS');
-					$response['status'] = true;
-				}
-				else
-				{
-					$response['msg'] = Text::_('FAILED');
-				}
-			}
-			else
-			{
-				$response['msg'] = Text::_('MISSING_PARAMS');
-			}
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$rule_deleted = $this->m_form->deleteRule($rule_id);
+		if ($rule_deleted === false)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_DELETE_RULE'));
+		}
+
+		return EmundusResponse::ok($rule_deleted, Text::_('RULE_DELETED'));
 	}
 
-	public function publishRule()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function publishRule(): EmundusResponse
 	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
-
-		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		$rule_id = $this->input->getInt('rule_id');
+		$state   = $this->input->getInt('state');
+		if (empty($rule_id) || empty($state))
 		{
-			$rule_id = $this->input->getInt('rule_id');
-			$state   = $this->input->getInt('state');
-
-			if (!empty($rule_id))
-			{
-				$rule_published = $this->m_form->publishRule($rule_id, $state);
-
-				if ($rule_published !== false)
-				{
-					$response['msg']    = Text::_('SUCCESS');
-					$response['status'] = true;
-				}
-				else
-				{
-					$response['msg'] = Text::_('FAILED');
-				}
-			}
-			else
-			{
-				$response['msg'] = Text::_('MISSING_PARAMS');
-			}
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$rule_published = $this->m_form->publishRule($rule_id, $state);
+		if ($rule_published === false)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_PUBLISH_RULE'));
+		}
+
+		return EmundusResponse::ok($rule_published);
 	}
 
-	public function getaddpipestatus()
+	public function getaddpipestatus(): void
 	{
 		$response = array('status' => false);
 
@@ -1470,61 +846,49 @@ class EmundusControllerForm extends BaseController
 			$response['msg'] = Text::_('ADDPIPE_NOT_ACTIVATED');
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$this->sendJsonResponse($response);
 	}
 
-	public function getuserprofileelements()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getuserprofileelements(): EmundusResponse
 	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		$elements = $this->m_form->getUserProfileElements();
+		if (empty($elements))
 		{
-			$elements = $this->m_form->getUserProfileElements();
-
-			if (!empty($elements))
-			{
-				$response = array('status' => true, 'msg' => Text::_('SUCCESS'), 'data' => $elements);
-			}
-			else
-			{
-				$response['msg'] = Text::_('NO_ELEMENTS_FOUND');
-			}
+			throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_ELEMENTS'));
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		return EmundusResponse::ok($elements, Text::_('ELEMENTS_RETRIEVED'));
 	}
 
-	public function getFabrikElementOptions()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getFabrikElementOptions(): void
 	{
-		$response = ['code' => 403, 'status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
+		$response = ['code' => 400, 'status' => false, 'msg' => Text::_('MISSING_REQUIRED_PARAMETER'), 'data' => []];
+		$search   = $this->input->getString('search_query', '');
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($this->app->getIdentity()->id))
+		if (!empty($search))
 		{
-			$response = ['code' => 400, 'status' => false, 'msg' => Text::_('MISSING_REQUIRED_PARAMETER'), 'data' => []];
-			$search = $this->input->getString('search_query', '');
+			$resolver = new FormDataConditionResolver();
+			$choices  = $resolver->getAvailableElementsOptions($search);
 
-			if (!empty($search))
-			{
-				$resolver = new FormDataConditionResolver();
-				$choices = $resolver->getAvailableElementsOptions($search);
-
-				$response = [
-					'code' => 200,
-					'status' => true,
-					'data' => array_map(function ($choice) {
-						return [
-							'value' => $choice->getValue(),
-							'label' => $choice->getLabel(),
-						];
-					}, $choices),
-				];
-			} else {
-				$response['code'] = 200;
-				$response['data'] = [];
-				$response['msg'] = Text::_('NO_OPTIONS_FOUND');
-			}
+			$response = [
+				'code'   => EmundusResponse::HTTP_OK,
+				'status' => true,
+				'data'   => array_map(function ($choice) {
+					return [
+						'value' => $choice->getValue(),
+						'label' => $choice->getLabel(),
+					];
+				}, $choices),
+			];
+		}
+		else
+		{
+			$response['code'] = EmundusResponse::HTTP_OK;
+			$response['data'] = [];
+			$response['msg']  = Text::_('NO_OPTIONS_FOUND');
 		}
 
 		$this->sendJsonResponse($response);

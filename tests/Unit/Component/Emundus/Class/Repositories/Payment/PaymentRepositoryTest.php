@@ -38,7 +38,7 @@ class PaymentRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers PaymentRepository::getPaymentMethods
+	 * @covers \Tchooz\Repositories\Payment\PaymentRepository::getPaymentMethods
 	 * @return void
 	 */
 	public function testGetPaymentMethods()
@@ -48,7 +48,7 @@ class PaymentRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers \Tchooz\Repositories\Payment\PaymentRepository::testGenerateAmountsByIterations
+	 * @covers \Tchooz\Repositories\Payment\PaymentRepository::generateAmountsByIterations
 	 * @return void
 	 */
 	public function testGenerateAmountsByIterations()

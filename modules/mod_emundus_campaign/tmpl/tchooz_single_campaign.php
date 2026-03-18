@@ -74,6 +74,15 @@ if ($currentCampaign->apply_online == 0)
 	$can_apply = 0;
 }
 
+include_once(JPATH_BASE . '/components/com_emundus/models/profile.php');
+$m_profile = new EmundusModelProfile();
+$e_user   = $session->get('emundusUser');
+$app_prof = $m_profile->getApplicantsProfilesArray();
+if($can_apply === 1 && !$user->guest && !in_array($e_user->profile, $app_prof))
+{
+    $can_apply = 0;
+}
+
 $campaigns_url = EmundusHelperMenu::getHomepageLink();
 if (!empty($mod_em_campaign_go_back_campaigns_link))
 {

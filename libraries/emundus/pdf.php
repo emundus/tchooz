@@ -805,21 +805,23 @@ function data_to_img($match) {
 }
 
 /**
- * @param $user_id
- * @param $fnum
- * @param $output
- * @param $form_post
- * @param $form_ids
- * @param $options
- * @param $application_form_order
- * @param $profile_id
- * @param $file_lbl
- * @param $elements
- * @param $attachments
+ * @param          $user_id
+ * @param   null   $fnum
+ * @param   bool   $output
+ * @param   int    $form_post
+ * @param   null   $form_ids
+ * @param   array  $options
+ * @param   null   $application_form_order
+ * @param   null   $profile_id
+ * @param   null   $file_lbl
+ * @param   null   $elements
+ * @param   bool   $attachments
+ * @param   ?int   $current_user_id
+ *
  * @return false|string|void
  * @throws Exception
  */
-function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = [], $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
+function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = [], $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true, ?int $current_user_id = null) {
 	jimport('joomla.html.parameter');
     set_time_limit(0);
     require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
@@ -831,6 +833,11 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 	$db = Factory::getContainer()->get('DatabaseDriver');
 	$app = Factory::getApplication();
+
+	if (empty($current_user_id))
+	{
+		$current_user_id = $app->getIdentity()->id;
+	}
 
 	if (is_null($options)) {
 		$options = [];
@@ -866,7 +873,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 //    if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
     if (isset($form_post)) {
 	    try {
-		    $anonymize_data = EmundusHelperAccess::isDataAnonymized($app->getIdentity()->id) || $user->is_anonym;
+		    $anonymize_data = EmundusHelperAccess::isDataAnonymized($current_user_id) || $user->is_anonym;
 
 		    $photo_attachment_id = $eMConfig->get('photo_attachment', 10);
 
@@ -887,11 +894,20 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		    $item = $db->loadObject();
 
 		    /* GET LOGO */
-			$logo = EmundusHelperEmails::getLogo(false,$item->training);
-
-		    $type = pathinfo($logo, PATHINFO_EXTENSION);
-		    $data = file_get_contents($logo);
-		    $logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+			try
+			{
+				$logo = EmundusHelperEmails::getLogo(false,$item->training);
+				$type = pathinfo($logo, PATHINFO_EXTENSION);
+				if ($data = file_get_contents($logo))
+				{
+					$logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+				}
+			}
+			catch (\Exception $e)
+			{
+				$logo_base64 = '';
+				Log::add('Error while getting logo for application form PDF : '.$e->getMessage(), Log::ERROR, 'com_emundus');
+			}
 		    /* END LOGO */
 
 	        $htmldata = '';
@@ -910,9 +926,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 				<body>';
 			$htmldata .= '<header><table style="width: 100%"><tr><td><img src="'. $logo_base64 .'" width="auto" height="60"/></td><td style="text-align: right">';
 
-            $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+            $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($current_user_id);
 
-            if ($options[0] != "0") {
+            if (!empty($options) && $options[0] != "0") {
                 $date_submitted = (!empty($item->date_submitted) && strpos($item->date_submitted, '0000') === false) ? EmundusHelperDate::displayDate($item->date_submitted) : Text::_('NOT_SENT');
 
                 // Create an date object
@@ -1008,7 +1024,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     $tags = $m_files->getTagsByFnum(explode(',', $fnum));
                     $htmldata .= '<table style="margin-top: 8px" class="tags-table"><tr><td> ';
                     foreach ($tags as $tag) {
-	                    if(EmundusHelperAccess::asAccessAction(14 ,'r', $app->getIdentity()->id, $fnum) || (EmundusHelperAccess::asAccessAction(14 ,'c', $app->getIdentity()->id, $fnum) && $tag['user_id'] === $app->getIdentity()->id))
+	                    if(EmundusHelperAccess::asAccessAction(14 ,'r', $current_user_id, $fnum) || (EmundusHelperAccess::asAccessAction(14 ,'c', $current_user_id, $fnum) && $tag['user_id'] === $current_user_id))
 	                    {
 		                    $class = str_replace('label-', '', $tag['class']);
 		                    $htmldata .= '<span class="sticker label-' . $class . '">' . $tag['label'] . '</span>&nbsp;';
@@ -1020,7 +1036,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $htmldata .= '<hr>';
             }
         } catch (Exception $e) {
-            Log::add('SQL error in emundus pdf library at query : ' . $query, Log::ERROR, 'com_emundus');
+            Log::add('Error in emundus pdf library at query : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
         }
 
 	    if ($form_post == 1 && empty($form_ids) && !empty($elements)) {
@@ -1047,12 +1063,12 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 }
 
 
-                $forms .= $m_application->getFormsPDF($user_id, $fnum, $fids, $gids, $profile_id, $eids, $attachments, $step_types);
+                $forms .= $m_application->getFormsPDF($user_id, $fnum, $fids, $gids, $profile_id, $eids, $attachments, $step_types, $current_user_id);
             }
         }
         else {
 			$eids = !empty($elements) ? $elements[key($elements)]['eids'] : null;
-			$forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, $eids, $attachments, $step_types);
+			$forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, $eids, $attachments, $step_types, $current_user_id);
 		}
         /*** Applicant   ***/
 	    $htmldata .= "
@@ -1552,7 +1568,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
  * @since version
  * @deprecated since version 2.0
  */
-function application_header_pdf($user_id, $fnum = null, $output = true, $options = null) {
+function application_header_pdf($user_id, $fnum = null, $output = true, $options = null, $current_user_id = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
 
@@ -1604,7 +1620,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
         $item = $db->loadObject();
 
     } catch (Exception $e) {
-        Log::add('SQL error in emundus pdf library at query : ' . $query, Log::ERROR, 'com_emundus');
+        Log::add('SQL error in emundus pdf library at query : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
     }
 
     //get logo

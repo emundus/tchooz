@@ -1,5 +1,8 @@
 /* jshint esversion: 8 */
 import client from './axiosClient';
+import { FetchClient } from '@/services/fetchClient.js';
+
+const usersClient = new FetchClient('users');
 
 export default {
 	async getUserById(id) {
@@ -106,6 +109,21 @@ export default {
 			return {
 				status: false,
 				error: e,
+			};
+		}
+	},
+
+	async addException(userId) {
+		try {
+			const response = await usersClient.post('index.php?option=com_emundus&controller=users&task=addexception', {
+				userId: userId,
+			});
+			return response;
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+				msg: e.message,
 			};
 		}
 	},

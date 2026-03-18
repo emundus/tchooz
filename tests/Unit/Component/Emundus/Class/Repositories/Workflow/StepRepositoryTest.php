@@ -36,7 +36,7 @@ class StepRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers StepRepository::save
+	 * @covers \Tchooz\Repositories\Workflow\StepRepository::save
 	 * @return void
 	 */
 	public function testSave()
@@ -61,7 +61,7 @@ class StepRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers StepRepository::save
+	 * @covers \Tchooz\Repositories\Workflow\StepRepository::save
 	 * @return void
 	 */
 	public function testSaveWithoutWorkflow()

@@ -425,7 +425,7 @@ class EmundusModelSign extends ListModel
 		{
 			$query = $this->db->getQuery(true);
 
-			$query->select('ecc.id as value, ecc.fnum, CONCAT(eu.firstname, " ", eu.lastname, " - ", esc.label, " (", esc.year,")") as name')
+			$query->select('ecc.id as value, ecc.fnum, CONCAT(eu.firstname, " ", eu.lastname, " - ", esc.label, " (", esc.year,") - N°", ecc.fnum) as name')
 				->from($this->db->quoteName('#__emundus_campaign_candidature','ecc'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$this->db->quoteName('esc.id').' = '.$this->db->quoteName('ecc.campaign_id'))
 				->leftJoin($this->db->quoteName('#__emundus_users','eu').' ON '.$this->db->quoteName('eu.user_id').' = '.$this->db->quoteName('ecc.applicant_id'))

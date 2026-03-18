@@ -17,6 +17,8 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseInterface;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\Programs\ProgramRepository;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -54,12 +56,32 @@ class EmundusModelEvents extends BaseDatabaseModel
 		);
 	}
 
-	public function getEvents(string $order_by = '', string $sort = 'DESC', string $recherche = '', int|string $lim = 25, int|string $page = 0, int $location = 0, int $id = 0): array
+	public function getEvents(string $order_by = '', string $sort = 'DESC', string $recherche = '', int|string $lim = 25, int|string $page = 0, int $location = 0, int $id = 0, array $programs = [], string $published = null): array
 	{
 		$events = ['datas' => [], 'count' => 0];
 
 		try
 		{
+			$campaignRepository = new CampaignRepository();
+			$programRepository = new ProgramRepository();
+
+			$userCampaignsIds = [];
+			$userProgramsIds = [];
+			if(!empty($programs))
+			{
+				// Get associated campaigns
+				$userCampaigns = $campaignRepository->getItemsByField('training', $programs);
+				$userCampaignsIds = array_map(function($campaign) {
+					return $campaign->id;
+				}, $userCampaigns);
+
+				// Get programmes ids
+				$userPrograms = $programRepository->getItemsByField('code', $programs);
+				$userProgramsIds = array_map(function($program) {
+					return $program->id;
+				}, $userPrograms);
+			}
+
 			if (empty($lim) || $lim == 'all')
 			{
 				$limit = '';
@@ -85,12 +107,21 @@ class EmundusModelEvents extends BaseDatabaseModel
 				$this->db->quoteName('ee.name', 'label'),
 				$this->db->quoteName('del.name', 'location'),
 				$this->db->quoteName('ee.slot_duration'),
-				$this->db->quoteName('ee.color')
+				$this->db->quoteName('ee.slot_duration_type'),
+				$this->db->quoteName('ee.color'),
+				'group_concat(DISTINCT eserp.programme) as programs',
+				'group_concat(DISTINCT eserc.campaign) as campaigns',
+				$this->db->quoteName('u.name', 'manager_name'),
+				$this->db->quoteName('u.email', 'manager_email'),
+				$this->db->quoteName('ee.published')
 			];
 
-			$query->select('count(ee.id)')
+			$query->select('count(DISTINCT ee.id)')
 				->from($this->db->quoteName('#__emundus_setup_events', 'ee'))
-				->leftJoin($this->db->quoteName('data_events_location', 'del') . ' ON ' . $this->db->quoteName('del.id') . ' = ' . $this->db->quoteName('ee.location'));
+				->leftJoin($this->db->quoteName('data_events_location', 'del') . ' ON ' . $this->db->quoteName('del.id') . ' = ' . $this->db->quoteName('ee.location'))
+				->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('ee.manager'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_events_repeat_campaign', 'eserc') . ' ON ' . $this->db->quoteName('eserc.event') . ' = ' . $this->db->quoteName('ee.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_events_repeat_program', 'eserp') . ' ON ' . $this->db->quoteName('eserp.event') . ' = ' . $this->db->quoteName('ee.id'));
 			if (!empty($location))
 			{
 				$query->where($this->db->quoteName('ee.location') . ' = ' . $location);
@@ -103,11 +134,21 @@ class EmundusModelEvents extends BaseDatabaseModel
 			{
 				$query->where($this->db->quoteName('ee.id') . ' = ' . $id);
 			}
+			if (!empty($published) && $published !== 'all')
+			{
+				$published = $published == 'true' ? 1 : 0;
+				$query->where($this->db->quoteName('ee.published') . ' = ' . $published);
+			}
+			if(!empty($userCampaignsIds) && !empty($userProgramsIds))
+			{
+				$query->where($this->db->quoteName('eserc.campaign') . ' IN (' . implode(',',$userCampaignsIds) . ') OR ' . $this->db->quoteName('eserp.programme') . ' IN (' . implode(',',$userProgramsIds) . ')');
+			}
 			$this->_db->setQuery($query);
 			$events['count'] = $this->_db->loadResult();
 
 			$query->clear('select')
-				->select($columns);
+				->select($columns)
+				->group($this->db->quoteName('ee.id'));
 			if (!empty($order_by) && !empty($sort))
 			{
 				$query->order($order_by . ' ' . $sort);
@@ -145,6 +186,18 @@ class EmundusModelEvents extends BaseDatabaseModel
 					->where($this->db->quoteName('eses.event') . ' = ' . $event->id);
 				$this->_db->setQuery($query);
 				$event->booked_count = $this->_db->loadResult();
+
+				// Get campaigns and programs details
+				if(!empty($event->campaigns))
+				{
+					$campaigns = explode(',', $event->campaigns);
+					$event->campaigns = $campaignRepository->getItemsByFields(['id' => $campaigns]);
+				}
+				if(!empty($event->programs))
+				{
+					$programs = explode(',', $event->programs);
+					$event->programs = $programRepository->getItemsByFields(['id' => $programs]);
+				}
 			}
 		}
 		catch (Exception $e)
@@ -1538,7 +1591,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 					if ($this->db->updateObject('jos_emundus_setup_events', $slot_config, 'id'))
 					{
 						$this->setupAvailabilities($event_id);
-						$setup_slot = ['status' => true, 'message' => 'COM_EMUNDUS_ONBOARD_SUCCESS'];
+						$setup_slot = ['status' => true, 'message' => 'COM_EMUNDUS_ONBOARD_SUCCESS', 'code' => 200];
 					}
 				}
 			}
@@ -2150,8 +2203,8 @@ class EmundusModelEvents extends BaseDatabaseModel
 			}
 		}
 
-		$campaigns_events = $this->getEventsByCampaignIds($cid);
-		$programs_events  = $this->getEventsByProgramCodes($program_code);
+		$campaigns_events = $this->getEventsByCampaignIds($cid, true);
+		$programs_events  = $this->getEventsByProgramCodes($program_code, true);
 
 		$events = array_merge($campaigns_events, $programs_events);
 
@@ -2172,7 +2225,8 @@ class EmundusModelEvents extends BaseDatabaseModel
 					$query->clear()
 						->select('id')
 						->from($this->db->quoteName('#__emundus_setup_events'))
-						->where($this->db->quoteName('location') . ' = ' . $location);
+						->where($this->db->quoteName('location') . ' = ' . $location)
+						->where($this->db->quoteName('published') . ' = 1');
 					$this->db->setQuery($query);
 					$events = array_intersect($events, $this->db->loadColumn());
 				}
@@ -2292,7 +2346,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 	 *
 	 * @since version 2.2.0
 	 */
-	public function getEventsByCampaignIds($campaign_ids)
+	public function getEventsByCampaignIds($campaign_ids, $only_published_events = false)
 	{
 		$events = [];
 
@@ -2307,8 +2361,14 @@ class EmundusModelEvents extends BaseDatabaseModel
 				$query = $this->db->getQuery(true);
 
 				$query->select('event')
-					->from($this->db->quoteName('#__emundus_setup_events_repeat_campaign'))
-					->where('campaign IN (' . implode(',', array_map([$this->db, 'quote'], $campaign_ids)) . ')');
+					->from($this->db->quoteName('#__emundus_setup_events_repeat_campaign', 'eserc'));
+				if ($only_published_events)
+				{
+					$query->leftJoin($this->db->quoteName('#__emundus_setup_events', 'ese') . ' ON ' . $this->db->quoteName('ese.id') . ' = ' . $this->db->quoteName('eserc.event'))
+						->where($this->db->quoteName('ese.published') . ' = 1');
+				}
+				$query->where('campaign IN (' . implode(',', array_map([$this->db, 'quote'], $campaign_ids)) . ')');
+
 
 				$this->_db->setQuery($query);
 				$events = $this->_db->loadColumn();
@@ -2329,7 +2389,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 	 *
 	 * @since version 2.2.0
 	 */
-	public function getEventsByProgramCodes($program_codes)
+	public function getEventsByProgramCodes($program_codes, $only_published_events = false)
 	{
 		$events = [];
 
@@ -2346,8 +2406,13 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 				$query->select('eserp.event')
 					->from($this->db->quoteName('#__emundus_setup_events_repeat_program', 'eserp'))
-					->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.id') . ' = ' . $this->db->quoteName('eserp.programme'))
-					->where('esp.code IN (' . implode(',', array_map([$this->db, 'quote'], $program_codes)) . ')');
+					->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.id') . ' = ' . $this->db->quoteName('eserp.programme'));
+				if ($only_published_events)
+				{
+					$query->leftJoin($this->db->quoteName('#__emundus_setup_events', 'ese') . ' ON ' . $this->db->quoteName('ese.id') . ' = ' . $this->db->quoteName('eserp.event'))
+						->where($this->db->quoteName('ese.published') . ' = 1');
+				}
+				$query->where('esp.code IN (' . implode(',', array_map([$this->db, 'quote'], $program_codes)) . ')');
 
 				$this->_db->setQuery($query);
 				$events = $this->_db->loadColumn();
@@ -2670,7 +2735,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 		return $updated;
 	}
 
-	public function getRegistrantCount($event_id)
+	public function getRegistrantCount($event_id, $only_upcoming_registrants = false)
 	{
 		$count = 0;
 
@@ -2678,9 +2743,14 @@ class EmundusModelEvents extends BaseDatabaseModel
 		{
 			$query = $this->db->getQuery(true);
 
-			$query->select('count(id)')
-				->from($this->db->quoteName('#__emundus_registrants'))
-				->where('event = ' . $event_id);
+			$query->select('count(er.id)')
+				->from($this->db->quoteName('#__emundus_registrants', 'er'));
+			if($only_upcoming_registrants)
+			{
+				$query->leftJoin($this->db->quoteName('#__emundus_setup_availabilities', 'esa') . ' ON ' . $this->db->quoteName('er.availability') . ' = ' . $this->db->quoteName('esa.id'));
+				$query->where($this->db->quoteName('esa.start_date') . ' > NOW()');
+			}
+			$query->where('er.event = ' . $event_id);
 			$this->_db->setQuery($query);
 			$count = $this->_db->loadResult();
 		}
@@ -2884,6 +2954,19 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 		try
 		{
+			$query = $this->db->getQuery(true);
+
+			// Get registrants directly associated
+			$query->clear()
+				->select('er.id')
+				->from($this->db->quoteName('#__emundus_registrants', 'er'))
+				->leftJoin($this->db->quoteName('#__emundus_registrants_users', 'esru') . ' ON ' . $this->db->quoteName('esru.registrant') . ' = ' . $this->db->quoteName('er.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_slot_users', 'essu') . ' ON ' . $this->db->quoteName('essu.slot') . ' = ' . $this->db->quoteName('er.slot'))
+				->where('esru.user = ' . $user_id)
+				->orWhere('essu.user = ' . $user_id);
+			$this->db->setQuery($query);
+			$registrants_ids_associated = $this->db->loadColumn();
+
 			// $booking_acl = EmundusHelperAccess::getActionIdFromActionName('booking');
 
 			require_once(JPATH_SITE . '/components/com_emundus/models/programme.php');
@@ -2908,8 +2991,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 				$offset = ($page - 1) * $limit;
 			}
 
-			$query = $this->db->getQuery(true);
-
 			$columns = [
 				$this->db->quoteName('er.id'),
 				$this->db->quoteName('er.ccid'),
@@ -2932,7 +3013,8 @@ class EmundusModelEvents extends BaseDatabaseModel
 				$this->db->quoteName('ese.color'),
 			];
 
-			$query->select('count(distinct er.id)')
+			$query->clear()
+				->select('count(distinct er.id)')
 				->from($this->db->quoteName('#__emundus_registrants', 'er'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_events', 'ese') . ' ON ' . $this->db->quoteName('ese.id') . ' = ' . $this->db->quoteName('er.event'))
 				->leftJoin($this->db->quoteName('data_events_location', 'del') . ' ON ' . $this->db->quoteName('del.id') . ' = ' . $this->db->quoteName('ese.location'))
@@ -2943,12 +3025,25 @@ class EmundusModelEvents extends BaseDatabaseModel
 				->leftJoin($this->db->quoteName('#__emundus_setup_event_slots', 'eses') . ' ON ' . $this->db->quoteName('eses.id') . ' = ' . $this->db->quoteName('er.slot'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_slot_users', 'essu') . ' ON ' . $this->db->quoteName('essu.slot') . ' = ' . $this->db->quoteName('er.slot'))
 				->leftJoin($this->db->quoteName('#__emundus_registrants_users', 'esru') . ' ON ' . $this->db->quoteName('esru.registrant') . ' = ' . $this->db->quoteName('er.id'))
-				->leftJoin($this->db->quoteName('data_location_rooms', 'dlr') . ' ON ' . $this->db->quoteName('dlr.id') . ' = ' . $this->db->quoteName('eses.room'));
+				->leftJoin($this->db->quoteName('data_location_rooms', 'dlr') . ' ON ' . $this->db->quoteName('dlr.id') . ' = ' . $this->db->quoteName('eses.room'))
+				->where($this->db->quoteName('ese.published') . ' = 1');
 
 			if (!empty($programs))
 			{
-				$query->where($this->db->quoteName('esc.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')');
+				$programsCondition = $this->db->quoteName('esc.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')';
+				if(!empty($registrants_ids_associated))
+				{
+					$programsCondition = '(' . $programsCondition . ' OR er.id IN (' . implode(',', $registrants_ids_associated) . '))';
+				}
+
+				$query->where($programsCondition);
 			}
+			elseif(!empty($registrants_ids_associated))
+			{
+				$query->where('er.id IN (' . implode(',', $registrants_ids_associated) . ')');
+			}
+
+			// Add a or where to get the events that are not linked to any program but that the user has access to
 
 			if (!empty($event))
 			{
@@ -3055,7 +3150,8 @@ class EmundusModelEvents extends BaseDatabaseModel
 		{
 			$query->clear()
 				->select([$this->db->quoteName('id', 'value'), $this->db->quoteName('name', 'label')])
-				->from($this->db->quoteName('#__emundus_setup_events'));
+				->from($this->db->quoteName('#__emundus_setup_events'))
+				->where($this->db->quoteName('published') . ' = 1');
 			$this->db->setQuery($query);
 			$events = $this->db->loadObjectList();
 		}
@@ -3782,5 +3878,31 @@ class EmundusModelEvents extends BaseDatabaseModel
 		}
 
 		return !empty($associated_slots);
+	}
+
+	public function togglePublished(int $event_id, bool $published): bool
+	{
+		$toggled = false;
+
+		if (!empty($event_id))
+		{
+			$query = $this->db->createQuery();
+
+			$query->update('#__emundus_setup_events')
+				->set('published = ' . (int) $published)
+				->where('id = ' . $event_id);
+
+			try
+			{
+				$this->db->setQuery($query);
+				$toggled = (bool) $this->db->execute();
+			}
+			catch (\Exception $e)
+			{
+				Log::add('Error on toggle published event : ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
+			}
+		}
+
+		return $toggled;
 	}
 }

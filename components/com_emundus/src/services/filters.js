@@ -281,4 +281,59 @@ export default {
 				});
 		}
 	},
+	async getListFilters(view) {
+		let filters = [];
+
+		if (view) {
+			return client
+				.get('getlistfilters', {
+					view: view,
+				})
+				.then((data) => {
+					if (data.status) {
+						return data.data;
+					}
+				})
+				.catch((error) => {
+					return filters;
+				});
+		}
+	},
+	async saveListFilters(filters, name, view, id = 0) {
+		if (filters && name.length > 0) {
+			return client
+				.post('savelistfilters', {
+					filters: JSON.stringify(filters),
+					name: name,
+					view: view,
+					id: id,
+				})
+				.then((data) => {
+					if (data.status) {
+						return data.data;
+					}
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		} else {
+			throw new Error('Filters and name are required to save list filters');
+		}
+	},
+	async deleteListFilters(id) {
+		if (id > 0) {
+			return client
+				.post('deletelistfilters', {
+					id: id,
+				})
+				.then((data) => {
+					if (data.status) {
+						return data;
+					}
+				})
+				.catch((error) => {
+					throw new Error('Error occured while deleting list filters : '.error.message);
+				});
+		}
+	},
 };

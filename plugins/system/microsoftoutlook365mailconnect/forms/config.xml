@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fields name="mail">
+        <fieldset name="mail" label="CONFIG_MAIL_SETTINGS_LABEL">
+            <field
+                    addfieldprefix="Web357\Plugin\System\Microsoftoutlook365mailconnect\Field"
+                    name="msoutlook365_status"
+                    type="msoutlook365mailstatus"
+                    label=""
+            />
+        </fieldset>
+    </fields>
+</form>

@@ -29,7 +29,7 @@ class CampaignDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers CampaignDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\CampaignDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValue(): void
@@ -45,7 +45,7 @@ class CampaignDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers CampaignDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\CampaignDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueWithInvalidField()
@@ -56,7 +56,7 @@ class CampaignDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers CampaignDataConditionResolver::getAvailableFields
+	 * @covers \Tchooz\Services\Automation\Condition\CampaignDataConditionResolver::getAvailableFields
 	 * @return void
 	 */
 	public function testGetAvailableFields(): void

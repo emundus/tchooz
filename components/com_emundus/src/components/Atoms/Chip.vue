@@ -41,11 +41,11 @@ export default {
 			v-if="image"
 			:src="image"
 			:alt="imageAltText"
-			class="tw-mr-1 tw-h-6 tw-w-6 tw-rounded-full tw-object-contain"
+			class="tw-mr-1 tw-h-7 tw-w-7 tw-rounded-full tw-object-contain"
 		/>
 		<div
 			v-else
-			class="tw-mr-2 tw-flex tw-h-6 tw-w-6 tw-items-center tw-justify-center tw-rounded-full tw-bg-neutral-600 tw-text-sm tw-font-bold tw-text-white"
+			class="tw-mr-2 tw-flex tw-h-7 tw-w-7 tw-shrink-0 tw-items-center tw-justify-center tw-rounded-full tw-bg-neutral-600 tw-text-sm tw-font-bold tw-text-white"
 		>
 			{{ initials }}
 		</div>

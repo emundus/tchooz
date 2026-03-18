@@ -34,6 +34,7 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
 
 use Joomla\CMS\Factory;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Emails\TagEntity;
 use Tchooz\Enums\Emails\TagTypeEnum;
 use Tchooz\Traits\TraitDispatcher;
@@ -1273,6 +1274,13 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
+		$selected_evaluators = [];
+		foreach ($applied_filters as $filter) {
+			if($filter['uid'] == 'evaluators' && !empty($filter['value']) && !in_array('all', $filter['value']) && $filter['operator'] === 'IN') {
+				$selected_evaluators = !is_array($filter['value']) ? [$filter['value']] : $filter['value'];
+			}
+		}
+
 		$this->_applicants = [];
 		if (!empty($step_ids))  {
 			foreach ($step_ids as $step_id) {
@@ -1289,6 +1297,10 @@ class EmundusModelEvaluation extends JModelList
 			$list = [];
 			foreach($grouped_list as $fnum => $items) {
 				foreach ($items as $item) {
+					if(!empty($selected_evaluators) && in_array('evaluator_id', array_keys($item)) && !in_array($item['evaluator_id'], $selected_evaluators)) {
+						continue;
+					}
+
 					$list[] = $item;
 				}
 			}
@@ -2902,6 +2914,28 @@ class EmundusModelEvaluation extends JModelList
 		return $letter_ids;
 	}
 
+	public function getLetters(): array
+	{
+		$letters = [];
+
+		$query = $this->db->createQuery();
+
+		try
+		{
+			$query->select('*')
+				->from($this->db->quoteName('#__emundus_setup_letters'));
+
+			$this->db->setQuery($query);
+			$letters = $this->db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error in getLetters: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $letters;
+	}
+
 	/// get uploaded files by document type and fnums
 	public function getFilesByAttachmentFnums($attachment, $fnums = array())
 	{
@@ -3406,24 +3440,25 @@ class EmundusModelEvaluation extends JModelList
 		$lettersToGenerateCopy = $lettersToGenerate;
 		$query = $this->db->createQuery();
 
+		PluginHelper::importPlugin('emundus');
+		$dispatcher         = Factory::getApplication()->getDispatcher();
 
 		if (!Factory::getApplication()->isCli())
 		{
-			PluginHelper::importPlugin('emundus');
 			PluginHelper::importPlugin('actionlog');
-			$dispatcher = Factory::getApplication()->getDispatcher();
-			$onCallEventHandler = new GenericEvent(
-				'onCallEventHandler',
-				[
-					'onBeforeGenerateLetters',
-					[
-						'letters' => &$lettersToGenerate,
-						'fnum' => $fnum,
-					]
-				]
-			);
-			$dispatcher->dispatch('onCallEventHandler', $onCallEventHandler);
 		}
+
+		$onCallEventHandler = new GenericEvent(
+			'onCallEventHandler',
+			[
+				'onBeforeGenerateLetters',
+				[
+					'letters' => &$lettersToGenerate,
+					'fnum'    => $fnum,
+				]
+			]
+		);
+		$dispatcher->dispatch('onCallEventHandler', $onCallEventHandler);
 
 		// Make sure that only letters that were originally selected are generated
 		// This is to avoid issues with plugins that add letters
@@ -3442,7 +3477,6 @@ class EmundusModelEvaluation extends JModelList
 		{
 			$lettersToGenerate = $lettersToGenerateCopy;
 		}
-
 
 		if (!class_exists('EmundusModelFiles'))
 		{
@@ -3815,6 +3849,37 @@ class EmundusModelEvaluation extends JModelList
 											}
 										}
 
+									}
+									else if ($elt['plugin'] === 'orderlist')
+									{
+										foreach ($fabrikValues[$elt['id']] as $fnum => $val)
+										{
+											if (is_string($val['val']) && !empty($val['val']))
+											{
+												$orderedValues = explode(',', $val['val']);
+												$labels = [];
+												$orderIndex = 1;
+												foreach ($orderedValues as $value)
+												{
+													$value = trim($value, '"');
+													$index = array_search($value, $params->sub_options->sub_values);
+													if ($index !== false) {
+														$labels[] = $orderIndex . '. ' . Text::_($params->sub_options->sub_labels[$index]);
+													}
+													else {
+														$labels[] = $orderIndex . '. ' . $value;
+													}
+
+													$orderIndex++;
+												}
+
+												$fabrikValues[$elt['id']][$fnum]['val'] = implode("\n", $labels);
+											}
+											else
+											{
+												$fabrikValues[$elt['id']][$fnum]['val'] = '';
+											}
+										}
 									}
 									elseif ($elt['plugin'] == "birthday")
 									{
@@ -4253,6 +4318,27 @@ class EmundusModelEvaluation extends JModelList
 			{
 				$logs_params = ['created' => ['filename' => $letter->title]];
 				EmundusModelLogs::log($user->id, (int)$fnumInfo[$fnum]['applicant_id'], $fnum, 27, 'c', 'COM_EMUNDUS_ACCESS_LETTERS', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+
+				$context = new EventContextEntity(
+					$user,
+					[$fnum],
+					[$fnumInfo[$fnum]['applicant_id']],
+					[
+						'letter_id' => $letter->id,
+						'attachment_id' => $letter->attachment_id,
+					]
+				);
+
+				$onCallEventHandler = new GenericEvent(
+					'onCallEventHandler',
+					[
+						'onAfterGenerateLetter',
+						[
+							'context' => $context,
+						]
+					]
+				);
+				$dispatcher->dispatch('onCallEventHandler', $onCallEventHandler);
 			}
 		}
 

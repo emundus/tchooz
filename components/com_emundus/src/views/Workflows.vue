@@ -1,6 +1,6 @@
 <template>
 	<div id="workflow_id">
-		<list :default-lists="configString" :default-type="'workflow'"></list>
+		<list :default-lists="configString" :default-type="'workflow'" :crud="crud"></list>
 	</div>
 </template>
 
@@ -9,6 +9,12 @@ import list from '@/views/list.vue';
 
 export default {
 	name: 'Workflows',
+	props: {
+		crud: {
+			type: Object,
+			default: [],
+		},
+	},
 	components: {
 		list,
 	},
@@ -31,6 +37,7 @@ export default {
 									controller: 'workflow',
 									name: 'add',
 									type: 'redirect',
+									acl: 'workflow|c',
 								},
 								{
 									action: 'index.php?option=com_emundus&view=workflows&layout=edit&wid=%id%',
@@ -38,6 +45,7 @@ export default {
 									controller: 'workflow',
 									type: 'redirect',
 									name: 'edit',
+									acl: 'workflow|u',
 								},
 								{
 									action: 'delete',
@@ -47,6 +55,7 @@ export default {
 									multiple: true,
 									name: 'delete',
 									confirm: 'COM_EMUNDUS_WORKFLOW_DELETE_WORKFLOW_CONFIRMATION',
+									acl: 'workflow|d',
 								},
 								{
 									action: 'duplicate',
@@ -54,6 +63,13 @@ export default {
 									controller: 'workflow',
 									name: 'duplicate',
 									method: 'post',
+									acl: 'workflow|c',
+								},
+								{
+									action: 'index.php?option=com_emundus&view=workflows&layout=edit&wid=%id%&readonly=1',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_SHOW_DETAILS',
+									type: 'redirect',
+									name: 'show',
 								},
 							],
 							filters: [

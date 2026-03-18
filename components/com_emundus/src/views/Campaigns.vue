@@ -1,6 +1,12 @@
 <template>
 	<div id="campaigns-list">
-		<list v-if="!loading" :default-lists="configString" :default-type="'campaigns'" :key="renderingKey"></list>
+		<list
+			v-if="!loading"
+			:default-lists="configString"
+			:default-type="'campaigns'"
+			:key="renderingKey"
+			:crud="crud"
+		></list>
 	</div>
 </template>
 
@@ -12,6 +18,12 @@ import settingsService from '@/services/settings.js';
 
 export default {
 	name: 'Campaigns',
+	props: {
+		crud: {
+			type: Object,
+			default: [],
+		},
+	},
 	components: {
 		list,
 	},
@@ -32,6 +44,7 @@ export default {
 							controller: 'campaign',
 							getter: 'getallcampaign',
 							noData: 'COM_EMUNDUS_ONBOARD_NOCAMPAIGN',
+							acl: 'campaign|r',
 							actions: [
 								{
 									action: 'index.php?option=com_emundus&view=campaigns&layout=add',
@@ -39,6 +52,7 @@ export default {
 									controller: 'campaign',
 									name: 'add',
 									type: 'redirect',
+									acl: 'campaign|c',
 								},
 								{
 									action: 'duplicatecampaign',
@@ -46,6 +60,7 @@ export default {
 									controller: 'campaign',
 									name: 'duplicate',
 									method: 'post',
+									acl: 'campaign|c',
 								},
 								{
 									action: 'index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=%id%',
@@ -53,6 +68,11 @@ export default {
 									controller: 'campaign',
 									type: 'redirect',
 									name: 'edit',
+									showon: {
+										key: 'can_edit',
+										operator: '=',
+										value: true,
+									},
 								},
 								{
 									action: 'deletecampaign',
@@ -62,11 +82,18 @@ export default {
 									multiple: true,
 									method: 'delete',
 									confirm: 'COM_EMUNDUS_ONBOARD_CAMPDELETE',
-									showon: {
-										key: 'nb_files',
-										operator: '<',
-										value: '1',
-									},
+									showon: [
+										{
+											key: 'nb_files',
+											operator: '<',
+											value: '1',
+										},
+										{
+											key: 'can_edit',
+											operator: '=',
+											value: true,
+										},
+									],
 								},
 								{
 									action: 'unpublishcampaign',
@@ -75,11 +102,18 @@ export default {
 									name: 'unpublish',
 									multiple: true,
 									method: 'post',
-									showon: {
-										key: 'published',
-										operator: '=',
-										value: '1',
-									},
+									showon: [
+										{
+											key: 'published',
+											operator: '=',
+											value: '1',
+										},
+										{
+											key: 'can_edit',
+											operator: '=',
+											value: true,
+										},
+									],
 								},
 								{
 									action: 'publishcampaign',
@@ -88,11 +122,25 @@ export default {
 									name: 'publish',
 									multiple: true,
 									method: 'post',
-									showon: {
-										key: 'published',
-										operator: '=',
-										value: '0',
-									},
+									showon: [
+										{
+											key: 'published',
+											operator: '=',
+											value: '0',
+										},
+										{
+											key: 'can_edit',
+											operator: '=',
+											value: true,
+										},
+									],
+								},
+								{
+									action: 'show',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_SHOW_DETAILS',
+									type: 'modal',
+									component: 'CampaignDetails',
+									name: 'show',
 								},
 							],
 							filters: [
@@ -148,6 +196,7 @@ export default {
 							controller: 'programme',
 							getter: 'getallprogram',
 							noData: 'COM_EMUNDUS_ONBOARD_NOPROGRAM',
+							acl: 'program|r',
 							actions: [
 								{
 									action: 'index.php?option=com_fabrik&view=form&formid=108',
@@ -155,6 +204,7 @@ export default {
 									label: 'COM_EMUNDUS_ONBOARD_ADD_PROGRAM',
 									name: 'add',
 									type: 'redirect',
+									acl: 'program|c',
 								},
 								{
 									action: 'index.php?option=com_emundus&view=programme&layout=edit&id=%id%',
@@ -162,6 +212,14 @@ export default {
 									controller: 'programme',
 									type: 'redirect',
 									name: 'edit',
+									acl: 'program|u',
+								},
+								{
+									action: 'show',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_SHOW_DETAILS',
+									type: 'modal',
+									component: 'ProgramDetails',
+									name: 'show',
 								},
 							],
 							filters: [

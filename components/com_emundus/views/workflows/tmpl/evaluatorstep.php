@@ -5,6 +5,7 @@ defined('_JEXEC') or die('Restricted Access');
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Factories\LayoutFactory;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 $m_workflow = new EmundusModelWorkflow();
@@ -19,6 +20,16 @@ else
 {
 	$currentLangPath = '';
 }
+
+$data = LayoutFactory::prepareVueData();
+
+$datas = [
+    ...$data,
+    'fnum' => $this->fnum,
+    'defaultCcid' => EmundusHelperFiles::getIdFromFnum($this->fnum),
+    'stepId' => !empty($this->step) ? $this->step->id : null,
+]
+
 ?>
 
 <div class="panel panel-default widget em-container-evaluator-step tw-h-full">
@@ -44,15 +55,6 @@ else
                         }
                     ?>
                 </h3>
-	            <?php
-	            if (EmundusHelperAccess::asAccessAction(8, 'c', $this->user->id, $this->fnum)) {
-		            ?>
-                    <button id="download-evaluation-step-pdf" class="em-mt-8 em-ml-8 tw-cursor-pointer" data-fnum="<?= $this->fnum ?>" data-toggle="tooltip" data-placement="right" title="Télécharger le formulaire d'évaluation">
-                        <span class="material-symbols-outlined tw-cursor-pointer tw-text-white" data-fnum="<?= $this->fnum ?>">file_download</span>
-                    </button>
-		            <?php
-	            }
-	            ?>
             </div>
             <div class="btn-group pull-right">
                 <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span>
@@ -83,27 +85,19 @@ else
                     </div>
                 </div>
 			<?php endif; ?>
-            <iframe id="evaluation-step-iframe" class="tw-mt-4 !tw-h-[calc(100%-155px)]" width="100%" loading="lazy"
-                    src="<?php echo $currentLangPath; ?>/evaluation-step-form?view=form&formid=<?= $this->step->form_id ?>&<?= $this->step->table ?>___ccid=<?= $this->ccid ?>&<?= $this->step->table ?>___step_id=<?= $this->step->id ?>&tmpl=component&iframe=1"></iframe>
-        </div>
-		<?php
 
-		/**
-         * TODO: if really needed, display the list of other evaluations here :
-		 * if (EmundusHelperAccess::asAccessAction($this->step->action_id, 'r', $this->user->id, $this->fnum) && $this->step->multiple == 1) {
-            $step_evaluations = $m_workflow->getStepEvaluationsForFile($this->step->id, $this->ccid);
-            ?>
-
-            <div class="tw-px-4">
+            <!-- display evaluator step forms -->
+            <div id="em-component-vue"
+                 component="Evaluations"
+                 class="tw-h-full"
+                 data="<?= htmlspecialchars(json_encode($datas), ENT_QUOTES, 'UTF-8'); ?>"
+            >
             </div>
 
-            <?php
+            <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash']  . rand(0, 99999) ?>"></script>
 
-            foreach($step_evaluations as $evaluation) {
-
-            }
-        }*/
-
+        </div>
+		<?php
 	}
     else if (!$this->access['can_see']) {
         ?>
@@ -119,30 +113,8 @@ else
 	?>
 </div>
 
-<script>
-    document.getElementById('evaluation-step-iframe').onload = function() {
-        let iframeElement = document.getElementById('evaluation-step-iframe');
-        iframeElement.style.height = (iframeElement.contentWindow.document.body.scrollHeight + 32) + 'px';
-        iframeElement.contentWindow.document.body.style.background = 'white';
-        iframeElement.contentWindow.document.body.style.height = '100%';
+<style>
+    #evaluations-container {
+        height: calc(100vh - 151px);
     }
-
-    document.getElementById('download-evaluation-step-pdf').addEventListener('click', function (e) {
-        if (typeof export_pdf === 'function') {
-            let pdf_elements = {
-                profiles: [
-                ],
-                tables: [
-                    'evaluation_steps_<?= $this->step->table_id?>'
-                ],
-                groups: [],
-                elements: []
-            };
-
-
-            export_pdf(JSON.stringify({0: <?= $this->fnum ?>}), null, 'evaluation_step', '<?= $this->step->table_id ?>,evaluation_steps_<?= $this->step->table_id ?>', pdf_elements);
-        } else {
-            console.error('Function export_pdf does not exist');
-        }
-    });
-</script>
+</style>

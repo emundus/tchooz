@@ -24,11 +24,9 @@ use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
@@ -3365,6 +3363,41 @@ class EmundusModelFiles extends JModelLegacy
 							}
 						}
 						break;
+					case 'orderlist':
+						if ($is_repeat) {
+							$element_table_alias = array_search($element->table_join, $already_joined);
+						}
+
+						// value is saved as string 'value1, value2' in the database
+						$query            .= ', (';
+						$regexp_sub_query = $element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
+
+						$element_params = json_decode($element->element_attribs, true);
+						if (!empty($element_params['sub_options']['sub_values'])) {
+							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
+								if(!empty($translations) && isset($translations[$element_params['sub_options']['sub_labels'][$sub_key]])) {
+									$sub_label = $translations[$element_params['sub_options']['sub_labels'][$sub_key]];
+								}
+								else
+								{
+									$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
+								}
+								$sub_label = $sub_label === '' ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+								$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
+								$sub_value = str_replace("'", "\'", $sub_value);
+
+
+								if ($sub_key === 0) {
+									$regexp_sub_query = 'regexp_replace(' . $element_table_alias . '.' . $element->element_name . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
+								}
+								else {
+									$regexp_sub_query = 'regexp_replace(' . $regexp_sub_query . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
+								}
+							}
+						}
+
+						$query .= $regexp_sub_query . ') AS ' . $element->tab_name . '___' . $element->element_name;
+						break;
 					case 'birthday':
 						if ($is_repeat) {
 							$query            .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d\') AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
@@ -4425,7 +4458,16 @@ class EmundusModelFiles extends JModelLegacy
 		if ($rawValue) {
 			$format = ValueFormatEnum::RAW;
 		}
-		return $helper->getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat, $parent_row_id, $format);
+
+        if ($elt['plugin'] == 'date') {
+            $date_form_format = $params->date_form_format;
+        } else if ($elt['plugin'] == 'jdate') {
+            $date_form_format = $params->jdate_form_format;
+        } else {
+            $date_form_format = '';
+        }
+
+		return $helper->getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat, $parent_row_id, $format, $date_form_format);
 	}
 
 	/**
@@ -5817,8 +5859,6 @@ class EmundusModelFiles extends JModelLegacy
 					}
 				}
 
-
-
 				if (!empty($eval_steps) && (!empty($eval_steps['tables']) || !empty($eval_steps['groups']) || !empty($eval_steps['elements']))) {
 					$elements = [
 						['fids' => $eval_steps['tables'], 'gids' => $eval_steps['groups'], 'eids' => $eval_steps['elements']]
@@ -5995,14 +6035,20 @@ class EmundusModelFiles extends JModelLegacy
 	 * @param $attachids
 	 * @param $options
 	 * @param $pdf_data
+	 * @param int|null $current_user_id
 	 *
 	 * @return array
 	 * @throws \Gotenberg\Exceptions\GotenbergApiErrored
 	 */
-	public function generatePDF($validFnums, $file, $totalfile = 1, $start = 0, $forms = 0, $attachment = 0, $assessment = 0, $decision = 0, $admission = 0, $ids = null, $formid = null, $attachids = null, $options = null, $pdf_data = [])
+	public function generatePDF($validFnums, $file, $totalfile = 1, $start = 0, $forms = 0, $attachment = 0, $assessment = 0, $decision = 0, $admission = 0, $ids = null, $formid = null, $attachids = null, $options = null, $pdf_data = [], ?int $current_user_id = null)
 	{
 		$response_status = false;
 		$dataresult = array();
+
+		if (empty($current_user_id))
+		{
+			$current_user_id = $this->app->getIdentity()->id;
+		}
 
 		if (!empty($validFnums) && !empty($file)) {
 			if (!class_exists('EmundusHelperExport'))
@@ -6012,12 +6058,12 @@ class EmundusModelFiles extends JModelLegacy
 
 			$eMConfig = ComponentHelper::getParams('com_emundus');
 
-			$formids    = explode(',', $formid);
+			$formids    = !empty($formid) ? explode(',', $formid) : [];
 			if (!is_array($attachids)) {
-				$attachids = explode(',', $attachids);
+				$attachids = !empty($attachids) ? explode(',', $attachids) : [];
 			}
 			if(!is_array($options)) {
-				$options = explode(',', $options);
+				$options = !empty($options) ? explode(',', $options) : [];
 			}
 
 			$fnumsInfo = $this->getFnumsInfos($validFnums);
@@ -6054,7 +6100,7 @@ class EmundusModelFiles extends JModelLegacy
 			}
 
 			for ($i = $start; $i <= $totalfile; $i++) {
-				$fnum = $validFnums[$i];
+				$fnum = $validFnums[$i] ?? null;
 				if (is_numeric($fnum) && !empty($fnum)) {
 					if (isset($forms)) {
 						$forms_to_export = array();
@@ -6078,7 +6124,7 @@ class EmundusModelFiles extends JModelLegacy
 							$infos = $m_profile->getFnumDetails($fnum);
 							$campaign_id = $infos['campaign_id'];
 
-							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $pdf_data, in_array("upload", $options));
+							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $pdf_data, in_array("upload", $options), '', $current_user_id);
 						}
 					}
 
@@ -6093,14 +6139,13 @@ class EmundusModelFiles extends JModelLegacy
 							}
 						}
 						if ($attachment || !empty($attachment_to_export)) {
-							$files = $m_application->getAttachmentsByFnum($fnum, $ids, $attachment_to_export);
+							$files = $m_application->getAttachmentsByFnum($fnum, $ids, $attachment_to_export, null, $current_user_id);
 							$files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
 						}
 					}
 
-					EmundusModelLogs::log($this->app->getIdentity()->id, (int) $fnumsInfo[$fnum]['applicant_id'], $fnum, 8, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_PDF');
+					EmundusModelLogs::log($current_user_id, (int) $fnumsInfo[$fnum]['applicant_id'], $fnum, 8, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_PDF');
 				}
-
 			}
 			$start = $i;
 
@@ -6111,10 +6156,24 @@ class EmundusModelFiles extends JModelLegacy
 
 				$start = $i;
 
+				$app = Factory::getApplication();
+				$config = $app->getConfig();
+				$siteurl = $config->get('live_site');
+
+				if (empty($siteurl)) {
+					if ($app->isClient('site')) {
+						$base_url = Uri::base();
+					} else if ($app->isClient('administrator')) {
+						$base_url = Uri::root();
+					}
+				} else {
+					$base_url = $siteurl;
+				}
+
 				$dataresult = [
 					'start' => $start, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
 					'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
+					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=> $base_url, 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
 				];
 				$response_status = true;
 			}
@@ -6171,7 +6230,7 @@ class EmundusModelFiles extends JModelLegacy
 				$dataresult = [
 					'start' => $start, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
 					'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
+					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
 				];
 				$response_status = true;
 			}
@@ -6181,7 +6240,7 @@ class EmundusModelFiles extends JModelLegacy
 				$dataresult = [
 					'start' => $start, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
 					'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
+					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
 				];
 			}
 		}

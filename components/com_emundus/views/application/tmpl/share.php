@@ -7,10 +7,21 @@
  */
 
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
+
+$actionRepository = new ActionRepository();
+$accessFileGroupsAction = $actionRepository->getByName('access_file');
+$accessFileUsersAction = $actionRepository->getByName('access_file_users');
+
+$canDeleteAccessGroups = EmundusHelperAccess::asAccessAction($accessFileGroupsAction->getId(), CrudEnum::DELETE->value, $this->_user->id, $this->fnum);
+$canUpdateAccessGroups = EmundusHelperAccess::asAccessAction($accessFileGroupsAction->getId(), CrudEnum::UPDATE->value, $this->_user->id, $this->fnum);
+$canDeleteAccessUsers = EmundusHelperAccess::asAccessAction($accessFileUsersAction->getId(), CrudEnum::DELETE->value, $this->_user->id, $this->fnum);
+$canUpdateAccessUsers = EmundusHelperAccess::asAccessAction($accessFileUsersAction->getId(), CrudEnum::UPDATE->value, $this->_user->id, $this->fnum);
 
 ?>
 
-<?php if (!empty($this->access['groups'])): ?>
+<?php if (!empty($this->access['groups']) && EmundusHelperAccess::asAccessAction($accessFileGroupsAction->getId(), CrudEnum::READ->value, $this->_user->id, $this->fnum)) : ?>
     <div class="row">
         <div class="panel panel-default widget em-container-share">
             <div class="panel-heading em-container-share-heading !tw-bg-profile-full">
@@ -40,7 +51,7 @@ use Joomla\CMS\Language\Text;
                                 <tr>
                                     <td class="em-flex-row em-flex-space-between">
                                         <span><?= $groups['gname']?></span>
-										<?php if ($groups['isAssoc'] && EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $this->fnum)) :?>
+										<?php if ($groups['isAssoc'] && $canDeleteAccessGroups) :?>
 											<?php if($groups['isACL']):?>
                                                 <a class="em-flex-row em-del-access" href="index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=groups">
                                                     <span class="material-symbols-outlined">autorenew</span>
@@ -91,7 +102,7 @@ use Joomla\CMS\Language\Text;
 											foreach($cruds as $crud) {
 												$td = '';
 												if ($default_action[$crud] == 1) {
-													if ($this->canUpdateAccess) {
+													if ($canUpdateAccessGroups) {
 														$td .= '<td class="can-update" id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
 													} else {
 														$td .= '<td id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
@@ -126,7 +137,7 @@ use Joomla\CMS\Language\Text;
         </div>
     </div>
 <?php endif;?>
-<?php if(!empty($this->access['users'])):?>
+<?php if(!empty($this->access['users']) && EmundusHelperAccess::asAccessAction($accessFileUsersAction->getId(), CrudEnum::READ->value, $this->_user->id, $this->fnum)):?>
     <div class="row em-w-100 em-p-16" style="display: flex">
         <div class="table-left em-container-share-table-left">
             <table class="table table-bordered" id="users-table">
@@ -143,7 +154,7 @@ use Joomla\CMS\Language\Text;
                     <tr>
                         <td class="em-flex-row em-flex-space-between">
                             <span><?= ucfirst($groups['uname']) ?></span>
-							<?php if(EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $this->fnum)):?>
+							<?php if($canDeleteAccessUsers):?>
                                 <a class="em-flex-row em-del-access" href = "/index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=users">
                                     <span class="material-symbols-outlined">close</span>
                                 </a>
@@ -188,7 +199,7 @@ use Joomla\CMS\Language\Text;
 								$td = '';
 								if ($default_action['status'] == 1) {
 									if ($default_action[$crud] == 1) {
-										if ($this->canUpdateAccess) {
+										if ($canUpdateAccessUsers) {
 											$td .= '<td class="can-update" id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';
 										} else {
 											$td .= '<td id="' . $gid . '-' . $def_action_id . '-' . $crud . '" state="' . $groups['actions'][$def_action_id][$crud] . '">';

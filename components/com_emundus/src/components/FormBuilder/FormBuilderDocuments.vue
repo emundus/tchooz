@@ -6,7 +6,13 @@
 			@click="$emit('show-documents')"
 		>
 			<span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_DOCUMENTS') }}</span>
-			<span id="add-document" class="material-symbols-outlined tw-cursor-pointer" @click="createDocument">add</span>
+			<span
+				v-if="canUpdate"
+				id="add-document"
+				class="material-symbols-outlined tw-cursor-pointer"
+				@click="createDocument"
+				>add</span
+			>
 		</div>
 		<div v-for="document in documents" :key="document.id" @click="$emit('show-documents')" class="tw-p-4">
 			<p class="document-label">{{ document.label }}</p>
@@ -29,6 +35,10 @@ export default {
 		campaign_id: {
 			type: Number,
 			required: true,
+		},
+		canUpdate: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	mixins: [errors],

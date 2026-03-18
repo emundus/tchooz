@@ -45,6 +45,22 @@
 					</div>
 				</div>
 
+				<div v-if="elementPreoperatorParameters.length > 0" class="tw-mt-4">
+					<Parameter
+						:parameter-object="field"
+						v-for="field in elementPreoperatorParameters"
+						:key="field.reload + field.param"
+						class="tw-mr-4"
+						:class="{
+							'tw-col-span-2': field.param === 'target' || field.param === 'value',
+							'tw-col-span-1': field.param === 'type' || field.param === 'operator',
+						}"
+						@valueUpdated="onParameterValueUpdated"
+						:asyncAttributes="field.multiselectOptions ? field.multiselectOptions.asyncAttributes : []"
+						:multiselectOptions="field.multiselectOptions ? field.multiselectOptions : null"
+					/>
+				</div>
+
 				<div class="tw-mt-4">
 					<div class="tw-flex tw-items-center tw-gap-3">
 						<span
@@ -94,15 +110,15 @@ import formBuilderMixin from '@/mixins/formbuilder.js';
 import globalMixin from '@/mixins/mixin.js';
 import fabrikMixin from '@/mixins/fabrik.js';
 import errorMixin from '@/mixins/errors.js';
-
-import formBuilderService from '@/services/formbuilder.js';
-import { useGlobalStore } from '@/stores/global.js';
+import transformIntoParameterField from '@/mixins/transformIntoParameterField.js';
 
 import Multiselect from 'vue-multiselect';
 import { watch } from 'vue';
+import Parameter from '@/components/Utils/Parameter.vue';
 
 export default {
 	components: {
+		Parameter,
 		Multiselect,
 	},
 	props: {
@@ -131,7 +147,7 @@ export default {
 			default: false,
 		},
 	},
-	mixins: [formBuilderMixin, globalMixin, errorMixin, fabrikMixin],
+	mixins: [formBuilderMixin, globalMixin, errorMixin, fabrikMixin, transformIntoParameterField],
 	data() {
 		return {
 			loading: false,
@@ -195,8 +211,6 @@ export default {
 		}
 
 		if (this.page.id) {
-			console.log(this.conditionData.field);
-			console.log(this.elementsOptions);
 			this.conditionData.field = this.elementsOptions.find((element) => element.name === this.conditionData.field);
 			if (this.conditionData.field) {
 				this.defineOptions(this.conditionData.field);
@@ -298,6 +312,13 @@ export default {
 				}
 			}
 		},
+		onParameterValueUpdated(param, oldValue, newValue) {
+			if (!this.condition.params || typeof this.condition.params !== 'object') {
+				this.condition.params = {};
+			}
+
+			this.condition.params[param.param] = param.value;
+		},
 	},
 	watch: {
 		'conditionData.type': function (newType, oldType) {
@@ -316,6 +337,39 @@ export default {
 	computed: {
 		conditionLabel() {
 			return `-- ${this.index + 1} --`;
+		},
+		elementPreoperatorParameters() {
+			let parameters = [];
+
+			if (this.conditionData.field) {
+				if (this.conditionData.field.plugin === 'orderlist') {
+					let value = this.condition.params && this.condition.params.option ? this.condition.params.option : null;
+					const choices = [];
+
+					this.conditionData.field.params.sub_options.sub_values.forEach((value, index) => {
+						choices.push({
+							value: value,
+							label: this.conditionData.field.params.sub_options.sub_labels[index],
+						});
+					});
+
+					parameters.push(
+						this.fromFieldEntityToParameter(
+							{
+								name: 'option',
+								label: this.translate('COM_EMUNDUS_FORMBUILDER_RULE_ORDERLIST_OPTION'),
+								required: true,
+								type: 'choice',
+								choices: choices,
+								multiple: false,
+							},
+							value,
+						),
+					);
+				}
+			}
+
+			return parameters;
 		},
 	},
 };

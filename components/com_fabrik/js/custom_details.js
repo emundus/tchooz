@@ -214,7 +214,7 @@ requirejs(['fab/fabrik'], function () {
     if (!form_loaded) {
       setTimeout(() => {
         fetch('/index.php?option=com_emundus&controller=form&task=getjsconditions&form_id=' + form.id).then(response => response.json()).then(data => {
-          if (data.status) {
+          if (data.status && data.data && data.data.conditions) {
             js_rules = data.data.conditions;
 
             form.elements.forEach(function (element) {

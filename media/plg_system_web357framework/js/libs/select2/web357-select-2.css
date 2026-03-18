@@ -1,0 +1,102 @@
+/**
+* Select2 Input
+*/
+/* select2 container: for Joomla 3 */
+.select2.web357-select2-container.web357-j3x {
+    --selected-results-background-color: #3071A9;
+    max-width: 220px;
+}
+
+/* background box */
+.select2.web357-select2-container .select2-selection {
+    background-color: var(--form-control-bg, #fff);
+    border: var(--form-control-border, 1px solid #ccc);
+}
+
+
+/* background box: for Joomla >=4 */
+.select2.web357-select2-container:not(.web357-j3x) .select2-selection {
+    padding: 0 0.7rem;
+    min-height: 42px;
+}
+
+/* search field: for Joomla >=4 */
+.select2.web357-select2-container:not(.web357-j3x) textarea.select2-search__field {
+    margin: 0;
+    padding: 5px;
+    height: 37px;
+    line-height: 34px;
+}
+
+/* background box: for Joomla 3 */
+.select2.web357-select2-container.web357-j3x textarea.select2-search__field {
+    margin: 0;
+    padding: 0 5px;
+    height: 25px;
+    line-height: 26px;
+}
+
+
+/**
+* Select2 Input selected options
+*/
+/* selected options list */
+.select2.web357-select2-container ul {
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* selected option box */
+.select2.web357-select2-container .select2-selection__choice {
+    border-color: var(--selected-results-background-color, #0b55c4);
+    background-color: var(--selected-results-background-color, #0b55c4);
+
+    color: #fff;
+    width: auto; /* joomla4 & joomla5 responsive fix */
+    display: inline-block;
+    margin: 3px;
+}
+
+/* remove selected option button */
+.select2.web357-select2-container .select2-selection__choice__remove,
+.select2.web357-select2-container .select2-selection__choice__remove:hover {
+    border-color: var(--selected-results-background-color, #0b55c4);
+    background-color: var(--selected-results-background-color, #0b55c4);
+    color: #fff;
+}
+
+/* remove selected option button: for Joomla 3 */
+.select2.web357-select2-container.web357-j3x .select2-selection__choice__remove {
+    line-height: 16px; /* joomla3:compatibility */
+}
+
+/**
+* Select2 Dropdown
+*/
+.web357-select2-dropdown {
+    background-color: var(--form-control-bg, #fff);
+    border: var(--form-control-border, 1px solid #ccc);
+}
+
+.web357-select2-dropdown.web357-j3x {
+    --selected-results-background-color: #3071A9;
+}
+
+/**
+* Select2 Dropdown Choices
+*/
+/* select2 choice hovered */
+.web357-select2-dropdown .select2-results__option--highlighted.select2-results__option--selectable {
+    border-color: #6F9BDC;
+    background-color: #6F9BDC;
+    color: #fff;
+}
+
+/* select2 choice selected */
+.web357-select2-dropdown .select2-results__option--selected,
+.web357-select2-dropdown .select2-results__option--selected:hover {
+    border-color: var(--selected-results-background-color, #0b55c4);
+    background-color: var(--selected-results-background-color, #0b55c4);
+    color: #fff;
+}
+

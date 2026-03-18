@@ -17,7 +17,7 @@ class DateComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers DateComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\DateComparator::supports
 	 * @return void
 	 */
 	public function testSupportsWithValidDates(): void
@@ -26,7 +26,7 @@ class DateComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers DateComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\DateComparator::supports
 	 * @return void
 	 */
 	public function testSupportsWithInvalidValues(): void
@@ -35,7 +35,7 @@ class DateComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers DateComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\DateComparator::supports
 	 * @return void
 	 */
 	public function testEqualsDates(): void
@@ -46,7 +46,7 @@ class DateComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers DateComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\DateComparator::supports
 	 * @return void
 	 */
 	public function testNotEqualsDates(): void
@@ -57,7 +57,7 @@ class DateComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers DateComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\DateComparator::supports
 	 * @return void
 	 */
 	public function testGreaterThanDate(): void
@@ -68,7 +68,7 @@ class DateComparatorTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers DateComparator::supports
+	 * @covers \Tchooz\Entities\Automation\Comparators\DateComparator::supports
 	 * @return void
 	 */
 	public function testLessThanDate(): void

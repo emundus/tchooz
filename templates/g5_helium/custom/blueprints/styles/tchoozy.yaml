@@ -147,3 +147,12 @@ form:
       options:
         block: Enabled
         none: Disabled
+
+    error-page:
+      type: select.select
+      label: Error pages
+      default: block
+      description: Pages d'erreur (404, 500...)
+      options:
+        block: Enabled
+        none: Disabled

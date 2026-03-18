@@ -63,7 +63,6 @@ class ChoiceFieldFactory
 				}
 			}
 
-
 			$options[] = new ChoiceFieldValue($id, $label);
 		}
 

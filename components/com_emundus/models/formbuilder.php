@@ -449,10 +449,13 @@ class EmundusModelFormbuilder extends ListModel
 				$this->db->setQuery($query);
 				$this->db->execute();
 			}
-
 			//
 
+			$hCache = new EmundusHelperCache('com_emundus.menus');
+			$hCache->clean();
+
 			return array(
+				'code'          => 200,
 				'status'        => true,
 				'msg'           => 'SUCCESS',
 				'id'            => $formid,
@@ -500,7 +503,7 @@ class EmundusModelFormbuilder extends ListModel
 					'label'               => 'FORM_' . $prid,
 					'record_in_database'  => 1,
 					'error'               => 'FORM_ERROR',
-					'intro'               => '<p>' . 'FORM_' . $prid . '_INTRO</p>',
+					'intro'               => 'FORM_' . $prid . '_INTRO',
 					'created'             => gmdate('Y-m-d h:i:s'),
 					'created_by'          => $user->id,
 					'created_by_alias'    => $user->username,
@@ -529,7 +532,7 @@ class EmundusModelFormbuilder extends ListModel
 					$query->clear()
 						->update($this->db->quoteName('#__fabrik_forms'))
 						->set($this->db->quoteName('label') . ' = ' . $this->db->quote('FORM_' . $prid . '_' . $form_id))
-						->set($this->db->quoteName('intro') . ' = ' . $this->db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $form_id . '</p>'));
+						->set($this->db->quoteName('intro') . ' = ' . $this->db->quote('FORM_' . $form_id . '_INTRO'));
 					$query->where($this->db->quoteName('id') . ' = ' . $this->db->quote($form_id));
 					$this->db->setQuery($query);
 					$this->db->execute();
@@ -539,7 +542,7 @@ class EmundusModelFormbuilder extends ListModel
 
 					if (!empty($intro) && is_array($intro))
 					{
-						LanguageFactory::translate('FORM_' . $prid . '_INTRO_' . $form_id, $intro, 'fabrik_forms', $form_id, 'intro', $user->id);
+						LanguageFactory::translate('FORM_' . $form_id . '_INTRO', $intro, 'fabrik_forms', $form_id, 'intro', $user->id);
 					}
 				}
 			}
@@ -982,6 +985,7 @@ class EmundusModelFormbuilder extends ListModel
 
 	function deleteMenu($menu)
 	{
+		$deleted = false;
 		$query = $this->db->getQuery(true);
 
 		try
@@ -992,14 +996,20 @@ class EmundusModelFormbuilder extends ListModel
 				->where($this->db->quoteName('id') . ' = ' . (int) $menu);
 			$this->db->setQuery($query);
 
-			return $this->db->execute();
+			if($deleted = $this->db->execute())
+			{
+				$hCache = new EmundusHelperCache('com_emundus.menus');
+				$hCache->clean();
+			}
 		}
 		catch (Exception $e)
 		{
 			Log::add('component/com_emundus/models/formbuilder | Error at move to trash the menu with the fabrik_form ' . $menu . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
-			return false;
+			$deleted = false;
 		}
+
+		return $deleted;
 	}
 
 	function saveAsTemplate($menu, $template)
@@ -1701,7 +1711,7 @@ class EmundusModelFormbuilder extends ListModel
 						//
 
 						// Init a default subvalue for checkboxes
-						if ($plugin === 'checkbox' || $plugin === 'radiobutton' || $plugin === 'dropdown')
+						if ($plugin === 'checkbox' || $plugin === 'radiobutton' || $plugin === 'dropdown' || $plugin === 'orderlist')
 						{
 							$sub_values = [];
 							$sub_labels = [];
@@ -2181,7 +2191,7 @@ class EmundusModelFormbuilder extends ListModel
 				$lang = substr($lang->getTag(), 0, 2);
 			}
 
-			if($element['label'] != $dbElement->label)
+			if ($element['label'] != $dbElement->label)
 			{
 				$key                = 'ELEMENT_' . $element['id'] . '_LABEL';
 				$languageRepository = new LanguageRepository();
@@ -2263,7 +2273,7 @@ class EmundusModelFormbuilder extends ListModel
 			//
 
 			// PARAMETERS BY PLUGIN
-			if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown' || $element['plugin'] === 'databasejoin')
+			if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown' || $element['plugin'] === 'databasejoin' || $element['plugin'] === 'orderlist')
 			{
 				$old_params = json_decode($dbElement->params, true);
 
@@ -2645,7 +2655,7 @@ class EmundusModelFormbuilder extends ListModel
 			{
 				$show_in_list_summary = $element['show_in_list_summary'] ? 1 : 0;
 			}
-			
+
 			// Update the element
 			$fields = array(
 				$this->db->quoteName('plugin') . ' = ' . $this->db->quote($element['plugin']),
@@ -2666,11 +2676,11 @@ class EmundusModelFormbuilder extends ListModel
 				{
 					require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
 				}
-				$htmlSanitizer             = HtmlSanitizerSingleton::getInstance();
+				$htmlSanitizer      = HtmlSanitizerSingleton::getInstance();
 				$element['default'] = $htmlSanitizer->sanitize($element['default']);
 
 				// Update translation of default label
-				$defaultKey                = 'ELEMENT_' . $element['id'] . '_DEFAULT';
+				$defaultKey         = 'ELEMENT_' . $element['id'] . '_DEFAULT';
 				$languageRepository = new LanguageRepository();
 				if (!empty($dbElement->default_text))
 				{
@@ -2920,6 +2930,7 @@ class EmundusModelFormbuilder extends ListModel
 			->set('intro = ' . $this->db->quote($introKey))
 			->where('id = ' . $this->db->quote($form_id));
 		$this->db->setQuery($query);
+
 		return $this->db->execute();
 	}
 
@@ -3454,11 +3465,12 @@ class EmundusModelFormbuilder extends ListModel
 
 		if (!empty($formid) && !empty($prid))
 		{
-			if(empty($userId))
+			if (empty($userId))
 			{
 				$user = Factory::getApplication()->getIdentity();
 			}
-			else {
+			else
+			{
 				$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
 			}
 
@@ -3481,8 +3493,8 @@ class EmundusModelFormbuilder extends ListModel
 			$groups = $form->getGroups();
 
 			// Prepare languages
-			$model_prefix   = 'Model - ';
-			$languages      = LanguageHelper::getLanguages();
+			$model_prefix = 'Model - ';
+			$languages    = LanguageHelper::getLanguages();
 
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
 			$falang = new EmundusModelFalang();
@@ -3589,6 +3601,7 @@ class EmundusModelFormbuilder extends ListModel
 							$response['link']   = 'index.php?option=com_fabrik&view=form&formid=' . $newformid;
 							$response['rgt']    = array_values($rgts)[strval(sizeof($rgts) - 1)] + 2;
 							$response['status'] = true;
+							$response['code']   = 200;
 						}
 						else
 						{
@@ -3616,6 +3629,9 @@ class EmundusModelFormbuilder extends ListModel
 			}
 		}
 
+		$hCache = new EmundusHelperCache('com_emundus.menus');
+		$hCache->clean();
+
 		return $response;
 	}
 
@@ -3633,7 +3649,7 @@ class EmundusModelFormbuilder extends ListModel
 		foreach ($languages as $language)
 		{
 			$translated = LanguageFactory::getTranslation($key, $language->lang_code);
-			if(is_null($translated))
+			if (is_null($translated))
 			{
 				$translated = '';
 			}
@@ -4662,10 +4678,10 @@ class EmundusModelFormbuilder extends ListModel
 	}
 
 	/**
-	 * @deprecated
 	 * @param   string  $text
 	 *
 	 * @return bool
+	 * @deprecated
 	 */
 	public function deleteTranslation(string $text): bool
 	{

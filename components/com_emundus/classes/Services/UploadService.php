@@ -14,6 +14,7 @@ use enshrined\svgSanitize\Sanitizer;
 use RuntimeException;
 use InvalidArgumentException;
 use Tchooz\Enums\Upload\UploadFormatEnum;
+use Tchooz\Services\FileSecurityService;
 
 class UploadService
 {
@@ -100,6 +101,12 @@ class UploadService
 			$this->stripJpegExif($file['tmp_name']);
 		}
 
+		// Scan file content for dangerous patterns (JS in PDF, macros in Office, etc.)
+		$securityService = new FileSecurityService();
+		if ($securityService->containsDangerousContent($file['tmp_name'], $ext)) {
+			throw new RuntimeException('File contains potentially dangerous active content (scripts, macros).');
+		}
+
 		if (!is_dir($this->uploadDir) && !mkdir($this->uploadDir, 0755, true) && !is_dir($this->uploadDir)) {
 			throw new RuntimeException('Failed to create upload directory.');
 		}
@@ -145,6 +152,7 @@ class UploadService
 
 		// fallback: basic sanitization
 		$name = preg_replace('/[^\w\-. ]+/', '', $name);
+		$name = preg_replace('/\s+/', '-', $name);
 		$name = trim($name);
 		return $name === '' ? 'file' : $name;
 	}

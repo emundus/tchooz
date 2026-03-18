@@ -34,7 +34,7 @@ class TransactionRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TransactionRepository::getTransactions
+	 * @covers \Tchooz\Repositories\Payment\TransactionRepository::getTransactions
 	 * @return void
 	 */
 	public function testGetTransactions()
@@ -212,7 +212,7 @@ class TransactionRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TransactionRepository::saveTransaction
+	 * @covers \Tchooz\Repositories\Payment\TransactionRepository::saveTransaction
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -242,7 +242,7 @@ class TransactionRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TransactionRepository::getById
+	 * @covers \Tchooz\Repositories\Payment\TransactionRepository::getById
 	 * @return void
 	 */
 	public function testGetById()
@@ -286,7 +286,7 @@ class TransactionRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TransactionRepository::prepareExport
+	 * @covers \Tchooz\Repositories\Payment\TransactionRepository::prepareExport
 	 * @return void
 	 */
 	public function testPrepareExport()

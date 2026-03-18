@@ -321,12 +321,25 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
 	{
 		$valid = true;
 
-
 		$name           = $this->getHTMLId($repeatCounter);
 		$hiddenElements = ArrayHelper::getValue($this->getFormModel()->formData, 'hiddenElements', '[]');
 		$hiddenElements = json_decode($hiddenElements);
 
-		if (!in_array($name, $hiddenElements))
+		$shouldValidate = !in_array($name, $hiddenElements);
+		// Element can be repeated and current iteration can be deleted so check if the element with this repeat counter is in formData
+		if($shouldValidate && $this->getGroup()->canRepeat() && $repeatCounter > 0)
+		{
+			$fullName = $this->getFullName(true, false);
+			if(isset($this->getFormModel()->formData[$fullName]) && is_array($this->getFormModel()->formData[$fullName]) && array_key_exists($repeatCounter, $this->getFormModel()->formData[$fullName]))
+			{
+				$shouldValidate = true;
+			}
+			else {
+				$shouldValidate = false;
+			}
+		}
+
+		if ($shouldValidate)
 		{
 			$this->selectedCurrencies = $this->getSelectedCurrencies();
 			$selectedIso3Front        = $data['selectedIso3Front'];

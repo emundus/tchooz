@@ -139,6 +139,8 @@ Text::script('COM_EMUNDUS_ONBOARD_OK');
 Text::script('COM_EMUNDUS_ONBOARD_CANCEL');
 Text::script('COM_EMUNDUS_ACTIONS_DELETE');
 
+Text::script('COM_FABRIK_NO_REPEAT_GROUP_DATA');
+
 if ($pageClass !== '') :
     echo '<div class="' . $pageClass . '">';
 endif;
@@ -340,7 +342,7 @@ if (empty($fnum))
     $fnum = $app->getSession()->get('emundusUser')->fnum;
 }
 
-if ($this->display_comments)
+if ($this->display_comments && !empty($fnum))
 {
     Text::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT');
     Text::script('COM_EMUNDUS_COMMENTS_ERROR_PLEASE_COMPLETE');

@@ -340,6 +340,9 @@ class EmundusModelWorkflow extends JModelList
 								$this->saveChoicesStepRules($step);
 							}
 						}
+
+						// purge cache of 'workflow_programs'
+						$this->h_cache->set('workflow_programs', null);
 					}
 					catch (Exception $e)
 					{
@@ -551,7 +554,7 @@ class EmundusModelWorkflow extends JModelList
 	 *
 	 * @return array
 	 */
-	public function getWorkflows($ids = [], $limit = 0, $page = 0, $programs = [], $order_by = 'esw.id', $order = 'DESC', $search = ''): array
+	public function getWorkflows($ids = [], $limit = 0, $page = 0, $programs = [], $order_by = 'esw.id', $order = 'DESC', $search = '', $displayNoAssociated = false): array
 	{
 		$workflows = [];
 
@@ -569,7 +572,13 @@ class EmundusModelWorkflow extends JModelList
 
 		if (!empty($programs) && !in_array('all', $programs))
 		{
-			$query->where($this->db->quoteName('eswp.program_id') . ' IN (' . implode(',', $programs) . ')');
+			if($displayNoAssociated)
+			{
+				$query->where('(' . $this->db->quoteName('eswp.program_id') . ' IN (' . implode(',', $programs) . ') OR ' . $this->db->quoteName('eswp.program_id') . ' IS NULL)');
+			}
+			else {
+				$query->where($this->db->quoteName('eswp.program_id') . ' IN (' . implode(',', $programs) . ')');
+			}
 		}
 
 		if (!empty($search))
@@ -1127,7 +1136,7 @@ class EmundusModelWorkflow extends JModelList
 	{
 		$step = null;
 
-		if (!empty($file_identifier) && in_array($column, ['fnum', 'id']))
+		if (!empty($file_identifier) && in_array($column, ['fnum', 'id']) && !empty($types))
 		{
 			$query = $this->db->createQuery();
 
@@ -1175,7 +1184,7 @@ class EmundusModelWorkflow extends JModelList
 						$campaignRepository = new CampaignRepository();
 						$campaign           = $campaignRepository->getById($file_infos['campaign_id']);
 						$parent_campaigns   = !empty($campaign->getParent()) ? [$campaign->getParent()->getId()] : [];
-						$linked_campaigns   = $campaignRepository->getAllCampaigns('ASC', '', 0, 0, 't.id', null, $file_infos['campaign_id'], null, $parent_campaigns);
+						$linked_campaigns   = $campaignRepository->getAllCampaigns('ASC', '', 0, 0, 'esc.id', null, $file_infos['campaign_id'], null, null, null, [], $parent_campaigns);
 
 						if ($linked_campaigns->getTotalItems() > 0)
 						{
@@ -2205,7 +2214,7 @@ class EmundusModelWorkflow extends JModelList
 	{
 		$step = null;
 
-		if (!empty($fnum))
+		if (!empty($fnum) && !empty($this->paymentStepTypeIds))
 		{
 			$current_step = $this->getCurrentWorkflowStepFromFile($fnum, $this->paymentStepTypeIds);
 
@@ -2299,29 +2308,32 @@ class EmundusModelWorkflow extends JModelList
 			$this->db->setQuery($query);
 			$choices_step_type = $this->db->loadResult();
 
-			$current_step = $this->getCurrentWorkflowStepFromFile($fnum, [$choices_step_type]);
-
-			if (empty($current_step) && !$only_current)
+			if(!empty($choices_step_type))
 			{
-				// TODO: get last applicant payment step
-				// We should determine based on the current step of the applicant what is the last payment step is had accessed
-				$workflow_data = $this->getWorkflowByFnum($fnum);
+				$current_step = $this->getCurrentWorkflowStepFromFile($fnum, [$choices_step_type]);
 
-				if (!empty($workflow_data['steps']))
+				if (empty($current_step) && !$only_current)
 				{
-					foreach ($workflow_data['steps'] as $workflow_step)
+					// TODO: get last applicant payment step
+					// We should determine based on the current step of the applicant what is the last payment step is had accessed
+					$workflow_data = $this->getWorkflowByFnum($fnum);
+
+					if (!empty($workflow_data['steps']))
 					{
-						if ($workflow_step->type === $choices_step_type)
+						foreach ($workflow_data['steps'] as $workflow_step)
 						{
-							$step = $workflow_step;
-							break;
+							if ($workflow_step->type === $choices_step_type)
+							{
+								$step = $workflow_step;
+								break;
+							}
 						}
 					}
 				}
-			}
-			else
-			{
-				$step = $current_step;
+				else
+				{
+					$step = $current_step;
+				}
 			}
 		}
 

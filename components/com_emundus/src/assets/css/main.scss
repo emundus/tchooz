@@ -74,7 +74,9 @@
 .view-task.layout-history #g-container-main .g-container,
 .view-export_select_columns.layout-aliases #g-container-main .g-container,
 .view-crc #g-container-main .g-container,
-.view-export_select_columns.layout-exports #g-container-main .g-container {
+.view-export_select_columns.layout-exports #g-container-main .g-container,
+.view-application_choices.layout-list #g-container-main .g-container,
+.view-users.layout-exceptions #g-container-main .g-container {
 	width: auto;
 	position: relative;
 }
@@ -94,7 +96,9 @@
 .view-export_select_columns.layout-aliases #g-container-main,
 .view-automation #g-container-main,
 .view-task.layout-history #g-container-main,
-.view-export_select_columns.layout-exports #g-container-main {
+.view-export_select_columns.layout-exports #g-container-main,
+.view-application_choices.layout-list #g-container-main,
+.view-users.layout-exceptions #g-container-main .g-container {
 	padding-left: 76px;
 }
 

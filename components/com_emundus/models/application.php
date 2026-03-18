@@ -68,6 +68,8 @@ class EmundusModelApplication extends ListModel
 	 */
 	protected $_db;
 
+	private ?HtmlSanitizerSingleton $sanitizer;
+
 	/**
 	 * Constructor
 	 *
@@ -93,6 +95,11 @@ class EmundusModelApplication extends ListModel
 
 		$this->_user   = $session->get('emundusUser');
 		$this->locales = substr($language->getTag(), 0, 2);
+
+		if (!class_exists('HtmlSanitizerSingleton')) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/html.php');
+		}
+		$this->sanitizer = HtmlSanitizerSingleton::getInstance();
 	}
 
 	public function getApplicantInfos($aid, $param)
@@ -2530,6 +2537,28 @@ class EmundusModelApplication extends ListModel
 															$elt = "";
 														}
 													}
+													else if ($elements[$j]->plugin == 'orderlist')
+													{
+														$elt = '';
+														if (!empty($r_elt)) {
+															$orderedValues = explode(',', $r_elt);
+															$orderedValues = array_map(function($value) {
+																return trim($value, '"');
+															}, $orderedValues);
+
+															$elt = '<ol>';
+															foreach ($orderedValues as $value) {
+																$index = array_search($value, $params->sub_options->sub_values);
+																if (strlen($index) > 0) {
+																	$elt .= '<li>' . Text::_($params->sub_options->sub_labels[$index]) . '</li>';
+																}
+																elseif (!empty($params->dropdown_populate)) {
+																	$elt .= '<li>' . $value . '</li>';
+																}
+															}
+															$elt .= '</ol>';
+														}
+													}
 													elseif ($elements[$j]->plugin == 'internalid') {
 														$elt = '';
 													}
@@ -2808,6 +2837,33 @@ class EmundusModelApplication extends ListModel
 												else {
 													$elt = "";
 												}
+											} elseif ($element->plugin === 'orderlist')
+											{
+												$params = json_decode($element->params);
+
+												if (!empty($element->content))
+												{
+													$orderedValues = explode(',', $element->content);
+													$labels = [];
+													foreach ($orderedValues as $value)
+													{
+														$value = trim($value, '"');
+														$index = array_search($value, $params->sub_options->sub_values);
+														if ($index !== false) {
+															$labels[] = Text::_($params->sub_options->sub_labels[$index]);
+														}
+														else {
+															$labels[] = $value;
+														}
+													}
+
+													$elt = '<ol>';
+													foreach ($labels as $label)
+													{
+														$elt .= '<li>' . Text::_($label) . '</li>';
+													}
+													$elt .= "</ol>";
+												}
 											}
 											elseif ($element->plugin == 'internalid') {
 												$elt = '';
@@ -2983,7 +3039,7 @@ class EmundusModelApplication extends ListModel
 		$forms     = '';
 
 		if (isset($tableuser)) {
-			$allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
+			$allowed_groups = EmundusHelperAccess::getUserFabrikGroups($current_user_id);
 
 			foreach ($tableuser as $key => $itemt) {
 				$query = $this->_db->getQuery(true);
@@ -3049,6 +3105,8 @@ class EmundusModelApplication extends ListModel
 					if (!EmundusHelperAccess::isAllowedAccessLevel($current_user_id, (int) $g_params->access)) {
 						continue;
 					}
+
+					$g_params->repeated = $g_params->repeated ?? 0;
 
 					if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
 						if(!in_array($g_params->repeat_group_show_first, $hidden_group_param_values) && !empty(Text::_($itemg->label)))
@@ -3322,6 +3380,32 @@ class EmundusModelApplication extends ListModel
 													}
 													else {
 														$elt = "";
+													}
+												}
+												elseif ($elements[$j]->plugin == 'orderlist')
+												{
+													if (!empty($r_elt))
+													{
+														$orderedValues = explode(',', $r_elt);
+														$labels = [];
+														foreach ($orderedValues as $value)
+														{
+															$value = trim($value, '"');
+															$index = array_search($value, $params->sub_options->sub_values);
+															if ($index !== false) {
+																$labels[] = Text::_($params->sub_options->sub_labels[$index]);
+															}
+															else {
+																$labels[] = $value;
+															}
+														}
+
+														$elt = '<ol>';
+														foreach ($labels as $label)
+														{
+															$elt .= '<li>' . Text::_($label) . '</li>';
+														}
+														$elt .= "</ol>";
 													}
 												}
 												elseif ($elements[$j]->plugin == 'internalid') {
@@ -3600,6 +3684,32 @@ class EmundusModelApplication extends ListModel
 														$elt = "";
 													}
 												}
+												elseif ($elements[$j]->plugin == 'orderlist')
+												{
+													if (!empty($r_elt))
+													{
+														$orderedValues = explode(',', $r_elt);
+														$labels = [];
+														foreach ($orderedValues as $value)
+														{
+															$value = trim($value, '"');
+															$index = array_search($value, $params->sub_options->sub_values);
+															if ($index !== false) {
+																$labels[] = Text::_($params->sub_options->sub_labels[$index]);
+															}
+															else {
+																$labels[] = $value;
+															}
+														}
+
+														$elt = '<ol>';
+														foreach ($labels as $label)
+														{
+															$elt .= '<li>' . Text::_($label) . '</li>';
+														}
+														$elt .= "</ol>";
+													}
+												}
 												elseif ($elements[$j]->plugin == 'internalid') {
 													$elt = '';
 												}
@@ -3842,6 +3952,32 @@ class EmundusModelApplication extends ListModel
 												}
 												else {
 													$elt = "";
+												}
+											}
+											elseif ($element->plugin === 'orderlist')
+											{
+												if (!empty($element->content))
+												{
+													$orderedValues = explode(',', $element->content);
+													$labels = [];
+													foreach ($orderedValues as $value)
+													{
+														$value = trim($value, '"');
+														$index = array_search($value, $params->sub_options->sub_values);
+														if ($index !== false) {
+															$labels[] = Text::_($params->sub_options->sub_labels[$index]);
+														}
+														else {
+															$labels[] = $value;
+														}
+													}
+
+													$elt = '<ol>';
+													foreach ($labels as $label)
+													{
+														$elt .= '<li>' . Text::_($label) . '</li>';
+													}
+													$elt .= "</ol>";
 												}
 											}
 											elseif ($element->plugin == 'internalid') {
@@ -4512,7 +4648,7 @@ class EmundusModelApplication extends ListModel
 		}
 	}
 
-	public function getAttachmentsByFnum($fnum, $ids = null, $attachment_id = null, $profile = null)
+	public function getAttachmentsByFnum($fnum, $ids = null, $attachment_id = null, $profile = null, ?int $current_user_id = null)
 	{
 		try {
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
@@ -4521,7 +4657,6 @@ class EmundusModelApplication extends ListModel
 			$m_profiles = new EmundusModelProfile;
 			$m_files    = new EmundusModelFiles;
 			$fnumInfos  = $m_files->getFnumInfos($fnum);
-
 			$profiles_by_campaign = $m_profiles->getProfilesIDByCampaign([$fnumInfos['id']]);
 
 			// TODO : Group attachments by profile and adding profile column in jos_emundus_uploads
@@ -4555,9 +4690,15 @@ class EmundusModelApplication extends ListModel
 			return false;
 		}
 
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+
+		if (empty($current_user_id))
+		{
+			$current_user_id = Factory::getApplication()->getIdentity()->id;
+		}
+
+		require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 		// Sort the docs out that are not allowed to be exported by the user.
-		$allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+		$allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($current_user_id);
 		if ($allowed_attachments !== true) {
 			foreach ($docs as $key => $doc) {
 				if (!in_array($doc->attachment_id, $allowed_attachments)) {
@@ -6952,6 +7093,14 @@ class EmundusModelApplication extends ListModel
 			try {
 				$this->_db->setQuery($query);
 				$tabs = $this->_db->loadAssocList();
+
+				if (!empty($tabs))
+				{
+					foreach ($tabs as $key => $tab)
+					{
+						$tabs[$key]['name'] = $this->sanitizer->sanitizeNoHtml($tab['name']);
+					}
+				}
 			}
 			catch (Exception $e) {
 				Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
@@ -6976,6 +7125,9 @@ class EmundusModelApplication extends ListModel
 					$owned   = $this->isTabOwnedByUser($tab->id, $user_id);
 
 					if ($owned) {
+						// sanitize name
+						$tab->name = $this->sanitizer->sanitizeNoHtml($tab->name);
+
 						$query->clear()
 							->update($this->_db->quoteName('#__emundus_campaign_candidature_tabs'))
 							->set($this->_db->quoteName('name') . ' = ' . $this->_db->quote($tab->name))

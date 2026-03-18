@@ -14,6 +14,8 @@ jimport('joomla.application.component.view');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 /**
  * View class for a list of Emundus.
@@ -37,7 +39,9 @@ class EmundusViewProgramme extends JViewLegacy
 		$this->user = $app->getIdentity();
 
 		if ($layout === 'edit') {
-			if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+			$actionRepository = new ActionRepository();
+			$programAction   = $actionRepository->getByName('program');
+			if (!EmundusHelperAccess::asAccessAction($programAction->getId(), CrudEnum::UPDATE->value, $this->user->id)) {
 				$app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
 				$app->redirect('/');
 			}

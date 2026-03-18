@@ -17,7 +17,7 @@ class TagRepositoriesTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TagRepository::getAllFabrikTags
+	 * @covers \Tchooz\Repositories\Emails\TagRepository::getAllFabrikTags
 	 * @return void
 	 */
 	public function testGetAllFabrikTags(): void
@@ -36,7 +36,7 @@ class TagRepositoriesTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TagRepository::getAllOtherTags
+	 * @covers \Tchooz\Repositories\Emails\TagRepository::getAllOtherTags
 	 * @return void
 	 */
 	public function testGetAllOtherTags(): void

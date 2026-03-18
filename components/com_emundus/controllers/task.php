@@ -136,7 +136,7 @@ class EmundusControllerTask extends BaseController
 				$serializedTask          = $task->serialize();
 				$serializedTask['metadata'] = null; // We don't want to send all the metadata to the frontend, it can be heavy and not useful in most cases. We can add specific metadata fields if needed.
 				$serializedTask['label'] = [
-					'fr' => '[#' . $task->getId() . '] ' . (!empty($task->getAction()) ? $task->getAction()->getLabelForLog() : '') . (!empty($to) ? Text::_('COM_EMUNDUS_TASK_TARGET') .' : ' . $to : ''),
+					'fr' => '[#' . $task->getId() . '] ' . (!empty($task->getAction()) ? $task->getAction()->getLabelForLog() : '') . (!empty($to) ? ' (' . Text::_('COM_EMUNDUS_TASK_TARGET') .' : ' . $to . ')': ''),
 				];
 
 				$createdAt = EmundusHelperDate::displayDate($task->getCreatedAt()->format('Y-m-d H:i:s'), 'd/m/Y H:i', 0);

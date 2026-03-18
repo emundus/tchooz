@@ -1,6 +1,6 @@
 <template>
 	<div id="requests-list">
-		<list :default-lists="configString" :default-type="'requests'"></list>
+		<list :default-lists="configString" :default-type="'requests'" :crud="crud"></list>
 	</div>
 </template>
 
@@ -9,6 +9,12 @@ import list from '@/views/list.vue';
 
 export default {
 	name: 'Requests',
+	props: {
+		crud: {
+			type: Object,
+			default: [],
+		},
+	},
 	components: {
 		list,
 	},

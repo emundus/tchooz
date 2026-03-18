@@ -17,7 +17,7 @@ class AttachmentTypeRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers AttachmentTypeRepository::get
+	 * @covers \Tchooz\Repositories\Attachments\AttachmentTypeRepository::get
 	 * @return void
 	 */
 	public function testGet()

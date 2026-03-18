@@ -18,6 +18,8 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
@@ -1246,8 +1248,12 @@ class EmundusControllerEvaluation extends BaseController
 		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
 
 		$fnum = $this->input->getString('fnum', null);
+		$stepId = $this->input->getInt('step_id', 0);
 
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
+			$stepsWithEvaluations = [];
+			$steps = [];
+			
 			$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
 			/*
 			 * 3 cases possible
@@ -1259,22 +1265,47 @@ class EmundusControllerEvaluation extends BaseController
 			$workflowRepository = new \Tchooz\Repositories\Workflow\WorkflowRepository();
 			$workflow = $workflowRepository->getWorkflowByFnum($fnum, true);
 
-			if (!class_exists('EmundusModelWorkflow')) {
-				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
-			}
-			$workflowModel = new EmundusModelWorkflow();
-			
-			$steps = [];
-			// merge steps of workflow and child workflows
-			$steps = array_merge($steps, $workflow->getSteps());
-			foreach ($workflow->getChildWorkflows() as $childWorkflow) {
-				$steps = array_merge($steps, $childWorkflow->getSteps());
-			}
+			if (!empty($workflow))
+			{
+				if (!class_exists('EmundusModelWorkflow'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+				}
+				$workflowModel = new EmundusModelWorkflow();
 
-			$stepsWithEvaluations = [];
+				$applicationChoicesProgram = [];
+				$addonRepository           = new AddonRepository();
+				$choicesAddon              = $addonRepository->getByName('choices');
+				if ($choicesAddon->getValue()->isEnabled())
+				{
+					$applicationChoicesRepository = new ApplicationChoicesRepository();
+					$applicationChoices           = $applicationChoicesRepository->getChoicesByFnum($fnum);
+					foreach ($applicationChoices as $choice)
+					{
+						$applicationChoicesProgram[] = $choice->getCampaign()->getProgram()->getId();
+					}
+				}
+
+				// merge steps of workflow and child workflows
+				$steps = array_merge($steps, $workflow->getSteps());
+				foreach ($workflow->getChildWorkflows() as $childWorkflow)
+				{
+					if (!empty($applicationChoicesProgram) && count(array_intersect($applicationChoicesProgram, $childWorkflow->getProgramIds())) === 0)
+					{
+						continue;
+					}
+					$steps = array_merge($steps, $childWorkflow->getSteps());
+				}
+			}
+			
 			foreach ($steps as $step)
 			{
 				assert($step instanceof Tchooz\Entities\Workflow\StepEntity);
+
+				if (!empty($stepId) && $step->getId() != $stepId)
+				{
+					continue;
+				}
 
 				if ($step->isEvaluationStep() && !empty($step->getTable()))
 				{
@@ -1310,7 +1341,6 @@ class EmundusControllerEvaluation extends BaseController
 							if ($createAccess)
 							{
 								$allEvaluations = $workflowModel->getStepEvaluationsForFile($step->getId(), $ccid, 'form', $this->_user->id);
-
 							}
 
 							$otherEvaluations = $workflowModel->getStepEvaluationsForFile($step->getId(), $ccid);
