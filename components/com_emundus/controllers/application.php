@@ -35,6 +35,7 @@ use Tchooz\Enums\List\ListColumnTypesEnum;
 use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
@@ -2994,7 +2995,7 @@ class EmundusControllerApplication extends EmundusController
 	public function applyPubliclyToCampaign(): void
 	{
 		$this->checkToken();
-		$response = Response::denied();
+		$response = EmundusResponse::denied();
 
 		if ($this->_user->guest)
 		{
@@ -3046,7 +3047,8 @@ class EmundusControllerApplication extends EmundusController
 						throw new \RuntimeException(Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_FAILED'));
 					}
 
-					$token = $applicationRepository->generateAccessFileToken($applicationEntity);
+					$fileAccessRepository = new ApplicationFileAccessRepository();
+					$token = $fileAccessRepository->generateAccessFileToken($applicationEntity);
 					$response->code = 200;
 					$response->status = true;
 					$response->msg = Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_SUCCESS');

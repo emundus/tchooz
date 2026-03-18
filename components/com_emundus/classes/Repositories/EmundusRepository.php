@@ -15,7 +15,6 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\QueryInterface;
-use Tchooz\Factories\Workflow\StepTypeFactory;
 use Tchooz\Traits\TraitTable;
 
 class EmundusRepository

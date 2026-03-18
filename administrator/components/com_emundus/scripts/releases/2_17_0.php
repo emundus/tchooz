@@ -55,6 +55,10 @@ class Release2_17_0Installer extends ReleaseInstaller
 			],
 				[
 					new \EmundusTableForeignKey('jos_emundus_file_access_ccid_fk', 'ccid', 'jos_emundus_campaign_candidature', 'id', \EmundusTableForeignKeyOnEnum::CASCADE, \EmundusTableForeignKeyOnEnum::CASCADE),
+				],
+				'',
+				[
+					['name' => 'jos_emundus_file_access_ccid_idx', 'columns' => ['ccid']]
 				]
 			);
 			$this->tasks[] = $tableCreated['status'];

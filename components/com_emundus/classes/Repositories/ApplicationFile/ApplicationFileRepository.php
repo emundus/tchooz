@@ -9,6 +9,7 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 use Tchooz\Attributes\TableAttribute;
+use Tchooz\Entities\ApplicationFile\ApplicationFileAccessEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Fabrik\FabrikElementEntity;
 use Tchooz\Factories\ApplicationFile\ApplicationFileFactory;
@@ -597,56 +598,5 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 	public function delete(int $id): bool
 	{
 		// TODO: Implement delete() method.
-	}
-
-
-	/**
-	 * @param   ApplicationFileEntity  $applicationFile
-	 *
-	 * @return string
-	 * @throws \RuntimeException
-	 */
-	public function generateAccessFileToken(ApplicationFileEntity $applicationFile): string
-	{
-		$token = '';
-
-		if ($applicationFile->isPublic())
-		{
-			// completely random token for public application files
-			try {
-				$token = bin2hex(random_bytes(16));
-
-				// bcrypt the token before storing it in the database for security reasons
-				$encryptedToken = password_hash($token, PASSWORD_BCRYPT);
-
-				// Store the token in the database with an expiration time (e.g., 1 month)
-				$expiration = (new \DateTime())->modify('+1 month')->format('Y-m-d H:i:s');
-				$this->query->clear()
-					->insert($this->db->quoteName('#__emundus_file_access'))
-					->columns($this->db->quoteName(['fnum', 'token', 'expires_at']))
-					->values(implode(', ', [
-						$this->db->quote($applicationFile->getFnum()),
-						$this->db->quote($encryptedToken),
-						$this->db->quote($expiration)
-					]));
-
-				$this->db->setQuery($this->query);
-				$inserted = $this->db->execute();
-
-				if (!$inserted)
-				{
-					throw new \RuntimeException('Failed to generate access token for public application file with fnum: ' . $applicationFile->getFnum());
-				}
-			} catch (\Exception $e)
-			{
-				throw new \RuntimeException('Error generating access token for public application file: ' . $e->getMessage());
-			}
-		}
-		else
-		{
-			throw new \RuntimeException('Unallowed to create access token for non-public application file');
-		}
-
-		return $token;
 	}
 }
