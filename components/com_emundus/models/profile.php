@@ -644,7 +644,6 @@ class EmundusModelProfile extends ListModel
 		try
 		{
 			$this->_db->setQuery($query);
-
 			return $this->_db->loadAssoc();
 		}
 		catch (Exception $e)
@@ -655,11 +654,12 @@ class EmundusModelProfile extends ListModel
 	}
 
 	/**
-	 * @param $campaign_id
+	 * @param          $campaign_id
+	 * @param   int[]  $step_types
 	 *
 	 * @return array
 	 */
-	function getWorkflowProfilesByCampaign($campaign_id, $step_types = [1])
+	function getWorkflowProfilesByCampaign($campaign_id, array $step_types = [1]): array
 	{
 		$profiles = [];
 
@@ -684,19 +684,25 @@ class EmundusModelProfile extends ListModel
 	/**
 	 * @description : Get profile by status
 	 *
-	 * @param   $fnum string
+	 * @param   string  $fnum
+	 * @param   int     $use_session
 	 *
 	 * @return  array
-	 **/
-	function getProfileByStatus($fnum,$use_session = 0)
+	 * @throws Exception
+	 */
+	function getProfileByStatus(string $fnum, $use_session = 0): array
 	{
 		$query = $this->_db->getQuery(true);
 
 		$res = [];
 
-        if($use_session == '1'){
-            $res['profile'] = JFactory::getSession()->get('emundusUser')->profile;
-            $res['campaign_id'] = $fnumInfos['campaign_id'];
+        if ($use_session == 1)
+		{
+			$session = Factory::getApplication()->getSession();
+			$emundusUserSession = $session->get('emundusUser');
+            $res['profile'] = $emundusUserSession->profile;
+            $res['campaign_id'] = $emundusUserSession->campaign_id ?? 0;
+
             return $res;
         }
 
@@ -758,7 +764,7 @@ class EmundusModelProfile extends ListModel
 			}
 			catch (Exception $e)
 			{
-				Log::add(Uri::getInstance() . ' :: USER ID : ' . Factory::getApplication()->getIdentity()->id . ' -> ' . $query, Log::ERROR, 'com_emundus.error');
+				Log::add(Uri::getInstance() . ' :: USER ID : ' . Factory::getApplication()->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
