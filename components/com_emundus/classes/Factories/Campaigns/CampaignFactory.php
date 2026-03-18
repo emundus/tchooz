@@ -125,7 +125,7 @@ class CampaignFactory implements DBFactory
 			moreProperties: $dbObject->more_properties,
 			files_count: isset($dbObject->files_count) ? (int) $dbObject->files_count : 0,
 			createdBy: isset($dbObject->user) ? (int) $dbObject->user : 0,
-			isPublic: isset($dbObject['is_public']) && $dbObject['is_public'] == 1,
+			isPublic: isset($dbObject->public) && $dbObject->public == 1,
 		);
 	}
 }

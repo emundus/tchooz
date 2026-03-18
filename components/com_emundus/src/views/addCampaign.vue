@@ -333,7 +333,12 @@
 							<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
 							<span
 								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
-								@click="displayTip(COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP, COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP_TEXT)"
+								@click="
+									displayTip(
+										COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP,
+										COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP_TEXT,
+									)
+								"
 								>help_outline</span
 							>
 						</div>

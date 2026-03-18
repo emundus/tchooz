@@ -49,7 +49,8 @@ use Tchooz\Traits\TraitTable;
 		'pinned',
 		'alias',
 		'visible',
-		'parent_id'
+		'parent_id',
+		'public'
 	]
 )]
 class CampaignRepository extends EmundusRepository implements RepositoryInterface
@@ -225,6 +226,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 				{
 					$filterDate = $this->db->quoteName($this->alias . '.published') . ' = 0';
 				}
+
 				if (!empty($filterDate))
 				{
 					$query->where($filterDate);
