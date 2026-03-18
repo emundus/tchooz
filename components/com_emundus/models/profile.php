@@ -230,8 +230,6 @@ class EmundusModelProfile extends ListModel
 	 */
 	function getFullProfileByFnum($fnum): array
 	{
-
-
 		$query = $this->_db->getQuery(true);
 
 		try

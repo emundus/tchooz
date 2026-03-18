@@ -18,14 +18,20 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserFactoryInterface;
 use \setasign\Fpdi\Fpdi;
-use \setasign\Fpdi\PdfReader;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Tchooz\EmundusResponse;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Export\ExportRepository;
 use Tchooz\Services\FileSecurityService;
+use Tchooz\Traits\TraitResponse;
 
 /**
  * eMundus Component Controller
@@ -35,6 +41,8 @@ use Tchooz\Services\FileSecurityService;
  */
 class EmundusController extends JControllerLegacy
 {
+	use TraitResponse;
+
 	private $_user;
 	private $_db;
 
@@ -2411,5 +2419,79 @@ class EmundusController extends JControllerLegacy
 		}
 
 		exit();
+	}
+
+	/**
+	 * @return void
+	 */
+	public function applyPubliclyToCampaign(): void
+	{
+		//$this->checkToken();
+		$response = EmundusResponse::denied();
+
+		if ($this->app->getIdentity()->guest == 1)
+		{
+			$campaignId = $this->input->getInt('campaign_id', 0);
+			$applyAnonymously = $this->input->getBool('anonymous', false);
+
+			if (!empty($campaignId))
+			{
+				$campaignRepository = new CampaignRepository();
+				$campaign = $campaignRepository->getById($campaignId);
+
+				if (!$campaign->isPublic())
+				{
+					throw new \Symfony\Component\OptionsResolver\Exception\AccessException(Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_NOT_ALLOWED'));
+				}
+
+				// block attempts to apply too frequently
+				$last_application_time = $this->app->getSession()->get('last_public_application_time', 0);
+				$cooldown_time = 60; // 60 seconds cooldown
+				if (time() - $last_application_time < $cooldown_time)
+				{
+					$response->code = 429;
+					$response->msg = Text::sprintf('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_COOLDOWN', $cooldown_time - (time() - $last_application_time));
+					$this->sendJsonResponse($response);
+
+					return;
+				}
+
+				$this->app->getSession()->set('last_public_application_time', time());
+
+				// get system user to apply on behalf of the guest
+				$systemUserId = ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
+
+				if (!empty($systemUserId))
+				{
+					$systemUser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($systemUserId);
+					$applicationRepository = new ApplicationFileRepository();
+					$applicationEntity = new ApplicationFileEntity($systemUser, '', 0, $campaignId);
+					$applicationEntity->generateFnum($campaignId, $systemUserId);
+					$applicationEntity->setIsPublic(true);
+
+					if ($applyAnonymously)
+					{
+						$applicationEntity->setIsAnonymous(true);
+					}
+
+					if (!$applicationRepository->flush($applicationEntity, $systemUserId))
+					{
+						throw new \RuntimeException(Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_FAILED'));
+					}
+
+					$fileAccessRepository = new ApplicationFileAccessRepository();
+					$token = $fileAccessRepository->generateAccessFileToken($applicationEntity);
+					$response->code = 200;
+					$response->status = true;
+					$response->msg = Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_SUCCESS');
+					$response->data = [
+						'fnum' => $applicationEntity->getFnum(),
+						'token' => $token,
+					];
+				}
+			}
+		}
+
+		$this->sendJsonResponse($response);
 	}
 }

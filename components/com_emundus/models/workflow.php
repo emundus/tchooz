@@ -1283,6 +1283,11 @@ class EmundusModelWorkflow extends JModelList
 		$this->db->setQuery($query);
 		$campaign_dates = $this->db->loadAssoc();
 
+		if (!class_exists('EmundusHelperDate'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/date.php');
+		}
+
 		$dates['start_date'] = EmundusHelperDate::displayDate($campaign_dates['start_date'], 'Y-m-d H:i:s', 1);
 		$dates['end_date']   = EmundusHelperDate::displayDate($campaign_dates['end_date'], 'Y-m-d H:i:s', 1);
 

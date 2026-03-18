@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="system" method="upgrade">
+    <name>plg_system_emunduspublicaccess</name>
+    <author>eMundus</author>
+    <creationDate>2026-03</creationDate>
+    <copyright>Copyright (C) 2005-2026 eMundus - All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <version>1.0.0</version>
+    <description>PLG_SYSTEM_EMUNDUSPUBLICACCESS_DESCRIPTION</description>
+
+    <namespace path="src">Joomla\Plugin\System\EmundusPublicAccess</namespace>
+
+    <files>
+        <folder plugin="emunduspublicaccess">services</folder>
+        <folder>src</folder>
+        <folder>language</folder>
+    </files>
+
+    <languages>
+        <language tag="en-GB">language/en-GB/plg_system_emunduspublicaccess.ini</language>
+        <language tag="fr-FR">language/fr-FR/plg_system_emunduspublicaccess.ini</language>
+    </languages>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="token_param_name"
+                        type="text"
+                        label="PLG_SYSTEM_EMUNDUSPUBLICACCESS_PARAM_TOKEN_NAME"
+                        description="PLG_SYSTEM_EMUNDUSPUBLICACCESS_PARAM_TOKEN_NAME_DESC"
+                        default="access_token"
+                />
+                <field
+                        name="session_ttl"
+                        type="number"
+                        label="PLG_SYSTEM_EMUNDUSPUBLICACCESS_PARAM_SESSION_TTL"
+                        description="PLG_SYSTEM_EMUNDUSPUBLICACCESS_PARAM_SESSION_TTL_DESC"
+                        default="15"
+                        min="5"
+                        max="1440"
+                        step="5"
+                />
+            </fieldset>
+        </fields>
+    </config>
+</extension>
+

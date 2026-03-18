@@ -274,6 +274,7 @@ class ApplicationFileEntity
 			'attachmentProgress' => $this->attachmentProgress,
 			'updated_at'         => $this->updated_at,
 			'updated_by'         => $this->updated_by,
+			'public'             => $this->isPublic ? 1 : 0,
 		];
 	}
 }

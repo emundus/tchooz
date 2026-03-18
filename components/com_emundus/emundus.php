@@ -1406,7 +1406,7 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
 {
 	$controller->execute($task);
 }
-elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == ApplicationHelper::getHash($token)) || $task == 'getfilereferent' || $app->input->get('controller', '', 'WORD') === 'vote' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions') || in_array($task, ['yousigncallback', 'docusigncallback'])))
+elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == ApplicationHelper::getHash($token)) || $task == 'getfilereferent' || $task === 'applyPubliclyToCampaign' || $app->input->get('controller', '', 'WORD') === 'vote' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions') || in_array($task, ['yousigncallback', 'docusigncallback'])))
 {
 	$controller->execute($task);
 }
@@ -1416,7 +1416,7 @@ else
 	{
 		$controller->execute($task);
 	}
-	elseif ($user->guest && $name !== 'accessibility' && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity' && $task != 'activation_anonym_user')
+	elseif ($user->guest && $name !== 'accessibility' && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $name != 'publicaccess' && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity' && $task != 'activation_anonym_user')
 	{
 		if ($name == 'user' && $app->input->get('emailactivation', 0) == 1)
 		{

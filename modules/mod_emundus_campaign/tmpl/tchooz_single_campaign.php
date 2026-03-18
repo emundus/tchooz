@@ -337,7 +337,7 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
                         <button class="em-disabled-button em-w-100" role="button"
                                 data-toggle="sc-modal"><?= JText::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED'); ?></button>
 					<?php else : ?>
-                        <a class="btn btn-primary em-w-100 em-applicant-default-font"
+                        <a class="tw-btn-primary em-w-100"
                            href='<?php echo $register_url; ?>'
                            data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
 					<?php endif; ?>

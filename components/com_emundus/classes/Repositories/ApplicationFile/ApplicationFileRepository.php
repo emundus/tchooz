@@ -302,7 +302,8 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 				'status'              => $applicationFileEntity->getStatus(),
 				'published'           => $applicationFileEntity->getPublished(),
 				'form_progress'       => 0,
-				'attachment_progress' => 0
+				'attachment_progress' => 0,
+				'public'              => $applicationFileEntity->isPublic() ? 1 : 0,
 			];
 			$campaign_candidature = (object) $campaign_candidature;
 			$this->db->insertObject('#__emundus_campaign_candidature', $campaign_candidature);
