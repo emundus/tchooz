@@ -12,6 +12,7 @@ namespace Joomla\Plugin\System\EmundusPublicAccess\Extension;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Application\AfterRouteEvent;
+use Joomla\CMS\Event\User\LogoutEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -90,6 +91,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 
 		return [
 			'onAfterRoute' => 'onAfterRoute',
+			'onUserLogout' => 'onUserLogout',
 		];
 	}
 
@@ -124,7 +126,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 		}
 
 		// If the session is already marked as a public access session, validate that it is still valid
-		if ($session->get(self::SESSION_PUBLIC_ACCESS_KEY, false))
+		if (self::isPublicAccessSession())
 		{
 			$this->validateExistingPublicSession();
 
@@ -133,6 +135,24 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 
 			// TODO: restrict accessible menus to form menus
 
+		}
+	}
+
+	/**
+	 * Before logout, destroy scoped session and revert to guest identity.
+	 * Do not let Joomla perform total logout, because other users could be using system user, but with another session
+	 *
+	 *
+	 * @param   LogoutEvent  $event
+	 *
+	 * @return void
+	 */
+	public function onUserLogout(LogoutEvent $event): void
+	{
+		if (self::isPublicAccessSession())
+		{
+			$this->destroyPublicSession();
+			$event->stopPropagation();
 		}
 	}
 
@@ -434,18 +454,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 				return;
 			}
 
-			// Session still valid — re-inject system user identity
-			$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
-
-			if (!empty($systemUserId))
-			{
-				$systemUser = $this->getUserFactory()->loadUserById($systemUserId);
-
-				if (!empty($systemUser->id))
-				{
-					$app->loadIdentity($systemUser);
-				}
-			}
+			$this->initPublicSession($applicationFile, $savedToken);
 		}
 		catch (\Exception $e)
 		{
@@ -479,6 +488,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 		$session->clear(self::SESSION_PUBLIC_TOKEN_KEY);
 		$session->clear(self::SESSION_PUBLIC_CREATED_AT_KEY);
 		$session->clear('emundusUser');
+		$session->destroy();
 
 		// Restore the guest identity
 		$guestUser = $this->getUserFactory()->loadUserById(0);
@@ -490,17 +500,29 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			'plg_system_emunduspublicaccess'
 		);
 
-		if ($redirect)
-		{
-			$url = 'index.php?option=com_emundus&view=publicaccess&error=1'
-				. '&error_msg=' . urlencode(Text::_('COM_EMUNDUS_PUBLIC_ACCESS_SESSION_EXPIRED'));
+		if ($this->getApplication()->isClient('site')) {
+			$this->getApplication()->getInput()->cookie->set(
+				'joomla_user_state',
+				'',
+				[
+					'expires' => 1,
+					'path'    => $this->getApplication()->get('cookie_path', '/'),
+					'domain'  => $this->getApplication()->get('cookie_domain', ''),
+				]
+			);
 
-			if (!empty($fnum))
+			if ($redirect)
 			{
-				$url .= '&fnum=' . urlencode($fnum);
-			}
+				$url = 'index.php?option=com_emundus&view=publicaccess&error=1'
+					. '&error_msg=' . urlencode(Text::_('COM_EMUNDUS_PUBLIC_ACCESS_SESSION_EXPIRED'));
 
-			$app->redirect(Route::_($url, false));
+				if (!empty($fnum))
+				{
+					$url .= '&fnum=' . urlencode($fnum);
+				}
+
+				$app->redirect(Route::_($url, false));
+			}
 		}
 	}
 
