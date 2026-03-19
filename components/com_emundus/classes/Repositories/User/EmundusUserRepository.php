@@ -31,7 +31,8 @@ use Tchooz\Traits\TraitTable;
 	'lastname',
 	'profile_picture',
 	'user_category',
-	'is_anonym'
+	'is_anonym',
+	'birth_date'
 ])]
 class EmundusUserRepository extends EmundusRepository implements RepositoryInterface
 {
@@ -55,38 +56,43 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 			throw new \Exception('EmundusUserEntity must have a valid User associated to flush.');
 		}
 
-		try {
+		try
+		{
 			if (empty($emundusUserEntity->getId()))
 			{
-				$insert = (object)[
-					'user_id'       => $emundusUserEntity->getUser()->id,
-					'firstname'     => $emundusUserEntity->getFirstname(),
-					'lastname'      => $emundusUserEntity->getLastname(),
+				$insert = (object) [
+					'user_id'         => $emundusUserEntity->getUser()->id,
+					'firstname'       => $emundusUserEntity->getFirstname(),
+					'lastname'        => $emundusUserEntity->getLastname(),
 					'profile_picture' => $emundusUserEntity->getProfilePicture(),
-					'user_category' => $emundusUserEntity->getUserCategory()?->getId(),
-					'is_anonym'     => $emundusUserEntity->isAnonym() ? 1 : 0
+					'user_category'   => $emundusUserEntity->getUserCategory()?->getId(),
+					'is_anonym'       => $emundusUserEntity->isAnonym() ? 1 : 0,
+					'birth_date'      => $emundusUserEntity->getBirthDate()?->format('d/m/Y')
 				];
 
 				if ($flushed = $this->db->insertObject($this->getTableName(self::class), $insert))
 				{
-					$emundusUserEntity->setId((int)$this->db->insertid());
+					$emundusUserEntity->setId((int) $this->db->insertid());
 				}
 			}
 			else
 			{
-				$update = (object)[
-					'id'            => $emundusUserEntity->getId(),
-					'user_id'       => $emundusUserEntity->getUser()->id,
-					'firstname'     => $emundusUserEntity->getFirstname(),
-					'lastname'      => $emundusUserEntity->getLastname(),
+				$update = (object) [
+					'id'              => $emundusUserEntity->getId(),
+					'user_id'         => $emundusUserEntity->getUser()->id,
+					'firstname'       => $emundusUserEntity->getFirstname(),
+					'lastname'        => $emundusUserEntity->getLastname(),
 					'profile_picture' => $emundusUserEntity->getProfilePicture(),
-					'user_category' => $emundusUserEntity->getUserCategory()?->getId(),
-					'is_anonym'     => $emundusUserEntity->isAnonym() ? 1 : 0
+					'user_category'   => $emundusUserEntity->getUserCategory()?->getId(),
+					'is_anonym'       => $emundusUserEntity->isAnonym() ? 1 : 0,
+					'birth_date'      => $emundusUserEntity->getBirthDate()?->format('d/m/Y')
 				];
 
 				$flushed = $this->db->updateObject($this->getTableName(self::class), $update, 'id');
 			}
-		} catch (\Exception $e) {
+		}
+		catch (\Exception $e)
+		{
 			Log::add('Error flushing EmundusUserEntity: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.emundususer');
 		}
 
@@ -109,7 +115,8 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 
 		$emundus_user = $this->getItemByField('user_id', $user_id);
 
-		if (!empty($emundus_user)) {
+		if (!empty($emundus_user))
+		{
 			$emundus_user_entity = $this->factory->fromDbObject($emundus_user, $this->withRelations);
 		}
 
@@ -128,12 +135,13 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 		$query = $this->db->getQuery(true);
 		$query->select($this->columns)
 			->from($this->db->quoteName($this->tableName, $this->alias))
-			->leftJoin($this->db->quoteName($this->getTableName(ApplicationFileRepository::class), 'af') . ' ON af.applicant_id = '.$this->alias.'.user_id')
+			->leftJoin($this->db->quoteName($this->getTableName(ApplicationFileRepository::class), 'af') . ' ON af.applicant_id = ' . $this->alias . '.user_id')
 			->where('af.fnum = ' . $this->db->quote($fnum));
 		$this->db->setQuery($query);
 		$emundus_user = $this->db->loadObject();
 
-		if (!empty($emundus_user)) {
+		if (!empty($emundus_user))
+		{
 			$emundus_user_entity = $this->factory->fromDbObject($emundus_user, $this->withRelations);
 		}
 
@@ -150,7 +158,8 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 		$codes = [];
 
 		$cacheKey = 'emundus_user_programs_' . $user_id;
-		if($this->cache && $this->cache->contains($cacheKey)) {
+		if ($this->cache && $this->cache->contains($cacheKey))
+		{
 			return $this->cache->get($cacheKey);
 		}
 
@@ -165,18 +174,20 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->db->quoteName('sgr.course') . ' = ' . $this->db->quoteName('sp.code'))
 				->where($this->db->quoteName('g.user_id') . ' = ' . $this->db->quote($user_id));
 
-			try {
+			try
+			{
 				$this->db->setQuery($query);
 				$programs = $this->db->loadColumn();
 
 				$codes = array_filter(array_unique($programs));
 
-				if(!empty($codes) && $this->cache)
+				if (!empty($codes) && $this->cache)
 				{
 					$this->cache->store($codes, $cacheKey);
 				}
 			}
-			catch (\Exception $e) {
+			catch (\Exception $e)
+			{
 				Log::add('component/com_emundus/models/program | Error at getting programs of the user ' . $user_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
@@ -194,7 +205,8 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 		$ids = [];
 
 		$cacheKey = 'emundus_user_programs_ids_' . $user_id;
-		if($this->cache && $this->cache->contains($cacheKey)) {
+		if ($this->cache && $this->cache->contains($cacheKey))
+		{
 			return $this->cache->get($cacheKey);
 		}
 
@@ -209,18 +221,20 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->db->quoteName('sgr.course') . ' = ' . $this->db->quoteName('sp.code'))
 				->where($this->db->quoteName('g.user_id') . ' = ' . $this->db->quote($user_id));
 
-			try {
+			try
+			{
 				$this->db->setQuery($query);
 				$programs = $this->db->loadColumn();
 
 				$ids = array_filter(array_unique($programs));
 
-				if(!empty($ids) && $this->cache)
+				if (!empty($ids) && $this->cache)
 				{
 					$this->cache->store($ids, $cacheKey);
 				}
 			}
-			catch (\Exception $e) {
+			catch (\Exception $e)
+			{
 				Log::add('component/com_emundus/models/program | Error at getting programs of the user ' . $user_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
@@ -249,7 +263,7 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 				->from($this->db->quoteName($this->tableName, $this->alias))
 				->leftJoin($this->db->quoteName($this->getTableName(ApplicationFileRepository::class), 'af') . ' ON ' . $this->db->quoteName('af.applicant_id') . ' = ' . $this->db->quoteName($this->alias . '.user_id'))
 				->where($this->db->quoteName('af.published') . ' = 1');
-			if(!empty($search))
+			if (!empty($search))
 			{
 				$searchEscaped = $this->db->quote('%' . $this->db->escape($search, true) . '%');
 				$query->where('(' . $this->db->quoteName($this->alias . '.firstname') . ' LIKE ' . $searchEscaped
@@ -287,8 +301,8 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 	public function getExceptions(
 		string $sort = 'DESC',
 		string $search = '',
-		int $lim = 25,
-		int $page = 0,
+		int    $lim = 25,
+		int    $page = 0,
 		string $order_by = 'eu.id',
 	): ListResult
 	{
@@ -323,7 +337,7 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 				->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName($this->alias . '.user_id'))
 				->where($this->db->quoteName('ese.id') . ' IS NOT NULL');
 
-			if(!empty($search))
+			if (!empty($search))
 			{
 				$searchEscaped = $this->db->quote('%' . $this->db->escape($search, true) . '%');
 				$query->where('(' . $this->db->quoteName($this->alias . '.firstname') . ' LIKE ' . $searchEscaped
@@ -341,7 +355,7 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 			$this->db->setQuery($query, $offset, $limit);
 			$exceptionsObjects = $this->db->loadObjectList();
 
-			if(!empty($exceptionsObjects))
+			if (!empty($exceptionsObjects))
 			{
 				$exceptions = $this->factory->fromDbObjects($exceptionsObjects, $this->withRelations);
 			}
@@ -390,7 +404,7 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 		try
 		{
 			$exceptionParameters = ExtensionService::getParamValue('com_emundus', 'id_applicants', []);
-			if(!empty($exceptionParameters) && !is_array($exceptionParameters))
+			if (!empty($exceptionParameters) && !is_array($exceptionParameters))
 			{
 				$exceptionParameters = explode(',', $exceptionParameters);
 			}
@@ -398,7 +412,7 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 			// First check if not already exist
 			$exceptionExist = $this->getExceptionByUserId($user_id);
 
-			if(empty($exceptionExist))
+			if (empty($exceptionExist))
 			{
 				$insert = (object) [
 					'date_time' => Factory::getDate()->toSql(),
@@ -413,7 +427,7 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 				$added = true;
 			}
 
-			if($added && !in_array($user_id, $exceptionParameters))
+			if ($added && !in_array($user_id, $exceptionParameters))
 			{
 				$exceptionParameters[] = $user_id;
 				ExtensionService::updateExtensionParam('com_emundus', 'id_applicants', implode(',', $exceptionParameters));
@@ -439,21 +453,22 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 		try
 		{
 			$exceptionParameters = ExtensionService::getParamValue('com_emundus', 'id_applicants', []);
-			if(!empty($exceptionParameters) && !is_array($exceptionParameters))
+			if (!empty($exceptionParameters) && !is_array($exceptionParameters))
 			{
 				$exceptionParameters = explode(',', $exceptionParameters);
 			}
-			
+
 			$query = $this->db->getQuery(true);
 			$query->delete($this->db->quoteName('#__emundus_setup_exceptions'))
 				->where($this->db->quoteName('user') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $ids)) . ')');
 			$this->db->setQuery($query);
 			$deleted = $this->db->execute();
 
-			if($deleted)
+			if ($deleted)
 			{
-				foreach ($ids as $id) {
-					if(in_array($id, $exceptionParameters))
+				foreach ($ids as $id)
+				{
+					if (in_array($id, $exceptionParameters))
 					{
 						$exceptionParameters = array_diff($exceptionParameters, [$id]);
 					}

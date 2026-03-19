@@ -143,7 +143,7 @@ class TchoozUpdateCommand extends AbstractCommand
 		$db    = $this->getDatabase();
 		$query = $db->getQuery(true);
 
-		$query->select('extension_id, name, package_id, type, element, manifest_cache')
+		$query->select('extension_id, name, package_id, type, element, manifest_cache, folder')
 			->where($db->quoteName('element') . " IN (" . implode(',', $db->quote($comp)) . ') AND state != -1 AND extension_id != 10000 AND client_id = 1')
 			->from('#__' . $table);
 		$db->setQuery($query);
@@ -171,7 +171,24 @@ class TchoozUpdateCommand extends AbstractCommand
 
 		foreach ($elements as $element) {
 			$elementArr     = $this->components[$element];
-			$manifest_cache = json_decode($elementArr['manifest_cache'], true);
+			$manifest_cache = $elementArr['manifest_cache'];
+			if(empty($manifest_cache) || $manifest_cache === 'false')
+			{
+				if(!class_exists('EmundusHelperUpdate'))
+				{
+					require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+				}
+				$manifest_cache = \EmundusHelperUpdate::buildManifest($elementArr['type'], $elementArr['element'], $elementArr['folder'], true);
+
+				// Update manifest cache in database
+				$data = (object)[
+					'extension_id'   => $elementArr['extension_id'],
+					'manifest_cache' => $manifest_cache
+				];
+				$this->getDatabase()->updateObject('#__extensions', $data, 'extension_id');
+			}
+
+			$manifest_cache = json_decode($manifest_cache, true);
 
 			if ($manifest_cache['filename']) {
 				$xml_file = $manifest_cache['filename'] . '.xml';

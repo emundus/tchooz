@@ -242,7 +242,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		foreach ($application_choices as $application_choice)
 		{
 			$application_choice->more_data = $this->getMoreData((int) $application_choice->id, $more_form_id, $elements, $table_name);
-			
+
 			// If there are more filters, apply them on the more data
 			if (!empty($moreFilters))
 			{

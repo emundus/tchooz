@@ -79,6 +79,11 @@ class MappingService
 
 						$value[$key] = $val;
 					}
+
+					if (empty($value))
+					{
+						$value = null;
+					}
 				}
 
 				$json[$mappingRow->getTargetField()] = $value;

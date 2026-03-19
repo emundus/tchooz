@@ -21,6 +21,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\User\User;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Factories\Language\LanguageFactory;
 
@@ -436,20 +437,20 @@ class EmundusModelProgramme extends ListModel
 	}
 
 	/**
-	 * @param $lim
-	 * @param $page
-	 * @param $filter
-	 * @param $sort
-	 * @param $recherche
-	 * @param $user
-	 * @param $category
-	 * @param $order_by
+	 * @param   string|int  $lim
+	 * @param   int     $page
+	 * @param   ?string $filter
+	 * @param   string  $sort
+	 * @param   string  $recherche
+	 * @param   ?User   $user
+	 * @param   string  $category
+	 * @param   string  $order_by
 	 *
 	 * @return array
 	 *
 	 * @since version 1.0
 	 */
-	function getAllPrograms($lim = 'all', $page = 0, $filter = null, string $sort = 'DESC', $recherche = '', $user = null, $category = '', string $order_by = 'p.id')
+	function getAllPrograms(string|int $lim = 'all', int $page = 0, ?string $filter = null, string $sort = 'DESC', string $recherche = '', ?User $user = null, string $category = '', string $order_by = 'p.id'): array
 	{
 		if(empty($user)) {
 			$user = $this->_user;
@@ -457,7 +458,10 @@ class EmundusModelProgramme extends ListModel
 		if (empty($order_by)) {
 			$order_by = 'p.id';
 		}
-		$all_programs = [];
+		$all_programs = [
+			'datas' => [],
+			'count' => 0
+		];
 
 		// Get affected programs
 		$programs = $this->getUserPrograms($user->id);

@@ -2096,8 +2096,8 @@ class EmundusModelSettings extends ListModel
 
 	public function getEmailParameters()
 	{
-		$params   = [];
-		$emConfig = ComponentHelper::getComponent('com_emundus')->getParams();
+		$params          = [];
+		$emConfig        = ComponentHelper::getComponent('com_emundus')->getParams();
 		$microsoftParams = Microsoftoutlook365mailconnect::getPluginParams();
 
 		$params['mailonline']              = $this->app->get('mailonline');
@@ -2115,10 +2115,10 @@ class EmundusModelSettings extends ListModel
 		$params['custom_email_smtppass']   = '************';
 		$params['default_email_mailfrom']  = $emConfig->get('default_email_mailfrom', $this->app->get('mailfrom'));
 
-		$params['microsoft365_applicationid'] =  $microsoftParams->get('oauth_application_id', '');
-		$params['microsoft365_clientsecret'] = $microsoftParams->get('oauth_client_secret', '');
-		$params['microsoft365_redirecturi'] = MicrosoftOutlookApplicationHelper::getInstance()->getRedirectUrl();
-		$params['microsoft365_isauthorized'] = MicrosoftOutlookApplicationHelper::getInstance()->isAuthorized();
+		$params['microsoft365_applicationid'] = $microsoftParams->get('oauth_application_id', '');
+		$params['microsoft365_clientsecret']  = $microsoftParams->get('oauth_client_secret', '');
+		$params['microsoft365_redirecturi']   = MicrosoftOutlookApplicationHelper::getInstance()->getRedirectUrl();
+		$params['microsoft365_isauthorized']  = MicrosoftOutlookApplicationHelper::getInstance()->isAuthorized();
 
 		return $params;
 	}
@@ -2297,11 +2297,11 @@ class EmundusModelSettings extends ListModel
 
 	public function sendTestMailSettings($variables, $user = null, $mail_to = null)
 	{
-		if($variables['server_type'] === 'microsoftoutlook365mailconnect')
+		if ($variables['server_type'] === 'microsoftoutlook365mailconnect')
 		{
-			$pluginParams = Microsoftoutlook365mailconnect::getPluginParams();
+			$pluginParams     = Microsoftoutlook365mailconnect::getPluginParams();
 			$oauthAccessToken = $pluginParams->get('oauth_access_token');
-			if(!empty($oauthAccessToken))
+			if (!empty($oauthAccessToken))
 			{
 				$oauthAccessToken = json_decode($oauthAccessToken);
 			}
@@ -2363,7 +2363,7 @@ class EmundusModelSettings extends ListModel
 		$mail_to = !empty($mail_to) ? $mail_to : $user->email;
 
 		$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
-		if($variables['server_type'] === 'smtp')
+		if ($variables['server_type'] === 'smtp')
 		{
 			$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer($config);
 			$mailer->setSender($variables['mailfrom'], $variables['fromname']);
@@ -2484,7 +2484,7 @@ class EmundusModelSettings extends ListModel
 				$this->db->setQuery($query);
 				$saved = $this->db->execute();
 
-				if($saved && $config['custom_server_type'] === 'microsoftoutlook365mailconnect')
+				if ($saved && $config['custom_server_type'] === 'microsoftoutlook365mailconnect')
 				{
 					$query->clear()
 						->select('extension_id, params')
@@ -2494,12 +2494,12 @@ class EmundusModelSettings extends ListModel
 					$this->db->setQuery($query);
 					$result = $this->db->loadObject();
 
-					if(!empty($result))
+					if (!empty($result))
 					{
-						$params = json_decode($result->params, true);
+						$params                         = json_decode($result->params, true);
 						$params['oauth_application_id'] = $config['oauth_application_id'];
-						$params['oauth_client_secret'] = $config['oauth_client_secret'];
-						$params['oauth_from_email'] = $config['mailfrom'];
+						$params['oauth_client_secret']  = $config['oauth_client_secret'];
+						$params['oauth_from_email']     = $config['mailfrom'];
 
 						$query->clear()
 							->update('#__extensions')
@@ -2509,7 +2509,7 @@ class EmundusModelSettings extends ListModel
 						$this->db->setQuery($query);
 						$saved = $this->db->execute();
 
-						$cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+						$cache = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
 							->createCacheController('output', ['defaultgroup' => 'com_plugins']);
 						$cache->clean('com_plugins');
 					}
@@ -2860,7 +2860,7 @@ class EmundusModelSettings extends ListModel
 				$query->where($this->db->quoteName('c.label') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'));
 			}
 
-			if(!empty($programs))
+			if (!empty($programs))
 			{
 				$query->where($this->db->quoteName('p.id') . ' IN (' . implode(',', $programs) . ')');
 			}
@@ -2916,7 +2916,7 @@ class EmundusModelSettings extends ListModel
 					. ' OR ' . $this->db->quoteName('fc.value') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'));
 			}
 
-			if(!empty($filteredPrograms))
+			if (!empty($filteredPrograms))
 			{
 				$query->where($this->db->quoteName('esp.id') . ' IN (' . implode(',', $filteredPrograms) . ')');
 			}
@@ -4641,6 +4641,7 @@ class EmundusModelSettings extends ListModel
 				'create_webhook'                => $setup->create_webhook,
 				'signature_level'               => $setup->signature_level,
 				'signature_authentication_mode' => $setup->signature_authentication_mode,
+				'signature_display_mode'        => $setup->signature_display_mode ?? 'minimal',
 				'request_name'                  => $setup->request_name,
 				'authentication'                => [
 					'type'          => 'bearer',
@@ -4678,6 +4679,7 @@ class EmundusModelSettings extends ListModel
 			$config['create_webhook']                = $setup->create_webhook;
 			$config['signature_level']               = $setup->signature_level;
 			$config['signature_authentication_mode'] = $setup->signature_authentication_mode;
+			$config['signature_display_mode']        = $setup->signature_display_mode ?? $config['signature_display_mode'] ?? 'minimal';
 			$config['request_name']                  = $setup->request_name;
 			$config['mode']                          = $setup->mode;
 

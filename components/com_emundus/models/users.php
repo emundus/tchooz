@@ -1270,7 +1270,10 @@ class EmundusModelUsers extends ListModel
 			$this->db->execute();
 
 			$this->app->triggerEvent('onAfterSaveEmundusUser', [$user_id, $params]);
-			$this->app->triggerEvent('onCallEventHandler', ['onAfterSaveEmundusUser', ['user_id' => $user_id, 'params' => $params]]);
+			$this->app->triggerEvent('onCallEventHandler', [
+				'onAfterSaveEmundusUser',
+				['user_id' => $user_id, 'params' => $params]
+			]);
 
 
 			if (!empty($groups)) {
