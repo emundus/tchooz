@@ -13,6 +13,7 @@ use JComponentHelper;
 use JFactory;
 use JLog;
 
+use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\api\Api;
 
 defined('_JEXEC') or die('Restricted access');
@@ -23,12 +24,11 @@ class Yousign extends Api
 	{
 		parent::__construct();
 
-		$this->setAuth();
+		$config = ComponentHelper::getParams('com_emundus');
 
-		$em_config = JComponentHelper::getParams('com_emundus');
-		$api_key = $em_config->get('yousign_api_key', '');
+		$this->setAuth($config->get('yousign_api_key', ''));
 
-		$baseUrl = $em_config->get('yousign_prod', 'https://staging-api.yousign.com');
+		$baseUrl = $config->get('yousign_prod', 'https://staging-api.yousign.com');
 		$this->setBaseUrl($baseUrl);
 
 		$auth = $this->getAuth();
@@ -42,10 +42,9 @@ class Yousign extends Api
 		$this->setClient();
 	}
 
-	public function setAuth(): void
+	public function setAuth($token): void
 	{
-		$config = JComponentHelper::getParams('com_emundus');
-		$this->auth['bearer_token'] = $config->get('yousign_api_key', '');
+		$this->auth['bearer_token'] = $token;
 	}
 
 	public function getSignatureRequest($id) {
