@@ -224,7 +224,7 @@ class LanguageFactory implements DBFactory
 
 	public static function cleanCache()
 	{
-		$cache = Factory::getContainer()->get(CacheControllerFactoryInterface::class)->createCacheController('output', ['defaultgroup' => 'com_emundus.translations', 'caching' => true]);
+		$cache = Factory::getContainer()->get(CacheControllerFactoryInterface::class)->createCacheController('output', ['defaultgroup' => 'com_emundus.translations']);
 		$languages = LanguageHelper::getLanguages();
 
 		foreach ($languages as $language)
