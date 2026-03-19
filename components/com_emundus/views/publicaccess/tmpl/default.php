@@ -58,9 +58,8 @@ $baseUrl = Uri::base();
 				</div>
 			<?php endif; ?>
 
-			<form method="get" action="<?php echo Route::_('index.php'); ?>" id="publicAccessForm">
-				<input type="hidden" name="option" value="com_emundus"/>
-				<input type="hidden" name="task" value="openfile"/>
+			<form method="post" action="<?php echo Route::_('index.php?option=com_emundus&task=authenticatepublicaccess'); ?>" id="publicAccessForm">
+				<?php echo \Joomla\CMS\HTML\HTMLHelper::_('form.token'); ?>
 
 				<!-- fnum: visible if not pre-filled, hidden if already set -->
 				<?php if (!empty($this->fnum)) : ?>

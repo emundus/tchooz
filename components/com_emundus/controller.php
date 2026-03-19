@@ -19,6 +19,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use \setasign\Fpdi\Fpdi;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Tchooz\EmundusResponse;
@@ -2485,7 +2486,13 @@ class EmundusController extends JControllerLegacy
 					if ($this->app->isClient('site'))
 					{
 						$this->app->enqueueMessage(sprintf(Text::_('COM_EMUNDUS_SAVE_INFORMATIONS_TO_REOPEN_LATER'), $token, $applicationEntity->getFnum()));
-						$this->app->redirect(Route::_('/index.php?option=com_emundus&task=openfile&access_token=' . $token . '&fnum=' . $applicationEntity->getFnum()));
+
+						$session = $this->app->getSession();
+						$session->set(EmundusPublicAccess::SESSION_PUBLIC_ACCESS_KEY, true);
+						$session->set(EmundusPublicAccess::SESSION_PUBLIC_FNUM_KEY, $applicationEntity->getFnum());
+						$session->set(EmundusPublicAccess::SESSION_PUBLIC_TOKEN_KEY, $token);
+
+						$this->app->redirect(Route::_('/index.php?option=com_emundus&task=openfile&fnum=' . $applicationEntity->getFnum()));
 					}
 
 					$response->code = 200;

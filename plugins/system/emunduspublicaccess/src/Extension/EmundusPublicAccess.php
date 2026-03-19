@@ -113,15 +113,33 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 		$option = $input->getCmd('option', '');
 		if ($option === 'com_emundus')
 		{
-			$tokenParamName = $this->params->get('token_param_name', 'access_token');
-			$accessToken    = $input->getString($tokenParamName, '');
-			$fnum           = $input->getString('fnum', '');
+			$task = $input->getCmd('task', '');
 
-			if (!empty($accessToken) && !empty($fnum))
+			// Token authentication is only accepted via POST to avoid token exposure in URLs,
+			// browser history, server logs, and Referer headers.
+			if ($task === 'authenticatepublicaccess' && $app->getInput()->getMethod() === 'POST')
 			{
-				$this->authenticatePublicAccess($accessToken, $fnum);
+				// Validate CSRF token
+				if (!\Joomla\CMS\Session\Session::checkToken())
+				{
+					Log::add(
+						'Public access attempt with invalid CSRF token.',
+						Log::WARNING,
+						'plg_system_emunduspublicaccess'
+					);
+					$app->redirect(Route::_('index.php?option=com_emundus&view=publicaccess&error=1&error_msg=' . urlencode(Text::_('JINVALID_TOKEN')), false));
 
-				return;
+					return;
+				}
+
+				$tokenParamName = $this->params->get('token_param_name', 'access_token');
+				$accessToken    = $input->post->getString($tokenParamName, '');
+				$fnum           = $input->post->getString('fnum', '');
+
+				if (!empty($accessToken) && !empty($fnum))
+				{
+					$this->authenticatePublicAccess($accessToken, $fnum);
+				}
 			}
 		}
 
@@ -211,6 +229,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 
 			// Token is valid — set up the public access session
 			$this->initPublicSession($applicationFile, $accessToken);
+			$this->getApplication()->redirect('/index.php?option=com_emundus&task=openfile&fnum=' . $applicationFile->getFnum());
 		}
 		catch (\Exception $e)
 		{
