@@ -14,7 +14,14 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use Tchooz\Repositories\Payment\PaymentRepository;
+
+if (EmundusPublicAccess::isPublicAccessSession())
+{
+	require ModuleHelper::getLayoutPath('mod_emundus_applications', 'public_access');
+	return;
+}
 
 include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
 $m_profile = new EmundusModelProfile();
