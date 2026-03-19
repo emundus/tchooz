@@ -551,7 +551,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$cache_key = 'emundus_user_programs_' . $userId;
 		$cache->remove($cache_key);
 
-		$cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)->createCacheController('output', ['defaultgroup' => 'com_emundus.access', 'caching' => true]);
+		$cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)->createCacheController('output', ['defaultgroup' => 'com_emundus.access']);
 		$cache_key = 'access_levels_' . $userId;
 		$cache->remove($cache_key);
 	}

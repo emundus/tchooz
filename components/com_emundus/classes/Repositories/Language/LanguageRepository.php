@@ -62,7 +62,7 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 		$this->langCode = Factory::getApplication()->getLanguage()->getTag();
 
 		$this->cache = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
-			->createCacheController('output', ['defaultgroup' => 'com_emundus.translations', 'lifetime' => 86400, 'caching' => true]);
+			->createCacheController('output', ['defaultgroup' => 'com_emundus.translations', 'lifetime' => 86400]);
 	}
 
 	public function flush(LanguageEntity $language): bool

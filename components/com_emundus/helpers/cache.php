@@ -35,7 +35,7 @@ class EmundusHelperCache
 
 		$this->cache = Factory::getContainer()
 			->get(CacheControllerFactoryInterface::class)
-			->createCacheController('output', ['defaultgroup' => $group, 'caching' => true, 'lifetime' => $lifetime]);
+			->createCacheController('output', ['defaultgroup' => $group, 'lifetime' => $lifetime]);
 
 		$this->cache_enabled = Factory::getApplication()->get('caching') !== 0;
 		$this->group = $group;
@@ -49,9 +49,14 @@ class EmundusHelperCache
 		return $this->cache_enabled;
 	}
 
-	public function get($key)
+	public function contains($key): bool
 	{
-		$cache = null;
+		return $this->isEnabled() && $this->cache->contains($key);
+	}
+
+	public function get($key, $default = null)
+	{
+		$cache = $default;
 
 		if ($this->isEnabled() && $this->cache->contains($key))
 		{
