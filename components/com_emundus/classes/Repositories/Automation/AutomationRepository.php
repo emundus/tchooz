@@ -278,7 +278,7 @@ class AutomationRepository extends EmundusRepository implements RepositoryInterf
 				$conditionRepository = new ConditionRepository($this->db);
 				foreach ($automation->getConditionsGroups() as $conditionGroup)
 				{
-					$conditionRepository->saveGroupCondition($conditionGroup);
+					$conditionRepository->saveGroupCondition($conditionGroup, $automation->getId());
 
 					foreach ($conditionGroup->getConditions() as $condition)
 					{

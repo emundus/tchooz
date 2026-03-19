@@ -11,6 +11,7 @@ use Tchooz\Entities\Automation\TargetEntity;
 use Tchooz\Entities\Automation\TargetPredefinitions\ApplicantCurrentFilePredefinition;
 use Tchooz\Entities\Automation\TargetPredefinitions\UsersAssociatedToFilePredefinition;
 use Tchooz\Enums\Automation\ConditionOperatorEnum;
+use Tchooz\Enums\Automation\ConditionsAndorEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Repositories\Automation\AutomationRepository;
@@ -443,5 +444,45 @@ class AutomationRepositoryTest extends UnitTestCase
 
 		$this->expectException(\InvalidArgumentException::class);
 		$this->repository->flush($automation);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::flush
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::getById
+	 * @covers \Tchooz\Repositories\Automation\ConditionRepository::saveCondition
+	 * @covers \Tchooz\Repositories\Automation\ConditionRepository::saveGroupCondition
+	 * @covers \Tchooz\Repositories\Automation\ConditionRepository::getConditionsGroupsByAutomationId
+	 * @covers \Tchooz\Repositories\Automation\ConditionRepository::getChildrenGroupsByParentId
+	 * @covers \Tchooz\Repositories\Automation\ConditionRepository::getConditionsByGroupId
+	 * @return void
+	 */
+	public function testGetAutomationByIdWithParentGroupHavingNoConditionAndOnlySubGroups(): void
+	{
+		$automation       = new AutomationEntity(0, 'Test Automation with parent group having no condition and only subgroups', 'This is a test automation');
+		$eventsRepository = new EventsRepository();
+		$event            = $eventsRepository->getEventByName('onAfterStatusChange');
+		$automation->setEvent($event);
+
+		$conditionGroup1 = new ConditionGroupEntity(0, [], ConditionsAndorEnum::AND, 0, [
+			new ConditionGroupEntity(0, [new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 0)], ConditionsAndorEnum::AND, 0),
+			new ConditionGroupEntity(0, [new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::NOT_EQUALS, 1)], ConditionsAndorEnum::AND, 0)
+		]);
+
+		$automation->setConditionsGroups([$conditionGroup1]);
+		$action = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => 1]);
+		$target = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
+		$action->addTarget($target);
+		$automation->addAction($action);
+
+		$saved = $this->repository->flush($automation);
+		$this->assertTrue($saved, 'Automation should be saved successfully');
+		$this->assertGreaterThan(0, $automation->getId(), 'Automation ID should be greater than 0 after saving');
+
+		$retrievedAutomation = $this->repository->getById($automation->getId());
+
+		$this->assertNotNull($retrievedAutomation);
+		$this->assertCount(1, $retrievedAutomation->getConditionsGroups(), 'There should be one parent condition group');
+		$this->assertCount(2, $retrievedAutomation->getConditionsGroups()[0]->getSubGroups(), 'Parent group should have two subgroups');
+		$this->assertCount(0, $retrievedAutomation->getConditionsGroups()[0]->getConditions(), 'Parent group should have no conditions');
 	}
 }
