@@ -2481,6 +2481,13 @@ class EmundusController extends JControllerLegacy
 
 					$fileAccessRepository = new ApplicationFileAccessRepository();
 					$token = $fileAccessRepository->generateAccessFileToken($applicationEntity);
+
+					if ($this->app->isClient('site'))
+					{
+						$this->app->enqueueMessage(sprintf(Text::_('COM_EMUNDUS_SAVE_INFORMATIONS_TO_REOPEN_LATER'), $token, $applicationEntity->getFnum()));
+						$this->app->redirect(Route::_('/index.php?option=com_emundus&task=openfile&access_token=' . $token . '&fnum=' . $applicationEntity->getFnum()));
+					}
+
 					$response->code = 200;
 					$response->status = true;
 					$response->msg = Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_SUCCESS');
