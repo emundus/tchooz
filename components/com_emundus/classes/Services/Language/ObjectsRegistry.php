@@ -12,6 +12,11 @@ namespace Tchooz\Services\Language;
 use EmundusHelperCache;
 use Tchooz\Services\Language\Objects\ObjectInterface;
 
+if(!class_exists('EmundusHelperCache'))
+{
+	require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+}
+
 class ObjectsRegistry
 {
 	private CONST OBJECTS_DIRECTORY = JPATH_ROOT . '/components/com_emundus/classes/Services/Language/Objects';

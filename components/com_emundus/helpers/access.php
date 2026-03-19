@@ -25,6 +25,11 @@ use Tchooz\Repositories\NumericSign\RequestRepository;
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
+if(!class_exists('EmundusHelperCache'))
+{
+	require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+}
+
 /**
  * Content Component Query Helper
  *
