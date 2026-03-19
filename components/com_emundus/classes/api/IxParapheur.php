@@ -50,7 +50,7 @@ class IxParapheur extends Api
 		$this->setBaseUrl($baseUrl);
 
 		$this->setClient();
-		$this->setAuth();
+		$this->setAuth($config->get('ixparapheur_api_app_token', ''));
 
 		$auth = $this->getAuth();
 		$headers = array(
@@ -59,11 +59,9 @@ class IxParapheur extends Api
 		$this->setHeaders($headers);
 	}
 
-	public function setAuth(): void
+	public function setAuth($token): void
 	{
-		$config = ComponentHelper::getParams('com_emundus');
-
-		$this->auth['app_token'] = $config->get('ixparapheur_api_app_token', '');
+		$this->auth['app_token'] = $token;
 	}
 
 	public function getNatures($name = null): array

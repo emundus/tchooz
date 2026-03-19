@@ -17,9 +17,13 @@ use DocuSign\eSign\Model\Recipients;
 use DocuSign\eSign\Model\Signer;
 use DocuSign\eSign\Model\SignHere;
 use DocuSign\eSign\Model\Tabs;
+use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\PluginHelper;
 use JUri;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\NumericSign\Request as Request;
 use Tchooz\Enums\NumericSign\SignAuthenticationLevelEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
@@ -29,9 +33,12 @@ use Tchooz\Repositories\NumericSign\RequestSignersRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Services\NumericSign\DocuSignJwtAuthenticator;
+use Tchooz\Traits\TraitAutomatedTask;
 
 class DocuSignSynchronizer
 {
+	use TraitAutomatedTask;
+
 	private array $auth = [];
 
 	private ApiClient $client;
@@ -627,6 +634,28 @@ class DocuSignSynchronizer
 							if (!$requestRepository->flush($request))
 							{
 								throw new \RuntimeException("Failed to update request with signed upload ID.");
+							}
+							else
+							{
+								PluginHelper::importPlugin('emundus');
+
+								$onAfterSignRequestCompletedEventHandler = new GenericEvent(
+									'onCallEventHandler',
+									[
+										'onAfterSignRequestCompleted',
+										['context' => new EventContextEntity(
+											$this->getAutomatedTaskUser(),
+											[$request->getFnum()],
+											[],
+											[
+												'request_id' => $request->getId(),
+											]
+										)]
+									]
+								);
+
+								$dispatcher = Factory::getApplication()->getDispatcher();
+								$dispatcher->dispatch('onCallEventHandler', $onAfterSignRequestCompletedEventHandler);
 							}
 						}
 					}

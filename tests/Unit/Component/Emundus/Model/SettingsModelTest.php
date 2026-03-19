@@ -12,6 +12,7 @@ namespace Unit\Component\Emundus\Model;
 use EmundusHelperCache;
 use Joomla\CMS\Factory;
 use Joomla\Tests\Unit\UnitTestCase;
+use Tchooz\Entities\Upload\UploadEntity;
 
 require_once JPATH_BASE . '/components/com_emundus/helpers/cache.php';
 
@@ -233,5 +234,129 @@ class SettingsModelTest extends UnitTestCase
 		$state = $this->db->loadResult();
 
 		$this->assertSame(0, $state, 'La désactivation du plugin Emundus - User Type fonctionne');
+	}
+
+	/**
+	 * @covers EmundusModelSettings::getFileThumbnail
+	 */
+	public function testGetFileThumbnail(): void
+	{
+		$assetPath =  JPATH_BASE . '/tests/assets/pdf_test_file.pdf';
+		$this->assertFileExists($assetPath, 'Test PDF asset should exist');
+
+		$userId   = $this->dataset['applicant'];
+		$filename = 'pdf_test_file.pdf';
+
+		$targetDir  = JPATH_SITE . '/images/emundus/files/' . $userId;
+		$targetPath = $targetDir . '/' . $filename;
+
+		$upload = new UploadEntity(
+			0,
+			$userId,
+			$this->dataset['fnum'],
+			$this->h_dataset->createSampleAttachment(),
+			$filename,
+			'Test file description',
+			'local_testfile.pdf'
+		);
+
+		$this->assertFileDoesNotExist($targetPath, 'Target test file already exists; refusing to overwrite');
+
+		if (!is_dir($targetDir))
+		{
+			$this->assertTrue(mkdir($targetDir), 'Failed to create target directory for test file');
+		}
+
+		$this->assertTrue(copy($assetPath, $targetPath), 'Failed to copy asset PDF into internal path');
+
+		try
+		{
+			$thumb = $this->model->getFileThumbnail($upload, 1);
+
+			$this->assertIsString($thumb);
+			$this->assertNotEmpty($thumb, 'Thumbnail base64 should not be empty');
+
+			$decoded = base64_decode($thumb, true);
+			$this->assertNotFalse($decoded, 'Thumbnail should be valid base64');
+		}
+		finally
+		{
+			if (is_file($targetPath))
+			{
+				unlink($targetPath);
+			}
+
+			if (is_dir($targetDir))
+			{
+				$files = array_values(array_diff(scandir($targetDir) ?: [], ['.', '..']));
+				if (count($files) === 0)
+				{
+					rmdir($targetDir);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @covers EmundusModelSettings::getFileInfosFromUploadEntity
+	 */
+	public function testGetFileInfosFromUploadEntity(): void
+	{
+		$assetPath = JPATH_BASE . '/tests/assets/pdf_test_file.pdf';
+		$this->assertFileExists($assetPath);
+
+		$userId   = $this->dataset['applicant'];
+		$filename = 'pdf_test_file.pdf';
+
+		$targetDir  = JPATH_SITE . '/images/emundus/files/' . $userId;
+		$targetPath = $targetDir . '/' . $filename;
+
+		$upload = new UploadEntity(
+			0,
+			$userId,
+			$this->dataset['fnum'],
+			$this->h_dataset->createSampleAttachment(),
+			$filename,
+			'Test file description',
+			'local_testfile.pdf'
+		);
+
+		$upload->setThumbnail(base64_encode('dummy-thumb'));
+
+		$this->assertFileDoesNotExist($targetPath);
+
+		if (!is_dir($targetDir))
+		{
+			$this->assertTrue(mkdir($targetDir), 'Failed to create target directory for test file');
+		}
+		$this->assertTrue(copy($assetPath, $targetPath));
+
+		try
+		{
+			$infos = $this->model->getFileInfosFromUploadEntity($upload);
+
+			$this->assertIsArray($infos);
+			$this->assertArrayHasKey('thumbnail', $infos);
+			$this->assertArrayHasKey('pages_length', $infos);
+			$this->assertArrayHasKey('text', $infos);
+
+			$this->assertGreaterThanOrEqual(1, $infos['pages_length']);
+			$this->assertIsString($infos['text']);
+		}
+		finally
+		{
+			if (is_file($targetPath))
+			{
+				unlink($targetPath);
+			}
+			if (is_dir($targetDir))
+			{
+				$files = array_values(array_diff(scandir($targetDir) ?: [], ['.', '..']));
+				if (count($files) === 0)
+				{
+					rmdir($targetDir);
+				}
+			}
+		}
 	}
 }

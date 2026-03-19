@@ -186,9 +186,13 @@ export default {
 				return;
 			}
 
-			this.automation.conditions_groups.foreach((g) => {
+			this.automation.conditions_groups.forEach((g) => {
 				if (g.id === group.parent_id) {
 					g.subGroups = g.subGroups.filter((sg) => sg.id !== group.id);
+				}
+
+				if (g.id === group.id) {
+					this.automation.conditions_groups = this.automation.conditions_groups.filter((cg) => cg.id !== group.id);
 				}
 			});
 		},

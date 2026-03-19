@@ -4,6 +4,7 @@ namespace Tchooz\Repositories\Automation;
 
 use Gantry\Framework\Exception;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Automation\ConditionEntity;
 use Tchooz\Entities\Automation\ConditionGroupEntity;
@@ -79,6 +80,10 @@ class ConditionRepository
 				}
 			}
 		} catch (Exception $e) {
+			// Log the error or handle it as needed
+			$saved = false;
+			Log::add('Error saving group condition: ' . $e->getMessage(), Log::ERROR, 'com_emundus.condition.repository');
+
 		}
 
 		if ($saved)
@@ -236,10 +241,25 @@ class ConditionRepository
 				->leftJoin($this->db->quoteName('#__emundus_condition', 'cond') . ' ON ' . $this->db->quoteName('cond.group_id') . ' = ' . $this->db->quoteName('gc.id'))
 				->leftJoin($this->db->quoteName('#__emundus_automation_condition', 'ac') . ' ON ' . $this->db->quoteName('ac.condition_id') . ' = ' . $this->db->quoteName('cond.id'))
 				->where($this->db->quoteName('ac.automation_id') . ' = ' . $automationId)
-				->andWhere($this->db->quoteName('gc.parent_id') . ' IS NULL');
+				->where($this->db->quoteName('gc.parent_id') . ' IS NULL'); // Only get parent groups, children will be retrieved recursively
 
 			$this->db->setQuery($query);
-			$groupRows = $this->db->loadObjectList();
+			$groupRowsWitConditions = $this->db->loadObjectList();
+
+			// get parent_id not null groups that are linked to the automation but not retrieved in the previous query (in case there are groups without conditions directly linked to the automation)
+			$query->clear()
+				->select('DISTINCT gc.*')
+				->from($this->db->quoteName('#__emundus_group_condition', 'gc'))
+				->leftJoin($this->db->quoteName('#__emundus_group_condition', 'gc_child') . ' ON ' . $this->db->quoteName('gc_child.parent_id') . ' = ' . $this->db->quoteName('gc.id'))
+				->leftJoin($this->db->quoteName('#__emundus_condition', 'cond') . ' ON ' . $this->db->quoteName('cond.group_id') . ' = ' . $this->db->quoteName('gc_child.id'))
+				->leftJoin($this->db->quoteName('#__emundus_automation_condition', 'ac') . ' ON ' . $this->db->quoteName('ac.condition_id') . ' = ' . $this->db->quoteName('cond.id'))
+				->where($this->db->quoteName('ac.automation_id') . ' = ' . $automationId)
+				->where($this->db->quoteName('gc_child.parent_id') . ' IS NOT NULL');
+
+			$this->db->setQuery($query);
+			$groupRowsWithoutConditions = $this->db->loadObjectList();
+			$groupRows = array_merge($groupRowsWitConditions, $groupRowsWithoutConditions);
+			$groupRows = array_unique($groupRows, SORT_REGULAR); // Remove duplicates in case some groups are retrieved in both queries
 
 			foreach ($groupRows as $groupRow)
 			{

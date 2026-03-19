@@ -630,6 +630,7 @@ class EmundusControllerCampaign extends EmundusController
 		else
 		{
 			$response['msg'] = Text::_('ERROR_CANNOT_ADD_CAMPAIGN');
+			$response['code'] = 500;
 		}
 
 		$this->sendJsonResponse($response);

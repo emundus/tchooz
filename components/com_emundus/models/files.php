@@ -5859,8 +5859,6 @@ class EmundusModelFiles extends JModelLegacy
 					}
 				}
 
-
-
 				if (!empty($eval_steps) && (!empty($eval_steps['tables']) || !empty($eval_steps['groups']) || !empty($eval_steps['elements']))) {
 					$elements = [
 						['fids' => $eval_steps['tables'], 'gids' => $eval_steps['groups'], 'eids' => $eval_steps['elements']]
@@ -6060,12 +6058,12 @@ class EmundusModelFiles extends JModelLegacy
 
 			$eMConfig = ComponentHelper::getParams('com_emundus');
 
-			$formids    = explode(',', $formid);
+			$formids    = !empty($formid) ? explode(',', $formid) : [];
 			if (!is_array($attachids)) {
-				$attachids = explode(',', $attachids);
+				$attachids = !empty($attachids) ? explode(',', $attachids) : [];
 			}
 			if(!is_array($options)) {
-				$options = explode(',', $options);
+				$options = !empty($options) ? explode(',', $options) : [];
 			}
 
 			$fnumsInfo = $this->getFnumsInfos($validFnums);
@@ -6102,7 +6100,7 @@ class EmundusModelFiles extends JModelLegacy
 			}
 
 			for ($i = $start; $i <= $totalfile; $i++) {
-				$fnum = $validFnums[$i];
+				$fnum = $validFnums[$i] ?? null;
 				if (is_numeric($fnum) && !empty($fnum)) {
 					if (isset($forms)) {
 						$forms_to_export = array();
@@ -6148,7 +6146,6 @@ class EmundusModelFiles extends JModelLegacy
 
 					EmundusModelLogs::log($current_user_id, (int) $fnumsInfo[$fnum]['applicant_id'], $fnum, 8, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_PDF');
 				}
-
 			}
 			$start = $i;
 
@@ -6159,10 +6156,24 @@ class EmundusModelFiles extends JModelLegacy
 
 				$start = $i;
 
+				$app = Factory::getApplication();
+				$config = $app->getConfig();
+				$siteurl = $config->get('live_site');
+
+				if (empty($siteurl)) {
+					if ($app->isClient('site')) {
+						$base_url = Uri::base();
+					} else if ($app->isClient('administrator')) {
+						$base_url = Uri::root();
+					}
+				} else {
+					$base_url = $siteurl;
+				}
+
 				$dataresult = [
 					'start' => $start, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
 					'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
+					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=> $base_url, 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
 				];
 				$response_status = true;
 			}

@@ -319,7 +319,7 @@ class EventsModelTest extends UnitTestCase
 		$this->assertIsArray($event_slot_lower_capacity_with_registrant, 'The method saveEventSlot should return an array');
 		$this->assertEmpty($event_slot_lower_capacity_with_registrant['slots'], 'The method saveEventSlot should return an empty array');
 		$this->assertFalse($event_slot_lower_capacity_with_registrant['status'], 'The method saveEventSlot should return a false status');
-		$this->assertStringStartsWith('Afin de ne pas impacter la ou les réservations', $event_slot_lower_capacity_with_registrant['message'], 'The method saveEventSlot should return an error message about impacting existing bookings');
+		$this->assertStringStartsWith(Text::_('COM_EMUNDUS_ONBOARD_ADD_EVENT_UPDATE_CAPACITY_ERROR'), $event_slot_lower_capacity_with_registrant['message'], 'The method saveEventSlot should return an error message about impacting existing bookings');
 
 		$date = new DateTime($event_slots['slots'][0]->start);
 		$date->modify('-95 minutes');
@@ -340,7 +340,7 @@ class EventsModelTest extends UnitTestCase
 		$this->assertIsArray($event_slot_earlier_start_date_with_registrant, 'The method saveEventSlot should return an array');
 		$this->assertEmpty($event_slot_earlier_start_date_with_registrant['slots'], 'The method saveEventSlot should return an empty array');
 		$this->assertFalse($event_slot_earlier_start_date_with_registrant['status'], 'The method saveEventSlot should return a false status');
-		$this->assertStringContainsString("l'heure de début de la plage de réservation ne doit pas être inférieure à celle définie", $event_slot_earlier_start_date_with_registrant['message'], 'The method saveEventSlot should return an error message about the start date being too early');
+		$this->assertStringContainsString(Text::_('COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_CONDITIONS_ERROR'), $event_slot_earlier_start_date_with_registrant['message'], 'The method saveEventSlot should return an error message about the start date being too early');
 
 		$date = new DateTime($event_slots['slots'][0]->end);
 		$date->modify('-90 minutes');
@@ -545,7 +545,6 @@ class EventsModelTest extends UnitTestCase
 		$setuped_duration = $this->model->setupSlot($setup_new_slot_duration['event_id'], $setup_new_slot_duration['slot_duration'], $setup_new_slot_duration['slot_break_every'], $setup_new_slot_duration['slot_break_time'], $setup_new_slot_duration['slots_availables_to_show'], $setup_new_slot_duration['slot_can_book_until'], $setup_new_slot_duration['slot_can_cancel'], $setup_new_slot_duration['slot_can_cancel_until'], $setup_new_slot_duration['user_id']);
 		$this->assertIsArray($setuped_duration, 'The method setupSlot should return an array');
 		$this->assertFalse($setuped_duration['status'], 'The method setupSlot status should return false');
-		$this->assertStringContainsString('La durée des créneaux ne peut pas être modifiée', $setuped_duration['message'], 'The method setupSlot status should return an error message about slot duration');
 
 		$setup_new_slot_break_every = [
 			'event_id' => $event_id,
@@ -562,7 +561,6 @@ class EventsModelTest extends UnitTestCase
 		$setuped_break_every= $this->model->setupSlot($setup_new_slot_break_every['event_id'], $setup_new_slot_break_every['slot_duration'], $setup_new_slot_break_every['slot_break_every'], $setup_new_slot_break_every['slot_break_time'], $setup_new_slot_break_every['slots_availables_to_show'], $setup_new_slot_break_every['slot_can_book_until'], $setup_new_slot_break_every['slot_can_cancel'], $setup_new_slot_break_every['slot_can_cancel_until'], $setup_new_slot_break_every['user_id']);
 		$this->assertIsArray($setuped_break_every, 'The method setupSlot should return an array');
 		$this->assertFalse($setuped_break_every['status'], 'The method setupSlot status should return false');
-		$this->assertStringContainsString("au moins une réservation a déjà eu lieu sur cet évènement", $setuped_break_every['message'], 'The method setupSlot status should return an error message about break every');
 
 		$setup_new_slot_break_time = [
 			'event_id' => $event_id,

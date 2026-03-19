@@ -28,7 +28,8 @@ class PostgREST extends Api
 
 		$this->db = Factory::getDbo();
 
-		$this->setAuth();
+		$config = ComponentHelper::getParams('com_emundus');
+		$this->setAuth($config->get('postgrest_api_bearer_token', ''));
 
 		$auth = $this->getAuth();
 		$headers = array(
@@ -36,18 +37,16 @@ class PostgREST extends Api
 		);
 		$this->setHeaders($headers);
 
-		$config = ComponentHelper::getParams('com_emundus');
+
 		$baseUrl = $config->get('postgrest_api_base_url', '');
 		$this->setBaseUrl($baseUrl);
 
 		$this->setClient();
 	}
 
-	public function setAuth(): void
+	public function setAuth($token): void
 	{
-		$config = ComponentHelper::getParams('com_emundus');
-
-		$this->auth['bearer_token'] = $config->get('postgrest_api_bearer_token', '');
+		$this->auth['bearer_token'] = $token;
 	}
 
 	public function getAttributeMapping(): array

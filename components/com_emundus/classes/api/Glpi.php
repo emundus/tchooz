@@ -30,7 +30,7 @@ class Glpi extends Api
 		$this->setBaseUrl($baseUrl);
 
 		$this->setClient();
-		$this->setAuth();
+		$this->setAuth($config->get('glpi_api_app_token', ''));
 
 		$auth = $this->getAuth();
 		$headers = array(
@@ -44,11 +44,11 @@ class Glpi extends Api
 		}
 	}
 
-	public function setAuth(): void
+	public function setAuth($token): void
 	{
 		$config = ComponentHelper::getParams('com_emundus');
 
-		$this->auth['app_token']     = $config->get('glpi_api_app_token', '');
+		$this->auth['app_token']     = $token;
 		$this->auth['user_token']    = $config->get('glpi_api_user_token', '');
 		$this->auth['session_token'] = $this->getSessionToken();
 	}

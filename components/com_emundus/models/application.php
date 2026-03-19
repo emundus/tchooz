@@ -68,6 +68,8 @@ class EmundusModelApplication extends ListModel
 	 */
 	protected $_db;
 
+	private ?HtmlSanitizerSingleton $sanitizer;
+
 	/**
 	 * Constructor
 	 *
@@ -93,6 +95,11 @@ class EmundusModelApplication extends ListModel
 
 		$this->_user   = $session->get('emundusUser');
 		$this->locales = substr($language->getTag(), 0, 2);
+
+		if (!class_exists('HtmlSanitizerSingleton')) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/html.php');
+		}
+		$this->sanitizer = HtmlSanitizerSingleton::getInstance();
 	}
 
 	public function getApplicantInfos($aid, $param)
@@ -3032,7 +3039,7 @@ class EmundusModelApplication extends ListModel
 		$forms     = '';
 
 		if (isset($tableuser)) {
-			$allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
+			$allowed_groups = EmundusHelperAccess::getUserFabrikGroups($current_user_id);
 
 			foreach ($tableuser as $key => $itemt) {
 				$query = $this->_db->getQuery(true);
@@ -3098,6 +3105,8 @@ class EmundusModelApplication extends ListModel
 					if (!EmundusHelperAccess::isAllowedAccessLevel($current_user_id, (int) $g_params->access)) {
 						continue;
 					}
+
+					$g_params->repeated = $g_params->repeated ?? 0;
 
 					if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
 						if(!in_array($g_params->repeat_group_show_first, $hidden_group_param_values) && !empty(Text::_($itemg->label)))
@@ -7084,6 +7093,14 @@ class EmundusModelApplication extends ListModel
 			try {
 				$this->_db->setQuery($query);
 				$tabs = $this->_db->loadAssocList();
+
+				if (!empty($tabs))
+				{
+					foreach ($tabs as $key => $tab)
+					{
+						$tabs[$key]['name'] = $this->sanitizer->sanitizeNoHtml($tab['name']);
+					}
+				}
 			}
 			catch (Exception $e) {
 				Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
@@ -7108,6 +7125,9 @@ class EmundusModelApplication extends ListModel
 					$owned   = $this->isTabOwnedByUser($tab->id, $user_id);
 
 					if ($owned) {
+						// sanitize name
+						$tab->name = $this->sanitizer->sanitizeNoHtml($tab->name);
+
 						$query->clear()
 							->update($this->_db->quoteName('#__emundus_campaign_candidature_tabs'))
 							->set($this->_db->quoteName('name') . ' = ' . $this->_db->quote($tab->name))
