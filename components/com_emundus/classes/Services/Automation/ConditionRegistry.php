@@ -10,6 +10,11 @@ use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Repositories\Automation\AutomationRepository;
 use Tchooz\Services\Automation\Condition\ConditionTargetResolverInterface;
 
+if(!class_exists('EmundusHelperCache'))
+{
+	require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+}
+
 class ConditionRegistry
 {
 	private CONST CONDITIONS_DIRECTORY = JPATH_ROOT . '/components/com_emundus/classes/Services/Automation/Condition';

@@ -8,6 +8,11 @@ use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 
+if(!class_exists('EmundusHelperCache'))
+{
+	require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+}
+
 class FabrikFormEventDefinition extends EventDefinition
 {
 

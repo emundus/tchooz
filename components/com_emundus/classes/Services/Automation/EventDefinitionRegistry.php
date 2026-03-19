@@ -5,6 +5,11 @@ namespace Tchooz\Services\Automation;
 use EmundusHelperCache;
 use Tchooz\Entities\Automation\EventsDefinitions\Defaults\EventDefinition;
 
+if(!class_exists('EmundusHelperCache'))
+{
+	require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+}
+
 class EventDefinitionRegistry
 {
 	private CONST EVENT_DEFINITIONS_DIRECTORY = JPATH_ROOT . '/components/com_emundus/classes/Entities/Automation/EventsDefinitions';

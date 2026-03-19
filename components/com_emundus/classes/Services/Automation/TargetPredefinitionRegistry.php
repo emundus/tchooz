@@ -6,6 +6,11 @@ use EmundusHelperCache;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Automation\TargetPredefinitionEntity;
 
+if(!class_exists('EmundusHelperCache'))
+{
+	require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+}
+
 class TargetPredefinitionRegistry
 {
 	private const TARGET_PREDEFINITIONS_DIRECTORY = JPATH_ROOT . '/components/com_emundus/classes/Entities/Automation/TargetPredefinitions';
