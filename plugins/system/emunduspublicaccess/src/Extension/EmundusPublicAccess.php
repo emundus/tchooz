@@ -345,8 +345,8 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			$emundusSession->fnum                   = $applicationFile->getFnum();
 			$emundusSession->fnums                  = [$applicationFile->getFnum()];
 			$emundusSession->campaign_id            = $campaign->getId();
-			$emundusSession->status                 = $applicationFile->getStatus();
-			$emundusSession->candidature_incomplete = ($applicationFile->getStatus() == 0) ? 0 : 1;
+			$emundusSession->status                 = $applicationFile->getStatus()->getStep();
+			$emundusSession->candidature_incomplete = ($applicationFile->getStatus()->getStep() == 0) ? 0 : 1;
 			$emundusSession->profile                = !empty($profile['profile_id']) ? $profile['profile_id'] : ($profile['profile'] ?? 0);
 			$emundusSession->profile_label          = $profile['label'] ?? '';
 			$emundusSession->menutype               = $profile['menutype'] ?? '';
