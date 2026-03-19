@@ -25,6 +25,7 @@ use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Export\ExportRepository;
+use Tchooz\Services\FileSecurityService;
 
 /**
  * eMundus Component Controller
@@ -1240,6 +1241,24 @@ class EmundusController extends JControllerLegacy
 
 						return false;
 					}
+				}
+
+				// Block files containing dangerous active content (macros, scripts, JavaScript)
+				$fileSecurityService = new FileSecurityService();
+				if ($fileSecurityService->containsDangerousContent($file['tmp_name'], $file_ext)) {
+					$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . ' -> File contains dangerous active content (' . $file_ext . '), upload blocked';
+					Log::add($error, Log::WARNING, 'com_emundus');
+					$errorInfo = Text::_('COM_EMUNDUS_ERROR_FILE_CONTAINS_ACTIVE_CONTENT');
+
+					if ($format == "raw") {
+						echo '{"aid":"0","status":false,"message":"' . $errorInfo . '"}';
+					}
+					else {
+						$this->app->enqueueMessage($errorInfo, 'error');
+						$this->setRedirect($url);
+					}
+
+					return false;
 				}
 
 				// Check if pdf and if a max or min number of pages is defined

@@ -7,6 +7,7 @@ use Tchooz\Entities\Fields\Field;
 use Tchooz\Entities\Fields\MixedField;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Services\Automation\FieldTransformer;
 
@@ -159,6 +160,16 @@ class AliasDataConditionResolver implements ConditionTargetResolverInterface
 			else if (isset($value['raw']))
 			{
 				$value = $value['raw'];
+
+				$field = $this->getFieldFromAlias($fieldName);
+				if ($field->getOriginalType() === ElementPluginEnum::ORDERLIST->value)
+				{
+					if (is_string($value))
+					{
+						$value = str_replace('"', '', $value);
+						$value = explode(',', $value);
+					}
+				}
 			}
 		}
 

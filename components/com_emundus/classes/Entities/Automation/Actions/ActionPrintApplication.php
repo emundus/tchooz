@@ -15,6 +15,8 @@ use Tchooz\Enums\Automation\TargetTypeEnum;
 
 class ActionPrintApplication extends ActionEntity
 {
+	public const ATTACHMENT_ID = 26;
+
 	public static function getIcon(): ?string
 	{
 		return 'print';
@@ -64,6 +66,16 @@ class ActionPrintApplication extends ActionEntity
 		{
 			try
 			{
+				if (!defined('EMUNDUS_PATH_ABS'))
+				{
+					define('EMUNDUS_PATH_ABS', JPATH_ROOT . '/images/emundus/files/');
+				}
+
+				if (!defined('EMUNDUS_PATH_REL'))
+				{
+					define('EMUNDUS_PATH_REL', 'images/emundus/files/');
+				}
+
 				$app = Factory::getApplication();
 
 				$offset   = $app->get('offset', 'UTC');
@@ -170,7 +182,7 @@ class ActionPrintApplication extends ActionEntity
 
 				$upload = (object) [
 					'fnum'           => $fnum,
-					'attachment_id'  => 26,
+					'attachment_id'  => self::ATTACHMENT_ID,
 					'user_id'        => $fnumInfo['applicant_id'],
 					'can_be_deleted' => 0,
 					'filename'       => $target_file_name
@@ -182,7 +194,7 @@ class ActionPrintApplication extends ActionEntity
 					$query->select('id')
 						->from($db->quoteName('#__emundus_uploads'))
 						->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
-						->where($db->quoteName('attachment_id') . ' = 26')
+						->where($db->quoteName('attachment_id') . ' = ' . (int) self::ATTACHMENT_ID)
 						->where($db->quoteName('user_id') . ' = ' . (int) $fnumInfo['applicant_id']);
 					$db->setQuery($query);
 					$upload_id = $db->loadResult();
@@ -226,7 +238,7 @@ class ActionPrintApplication extends ActionEntity
 			}
 			catch (\Exception $e)
 			{
-				Log::add('Error generating letter in ActionPrintLetter: ' . $e->getMessage(), Log::ERROR, 'com_emundus.action');
+				Log::add('Error printing application file in ActionPrintApplication: ' . $e->getMessage(), Log::ERROR, 'com_emundus.action');
 				$executed = ActionExecutionStatusEnum::FAILED;
 			}
 		}

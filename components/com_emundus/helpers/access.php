@@ -43,21 +43,18 @@ class EmundusHelperAccess
 
 	static function isAllowedAccessLevel($user_id, $current_menu_access)
 	{
-		$accesses = [];
-
-		$cache = Factory::getContainer()->get(CacheControllerFactoryInterface::class)->createCacheController('output', ['defaultgroup' => 'com_emundus.access', 'caching' => true]);
+		$hCache = new EmundusHelperCache('com_emundus.access');
 		$cache_key = 'access_levels_' . $user_id;
-		if($cache->contains($cache_key)) {
-			$accesses = $cache->get($cache_key);
-			if(is_array($accesses) && in_array($current_menu_access, array_keys($accesses))) {
-				return $accesses[$current_menu_access];
-			}
+		$accesses = $hCache->get($cache_key, []);
+
+		if(is_array($accesses) && in_array($current_menu_access, array_keys($accesses))) {
+			return $accesses[$current_menu_access];
 		}
 
 		$user_access_level = Access::getAuthorisedViewLevels($user_id);
 
 		$accesses[$current_menu_access] = in_array($current_menu_access, $user_access_level);
-		$cache->store($accesses, $cache_key);
+		$hCache->set($cache_key, $accesses);
 
 		return $accesses[$current_menu_access];
 	}
@@ -234,10 +231,10 @@ class EmundusHelperAccess
 			}
 			else
 			{
-				$cache = Factory::getContainer()->get(CacheControllerFactoryInterface::class)->createCacheController('output', ['defaultgroup' => 'com_emundus.access', 'caching' => true]);
+				$hCache = new EmundusHelperCache('com_emundus.access');
 				$cache_key = 'access_action_' . $action_id . '_' . $crud . '_' . (!empty($user_id) ? $user_id : 'current');
-				if($cache->contains($cache_key)) {
-					return $cache->get($cache_key);
+				if($hCache->contains($cache_key)) {
+					return $hCache->get($cache_key);
 				}
 				
 				if (!empty($user_id)) {
@@ -248,7 +245,7 @@ class EmundusHelperAccess
 				}
 
 				$has_access = EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud);
-				$cache->store($has_access, $cache_key);
+				$hCache->set($cache_key, $has_access);
 			}
 		}
 

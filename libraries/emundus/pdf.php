@@ -894,11 +894,20 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		    $item = $db->loadObject();
 
 		    /* GET LOGO */
-			$logo = EmundusHelperEmails::getLogo(false,$item->training);
-
-		    $type = pathinfo($logo, PATHINFO_EXTENSION);
-		    $data = file_get_contents($logo);
-		    $logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+			try
+			{
+				$logo = EmundusHelperEmails::getLogo(false,$item->training);
+				$type = pathinfo($logo, PATHINFO_EXTENSION);
+				if ($data = file_get_contents($logo))
+				{
+					$logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+				}
+			}
+			catch (\Exception $e)
+			{
+				$logo_base64 = '';
+				Log::add('Error while getting logo for application form PDF : '.$e->getMessage(), Log::ERROR, 'com_emundus');
+			}
 		    /* END LOGO */
 
 	        $htmldata = '';
@@ -919,7 +928,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
             $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($current_user_id);
 
-            if ($options[0] != "0") {
+            if (!empty($options) && $options[0] != "0") {
                 $date_submitted = (!empty($item->date_submitted) && strpos($item->date_submitted, '0000') === false) ? EmundusHelperDate::displayDate($item->date_submitted) : Text::_('NOT_SENT');
 
                 // Create an date object
@@ -1027,7 +1036,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $htmldata .= '<hr>';
             }
         } catch (Exception $e) {
-            Log::add('SQL error in emundus pdf library at query : ' . $query, Log::ERROR, 'com_emundus');
+            Log::add('Error in emundus pdf library at query : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
         }
 
 	    if ($form_post == 1 && empty($form_ids) && !empty($elements)) {
@@ -1559,7 +1568,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
  * @since version
  * @deprecated since version 2.0
  */
-function application_header_pdf($user_id, $fnum = null, $output = true, $options = null) {
+function application_header_pdf($user_id, $fnum = null, $output = true, $options = null, $current_user_id = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
 
@@ -1611,7 +1620,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
         $item = $db->loadObject();
 
     } catch (Exception $e) {
-        Log::add('SQL error in emundus pdf library at query : ' . $query, Log::ERROR, 'com_emundus');
+        Log::add('SQL error in emundus pdf library at query : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
     }
 
     //get logo

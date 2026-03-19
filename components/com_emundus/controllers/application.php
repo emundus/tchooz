@@ -535,10 +535,10 @@ class EmundusControllerApplication extends EmundusController
 				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 			}
 			$m_workflow = new EmundusModelWorkflow();
-			
+
 			$actionRepository = new ActionRepository();
 			$paymentAction = $actionRepository->getByName('payment');
-			
+
 			$m_application = $this->getModel('Application');
 			$menus         = $m_application->getApplicationMenu($this->_user->id, $fnum);
 			$ccid          = EmundusHelperFiles::getIdFromFnum($fnum);
@@ -2914,7 +2914,7 @@ class EmundusControllerApplication extends EmundusController
 
 		$moreFormId   = $applicationChoicesRepository->getMoreFormId();
 		$moreElements = $applicationChoicesRepository->getChoicesMoreElements($moreFormId);
-		
+
 		$applicationChoices           = $applicationChoicesRepository->getAllChoices('DESC', '', 0, 0, 't.id', [], null, $moreFormId, [], [], [], [], $ids);
 
 		if(!empty($applicationChoices->getItems()))

@@ -128,11 +128,11 @@ class EmundusControllerEmail extends EmundusController
 			$mail_to = explode(',', $mail_to);
 			$email   = $this->m_emails->sendExpertMail((array) $fnums, $this->user->id, $mail_subject, $mail_from_name, $mail_from, $mail_to, $mail_body, $mail_id);
 
-			$response = ['status' => true, 'sent' => $email['sent'], 'failed' => $email['failed'], 'message' => $email['message']];
+			$response = ['code' => 200, 'status' => true, 'sent' => $email['sent'], 'failed' => $email['failed'], 'message' => $email['message']];
 		}
 		else
 		{
-			$response = ['status' => false, 'sent' => null, 'failed' => true, 'message' => Text::_('MISSING_PARAMS')];
+			$response = ['code' => 400, 'status' => false, 'sent' => null, 'failed' => true, 'message' => Text::_('MISSING_PARAMS')];
 		}
 
 		$this->sendJsonResponse($response);

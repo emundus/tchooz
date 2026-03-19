@@ -170,7 +170,14 @@ class YousignRequests
 
 	public function getExpirationDate(): string
 	{
-		return $this->expirationDate;
+		if(empty($this->expirationDate))
+		{
+			return '';
+		}
+
+		// Remove hours, minutes and seconds from the expiration date
+		$dt = new \DateTime($this->expirationDate);
+		return $dt->format('Y-m-d');
 	}
 
 	public function setExpirationDate(string $expirationDate): void

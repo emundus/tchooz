@@ -141,6 +141,26 @@ export default {
 					label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_REQUEST_NAME',
 					helptext: '',
 					displayed: true,
+					optional: true,
+				},
+				{
+					param: 'signature_display_mode',
+					type: 'select',
+					placeholder: '',
+					value: 'minimal',
+					label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_SIGNATURE_DISPLAY_MODE',
+					displayed: true,
+					options: [
+						{
+							label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_SIGNATURE_DISPLAY_MODE_MINIMAL',
+							value: 'minimal',
+						},
+						{
+							label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_SIGNATURE_DISPLAY_MODE_DETAILED',
+							value: 'detailed',
+						},
+					],
+					optional: true,
 				},
 			],
 		};

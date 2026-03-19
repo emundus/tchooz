@@ -72,21 +72,23 @@ if (!empty($currentWorkflow))
         </div>
     <?php endif; ?>
 
-    <div class="btn-upload em-pointer">
-        <p class="em-flex-row"><?php echo Text::_('PLG_ELEMENT_FILEUPLOAD_DROP') ?>
-            <u class="em-ml-4">
-                <?php echo Text::_('PLG_ELEMENT_FILEUPLOAD_DROP_CLICK') ?>
-            </u>
-            <span class="material-symbols-outlined em-ml-12">cloud_upload</span>
-        </p>
+    <div class="tw-relative">
+        <div class="btn-upload em-pointer">
+            <p class="em-flex-row"><?php echo Text::_('PLG_ELEMENT_FILEUPLOAD_DROP') ?>
+                <u class="em-ml-4">
+                    <?php echo Text::_('PLG_ELEMENT_FILEUPLOAD_DROP_CLICK') ?>
+                </u>
+                <span class="material-symbols-outlined em-ml-12">cloud_upload</span>
+            </p>
+        </div>
+        <input class="fabrikinput" type="file" id="file_<?= $d->attributes['id']; ?>"
+               name="file_<?= $d->attributes['name']; ?>"
+               <?php if ($d->attributes['description_input'] == 1) : ?>style="top: 80px"<?php endif; ?>
+               multiple <?php foreach ($d->attributes as $key => $value)
+        {
+            echo $key . '="' . $value . '" ';
+        } ?>/>
+        <input class="fabrikinput" type="hidden" id="<?= $d->attributes['id']; ?>" name="<?= $d->attributes['name']; ?>"
+               value="<?= $d->attributes['value']; ?>" />
     </div>
-    <input class="fabrikinput" type="file" id="file_<?= $d->attributes['id']; ?>"
-           name="file_<?= $d->attributes['name']; ?>"
-           <?php if ($d->attributes['description_input'] == 1) : ?>style="top: 80px"<?php endif; ?>
-           multiple <?php foreach ($d->attributes as $key => $value)
-    {
-        echo $key . '="' . $value . '" ';
-    } ?>/>
-    <input class="fabrikinput" type="hidden" id="<?= $d->attributes['id']; ?>" name="<?= $d->attributes['name']; ?>"
-           value="<?= $d->attributes['value']; ?>" />
 </div>

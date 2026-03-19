@@ -2,7 +2,7 @@
 	<div id="application-choices-list">
 		<list
 			v-if="!loading"
-			:default-lists="config"
+			:default-lists="configString"
 			:encoded="false"
 			:default-type="'applicationchoices'"
 			:key="renderingKey"
@@ -145,6 +145,11 @@ export default {
 				this.loading = false;
 			}
 		});
+	},
+	computed: {
+		configString() {
+			return btoa(JSON.stringify(this.config));
+		},
 	},
 };
 </script>
