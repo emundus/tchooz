@@ -289,74 +289,7 @@ class EmundusHelperUpdate
 
 			if (empty($manifest_cache) && (!empty($type)))
 			{
-				$folder_type = '';
-				switch ($type)
-				{
-					case 'plugin':
-						$folder_type = 'plugins';
-						break;
-					case 'module':
-						$folder_type = 'modules';
-						break;
-					case 'component':
-						$folder_type = 'components';
-						break;
-					case 'library':
-						$folder_type = 'libraries';
-						break;
-				}
-
-				if (!empty($folder_type))
-				{
-					if (!$administrator)
-					{
-						if (!empty($folder))
-						{
-							$manifest_path = JPATH_BASE . '/' . $folder_type . '/' . $folder . '/' . $element . '/' . $element . '.xml';
-						}
-						else
-						{
-							$manifest_path = JPATH_BASE . '/' . $folder_type . '/' . $element . '/' . $element . '.xml';
-						}
-					}
-					else
-					{
-						if (!empty($folder))
-						{
-							$manifest_path = JPATH_ADMINISTRATOR . '/' . $folder_type . '/' . $folder . '/' . $element . '/' . $element . '.xml';
-						}
-						else
-						{
-							$manifest_path = JPATH_ADMINISTRATOR . '/' . $folder_type . '/' . $element . '/' . $element . '.xml';
-						}
-					}
-
-					if (file_exists($manifest_path))
-					{
-						$xml_string = file_get_contents($manifest_path);
-						$xml        = simplexml_load_string($xml_string);
-						$json       = json_encode($xml);
-						if (!empty($json))
-						{
-							$array          = json_decode($json, true);
-							$manifest_cache = [
-								'name'         => $array['name'],
-								'type'         => $array['@attributes']['type'],
-								'creationDate' => $array['creationDate'],
-								'author'       => $array['author'],
-								'copyright'    => $array['copyright'],
-								'authorEmail'  => $array['authorEmail'],
-								'authorUrl'    => $array['authorUrl'],
-								'version'      => $array['version'],
-								'description'  => $array['description'],
-								'group'        => !empty($array['@attributes']['group']) ? $array['@attributes']['group'] : '',
-								'namespace'    => $array['namespace'],
-								'filename'     => $element,
-							];
-							$manifest_cache = json_encode($manifest_cache);
-						}
-					}
-				}
+				$manifest_cache = self::buildManifest($type, $element, $folder, $administrator);
 			}
 
 			if (!empty($manifest_cache))
@@ -428,6 +361,82 @@ class EmundusHelperUpdate
 		}
 
 		return $installed;
+	}
+
+	public static function buildManifest($type, $element, $folder = '', $administrator = false): ?string
+	{
+		$manifest_cache = null;
+
+		$folder_type = '';
+		switch ($type)
+		{
+			case 'plugin':
+				$folder_type = 'plugins';
+				break;
+			case 'module':
+				$folder_type = 'modules';
+				break;
+			case 'component':
+				$folder_type = 'components';
+				break;
+			case 'library':
+				$folder_type = 'libraries';
+				break;
+		}
+
+		if (!empty($folder_type))
+		{
+			if (!$administrator)
+			{
+				if (!empty($folder))
+				{
+					$manifest_path = JPATH_BASE . '/' . $folder_type . '/' . $folder . '/' . $element . '/' . $element . '.xml';
+				}
+				else
+				{
+					$manifest_path = JPATH_BASE . '/' . $folder_type . '/' . $element . '/' . $element . '.xml';
+				}
+			}
+			else
+			{
+				if (!empty($folder))
+				{
+					$manifest_path = JPATH_ADMINISTRATOR . '/' . $folder_type . '/' . $folder . '/' . $element . '/' . $element . '.xml';
+				}
+				else
+				{
+					$manifest_path = JPATH_ADMINISTRATOR . '/' . $folder_type . '/' . $element . '/' . $element . '.xml';
+				}
+			}
+
+			if (file_exists($manifest_path))
+			{
+				$xml_string = file_get_contents($manifest_path);
+				$xml        = simplexml_load_string($xml_string);
+				$json       = json_encode($xml);
+				if (!empty($json))
+				{
+					$array          = json_decode($json, true);
+					$manifest_cache = [
+						'name'         => $array['name'],
+						'type'         => $array['@attributes']['type'],
+						'creationDate' => $array['creationDate'],
+						'author'       => $array['author'],
+						'copyright'    => $array['copyright'],
+						'authorEmail'  => $array['authorEmail'],
+						'authorUrl'    => $array['authorUrl'],
+						'version'      => $array['version'],
+						'description'  => $array['description'],
+						'group'        => !empty($array['@attributes']['group']) ? $array['@attributes']['group'] : '',
+						'namespace'    => $array['namespace'],
+						'filename'     => $element,
+					];
+					$manifest_cache = json_encode($manifest_cache);
+				}
+			}
+		}
+
+		return $manifest_cache;
 	}
 
 	/**
