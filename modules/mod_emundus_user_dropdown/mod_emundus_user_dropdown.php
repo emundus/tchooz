@@ -11,8 +11,14 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+
+if (EmundusPublicAccess::isPublicAccessSession())
+{
+	return;
+}
 
 $layout = $params->get('layout', 'default');
 

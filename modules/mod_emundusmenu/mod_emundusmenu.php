@@ -13,12 +13,18 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\Module\Emundusmenu\Site\Helper\EmundusmenuHelper;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 
 require_once JPATH_ROOT . '/components/com_emundus/models/profile.php';
 require_once JPATH_ROOT . '/components/com_emundus/models/settings.php';
 require_once JPATH_ROOT . '/components/com_emundus/helpers/menu.php';
 
 $app = Factory::getApplication();
+
+if (EmundusPublicAccess::isPublicAccessSession())
+{
+	return;
+}
 
 $class_sfx         = htmlspecialchars($params->get('class_sfx'));
 $tag         = $params->get('tag_id');
