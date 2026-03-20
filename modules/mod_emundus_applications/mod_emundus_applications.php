@@ -35,6 +35,7 @@ $wa->registerAndUseStyle('mod_emundus_applications', 'modules/mod_emundus_applic
 $wa->registerAndUseScript('com_emundus_selectize', 'media/com_emundus/lib/selectize/dist/js/standalone/selectize.js');
 $wa->registerAndUseStyle('com_emundus_selectize', 'media/com_emundus/lib/selectize/dist/css/selectize.default.css');
 $wa->useScript('jquery');
+$wa->registerAndUseScript('mod_emundus_applications.publicaccess', 'modules/mod_emundus_applications/script/publicaccess.js');
 $user = $app->getSession()->get('emundusUser');
 
 if (empty($user->firstname) && empty($user->lastname))

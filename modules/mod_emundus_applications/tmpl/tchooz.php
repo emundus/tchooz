@@ -1163,6 +1163,17 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
     </div>
 <?php endif; ?>
 
+<div class="em-mt-32" id="import_file" style="display: block;">
+    <div class="hover-and-tile-container hover-and-tile-container-action tw-border-dashed" style="width: 50%; height: 300px;">
+        <div id="tile-hover-offset-request"></div>
+        <div class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
+            <div id="background-shapes" alt="Fond formes"></div>
+            <span class="material-symbols-outlined tw-w-fit">download</span>
+            <p class="tw-w-fit"><?= Text::_('COM_EMUNDUS_IMPORT_FILE_FROM_TOKEN_ACCESS') ?></p>
+        </div>
+    </div>
+</div>
+
 <?php if (!empty($filled_poll_id) && !empty($poll_url) && $filled_poll_id == 0 && $poll_url != "") : ?>
     <div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog"
          aria-labelledby="em-modal-form" aria-hidden="true">

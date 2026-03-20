@@ -810,29 +810,39 @@ circle.circle {
     opacity: 0.3;
 }
 
-.hover-and-tile-container-add > .mod_emundus_applications___content_app {
+.hover-and-tile-container-add > .mod_emundus_applications___content_app,
+.hover-and-tile-container-action > .mod_emundus_applications___content_app
+{
     background-color: var(--neutral-0);
     border: 2px dashed var(--neutral-400);
     gap: 12px;
 }
 
-.hover-and-tile-container-add:hover > .mod_emundus_applications___content_app {
+.hover-and-tile-container-add:hover > .mod_emundus_applications___content_app,
+.hover-and-tile-container-action:hover > .mod_emundus_applications___content_app
+{
     border: 2px dashed var(--neutral-500);
     transition: all .5s;
 }
 
-.hover-and-tile-container-add > .mod_emundus_applications___content_app > span {
+.hover-and-tile-container-add > .mod_emundus_applications___content_app > span,
+.hover-and-tile-container-action > .mod_emundus_applications___content_app > span
+{
     font-size: 80px;
     color: var(--em-profile-color);
     opacity: 0.3;
 }
 
-.hover-and-tile-container-add:hover > .mod_emundus_applications___content_app > span {
+.hover-and-tile-container-add:hover > .mod_emundus_applications___content_app > span,
+.hover-and-tile-container-action:hover > .mod_emundus_applications___content_app > span
+{
     opacity: 1;
     transition: all .5s;
 }
 
-.hover-and-tile-container-add > .mod_emundus_applications___content_app > p {
+.hover-and-tile-container-add > .mod_emundus_applications___content_app > p,
+.hover-and-tile-container-action > .mod_emundus_applications___content_app > p
+{
     font-size: var(--em-applicant-h4);
     color: var(--em-profile-color);
 }
