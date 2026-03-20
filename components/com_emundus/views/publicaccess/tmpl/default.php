@@ -48,7 +48,7 @@ $baseUrl = Uri::base();
 			</div>
 
 			<?php if ($this->hasError) : ?>
-				<div class="tw-mb-4 tw-p-3 tw-bg-red-50 tw-border tw-border-red-200 tw-rounded-md tw-flex tw-items-start tw-gap-2">
+				<div class="tw-mb-4 tw-p-3 tw-bg-red-50 tw-border tw-border-red-200 tw-rounded tw-flex tw-items-start tw-gap-2">
 					<span class="material-symbols-outlined tw-text-red-500 tw-text-lg tw-mt-0.5">error</span>
 					<p class="tw-text-red-700 tw-text-sm tw-m-0">
 						<?php echo !empty($this->errorMessage)
@@ -75,7 +75,7 @@ $baseUrl = Uri::base();
 							name="fnum"
 							required
 							placeholder="<?php echo Text::_('COM_EMUNDUS_PUBLIC_ACCESS_FNUM_PLACEHOLDER'); ?>"
-							class="tw-w-full tw-px-4 tw-py-2 tw-border tw-border-neutral-300 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500 focus:tw-border-primary-500"
+							class="tw-w-full tw-px-4 tw-py-2 tw-border tw-border-neutral-300 tw-rounded focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500 focus:tw-border-primary-500"
 						/>
 					</div>
 				<?php endif; ?>
@@ -93,7 +93,7 @@ $baseUrl = Uri::base();
 						autocomplete="off"
 						spellcheck="false"
 						placeholder="<?php echo Text::_('COM_EMUNDUS_PUBLIC_ACCESS_TOKEN_PLACEHOLDER'); ?>"
-						class="tw-w-full tw-px-4 tw-py-2 tw-border tw-border-neutral-300 tw-rounded-md tw-font-mono focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500 focus:tw-border-primary-500"
+						class="tw-w-full tw-px-4 tw-py-2 tw-border tw-border-neutral-300 tw-rounded tw-font-mono focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500 focus:tw-border-primary-500"
 					/>
 				</div>
 
