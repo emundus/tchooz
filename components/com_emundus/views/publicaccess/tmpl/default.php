@@ -29,7 +29,7 @@ $baseUrl = Uri::base();
 				<p class="tw-text-neutral-600 tw-mb-6">
 					<?php echo Text::_('COM_EMUNDUS_PUBLIC_ACCESS_ALREADY_AUTHENTICATED_DESC'); ?>
 				</p>
-				<a href="<?php echo Route::_('index.php?option=com_emundus&task=openfile&fnum=' . $this->escape($this->fnum)); ?>"
+				<a href="<?php echo Route::_('/index.php?option=com_emundus&task=openfile&fnum=' . $this->escape($this->fnum)); ?>"
 				   class="tw-btn-primary tw-mt-4">
 					<?php echo Text::_('COM_EMUNDUS_PUBLIC_ACCESS_OPEN_FILE'); ?>
 				</a>

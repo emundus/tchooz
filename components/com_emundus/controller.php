@@ -2485,14 +2485,12 @@ class EmundusController extends JControllerLegacy
 
 					if ($this->app->isClient('site'))
 					{
-						$this->app->enqueueMessage(sprintf(Text::_('COM_EMUNDUS_SAVE_INFORMATIONS_TO_REOPEN_LATER'), $token, $applicationEntity->getFnum()));
-
 						$session = $this->app->getSession();
 						$session->set(EmundusPublicAccess::SESSION_PUBLIC_ACCESS_KEY, true);
 						$session->set(EmundusPublicAccess::SESSION_PUBLIC_FNUM_KEY, $applicationEntity->getFnum());
 						$session->set(EmundusPublicAccess::SESSION_PUBLIC_TOKEN_KEY, $token);
-
-						$this->app->redirect(Route::_('/index.php?option=com_emundus&task=openfile&fnum=' . $applicationEntity->getFnum()));
+						$session->set(EmundusPublicAccess::SESSION_PUBLIC_STORED_ACCESS_KEY, false);
+						$this->app->redirect(Route::_('/index.php?option=com_emundus&view=publicaccess&layout=storetoken'));
 					}
 
 					$response->code = 200;
@@ -2504,6 +2502,33 @@ class EmundusController extends JControllerLegacy
 					];
 				}
 			}
+		} else
+		{
+			if ($this->app->isClient('site'))
+			{
+				$this->app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+				$this->app->redirect(Route::_('/'), 303);
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	/**
+	 * @return void
+	 * @throws Exception
+	 */
+	public function markPublicAccessKeyAsStored(): void
+	{
+		$this->checkToken();
+		$response = EmundusResponse::denied();
+
+		if (EmundusPublicAccess::isPublicAccessSession())
+		{
+			$session = $this->app->getSession();
+			$session->set(EmundusPublicAccess::SESSION_PUBLIC_STORED_ACCESS_KEY, true);
+
+			$response = EmundusResponse::ok();
 		}
 
 		$this->sendJsonResponse($response);

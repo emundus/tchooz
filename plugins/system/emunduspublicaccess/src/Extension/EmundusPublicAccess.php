@@ -18,6 +18,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryAwareTrait;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\SubscriberInterface;
@@ -72,6 +73,8 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 * Session key used to store the creation timestamp of the public access session.
 	 */
 	public const SESSION_PUBLIC_CREATED_AT_KEY = 'emundus_public_created_at';
+
+	public const SESSION_PUBLIC_STORED_ACCESS_KEY = 'emundus_public_stored_access';
 
 	/**
 	 * Default maximum duration (in minutes) for a public access session.
@@ -149,10 +152,24 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			$this->validateExistingPublicSession();
 
 			$currentMenu = $app->getMenu()->getActive();
-			$fnum = $session->get(self::SESSION_PUBLIC_FNUM_KEY, '');
+			if (!$session->get(self::SESSION_PUBLIC_STORED_ACCESS_KEY, true))
+			{
+				$uri = Uri::getInstance();
 
-			// TODO: restrict accessible menus to form menus
-
+				if ($uri->getVar('task') === 'markPublicAccessKeyAsStored')
+				{
+					// do nothing
+				}
+				else if ($uri->getVar('layout') !== 'storetoken')
+				{
+					$redirectUrl = Route::_('/index.php?option=com_emundus&view=publicaccess&layout=storetoken', false);
+					$app->redirect($redirectUrl);
+				}
+			}
+			else
+			{
+				// TODO: restrict accessible menus to form menus
+			}
 		}
 	}
 
@@ -228,6 +245,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			}
 
 			// Token is valid — set up the public access session
+			$this->getApplication()->getSession()->set(self::SESSION_PUBLIC_STORED_ACCESS_KEY, true);
 			$this->initPublicSession($applicationFile, $accessToken);
 			$this->getApplication()->redirect('/index.php?option=com_emundus&task=openfile&fnum=' . $applicationFile->getFnum());
 		}
