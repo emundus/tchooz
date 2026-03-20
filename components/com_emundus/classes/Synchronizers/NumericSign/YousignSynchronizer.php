@@ -64,7 +64,7 @@ class YousignSynchronizer extends Api
 		{
 			$payload['expiration_date'] = $expiration_date;
 		}
-
+		
 		try
 		{
 			$response = $this->post('signature_requests', json_encode($payload));
@@ -383,7 +383,7 @@ class YousignSynchronizer extends Api
 		return $signers;
 	}
 
-	public function addSigner(string $procedure_id, \stdClass $signer, string $document_id, object|string|null $signature_position = '', string $signature_level = 'electronic_signature', string $signature_authentication_mode = 'otp_email'): array
+	public function addSigner(string $procedure_id, \stdClass $signer, string $document_id, object|string|null $signature_position = '', string $signature_level = 'electronic_signature', string $signature_authentication_mode = 'otp_email', string $signature_display_mode = 'minimal'): array
 	{
 		switch ($signature_level)
 		{
@@ -442,9 +442,19 @@ class YousignSynchronizer extends Api
 					'x'           => $signature_position->x,
 					'y'           => $signature_position->y,
 					'width'       => $signature_position->width,
-					'height'      => $signature_position->height
+					'height'      => $signature_position->height,
+					'display' => [
+						'layout' => $signature_display_mode
+					]
 				]
 			];
+
+			if($signature_display_mode === 'detailed')
+			{
+				$payload['fields'][0]['display']['options'] = [
+					'date_format' => 'dd/MM/yyyy',
+				];
+			}
 		}
 
 		if (!empty($signer->phone_number))
@@ -455,7 +465,6 @@ class YousignSynchronizer extends Api
 		try
 		{
 			$response = $this->post('signature_requests/' . $procedure_id . '/signers', json_encode($payload));
-
 			if ($this->isThrowed($response))
 			{
 				throw new \Exception($response['message'], $response['status']);

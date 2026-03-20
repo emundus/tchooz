@@ -21,6 +21,11 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 
+if(!class_exists('EmundusHelperCache'))
+{
+	require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+}
+
 /**
  * eMundus Component Query Helper
  *

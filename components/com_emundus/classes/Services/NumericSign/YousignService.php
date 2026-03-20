@@ -32,6 +32,8 @@ class YousignService
 
 	private string $global_signature_authentication_mode = 'otp_email';
 
+	private string $signature_display_mode = 'minimal';
+
 	public function __construct(
 		private readonly YousignSynchronizer       $yousign_synchronizer,
 		private readonly YousignRequestsRepository $yousign_repository,
@@ -70,6 +72,10 @@ class YousignService
 		if (!empty($config) && !empty($config->signature_authentication_mode))
 		{
 			$this->global_signature_authentication_mode = $config->signature_authentication_mode;
+		}
+		if( !empty($config) && !empty($config->signature_display_mode))
+		{
+			$this->signature_display_mode = $config->signature_display_mode;
 		}
 
 		try
@@ -437,7 +443,7 @@ class YousignService
 				$signature_level               = !empty($signer->authentication_level) ? $signer->authentication_level : $this->global_signature_level;
 				$signature_authentication_mode = !empty($signer->authentication_mode) ? $signer->authentication_mode : $this->global_signature_authentication_mode;
 
-				$api_signer = $this->yousign_synchronizer->addSigner($yousign_request->getProcedureId(), $signer, $yousign_request->getDocumentId(), $signature_position, $signature_level, $signature_authentication_mode);
+				$api_signer = $this->yousign_synchronizer->addSigner($yousign_request->getProcedureId(), $signer, $yousign_request->getDocumentId(), $signature_position, $signature_level, $signature_authentication_mode, $this->signature_display_mode);
 				if ($api_signer['status'] == 201)
 				{
 					$yousign_request->addSigner($api_signer['data']->id, $signer->id, $api_signer['data']->signature_link, !empty($signature_position) ? json_encode($signature_position) : null);

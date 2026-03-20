@@ -28,6 +28,8 @@ class EmundusUserEntity
 
 	private bool $anonym;
 
+	private ?\DateTimeImmutable $birthDate;
+
 	public function __construct(
 		int                $id,
 		User               $user,
@@ -35,7 +37,8 @@ class EmundusUserEntity
 		string             $lastname,
 		string             $profile_picture = null,
 		UserCategoryEntity $user_category = null,
-		bool               $is_anonym = false
+		bool               $is_anonym = false,
+		?\DateTimeImmutable $birthDate = null
 	)
 	{
 		$this->id              = $id;
@@ -45,6 +48,7 @@ class EmundusUserEntity
 		$this->profile_picture = $profile_picture;
 		$this->user_category   = $user_category;
 		$this->anonym          = $is_anonym;
+		$this->birthDate       = $birthDate;
 	}
 
 	public function getId(): int
@@ -117,6 +121,18 @@ class EmundusUserEntity
 		$this->anonym = $anonym;
 	}
 
+	public function getBirthDate(): ?\DateTimeImmutable
+	{
+		return $this->birthDate;
+	}
+
+	public function setBirthDate(?\DateTimeImmutable $birthDate): EmundusUserEntity
+	{
+		$this->birthDate = $birthDate;
+
+		return $this;
+	}
+
 	public function getFullname(): string
 	{
 		return $this->getFirstname() . ' ' . $this->getLastname();
@@ -131,7 +147,9 @@ class EmundusUserEntity
 			'lastname'        => $this->getLastname(),
 			'profile_picture' => $this->getProfilePicture(),
 			'user_category'   => $this->getUserCategory()?->__serialize(),
-			'is_anonym'       => $this->isAnonym()
+			'is_anonym'       => $this->isAnonym(),
+			// Format birth date as ISO 8601 date (Y-m-d) for consistency
+			'birth_date'      => $this->getBirthDate()?->format('Y-m-d'),
 		];
 	}
 }

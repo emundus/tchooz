@@ -6,6 +6,11 @@ use EmundusHelperCache;
 use Tchooz\Enums\Mapping\MappingTransformersEnum;
 use Tchooz\Transformers\Mapping\MappingTranformer;
 
+if(!class_exists('EmundusHelperCache'))
+{
+	require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+}
+
 class TransformationsRegistry
 {
 	private CONST TRANSFORMERS_DIRECTORY = JPATH_ROOT . '/components/com_emundus/classes/Transformers';
