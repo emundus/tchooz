@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('continue-btn').addEventListener('click', function() {
 		if (copiedItems.fnum && copiedItems.token)
 		{
-			window.location.href = '/index.php?option=com_emundus&task=openfile';
+			window.location.href = '/index.php?option=com_emundus&task=openfile&fnum=' + Joomla.getOptions('com_emundus.fnum');
 		}
 		else
 		{

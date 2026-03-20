@@ -92,7 +92,8 @@ class EmundusViewPublicaccess extends HtmlView
 		}
 
 		$document = $app->getDocument();
-		$wa       = $document->getWebAssetManager();
+		$document->addScriptOptions('com_emundus.fnum', $this->storetokenFnum);
+		$wa = $document->getWebAssetManager();
 		$wa->registerAndUseScript(
 			'com_emundus.storetoken',
 			'components/com_emundus/assets/js/storetoken.js',
