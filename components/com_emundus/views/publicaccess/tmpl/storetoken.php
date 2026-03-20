@@ -16,7 +16,7 @@ $fnum  = $this->storetokenFnum;
 ?>
 
 <div class="tw-flex tw-items-center tw-justify-center tw-min-h-[60vh]">
-	<div class="tw-w-full tw-max-w-lg tw-p-8 tw-bg-white tw-rounded-coordinator tw-shadow">
+	<div class="emundus-form !tw-p-6 tw-rounded-coordinator-cards tw-shadow-standard tw-border tw-border-neutral-300 !tw-bg-white applicant-form">
 		<!-- Header -->
 		<div class="tw-text-center tw-mb-6">
 			<span class="material-symbols-outlined tw-text-5xl tw-text-orange-500 tw-mb-2">warning</span>
@@ -89,7 +89,7 @@ $fnum  = $this->storetokenFnum;
 			<p class="tw-text-sm tw-font-medium tw-text-neutral-700 tw-mb-2 tw-m-0">
 				<?php echo Text::_('COM_EMUNDUS_STORETOKEN_CHECKLIST_TITLE'); ?>
 			</p>
-			<div class="tw-flex tw-items-center tw-gap-2 tw-mb-1">
+			<div class="tw-flex tw-items-center tw-gap-2 tw-mb-1 tw-mt-2">
 				<span class="material-symbols-outlined tw-text-lg" id="check-fnum">radio_button_unchecked</span>
 				<span class="tw-text-sm tw-text-neutral-600" id="check-fnum-label">
 					<?php echo Text::_('COM_EMUNDUS_STORETOKEN_CHECKLIST_FNUM'); ?>

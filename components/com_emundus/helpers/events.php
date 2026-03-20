@@ -70,9 +70,13 @@ class EmundusHelperEvents
 		Log::addLogger(array('text_file' => 'com_emundus.helper_events.php'), Log::ALL, array('com_emundus.helper_events'));
 
 		$app = Factory::getApplication();
+		if ($app->getIdentity()->guest === 1)
+		{
+			$app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+			$app->redirect(EmundusHelperMenu::getHomepageLink());
+		}
 
 		$user = $app->getSession()->get('emundusUser');
-
 		$fnum = $app->input->getString('fnum', '');
 		if (empty($fnum))
 		{

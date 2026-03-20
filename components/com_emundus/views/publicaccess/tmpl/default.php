@@ -17,7 +17,7 @@ $baseUrl = Uri::base();
 ?>
 
 <div class="tw-flex tw-items-center tw-justify-center tw-min-h-[60vh]">
-	<div class="tw-w-full tw-max-w-md tw-p-8 tw-bg-white tw-rounded-coordinator tw-shadow">
+	<div class="emundus-form !tw-p-6 tw-rounded-coordinator-cards tw-shadow-standard tw-border tw-border-neutral-300 !tw-bg-white applicant-form">
 
 		<?php if ($this->isAlreadyAuthenticated) : ?>
 			<!-- Already authenticated: redirect to the file -->
