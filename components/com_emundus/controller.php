@@ -2510,8 +2510,7 @@ class EmundusController extends JControllerLegacy
 		{
 			if ($this->app->isClient('site'))
 			{
-				$this->app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
-				$this->app->redirect(Route::_('/'), 303);
+				throw new \Exception(Text::_('ACCESS_DENIED'), 403);
 			}
 		}
 
