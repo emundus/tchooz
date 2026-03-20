@@ -449,7 +449,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 
 			$this->destroyPublicSession(true, $sessionFnum);
 
-			return;
+			throw new \Exception(Text::_('COM_EMUNDUS_PUBLIC_ACCESS_SESSION_EXPIRED'), 403);
 		}
 
 		// Security: if a fnum is in the URL, it MUST match the session fnum.
