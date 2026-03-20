@@ -17,7 +17,7 @@ $baseUrl = Uri::base();
 ?>
 
 <div class="tw-flex tw-items-center tw-justify-center tw-min-h-[60vh]">
-	<div class="tw-w-full tw-max-w-md tw-p-8 tw-bg-white tw-rounded-lg tw-shadow-md">
+	<div class="tw-w-full tw-max-w-md tw-p-8 tw-bg-white tw-rounded-coordinator tw-shadow">
 
 		<?php if ($this->isAlreadyAuthenticated) : ?>
 			<!-- Already authenticated: redirect to the file -->
@@ -75,7 +75,6 @@ $baseUrl = Uri::base();
 							name="fnum"
 							required
 							placeholder="<?php echo Text::_('COM_EMUNDUS_PUBLIC_ACCESS_FNUM_PLACEHOLDER'); ?>"
-							class="tw-w-full tw-px-4 tw-py-2 tw-border tw-border-neutral-300 tw-rounded focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500 focus:tw-border-primary-500"
 						/>
 					</div>
 				<?php endif; ?>
@@ -93,7 +92,6 @@ $baseUrl = Uri::base();
 						autocomplete="off"
 						spellcheck="false"
 						placeholder="<?php echo Text::_('COM_EMUNDUS_PUBLIC_ACCESS_TOKEN_PLACEHOLDER'); ?>"
-						class="tw-w-full tw-px-4 tw-py-2 tw-border tw-border-neutral-300 tw-rounded tw-font-mono focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500 focus:tw-border-primary-500"
 					/>
 				</div>
 

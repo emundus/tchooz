@@ -74,6 +74,9 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 */
 	public const SESSION_PUBLIC_CREATED_AT_KEY = 'emundus_public_created_at';
 
+	/**
+	 * Session key used to detect if user has already stored the access token in session and avoid infinite redirection loop to storetoken layout
+	 */
 	public const SESSION_PUBLIC_STORED_ACCESS_KEY = 'emundus_public_stored_access';
 
 	/**
@@ -151,7 +154,6 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 		{
 			$this->validateExistingPublicSession();
 
-			$currentMenu = $app->getMenu()->getActive();
 			if (!$session->get(self::SESSION_PUBLIC_STORED_ACCESS_KEY, true))
 			{
 				$uri = Uri::getInstance();
@@ -168,7 +170,11 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			}
 			else
 			{
-				// TODO: restrict accessible menus to form menus
+				$currentMenu = $app->getMenu()->getActive();
+				if ($currentMenu->menutype !== 'topmenu' && !str_starts_with($currentMenu->menutype, 'menu-profile'))
+				{
+					throw new \Exception(Text::_('ACCESS_DENIED'), 403);
+				}
 			}
 		}
 	}
@@ -176,7 +182,6 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	/**
 	 * Before logout, destroy scoped session and revert to guest identity.
 	 * Do not let Joomla perform total logout, because other users could be using system user, but with another session
-	 *
 	 *
 	 * @param   LogoutEvent  $event
 	 *
