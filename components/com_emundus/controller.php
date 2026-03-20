@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use enshrined\svgSanitize\Sanitizer;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -2445,19 +2446,22 @@ class EmundusController extends JControllerLegacy
 					throw new \Symfony\Component\OptionsResolver\Exception\AccessException(Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_NOT_ALLOWED'));
 				}
 
-				// block attempts to apply too frequently
-				$last_application_time = $this->app->getSession()->get('last_public_application_time', 0);
-				$cooldown_time = 60; // 60 seconds cooldown
-				if (time() - $last_application_time < $cooldown_time)
+				// IP-based rate limiting (session is unreliable for guests)
+				$rateLimitResponse = $this->enforcePublicApplicationRateLimit($campaignId);
+				if ($rateLimitResponse !== null)
 				{
+					if ($this->app->isClient('site'))
+					{
+						throw new \Exception($rateLimitResponse, 429);
+					}
+
 					$response->code = 429;
-					$response->msg = Text::sprintf('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_COOLDOWN', $cooldown_time - (time() - $last_application_time));
+					$response->msg = $rateLimitResponse;
 					$this->sendJsonResponse($response);
 
 					return;
 				}
 
-				$this->app->getSession()->set('last_public_application_time', time());
 
 				// get system user to apply on behalf of the guest
 				$systemUserId = ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
@@ -2512,6 +2516,125 @@ class EmundusController extends JControllerLegacy
 		}
 
 		$this->sendJsonResponse($response);
+	}
+
+	/**
+	 * Enforce IP-based rate limiting for public campaign applications.
+	 *
+	 * Uses Joomla cache (not session) so it works reliably for guest users.
+	 * Applies multiple time windows to prevent both burst and sustained abuse:
+	 * - Cooldown: 30s between consecutive applications (anti double-click/script)
+	 * - Per-minute: max 3 applications/min (blocks rapid automated submissions)
+	 * - Per-hour: max 10 applications/hour (allows shared NAT/public terminals)
+	 * - Per-day: max 30 applications/day (generous for shared IPs)
+	 * - Per-campaign per-day: max 5 applications/campaign/day (prevents targeted spam)
+	 *
+	 * @param   int  $campaignId  The campaign being applied to
+	 *
+	 * @return  string|null  Error message if rate limited, null if allowed
+	 *
+	 * @since   1.0.0
+	 */
+	private function enforcePublicApplicationRateLimit(int $campaignId): ?string
+	{
+		$clientIp = $this->app->input->server->getString('HTTP_X_FORWARDED_FOR', '');
+		if (empty($clientIp))
+		{
+			$clientIp = $this->app->input->server->getString('REMOTE_ADDR', '0.0.0.0');
+		}
+		else
+		{
+			// Take only the first IP if multiple are present (X-Forwarded-For: client, proxy1, proxy2)
+			$clientIp = trim(explode(',', $clientIp)[0]);
+		}
+
+		$ipHash = md5($clientIp);
+		$now    = time();
+
+		// Cache lifetime = 1 day (longest window), stored timestamps auto-expire
+		$cache = Factory::getContainer()
+			->get(CacheControllerFactoryInterface::class)
+			->createCacheController('output', [
+				'defaultgroup' => 'com_emundus_ratelimit',
+				'lifetime'     => 86400,
+			]);
+
+		// --- Global rate limit (all campaigns) ---
+		$globalKey  = 'public_apply_' . $ipHash;
+		$timestamps = $cache->get($globalKey);
+		if (!is_array($timestamps))
+		{
+			$timestamps = [];
+		}
+
+		// Purge entries older than 24h
+		$timestamps = array_values(array_filter($timestamps, function ($ts) use ($now) {
+			return ($ts > ($now - 86400));
+		}));
+
+		// Cooldown: 30 seconds between consecutive applications
+		if (!empty($timestamps))
+		{
+			$lastApplication = end($timestamps);
+			$cooldown        = 30;
+			if (($now - $lastApplication) < $cooldown)
+			{
+				$remaining = $cooldown - ($now - $lastApplication);
+
+				return Text::sprintf('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_COOLDOWN', $remaining);
+			}
+		}
+
+		// Per-minute: max 3
+		$lastMinute = array_filter($timestamps, function ($ts) use ($now) {
+			return ($ts > ($now - 60));
+		});
+		if (count($lastMinute) >= 3)
+		{
+			return Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_RATE_LIMIT_MINUTE');
+		}
+
+		// Per-hour: max 10
+		$lastHour = array_filter($timestamps, function ($ts) use ($now) {
+			return ($ts > ($now - 3600));
+		});
+		if (count($lastHour) >= 10)
+		{
+			return Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_RATE_LIMIT_HOUR');
+		}
+
+		// Per-day: max 30
+		if (count($timestamps) >= 30)
+		{
+			return Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_RATE_LIMIT_DAY');
+		}
+
+		// --- Per-campaign rate limit ---
+		$campaignKey        = 'public_apply_' . $ipHash . '_c' . $campaignId;
+		$campaignTimestamps = $cache->get($campaignKey);
+		if (!is_array($campaignTimestamps))
+		{
+			$campaignTimestamps = [];
+		}
+
+		$campaignTimestamps = array_values(array_filter($campaignTimestamps, function ($ts) use ($now) {
+			return ($ts > ($now - 86400));
+		}));
+
+		// Per-campaign per-day: max 5
+		if (count($campaignTimestamps) >= 5)
+		{
+			return Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_RATE_LIMIT_CAMPAIGN');
+		}
+
+		// All checks passed — record this application
+		$timestamps[]         = $now;
+		$campaignTimestamps[] = $now;
+
+		$cache->store($timestamps, $globalKey);
+		$cache->store($campaignTimestamps, $campaignKey);
+
+		return null;
 	}
 
 	/**
