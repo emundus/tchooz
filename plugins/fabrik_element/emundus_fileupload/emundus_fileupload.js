@@ -99,7 +99,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             var formData = new FormData();
             var input = document.querySelector('input#file_' + this.element.id);
             let divCtrlGroup = input.parentElement.parentElement.parentElement;
-            var div = input.parentElement
+            var div = input.parentElement.parentElement;
             var deleteButton = document.querySelector('div#' + div.id + ' > a.em-deleteFile');
 
             formData.append('attachId', this.options.attachment_id);
