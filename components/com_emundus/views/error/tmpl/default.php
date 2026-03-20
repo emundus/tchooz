@@ -77,6 +77,9 @@ use Joomla\CMS\Uri\Uri;
 	<?php elseif ($this->error_code == 403) : ?>
         <img src="<?php echo Uri::root(); ?>media/com_emundus/images/tchoozy/complex-illustrations/403-error.svg"
              alt="Erreur 403"/>
+    <?php elseif ($this->error_code == 429) : ?>
+        <img src="<?php echo Uri::root(); ?>media/com_emundus/images/tchoozy/complex-illustrations/high-workload.svg"
+             alt="Erreur 429"/>
 	<?php else : ?>
         <img src="<?php echo Uri::root(); ?>media/com_emundus/images/tchoozy/complex-illustrations/building.svg"
              alt="Erreur 403"/>
