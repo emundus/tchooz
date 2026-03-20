@@ -12,6 +12,7 @@ namespace Joomla\Plugin\System\EmundusPublicAccess\Extension;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Application\AfterRouteEvent;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Event\User\LogoutEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -22,6 +23,7 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryAwareTrait;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\SubscriberInterface;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 
@@ -90,14 +92,10 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	{
 		$app = Factory::getApplication();
 
-		if (!$app->isClient('site'))
-		{
-			return [];
-		}
-
 		return [
 			'onAfterRoute' => 'onAfterRoute',
 			'onUserLogout' => 'onUserLogout',
+			'onAfterSubmitFile' => 'onAfterSubmitFile',
 		];
 	}
 
@@ -176,6 +174,20 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 					throw new \Exception(Text::_('ACCESS_DENIED'), 403);
 				}
 			}
+		}
+	}
+
+	/**
+	 * @param   GenericEvent  $event
+	 *
+	 * @return void
+	 */
+	public function onAfterSubmitFile(GenericEvent $event): void
+	{
+		if (self::isPublicAccessSession() && $event->hasArgument('context'))
+		{
+			assert($event->getArgument('context') instanceof EventContextEntity);
+			$this->destroyPublicSession(false, $event->getArgument('context')->getFiles()[0]);
 		}
 	}
 

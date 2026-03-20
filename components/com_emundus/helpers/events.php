@@ -1906,12 +1906,14 @@ class EmundusHelperEvents
 			Log::add(Uri::getInstance() . ' :: USER ID : ' . $app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
+		PluginHelper::importPlugin('emundus'); // si event call event handler
+		$dispatcher = Factory::getApplication()->getDispatcher();
+		$context = new EventContextEntity(Factory::getApplication()->getIdentity(), [$student->fnum], [$student->id]);
+
 		if ($updated && $old_status != $new_status)
 		{
+			$context->setParameters([onAfterStatusChangeDefinition::OLD_STATUS_PARAMETER => $old_status, onAfterStatusChangeDefinition::STATUS_PARAMETER => $new_status]);
 			$this->logUpdateState($old_status, $new_status, $student->id, $applicant_id, $student->fnum);
-
-			PluginHelper::importPlugin('emundus'); // si event call event handler
-			$dispatcher = Factory::getApplication()->getDispatcher();
 
 			$onAfterStatusChangeEventHandler = new GenericEvent(
 				'onCallEventHandler',
@@ -1921,22 +1923,19 @@ class EmundusHelperEvents
 						'fnum' => $student->fnum,
 						'state' => $new_status,
 						'old_state' => $old_status,
-						'context' => new EventContextEntity(
-							Factory::getApplication()->getIdentity(),
-							[$student->fnum],
-							[$student->id],
-							[
-								onAfterStatusChangeDefinition::OLD_STATUS_PARAMETER => $old_status,
-								onAfterStatusChangeDefinition::STATUS_PARAMETER => $new_status
-							]
-						)
+						'context' => $context
 					]
 				]
 			);
 			$onAfterStatusChange             = new GenericEvent(
 				'onAfterStatusChange',
 				// Datas to pass to the event
-				['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]
+				[
+					'fnum' => $student->fnum,
+					'state' => $new_status,
+					'old_state' => $old_status,
+					'context' => $context
+				]
 			);
 
 			// Dispatch the event
@@ -1956,25 +1955,14 @@ class EmundusHelperEvents
 			Log::add(Uri::getInstance() . ' :: USER ID : ' . $app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
-		PluginHelper::importPlugin('emundus');
-		$dispatcher = Factory::getApplication()->getDispatcher();
-
-		$onAfterSubmitFile = new GenericEvent('onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]);
+		$context->setParameters([
+			'step'       => !empty($current_phase) && !empty($current_phase->id) ? $current_phase->id : null,
+			'old_status' => $old_status,
+			'status'     => $new_status
+		]);
+		$onAfterSubmitFile = new GenericEvent('onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum, 'context' => $context]);
 		$dispatcher->dispatch('onAfterSubmitFile', $onAfterSubmitFile);
-		$CEVonAfterSubmitFile = new GenericEvent('onCallEventHandler', ['onAfterSubmitFile', [
-			'user' => $student->id,
-			'fnum' => $student->fnum,
-			'context' => new EventContextEntity(
-				Factory::getApplication()->getIdentity(),
-				[$student->fnum],
-				[$student->id],
-				[
-					'step' => !empty($current_phase) && !empty($current_phase->id) ? $current_phase->id : null,
-					'old_status' => $old_status,
-					'status' => $new_status
-				]
-			)
-		]]);
+		$CEVonAfterSubmitFile = new GenericEvent('onCallEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum, 'context' => $context]]);
 		$dispatcher->dispatch('onCallEventHandler', $CEVonAfterSubmitFile);
 
 		// If pdf exporting is activated
@@ -2523,18 +2511,23 @@ class EmundusHelperEvents
 		return $elements;
 	}
 
-	private function logUpdateState($old_status, $new_status, $user_id, $applicant_id, $fnum)
+	private function logUpdateState($old_status, $new_status, $user_id, $applicant_id, $fnum): void
 	{
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
+		$requestStatus = [$new_status];
+		if (!is_null($old_status) && $old_status !== '')
+		{
+			$requestStatus[] = $old_status;
+		}
+
 		$query->select('step, value')
 			->from('#__emundus_setup_status')
-			->where('step IN (' . implode(',', array($old_status, $new_status)) . ')');
-		$db->setQuery($query);
-
+			->where('step IN (' . implode(',', $requestStatus) . ')');
 		try
 		{
+			$db->setQuery($query);
 			$status_labels = $db->loadObjectList('step');
 
 			EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode(array(
