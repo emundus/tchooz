@@ -90,6 +90,14 @@ class EmundusViewPublicaccess extends HtmlView
 			// No token data in session, redirect to default view
 			$app->redirect(Route::_('index.php?option=com_emundus&view=publicaccess', false));
 		}
+
+		$document = $app->getDocument();
+		$wa       = $document->getWebAssetManager();
+		$wa->registerAndUseScript(
+			'com_emundus.storetoken',
+			'components/com_emundus/assets/js/storetoken.js',
+			['version' => 'auto', 'defer' => true]
+		);
 	}
 }
 

@@ -8,7 +8,6 @@
  */
 
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Router\Route;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -18,7 +17,6 @@ $fnum  = $this->storetokenFnum;
 
 <div class="tw-flex tw-items-center tw-justify-center tw-min-h-[60vh]">
 	<div class="tw-w-full tw-max-w-lg tw-p-8 tw-bg-white tw-rounded-coordinator tw-shadow">
-
 		<!-- Header -->
 		<div class="tw-text-center tw-mb-6">
 			<span class="material-symbols-outlined tw-text-5xl tw-text-orange-500 tw-mb-2">warning</span>
@@ -54,7 +52,6 @@ $fnum  = $this->storetokenFnum;
 				<button
 					type="button"
 					id="copy-fnum-btn"
-					onclick="copyToClipboard('storetoken-fnum', 'copy-fnum-btn', 'fnum')"
 					class="tw-px-3 tw-py-2 tw-border tw-border-neutral-300 tw-rounded tw-bg-white hover:tw-bg-neutral-100 tw-transition-colors tw-flex tw-items-center tw-gap-1"
 					title="<?php echo Text::_('COM_EMUNDUS_STORETOKEN_COPY'); ?>"
 				>
@@ -79,7 +76,6 @@ $fnum  = $this->storetokenFnum;
 				<button
 					type="button"
 					id="copy-token-btn"
-					onclick="copyToClipboard('storetoken-token', 'copy-token-btn', 'token')"
 					class="tw-px-3 tw-py-2 tw-border tw-border-neutral-300 tw-rounded tw-bg-white hover:tw-bg-neutral-100 tw-transition-colors tw-flex tw-items-center tw-gap-1"
 					title="<?php echo Text::_('COM_EMUNDUS_STORETOKEN_COPY'); ?>"
 				>
@@ -113,88 +109,12 @@ $fnum  = $this->storetokenFnum;
 			id="continue-btn"
 			disabled
 			class="tw-w-full tw-btn-primary tw-opacity-50 tw-cursor-not-allowed tw-transition-all"
-			onclick="window.location.href='<?php echo Route::_('index.php?option=com_emundus&task=openfile&fnum=' . $this->escape($fnum), false); ?>'"
 		>
 			<?php echo Text::_('COM_EMUNDUS_STORETOKEN_CONTINUE'); ?>
 		</button>
 
-		<p class="tw-text-xs tw-text-neutral-500 tw-text-center tw-mt-4">
+        <p class="tw-text-xs tw-text-neutral-500 tw-text-center tw-mt-4">
 			<?php echo Text::_('COM_EMUNDUS_STORETOKEN_HELP'); ?>
 		</p>
 	</div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-	const copiedItems = { fnum: false, token: false };
-
-	window.copyToClipboard = function(inputId, btnId, itemKey) {
-		const input = document.getElementById(inputId);
-		const text = input.value;
-
-		if (navigator.clipboard && navigator.clipboard.writeText) {
-			navigator.clipboard.writeText(text).then(function() {
-				markCopied(btnId, itemKey);
-			}).catch(function() {
-				fallbackCopy(input, btnId, itemKey);
-			});
-		} else {
-			fallbackCopy(input, btnId, itemKey);
-		}
-	};
-
-	function fallbackCopy(input, btnId, itemKey) {
-		input.select();
-		input.setSelectionRange(0, 99999);
-		try {
-			document.execCommand('copy');
-			markCopied(btnId, itemKey);
-		} catch (err) {
-			console.error('Copy failed', err);
-		}
-	}
-
-	function markCopied(btnId, itemKey) {
-		// Update button icon
-		const iconId = btnId.replace('btn', 'icon');
-		const icon = document.getElementById(iconId);
-		if (icon) {
-			icon.textContent = 'check';
-			icon.classList.add('tw-text-green-600');
-		}
-
-		// Update checklist
-		const checkIcon = document.getElementById('check-' + itemKey);
-		const checkLabel = document.getElementById('check-' + itemKey + '-label');
-		if (checkIcon) {
-			checkIcon.textContent = 'check_circle';
-			checkIcon.classList.add('tw-text-green-600');
-		}
-		if (checkLabel) {
-			checkLabel.classList.add('tw-text-green-700', 'tw-font-medium');
-		}
-
-		// Track copied items
-		copiedItems[itemKey] = true;
-
-		// Enable continue button if both items are copied
-		if (copiedItems.fnum && copiedItems.token) {
-			const continueBtn = document.getElementById('continue-btn');
-			if (continueBtn) {
-				continueBtn.disabled = false;
-				continueBtn.classList.remove('tw-opacity-50', 'tw-cursor-not-allowed');
-
-                fetch('/index.php?option=com_emundus&task=markPublicAccessKeyAsStored', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': '<?php echo \Joomla\CMS\Session\Session::getFormToken(); ?>'
-                    }
-                }).catch(function(err) {
-                    console.error('Failed to mark token as copied', err);
-                });
-			}
-		}
-	}
-});
-</script>

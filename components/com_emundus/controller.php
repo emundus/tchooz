@@ -2428,7 +2428,6 @@ class EmundusController extends JControllerLegacy
 	 */
 	public function applyPubliclyToCampaign(): void
 	{
-		//$this->checkToken();
 		$response = EmundusResponse::denied();
 
 		if ($this->app->getIdentity()->guest == 1)
