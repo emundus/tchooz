@@ -11,6 +11,11 @@ use Tchooz\Enums\Synchronizer\SynchronizerContextEnum;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 
+if(!class_exists('EmundusHelperCache'))
+{
+	require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+}
+
 class ActionRegistry
 {
 	private CONST ACTIONS_DIRECTORY = JPATH_ROOT . '/components/com_emundus/classes/Entities/Automation/Actions';

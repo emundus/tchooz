@@ -58,6 +58,11 @@ class EmundusModelFormbuilder extends ListModel
 			require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
 		}
 
+		if(!class_exists('EmundusHelperCache'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+		}
+
 		Log::addLogger(['text_file' => 'com_emundus.formbuilder.php'], Log::ALL, array('com_emundus.formbuilder'));
 	}
 
