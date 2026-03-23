@@ -442,6 +442,67 @@ class ApplicationFileAccessRepositoryTest extends UnitTestCase
 	}
 
 	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository::generateAccessFileToken
+	 */
+	public function testTokenExpirationDateCannotExceedMaxDuration(): void
+	{
+		$token = $this->repository->generateAccessFileToken($this->publicApplicationFile);
+
+		$access = $this->repository->getByApplicationFile($this->publicApplicationFile);
+		$this->assertNotNull($access, 'L\'accès doit exister après génération du token');
+
+		$maxAllowedDate = new \DateTimeImmutable('+ 366 days');
+		$this->assertTrue(
+			$access->getExpirationDate() < $maxAllowedDate,
+			'La date d\'expiration ne doit pas dépasser 365 jours à partir de maintenant'
+		);
+
+		$minExpectedDate = new \DateTimeImmutable('+ 1 day');
+		$this->assertTrue(
+			$access->getExpirationDate() > $minExpectedDate,
+			'La date d\'expiration doit être dans le futur (au moins 1 jour)'
+		);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository::flush
+	 */
+	public function testFlushThrowsExceptionWhenExpirationDateExceedsMaxDuration(): void
+	{
+		$encryptedToken = password_hash('test_token', PASSWORD_BCRYPT);
+		$excessiveDate = new \DateTimeImmutable('+ 400 days');
+		$accessEntity = new ApplicationFileAccessEntity(
+			0,
+			$this->publicApplicationFile->getId(),
+			$encryptedToken,
+			$excessiveDate
+		);
+
+		$this->expectException(\InvalidArgumentException::class);
+
+		$this->repository->flush($accessEntity);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository::flush
+	 */
+	public function testFlushAcceptsExpirationDateAtMaxDuration(): void
+	{
+		$encryptedToken = password_hash('test_token', PASSWORD_BCRYPT);
+		$maxDate = new \DateTimeImmutable('+ 364 days');
+		$accessEntity = new ApplicationFileAccessEntity(
+			0,
+			$this->publicApplicationFile->getId(),
+			$encryptedToken,
+			$maxDate
+		);
+
+		$flushed = $this->repository->flush($accessEntity);
+
+		$this->assertTrue($flushed, 'Le flush doit réussir avec une date d\'expiration dans la limite autorisée');
+	}
+
+	/**
 	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository::renewToken
 	 */
 	public function testRenewTokenWhenNoAccessExistsThrowsException(): void

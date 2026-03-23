@@ -7,6 +7,7 @@ use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\ApplicationFile\ApplicationFileAccessEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Factories\ApplicationFile\ApplicationFileAccessFactory;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\EmundusRepository;
 
 #[TableAttribute(table: 'jos_emundus_file_access', alias: 'efa', columns: [
@@ -93,6 +94,14 @@ class ApplicationFileAccessRepository extends EmundusRepository
 			);
 		}
 
+		// expiration date cannot exceed 365 days from now
+		$maxAllowedDate = new \DateTimeImmutable('+ 365 days');
+		if ($applicationFileAccessEntity->getExpirationDate() > $maxAllowedDate) {
+			throw new \InvalidArgumentException(
+				Text::_('COM_EMUNDUS_FILE_ACCESS_EXPIRATION_DATE_TOO_FAR')
+			);
+		}
+
 		if (empty($applicationFileAccessEntity->getId()))
 		{
 			$existingAccess = $this->getByApplicationFileId($applicationFileAccessEntity->getApplicationId());
@@ -151,8 +160,17 @@ class ApplicationFileAccessRepository extends EmundusRepository
 				// bcrypt the token before storing it in the database for security reasons
 				$encryptedToken = password_hash($token, PASSWORD_BCRYPT);
 
-				$access = new ApplicationFileAccessEntity(0, $applicationFile->getId(), $encryptedToken, new \DateTimeImmutable('+ 30 days'));
+				$addonRepository = new AddonRepository();
+				$publicAccessAddon = $addonRepository->getByName('public_access');
+				$params = $publicAccessAddon->getValue()->getParams();
 
+				$days = !empty($params['token_validity_duration']) ? intval($params['token_validity_duration']) : 30;
+
+				if ($days > 365) {
+					$days = 365;
+				}
+
+				$access = new ApplicationFileAccessEntity(0, $applicationFile->getId(), $encryptedToken, new \DateTimeImmutable('+ ' . $days . ' days'));
 				if (!$this->flush($access))
 				{
 					throw new \RuntimeException('Failed to generate access token for public application file with fnum: ' . $applicationFile->getFnum());

@@ -77,7 +77,7 @@ class PublicSessionAddonHandler implements AddonHandlerInterface
 	{
 		return [
 			new YesnoField('display_import_public_file_action', Text::_('COM_EMUNDUS_ADDON_PUBLIC_SESSION_DISPLAY_IMPORT_FILE_ACTION_LABEL'), true),
-			new NumericField('token_validity_duration', Text::_('COM_EMUNDUS_ADDON_PUBLIC_SESSION_DISPLAY_TOKEN_VALIDITY_DURATION_LABEL'), true),
+			(new NumericField('token_validity_duration', Text::_('COM_EMUNDUS_ADDON_PUBLIC_SESSION_DISPLAY_TOKEN_VALIDITY_DURATION_LABEL'), true))->setMin(1)->setMax(365),
 		];
 	}
 }
