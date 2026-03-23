@@ -2898,7 +2898,7 @@ class EmundusControllerApplication extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
 		['id' => 'application_choices', 'mode' => CrudEnum::READ]
 	])]
-	public function exportapplicationchoices(): EmundusResponse
+	public function exportapplicationchoices(): void
 	{
 		$response['code']    = 200;
 		$response['status']  = true;
@@ -2990,5 +2990,67 @@ class EmundusControllerApplication extends EmundusController
 		}
 
 		$this->sendJsonResponse($response);
+	}
+
+	/**
+	 * @return EmundusResponse
+	 * @throws Exception
+	 */
+	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
+	public function updateOwnerPublicAccessFile(): EmundusResponse
+	{
+		//$this->checkToken();
+		$response = EmundusResponse::denied();
+
+		$fnum = $this->app->getInput()->getString('fnum', '');
+		$token = $this->app->getInput()->getString('token', '');
+		$newOwnerId = $this->app->getInput()->getInt('owner', 0);
+
+		if (!empty($fnum) && !empty($token))
+		{
+			$applicationFileRepository = new ApplicationFileRepository();
+			$applicationFile = $applicationFileRepository->getByFnum($fnum);
+
+			if (empty($applicationFile))
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_APPLICATION_FILE_NOT_FOUND'), 404);
+			}
+
+			if (!$applicationFile->isPublic())
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_APPLICATION_FILE_NOT_PUBLIC'), 403);
+			}
+
+			$applicationFileAccessRepository = new ApplicationFileAccessRepository();
+
+			if (!$applicationFileAccessRepository->verifyAccessToken($token, $applicationFile))
+			{
+				throw new Exception(Text::_('ACCESS_DENIED'), 403);
+			}
+
+			if (empty($newOwnerId))
+			{
+				$newOwnerId = $this->user->id;
+			}
+
+			if ($newOwnerId != $this->user->id)
+			{
+				if (!EmundusHelperAccess::asAccessAction('update_owner', 'c', $this->user->id, $applicationFile->getFnum()))
+				{
+					throw new Exception(Text::_('ACCESS_DENIED'), 403);
+				}
+			}
+
+			// ! TODO: need feature #671
+			throw new Exception(Text::_('WAITING_FOR_UPDATE_OWNER_SERVICE'), 404);
+
+			/*$service = new ApplicationFileService();
+			if ($service->updateOwner($applicationFile, $newOwnerId, $this->user->id))
+			{
+				$response = EmundusResponse::ok();
+			}*/
+		}
+
+		return $response;
 	}
 }

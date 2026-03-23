@@ -863,6 +863,17 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 			<?php endforeach ?>
 		<?php endforeach; ?>
 	<?php endif; ?>
+
+    <div class="em-mt-32" id="import_file">
+        <div class="hover-and-tile-container hover-and-tile-container-action tw-border-dashed tw-cursor-pointer" style="width: 50%; height: 300px;">
+            <div id="tile-hover-offset-request"></div>
+            <div class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center tw-cursor-pointer">
+                <div id="background-shapes" class="tw-cursor-pointer" alt="Fond formes"></div>
+                <span class="material-symbols-outlined tw-w-fit tw-cursor-pointer">download</span>
+                <p class="tw-w-fit tw-cursor-pointer"><?= Text::_('IMPORT_FILE_FROM_PUBLIC_ACCESS_TITLE') ?></p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="em-mt-32" id="applications_list_view" style="display: none">
@@ -1138,6 +1149,21 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                         <td></td>
                                     </tr>
 								<?php endif; ?>
+                                    <tr class="tw-cursor-pointer" id="import_file">
+                                        <td>
+                                            <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                                                <div id="background-shapes"
+                                                     alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+                                            <?php endif; ?>
+                                            <p class="tw-w-fit"><?= Text::_('IMPORT_FILE_FROM_PUBLIC_ACCESS_TITLE'); ?></p>
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <span class="material-symbols-outlined tw-w-fit">download</span>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
                                 </tbody>
                             </table>
 						<?php endforeach; ?>
@@ -1162,17 +1188,6 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                 class="icon-plus-sign"> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span></a>
     </div>
 <?php endif; ?>
-
-<div class="em-mt-32" id="import_file" style="display: block;">
-    <div class="hover-and-tile-container hover-and-tile-container-action tw-border-dashed" style="width: 50%; height: 300px;">
-        <div id="tile-hover-offset-request"></div>
-        <div class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
-            <div id="background-shapes" alt="Fond formes"></div>
-            <span class="material-symbols-outlined tw-w-fit">download</span>
-            <p class="tw-w-fit"><?= Text::_('COM_EMUNDUS_IMPORT_FILE_FROM_TOKEN_ACCESS') ?></p>
-        </div>
-    </div>
-</div>
 
 <?php if (!empty($filled_poll_id) && !empty($poll_url) && $filled_poll_id == 0 && $poll_url != "") : ?>
     <div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog"

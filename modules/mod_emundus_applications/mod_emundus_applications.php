@@ -22,6 +22,17 @@ if (EmundusPublicAccess::isPublicAccessSession())
 	require ModuleHelper::getLayoutPath('mod_emundus_applications', 'public_access');
 	return;
 }
+else
+{
+	Text::script('IMPORT_FILE_FROM_PUBLIC_ACCESS_TITLE');
+	Text::script('IMPORT_FILE_FROM_PUBLIC_ACCESS_DESC');
+	Text::script('COM_EMUNDUS_FNUM_LABEL');
+	Text::script('COM_EMUNDUS_FNUM_LABEL_PLACEHOLDER');
+	Text::script('COM_EMUNDUS_ACCESS_KEY_LABEL');
+	Text::script('COM_EMUNDUS_ACCESS_KEY_LABEL_PLACEHOLDER');
+	Text::script('IMPORT_FILE_FROM_PUBLIC_ACCESS_BUTTON');
+	Text::script('CANCEL');
+}
 
 include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
 $m_profile = new EmundusModelProfile();
