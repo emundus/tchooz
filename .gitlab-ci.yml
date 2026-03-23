@@ -98,7 +98,7 @@ check-language-files-health:
 repo_scanning:
   stage: test
   image:
-    name: docker.io/aquasec/trivy:latest
+    name: ghcr.io/aquasecurity/trivy:latest
     entrypoint: [""]
   variables:
     TRIVY_NO_PROGRESS: "true"
