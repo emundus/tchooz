@@ -278,6 +278,20 @@ class EmundusHelperUpdate
 		return $updated;
 	}
 
+
+	/**
+	 * @param $name
+	 * @param $element
+	 * @param $manifest_cache
+	 * @param $type
+	 * @param $enabled
+	 * @param $folder
+	 * @param $params
+	 * @param $administrator
+	 * @param $message
+	 *
+	 * @return bool
+	 */
 	public static function installExtension($name, $element, $manifest_cache = null, $type = 'plugin', $enabled = 1, $folder = '', $params = '{}', $administrator = false, $message = true)
 	{
 		$installed = false;

@@ -104,4 +104,9 @@ class ChoicesAddonHandler implements AddonHandlerInterface
 
 		return !in_array(false, $tasks, true);
 	}
+
+	public function getParameters(): array
+	{
+		// TODO: Implement getParameters() method.
+	}
 }

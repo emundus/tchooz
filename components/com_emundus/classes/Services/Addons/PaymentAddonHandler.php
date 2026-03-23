@@ -93,4 +93,9 @@ class PaymentAddonHandler implements AddonHandlerInterface
 
 		return !in_array(false, $updates);
 	}
+
+	public function getParameters(): array
+	{
+		// TODO: Implement getParameters() method.
+	}
 }

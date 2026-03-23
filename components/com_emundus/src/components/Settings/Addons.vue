@@ -6,12 +6,13 @@ import SMSAddon from '@/components/Settings/Addons/SMSAddon.vue';
 import RankingTool from '@/components/Settings/Addons/RankingTool.vue';
 import PaymentAddon from '@/components/Settings/Addons/PaymentAddon.vue';
 import AnonymAddon from '@/components/Settings/Addons/AnonymAddon.vue';
+import Addon from '@/components/Settings/Addons/Addon.vue';
 
 /* Components */
 
 export default {
 	name: 'Addons',
-	components: { Messenger, SMSAddon, RankingTool, PaymentAddon, AnonymAddon },
+	components: { Messenger, SMSAddon, RankingTool, PaymentAddon, AnonymAddon, Addon },
 	data() {
 		return {
 			loading: true,
@@ -126,7 +127,7 @@ export default {
 				"
 			/>
 			<SMSAddon
-				v-if="currentAddon.type === 'sms'"
+				v-else-if="currentAddon.type === 'sms'"
 				:addon="currentAddon"
 				@addonSaved="
 					currentAddon = null;
@@ -135,7 +136,7 @@ export default {
 			></SMSAddon>
 
 			<PaymentAddon
-				v-if="currentAddon.type === 'payment'"
+				v-else-if="currentAddon.type === 'payment'"
 				:addon="currentAddon"
 				@addonSaved="
 					currentAddon = null;
@@ -144,13 +145,22 @@ export default {
 			></PaymentAddon>
 
 			<AnonymAddon
-				v-if="currentAddon.type === 'anonymous'"
+				v-else-if="currentAddon.type === 'anonymous'"
 				:addon="currentAddon"
 				@addonSaved="
 					currentAddon = null;
 					getAddons();
 				"
 			></AnonymAddon>
+
+			<Addon
+				v-else
+				:addon="currentAddon"
+				@addonSaved="
+					currentAddon = null;
+					getAddons();
+				"
+			></Addon>
 		</div>
 
 		<div class="em-page-loader" v-if="loading"></div>

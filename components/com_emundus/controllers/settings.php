@@ -27,6 +27,8 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Users\Administrator\Helper\Mfa;
 use Symfony\Component\OptionsResolver\Exception\AccessException;
 use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Entities\Addons\AddonValue;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Entities\User\UserCategoryEntity;
@@ -3571,6 +3573,33 @@ class EmundusControllersettings extends EmundusController
 
 		echo json_encode((object) $response);
 		exit;
+	}
+
+	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
+	public function getaddonparameters(): EmundusResponse
+	{
+		$response = EmundusResponse::fail(Text::_('COM_EMUNDUS_NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
+
+		$type = $this->app->getInput()->getString('addon_type');
+		if (!empty($type))
+		{
+			$addonValue = new AddonValue(true, true, []);
+			$publicSessionAddon = new AddonEntity('public_session', $addonValue);
+			$resolver = new AddonHandlerResolver();
+			try
+			{
+				$handler = $resolver->resolve('public_session', $publicSessionAddon);
+
+				$data = array_map(function ($param) {
+					return $param->toSchema();
+				}, $handler->getParameters());
+				$response = EmundusResponse::ok($data, Text::_('COM_EMUNDUS_ADDON_PARAMETERS_FETCHED'));
+			} catch (Exception $e) {
+				return EmundusResponse::fail(Text::_('COM_EMUNDUS_ADDON_HANDLER_NOT_FOUND'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
+			}
+		}
+
+		return $response;
 	}
 }
 

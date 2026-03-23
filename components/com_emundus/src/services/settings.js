@@ -456,6 +456,20 @@ export default {
 		}
 	},
 
+	async getAddonParameters(addonType)
+	{
+		try {
+			return await fetchClient.post('getaddonparameters', {
+				addon_type: addonType,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
 	async setupMessenger(setup) {
 		try {
 			return await fetchClient.post('setupmessenger', {

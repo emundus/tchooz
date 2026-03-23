@@ -55,4 +55,9 @@ class AutomationAddonHandler implements AddonHandlerInterface
 
 		return !in_array(false, $tasks);
 	}
+
+	public function getParameters(): array
+	{
+		// TODO: Implement getParameters() method.
+	}
 }

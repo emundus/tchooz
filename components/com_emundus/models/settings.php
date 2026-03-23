@@ -3807,6 +3807,7 @@ class EmundusModelSettings extends ListModel
 				case 'sms':
 				case 'payment':
 				case 'anonymous':
+				case 'public_session':
 					$config = [
 						'enabled'   => $addon['enabled'],
 						'displayed' => $addon['displayed'],
@@ -4113,6 +4114,21 @@ class EmundusModelSettings extends ListModel
 					'COM_EMUNDUS_ADDONS_AUTOMATION_DESC',
 					json_encode($automationAddon->getValue()->getParams()),
 					$automationAddon->getValue()->isEnabled() ? 1 : 0,
+					1
+				);
+			}
+
+			$addonRepository = new AddonRepository();
+			$publicSessionAddon = $addonRepository->getByName('public_session');
+			if ($publicSessionAddon->getValue()->isDisplayed())
+			{
+				$addons[] = new AddonEntity(
+					Text::_('COM_EMUNDUS_ADDONS_PUBLIC_SESSION'),
+					'public_session',
+					'no_accounts',
+					Text::_('COM_EMUNDUS_ADDONS_PUBLIC_SESSION_DESC'),
+					json_encode($publicSessionAddon->getValue()->getParams()),
+					$publicSessionAddon->getValue()->isEnabled() ? 1 : 0,
 					1
 				);
 			}
