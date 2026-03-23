@@ -142,7 +142,6 @@ export default {
 					}
 				}
 
-				console.log(this.config);
 				this.loading = false;
 			}
 		});
