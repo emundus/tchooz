@@ -120,7 +120,7 @@ class ActionApiMap extends ActionEntity
 		$options = [];
 
 		$repository = new MappingRepository();
-		$mappings   = $repository->getAll();
+		$mappings   = $repository->getAll([], 0);
 		foreach ($mappings as $mapping)
 		{
 			$options[] = new ChoiceFieldValue($mapping->getId(), $mapping->getLabel());
