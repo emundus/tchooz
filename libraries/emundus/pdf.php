@@ -894,20 +894,20 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		    $item = $db->loadObject();
 
 		    /* GET LOGO */
-			try
-			{
-				$logo = EmundusHelperEmails::getLogo(false,$item->training);
-				$type = pathinfo($logo, PATHINFO_EXTENSION);
-				if ($data = file_get_contents($logo))
-				{
-					$logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-				}
-			}
-			catch (\Exception $e)
-			{
-				$logo_base64 = '';
-				Log::add('Error while getting logo for application form PDF : '.$e->getMessage(), Log::ERROR, 'com_emundus');
-			}
+		    $logo_base64 = '';
+		    try
+		    {
+			    $logo = EmundusHelperEmails::getLogo(false,$item->training);
+			    $type = pathinfo($logo, PATHINFO_EXTENSION);
+			    if ($data = file_get_contents($logo))
+			    {
+				    $logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+			    }
+		    }
+		    catch (\Exception $e)
+		    {
+			    Log::add('Error while getting logo for application form PDF : '.$e->getMessage(), Log::ERROR, 'com_emundus');
+		    }
 		    /* END LOGO */
 
 	        $htmldata = '';
@@ -1035,6 +1035,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 }
                 $htmldata .= '<hr>';
             }
+			else {
+				$htmldata .= '</td></tr></table><hr/></header>';
+			}
         } catch (Exception $e) {
             Log::add('Error in emundus pdf library at query : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
         }
