@@ -1500,6 +1500,88 @@
                 background-color: var(--neutral-400) !important;
             }
         }
+
+        &.view-groups {
+            /** Checkboxes for groups views **/
+
+            input[type="checkbox"] {
+                appearance: none;
+                -webkit-appearance: none;
+                display: inline-block;
+                padding: 0 !important;
+
+                width: 20px;
+                height: 20px;
+                border: 2px solid var(--neutral-300);
+                border-radius: 4px;
+                background-color: var(--neutral-0);
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            /* État coché */
+
+            input[type="checkbox"]:checked {
+                background-color: var(--main-500);
+                border-color: var(--main-500);
+            }
+
+            /* Coche personnalisée via pseudo-élément */
+
+            input[type="checkbox"]:checked::after {
+                content: '';
+                display: block;
+                width: 5px;
+                height: 9px;
+                border: 2px solid white;
+                border-top: none;
+                border-left: none;
+                transform: rotate(45deg) translate(6px, -2px);
+            }
+
+            /* Focus accessible */
+
+            input[type="checkbox"]:focus-visible {
+                outline: 2px solid var(--main-500);
+                outline-offset: 2px;
+            }
+
+            /* État désactivé */
+
+            input[type="checkbox"]:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+
+            /* Checked disabled */
+
+            input[type="checkbox"]:checked:disabled {
+                background-color: var(--neutral-400);
+                border-color: var(--neutral-400);
+                opacity: 0.4;
+            }
+
+            input[type="checkbox"]:indeterminate {
+                background-color: var(--neutral-400);
+                border-color: var(--neutral-400);
+            }
+
+            input[type="checkbox"]:indeterminate::after {
+                content: '';
+                font-size: 24px;
+                transform: translate(4px, 0px);
+                width: 8px;
+                height: 9px;
+                border-bottom: 2px solid var(--neutral-600);
+                display: block;
+            }
+
+            input[type="checkbox"]:checked:disabled {
+                background-color: var(--main-500);
+                border-color: var(--main-500);
+                opacity: 1;
+            }
+        }
     }
 
     input[type="text"],

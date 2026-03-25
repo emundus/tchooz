@@ -62,6 +62,8 @@ build-db-to-test-job:
 
 phpunit-job:
   stage: test
+  when: manual
+  allow_failure: false
   image: emundus/tchooz-test-app:latest
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:

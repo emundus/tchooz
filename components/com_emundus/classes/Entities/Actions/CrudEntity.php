@@ -21,7 +21,8 @@ class CrudEntity
 
 	private int $delete;
 
-	public function __construct(int $multi, int $create, int $read, int $update, int $delete) {
+	public function __construct(int $multi, int $create, int $read, int $update, int $delete)
+	{
 		$this->multi  = $multi;
 		$this->create = $create;
 		$this->read   = $read;
@@ -77,5 +78,16 @@ class CrudEntity
 	public function setDelete(int $delete): void
 	{
 		$this->delete = $delete;
+	}
+
+	public function __serialize(): array
+	{
+		return [
+			'multi'  => $this->multi,
+			'create' => $this->create,
+			'read'   => $this->read,
+			'update' => $this->update,
+			'delete' => $this->delete,
+		];
 	}
 }

@@ -5,6 +5,12 @@ namespace Unit\Component\Emundus\Class\Factories\Workflow;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Factories\Workflow\StepFactory;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Factories\Workflow
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Factories\Workflow\StepFactory
+ */
 class StepFactoryTest extends UnitTestCase
 {
 

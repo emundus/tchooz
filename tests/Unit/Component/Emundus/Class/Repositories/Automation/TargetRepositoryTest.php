@@ -8,6 +8,12 @@ use Tchooz\Entities\Automation\TargetEntity;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Repositories\Automation\TargetRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Automation
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Automation\TargetRepository
+ */
 class TargetRepositoryTest extends UnitTestCase
 {
 

@@ -220,7 +220,7 @@
 											v-html="tag.value"
 										></span>
 									</div>
-									<div v-else-if="column.hasOwnProperty('long_value')">
+									<div v-else-if="column.hasOwnProperty('long_value') && column.long_value">
 										<span
 											@click="displayLongValue($event, column.long_value)"
 											class="tw-mb-2 tw-mt-2 tw-block tw-w-fit"
@@ -228,7 +228,7 @@
 											v-html="column.value"
 										></span>
 									</div>
-									<span v-else :class="column.classes" v-html="column.value"></span>
+									<span v-else class="tw-block" :class="column.classes" v-html="column.value"></span>
 								</td>
 								<td
 									class="actions tw-gap-6 tw-rounded-e-coordinator-cards tw-p-4"
@@ -321,7 +321,7 @@
 													transition="nice-modal-fade"
 													:classes="'!tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-p-8 tw-shadow-modal'"
 													:height="modalHeight"
-													:width="'600px'"
+													:width="modalWidth"
 													:delay="100"
 													:adaptive="true"
 													:clickToClose="false"
@@ -380,6 +380,20 @@
 							@update-items="getListItems()"
 							@calendar-created="resetLastItemSelected"
 						/>
+					</div>
+
+					<!-- Display number of selected items -->
+					<div
+						v-if="checkedItems.length > 0"
+						class="tw-fixed tw-bottom-4 tw-right-[50%] tw-z-50 tw-rounded-coordinator tw-border tw-border-main-500 tw-bg-main-25 tw-p-4 tw-shadow-lg"
+					>
+						<span class="tw-block tw-text-sm">
+							{{
+								checkedItems.length === 1
+									? translate('COM_EMUNDUS_ONBOARD_ITEM_SELECTED').replace('%s', checkedItems.length)
+									: translate('COM_EMUNDUS_ONBOARD_ITEMS_SELECTED').replace('%s', checkedItems.length)
+							}}
+						</span>
 					</div>
 
 					<div v-if="showExportModal">
@@ -450,6 +464,7 @@ import CampaignDetails from '@/components/Campaigns/CampaignDetails.vue';
 import ProgramDetails from '@/components/Campaigns/ProgramDetails.vue';
 import EventDetails from '@/components/Events/EventDetails.vue';
 import EmailDetails from '@/components/Emails/EmailDetails.vue';
+import GroupDetails from '@/components/Groups/GroupDetails.vue';
 import Import from '@/components/Campaigns/Import.vue';
 import SaveRequest from '@/views/Sign/SaveRequest.vue';
 import UpdateApplicationChoiceState from '@/components/Application/UpdateApplicationChoiceState.vue';
@@ -485,6 +500,7 @@ export default {
 		OrganizationDetails,
 		CampaignDetails,
 		ProgramDetails,
+		GroupDetails,
 		EventDetails,
 		EmailDetails,
 		SaveRequest,
@@ -516,6 +532,10 @@ export default {
 			type: String,
 			default: 'auto',
 		},
+		modalWidth: {
+			type: String,
+			default: '600px',
+		},
 		crud: {
 			type: Object,
 			default: () => [],
@@ -543,6 +563,7 @@ export default {
 				ProgramDetails,
 				EventDetails,
 				EmailDetails,
+				GroupDetails,
 				Import,
 				SaveRequest,
 				UpdateApplicationChoiceState,
@@ -1070,7 +1091,7 @@ export default {
 				Swal.fire({
 					icon: 'warning',
 					title: this.translate(action.label),
-					text: this.translate(action.confirm),
+					html: this.translate(action.confirm),
 					input: action.input ? action.input : null,
 					inputLabel: action.inputLabel ? this.translate(action.inputLabel) : null,
 					showCancelButton: true,

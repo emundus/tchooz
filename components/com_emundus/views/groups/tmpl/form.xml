@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="Formulaire de création/d'édition d'un groupe">
+        <message>
+            <![CDATA[Affiche le formulaire pour la création/édition d'un groupe]]>
+        </message>
+    </layout>
+
+    <fields name="params">
+    </fields>
+</metadata>

@@ -7,6 +7,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Upload\UploadEntity;
 use Tchooz\Repositories\Upload\UploadRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Upload
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Upload\UploadRepository
+ */
 class UploadRepositoryTest extends UnitTestCase
 {
 	private UploadRepository $repository;

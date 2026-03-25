@@ -18,7 +18,7 @@ use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
 
 /**
- * @package     Unit\Component\Emundus\Helper
+ * @package     Unit\Component\Emundus\Class\Repositories\Contacts
  *
  * @since       version 1.0.0
  * @covers      \Tchooz\Repositories\Contacts\OrganizationRepository

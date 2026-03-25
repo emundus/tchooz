@@ -10,6 +10,12 @@ use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Repositories\Workflow\StepTypeRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Workflow
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Workflow\StepRepository
+ */
 class StepRepositoryTest extends UnitTestCase
 {
 	private StepRepository $repository;

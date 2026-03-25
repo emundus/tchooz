@@ -13,9 +13,11 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 use Tchooz\Attributes\TableAttribute;
+use Tchooz\Entities\Groups\GroupEntity;
 use Tchooz\Entities\Programs\ProgramEntity;
 use Tchooz\Factories\Programs\ProgramFactory;
 use Tchooz\Repositories\EmundusRepository;
+use Tchooz\Repositories\Groups\GroupRepository;
 use Tchooz\Traits\TraitTable;
 
 #[TableAttribute(
@@ -119,6 +121,32 @@ class ProgramRepository extends EmundusRepository
 		}
 
 		return $categories;
+	}
+
+	/**
+	 * @param   string  $programCode
+	 *
+	 * @return array<GroupEntity>
+	 *
+	 * @since version
+	 */
+	public function getGroupsByProgramCode(string $programCode): array
+	{
+		$groups = [];
+
+		$query = $this->db->getQuery(true);
+		$query->select('parent_id')
+			->from($this->db->quoteName('#__emundus_setup_groups_repeat_course'))
+			->where('course = ' . $this->db->quote($programCode));
+		$this->db->setQuery($query);
+		$groupIds = $this->db->loadColumn();
+
+		$groupRepository = new GroupRepository();
+		if (!empty($groupIds)) {
+			$groups = $groupRepository->getItemsByField('id', $groupIds, true);
+		}
+
+		return $groups;
 	}
 
 	public function getFactory(): ProgramFactory
