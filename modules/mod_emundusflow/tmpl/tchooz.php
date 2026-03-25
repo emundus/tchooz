@@ -1,5 +1,6 @@
 <?php // no direct access
 use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 
@@ -11,6 +12,14 @@ $site_offset = $config->get('offset');
 $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 $dateTime = $dateTime->setTimezone(new DateTimeZone($site_offset));
 $now      = $dateTime->format('Y-m-d H:i:s');
+
+$document = Factory::getApplication()->getDocument();
+$wa       = $document->getWebAssetManager();
+
+if ($params->get('layout', '') != '_:tchooz')
+{
+    $wa->registerAndUseStyle("modules/mod_emundusflow/style/emundus.css");
+}
 
 assert($applicationFile instanceof ApplicationFileEntity);
 ?>
@@ -200,7 +209,7 @@ assert($applicationFile instanceof ApplicationFileEntity);
                 </div>
 			<?php endif; ?>
 
-			<?php if ($show_programme == 1) : ?>
+			<?php if ($params->get('show_programme', 1) == 1) : ?>
                 <div class="tw-flex tw-items-center em-flex-wrap">
                     <p class="em-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
                     <p class="em-programme-tag" style="color: <?php echo $color ?>;margin: unset;padding: 0">
@@ -218,10 +227,10 @@ assert($applicationFile instanceof ApplicationFileEntity);
                 </div>
 			<?php endif; ?>
 
-	        <?php if($fnumInfos['applicant_id'] !== Factory::getApplication()->getIdentity()->id) : ?>
+	        <?php if($applicationFile->getUser()->id !== Factory::getApplication()->getIdentity()->id) : ?>
                 <div class="tw-flex tw-items-center">
                     <p class="tw-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_APPLICANT'); ?></p>
-                    <p><?= $fnumInfos['name']; ?></p>
+                    <p><?= $applicationFile->getUser()->name; ?></p>
                 </div>
 	        <?php endif; ?>
         </div>
@@ -258,6 +267,13 @@ assert($applicationFile instanceof ApplicationFileEntity);
 			echo $file_tags_display;
 		endif; ?>
     </div>
+
+    <?php
+        if ($applicationFile->isPublic())
+        {
+            require ModuleHelper::getLayoutPath($module->module, 'publicsession');
+        }
+    ?>
 
 </div>
 

@@ -11,12 +11,12 @@
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>benjamin@emundus.fr</authorEmail>
     <authorUrl>www.emundus.fr</authorUrl>
-    <version>2.0.0</version>
+    <version>2.19.0</version>
     <description>MOD_EMUNDUS_FLOW_SYS_XML_DESC</description>
+    <namespace path="src">Emundus\Module\Emundusflow</namespace>
     <files>
-        <filename>mod_emundusflow.xml</filename>
-        <filename module="mod_emundusflow">mod_emundusflow.php</filename>
-        <filename>index.html</filename>
+        <folder module="mod_emundusflow">services</folder>
+        <folder>src</folder>
         <folder>language</folder>
         <folder>style</folder>
         <folder>tmpl</folder>

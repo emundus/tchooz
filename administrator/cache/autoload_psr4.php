@@ -7,6 +7,7 @@ return [
 	'Emundus\\Module\\BtoB\\Site\\' => [JPATH_SITE . '/modules/mod_emundus_btob/src'],
 	'Emundus\\Module\\CountApplications\\Site\\' => [JPATH_SITE . '/modules/mod_emundus_count_applications/src'],
 	'Emundus\\Module\\Dashboard\\Site\\' => [JPATH_SITE . '/modules/mod_emundus_dashboard_vue/src'],
+	'Emundus\\Module\\Emundusflow\\Site\\' => [JPATH_SITE . '/modules/mod_emundusflow/src'],
 	'Emundus\\Module\\Messenger\\Site\\' => [JPATH_SITE . '/modules/mod_emundus_messenger_notifications/src'],
 	'Emundus\\Module\\Tracking\\Site\\' => [JPATH_SITE . '/modules/mod_emundus_tracking/src'],
 	'Emundus\\Plugin\\Console\\Tchooz\\' => [JPATH_PLUGINS . '/console/tchooz_cli/src'],
