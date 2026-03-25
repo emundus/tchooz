@@ -700,7 +700,6 @@ class EmundusControllerUsers extends EmundusController
 		if (EmundusHelperAccess::asAccessAction(12, 'u', $this->user->id) || EmundusHelperAccess::asAccessAction(12, 'c', $this->user->id))
 		{
 			$users = $this->input->getString('users', null);
-
 			$groups  = $this->input->getString('groups', null);
 			$m_users = $this->getModel('Users');
 
@@ -723,7 +722,7 @@ class EmundusControllerUsers extends EmundusController
 			});
 
 			$users = $m_users->getNonApplicantId($users);
-			$res   = $m_users->affectToGroups($users, explode(',', $groups));
+			$res   = $m_users->affectToGroups($users, explode(',', $groups), $this->user);
 
 			if ($res === true)
 			{

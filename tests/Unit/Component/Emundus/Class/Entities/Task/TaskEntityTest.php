@@ -9,6 +9,12 @@ use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Entities\Task
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Entities\Task\TaskEntity
+ */
 class TaskEntityTest extends UnitTestCase
 {
 	/**

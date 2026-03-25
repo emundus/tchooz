@@ -12,6 +12,12 @@ use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
 use Tchooz\Repositories\Export\ExportRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Entities\Automation\Actions
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Entities\Automation\Actions\ActionExport
+ */
 class ActionExportTest extends UnitTestCase
 {
 	public function setUp(): void

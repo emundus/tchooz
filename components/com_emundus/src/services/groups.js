@@ -44,4 +44,76 @@ export default {
 			}
 		});
 	},
+
+	async getGroup(id) {
+		try {
+			return await client.get('getgroup', { id: id });
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+				msg: e.message,
+			};
+		}
+	},
+
+	async saveGroup(data) {
+		try {
+			return await client.post('savegroup', data);
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+			};
+		}
+	},
+
+	async associatePrograms(groupId, programCodes) {
+		try {
+			return await client.post('associateprograms', { group_id: groupId, program_codes: programCodes });
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+			};
+		}
+	},
+
+	async getAccessRights(groupId) {
+		try {
+			return await client.get('getaccessrights', { group_id: groupId });
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+				msg: e.message,
+			};
+		}
+	},
+
+	async updateAccessRights(groupId, accessRights) {
+		try {
+			accessRights = JSON.stringify(accessRights);
+
+			return await client.post('updateaccessrights', { group_id: groupId, access_rights: accessRights });
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+				msg: e.message,
+			};
+		}
+	},
+
+	async getUsersGroup(groupId) {
+		try {
+			return await client.get('getusersgroup', { group_id: groupId });
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+				msg: e.message,
+			};
+		}
+	},
 };

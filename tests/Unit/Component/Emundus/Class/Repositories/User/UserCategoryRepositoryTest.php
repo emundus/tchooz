@@ -23,10 +23,12 @@ use Tchooz\Repositories\Payment\ProductRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+
 /**
- * @package     Unit\Component\Emundus\Helper
+ * @package     Unit\Component\Emundus\Class\Repositories\User
  *
  * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\User\UserCategoryRepository
  */
 class UserCategoryRepositoryTest extends UnitTestCase
 {

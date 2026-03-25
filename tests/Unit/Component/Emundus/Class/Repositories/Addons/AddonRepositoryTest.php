@@ -16,10 +16,10 @@ use Tchooz\Entities\Addons\AddonValue;
 use Tchooz\Repositories\Addons\AddonRepository;
 
 /**
- * @package     Unit\Component\Emundus\Helper
+ * @package     Unit\Component\Emundus\Class\Repositories\Addons
  *
  * @since       version 1.0.0
- * @covers      \Tchooz\Entities\NumericSign\Request
+ * @covers      \Tchooz\Repositories\Addons\AddonRepository
  */
 class AddonRepositoryTest extends UnitTestCase
 {

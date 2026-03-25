@@ -18,6 +18,10 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Emundus\Administrator\Attributes\PostflightAttribute;
 use Joomla\Database\DatabaseInterface;
+use Tchooz\Entities\Actions\ActionEntity;
+use Tchooz\Entities\Actions\CrudEntity;
+use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Services\Language\DbLanguage;
 use Tchooz\Traits\TraitVersion;
 
@@ -59,6 +63,8 @@ class Com_EmundusInstallerScript
 
 	public function preflight(string $type, object $parent): void
 	{
+		EmundusHelperUpdate::displayMessage('Exécution des tâches pré-installation');
+
 		if (version_compare(PHP_VERSION, '7.4.0', '<'))
 		{
 			EmundusHelperUpdate::displayMessage('This extension works with PHP 7.4.0 or newer. Please contact your web hosting provider to update your PHP version.', 'error');
@@ -85,6 +91,12 @@ class Com_EmundusInstallerScript
 			];
 
 			EmundusHelperUpdate::createTable('#__emundus_version', $columns,[], '', [], $primary_key_options);
+		}
+
+		if (!$this->updateTablesBeforeFilesScripts())
+		{
+			EmundusHelperUpdate::displayMessage('Échec de mise à jour des tables avant les scripts de fichiers.', 'error');
+			exit;
 		}
 
 		$this->generateAutoloadTables();
@@ -1818,6 +1830,38 @@ class Com_EmundusInstallerScript
 		return $checked;
 	}
 
+	/**
+	 * Update tables before files scripts to avoid errors in case of missing columns
+	 *
+	 * E.g. : jos_emundus_setup_actions table is used to create new actions, but since 2.17, a new columns is used in repositories.
+	 * So, we add the column before scripts to ensure installation still works
+	 *
+	 * @return bool
+	 */
+	private function updateTablesBeforeFilesScripts(): bool
+	{
+		$updates = [];
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		$table_existing = $db->setQuery('SHOW TABLE STATUS WHERE Name LIKE ' . $db->quote('jos_emundus_setup_step_types'))->loadResult();
+		if (!empty($table_existing))
+		{
+			$result = EmundusHelperUpdate::addColumn('#__emundus_setup_step_types', 'code', 'varchar', 50);
+			$updates[] = $result['status'];
+		}
+
+		// since 2.17.0
+		$result = EmundusHelperUpdate::addColumn('jos_emundus_setup_actions', 'type', 'VARCHAR', 20, 0, 'file');
+		$updates[] = $result['status'];
+		if (!$result['status'])
+		{
+			EmundusHelperUpdate::displayMessage($result['message'], 'error');
+		}
+
+		return !in_array(false, $updates);
+	}
+
 	private function generateAutoloadTables(): void
 	{
 		// Regenerate autoload_tables file located in JPATH_CACHE. Check only files in components/com_emundus/classes/Repositories directory
@@ -1869,7 +1913,8 @@ class Com_EmundusInstallerScript
 		}
 
 		$export = var_export($map, true);
-		$export = preg_replace(['/\barray\s*\(/', '/\)(,)?/'], ['[', ']$1'], $export);
+		$export = preg_replace(['/\barray\s*\(/', '/\)(,)/'], ['[', ']$1'], $export);
+		$export = preg_replace('/\)(;)?$/', ']$1', $export);
 		$php = "<?php\ndefined('_JEXEC') or die;\nreturn $export;\n";
 		$tmp ='autoload_tables.php' . '.tmp';
 		file_put_contents($tmp, $php);
@@ -1916,5 +1961,49 @@ class Com_EmundusInstallerScript
 		}
 
 		return $repaired;
+	}
+
+	#[PostflightAttribute(name: "Build setup actions table with ActionEnum")]
+	private function buildSetupActionsTable(): bool
+	{
+		$actions = ActionEnum::cases();
+		$actionRepository = new ActionRepository();
+
+		try
+		{
+			foreach ($actions as $action)
+			{
+				$actionEntity = $actionRepository->getByName($action->value);
+				if(!empty($actionEntity))
+				{
+					$actionEntity->setLabel($action->getLabel());
+					$actionEntity->setDescription($action->getDescription());
+					$actionEntity->setOrdering($action->getOrdering());
+					$actionEntity->setType($action->getType());
+
+					$actionRepository->flush($actionEntity);
+				}
+				else {
+					$actionEntity = new ActionEntity(
+						0,
+						$action->value,
+						$action->getLabel(),
+						new CrudEntity(0, 1, 1, 1, 1),
+						$action->getOrdering(),
+						true,
+						$action->getDescription(),
+						$action->getType()
+					);
+					$actionRepository->flush($actionEntity);
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			EmundusHelperUpdate::displayMessage($e->getMessage(), 'error');
+			return false;
+		}
+
+		return true;
 	}
 }

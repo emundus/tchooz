@@ -19,6 +19,8 @@ class ApplicationChoicesEntity
 
 	private ?CampaignEntity $campaign;
 
+	private int $campaign_id;
+
 	private string $fnum;
 
 	private ?ApplicationFileEntity $application_file = null;
@@ -32,11 +34,12 @@ class ApplicationChoicesEntity
 	// TODO: Refactor when Fabrik was moved into Entities
 	private ?array $moreProperties;
 
-	public function __construct(string $fnum, User $user, ?CampaignEntity $campaign, int $order = 0, ChoicesStateEnum $state = ChoicesStateEnum::DRAFT, int $id = 0, $moreProperties = [], ?ApplicationFileEntity $application_file = null)
+	public function __construct(string $fnum, User $user, ?CampaignEntity $campaign, int $campaign_id, int $order = 0, ChoicesStateEnum $state = ChoicesStateEnum::DRAFT, int $id = 0, $moreProperties = [], ?ApplicationFileEntity $application_file = null)
 	{
 		$this->fnum             = $fnum;
 		$this->user             = $user;
 		$this->campaign         = $campaign;
+		$this->campaign_id      = $campaign_id;
 		$this->order            = $order;
 		$this->id               = $id;
 		$this->moreProperties   = $moreProperties;
@@ -62,6 +65,18 @@ class ApplicationChoicesEntity
 	public function setCampaign(?CampaignEntity $campaign): void
 	{
 		$this->campaign = $campaign;
+	}
+
+	public function getCampaignId(): int
+	{
+		return $this->campaign_id;
+	}
+
+	public function setCampaignId(int $campaign_id): ApplicationChoicesEntity
+	{
+		$this->campaign_id = $campaign_id;
+
+		return $this;
 	}
 
 	public function getFnum(): string

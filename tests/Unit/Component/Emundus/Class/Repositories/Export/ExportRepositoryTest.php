@@ -10,6 +10,12 @@ use Tchooz\Entities\Export\ExportEntity;
 use Tchooz\Enums\Export\ExportFormatEnum;
 use Tchooz\Repositories\Export\ExportRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Export
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Export\ExportRepository
+ */
 class ExportRepositoryTest extends UnitTestCase
 {
 	private ExportRepository $repository;

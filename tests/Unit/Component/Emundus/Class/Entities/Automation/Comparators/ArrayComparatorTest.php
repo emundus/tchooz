@@ -7,6 +7,12 @@ use Tchooz\Entities\Automation\Comparators\ArrayComparator;
 use Tchooz\Enums\Automation\ConditionMatchModeEnum;
 use Tchooz\Enums\Automation\ConditionOperatorEnum;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Entities\Automation\Comparators
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Entities\Automation\Comparators\ArrayComparator
+ */
 class ArrayComparatorTest extends UnitTestCase
 {
 	private ArrayComparator $comparator;

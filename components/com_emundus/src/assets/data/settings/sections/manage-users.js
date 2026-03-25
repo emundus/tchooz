@@ -17,4 +17,13 @@ export default [
 		name: 'categories',
 		component: 'Categories',
 	},
+	{
+		label: 'COM_EMUNDUS_ONBOARD_SETTINGS_MANAGE_GROUPS_TITLE',
+		name: 'groups_settings',
+		component: 'SiteSettings',
+		props: {
+			json_source: 'settings/sections/groups-settings.js',
+		},
+		intro: '',
+	},
 ];

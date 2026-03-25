@@ -16,6 +16,12 @@ use Tchooz\Enums\Automation\ConditionOperatorEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Entities\Automation
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Entities\Automation\AutomationEntity
+ */
 class AutomationEntityTest extends UnitTestCase
 {
 	/**

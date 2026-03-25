@@ -1722,8 +1722,8 @@ class Release2_6_0Installer extends ReleaseInstaller
 				$action_id = $this->db->insertid();
 				$query->clear()
 					->insert($this->db->quoteName('#__emundus_setup_step_types'))
-					->columns($this->db->quoteName(['parent_id', 'label', 'action_id', 'published', 'system']))
-					->values($this->db->quote(0) . ', ' . $this->db->quote('COM_EMUNDUS_WORKFLOW_STEP_TYPE_PAYMENT') . ', ' . $this->db->quote($action_id) . ',' . $this->db->quote(1) . ',' . $this->db->quote(1));
+					->columns($this->db->quoteName(['parent_id', 'label', 'action_id', 'published', 'system', 'code']))
+					->values($this->db->quote(0) . ', ' . $this->db->quote('COM_EMUNDUS_WORKFLOW_STEP_TYPE_PAYMENT') . ', ' . $this->db->quote($action_id) . ',' . $this->db->quote(1) . ',' . $this->db->quote(1) . ',' . $this->db->quote('payment'));
 				$this->db->setQuery($query);
 				$tasks[] = $this->db->execute();
 			}

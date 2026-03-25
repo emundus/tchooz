@@ -51,9 +51,9 @@ class StepTypeRepository extends EmundusRepository
 		if (!empty($id))
 		{
 			$query = $this->db->createQuery()
-				->select('est.*')
-				->from($this->db->quoteName($this->getTableName(self::class), 'est'))
-				->where('est.id = ' . $id);
+				->select($this->alias.'.*')
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->where($this->alias.'.id = ' . $id);
 
 			$this->db->setQuery($query);
 			$result = $this->db->loadObject();
@@ -78,9 +78,9 @@ class StepTypeRepository extends EmundusRepository
 		if (!empty($code))
 		{
 			$query = $this->db->createQuery()
-				->select('est.*')
-				->from($this->db->quoteName($this->getTableName(self::class), 'est'))
-				->where('est.code = ' . $this->db->quote($code));
+				->select($this->alias.'.*')
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->where($this->alias.'.code = ' . $this->db->quote($code));
 
 			$this->db->setQuery($query);
 			$result = $this->db->loadObject();
@@ -98,10 +98,10 @@ class StepTypeRepository extends EmundusRepository
 		$stepTypes = [];
 
 		$query = $this->db->createQuery()
-			->select('est.*')
-			->from($this->db->quoteName($this->getTableName(self::class), 'est'))
-			->where('est.parent_id = ' . $parentId)
-			->order('est.label ASC');
+			->select($this->alias.'.*')
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->where($this->alias.'.parent_id = ' . $parentId)
+			->order($this->alias.'.label ASC');
 
 		$this->db->setQuery($query);
 		$results = $this->db->loadObjectList();
