@@ -161,7 +161,7 @@ class ApplicationFileAccessRepository extends EmundusRepository
 				$encryptedToken = password_hash($token, PASSWORD_BCRYPT);
 
 				$addonRepository = new AddonRepository();
-				$publicAccessAddon = $addonRepository->getByName('public_access');
+				$publicAccessAddon = $addonRepository->getByName('public_session');
 				$params = $publicAccessAddon->getValue()->getParams();
 
 				$days = !empty($params['token_validity_duration']) ? intval($params['token_validity_duration']) : 30;
