@@ -100,7 +100,14 @@ trait TraitTable
 		$alias = $this->getTableAlias($class);
 		$prefixed = [];
 		foreach ($attr->columns as $col) {
-			$prefixed[] = $alias . '.' . $col;
+			// If not already prefixed, add the alias
+			if (!str_contains($col, '.'))
+			{
+				$prefixed[] = $alias . '.' . $col;
+			}
+			else {
+				$prefixed[] = $col;
+			}
 		}
 
 		self::$__tableAttributeCache[$cacheKey] = $prefixed;

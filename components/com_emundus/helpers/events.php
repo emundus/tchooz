@@ -23,12 +23,19 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Entities\Actions\CrudEntity;
+use Tchooz\Entities\Actions\GroupAccessEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterStatusChangeDefinition;
 use Tchooz\Enums\CrudEnum;
+use Tchooz\Entities\Groups\GroupEntity;
 use Tchooz\Exception\EmundusException;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Actions\GroupAccessRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
+use Tchooz\Repositories\Groups\GroupRepository;
+use Tchooz\Repositories\Programs\ProgramRepository;
+use Tchooz\Repositories\User\EmundusUserRepository;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
@@ -105,16 +112,18 @@ class EmundusHelperEvents
 				$m_form    = new EmundusModelForm();
 				$m_profile = new EmundusModelProfile();
 
-                $em_params	= JComponentHelper::getParams('com_emundus');
-                $use_session = $em_params->get('use_session', 0);
+				$em_params   = JComponentHelper::getParams('com_emundus');
+				$use_session = $em_params->get('use_session', 0);
 
 				$prid = 0;
-                if ($use_session) {
-                    $prid = $app->getSession()->get('emundusUser')->profile;
-                }
-                if (empty($prid)) {
-                    $prid = $m_profile->getProfileByFnum($user->fnum);
-                }
+				if ($use_session)
+				{
+					$prid = $app->getSession()->get('emundusUser')->profile;
+				}
+				if (empty($prid))
+				{
+					$prid = $m_profile->getProfileByFnum($user->fnum);
+				}
 
 				$submittion_page    = $m_form->getSubmittionPage($prid);
 				$submittion_page_id = (int) explode('=', $submittion_page->link)[3];
@@ -123,15 +132,19 @@ class EmundusHelperEvents
 				{
 					$this->isApplicationCompleted($params);
 				}
-			} else {
+			}
+			else
+			{
 				$table = $params['formModel']->getTableName();
 
-				if (!empty($table)) {
-					if (!class_exists('EmundusHelperFiles')) {
+				if (!empty($table))
+				{
+					if (!class_exists('EmundusHelperFiles'))
+					{
 						require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
 					}
 					$h_files = new EmundusHelperFiles();
-					$linked = $h_files->isTableLinkedToCampaignCandidature($table);
+					$linked  = $h_files->isTableLinkedToCampaignCandidature($table);
 
 					if ($linked && !empty($params['formModel']->data['fnum']) && empty($params['formModel']->getRowId()))
 					{
@@ -163,7 +176,8 @@ class EmundusHelperEvents
 	 */
 	private function fillFormFromAliases($formModel, string $table, string $fnum, int $user_id = 0): void
 	{
-		if (!empty($fnum)) {
+		if (!empty($fnum))
+		{
 			$elements = array();
 			$groups   = $formModel->getGroupsHiarachy();
 			foreach ($groups as $group)
@@ -171,9 +185,10 @@ class EmundusHelperEvents
 				$elements = array_merge($group->getPublishedElements(), $elements);
 			}
 
-			if (!empty($elements)) {
+			if (!empty($elements))
+			{
 				$fabrikRepository = new FabrikRepository();
-				$elements = array_filter($elements, function ($element) use ($table) {
+				$elements         = array_filter($elements, function ($element) use ($table) {
 					return $element->getElement()->name !== 'parent_id';
 				});
 
@@ -182,7 +197,7 @@ class EmundusHelperEvents
 					$alias = $fabrikRepository->getElementAlias($elt->getId());
 					if (!empty($alias))
 					{
-						$h_fabrik = new EmundusHelperFabrik();
+						$h_fabrik    = new EmundusHelperFabrik();
 						$alias_value = $h_fabrik->getValueByAlias($alias, $fnum, $user_id);
 
 						if (!empty($alias_value['raw']))
@@ -215,7 +230,7 @@ class EmundusHelperEvents
 		{
 			$save        = false;
 			$emundusUser = $app->getSession()->get('emundusUser');
-			$fnum = $app->input->getString('fnum', '');
+			$fnum        = $app->input->getString('fnum', '');
 			if (empty($fnum))
 			{
 				$fnum = $emundusUser->fnum;
@@ -278,7 +293,8 @@ class EmundusHelperEvents
 
 		if (!empty($elements))
 		{
-			if (!class_exists('HtmlSanitizerSingleton')) {
+			if (!class_exists('HtmlSanitizerSingleton'))
+			{
 				require_once(JPATH_SITE . '/components/com_emundus/helpers/html.php');
 			}
 			$html_sanitizer = HtmlSanitizerSingleton::getInstance();
@@ -286,15 +302,15 @@ class EmundusHelperEvents
 			foreach ($elements as $elt)
 			{
 				$strong_sanitize = true;
-				if($elt->getElement()->plugin === 'panel')
+				if ($elt->getElement()->plugin === 'panel')
 				{
 					continue;
 				}
-				elseif($elt->getElement()->plugin === 'textarea')
+				elseif ($elt->getElement()->plugin === 'textarea')
 				{
 					// If advanced editor, reduce sanitize level to remove only harmful code
 					$wysiwig = $elt->getParams()->get('use_wysiwyg', 0);
-					if($wysiwig == 1)
+					if ($wysiwig == 1)
 					{
 						$strong_sanitize = false;
 					}
@@ -302,20 +318,20 @@ class EmundusHelperEvents
 
 				$name = $elt->getFullname();
 				// Element in repeat groups have [] in name
-				if(strpos($name, '[]') !== false)
+				if (strpos($name, '[]') !== false)
 				{
 					$name = str_replace('[]', '', $name);
 				}
 				$raw_name = $name . '_raw';
 
-				if(!empty($form_data[$name]))
+				if (!empty($form_data[$name]))
 				{
 					$sanitize_data = $this->sanitizeValue($form_data[$name], $strong_sanitize, $html_sanitizer);
 					$formModel->updateFormData($name, $sanitize_data, true);
 					$form_data[$name] = $sanitize_data;
 				}
 
-				if(!empty($form_data[$raw_name]))
+				if (!empty($form_data[$raw_name]))
 				{
 					$sanitize_data = $this->sanitizeValue($form_data[$raw_name], $strong_sanitize, $html_sanitizer);
 					$formModel->updateFormData($raw_name, $sanitize_data, true);
@@ -334,12 +350,12 @@ class EmundusHelperEvents
 	 */
 	public function sanitizeValue(mixed $value, bool $strong_sanitize, HtmlSanitizerSingleton $html_sanitizer)
 	{
-		if(is_array($value))
+		if (is_array($value))
 		{
 			$sanitized_values = [];
-			foreach($value as $key => $val)
+			foreach ($value as $key => $val)
 			{
-				if(is_string($val))
+				if (is_string($val))
 				{
 					if ($strong_sanitize)
 					{
@@ -347,7 +363,7 @@ class EmundusHelperEvents
 					}
 					else
 					{
-						$decoded = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+						$decoded                = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 						$sanitized_values[$key] = $html_sanitizer->sanitize($decoded);
 					}
 				}
@@ -367,7 +383,7 @@ class EmundusHelperEvents
 			}
 			else
 			{
-				$decoded = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+				$decoded       = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 				$sanitize_data = $html_sanitizer->sanitize($decoded);
 			}
 		}
@@ -394,7 +410,7 @@ class EmundusHelperEvents
 
 		try
 		{
-			$app = Factory::getApplication();
+			$app  = Factory::getApplication();
 			$user = $app->getSession()->get('emundusUser');
 
 			if (isset($user->fnum))
@@ -406,16 +422,18 @@ class EmundusHelperEvents
 
 				$this->clearFormSession($user->fnum, $params['formModel']->id);
 
-                $em_params	= ComponentHelper::getParams('com_emundus');
-                $use_session = $em_params->get('use_session', 0);
+				$em_params   = ComponentHelper::getParams('com_emundus');
+				$use_session = $em_params->get('use_session', 0);
 
 				$prid = 0;
-                if ($use_session) {
-                    $prid = $app->getSession()->get('emundusUser')->profile;
-                }
-                if (empty($prid)) {
-                    $prid = $mProfile->getProfileByFnum($user->fnum);
-                }
+				if ($use_session)
+				{
+					$prid = $app->getSession()->get('emundusUser')->profile;
+				}
+				if (empty($prid))
+				{
+					$prid = $mProfile->getProfileByFnum($user->fnum);
+				}
 
 				$submittion_page    = $mForm->getSubmittionPage($prid);
 				$submittion_page_id = (int) explode('=', $submittion_page->link)[3];
@@ -585,7 +603,7 @@ class EmundusHelperEvents
 			{
 				$emundusUser->applicant = 1;
 			}
-			$user        = $emundusUser;
+			$user = $emundusUser;
 
 			if (empty($user))
 			{
@@ -740,22 +758,22 @@ class EmundusHelperEvents
 			}
 
 			$fnumInfos = $user->fnums[$fnum];
-			$published = !empty($fnumInfos->published) ? (int)$fnumInfos->published : 0;
+			$published = !empty($fnumInfos->published) ? (int) $fnumInfos->published : 0;
 
 			// In case of archived/deleted files
-			if(empty($fnumInfos))
+			if (empty($fnumInfos))
 			{
-				if(!class_exists('EmundusModelFiles'))
+				if (!class_exists('EmundusModelFiles'))
 				{
 					require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
 				}
-				$m_files = new EmundusModelFiles();
+				$m_files   = new EmundusModelFiles();
 				$fnumInfos = $m_files->getFnumInfos($fnum);
-				if(!empty($fnumInfos))
+				if (!empty($fnumInfos))
 				{
 					$fnumInfos = (object) $fnumInfos;
 
-					$published = (int)$fnumInfos->state;
+					$published = (int) $fnumInfos->state;
 				}
 			}
 
@@ -766,9 +784,9 @@ class EmundusHelperEvents
 			if ($fnumInfos->applicant_id == $user->id && $emundusUser->applicant)
 			{
 				$can_edit = !$is_app_sent && !$is_dead_line_passed || (!$is_app_sent && $is_dead_line_passed && $can_edit_after_deadline);
-				if($published !== 1)
+				if ($published !== 1)
 				{
-					$can_edit = false;
+					$can_edit            = false;
 					$is_dead_line_passed = true;
 				}
 
@@ -808,13 +826,16 @@ class EmundusHelperEvents
 			$details_url = Route::_("index.php?option=com_fabrik&view=details&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload . $url_parameters) . '&fnum=' . $fnum;
 
 			$session = $this->getFormSession($fnum, $params['formModel']->id);
-			if (!empty($session->id) && $session->user_id != $user->id) {
-				if (!$can_read) {
+			if (!empty($session->id) && $session->user_id != $user->id)
+			{
+				if (!$can_read)
+				{
 					Factory::getApplication()->enqueueMessage(Text::_('ACCESS_DENIED'), 'warning');
 					Factory::getApplication()->redirect('/');
 				}
 
-				if ($reload < 3) {
+				if ($reload < 3)
+				{
 					Factory::getApplication()->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_CURRENT_EDITING'), 'warning');
 					Factory::getApplication()->redirect($details_url);
 				}
@@ -1087,7 +1108,7 @@ class EmundusHelperEvents
 						if (!empty($alias))
 						{
 							//TODO: Manage alias from evaluation forms
-							$h_fabrik = new EmundusHelperFabrik();
+							$h_fabrik    = new EmundusHelperFabrik();
 							$alias_value = $h_fabrik->getValueByAlias($alias, null, $user->id);
 
 							if (!empty($alias_value['raw']))
@@ -1395,7 +1416,7 @@ class EmundusHelperEvents
 			$params                  = ComponentHelper::getParams('com_emundus');
 			$scholarship_document_id = $params->get('scholarship_document_id', null);
 			$application_fee         = $params->get('application_fee', 0);
-            $use_session = $params->get('use_session', 0);
+			$use_session             = $params->get('use_session', 0);
 
 			$mApplication    = new EmundusModelApplication;
 			$mEmails         = new EmundusModelEmails;
@@ -1594,14 +1615,16 @@ class EmundusHelperEvents
 			}
 
 			// check if we have a new workflow payment step, and if so, check if it is completed
-			$m_workflow = new EmundusModelWorkflow();
+			$m_workflow   = new EmundusModelWorkflow();
 			$payment_step = $m_workflow->getPaymentStepFromFnum($user->fnum, true);
-			if (!empty($payment_step)) {
+			if (!empty($payment_step))
+			{
 				$completed = $m_workflow->isPaymentStepCompleted($user->fnum, $payment_step);
 
-				if (!$completed) {
+				if (!$completed)
+				{
 					$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_PAYMENT_STEP_NOT_COMPLETED'), 'warning');
-					$mainframe->redirect($m_workflow->getPaymentStepUrl() . '&fnum='. $user->fnum);
+					$mainframe->redirect($m_workflow->getPaymentStepUrl() . '&fnum=' . $user->fnum);
 				}
 			}
 		}
@@ -1638,8 +1661,8 @@ class EmundusHelperEvents
 
 			if (isset($user->fnum))
 			{
-                $em_params	= JComponentHelper::getParams('com_emundus');
-                $use_session = $em_params->get('use_session', 0);
+				$em_params   = JComponentHelper::getParams('com_emundus');
+				$use_session = $em_params->get('use_session', 0);
 
 				$mApplication->getFormsProgress($user->fnum, null, $use_session);
 				$mApplication->getAttachmentsProgress($user->fnum, null, $use_session);
@@ -1920,10 +1943,10 @@ class EmundusHelperEvents
 				['onAfterStatusChange',
 					// Datas to pass to the event
 					[
-						'fnum' => $student->fnum,
-						'state' => $new_status,
+						'fnum'      => $student->fnum,
+						'state'     => $new_status,
 						'old_state' => $old_status,
-						'context' => $context
+						'context'   => $context
 					]
 				]
 			);
@@ -1969,7 +1992,7 @@ class EmundusHelperEvents
 		if ($export_pdf == 1)
 		{
 			$lang = $app->getLanguage();
-			$lang->load('com_emundus', JPATH_SITE.'/components/com_emundus');
+			$lang->load('com_emundus', JPATH_SITE . '/components/com_emundus');
 
 			$fnum     = $student->fnum;
 			$fnumInfo = $mFiles->getFnumInfos($fnum);
@@ -1992,14 +2015,15 @@ class EmundusHelperEvents
 				$application_form_name = substr($application_form_name, 0, -4);
 			}
 
-			$file_name = $application_form_name . '.pdf';
+			$file_name        = $application_form_name . '.pdf';
 			$target_file_name = $application_form_name . '.pdf';
-			if($overwrite_export_pdf != 1) {
+			if ($overwrite_export_pdf != 1)
+			{
 				// Add timestamp to filename to avoid overwriting
 				$target_file_name = $application_form_name . '_' . date('Ymd_His') . '.pdf';
 			}
 
-			$tmp_link = JPATH_BASE . '/tmp/' . $file_name;
+			$tmp_link       = JPATH_BASE . '/tmp/' . $file_name;
 			$applicant_link = JPATH_BASE . '/images/emundus/files/' . $student->id . '/' . $target_file_name;
 
 			// If a file exists with that name, delete it
@@ -2047,13 +2071,14 @@ class EmundusHelperEvents
 			copy($tmp_link, $applicant_link);
 
 			$upload = (object) [
-				'fnum'          => $fnum,
-				'attachment_id' => 26,
-				'user_id'       => $student->id,
-				'can_be_deleted'=> 0,
-				'filename'      => $target_file_name
+				'fnum'           => $fnum,
+				'attachment_id'  => 26,
+				'user_id'        => $student->id,
+				'can_be_deleted' => 0,
+				'filename'       => $target_file_name
 			];
-			if($overwrite_export_pdf == 1) {
+			if ($overwrite_export_pdf == 1)
+			{
 				// Update upload if exists
 				$query = $db->getQuery(true);
 				$query->select('id')
@@ -2064,17 +2089,19 @@ class EmundusHelperEvents
 				$db->setQuery($query);
 				$upload_id = $db->loadResult();
 
-				if(!empty($upload_id))
+				if (!empty($upload_id))
 				{
-					$upload->id = $upload_id;
+					$upload->id       = $upload_id;
 					$upload->modified = $now;
 					$db->updateObject('#__emundus_uploads', $upload, 'id');
 				}
-				else {
+				else
+				{
 					$db->insertObject('#__emundus_uploads', $upload);
 				}
 			}
-			else {
+			else
+			{
 				$db->insertObject('#__emundus_uploads', $upload);
 			}
 		}
@@ -2100,7 +2127,7 @@ class EmundusHelperEvents
 		if (!empty($params['plugin_options']))
 		{
 			$go_to_next_step = false;
-			if($new_status != $old_status)
+			if ($new_status != $old_status)
 			{
 				$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($student->fnum);
 				if (!empty($current_phase->id))
@@ -2132,7 +2159,7 @@ class EmundusHelperEvents
 			$redirect_url = EmundusHelperMenu::getHomepageLink();
 		}
 
-		$app->redirect(Uri::base(true).$redirect_url);
+		$app->redirect(Uri::base(true) . $redirect_url);
 
 		return true;
 	}
@@ -2196,76 +2223,90 @@ class EmundusHelperEvents
 
 			if (!empty($params['programme']))
 			{
-				$programme = $params['programme'];
-				$user_id   = Factory::getApplication()->getIdentity()->id;
+				$groupRepository       = new GroupRepository();
+				$programRepository     = new ProgramRepository();
+				$emundusUserRepository = new EmundusUserRepository();
+				$groupAccessRepository = new GroupAccessRepository();
+				$actionRepository      = new ActionRepository();
+				$program               = $programRepository->getByCode($params['programme']->code);
 
-				$eMConfig                       = ComponentHelper::getParams('com_emundus');
-				$all_rights_group_id            = $eMConfig->get('all_rights_group', 1);
-				$model_evaluator_group_id       = $eMConfig->get('evaluator_group', '');
-				$model_program_manager_group_id = $eMConfig->get('program_manager_group', '');
-				$create_program_groups          = $eMConfig->get('create_program_groups', 1);
+				$user_id = Factory::getApplication()->getIdentity()->id;
 
-				$query->clear()
-					->select($db->quoteName('id'))
-					->from($db->quoteName('#__emundus_setup_groups_repeat_course'))
-					->where($db->quoteName('parent_id') . ' = ' . $db->quote($all_rights_group_id))
-					->andWhere($db->quoteName('course') . ' LIKE ' . $db->quote($programme->code));
-				$db->setQuery($query);
-				$all_rights_group_link = $db->loadResult();
+				$eMConfig            = ComponentHelper::getParams('com_emundus');
+				$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
 
-				if (empty($all_rights_group_link))
+				$create_program_groups = $eMConfig->get('create_program_groups', 1);
+				$groupsTemplate        = $eMConfig->get('create_groups_template', '');
+
+				if (empty($groupRepository->checkGroupAssociated($all_rights_group_id, $program->getCode())))
 				{
-					// Link All rights group with programme
-					$columns = array('parent_id', 'course');
-					$values  = array($db->quote($all_rights_group_id), $db->quote($programme->code));
-
-					$query->clear()
-						->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
-						->columns($db->quoteName($columns))
-						->values(implode(',', $values));
-					$db->setQuery($query);
-					$db->execute();
+					$groupRepository->addProgram(
+						$all_rights_group_id,
+						$program->getCode()
+					);
 				}
 
 				if ($create_program_groups == 1)
 				{
-					$query->clear()
-						->select($db->quoteName('id'))
-						->from($db->quoteName('#__emundus_setup_groups_repeat_course'))
-						->where($db->quoteName('parent_id') . ' <> ' . $db->quote($all_rights_group_id))
-						->andWhere($db->quoteName('course') . ' LIKE ' . $db->quote($programme->code));
-					$db->setQuery($query);
-					$group_program_link = $db->loadResult();
+					$programGroups = $programRepository->getGroupsByProgramCode($program->getCode());
+					$programGroups = array_filter($programGroups, function ($group) use ($all_rights_group_id) {
+						return $group->getId() != $all_rights_group_id;
+					});
 
-					if (empty($group_program_link))
+					if (empty($programGroups))
 					{
-						if (!class_exists('EmundusModelProgramme'))
-						{
-							require_once(JPATH_ROOT . '/components/com_emundus/models/programme.php');
-						}
-						$m_program = new EmundusModelProgramme();
-
-						$readonly_group_id = $m_program->addGroupToProgram($programme->label, $programme->code);
+						$readonlyGroup = new GroupEntity(
+							0,
+							$program->getLabel(),
+							'',
+							1,
+							[$program],
+							false,
+							false,
+							[]
+						);
+						$groupRepository->flush($readonlyGroup);
 
 						// Affect coordinator to the group of the program
-						$columns = array('user_id', 'group_id');
-						$values  = array($db->quote($user_id), $readonly_group_id);
-
-						$query->clear()
-							->insert($db->quoteName('#__emundus_groups'))
-							->columns($db->quoteName($columns))
-							->values(implode(',', $values));
-						$db->setQuery($query);
-						$db->execute();
+						$emundusUserRepository->associateGroup($readonlyGroup->getId(), $user_id);
 						//
 
-						if (!empty($model_evaluator_group_id))
+						if (!empty($groupsTemplate))
 						{
-							$evaluator_group_id = $m_program->addGroupToProgram($programme->label, $programme->code, $model_evaluator_group_id);
-						}
-						if (!empty($model_program_manager_group_id))
-						{
-							$program_manager_group_id = $m_program->addGroupToProgram($programme->label, $programme->code, $model_program_manager_group_id);
+							$groupsTemplate = explode(',', $groupsTemplate);
+							foreach ($groupsTemplate as $groupTemplate)
+							{
+								$groupTemplate = trim($groupTemplate);
+								$group         = $groupRepository->getById($groupTemplate);
+								if (!empty($group))
+								{
+									// Update label, programs and flush a new group for the program
+									$group->setLabel($group->getLabel() . ' - ' . $program->getLabel());
+									$group->setId(0);
+									$group->setPrograms([$program]);
+									$groupRepository->flush($group);
+
+									// Copy ACL
+									$accessRights = $groupAccessRepository->getItemsByField('group_id', $groupTemplate, true);
+									foreach ($accessRights as $accessRight)
+									{
+										assert($accessRight instanceof GroupAccessEntity);
+										// Exclude file action right initialized when create a group
+										if(empty($accessRight->getAction()) || $accessRight->getAction()->getName() === 'file')
+										{
+											continue;
+										}
+
+										$newAccessRight = new GroupAccessEntity(
+											0,
+											$group,
+											$accessRight->getAction(),
+											$accessRight->getCrud()
+										);
+										$groupAccessRepository->flush($newAccessRight);
+									}
+								}
+							}
 						}
 					}
 				}
@@ -2288,8 +2329,8 @@ class EmundusHelperEvents
 					else
 					{
 						$programme_id = !empty($params['data']) ? $params['data']['jos_emundus_setup_programmes___id'] : $params['formModel']->formData['id'];
-						$menu = Factory::getApplication()->getMenu();
-						$item = $menu->getItems('link', 'index.php?option=com_emundus&view=programme&layout=edit', true);
+						$menu         = Factory::getApplication()->getMenu();
+						$item         = $menu->getItems('link', 'index.php?option=com_emundus&view=programme&layout=edit', true);
 
 						if (!empty($item->route))
 						{
@@ -2484,11 +2525,13 @@ class EmundusHelperEvents
 				$query->where($db->quoteName('fe.hidden') . ' != -1');
 			}
 
-			if (!empty($excludedNames)) {
+			if (!empty($excludedNames))
+			{
 				$query->where($db->quoteName('fe.name') . ' NOT IN (' . implode(',', $db->quote($excludedNames)) . ')');
 			}
 
-			if (!empty($excludedPlugins)) {
+			if (!empty($excludedPlugins))
+			{
 				$query->where($db->quoteName('fe.plugin') . ' NOT IN (' . implode(',', $db->quote($excludedPlugins)) . ')');
 			}
 

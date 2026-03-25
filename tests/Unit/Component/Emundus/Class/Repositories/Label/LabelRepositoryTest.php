@@ -8,6 +8,12 @@ use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Label\LabelRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Label
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Label\LabelRepository
+ */
 class LabelRepositoryTest extends UnitTestCase
 {
 	private ?LabelRepository $repository;

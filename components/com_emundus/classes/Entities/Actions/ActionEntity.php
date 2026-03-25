@@ -9,6 +9,8 @@
 
 namespace Tchooz\Entities\Actions;
 
+use Tchooz\Enums\Actions\ActionTypeEnum;
+
 class ActionEntity
 {
 	private int $id;
@@ -25,7 +27,9 @@ class ActionEntity
 
 	private ?string $description;
 
-	public function __construct(int $id, string $name, string $label, CrudEntity $crud, int $ordering = 0, bool $status = true, ?string $description = null)
+	private ActionTypeEnum $type;
+
+	public function __construct(int $id, string $name, string $label, CrudEntity $crud, int $ordering = 0, bool $status = true, ?string $description = null, ActionTypeEnum $type = ActionTypeEnum::FILE)
 	{
 		$this->id          = $id ?: 0;
 		$this->name        = $name;
@@ -34,6 +38,7 @@ class ActionEntity
 		$this->ordering    = $ordering;
 		$this->status      = $status;
 		$this->description = $description;
+		$this->type        = $type;
 	}
 
 	public function getId(): int
@@ -104,5 +109,31 @@ class ActionEntity
 	public function setDescription(?string $description): void
 	{
 		$this->description = $description;
+	}
+
+	public function getType(): ActionTypeEnum
+	{
+		return $this->type;
+	}
+
+	public function setType(ActionTypeEnum $type): ActionEntity
+	{
+		$this->type = $type;
+
+		return $this;
+	}
+
+	public function __serialize(): array
+	{
+		return [
+			'id'          => $this->id,
+			'name'        => $this->name,
+			'label'       => $this->label,
+			'crud'        => $this->crud->__serialize(),
+			'ordering'    => $this->ordering,
+			'status'      => $this->status,
+			'description' => $this->description,
+			'type'        => $this->type->value,
+		];
 	}
 }

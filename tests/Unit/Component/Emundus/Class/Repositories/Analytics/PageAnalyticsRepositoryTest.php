@@ -15,10 +15,10 @@ use Tchooz\Repositories\Analytics\PageAnalyticsRepository;
 use Tchooz\Repositories\NumericSign\RequestRepository;
 
 /**
- * @package     Unit\Component\Emundus\Helper
+ * @package     Unit\Component\Emundus\Class\Repositories\Analytics
  *
  * @since       version 1.0.0
- * @covers      \Tchooz\Entities\NumericSign\Request
+ * @covers      \Tchooz\Repositories\Analytics\PageAnalyticsRepository
  */
 class PageAnalyticsRepositoryTest extends UnitTestCase
 {

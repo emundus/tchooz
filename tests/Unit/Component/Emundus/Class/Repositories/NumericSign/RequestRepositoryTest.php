@@ -13,10 +13,10 @@ use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Repositories\NumericSign\RequestRepository;
 
 /**
- * @package     Unit\Component\Emundus\Helper
+ * @package     Unit\Component\Emundus\Class\Repositories\NumericSign
  *
  * @since       version 1.0.0
- * @covers      \Tchooz\Entities\NumericSign\Request
+ * @covers      \Tchooz\Repositories\NumericSign\RequestRepository
  */
 class RequestRepositoryTest extends UnitTestCase
 {

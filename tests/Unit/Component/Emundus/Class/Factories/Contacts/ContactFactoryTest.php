@@ -19,7 +19,7 @@ use Tchooz\Factories\Contacts\ContactFactory;
 use Tchooz\Repositories\CountryRepository;
 
 /**
- * @package     Unit\Component\Emundus\Helper
+ * @package     Unit\Component\Emundus\Class\Factories\Contacts
  *
  * @since       version 1.0.0
  * @covers      \Tchooz\Factories\Contacts\ContactFactory

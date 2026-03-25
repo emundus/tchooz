@@ -2001,12 +2001,14 @@ class EmundusModelSettings extends ListModel
 
 		$settings_general            = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/sections/json/site-settings.json');
 		$settings_applicants         = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/sections/json/file-settings.json');
+		$settings_groups             = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/sections/json/groups-settings.json');
 		$settings_mail_server_custom = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/emails/json/custom.json');
 		$settings_mail_base          = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/emails/json/global.json');
 		$settings_mail_value         = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/emails/json/values.json');
 
 		$settings_applicants         = json_decode($settings_applicants, true);
 		$settings_general            = json_decode($settings_general, true);
+		$settings_groups             = json_decode($settings_groups, true);
 		$settings_mail_base          = json_decode($settings_mail_base, true);
 		$settings_mail_server_custom = json_decode($settings_mail_server_custom, true);
 		$settings_mail_value         = json_decode($settings_mail_value, true);
@@ -2040,6 +2042,18 @@ class EmundusModelSettings extends ListModel
 			else
 			{
 				$params['joomla'][$setting_general['param']] = $this->app->getConfig()->get($setting_general['param']);
+			}
+		}
+
+		foreach ($settings_groups as $setting_groups)
+		{
+			if ($setting_groups['component'] === 'emundus')
+			{
+				$params['emundus'][$setting_groups['param']] = $emundus_parameters->get($setting_groups['param']);
+			}
+			else
+			{
+				$params['joomla'][$setting_groups['param']] = $this->app->getConfig()->get($setting_groups['param']);
 			}
 		}
 
@@ -2152,6 +2166,15 @@ class EmundusModelSettings extends ListModel
 							$value = array_map(function ($item) {
 								return (int) $item->step;
 							}, $value);
+						}
+
+						if ($param === 'create_groups_template')
+						{
+							$value = array_map(function ($item) {
+								return (int) $item->value;
+							}, $value);
+							
+							$value = implode(',', $value);
 						}
 
 						$eMConfig = ComponentHelper::getParams('com_emundus');

@@ -18,7 +18,7 @@ use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 use Tchooz\Factories\Contacts\OrganizationFactory;
 
 /**
- * @package     Unit\Component\Emundus\Helper
+ * @package     Unit\Component\Emundus\Class\Factories\Contacts
  *
  * @since       version 1.0.0
  * @covers      \Tchooz\Factories\Contacts\OrganizationFactory

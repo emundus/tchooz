@@ -6,6 +6,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Fabrik
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Fabrik\FabrikRepository
+ */
 class FabrikRepositoryTest extends UnitTestCase
 {
 	private ?FabrikRepository $repository;

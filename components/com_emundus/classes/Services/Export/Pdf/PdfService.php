@@ -69,6 +69,7 @@ class PdfService extends Export implements ExportInterface
 
 		$this->parser       = new PdfParser();
 		$this->exportEntity = $exportEntity;
+		Log::addLogger(['text_file' => 'com_emundus.export.pdf.php'], Log::ALL, 'com_emundus.export.pdf');
 	}
 
 	public function export(string $exportPath, ?TaskEntity $task, ?string $langCode = 'fr-FR'): ExportResult
@@ -365,7 +366,7 @@ class PdfService extends Export implements ExportInterface
 		}
 		catch (\Exception $e)
 		{
-			Log::add($e->getMessage(), Log::ERROR);
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus.export.pdf');
 		}
 
 		return $forms;
@@ -422,7 +423,7 @@ class PdfService extends Export implements ExportInterface
 		}
 		catch (\Exception $e)
 		{
-			Log::add($e->getMessage(), Log::ERROR);
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus.export.pdf');
 
 			return false;
 		}
@@ -476,7 +477,7 @@ class PdfService extends Export implements ExportInterface
 		}
 		catch (\Exception $e)
 		{
-			Log::add($e->getMessage(), Log::ERROR);
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus.export.pdf');
 			$merged = false;
 		}
 

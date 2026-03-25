@@ -13,6 +13,7 @@ use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Enums\Api\ApiMethodEnum;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
+use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Enums\Automation\ActionMessageTypeEnum;
 use Tchooz\Factories\Synchronizer\SynchronizerFactory;
 use Tchooz\Repositories\Mapping\MappingRepository;
@@ -120,7 +121,7 @@ class ActionApiMap extends ActionEntity
 		$options = [];
 
 		$repository = new MappingRepository();
-		$mappings   = $repository->getAll();
+		$mappings   = $repository->getAll([], 0);
 		foreach ($mappings as $mapping)
 		{
 			$options[] = new ChoiceFieldValue($mapping->getId(), $mapping->getLabel());
@@ -137,5 +138,10 @@ class ActionApiMap extends ActionEntity
 	public function getLabelForLog(): string
 	{
 		return self::getLabel();
+	}
+
+	public function getPriority(): TaskPriorityEnum
+	{
+		return TaskPriorityEnum::HIGH;
 	}
 }

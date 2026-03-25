@@ -63,7 +63,20 @@ class EmundusUserFactory implements DBFactory
 		$birthDate = null;
 		if(!empty($dbObject->birth_date) && strpos($dbObject->birth_date, '/') !== false)
 		{
-			$birthDate = \DateTimeImmutable::createFromFormat('d/m/Y', $dbObject->birth_date);
+			if (str_contains($dbObject->birth_date, ':'))
+			{
+				$birthDate = \DateTimeImmutable::createFromFormat('d/m/Y H:i:s', $dbObject->birth_date);
+			}
+			else
+			{
+				$birthDate = \DateTimeImmutable::createFromFormat('d/m/Y', $dbObject->birth_date);
+			}
+
+			// if createFromFormat fails, it returns false. In that case, we set birthDate to null
+			if ($birthDate === false)
+			{
+				$birthDate = null;
+			}
 		}
 
 		return new EmundusUserEntity(

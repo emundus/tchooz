@@ -12,4 +12,5 @@ namespace Tchooz\Enums\List;
 enum ListColumnTypesEnum: string
 {
 	case TAGS = 'tags';
+	case COLOR = 'color';
 }

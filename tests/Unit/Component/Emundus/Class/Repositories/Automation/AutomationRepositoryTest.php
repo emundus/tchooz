@@ -17,6 +17,12 @@ use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Repositories\Automation\AutomationRepository;
 use Tchooz\Repositories\Automation\EventsRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Automation
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Automation\AutomationRepository
+ */
 class AutomationRepositoryTest extends UnitTestCase
 {
 	private ?AutomationRepository $repository;

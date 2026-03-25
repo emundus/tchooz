@@ -12,6 +12,12 @@ use Tchooz\Enums\Mapping\MappingTransformersEnum;
 use Tchooz\Repositories\Mapping\MappingRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Mapping
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Mapping\MappingRepository
+ */
 class MappingRepositoryTest extends UnitTestCase
 {
 	private MappingRepository $repository;

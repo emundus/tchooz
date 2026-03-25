@@ -9,6 +9,12 @@ use Tchooz\Entities\Automation\Actions\ActionUpdateUserRoles;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Entities\Automation\Actions
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Entities\Automation\Actions\ActionUpdateUserRoles
+ */
 class ActionUpdateUserRolesTest extends UnitTestCase
 {
 	private int $evaluatorProfileId = 0;

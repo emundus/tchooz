@@ -5,6 +5,12 @@ namespace Unit\Component\Emundus\Class\Repositories\ApplicationFile;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\ApplicationFile
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\ApplicationFile\ApplicationFileRepository
+ */
 class ApplicationFileRepositoryTest extends UnitTestCase
 {
 	private ApplicationFileRepository $repository;

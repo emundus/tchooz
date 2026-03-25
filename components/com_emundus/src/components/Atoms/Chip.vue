@@ -19,6 +19,11 @@ export default {
 			default: 2,
 		},
 	},
+	data() {
+		return {
+			imageError: false,
+		};
+	},
 	computed: {
 		initials() {
 			if (this.text) {
@@ -38,9 +43,10 @@ export default {
 		class="tw-mb-2 tw-mr-2 tw-flex tw-h-max tw-w-fit tw-items-center tw-rounded-full tw-border tw-border-neutral-500 tw-bg-neutral-400 tw-px-2 tw-py-1 tw-text-sm tw-font-semibold hover:tw-font-semibold"
 	>
 		<img
-			v-if="image"
+			v-if="image && !imageError"
 			:src="image"
 			:alt="imageAltText"
+			@error="imageError = true"
 			class="tw-mr-1 tw-h-7 tw-w-7 tw-rounded-full tw-object-contain"
 		/>
 		<div

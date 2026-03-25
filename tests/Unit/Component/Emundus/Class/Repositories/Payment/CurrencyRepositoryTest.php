@@ -7,6 +7,12 @@ use Joomla\CMS\Factory;
 use Tchooz\Entities\Payment\CurrencyEntity;
 use Tchooz\Repositories\Payment\CurrencyRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Payment
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Payment\CurrencyRepository
+ */
 class CurrencyRepositoryTest extends UnitTestCase
 {
 	public function __construct(?string $name = null, array $data = [], $dataName = '')

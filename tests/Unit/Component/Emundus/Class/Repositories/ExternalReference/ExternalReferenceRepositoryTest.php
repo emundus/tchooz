@@ -6,6 +6,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Repositories\ExternalReference\ExternalReferenceRepository;
 use Tchooz\Entities\ExternalReference\ExternalReferenceEntity;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\ExternalReference
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\ExternalReference\ExternalReferenceRepository
+ */
 class ExternalReferenceRepositoryTest extends UnitTestCase
 {
 	private ExternalReferenceRepository $repository;

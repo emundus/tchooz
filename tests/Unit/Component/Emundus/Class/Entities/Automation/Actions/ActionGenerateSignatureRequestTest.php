@@ -12,6 +12,12 @@ use Tchooz\Enums\NumericSign\SignConnectorsEnum;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\NumericSign\RequestRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Entities\Automation\Actions
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Entities\Automation\Actions\ActionGenerateSignatureRequest
+ */
 class ActionGenerateSignatureRequestTest extends UnitTestCase
 {
 	private RequestRepository $repository;

@@ -21,10 +21,10 @@ use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
 
 /**
- * @package     Unit\Component\Emundus\Helper
+ * @package     Unit\Component\Emundus\Class\Repositories\ApplicationFile
  *
  * @since       version 1.0.0
- * @covers      \Tchooz\Entities\NumericSign\Request
+ * @covers      \Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository
  */
 class ApplicationChoicesRepositoryTest extends UnitTestCase
 {

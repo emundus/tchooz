@@ -18,6 +18,7 @@ use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\NumericSign\RequestRepository;
@@ -30,61 +31,59 @@ if(!class_exists('EmundusHelperCache'))
 	require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
 }
 
-/**
- * Content Component Query Helper
- *
- * @static
- * @package        Joomla
- * @subpackage     Content
- * @since          1.5
- */
 class EmundusHelperAccess
 {
-
-	static function isAllowed($usertype, $allowed)
+	static function isAllowed($usertype, $allowed): bool
 	{
 		return in_array($usertype, $allowed);
 	}
 
 	static function isAllowedAccessLevel($user_id, $current_menu_access)
 	{
+		$menu_access_value = $current_menu_access instanceof AccessLevelEnum ? $current_menu_access->value : $current_menu_access;
+
 		$hCache = new EmundusHelperCache('com_emundus.access');
 		$cache_key = 'access_levels_' . $user_id;
 		$accesses = $hCache->get($cache_key, []);
 
-		if(is_array($accesses) && in_array($current_menu_access, array_keys($accesses))) {
-			return $accesses[$current_menu_access];
+		if(is_array($accesses) && in_array($menu_access_value, array_keys($accesses))) {
+			return $accesses[$menu_access_value];
+		}
+
+		if (!is_array($accesses))
+		{
+			$accesses = [];
 		}
 
 		$user_access_level = Access::getAuthorisedViewLevels($user_id);
 
-		$accesses[$current_menu_access] = in_array($current_menu_access, $user_access_level);
+		$accesses[$menu_access_value] = in_array($menu_access_value, $user_access_level);
 		$hCache->set($cache_key, $accesses);
 
-		return $accesses[$current_menu_access];
+		return $accesses[$menu_access_value];
 	}
 
 	static function asAdministratorAccessLevel($user_id)
 	{
-		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 8);
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id, AccessLevelEnum::ADMINISTRATOR);
 	}
 
 	static function asCoordinatorAccessLevel($user_id)
 	{
-		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 7);
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id, AccessLevelEnum::COORDINATOR);
 	}
 
 	static function asManagerAccessLevel($user_id)
 	{
-		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 17);
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id, AccessLevelEnum::MANAGER);
 	}
 
 	static function asPartnerAccessLevel($user_id)
 	{
-		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 6);
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id, AccessLevelEnum::PARTNER);
 	}
 
-	static function asEvaluatorAccessLevel($user_id)
+	static function asEvaluatorAccessLevel($user_id): bool
 	{
 		return (EmundusHelperAccess::isAllowedAccessLevel($user_id, 5) ||
 			EmundusHelperAccess::isAllowedAccessLevel($user_id, 3) ||
@@ -94,7 +93,7 @@ class EmundusHelperAccess
 
 	static function asApplicantAccessLevel($user_id)
 	{
-		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 4);
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id, AccessLevelEnum::APPLICANT);
 	}
 
 	static function asRegisteredAccessLevel($user_id)
@@ -104,7 +103,7 @@ class EmundusHelperAccess
 
 	static function asPublicAccessLevel($user_id)
 	{
-		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 1);
+		return EmundusHelperAccess::isAllowedAccessLevel($user_id, AccessLevelEnum::PUBLIC);
 	}
 
 	static function check_group($user_id, $group, $inherited)
@@ -201,21 +200,23 @@ class EmundusHelperAccess
 	{
 		$has_access = false;
 		require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
-		$m_users   = new EmundusModelUsers();
+		$m_users = new EmundusModelUsers();
 
-		if (!is_numeric($action_id) && !empty($action_id)) {
+		if (!is_numeric($action_id) && !empty($action_id))
+		{
 			$actionRepository = new ActionRepository();
-			$actionEntity = $actionRepository->getByName($action_id);
-			if(!empty($actionEntity))
+			$actionEntity     = $actionRepository->getByName($action_id);
+			if (!empty($actionEntity))
 			{
 				$action_id = $actionEntity->getId();
 			}
 		}
 
-		if (!empty($action_id)) {
+		if (!empty($action_id))
+		{
 			if (!empty($fnum))
 			{
-				if(!empty($user_id) && !self::isUserAllowedToAccessFnum($user_id, $fnum))
+				if (!empty($user_id) && !self::isUserAllowedToAccessFnum($user_id, $fnum))
 				{
 					return false;
 				}
@@ -227,9 +228,12 @@ class EmundusHelperAccess
 				}
 				elseif ($canAccess == 0 || $canAccess === null)
 				{
-					if (!empty($user_id)) {
+					if (!empty($user_id))
+					{
 						$groups = $m_users->getUserGroups($user_id, 'Column');
-					} else {
+					}
+					else
+					{
 						$groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
 					}
 
@@ -246,10 +250,12 @@ class EmundusHelperAccess
 				if($hCache->contains($cache_key)) {
 					return $hCache->get($cache_key);
 				}
-				
-				if (!empty($user_id)) {
+
+				if (!empty($user_id))
+				{
 					$groups = $m_users->getUserGroups($user_id, 'Column');
-				} else
+				}
+				else
 				{
 					$groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
 				}
@@ -271,18 +277,22 @@ class EmundusHelperAccess
 	{
 		$action_id = null;
 
-		if (!empty($action_name)) {
-			$db = Factory::getContainer()->get('DatabaseDriver');
+		if (!empty($action_name))
+		{
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 
 			$query->select('id')
 				->from('#__emundus_setup_actions')
 				->where('name = ' . $db->quote($action_name));
 
-			try {
+			try
+			{
 				$db->setQuery($query);
 				$action_id = $db->loadResult();
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				JLog::add('Can not find action id from name ' . $action_name . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 				$action_id = null;
 			}
@@ -397,15 +407,7 @@ class EmundusHelperAccess
 		return $m_files->getAttachmentsAssignedToEmundusGroups(array_keys(array_flip(array_keys($group_ids))));
 	}
 
-
-	/**
-	 * @param $user_id
-	 *
-	 * @return bool
-	 *
-	 * @since version
-	 */
-	public static function isDataAnonymized($user_id)
+	public static function isDataAnonymized(int $user_id): bool
 	{
 		$is_data_anonymized = false;
 		Log::addLogger(['text_file' => 'com_emundus.access.error.php'], Log::ERROR, 'com_emundus');
@@ -420,9 +422,11 @@ class EmundusHelperAccess
 				// NOTE: The unorthodox array_keys_flip is actually faster than doing array_unique(). The first array_keys is because the function used returns an assoc array [id => name].
 				$group_ids = array_keys(array_flip(array_keys($group_ids)));
 
-				$db    = JFactory::getDbo();
+				$db    = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
-				$query->select($db->quoteName('anonymize'))->from($db->quoteName('#__emundus_setup_groups'))->where($db->quoteName('id') . ' IN (' . implode(',', $group_ids) . ')');
+				$query->select($db->quoteName('anonymize'))
+					->from($db->quoteName('#__emundus_setup_groups'))
+					->where($db->quoteName('id') . ' IN (' . implode(',', $group_ids) . ')');
 				$db->setQuery($query);
 
 				try
@@ -464,7 +468,8 @@ class EmundusHelperAccess
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
-			if (self::isFnumMine($user_id, $fnum)) {
+			if (self::isFnumMine($user_id, $fnum))
+			{
 				$allowed = true;
 			}
 			else
@@ -615,7 +620,7 @@ class EmundusHelperAccess
 
 	/**
 	 * Check if the application file is mine
-	 * 
+	 *
 	 * @param $user_id
 	 * @param $fnum
 	 *
@@ -623,30 +628,37 @@ class EmundusHelperAccess
 	 *
 	 * @since version 1.40.0
 	 */
-	public static function isFnumMine($user_id, $fnum) {
+	public static function isFnumMine($user_id, $fnum)
+	{
 		$mine = false;
 
-		if (!empty($user_id) && !empty($fnum)) {
-			$db = Factory::getContainer()->get('DatabaseDriver');
+		if (!empty($user_id) && !empty($fnum))
+		{
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->select('id')
 				->from($db->quoteName('#__emundus_campaign_candidature'))
 				->where('applicant_id = ' . $db->quote($user_id))
 				->andWhere('fnum LIKE ' . $db->quote($fnum));
-			try {
+			try
+			{
 				$db->setQuery($query);
 				$ccid = $db->loadResult();
 
-				if (!empty($ccid)) {
+				if (!empty($ccid))
+				{
 					$mine = true;
 				}
 
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				Log::add('Error seeing if fnum is mine. -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 
-			if (!$mine) {
+			if (!$mine)
+			{
 				// maybe filed has been shared to me (collaboration)
 				$query->clear()
 					->select('efr.id')
@@ -656,14 +668,18 @@ class EmundusHelperAccess
 					->andWhere('efr.user_id = ' . $db->quote($user_id))
 					->andWhere('efr.uploaded = 1');
 
-				try {
+				try
+				{
 					$db->setQuery($query);
 					$collaboration_id = $db->loadResult();
 
-					if (!empty($collaboration_id)) {
+					if (!empty($collaboration_id))
+					{
 						$mine = true;
 					}
-				} catch (Exception $e) {
+				}
+				catch (Exception $e)
+				{
 					Log::add('Error seeing if fnum is mine. -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 				}
 			}
@@ -702,17 +718,17 @@ class EmundusHelperAccess
 		try
 		{
 			$mine = false;
-			$db = Factory::getContainer()->get('DatabaseDriver');
+			$db   = Factory::getContainer()->get('DatabaseDriver');
 
 			$requestRepository = new RequestRepository($db);
-			$request = $requestRepository->loadRequestById($request_id);
+			$request           = $requestRepository->loadRequestById($request_id);
 
 			$query = $db->getQuery(true);
 			$query->select('applicant_id')
 				->from($db->quoteName('#__emundus_campaign_candidature'))
 				->where('id = ' . $db->quote($request->getCcid()));
 			$db->setQuery($query);
-			$applicant_id = (int)$db->loadResult();
+			$applicant_id = (int) $db->loadResult();
 
 			if ($applicant_id === $user_id)
 			{
@@ -724,14 +740,15 @@ class EmundusHelperAccess
 		catch (Exception $e)
 		{
 			Log::add('Error seeing if request is mine. -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+
 			return false;
 		}
 	}
 
 	/**
-	 * @param $ccid int campaign candidature id
-	 * @param $step_data object step data, use getStepData from EmundusModelWorkflow
-	 * @param $user_id int if not given, current user will be taken
+	 * @param $ccid        int campaign candidature id
+	 * @param $step_data   object step data, use getStepData from EmundusModelWorkflow
+	 * @param $user_id     int if not given, current user will be taken
 	 * @param $profile_ids array if not given, only current session profile will be taken
 	 *
 	 * @return bool[] (can_see, can_edit)
@@ -739,18 +756,20 @@ class EmundusHelperAccess
 	 */
 	public static function getUserEvaluationStepAccess(int $ccid, object $step_data, ?int $user_id, bool $verify_campaign_infos = true): array
 	{
-		$can_see = false;
-		$can_edit = false;
+		$can_see            = false;
+		$can_edit           = false;
 		$reason_cannot_edit = 'READONLY_ACCESS';
 
-		if (!empty($ccid) && !empty($step_data->id)) {
+		if (!empty($ccid) && !empty($step_data->id))
+		{
 			$fnum = EmundusHelperFiles::getFnumFromId($ccid);
 
-			$app = Factory::getApplication();
-			$db = Factory::getContainer()->get('DatabaseDriver');
+			$app   = Factory::getApplication();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 
-			if (empty($user_id)) {
+			if (empty($user_id))
+			{
 				$user_id = $app->getIdentity()->id;
 			}
 
@@ -762,87 +781,102 @@ class EmundusHelperAccess
 				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
 				->where('ecc.id = ' . $ccid);
 			$db->setQuery($query);
-			$file_infos = $db->loadObject();
+			$file_infos   = $db->loadObject();
 			$programme_id = !empty($file_infos) ? $file_infos->id : null;
-			$campaign_id = !empty($file_infos) ? $file_infos->campaign_id : null;
+			$campaign_id  = !empty($file_infos) ? $file_infos->campaign_id : null;
 
 			$programs_ids = [$programme_id];
-			if(!empty($campaign_id))
+			if (!empty($campaign_id))
 			{
-				if(!class_exists('CampaignRepository')) {
+				if (!class_exists('CampaignRepository'))
+				{
 					require_once(JPATH_ROOT . '/components/com_emundus/classes/Repositories/Campaigns/CampaignRepository.php');
 				}
-				$campaignRepository = new CampaignRepository();
+				$campaignRepository  = new CampaignRepository();
 				$linked_programs_ids = $campaignRepository->getLinkedProgramsIds($campaign_id, $fnum);
-				if(!empty($linked_programs_ids))
+				if (!empty($linked_programs_ids))
 				{
 					$programs_ids = array_unique(array_merge($programs_ids, $linked_programs_ids));
 				}
 			}
 
-			if (!empty($programs_ids) && !empty(array_intersect($programs_ids, $step_data->programs))) {
+			if (!empty($programs_ids) && !empty(array_intersect($programs_ids, $step_data->programs)))
+			{
 				// verify if user can access to this evaluation form
-				if (EmundusHelperAccess::asCoordinatorAccessLevel($user_id) || EmundusHelperAccess::asAdministratorAccessLevel($user_id)) {
-					$can_see = true;
+				if (EmundusHelperAccess::asCoordinatorAccessLevel($user_id) || EmundusHelperAccess::asAdministratorAccessLevel($user_id))
+				{
+					$can_see  = true;
 					$can_edit = true;
-				} else if (EmundusHelperAccess::asPartnerAccessLevel($user_id)) {
-					// it's the bare minimum to potentially see the evaluation form
-					if (EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum) &&
-						(EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id) || EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id)))
+				}
+				else
+				{
+					if (EmundusHelperAccess::asPartnerAccessLevel($user_id))
 					{
-						$can_see = true;
-						// TODO: Check why create access not working if my group is associated to the file but not to the programme
-						if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id))
+						// it's the bare minimum to potentially see the evaluation form
+						if (EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum) &&
+							(EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id) || EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id)))
 						{
-							if ($verify_campaign_infos) {
-								// verify step is not closed
-								// file must be in one of the entry statuses and current date must be between start and end date of step
-								$query->clear()
-									->select('status')
-									->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
-									->where('ecc.id = ' . $ccid);
-
-								$db->setQuery($query);
-								$status = $db->loadResult();
-
-								$respect_dates = true;
-								if ($step_data->infinite != 1)
+							$can_see = true;
+							// TODO: Check why create access not working if my group is associated to the file but not to the programme
+							if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id))
+							{
+								if ($verify_campaign_infos)
 								{
-									if (!empty($step_data->start_date) && $step_data->start_date > date('Y-m-d H:i:s'))
+									// verify step is not closed
+									// file must be in one of the entry statuses and current date must be between start and end date of step
+									$query->clear()
+										->select('status')
+										->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+										->where('ecc.id = ' . $ccid);
+
+									$db->setQuery($query);
+									$status = $db->loadResult();
+
+									$respect_dates = true;
+									if ($step_data->infinite != 1)
 									{
-										$respect_dates = false;
-										$reason_cannot_edit = 'COM_EMUNDUS_WORKFLOW_STEP_ACCESS_DENIED_BECAUSE_NOT_STARTED';
+										if (!empty($step_data->start_date) && $step_data->start_date > date('Y-m-d H:i:s'))
+										{
+											$respect_dates      = false;
+											$reason_cannot_edit = 'COM_EMUNDUS_WORKFLOW_STEP_ACCESS_DENIED_BECAUSE_NOT_STARTED';
+										}
+
+										if (!empty($step_data->end_date) && $step_data->end_date < date('Y-m-d H:i:s'))
+										{
+											$respect_dates      = false;
+											$reason_cannot_edit = 'COM_EMUNDUS_WORKFLOW_STEP_ACCESS_DENIED_BECAUSE_ENDED';
+										}
 									}
 
-									if (!empty($step_data->end_date) && $step_data->end_date < date('Y-m-d H:i:s'))
+									if (in_array($status, $step_data->entry_status) && $respect_dates)
 									{
-										$respect_dates = false;
-										$reason_cannot_edit = 'COM_EMUNDUS_WORKFLOW_STEP_ACCESS_DENIED_BECAUSE_ENDED';
+										$can_edit = true;
+									}
+									else
+									{
+										$reason_cannot_edit = !in_array($status, $step_data->entry_status) ? 'COM_EMUNDUS_WORKFLOW_STEP_ACCESS_DENIED_BECAUSE_OF_STATUS' : $reason_cannot_edit;
 									}
 								}
-
-								if (in_array($status, $step_data->entry_status) && $respect_dates)
+								else
 								{
 									$can_edit = true;
-								} else {
-									$reason_cannot_edit = !in_array($status, $step_data->entry_status) ? 'COM_EMUNDUS_WORKFLOW_STEP_ACCESS_DENIED_BECAUSE_OF_STATUS' : $reason_cannot_edit;
 								}
-							} else {
-								$can_edit = true;
 							}
 						}
 					}
 				}
-			} else {
-				$can_see = false;
-				$can_edit = false;
+			}
+			else
+			{
+				$can_see            = false;
+				$can_edit           = false;
 				$reason_cannot_edit = Text::_('ERROR_INCOHERENT_STEP_FOR_CCID');
 			}
 		}
 
 		return [
-			'can_see' => $can_see,
-			'can_edit' => $can_edit,
+			'can_see'            => $can_see,
+			'can_edit'           => $can_edit,
 			'reason_cannot_edit' => $reason_cannot_edit
 		];
 	}
@@ -851,29 +885,36 @@ class EmundusHelperAccess
 	{
 		$granted = false;
 
-		if (!empty($action_id) && !empty($group_id)) {
+		if (!empty($action_id) && !empty($group_id))
+		{
 			// sanitize $crud
-			$crud = array_map(function($value) {
+			$crud = array_map(function ($value) {
 				return ($value == 1) ? 1 : 0;
 			}, $crud);
 
-			$db = Factory::getContainer()->get('DatabaseDriver');
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 			$query->clear()
 				->insert('#__emundus_acl')
 				->columns('action_id, group_id, c, r, u, d')
 				->values($action_id . ', ' . $group_id . ', ' . $crud['c'] . ', ' . $crud['r'] . ', ' . $crud['u'] . ', ' . $crud['d']);
 
-			try {
+			try
+			{
 				$db->setQuery($query);
 				$inserted = $db->execute();
 
-				if (!$inserted) {
+				if (!$inserted)
+				{
 					Log::add('Adding rights for action ' . $action_id . ' to group ' . $group_id . ' failed ', Log::WARNING, 'com_emundus');
-				} else {
+				}
+				else
+				{
 					$granted = true;
 				}
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				Log::add('Error while adding ACL for action : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
@@ -884,6 +925,7 @@ class EmundusHelperAccess
 
 	/**
 	 * TODO: put result in cache, it is not changing often
+	 *
 	 * @param   string  $fnum
 	 * @param   array   $filter_group_ids
 	 *
@@ -893,11 +935,13 @@ class EmundusHelperAccess
 	{
 		$user_ids = [];
 
-		if (!empty($fnum)) {
-			$db = Factory::getContainer()->get('DatabaseDriver');
+		if (!empty($fnum))
+		{
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
-			try {
+			try
+			{
 				$query->clear()
 					->select('DISTINCT group_id')
 					->from($db->quoteName('#__emundus_group_assoc'))
@@ -905,7 +949,8 @@ class EmundusHelperAccess
 					->andWhere($db->quoteName('action_id') . ' = 1')
 					->andWhere($db->quoteName('r') . ' = 1');
 
-				if (!empty($filter_group_ids)) {
+				if (!empty($filter_group_ids))
+				{
 					$query->andWhere('group_id IN (' . implode(',', $db->quote($filter_group_ids)) . ')');
 				}
 				$db->setQuery($query);
@@ -921,13 +966,15 @@ class EmundusHelperAccess
 				$program_code = $db->loadResult();
 
 				$program_group_ids = [];
-				if (!empty($program_code)) {
+				if (!empty($program_code))
+				{
 					$query->clear()
 						->select('DISTINCT parent_id')
 						->from($db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc'))
 						->where($db->quoteName('esgrc.course') . ' LIKE ' . $db->quote($program_code));
 
-					if (!empty($filter_group_ids)) {
+					if (!empty($filter_group_ids))
+					{
 						$query->andWhere($db->quoteName('esgrc.parent_id') . ' IN (' . implode(',', $db->quote($filter_group_ids)) . ')');
 					}
 
@@ -937,12 +984,14 @@ class EmundusHelperAccess
 
 				$group_ids = array_unique(array_merge($access_group_ids, $program_group_ids));
 
-				if (!empty($group_ids)) {
+				if (!empty($group_ids))
+				{
 					$query->clear()
 						->select('DISTINCT ' . $db->quoteName('eg.user_id'))
 						->from($db->quoteName('#__emundus_groups', 'eg'));
 
-					if (!empty($filter_group_ids)) {
+					if (!empty($filter_group_ids))
+					{
 						$query->where('eg.group_id IN (' . implode(',', $db->quote($group_ids)) . ')');
 					}
 
@@ -966,10 +1015,13 @@ class EmundusHelperAccess
 				$db->setQuery($query);
 				$users_directly_associated = $db->loadColumn();
 
-				if (!empty($users_directly_associated)) {
+				if (!empty($users_directly_associated))
+				{
 					$user_ids = array_unique(array_merge($user_ids, $users_directly_associated));
 				}
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				Log::add('Error while getting users that can access file ' . $fnum . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
@@ -981,36 +1033,45 @@ class EmundusHelperAccess
 	{
 		$action_id = 0;
 
-		if (!empty($name)) {
-			$cache = new EmundusHelperCache();
+		if (!empty($name))
+		{
+			$cache            = new EmundusHelperCache();
 			$cacheActionsList = $cache->get('emundus_actions_list');
 
-			if (!empty($cacheActionsList) && is_array($cacheActionsList)) {
-				foreach ($cacheActionsList as $action) {
-					if ($action['name'] == $name) {
+			if (!empty($cacheActionsList) && is_array($cacheActionsList))
+			{
+				foreach ($cacheActionsList as $action)
+				{
+					if ($action['name'] == $name)
+					{
 						$action_id = (int) $action['id'];
 						break;
 					}
 				}
 			}
 
-			if (empty($action_id)) {
-				$db = Factory::getContainer()->get('DatabaseDriver');
+			if (empty($action_id))
+			{
+				$db    = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 
 				$query->select('id')
 					->from($db->quoteName('#__emundus_setup_actions'))
 					->where($db->quoteName('name') . ' LIKE ' . $db->quote($name));
 
-				try {
+				try
+				{
 					$db->setQuery($query);
 					$action_id = (int) $db->loadResult();
 
-					if (!empty($action_id)) {
+					if (!empty($action_id))
+					{
 						$cacheActionsList[] = ['id' => $action_id, 'name' => $name];
 						$cache->set('emundus_actions_list', $cacheActionsList);
 					}
-				} catch (Exception $e) {
+				}
+				catch (Exception $e)
+				{
 					Log::add('Error while getting action id from action name ' . $name . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 				}
 			}
@@ -1019,57 +1080,69 @@ class EmundusHelperAccess
 		return $action_id;
 	}
 
-    /**
-     * Get action access right for a certain user for multiple files at once
-     *
-     * @param   int     $action_id  Id of the action.
-     * @param   string  $crud       create/read/update/delete.
-     * @param   null    $user_id    The user id.
-     * @param   array   $fnums      File numbers
-     *
-     * @return  array   Files on which the user can do the action
-     * @since   2.8.1
-     */
-    static function asAccessActionOnFnums($action_id, $crud, $user_id, array $fnums) {
-        $authorized_fnums = [];
+	/**
+	 * Get action access right for a certain user for multiple files at once
+	 *
+	 * @param   int     $action_id  Id of the action.
+	 * @param   string  $crud       create/read/update/delete.
+	 * @param   null    $user_id    The user id.
+	 * @param   array   $fnums      File numbers
+	 *
+	 * @return  array   Files on which the user can do the action
+	 * @since   2.8.1
+	 */
+	static function asAccessActionOnFnums($action_id, $crud, $user_id, array $fnums)
+	{
+		$authorized_fnums = [];
 
-        if (!empty($user_id) && !empty($fnums)) {
-            require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
-            require_once(JPATH_SITE . '/components/com_emundus/models/programme.php');
-            $m_files = new EmundusModelFiles();
-            $m_programme = new EmundusModelProgramme();
+		if (!empty($user_id) && !empty($fnums))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+			require_once(JPATH_SITE . '/components/com_emundus/models/programme.php');
+			$m_files     = new EmundusModelFiles();
+			$m_programme = new EmundusModelProgramme();
 
-            $fnumsInfos = $m_files->getFnumsInfos($fnums);
-            $user_programs = $m_programme->getUserPrograms($user_id);
+			$fnumsInfos    = $m_files->getFnumsInfos($fnums);
+			$user_programs = $m_programme->getUserPrograms($user_id);
 
-            $user_access_action = EmundusHelperAccess::asAccessAction($action_id, $crud, $user_id);
+			$user_access_action = EmundusHelperAccess::asAccessAction($action_id, $crud, $user_id);
 
-            $db = Factory::getContainer()->get('DatabaseDriver');
-            $query = $db->getQuery(true);
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
 
-            $query->clear()
-                ->select($db->quoteName('fnum'))
-                ->from($db->quoteName('#__emundus_users_assoc', 'eua'))
-                ->where($db->quoteName('fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')')
-                ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
-                ->andWhere($db->quoteName('action_id') . ' = ' . $db->quote($action_id))
-                ->andWhere($db->quoteName($crud) . ' = ' . $db->quote('-2'));
-            $db->setQuery($query);
-            $unauthorized_fnums = $db->loadColumn();
+			$query->clear()
+				->select($db->quoteName('fnum'))
+				->from($db->quoteName('#__emundus_users_assoc', 'eua'))
+				->where($db->quoteName('fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')')
+				->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+				->andWhere($db->quoteName('action_id') . ' = ' . $db->quote($action_id))
+				->andWhere($db->quoteName($crud) . ' = ' . $db->quote('-2'));
+			$db->setQuery($query);
+			$unauthorized_fnums = $db->loadColumn();
 
-            foreach($fnumsInfos as $fnumInfos) {
-                if (in_array($fnumInfos['fnum'], $unauthorized_fnums)) {
-                    continue;
-                } else if (in_array($fnumInfos['training'], $user_programs) && $user_access_action) {
-                    $authorized_fnums[] = $fnumInfos['fnum'];
-                } else {
-                    if (EmundusHelperAccess::asAccessAction($action_id, $crud, $user_id, $fnumInfos['fnum'])) {
-                        $authorized_fnums[] = $fnumInfos['fnum'];
-                    }
-                }
-            }
-        }
+			foreach ($fnumsInfos as $fnumInfos)
+			{
+				if (in_array($fnumInfos['fnum'], $unauthorized_fnums))
+				{
+					continue;
+				}
+				else
+				{
+					if (in_array($fnumInfos['training'], $user_programs) && $user_access_action)
+					{
+						$authorized_fnums[] = $fnumInfos['fnum'];
+					}
+					else
+					{
+						if (EmundusHelperAccess::asAccessAction($action_id, $crud, $user_id, $fnumInfos['fnum']))
+						{
+							$authorized_fnums[] = $fnumInfos['fnum'];
+						}
+					}
+				}
+			}
+		}
 
-        return $authorized_fnums;
-    }
+		return $authorized_fnums;
+	}
 }

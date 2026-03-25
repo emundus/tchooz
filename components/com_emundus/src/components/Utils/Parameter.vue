@@ -126,6 +126,7 @@
 				:group-values="multiselectOptions.groupValues ? multiselectOptions.groupValues : null"
 				:group-label="multiselectOptions.groupLabel ? multiselectOptions.groupLabel : null"
 				:group-select="multiselectOptions.groupSelect ? multiselectOptions.groupSelect : false"
+				:close-on-select="multiselectOptions.closeOnSelect"
 				:loading="isLoading"
 				:max="multiselectOptions.max ? multiselectOptions.max : null"
 				@tag="addOption"
@@ -171,11 +172,11 @@
 
 			<!-- YESNO -->
 			<div v-else-if="parameter.type === 'yesno'">
-				<fieldset data-toggle="buttons" class="tw-flex tw-items-center tw-gap-2">
+				<fieldset class="tw-flex tw-items-center tw-gap-2">
 					<label
 						:for="paramId + '_input_0'"
 						:class="[value == 0 ? 'tw-bg-red-700' : 'tw-border-neutral-500 tw-bg-white hover:tw-border-red-700']"
-						class="tw-inline-flex tw-h-10 tw-w-60 tw-items-center tw-justify-center tw-gap-2.5 tw-rounded-lg tw-border tw-p-2.5"
+						class="tw-inline-flex tw-h-10 tw-w-60 tw-cursor-pointer tw-items-center tw-justify-center tw-gap-2.5 tw-rounded-lg tw-border tw-p-2.5"
 					>
 						<input
 							v-model="value"
@@ -186,13 +187,15 @@
 							value="0"
 							:checked="value === 0"
 						/>
-						<span :class="[value == 0 ? 'tw-text-white' : 'tw-text-red-700']">{{ translate('JNO') }}</span>
+						<span :class="[value == 0 ? 'tw-text-white' : 'tw-text-red-700']">
+							{{ translate(parameter.noLabel || 'JNO') }}
+						</span>
 					</label>
 
 					<label
 						:for="paramId + '_input_1'"
 						:class="[value == 1 ? 'tw-bg-green-700' : 'tw-border-neutral-500 tw-bg-white hover:tw-border-green-700']"
-						class="tw-inline-flex tw-h-10 tw-w-60 tw-items-center tw-justify-center tw-gap-2.5 tw-rounded-lg tw-border tw-p-2.5"
+						class="tw-inline-flex tw-h-10 tw-w-60 tw-cursor-pointer tw-items-center tw-justify-center tw-gap-2.5 tw-rounded-lg tw-border tw-p-2.5"
 					>
 						<input
 							v-model="value"
@@ -203,7 +206,9 @@
 							value="1"
 							:checked="value === 1"
 						/>
-						<span :class="[value == 1 ? 'tw-text-white' : 'tw-text-green-700']">{{ translate('JYES') }}</span></label
+						<span :class="[value == 1 ? 'tw-text-white' : 'tw-text-green-700']">
+							{{ translate(parameter.yesLabel || 'JYES') }}
+						</span></label
 					>
 				</fieldset>
 			</div>
@@ -420,6 +425,16 @@
 				</div>
 			</div>
 
+			<color-picker
+				v-else-if="parameter.type === 'color'"
+				v-model="value"
+				:swatches="parameter.swatches ? parameter.swatches : 'dark'"
+				:row-length="8"
+				:id="paramId"
+				:random="true"
+				style="top: -8px"
+			/>
+
 			<!-- INPUT IN CASE OF SPLIT -->
 			<span v-if="parameter.splitField">{{ parameter.splitChar }}</span>
 			<span v-if="parameter.endText" class="tw-ml-2">{{ translate(parameter.endText) }}</span>
@@ -461,10 +476,11 @@ import { AsYouType, getExampleNumber, parsePhoneNumber } from 'libphonenumber-js
 import examples from 'libphonenumber-js/mobile/examples';
 import { vMaska } from 'maska/vue';
 import vueDropzone from 'vue2-dropzone-vue3';
+import ColorPicker from '@/components/ColorPicker.vue';
 
 export default {
 	name: 'Parameter',
-	components: { DatePicker, Multiselect, Modal, TipTapEditor, vueDropzone },
+	components: { ColorPicker, DatePicker, Multiselect, Modal, TipTapEditor, vueDropzone },
 	directives: {
 		maska: vMaska,
 	},
@@ -484,6 +500,7 @@ export default {
 					taggable: false,
 					searchable: true,
 					internalSearch: true,
+					closeOnSelect: true,
 					asyncRoute: '',
 					optionsProvider: null,
 					optionsLimit: 100,
@@ -597,20 +614,38 @@ export default {
 
 				this.value = found;
 			} else {
-				// Check if values are not already object
-				if (this.parameter.value && this.parameter.value.length > 0 && typeof this.parameter.value[0] !== 'object') {
-					if (Array.isArray(this.parameter.value)) {
-						this.value = this.multiOptions.filter((option) =>
-							this.parameter.value.includes(option[this.$props.multiselectOptions.trackBy].toString()),
-						);
-					} else {
-						let valueString = this.parameter.value.split(',');
-						this.value = this.multiOptions.filter((option) =>
-							valueString.includes(option[this.$props.multiselectOptions.trackBy].toString()),
+				if (
+					Array.isArray(this.multiOptions) &&
+					this.multiOptions.length > 0 &&
+					this.multiOptions[0][this.$props.multiselectOptions.groupValues]
+				) {
+					// Cas des options groupées
+					let values = [];
+					for (const group of this.multiOptions) {
+						values = values.concat(
+							group[this.$props.multiselectOptions.groupValues].filter((option) =>
+								this.parameter.value.includes(option[this.$props.multiselectOptions.trackBy]),
+							),
 						);
 					}
+
+					this.value = values;
 				} else {
-					this.value = this.parameter.value;
+					// Check if values are not already object
+					if (this.parameter.value && this.parameter.value.length > 0 && typeof this.parameter.value[0] !== 'object') {
+						let valueString = this.parameter.value;
+						if (typeof this.parameter.value === 'string') {
+							valueString = this.parameter.value.split(',');
+						}
+
+						this.value = this.multiOptions.filter(
+							(option) =>
+								valueString.includes(option[this.$props.multiselectOptions.trackBy].toString()) ||
+								valueString.includes(option[this.$props.multiselectOptions.trackBy]),
+						);
+					} else {
+						this.value = this.parameter.value;
+					}
 				}
 			}
 

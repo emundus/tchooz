@@ -14,6 +14,12 @@ use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Factories\Automation\ConditionsQueryFactory;
 use Tchooz\Services\Automation\ConditionRegistry;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Factories\Automation
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Factories\Automation\ConditionsQueryFactory
+ */
 class ConditionsQueryFactoryTest extends UnitTestCase
 {
 	private ConditionsQueryFactory $factory;
