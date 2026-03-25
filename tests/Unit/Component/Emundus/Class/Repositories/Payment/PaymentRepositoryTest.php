@@ -15,9 +15,10 @@ use Tchooz\Repositories\Payment\PaymentRepository;
 
 
 /**
- * @package     Unit\Component\Emundus\Helper
+ * @package     Unit\Component\Emundus\Class\Repositories\Payment
  *
  * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Payment\PaymentRepository
  */
 class PaymentRepositoryTest extends UnitTestCase
 {

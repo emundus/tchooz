@@ -12,6 +12,12 @@ use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Entities\Automation\ActionEntity;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Entities\Automation\Actions
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Entities\Automation\ActionEntity
+ */
 class ActionEntityTest extends UnitTestCase
 {
 	/**

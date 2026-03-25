@@ -6,6 +6,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Payment\PaymentMethodEntity;
 use Tchooz\Repositories\Payment\PaymentMethodRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Payment
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Payment\PaymentMethodRepository
+ */
 class PaymentMethodRepositoryTest extends UnitTestCase
 {
 	private PaymentMethodRepository $repository;

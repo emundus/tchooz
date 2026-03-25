@@ -1,0 +1,10 @@
+[
+	{
+		"component": "emundus",
+		"param": "create_program_groups"
+	},
+	{
+		"component": "emundus",
+		"param": "create_groups_template"
+	}
+]

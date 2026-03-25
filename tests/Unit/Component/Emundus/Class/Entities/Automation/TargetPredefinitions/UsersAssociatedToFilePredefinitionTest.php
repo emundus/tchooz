@@ -9,6 +9,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\TargetPredefinitions\UsersAssociatedToFilePredefinition;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Entities\Automation\TargetPredefinitions
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Entities\Automation\TargetPredefinitions\UsersAssociatedToFilePredefinition
+ */
 class UsersAssociatedToFilePredefinitionTest extends UnitTestCase
 {
 	private UsersAssociatedToFilePredefinition $predefinition;

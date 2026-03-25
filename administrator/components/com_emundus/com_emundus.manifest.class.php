@@ -18,6 +18,10 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Emundus\Administrator\Attributes\PostflightAttribute;
 use Joomla\Database\DatabaseInterface;
+use Tchooz\Entities\Actions\ActionEntity;
+use Tchooz\Entities\Actions\CrudEntity;
+use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Services\Language\DbLanguage;
 use Tchooz\Traits\TraitVersion;
 
@@ -1869,7 +1873,8 @@ class Com_EmundusInstallerScript
 		}
 
 		$export = var_export($map, true);
-		$export = preg_replace(['/\barray\s*\(/', '/\)(,)?/'], ['[', ']$1'], $export);
+		$export = preg_replace(['/\barray\s*\(/', '/\)(,)/'], ['[', ']$1'], $export);
+		$export = preg_replace('/\)(;)?$/', ']$1', $export);
 		$php = "<?php\ndefined('_JEXEC') or die;\nreturn $export;\n";
 		$tmp ='autoload_tables.php' . '.tmp';
 		file_put_contents($tmp, $php);
@@ -1916,5 +1921,49 @@ class Com_EmundusInstallerScript
 		}
 
 		return $repaired;
+	}
+
+	#[PostflightAttribute(name: "Build setup actions table with ActionEnum")]
+	private function buildSetupActionsTable(): bool
+	{
+		$actions = ActionEnum::cases();
+		$actionRepository = new ActionRepository();
+
+		try
+		{
+			foreach ($actions as $action)
+			{
+				$actionEntity = $actionRepository->getByName($action->value);
+				if(!empty($actionEntity))
+				{
+					$actionEntity->setLabel($action->getLabel());
+					$actionEntity->setDescription($action->getDescription());
+					$actionEntity->setOrdering($action->getOrdering());
+					$actionEntity->setType($action->getType());
+
+					$actionRepository->flush($actionEntity);
+				}
+				else {
+					$actionEntity = new ActionEntity(
+						0,
+						$action->value,
+						$action->getLabel(),
+						new CrudEntity(0, 1, 1, 1, 1),
+						$action->getOrdering(),
+						true,
+						$action->getDescription(),
+						$action->getType()
+					);
+					$actionRepository->flush($actionEntity);
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			EmundusHelperUpdate::displayMessage($e->getMessage(), 'error');
+			return false;
+		}
+
+		return true;
 	}
 }

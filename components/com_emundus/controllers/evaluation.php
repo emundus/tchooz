@@ -1253,7 +1253,7 @@ class EmundusControllerEvaluation extends BaseController
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
 			$stepsWithEvaluations = [];
 			$steps = [];
-			
+
 			$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
 			/*
 			 * 3 cases possible
@@ -1297,7 +1297,7 @@ class EmundusControllerEvaluation extends BaseController
 					$steps = array_merge($steps, $childWorkflow->getSteps());
 				}
 			}
-			
+
 			foreach ($steps as $step)
 			{
 				assert($step instanceof Tchooz\Entities\Workflow\StepEntity);
