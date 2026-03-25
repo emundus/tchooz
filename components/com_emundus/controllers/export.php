@@ -10,8 +10,8 @@ defined('_JEXEC') or die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\User\User;
 use Symfony\Component\OptionsResolver\Exception\AccessException;
@@ -19,16 +19,12 @@ use Tchooz\Entities\Actions\ActionEntity as AccessActionEntity;
 use Tchooz\Entities\Automation\Actions\ActionExport;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Export\ExportEntity;
-use Tchooz\Entities\Fabrik\FabrikFormEntity;
 use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnTag;
 use Tchooz\Entities\Task\TaskEntity;
-use Tchooz\Entities\Workflow\StepEntity;
-use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
-use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\List\ListColumnTypesEnum;
 use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
@@ -88,6 +84,7 @@ class EmundusControllerExport extends BaseController
 		$this->exportAction = EmundusHelperAccess::asAccessAction($this->exportActionExcel->getId(), CrudEnum::CREATE->value, $this->_user->id) || EmundusHelperAccess::asAccessAction($this->exportActionPdf->getId(), CrudEnum::CREATE->value, $this->_user->id) || EmundusHelperAccess::asAccessAction($this->exportActionZip->getId(), CrudEnum::CREATE->value, $this->_user->id);
 
 		$this->exportRepository = new ExportRepository();
+		Log::addLogger(['text_file' => 'export.php'], Log::ALL, ['export']);
 	}
 
 	public function display($cachable = false, $urlparams = false): void
@@ -759,6 +756,7 @@ class EmundusControllerExport extends BaseController
 					$task = new TaskEntity(0, TaskStatusEnum::PENDING, null, $this->_user->id, ['actionEntity' => $exportAction->serialize(), 'fnums' => array_map(function ($target) {
 						return $target->getFile();
 					}, $targets)]);
+					$task->setPriority($exportAction->getPriority());
 
 					$taskRepository = new TaskRepository();
 					if (!$taskRepository->saveTask($task))
@@ -793,6 +791,7 @@ class EmundusControllerExport extends BaseController
 		}
 		catch (Exception $e)
 		{
+			Log::add('Failed export ' . $e->getMessage(), Log::ERROR, 'export');
 			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 

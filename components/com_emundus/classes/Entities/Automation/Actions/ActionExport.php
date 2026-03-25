@@ -8,6 +8,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\Filesystem\Folder;
 use Tchooz\Entities\Automation\ActionEntity;
+use Tchooz\Entities\Automation\ActionExecutionMessage;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Export\ExportEntity;
@@ -18,6 +19,7 @@ use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
+use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Repositories\Export\ExportRepository;
 use Tchooz\Services\Export\ExportRegistry;
 
@@ -130,10 +132,16 @@ class ActionExport extends ActionEntity
 				$this->getParameterValues(),
 				$exportEntity
 			);
+			$startTimeDate = new \DateTime();
+			$startProgress = $exportEntity->getProgress();
 			$result         = $exportService->export($exportPath, $task, $langCode);
 
 			if ($result->isStatus() && !empty($result->getFilePath()))
 			{
+				$this->addExecutionMessage(new ActionExecutionMessage(
+					sprintf("Itération de l'export démarrée le %s à %f %% et stoppée à %f %%.", $startTimeDate->format('Y-m-d H:i:s'), $startProgress, $result->getProgress())
+				));
+
 				$expiredAt = null;
 				if ($result->getProgress() === floatval(100))
 				{
@@ -264,5 +272,10 @@ class ActionExport extends ActionEntity
 	public function isAvailable(): bool
 	{
 		return false;
+	}
+
+	public function getPriority(): TaskPriorityEnum
+	{
+		return TaskPriorityEnum::MEDIUM;
 	}
 }

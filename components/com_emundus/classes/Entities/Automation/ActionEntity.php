@@ -10,6 +10,7 @@ use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\ActionMessageTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Traits\TraitAutomatedTask;
 
 abstract class ActionEntity
@@ -517,5 +518,10 @@ abstract class ActionEntity
 		}
 
 		return $this->executionMessages;
+	}
+
+	public function getPriority(): TaskPriorityEnum
+	{
+		return TaskPriorityEnum::MEDIUM;
 	}
 }
