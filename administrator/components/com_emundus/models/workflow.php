@@ -155,13 +155,14 @@ class EmundusModelAdministratorWorkflow extends JModelList
 				['name' => 'action_id', 'type' => 'INT', 'null' => 1],
 				['name' => 'published', 'type' => 'TINYINT', 'null' => 1],
 				['name' => 'system', 'type' => 'TINYINT', 'null' => 1, 'default' => 0],
+				['name' => 'code', 'type' => 'VARCHAR(50)', 'null' => 0, 'default' => 'applicant'],
 			];
 			$created = EmundusHelperUpdate::createTable('jos_emundus_setup_step_types', $columns);
 			if ($created) {
 				// add first rows to the table
 				$rows = [
-					[1, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_APPLICANT', 1, 1, 1],
-					[2, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_EVALUATOR', 5, 1, 1],
+					[1, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_APPLICANT', 1, 1, 1, 'applicant'],
+					[2, 0, 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_EVALUATOR', 5, 1, 1, 'evaluator'],
 				];
 
 				foreach ($rows as $row) {
@@ -176,7 +177,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 					{
 						$query->clear()
 							->insert('#__emundus_setup_step_types');
-						$query->columns(['id', 'parent_id', 'label', 'action_id', 'published', $db->quoteName('system')]);
+						$query->columns(['id', 'parent_id', 'label', 'action_id', 'published', $db->quoteName('system'), $db->quoteName('code')]);
 						$query->values(implode(',', $db->quote($row)));
 
 						$db->setQuery($query);

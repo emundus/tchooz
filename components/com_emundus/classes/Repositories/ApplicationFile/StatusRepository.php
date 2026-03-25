@@ -36,6 +36,7 @@ class StatusRepository extends EmundusRepository implements RepositoryInterface
 	public function delete(int $id): bool
 	{
 		// TODO: Implement delete() method.
+		return false;
 	}
 
 	/**
@@ -46,12 +47,25 @@ class StatusRepository extends EmundusRepository implements RepositoryInterface
 	{
 		$statuses = [];
 
-		$query = $this->db->getQuery(true)
-			->select($this->columns)
-			->from($this->db->quoteName($this->tableName, $this->alias))
-			->order($this->db->quoteName('ordering') . ' ASC');
-		$this->db->setQuery($query);
-		$results = $this->db->loadObjectList();
+		$cacheKey = 'all_statuses';
+		if ($this->cache->contains($cacheKey)) {
+			$results = $this->cache->get($cacheKey);
+		}
+
+		if(empty($results))
+		{
+			$query = $this->db->createQuery()
+				->select($this->columns)
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->order($this->db->quoteName($this->alias . '.ordering') . ' ASC');
+			$this->db->setQuery($query);
+			$results = $this->db->loadObjectList();
+
+			if(!empty($results))
+			{
+				$this->cache->store($results, $cacheKey);
+			}
+		}
 
 		foreach ($results as $status) {
 			$statuses[] = $this->factory->fromDbObject($status, $this->withRelations);
@@ -62,12 +76,60 @@ class StatusRepository extends EmundusRepository implements RepositoryInterface
 
 	public function getById(int $id): ?StatusEntity
 	{
-		return $this->getItemByField('id', $id, true);
+		$status_entity = null;
+
+		$cacheKey = 'status_id_' . $id;
+		if ($this->cache->contains($cacheKey)) {
+			$status = $this->cache->get($cacheKey);
+		}
+
+		if(empty($status))
+		{
+			$query = $this->db->createQuery()
+				->select($this->columns)
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->where($this->db->quoteName($this->alias. '.id') . ' = ' . $id);
+			$this->db->setQuery($query);
+			$status = $this->db->loadObject();
+		}
+
+		if (!empty($status)) {
+			$this->cache->store($status, $cacheKey);
+
+			$status_entity = $this->factory->fromDbObject($status, $this->withRelations);
+		}
+
+		return $status_entity;
 	}
 
 	public function getByStep(int $step): ?StatusEntity
 	{
-		return $this->getItemByField('step', $step, true);
+		$status_entity = null;
+
+		$cacheKey = 'status_step_' . $step;
+		if ($this->cache->contains($cacheKey))
+		{
+			$status = $this->cache->get($cacheKey);
+		}
+
+		if (empty($status))
+		{
+			$query = $this->db->getQuery(true)
+				->select($this->columns)
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->where($this->db->quoteName($this->alias . '.step') . ' = ' . $step);
+			$this->db->setQuery($query);
+			$status = $this->db->loadObject();
+		}
+
+		if (!empty($status))
+		{
+			$this->cache->store($status, $cacheKey);
+
+			$status_entity = $this->factory->fromDbObject($status, $this->withRelations);
+		}
+
+		return $status_entity;
 	}
 
 	public function getFactory(): StatusFactory

@@ -168,7 +168,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 		if (!empty($result))
 		{
-			$applicationFileEntity = $this->factory->fromDbObject($result);
+			$applicationFileEntity = $this->factory->fromDbObject($result, $this->withRelations, $this->exceptRelations);
 		}
 
 		return $applicationFileEntity;

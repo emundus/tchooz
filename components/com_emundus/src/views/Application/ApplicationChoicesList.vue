@@ -64,6 +64,15 @@ export default {
 									multiple: true,
 									exportModal: false,
 								},
+								{
+									action: 'exportapplicationchoicesall',
+									label: 'COM_EMUNDUS_APPLICATION_CHOICES_EXPORT_EXCEL_ALL',
+									controller: 'application',
+									name: 'exportapplicationchoicesall',
+									method: 'get',
+									multiple: true,
+									exportModal: false,
+								},
 							],
 							filters: [
 								{
@@ -142,6 +151,8 @@ export default {
 					}
 				}
 
+				this.loading = false;
+			} else {
 				this.loading = false;
 			}
 		});
