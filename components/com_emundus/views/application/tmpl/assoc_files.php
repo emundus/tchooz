@@ -2,7 +2,7 @@
 
 use Joomla\CMS\Factory;
 
-JFactory::getSession()->set('application_layout', 'assoc_files');
+Factory::getApplication()->getSession()->set('application_layout', 'assoc_files');
 
 if (!empty((array) $this->assoc_files)) :
 	foreach ($this->assoc_files->published_campaigns as $camp) : ?>

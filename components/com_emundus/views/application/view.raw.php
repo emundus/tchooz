@@ -18,10 +18,11 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\MVC\View\HtmlView;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
-use Tchooz\Entities\Workflow\WorkflowEntity;
 
 /**
  * HTML View class for the Emundus Component
@@ -68,6 +69,8 @@ class EmundusViewApplication extends HtmlView
 	protected $sid;
 	protected $collaborators;
 	protected $is_applicant;
+
+	protected ApplicationFileEntity $applicationFile;
 
 	function __construct($config = array())
 	{
@@ -117,6 +120,9 @@ class EmundusViewApplication extends HtmlView
 		$this->fnum = $fnum;
 		$this->student = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(intval($fnumInfos['applicant_id']));
 		$this->sid   = $fnumInfos['applicant_id'];
+
+		$applicationFileRepository = new ApplicationFileRepository();
+		$this->applicationFile = $applicationFileRepository->getById($this->ccid);
 
 		$m_application = $this->getModel('Application');
 
@@ -168,7 +174,8 @@ class EmundusViewApplication extends HtmlView
 					{
 						$show_related_files = $params->get('show_related_files', 0);
 
-						if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asManagerAccessLevel($this->user->id))
+						// Public files are associated to one single Public Account, there can be thousands of them, irrelevant to show related files
+						if (($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asManagerAccessLevel($this->user->id)) && !$this->applicationFile->isPublic())
 						{
 							$campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], null, false);
 
