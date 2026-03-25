@@ -78,7 +78,9 @@ class ExcelService extends Export implements ExportInterface
 
 	private int $totalExecutionTime = 0;
 
-	const TIME_LIMIT = 20; //seconds
+	const TIME_LIMIT = 30; //seconds
+
+	const BATCH_SIZE = 200;
 
 	public function __construct(array $fnums = [], User $user = null, array|object $options = null, ExportEntity $exportEntity = null)
 	{
@@ -157,13 +159,16 @@ class ExcelService extends Export implements ExportInterface
 			{
 				return $this->exportOld($exportPath, $metadata);
 			}
-			// Next verion export logic here
+			// Next version export logic here
 			else
 			{
-				$json = [];
+				$json         = [];
 				$jsonFileName = 'export_' . $this->exportEntity->getId() . '.json';
 				$jsonFilePath = JPATH_SITE . '/' . $exportPath . $jsonFileName;
 
+				// ----------------------------
+				// 1) Load existing JSON if any
+				// ----------------------------
 				if (!empty($this->exportEntity->getFilename()) && str_ends_with($this->exportEntity->getFilename(), '.json'))
 				{
 					$jsonFilePath = JPATH_SITE . '/' . $this->exportEntity->getFilename();
@@ -172,23 +177,39 @@ class ExcelService extends Export implements ExportInterface
 						$jsonContent = file_get_contents($jsonFilePath);
 						if ($jsonContent !== false)
 						{
-							$json = json_decode($jsonContent, true);
+							$json = json_decode($jsonContent, true) ?? [];
 						}
 					}
 				}
 
-				$processStartTime = microtime(true);
+				// ----------------------------
+				// 2) Init JSON if empty
+				// ----------------------------
 				if (empty($json))
 				{
-					$json['headers'] = [];
-					// Store json file in export path
-					$jsonContent  = json_encode($json);
-					file_put_contents($jsonFilePath, $jsonContent);
-					$this->exportEntity->setFilename($exportPath . $jsonFileName);
+					$json = [
+						'headers' => [],
+						'files'   => [],
+						'meta'    => [
+							'fnums'      => [],
+							'processed'  => 0,
+							'batch_size' => self::BATCH_SIZE,
+							'phase' 	=> 'synthesis',
+							'synthesis_index' => 0,
+							'element_index' => 0,
+						],
+					];
 
+					// Save json file in export path
+					$jsonContent = json_encode($json);
+					file_put_contents($jsonFilePath, $jsonContent);
+
+					$this->exportEntity->setFilename($exportPath . $jsonFileName);
 					$this->exportRepository->flush($this->exportEntity);
 
-					// Check access to files
+					// ----------------------------
+					// 3) Check access to files
+					// ----------------------------
 					$validFnums = [];
 					$format     = ExportFormatEnum::XLSX;
 
@@ -199,154 +220,332 @@ class ExcelService extends Export implements ExportInterface
 
 					foreach ($this->fnums as $fnum)
 					{
-						if (is_string($fnum) && \EmundusHelperAccess::asAccessAction($format->getAccessName(), CrudEnum::CREATE->value, $this->user->id, $fnum))
+						if (
+							is_string($fnum) &&
+							\EmundusHelperAccess::asAccessAction(
+								$format->getAccessName(),
+								CrudEnum::CREATE->value,
+								$this->user->id,
+								$fnum
+							)
+						)
 						{
 							$validFnums[] = $fnum;
 						}
 					}
 
-					if(empty($validFnums))
+					if (empty($validFnums))
 					{
+						Log::add('No valid files to export for export ID ' . $this->exportEntity->getId(), Log::WARNING, 'com_emundus.service.export');
 						throw new \Exception('No valid files to export.');
 					}
 
-					if(Factory::getApplication()->isClient('site'))
+					if (Factory::getApplication()->isClient('site'))
 					{
 						Factory::getApplication()->setUserState('com_emundus.files.export.fnums', $validFnums);
 					}
 
-					$this->fnums = $validFnums;
+					$this->fnums = array_values($validFnums);
+
+					// Store fnums list in json meta (so we can resume safely)
+					$json['meta']['fnums']      = $this->fnums;
+					$json['meta']['processed']  = 0;
+					$json['meta']['batch_size'] = self::BATCH_SIZE;
+				}
+				else
+				{
+					// Ensure meta exists (backward compatible)
+					if (empty($json['meta']))
+					{
+						$json['meta'] = [
+							'fnums'      => $this->fnums,
+							'processed'  => 0,
+							'batch_size' => self::BATCH_SIZE,
+						];
+					}
+
+					// If fnums are missing in json meta, restore from current request
+					if (empty($json['meta']['fnums']))
+					{
+						$json['meta']['fnums'] = $this->fnums;
+					}
+
+					// Ensure processed exists
+					if (!isset($json['meta']['processed']))
+					{
+						$json['meta']['processed'] = 0;
+					}
+
+					// Ensure batch size exists
+					if (empty($json['meta']['batch_size']))
+					{
+						$json['meta']['batch_size'] = self::BATCH_SIZE;
+					}
+
+					// Ensure headers/files keys exist
+					$json['headers'] = $json['headers'] ?? [];
+					$json['files']   = $json['files'] ?? [];
 				}
 
-				$files = $this->applicationFileRepository->getAll(['fnum' => $this->fnums]);
+				// For safety, always use meta fnums as the source of truth
+				$allFnums  = array_values($json['meta']['fnums']);
+				$batchSize = (int) $json['meta']['batch_size'];
+				$processed = (int) $json['meta']['processed'];
 
-				$synthesisIds = $this->options->getSynthesis() ?? [];
+				$processStartTime = microtime(true);
+				$atLeastOneProcessed = false;
 
-				$last_header      = $json['headers'] ? array_key_last($json['headers']) : null;
-				if ($last_header)
+				// Cancel check
+				if (empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId()))
 				{
-					$last_synthesis_id = $last_header;
-					if (str_starts_with($last_header, 'header_'))
-					{
-						$last_synthesis_id = str_replace('header_', '', $last_header);
-					}
-
-					$last_synthesis_key = array_search($last_synthesis_id, $synthesisIds);
-					if ($last_synthesis_key !== false)
-					{
-						$synthesisIds = array_slice($synthesisIds, $last_synthesis_key + 1);
-					}
-					else
-					{
-						$synthesisIds = [];
-					}
+					throw new \Exception('Export has been cancelled.');
 				}
 
-				if(!empty($synthesisIds))
+				// ----------------------------
+				// 4) Build headers ONCE
+				// ----------------------------
+				if (empty($json['headers']))
 				{
+					// We'll build headers based on options only (labels)
+					// But your getData() currently needs $files to compute data.
+					// So we load a small sample (1 file) just for label resolution.
+					$sampleFnums = array_slice($allFnums, 0, 1);
+					$sampleFiles = $this->applicationFileRepository->getAll(['fnum' => $sampleFnums]);
+
+					// 4.a) Synthesis headers
+					$synthesisIds = $this->options->getSynthesis() ?? [];
 					foreach ($synthesisIds as $synthesis)
 					{
-						if (
-							(microtime(true) - $processStartTime) >= self::TIME_LIMIT ||
-							(empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId()))
-						)
+						$key = 'header_' . $synthesis;
+
+						$customHeaderData      = $this->getData($synthesis, $sampleFiles);
+						$json['headers'][$key] = $customHeaderData['label'] ?? ('header_' . $synthesis);
+					}
+
+					// 4.b) Elements headers
+					$elementIds = $this->options->getElements() ?? [];
+					foreach ($elementIds as $elementId)
+					{
+						$data = $this->getData($elementId, $sampleFiles);
+
+						// evaluator column for evaluation tables
+						if (!empty($data['is_evaluation']) && !empty($data['db_table_name']))
 						{
-							// Store json file in export path
-							$jsonContent  = json_encode($json);
-							file_put_contents($jsonFilePath, $jsonContent);
-
-							$result->setStatus(true);
-							$result->setFilePath($exportPath . $jsonFileName);
-
-							return $result;
+							$evaluatorElementId = 'evaluator_' . $data['db_table_name'];
+							if (!array_key_exists($evaluatorElementId, $json['headers']))
+							{
+								$json['headers'][$evaluatorElementId] = Text::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
+							}
 						}
 
-						$key              = 'header_' . $synthesis;
-						$customHeaderData = $this->getData($synthesis, $files);
-
-						$json['headers'][$key] = $customHeaderData['label'];
-						foreach ($files as $file)
-						{
-							$json['files'][$file->getFnum()][$key] = $customHeaderData['data'][$file->getFnum()];
-						}
+						$json['headers'][$elementId] = $data['label'] ?? ('element_' . $elementId);
 					}
 
-					// Store json file in export path
-					$jsonContent = json_encode($json);
-					file_put_contents($jsonFilePath, $jsonContent);
+					// Save immediately after headers creation
+					file_put_contents($jsonFilePath, json_encode($json));
 				}
 
-				// Fill elements data
-				$elementIds    = $this->options->getElements() ?? [];
-				$totalElements = count($elementIds);
+				// ----------------------------
+				// 5) Process fnums by chunks of 100
+				// ----------------------------
+				$totalFnums = count($allFnums);
 
-				$last_element_key = 0;
-				$last_header      = $json['headers'] ? array_key_last($json['headers']) : null;
-				if ($last_header)
-				{
-					$last_element_id = $last_header;
-					if (str_starts_with($last_header, 'element_'))
-					{
-						$last_element_id = str_replace('element_', '', $last_header);
-					}
+				$synthesisIds = $this->options->getSynthesis() ?? [];
+				$elementIds   = $this->options->getElements() ?? [];
 
-					$last_element_key = array_search($last_element_id, $elementIds);
-					if ($last_element_key !== false)
-					{
-						$elementIds = array_slice($elementIds, $last_element_key + 1);
-					}
-				}
-
-				foreach ($elementIds as $key => $elementId)
+				while ($processed < $totalFnums)
 				{
 					if (
-						(microtime(true) - $processStartTime) >= self::TIME_LIMIT ||
-						(empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId()))
+						(empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId())) ||
+						($atLeastOneProcessed && (microtime(true) - $processStartTime) >= self::TIME_LIMIT)
 					)
 					{
-						// Store json file in export path
-						$jsonContent  = json_encode($json);
-						file_put_contents($jsonFilePath, $jsonContent);
+						// Save state EXACTLY where we are
+						$json['meta']['processed'] = $processed;
+						$json['meta']['phase'] = $json['meta']['phase'] ?? 'synthesis';
+						$json['meta']['synthesis_index'] = $json['meta']['synthesis_index'] ?? 0;
+						$json['meta']['element_index'] = $json['meta']['element_index'] ?? 0;
+
+						file_put_contents($jsonFilePath, json_encode($json));
 
 						$result->setStatus(true);
 						$result->setFilePath($exportPath . $jsonFileName);
 
+						$progress = $this->computeProgress($json);
+
+						// If progress is inferior due to calculation error or scope re-determination, keep old progress to avoid regressions in UI
+						if ($progress > $result->getProgress())
+						{
+							$result->setProgress($progress);
+						}
+
 						return $result;
 					}
 
-					$data = $this->getData($elementId, $files);
-
-					// If data is from evaluation check if we have a evaluator_db_table_name
-					if ($data['is_evaluation'] && !array_key_exists(('evaluator_' . $data['db_table_name']), $json['headers']))
+					$chunkFnums = array_slice($allFnums, $processed, $batchSize);
+					if (empty($chunkFnums))
 					{
-						$evaluatorElementId = 'evaluator_' . $data['db_table_name'];
+						break;
+					}
 
-						$json['headers'][$evaluatorElementId] = Text::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
-						foreach ($files as $file)
+					$files = $this->applicationFileRepository->getAll(['fnum' => $chunkFnums]);
+
+					foreach ($chunkFnums as $fnum)
+					{
+						if (!isset($json['files'][$fnum]))
 						{
-							$query->clear()
-								->select('CASE WHEN u.name IS NULL THEN "' . Text::_("COM_EMUNDUS_UNKNOWN_EVALUATOR") . '" ELSE u.name END AS name')
-								->from($db->quoteName($data['db_table_name'], 'd'))
-								->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('d.evaluator') . ' = ' . $db->quoteName('u.id'))
-								->where($db->quoteName('d.fnum') . ' = ' . $db->quote($file->getFnum()))
-								->order('d.evaluator ASC');
-							$db->setQuery($query);
-							$evaluatorsName = $db->loadColumn();
-
-							$json['files'][$file->getFnum()][$evaluatorElementId] = !empty($evaluatorsName) ? implode(', ', $evaluatorsName) : '';
+							$json['files'][$fnum] = [];
 						}
 					}
 
-					$json['headers'][$elementId] = $data['label'];
-					foreach ($files as $file)
+					// ----------------------------
+					// PHASE 1 : SYNTHESIS
+					// ----------------------------
+					if ($json['meta']['phase'] === 'synthesis')
 					{
-						$json['files'][$file->getFnum()][$elementId] = $data['data'][$file->getFnum()];
+						for ($i = (int) $json['meta']['synthesis_index']; $i < count($synthesisIds); $i++)
+						{
+							if (
+								(empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId())) ||
+								($atLeastOneProcessed && (microtime(true) - $processStartTime) >= self::TIME_LIMIT)
+							)
+							{
+								// Save state EXACTLY where we are
+								$json['meta']['processed'] = $processed;
+								$json['meta']['phase'] = 'synthesis';
+								$json['meta']['synthesis_index'] = $i;
+
+								file_put_contents($jsonFilePath, json_encode($json));
+
+								$result->setStatus(true);
+								$result->setFilePath($exportPath . $jsonFileName);
+
+								$progress = $this->computeProgress($json);
+								if ($progress > $result->getProgress())
+								{
+									$result->setProgress($progress);
+								}
+
+								return $result;
+							}
+
+							$synthesis = $synthesisIds[$i];
+							$key = 'header_' . $synthesis;
+
+							$customHeaderData = $this->getData($synthesis, $files);
+
+							foreach ($files as $file)
+							{
+								$fnum = $file->getFnum();
+								$json['files'][$fnum][$key] = $customHeaderData['data'][$fnum] ?? '';
+							}
+
+							// Move pointer forward
+							$json['meta']['synthesis_index'] = $i + 1;
+							$atLeastOneProcessed = true;
+						}
+
+						// Synthesis done for this chunk → switch to elements
+						$json['meta']['phase'] = 'elements';
+						$json['meta']['element_index'] = 0;
+						$json['meta']['synthesis_index'] = 0;
+
+						file_put_contents($jsonFilePath, json_encode($json));
 					}
 
-					$progress = round((($key + 1 + $last_element_key + 1) / $totalElements) * 100, 2);
-					$result->setProgress($progress);
+					// ----------------------------
+					// PHASE 2 : ELEMENTS
+					// ----------------------------
+					if ($json['meta']['phase'] === 'elements')
+					{
+						for ($i = (int) $json['meta']['element_index']; $i < count($elementIds); $i++)
+						{
+							if (
+								(empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId())) ||
+								($atLeastOneProcessed && (microtime(true) - $processStartTime) >= self::TIME_LIMIT)
+							)
+							{
+								// Save state EXACTLY where we are
+								$json['meta']['processed'] = $processed;
+								$json['meta']['phase'] = 'elements';
+								$json['meta']['element_index'] = $i;
+
+								file_put_contents($jsonFilePath, json_encode($json));
+
+								$result->setStatus(true);
+								$result->setFilePath($exportPath . $jsonFileName);
+
+								$progress = $this->computeProgress($json);
+								if ($progress > $result->getProgress())
+								{
+									$result->setProgress($progress);
+								}
+
+								return $result;
+							}
+
+							$elementId = $elementIds[$i];
+							$data = $this->getData($elementId, $files);
+
+							// evaluator column
+							if (!empty($data['is_evaluation']) && !empty($data['db_table_name']))
+							{
+								$evaluatorElementId = 'evaluator_' . $data['db_table_name'];
+
+								foreach ($files as $file)
+								{
+									$db = Factory::getContainer()->get('DatabaseDriver');
+									$query = $db->getQuery(true);
+
+									$query->clear()
+										->select('CASE WHEN u.name IS NULL THEN "' . Text::_("COM_EMUNDUS_UNKNOWN_EVALUATOR") . '" ELSE u.name END AS name')
+										->from($db->quoteName($data['db_table_name'], 'd'))
+										->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('d.evaluator') . ' = ' . $db->quoteName('u.id'))
+										->where($db->quoteName('d.fnum') . ' = ' . $db->quote($file->getFnum()))
+										->order('d.evaluator ASC');
+
+									$db->setQuery($query);
+									$evaluatorsName = $db->loadColumn();
+
+									$json['files'][$file->getFnum()][$evaluatorElementId] =
+										!empty($evaluatorsName) ? implode(', ', $evaluatorsName) : '';
+								}
+							}
+
+							foreach ($files as $file)
+							{
+								$fnum = $file->getFnum();
+								$json['files'][$fnum][$elementId] = $data['data'][$fnum] ?? '';
+							}
+
+							// Move pointer forward
+							$json['meta']['element_index'] = $i + 1;
+							$atLeastOneProcessed = true;
+						}
+
+						// Elements done for this chunk → chunk finished
+						$json['meta']['phase'] = 'synthesis';
+						$json['meta']['synthesis_index'] = 0;
+						$json['meta']['element_index'] = 0;
+
+						// Move to next chunk
+						$processed += count($chunkFnums);
+						$json['meta']['processed'] = $processed;
+
+						// Save after each chunk
+						file_put_contents($jsonFilePath, json_encode($json));
+
+						$progress = $this->computeProgress($json);
+						if ($progress > $result->getProgress())
+						{
+							$result->setProgress($progress);
+						}
+					}
 				}
 
+				// ----------------------------
+				// 6) Finalization when all fnums processed
+				// ----------------------------
 				$csvFile = $this->fillCsv($exportPath, $json);
 
 				$excelFilename = 'export';
@@ -358,6 +557,7 @@ class ExcelService extends Export implements ExportInterface
 
 				// Delete temporary csv and json file
 				unlink(JPATH_SITE . '/' . $csvFile);
+
 				if (!empty($this->exportEntity->getFilename()) && str_ends_with($this->exportEntity->getFilename(), '.json'))
 				{
 					$jsonFilePath = JPATH_SITE . '/' . $this->exportEntity->getFilename();
@@ -379,6 +579,57 @@ class ExcelService extends Export implements ExportInterface
 
 		return $result;
 	}
+
+	public function computeProgress(array $json): float
+	{
+		$meta = $json['meta'] ?? [];
+
+		$allFnums = $meta['fnums'] ?? [];
+		$totalFnums = count($allFnums);
+		$batchSize = (int) ($meta['batch_size'] ?? 100);
+
+		if ($totalFnums === 0)
+		{
+			return 0.0;
+		}
+
+		$processed = (int) ($meta['processed'] ?? 0);
+
+		// Nombre total de chunks à traiter
+		$totalChunks = ceil($totalFnums / $batchSize);
+
+		// Chunks entièrement terminés
+		// ceil() car processed est incrémenté de la taille réelle du chunk (qui peut être < batchSize pour le dernier)
+		$doneChunks = $batchSize > 0 ? min(ceil($processed / $batchSize), $totalChunks) : 0;
+
+		// Fraction d'avancement dans le chunk courant basée sur les colonnes traitées
+		$totalColumns = isset($json['headers']) ? count($json['headers']) : 0;
+		$chunkFraction = 0.0;
+
+		if ($totalColumns > 0 && $doneChunks < $totalChunks)
+		{
+			$phase = $meta['phase'] ?? 'synthesis';
+			$synthesisIndex = (int) ($meta['synthesis_index'] ?? 0);
+			$elementIndex = (int) ($meta['element_index'] ?? 0);
+			$synthesisTotal = count($this->options->getSynthesis() ?? []);
+
+			if ($phase === 'synthesis')
+			{
+				$doneColumnsInChunk = $synthesisIndex;
+			}
+			else
+			{
+				$doneColumnsInChunk = $synthesisTotal + $elementIndex;
+			}
+
+			$chunkFraction = min($doneColumnsInChunk / $totalColumns, 1.0);
+		}
+
+		$progress = (($doneChunks + $chunkFraction) / $totalChunks) * 100;
+
+		return round(min($progress, 100.0), 2, PHP_ROUND_HALF_UP);
+	}
+
 
 	public function fillCsv(string $exportPath, array $json): string
 	{

@@ -639,7 +639,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 			$query->select('DISTINCT ' . $this->alias . '.*')
 				->from($this->db->quoteName($this->tableName, $this->alias))
 				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = ' . $this->alias . '.id')
-				->where('ecc.fnum IN (' . implode(',', $fnums) . ')');
+				->where('ecc.fnum IN (' . implode(',', $this->db->quote($fnums)) . ')');
 
 			try
 			{
