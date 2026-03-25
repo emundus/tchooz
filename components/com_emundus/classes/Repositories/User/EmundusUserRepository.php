@@ -56,39 +56,29 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 			throw new \Exception('EmundusUserEntity must have a valid User associated to flush.');
 		}
 
-		try
-		{
+		$data = (object)[
+			'user_id'       => $emundusUserEntity->getUser()->id,
+			'firstname'     => $emundusUserEntity->getFirstname(),
+			'lastname'      => $emundusUserEntity->getLastname(),
+			'profile_picture' => $emundusUserEntity->getProfilePicture(),
+			'user_category' => $emundusUserEntity->getUserCategory()?->getId(),
+			'is_anonym'     => $emundusUserEntity->isAnonym() ? 1 : 0,
+			'birth_date'      => $emundusUserEntity->getBirthDate()?->format('d/m/Y')
+		];
+
+		try {
 			if (empty($emundusUserEntity->getId()))
 			{
-				$insert = (object) [
-					'user_id'         => $emundusUserEntity->getUser()->id,
-					'firstname'       => $emundusUserEntity->getFirstname(),
-					'lastname'        => $emundusUserEntity->getLastname(),
-					'profile_picture' => $emundusUserEntity->getProfilePicture(),
-					'user_category'   => $emundusUserEntity->getUserCategory()?->getId(),
-					'is_anonym'       => $emundusUserEntity->isAnonym() ? 1 : 0,
-					'birth_date'      => $emundusUserEntity->getBirthDate()?->format('d/m/Y')
-				];
-
-				if ($flushed = $this->db->insertObject($this->getTableName(self::class), $insert))
+				if ($flushed = $this->db->insertObject($this->tableName, $data))
 				{
 					$emundusUserEntity->setId((int) $this->db->insertid());
 				}
 			}
 			else
 			{
-				$update = (object) [
-					'id'              => $emundusUserEntity->getId(),
-					'user_id'         => $emundusUserEntity->getUser()->id,
-					'firstname'       => $emundusUserEntity->getFirstname(),
-					'lastname'        => $emundusUserEntity->getLastname(),
-					'profile_picture' => $emundusUserEntity->getProfilePicture(),
-					'user_category'   => $emundusUserEntity->getUserCategory()?->getId(),
-					'is_anonym'       => $emundusUserEntity->isAnonym() ? 1 : 0,
-					'birth_date'      => $emundusUserEntity->getBirthDate()?->format('d/m/Y')
-				];
+				$data->id = $emundusUserEntity->getId();
 
-				$flushed = $this->db->updateObject($this->getTableName(self::class), $update, 'id');
+				$flushed = $this->db->updateObject($this->tableName, $data, 'id');
 			}
 		}
 		catch (\Exception $e)
@@ -146,6 +136,24 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 		}
 
 		return $emundus_user_entity;
+	}
+
+	public function associateGroup(int $groupId, int $userId): bool
+	{
+		$associated = false;
+
+		try {
+			$data = (object) [
+				'group_id' => $groupId,
+				'user_id' => $userId
+			];
+
+			$associated = $this->db->insertObject('#__emundus_groups', $data);
+		} catch (\Exception $e) {
+			Log::add('Error associating user ' . $userId . ' to group ' . $groupId . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.emundususer');
+		}
+
+		return $associated;
 	}
 
 	/**
@@ -483,5 +491,31 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 		}
 
 		return $deleted;
+	}
+
+	/**
+	 * @param   int  $groupId
+	 *
+	 * @return array<EmundusUserEntity>
+	 */
+	public function getUsersByGroup(int $groupId): array
+	{
+		$users = [];
+
+		$query = $this->db->getQuery(true);
+
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->leftJoin($this->db->quoteName('#__emundus_groups', 'eg') . ' ON eg.user_id = '.$this->alias.'.user_id')
+			->where('eg.group_id = ' . $groupId);
+		$this->db->setQuery($query);
+		$users = $this->db->loadObjectList();
+
+		if(!empty($users))
+		{
+			$users = $this->factory->fromDbObjects($users, $this->withRelations);
+		}
+
+		return $users;
 	}
 }

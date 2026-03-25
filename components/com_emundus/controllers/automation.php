@@ -493,7 +493,7 @@ class EmundusControllerAutomation extends BaseController
 	{
 		$response = ['code' => 403, 'status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
 
-		if (EmundusHelperAccess::asAccessAction($this->automationActionId, 'c', $this->app->getIdentity()->id))
+		if (EmundusHelperAccess::asAccessAction($this->automationActionId, 'c', $this->app->getIdentity()->id) || EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
 		{
 			$contextPossessFile = $this->input->getInt('context_possess_file', 0);
 			$contextPossessFile = $contextPossessFile === 1;

@@ -5,6 +5,12 @@ namespace Unit\Component\Emundus\Class\Repositories\Synchronizer;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Synchronizer
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Synchronizer\SynchronizerRepository
+ */
 class SynchronizerRepositoryTest extends UnitTestCase
 {
 	private SynchronizerRepository $repository;

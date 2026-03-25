@@ -15,7 +15,7 @@ use Tchooz\Repositories\Contacts\AddressRepository;
 use Tchooz\Repositories\CountryRepository;
 
 /**
- * @package     Unit\Component\Emundus\Helper
+ * @package     Unit\Component\Emundus\Class\Repositories\Contacts
  *
  * @since       version 1.0.0
  * @covers      \Tchooz\Repositories\Contacts\AddressRepository

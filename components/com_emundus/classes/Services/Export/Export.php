@@ -136,6 +136,7 @@ class Export
 	 * @param   ValueFormatEnum               $format
 	 *
 	 * @return array
+	 * @throws \Exception
 	 */
 	public function getData(int|string $elementId, array $files, ValueFormatEnum $format = ValueFormatEnum::RAW): array
 	{
@@ -286,19 +287,33 @@ class Export
 				$result['label'] = Text::_($element->getLabel());
 				$result['db_table_name'] = $element->getDbTableName();
 
+
+				if (!str_starts_with($element->getDbTableName(), 'jos_emundus_evaluations_'))
+				{
+					$elementValue = $this->helperFabrik->getFabrikElementValues($elementSerialized, array_map(function ($file) {
+						return $file->getFnum();
+					}, $files), 0, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations);
+				}
+				else
+				{
+					$result['is_evaluation'] = true;
+
+					$query->clear()
+						->select($db->quoteName('fnum') . ', GROUP_CONCAT(' . $db->quoteName('id') . ') as id')
+						->from($db->quoteName($element->getDbTableName()))
+						->where($db->quoteName('fnum') . ' IN (' . implode(',', array_map([$db, 'quote'], array_map(function ($file) {
+							return $file->getFnum();
+						}, $files))) . ')')
+						->order('evaluator ASC')
+						->group('fnum');
+					$db->setQuery($query);
+					$rowIdsByFnum = $db->loadObjectList('fnum');
+				}
+
 				foreach ($files as $file)
 				{
-					if(str_starts_with($element->getDbTableName(), 'jos_emundus_evaluations_')) {
-						$result['is_evaluation'] = true;
-
-						// Get row(s) id
-						$query->clear()
-							->select($db->quoteName('id'))
-							->from($db->quoteName($element->getDbTableName()))
-							->where($db->quoteName('fnum') . ' = ' . $db->quote($file->getFnum()))
-							->order('evaluator ASC');
-						$db->setQuery($query);
-						$rowIds = $db->loadColumn();
+					if ($result['is_evaluation']) {
+						$rowIds = !empty($rowIdsByFnum[$file->getFnum()]) ? explode(',', $rowIdsByFnum[$file->getFnum()]->id) : [];
 
 						$evaluationValues = [];
 						foreach ($rowIds as $rowId)
@@ -312,8 +327,7 @@ class Export
 
 						$elementValue[$element->getId()][$file->getFnum()]['raw'] = true;
 						$elementValue[$element->getId()][$file->getFnum()]['val'] = implode(',', $evaluationValues);
-					}
-					else
+					} else if (empty($elementValue) || empty($elementValue[$element->getId()]))
 					{
 						$elementValue = $this->helperFabrik->getFabrikElementValue($elementSerialized, $file->getFnum(), 0, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations);
 					}

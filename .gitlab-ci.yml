@@ -13,6 +13,8 @@ stages:
   - test
   - release
   - deploy
+  - deploy-staging
+  - deploy-production
 
 include:
 - project: 'emundus/devops/ci-cd-templates'
@@ -62,6 +64,8 @@ build-db-to-test-job:
 
 phpunit-job:
   stage: test
+  when: manual
+  allow_failure: false
   image: emundus/tchooz-test-app:latest
   coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:
@@ -98,7 +102,7 @@ check-language-files-health:
 repo_scanning:
   stage: test
   image:
-    name: docker.io/aquasec/trivy:latest
+    name: ghcr.io/aquasecurity/trivy:latest
     entrypoint: [""]
   variables:
     TRIVY_NO_PROGRESS: "true"

@@ -18,6 +18,12 @@ use Tchooz\Entities\Payment\TransactionEntity;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Payment
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Payment\TransactionRepository
+ */
 class TransactionRepositoryTest extends UnitTestCase
 {
 	private $payment_workflow = [];

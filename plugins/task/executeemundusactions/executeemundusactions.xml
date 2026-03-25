@@ -15,5 +15,9 @@
         <folder>src</folder>
     </files>
     <languages>
+        <language tag="en-GB">language/en-GB/plg_task_executeemundusactions.ini</language>
+        <language tag="en-GB">language/en-GB/plg_task_executeemundusactions.sys.ini</language>
+        <language tag="fr-FR">language/fr-FR/plg_task_executeemundusactions.ini</language>
+        <language tag="fr-FR">language/fr-FR/plg_task_executeemundusactions.sys.ini</language>
     </languages>
 </extension>

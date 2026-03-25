@@ -9,6 +9,12 @@ use Tchooz\Entities\Automation\Actions\ActionGenerateLetter;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Entities\Automation\Actions
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Entities\Automation\Actions\ActionGenerateLetter
+ */
 class ActionGenerateLetterTest extends UnitTestCase
 {
 	public function setUp(): void

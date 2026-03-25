@@ -6,6 +6,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Repositories\Workflow\StepTypeRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Workflow
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Workflow\StepTypeRepository
+ */
 class StepTypeRepositoryTest extends UnitTestCase
 {
 	private StepTypeRepository $repository;

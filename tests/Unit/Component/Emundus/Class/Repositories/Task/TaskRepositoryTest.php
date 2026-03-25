@@ -16,9 +16,14 @@ use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Repositories\Task\TaskRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Task
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Task\TaskRepository
+ */
 class TaskRepositoryTest extends UnitTestCase
 {
-
 	private TaskRepository $repository;
 
 	private User $coordinatorUser;

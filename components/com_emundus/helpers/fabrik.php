@@ -38,6 +38,10 @@ use Tchooz\Repositories\Fabrik\FabrikRepository;
  */
 class EmundusHelperFabrik
 {
+	public function __construct()
+	{
+		Log::addLogger(['text_file' => 'com_emundus.fabrik.helper.php'], Log::ALL, ['com_emundus.fabrik.helper']);
+	}
 
 	static function updateParam(array $params, $attribute, $value): array
 	{
@@ -850,7 +854,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 		catch (Exception $e)
 		{
-			Log::add('component/com_emundus/helpers/fabrik | Cannot add option for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/helpers/fabrik | Cannot add option for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.fabrik.helper');
 
 			return false;
 		}
@@ -901,7 +905,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 		catch (Exception $e)
 		{
-			Log::add('component/com_emundus/helpers/fabrik | Cannot add notempty validation for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/helpers/fabrik | Cannot add notempty validation for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.fabrik.helper');
 
 			return false;
 		}
@@ -945,7 +949,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 		catch (Exception $e)
 		{
-			Log::add('component/com_emundus/helpers/fabrik | Cannot check fabrik joins for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/helpers/fabrik | Cannot check fabrik joins for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.fabrik.helper');
 
 			return false;
 		}
@@ -1014,7 +1018,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 			catch (Exception $e)
 			{
-				Log::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.fabrik.helper');
 			}
 		}
 
@@ -1041,7 +1045,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 		catch (Exception $e)
 		{
-			Log::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type ' . $object . ' ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type ' . $object . ' ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.fabrik.helper');
 		}
 
 		return $table_name;
@@ -1146,7 +1150,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				}
 				catch (Exception $e)
 				{
-					Log::add('EmundusHelperFabrik::getFormattedPhoneNumberValue Phone number lib returned an error for given phone number ' . $phone_number . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+					Log::add('EmundusHelperFabrik::getFormattedPhoneNumberValue Phone number lib returned an error for given phone number ' . $phone_number . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.fabrik.helper');
 				}
 			}
 		}
@@ -1166,7 +1170,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 			catch (Exception $e)
 			{
-				Log::add('EmundusHelperFabrik::getDbTableName Cannot get table name for form ' . $formid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				Log::add('EmundusHelperFabrik::getDbTableName Cannot get table name for form ' . $formid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.fabrik.helper');
 			}
 		}
 
@@ -1208,187 +1212,201 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			{
 				$params = json_decode($element->params, true);
 
-				switch ($element->plugin)
+				try
 				{
-					case 'date':
-					case 'jdate':
-						$date_format = self::getFabrikDateParam($element, 'date_form_format');
-						$local       = self::getFabrikDateParam($element, 'date_store_as_local') ? 1 : 0;
+					switch ($element->plugin)
+					{
+						case 'date':
+						case 'jdate':
+							$date_format = self::getFabrikDateParam($element, 'date_form_format');
+							$local       = self::getFabrikDateParam($element, 'date_store_as_local') ? 1 : 0;
 
-						$formatted_value = EmundusHelperDate::displayDate($raw_value, $date_format, $local);
-						break;
+							$formatted_value = EmundusHelperDate::displayDate($raw_value, $date_format, $local);
+							break;
 
-					case 'birthday':
-						preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $raw_value, $matches);
-						if (count($matches) != 0)
-						{
-							$format = $params['list_date_format'];
-
-							$d = DateTime::createFromFormat($format, $raw_value);
-							if ($d && $d->format($format) == $raw_value)
+						case 'birthday':
+							preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $raw_value, $matches);
+							if (count($matches) != 0)
 							{
-								$formatted_value = $html ? HTMLHelper::_('date', $raw_value, Text::_('DATE_FORMAT_LC')) : EmundusHelperDate::displayDate($raw_value);
-							}
-							else
-							{
-								$formatted_value = $html ? HTMLHelper::_('date', $raw_value, $format) : EmundusHelperDate::displayDate($raw_value, $format);
-							}
-						}
-						break;
+								$format = $params['list_date_format'];
 
-					case 'emundus_phonenumber':
-						$formatted_value = self::getFormattedPhoneNumberValue($raw_value);
-						break;
-
-					case 'databasejoin':
-						$select = $params['join_val_column'];
-						if (!empty($params['join_val_column_concat']))
-						{
-							$select = 'CONCAT(' . $params['join_val_column_concat'] . ')';
-							$select = preg_replace('#{thistable}#', 'jd', $select);
-							$select = preg_replace('#{shortlang}#', substr($app->getLanguage()->getTag(), 0, 2), $select);
-							if (!empty($uid))
-							{
-								$select = preg_replace('#{my->id}#', $uid, $select);
-							}
-						}
-
-						$query->clear()
-							->select($select)
-							->from($db->quoteName($params['join_db_name'], 'jd'));
-
-						if (($params['database_join_display_type'] == 'checkbox' || $params['database_join_display_type'] == 'multilist') && is_array($raw_value))
-						{
-							$query->where($db->quoteName('jd.' . $params['join_key_column']) . ' IN (' . implode(',', $raw_value) . ')');
-							$db->setQuery($query);
-							$res = $db->loadColumn();
-
-							$formatted_value = $html ? "<ul><li>" . implode("</li><li>", $res) . "</li></ul>" : implode(',', $res);
-						}
-						elseif (!is_array($raw_value))
-						{
-							$query->where($db->quoteName('jd.' . $params['join_key_column']) . ' = ' . $db->quote($raw_value));
-							$db->setQuery($query);
-
-							$formatted_value = $db->loadResult();
-						}
-
-						break;
-
-					case 'cascadingdropdown':
-						$cascadingdropdown_id    = $params['cascadingdropdown_id'];
-						$cascadingdropdown_label = Text::_($params['cascadingdropdown_label']);
-
-						$r1     = explode('___', $cascadingdropdown_id);
-						$r2     = explode('___', $cascadingdropdown_label);
-						$select = !empty($params['cascadingdropdown_label_concat'] ? "CONCAT(" . $params['cascadingdropdown_label_concat'] . ")" : $r2[1]);
-						$from   = $r2[0];
-						$where  = $r1[1] . '=' . $db->Quote($raw_value);
-						$query  = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
-						$query  = preg_replace('#{thistable}#', $from, $query);
-						$query  = preg_replace('#{shortlang}#', substr($app->getLanguage()->getTag(), 0, 2), $query);
-						if (!empty($uid))
-						{
-							$query = preg_replace('#{my->id}#', $uid, $query);
-						}
-
-						$db->setQuery($query);
-						$ret = $db->loadResult();
-						if (empty($ret))
-						{
-							$ret = $raw_value;
-						}
-						$formatted_value = Text::_($ret);
-						break;
-
-					case 'dropdown':
-					case 'radiobutton':
-						if (isset($params['multiple']) && $params['multiple'] == 1)
-						{
-							$data = json_decode($raw_value);
-							foreach ($data as $key => $value)
-							{
-								$index = array_search($value, $params['sub_options']['sub_values']);
-								if ($index !== false)
+								$d = DateTime::createFromFormat($format, $raw_value);
+								if ($d && $d->format($format) == $raw_value)
 								{
-									$data[$key] = Text::_($params['sub_options']['sub_labels'][$index]);
-								}
-							}
-							$formatted_value = $html ? "<ul><li>" . implode("</li><li>", $data) . "</li></ul>" : implode(',', $data);
-						}
-						else
-						{
-							$index = array_search($raw_value, $params['sub_options']['sub_values']);
-
-							if ($index !== false)
-							{
-								if ($raw_value == '0')
-								{
-									$formatted_value = '';
+									$formatted_value = $html ? HTMLHelper::_('date', $raw_value, Text::_('DATE_FORMAT_LC')) : EmundusHelperDate::displayDate($raw_value);
 								}
 								else
 								{
-									$formatted_value = Text::_($params['sub_options']['sub_labels'][$index]);
+									$formatted_value = $html ? HTMLHelper::_('date', $raw_value, $format) : EmundusHelperDate::displayDate($raw_value, $format);
 								}
 							}
-						}
-						break;
+							break;
 
-					case 'checkbox':
-						$elm  = array();
-						$data = json_decode($raw_value, true);
+						case 'emundus_phonenumber':
+							$formatted_value = self::getFormattedPhoneNumberValue($raw_value);
+							break;
 
-						if (!empty($data))
-						{
-							$index = array_intersect($data, $params['sub_options']['sub_values']);
-						}
-						else
-						{
-							$index = $params['sub_options']['sub_values'];
-						}
+						case 'databasejoin':
+							$select = $params['join_val_column'];
+							if (!empty($params['join_val_column_concat']))
+							{
+								$select = 'CONCAT(' . $params['join_val_column_concat'] . ')';
+								$select = preg_replace('#{thistable}#', 'jd', $select);
+								$select = preg_replace('#{shortlang}#', substr($app->getLanguage()->getTag(), 0, 2), $select);
+								if (!empty($uid))
+								{
+									$select = preg_replace('#{my->id}#', $uid, $select);
+								}
+							}
 
-						foreach ($index as $sub_value)
-						{
-							$key   = array_search($sub_value, $params['sub_options']['sub_values']);
-							$elm[] = Text::_($params['sub_options']['sub_labels'][$key]);
-						}
+							$query->clear()
+								->select($select)
+								->from($db->quoteName($params['join_db_name'], 'jd'));
 
-						$formatted_value = $html ? "<ul>" . implode("</li><li>", $elm) . "</ul>" : implode(',', $elm);
-						break;
+							if (($params['database_join_display_type'] == 'checkbox' || $params['database_join_display_type'] == 'multilist') && is_array($raw_value))
+							{
+								if (!empty($raw_value))
+								{
+									$query->where($db->quoteName('jd.' . $params['join_key_column']) . ' IN (' . implode(',', $raw_value) . ')');
+									$db->setQuery($query);
+									$res = $db->loadColumn();
+								}
+								else
+								{
+									$res = [];
+								}
 
-					case 'yesno':
-						$formatted_value = $raw_value == 1 ? Text::_('JYES') : Text::_('JNO');
-						break;
+								$formatted_value = $html ? "<ul><li>" . implode("</li><li>", $res) . "</li></ul>" : implode(',', $res);
+							}
+							elseif (!is_array($raw_value))
+							{
+								$query->where($db->quoteName('jd.' . $params['join_key_column']) . ' = ' . $db->quote($raw_value));
+								$db->setQuery($query);
 
-					case 'textarea':
-						$formatted_value = nl2br($raw_value);
-						break;
+								$formatted_value = $db->loadResult();
+							}
 
-					case 'field':
-						if ($params['password'] == 1)
-						{
-							$formatted_value = '******';
-						}
-						elseif ($params['password'] == 3 && $html)
-						{
-							$formatted_value = '<a href="mailto:' . $raw_value . '" title="' . Text::_($element->label) . '">' . $raw_value . '</a>';
-						}
-						elseif ($params['password'] == 5 && $html)
-						{
-							$formatted_value = '<a href="' . $raw_value . '" target="_blank" title="' . Text::_($element->label) . '">' . $raw_value . '</a>';
-						}
-						break;
-					case 'internalid':
-						$formatted_value = '';
-						break;
-					case 'fileupload':
-						$live_site = Factory::getApplication()->get('live_site', Uri::root());
-						$live_site = rtrim($live_site, '/');
-						$formatted_value = $live_site.$raw_value;
-						break;
+							break;
 
-					default:
-						break;
+						case 'cascadingdropdown':
+							$cascadingdropdown_id    = $params['cascadingdropdown_id'];
+							$cascadingdropdown_label = Text::_($params['cascadingdropdown_label']);
+
+							$r1     = explode('___', $cascadingdropdown_id);
+							$r2     = explode('___', $cascadingdropdown_label);
+							$select = !empty($params['cascadingdropdown_label_concat'] ? "CONCAT(" . $params['cascadingdropdown_label_concat'] . ")" : $r2[1]);
+							$from   = $r2[0];
+							$where  = $r1[1] . '=' . $db->Quote($raw_value);
+							$query  = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
+							$query  = preg_replace('#{thistable}#', $from, $query);
+							$query  = preg_replace('#{shortlang}#', substr($app->getLanguage()->getTag(), 0, 2), $query);
+							if (!empty($uid))
+							{
+								$query = preg_replace('#{my->id}#', $uid, $query);
+							}
+
+							$db->setQuery($query);
+							$ret = $db->loadResult();
+							if (empty($ret))
+							{
+								$ret = $raw_value;
+							}
+							$formatted_value = Text::_($ret);
+							break;
+
+						case 'dropdown':
+						case 'radiobutton':
+							if (isset($params['multiple']) && $params['multiple'] == 1)
+							{
+								$data = json_decode($raw_value);
+								foreach ($data as $key => $value)
+								{
+									$index = array_search($value, $params['sub_options']['sub_values']);
+									if ($index !== false)
+									{
+										$data[$key] = Text::_($params['sub_options']['sub_labels'][$index]);
+									}
+								}
+								$formatted_value = $html ? "<ul><li>" . implode("</li><li>", $data) . "</li></ul>" : implode(',', $data);
+							}
+							else
+							{
+								$index = array_search($raw_value, $params['sub_options']['sub_values']);
+
+								if ($index !== false)
+								{
+									if ($raw_value == '0')
+									{
+										$formatted_value = '';
+									}
+									else
+									{
+										$formatted_value = Text::_($params['sub_options']['sub_labels'][$index]);
+									}
+								}
+							}
+							break;
+
+						case 'checkbox':
+							$elm  = array();
+							$data = json_decode($raw_value, true);
+
+							if (!empty($data))
+							{
+								$index = array_intersect($data, $params['sub_options']['sub_values']);
+							}
+							else
+							{
+								$index = $params['sub_options']['sub_values'];
+							}
+
+							foreach ($index as $sub_value)
+							{
+								$key   = array_search($sub_value, $params['sub_options']['sub_values']);
+								$elm[] = Text::_($params['sub_options']['sub_labels'][$key]);
+							}
+
+							$formatted_value = $html ? "<ul>" . implode("</li><li>", $elm) . "</ul>" : implode(',', $elm);
+							break;
+
+						case 'yesno':
+							$formatted_value = $raw_value == 1 ? Text::_('JYES') : Text::_('JNO');
+							break;
+
+						case 'textarea':
+							$formatted_value = nl2br($raw_value);
+							break;
+
+						case 'field':
+							if ($params['password'] == 1)
+							{
+								$formatted_value = '******';
+							}
+							elseif ($params['password'] == 3 && $html)
+							{
+								$formatted_value = '<a href="mailto:' . $raw_value . '" title="' . Text::_($element->label) . '">' . $raw_value . '</a>';
+							}
+							elseif ($params['password'] == 5 && $html)
+							{
+								$formatted_value = '<a href="' . $raw_value . '" target="_blank" title="' . Text::_($element->label) . '">' . $raw_value . '</a>';
+							}
+							break;
+						case 'internalid':
+							$formatted_value = '';
+							break;
+						case 'fileupload':
+							$live_site       = Factory::getApplication()->get('live_site', Uri::root());
+							$live_site       = rtrim($live_site, '/');
+							$formatted_value = $live_site . $raw_value;
+							break;
+
+						default:
+							break;
+					}
+				}
+				catch (Exception $e)
+				{
+					Log::add('Failed to format element ' . $element->id . ' value : ' . $e->getMessage(), Log::ERROR, 'com_emundus.fabrik.helper');
 				}
 			}
 		}
@@ -1815,7 +1833,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				}
 				catch (Exception $e)
 				{
-					Log::add('component/com_emundus/helpers/fabrik | Cannot retrive elements by alias : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+					Log::add('component/com_emundus/helpers/fabrik | Cannot retrive elements by alias : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.fabrik.helper');
 				}
 			}
 		}
@@ -1852,7 +1870,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 			catch (Exception $e)
 			{
-				Log::add('component/com_emundus/helpers/fabrik | Cannot retrive elements by alias : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/helpers/fabrik | Cannot retrive elements by alias : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.fabrik.helper');
 			}
 		}
 
@@ -2015,7 +2033,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				}
 				catch (Exception $e)
 				{
-					Log::add('component/com_emundus/helpers/fabrik | Cannot retrive value by alias : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+					Log::add('component/com_emundus/helpers/fabrik | Cannot retrive value by alias : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.fabrik.helper');
 				}
 
 				if (empty($values) && $load_option == 'result') {
@@ -2057,7 +2075,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 		catch (Exception $e)
 		{
-			Log::add('component/com_emundus/helpers/fabrik | Cannot get fabrik joins : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/helpers/fabrik | Cannot get fabrik joins : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.fabrik.helper');
 		}
 
 		return $fabrik_joins;
@@ -2121,7 +2139,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 		catch (Exception $e)
 		{
-			Log::add('component/com_emundus/helpers/fabrik | Cannot check fabrik joins for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/helpers/fabrik | Cannot check fabrik joins for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.fabrik.helper');
 		}
 
 		return $joined;
@@ -2381,7 +2399,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 			catch (Exception $e)
 			{
-				Log::add('component/com_emundus/helpers/fabrik | Cannot get all fabrik aliases : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/helpers/fabrik | Cannot get all fabrik aliases : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.fabrik.helper');
 			}
 		}
 
@@ -2625,7 +2643,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 		catch (Exception $e)
 		{
-			Log::add('component/com_emundus/helpers/fabrik | Cannot get all fabrik aliases : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/helpers/fabrik | Cannot get all fabrik aliases : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.fabrik.helper');
 		}
 
 		return $datas;
@@ -2963,7 +2981,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	}
 
 	/**
-	 * todo: check inconstency between raw and val, sometimes, raw is null and val appears as empty string
+	 * @deprecated Use getFabrikElementValues instead with single fnum in array
 	 * @param   array            $fabrik_element
 	 * @param   string|null      $fnum
 	 * @param   int              $row_id
@@ -2985,31 +3003,51 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		array $translations = []
 	): array
 	{
-		$isRaw = $return === ValueFormatEnum::RAW;
+		$fnums = !empty($fnum) ? [$fnum] : [];
 
-		$value = [
-			'raw' => '',
-			'val' => '',
-		];
+		return $this->getFabrikElementValues($fabrik_element, $fnums, $row_id, $return, $user_id, $exportMode, $translations);
+	}
+
+	/**
+	 * todo: check inconstency between raw and val, sometimes, raw is null and val appears as empty string
+	 * @param   array            $fabrik_element
+	 * @param   array            $fnums
+	 * @param   int              $row_id
+	 * @param   ValueFormatEnum  $return
+	 * @param   int              $user_id
+	 * @param   ExportModeEnum   $exportMode
+	 * @param   array            $translations
+	 *
+	 * @return array
+	 * @throws Exception
+	 */
+	public function getFabrikElementValues(
+		array           $fabrik_element,
+	    array           $fnums = [],
+	    int             $row_id = 0,
+	    ValueFormatEnum $return = ValueFormatEnum::FORMATTED,
+	    int             $user_id = 0,
+	    ExportModeEnum  $exportMode = ExportModeEnum::GROUP_CONCAT,
+	    array $translations = [])
+	: array
+	{
+		$fabrikElementValues = [];
 
 		if (empty($fabrik_element))
 		{
-			return $value;
+			return $fabrikElementValues;
 		}
 
 		$plugin = ElementPluginEnum::tryFromString($fabrik_element['plugin']);
 		if ($plugin === null || empty($fabrik_element['params']) || empty($fabrik_element['group_params']))
 		{
-			return $value;
+			return $fabrikElementValues;
 		}
 
+		$isRaw = $return === ValueFormatEnum::RAW;
 		$params      = json_decode($fabrik_element['params']);
 		$groupParams = json_decode($fabrik_element['group_params']);
-
 		$fabrikRepository = new FabrikRepository();
-		$encrypted_tables = $fabrikRepository->getEncryptedTables();
-
-		$fnums = !empty($fnum) ? [$fnum] : null;
 
 		$date_format = null;
 		if ($plugin->isDateField())
@@ -3021,26 +3059,28 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 		}
 
+		$encrypted_tables = $fabrikRepository->getEncryptedTables();
+
 		$isRepeatGroup = !empty($groupParams) && isset($groupParams->repeat_group_button) && $groupParams->repeat_group_button == 1;
 
 		if (in_array($plugin, [ElementPluginEnum::DATABASEJOIN, ElementPluginEnum::CASCADINGDROPDOWN]) || $isRepeatGroup)
 		{
-			$value[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id, $exportMode);
+			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id, $exportMode);
 		}
 		else
 		{
-			$value[$fabrik_element['id']] = $this->getFabrikValue($fnums, $fabrik_element['db_table_name'], $fabrik_element['name'], $date_format, $row_id, $return, $user_id);
+			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValue($fnums, $fabrik_element['db_table_name'], $fabrik_element['name'], $date_format, $row_id, $return, $user_id);
 		}
 
 		// Transform value if needed
 		$transformer = TransformerFactory::make($plugin->value, (array)$params, (array)$groupParams, $translations);
-		foreach ($value[$fabrik_element['id']] as $fnumKey => $val)
+		foreach ($fabrikElementValues[$fabrik_element['id']] as $fnumKey => $val)
 		{
-			$value[$fabrik_element['id']][$fnumKey]['raw'] = $val['raw'] ?? $val['val'];
+			$fabrikElementValues[$fabrik_element['id']][$fnumKey]['raw'] = $val['raw'] ?? $val['val'];
 
-			if(in_array($fabrik_element['db_table_name'], $encrypted_tables))
+			if (in_array($fabrik_element['db_table_name'], $encrypted_tables))
 			{
-				$decoded_value = json_decode($value[$fabrik_element['id']][$fnumKey]['raw'], true);
+				$decoded_value = json_decode($fabrikElementValues[$fabrik_element['id']][$fnumKey]['raw'], true);
 
 				if (!empty($decoded_value))
 				{
@@ -3050,32 +3090,32 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 						$all_decrypted_data[] = \EmundusHelperFabrik::decryptDatas($decoded_sub_value);
 					}
 
-					$value[$fabrik_element['id']][$fnumKey]['raw'] = '[' . implode(',', $all_decrypted_data) . ']';
+					$fabrikElementValues[$fabrik_element['id']][$fnumKey]['raw'] = '[' . implode(',', $all_decrypted_data) . ']';
 				}
 				else
 				{
-					$value[$fabrik_element['id']][$fnumKey]['raw'] = self::decryptDatas($value[$fabrik_element['id']][$fnumKey]['raw']);
+					$fabrikElementValues[$fabrik_element['id']][$fnumKey]['raw'] = self::decryptDatas($fabrikElementValues[$fabrik_element['id']][$fnumKey]['raw']);
 				}
 
-				$value[$fabrik_element['id']][$fnumKey]['val'] = $value[$fabrik_element['id']][$fnumKey]['raw'];
+				$fabrikElementValues[$fabrik_element['id']][$fnumKey]['val'] = $fabrikElementValues[$fabrik_element['id']][$fnumKey]['raw'];
 			}
 			else {
-				$value[$fabrik_element['id']][$fnumKey]['val'] = $val['val'];
+				$fabrikElementValues[$fabrik_element['id']][$fnumKey]['val'] = $val['val'];
 			}
 
 			if ($return === ValueFormatEnum::FORMATTED || $return === ValueFormatEnum::BOTH)
 			{
 				$formatted_values = [];
 
-				if (!is_array($value[$fabrik_element['id']][$fnumKey]['val']))
+				if (!is_array($fabrikElementValues[$fabrik_element['id']][$fnumKey]['val']))
 				{
-					$values = [$value[$fabrik_element['id']][$fnumKey]['val']];
+					$values = [$fabrikElementValues[$fabrik_element['id']][$fnumKey]['val']];
 
 					if ($isRepeatGroup) {
-						$values = explode(',', $value[$fabrik_element['id']][$fnumKey]['val']);
+						$values = explode(',', $fabrikElementValues[$fabrik_element['id']][$fnumKey]['val']);
 					}
 				} else {
-					$values = $value[$fabrik_element['id']][$fnumKey]['val'];
+					$values = $fabrikElementValues[$fabrik_element['id']][$fnumKey]['val'];
 				}
 				foreach ($values as $_value)
 				{
@@ -3092,35 +3132,39 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				if ($isRepeatGroup)
 				{
 					if ($exportMode !== ExportModeEnum::LEFT_JOIN) {
-						$value[$fabrik_element['id']][$fnumKey]['val'] = implode(', ', $formatted_values);
+						$fabrikElementValues[$fabrik_element['id']][$fnumKey]['val'] = implode(', ', $formatted_values);
 					} else {
-						$value[$fabrik_element['id']][$fnumKey]['val'] = $formatted_values;
+						$fabrikElementValues[$fabrik_element['id']][$fnumKey]['val'] = $formatted_values;
 					}
 				}
 				else
 				{
-					$value[$fabrik_element['id']][$fnumKey]['val'] = $formatted_values[0] ?? '';
+					$fabrikElementValues[$fabrik_element['id']][$fnumKey]['val'] = $formatted_values[0] ?? '';
 				}
 			}
 		}
 		//
 
 
-		if (!empty($fnum)) {
-			if (!isset($value[$fabrik_element['id']][$fnum]['complex_data']))
+		if (!empty($fnums)) {
+			foreach($fnums as $fnum)
 			{
-				$value[$fabrik_element['id']][$fnum]['complex_data'] = false;
+				if (!isset($fabrikElementValues[$fabrik_element['id']][$fnum]['complex_data']))
+				{
+					$fabrikElementValues[$fabrik_element['id']][$fnum]['complex_data'] = false;
+				}
 			}
 		}
 		else
 		{
-			if (!isset($value[$fabrik_element['id']][$user_id]['complex_data']))
+			if (!isset($fabrikElementValues[$fabrik_element['id']][$user_id]['complex_data']))
 			{
-				$value[$fabrik_element['id']][$user_id]['complex_data'] = false;
+				$fabrikElementValues[$fabrik_element['id']][$user_id]['complex_data'] = false;
 			}
 		}
 
-		return $value;
+
+		return $fabrikElementValues;
 	}
 
 	public function getFabrikValueRepeat(
@@ -3485,6 +3529,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 		catch (Exception $e)
 		{
+			Log::add('Failed to get fabrik value repeat ' . $e->getMessage() . ' query ' . $query->__toString(), Log::ERROR, 'com_emundus.fabrik.helper');
 			throw $e;
 		}
 	}
@@ -3602,6 +3647,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 			catch (Exception $e)
 			{
+				Log::add('Failed to get Fabrik value for ' . $name . ', error ' . $e->getMessage() . ' query : ' . $query->__toString(), Log::ERROR, 'com_emundus.fabrik.helper');
 				throw $e;
 			}
 		}
@@ -3668,13 +3714,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				}
 				catch (Exception $e)
 				{
+					Log::add('Failed to get Fabrik value for ' . $name . ' and table ' . $tableName . ', error ' . $e->getMessage() . ' query : ' . $query->__toString(), Log::ERROR);
 					throw $e;
 				}
 			}
 			else
 			{
 				$user_column_existing = $this->tableHasColumn($tableName, 'user_id');
-
 
 				if (!empty($user_column_existing))
 				{
@@ -3736,6 +3782,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					}
 					catch (Exception $e)
 					{
+						Log::add('Failed to get fabrik value from user id column ' . $e->getMessage(), Log::ERROR, 'com_emundus.fabrik.helper');
 						throw $e;
 					}
 				}
@@ -3796,7 +3843,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 			catch (Exception $e)
 			{
-				Log::add('Error getting list by form id: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				Log::add('Error getting list by form id: ' . $e->getMessage(), Log::ERROR, 'com_emundus.fabrik.helper');
 			}
 		}
 

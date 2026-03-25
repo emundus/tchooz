@@ -15,6 +15,12 @@ use Tchooz\Enums\Mapping\MappingTransformersEnum;
 use Tchooz\Services\Automation\ConditionRegistry;
 use Tchooz\Transformers\Mapping\ExtractValueAtIndexTransformer;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Entities\Automation
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Entities\Automation\ConditionEntity
+ */
 class ConditionEntityTest extends UnitTestCase
 {
 	/**

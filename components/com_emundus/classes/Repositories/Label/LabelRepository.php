@@ -130,17 +130,30 @@ class LabelRepository extends EmundusRepository implements RepositoryInterface
 	{
 		$results = [];
 
-		$query = $this->db->getQuery(true);
+		$cacheKey = 'labels_fnum_' . $fnum;
+		if ($this->cache->contains($cacheKey)) {
+			$dbObjects = $this->cache->get($cacheKey);
+		}
 
-		$query->select($this->columns)
-			->from($this->db->qn('#__emundus_tag_assoc','eta'))
-			->leftJoin($this->db->qn($this->tableName, $this->alias) . ' ON ' . $this->db->qn('eta.id_tag') . ' = ' . $this->db->qn($this->alias . '.id'))
-			->where($this->db->qn('eta.fnum') . ' = :fnum')
-			->bind(':fnum', $fnum, ParameterType::STRING);
-		$this->db->setQuery($query);
-		$dbObjects = $this->db->loadObjectList();
+		if(empty($dbObjects))
+		{
+			$query = $this->db->getQuery(true);
 
-		if ($dbObjects)
+			$query->select($this->columns)
+				->from($this->db->qn('#__emundus_tag_assoc', 'eta'))
+				->leftJoin($this->db->qn($this->tableName, $this->alias) . ' ON ' . $this->db->qn('eta.id_tag') . ' = ' . $this->db->qn($this->alias . '.id'))
+				->where($this->db->qn('eta.fnum') . ' = :fnum')
+				->bind(':fnum', $fnum, ParameterType::STRING);
+			$this->db->setQuery($query);
+			$dbObjects = $this->db->loadObjectList();
+
+			if(!empty($dbObjects))
+			{
+				$this->cache->store($dbObjects, $cacheKey);
+			}
+		}
+
+		if (!empty($dbObjects))
 		{
 			$results = $this->factory->fromDbObjects($dbObjects, $this->withRelations, $this->exceptRelations, $this->db);
 		}

@@ -114,7 +114,7 @@ export default {
 				if (group.isRepeatable) {
 					group.rows.forEach((row, rowIndex) => {
 						row.parameters.forEach((parameter) => {
-							if (parameter.displayRules.length > 0) {
+							if (parameter.displayRules && parameter.displayRules.length > 0) {
 								let everyRulesSucceed = parameter.displayRules.every((rule) => {
 									const fieldValue = this.getRowParameterValue(group, rowIndex, rule.field);
 
@@ -155,7 +155,7 @@ export default {
 					});
 				} else {
 					group.parameters.forEach((parameter) => {
-						if (parameter.displayRules.length > 0) {
+						if (parameter.displayRules && parameter.displayRules.length > 0) {
 							let everyRulesSucceed = parameter.displayRules.every((rule) => {
 								const ruleParameter = this.findParameterByName(rule.field);
 
@@ -209,6 +209,7 @@ export default {
 			handler() {
 				this.reloadParametersRules();
 			},
+			immediate: true,
 		},
 	},
 };
@@ -314,6 +315,9 @@ export default {
 				<div class="tw-flex tw-w-full tw-flex-col tw-gap-4">
 					<Parameter
 						v-for="(field, index) in group.parameters"
+						v-show="field.displayed !== false"
+						:help-text-type="group.helpTextType ? group.helpTextType : 'icon'"
+						:ref="'field_' + field.param"
 						:key="field.param + '-' + field.reload"
 						:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
 						:parameter-object="field"
