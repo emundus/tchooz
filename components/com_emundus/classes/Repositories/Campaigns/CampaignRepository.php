@@ -358,6 +358,10 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	public function getCampaignMoreElements(): array
 	{
 		$elements = [];
+		if(!$this->withRelations)
+		{
+			return $elements;
+		}
 
 		$form_id = $this->getCampaignMoreFormId();
 
@@ -396,52 +400,55 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 		try
 		{
-			$cache_key = 'joins_jos_emundus_setup_campaigns_more';
-			if ($this->cache->contains($cache_key))
-			{
-				$join_tables = $this->cache->get($cache_key);
-			}
-
-			if (empty($join_tables))
-			{
-				$query->clear()
-					->select('element_id, table_join, table_key')
-					->from($this->db->quoteName('#__fabrik_joins'))
-					->where($this->db->quoteName('join_from_table') . ' = ' . $this->db->quote('jos_emundus_setup_campaigns_more'));
-				$this->db->setQuery($query);
-				$join_tables = $this->db->loadAssocList('element_id');
-
-				$this->cache->store($join_tables, $cache_key);
-			}
-
 			if (empty($elements))
 			{
 				$elements = $this->getCampaignMoreElements();
 			}
 
-			$query->clear()
-				->select('*')
-				->from($this->db->quoteName('#__emundus_setup_campaigns_more', 't'))
-				->where('t.campaign_id = ' . $this->db->quote($campaign_id));
-			$this->db->setQuery($query);
-			$more_data = $this->db->loadAssoc();
-
-			foreach ($elements as $key => $element)
+			if(!empty($elements))
 			{
-				if (in_array($element['id'], array_keys($join_tables)))
+				$query->clear()
+					->select('*')
+					->from($this->db->quoteName('#__emundus_setup_campaigns_more', 't'))
+					->where('t.campaign_id = ' . $this->db->quote($campaign_id));
+				$this->db->setQuery($query);
+				$more_data = $this->db->loadAssoc();
+
+				$cache_key = 'joins_jos_emundus_setup_campaigns_more';
+				if ($this->cache->contains($cache_key))
+				{
+					$join_tables = $this->cache->get($cache_key);
+				}
+
+				if (empty($join_tables))
 				{
 					$query->clear()
-						->select($this->db->quoteName($join_tables[$element['id']]['table_key']))
-						->from($this->db->quoteName($join_tables[$element['id']]['table_join']))
-						->where($this->db->quoteName('parent_id') . ' = :id')
-						->bind(':id', $more_data['id'], ParameterType::INTEGER);
+						->select('element_id, table_join, table_key')
+						->from($this->db->quoteName('#__fabrik_joins'))
+						->where($this->db->quoteName('join_from_table') . ' = ' . $this->db->quote('jos_emundus_setup_campaigns_more'));
 					$this->db->setQuery($query);
-					$values = $this->db->loadColumn();
+					$join_tables = $this->db->loadAssocList('element_id');
 
-					$more_data[$element['name']] = [];
-					foreach ($values as $value)
+					$this->cache->store($join_tables, $cache_key);
+				}
+
+				foreach ($elements as $key => $element)
+				{
+					if (in_array($element['id'], array_keys($join_tables)))
 					{
-						$more_data[$element['name']][] = $value;
+						$query->clear()
+							->select($this->db->quoteName($join_tables[$element['id']]['table_key']))
+							->from($this->db->quoteName($join_tables[$element['id']]['table_join']))
+							->where($this->db->quoteName('parent_id') . ' = :id')
+							->bind(':id', $more_data['id'], ParameterType::INTEGER);
+						$this->db->setQuery($query);
+						$values = $this->db->loadColumn();
+
+						$more_data[$element['name']] = [];
+						foreach ($values as $value)
+						{
+							$more_data[$element['name']][] = $value;
+						}
 					}
 				}
 			}
@@ -555,7 +562,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		{
 			$campaign['more_data'] = $this->getMoreData((int) $campaign['id'], $elements);
 
-			$campaign_entity = $this->factory->fromDbObject($campaign, $this->withRelations, [], null, $elements);
+			$campaign_entity = $this->factory->fromDbObject($campaign, $this->withRelations, $this->exceptRelations, $this->db, $elements);
 		}
 
 		return $campaign_entity;

@@ -21,6 +21,7 @@ use Tchooz\Repositories\ApplicationFile\StatusRepository;
  *
  * @since       version 1.0.0
  * @covers      \Tchooz\Repositories\ApplicationFile\StatusRepository
+ * @covers      \Tchooz\Factories\ApplicationFile\StatusFactory
  */
 class StatusRepositoryTest extends UnitTestCase
 {
@@ -46,6 +47,8 @@ class StatusRepositoryTest extends UnitTestCase
 
 	/**
 	 * @covers \Tchooz\Repositories\ApplicationFile\StatusRepository::getAll
+	 * @covers \Tchooz\Factories\ApplicationFile\StatusFactory::fromDbObjects
+	 * @covers \Tchooz\Factories\ApplicationFile\StatusFactory::buildEntity
 	 */
 	public function testGetAllReturnsArray(): void
 	{

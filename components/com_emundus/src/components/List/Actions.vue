@@ -170,7 +170,7 @@ export default {
 							@click="onClickAction(action)"
 							class="tw-px-2 tw-py-1.5"
 							:class="{
-								'tw-cursor-not-allowed tw-text-neutral-500':
+								'tw-pointer-events-none tw-cursor-not-allowed tw-text-neutral-500':
 									checkedItems.length === 0 || !(typeof action.showon === 'undefined' || evaluateShowOn(action.showon)),
 								'tw-cursor-pointer tw-text-base hover:tw-rounded-coordinator-form hover:tw-bg-neutral-300':
 									checkedItems.length > 0 &&

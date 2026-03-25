@@ -35,10 +35,10 @@ class ApplicationFileFactory implements DBFactory
 			$this->prepareRelations();
 		}
 
-		return $this->buildEntity($dbObject, $withRelations);
+		return $this->buildEntity($dbObject, $withRelations, $exceptRelations);
 	}
 
-	public function fromDbObjects(array $dbObjects, $withRelations = true): array
+	public function fromDbObjects(array $dbObjects, $withRelations = true, $exceptRelations = []): array
 	{
 		$entities = [];
 
@@ -49,7 +49,7 @@ class ApplicationFileFactory implements DBFactory
 
 		foreach ($dbObjects as $dbObject)
 		{
-			$entities[] = $this->buildEntity($dbObject, $withRelations);
+			$entities[] = $this->buildEntity($dbObject, $withRelations, $exceptRelations);
 		}
 
 		return $entities;
@@ -57,7 +57,8 @@ class ApplicationFileFactory implements DBFactory
 
 	public function buildEntity(
 		object $dbObject,
-		$withRelations = true
+		bool $withRelations = true,
+		array $exceptRelations = []
 	): ApplicationFileEntity
 	{
 		$applicant = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($dbObject->applicant_id);
@@ -65,18 +66,23 @@ class ApplicationFileFactory implements DBFactory
 		return new ApplicationFileEntity(
 			user: $applicant,
 			fnum: $dbObject->fnum,
-			status: $withRelations ? $this->statusRepository->getByStep((int) $dbObject->status) : null,
+			status: self::checkRelationLoad(StatusRepository::class, $withRelations, $exceptRelations) ? $this->statusRepository->getByStep((int) $dbObject->status) : null,
 			campaign_id: $dbObject->campaign_id,
 			published: $dbObject->published,
 			data: [],
 			id: (int) $dbObject->id,
-			campaign: $withRelations ? $this->campaignRepository->getById((int) $dbObject->campaign_id) : null,
+			campaign: self::checkRelationLoad(CampaignRepository::class, $withRelations, $exceptRelations) ? $this->campaignRepository->getById((int) $dbObject->campaign_id) : null,
 			date_submitted: !empty($dbObject->date_submitted) ? new \DateTime($dbObject->date_submitted) : null,
 			formProgress: (int) $dbObject->form_progress,
 			attachmentProgress: (int) $dbObject->attachment_progress,
 			updated_at: !empty($dbObject->updated_at) ? new \DateTime($dbObject->updated_at) : null,
 			updated_by: !empty($dbObject->updated_by) ? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $dbObject->updated_by) : null,
 		);
+	}
+
+	public static function checkRelationLoad(string $relation, bool $withRelations = true, array $exceptRelations = []): bool
+	{
+		return $withRelations && !in_array($relation, $exceptRelations);
 	}
 
 	public function prepareRelations(): void
