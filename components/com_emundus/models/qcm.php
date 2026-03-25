@@ -1,6 +1,8 @@
 <?php
 
 
+use Joomla\CMS\Log\Log;
+
 class EmundusModelQcm extends JModelList
 {
 
@@ -102,9 +104,26 @@ class EmundusModelQcm extends JModelList
 				$questions = explode(',', $questions_assoc->questions);
 			}
 
+			if (empty($questions))
+			{
+				Log::add('component/com_emundus/models/qcm | No questions found for qcm : ' . $idqcm, Log::ERROR, 'com_emundus');
+
+				return 0;
+			}
+
 			$random_questions       = array();
-			$key_questions_shuffled = array_rand($questions, (int) $questions_assoc->count);
-			foreach ($key_questions_shuffled as $key) {
+			$count            = (int) $questions_assoc->count;
+			if ($count > count($questions))
+			{
+				$count = count($questions);
+			}
+			$key_questions_shuffled = array_rand($questions, $count);
+			if ($count == 1)
+			{
+				$key_questions_shuffled = array($key_questions_shuffled);
+			}
+			foreach ($key_questions_shuffled as $key)
+			{
 				$random_questions[] = (int) $questions[$key];
 			}
 

@@ -3970,7 +3970,7 @@ structure:
 			exit;
 		}
 
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 		if (version_compare(PHP_VERSION, '8.0.0', '>='))
@@ -3991,7 +3991,7 @@ structure:
         $db->setQuery($query);
         $all_rights_group = $db->loadResult();
 
-        if(!empty($all_rights_group))
+        if (!empty($all_rights_group))
         {
             EmundusHelperUpdate::updateComponentParameter('com_emundus', 'all_rights_group', $all_rights_group);
         }

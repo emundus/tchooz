@@ -35,9 +35,9 @@ use Tchooz\Enums\List\ListColumnTypesEnum;
 use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
-use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Label\LabelRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
@@ -1781,6 +1781,8 @@ class EmundusControllerApplication extends EmundusController
 			$data[strtolower($state->name)] = $state->getLabel();
 		}
 
+		asort($data);
+
 		$response           = [];
 		$response['code']   = 200;
 		$response['status'] = true;
@@ -1808,6 +1810,10 @@ class EmundusControllerApplication extends EmundusController
 				'value' => $state->value,
 			];
 		}
+
+		usort($data, function ($a, $b) {
+			return strcmp($a['label'], $b['label']);
+		});
 
 		$response           = [];
 		$response['code']   = 200;
@@ -2013,7 +2019,8 @@ class EmundusControllerApplication extends EmundusController
 		$applicationChoicesEntity = new ApplicationChoicesEntity(
 			$current_fnum,
 			$this->_user,
-			$campaign
+			$campaign,
+			$campaign_id
 		);
 
 		$applicationChoicesRepository = new ApplicationChoicesRepository();
@@ -2635,9 +2642,16 @@ class EmundusControllerApplication extends EmundusController
 			$fileStatusesFilter = array_filter($fileStatusesFilter);
 		}
 
-		$applicationChoicesRepository = new ApplicationChoicesRepository();
+		$applicationChoicesRepository = new ApplicationChoicesRepository(false);
+		$campaignRepository = new CampaignRepository(false);
+		$applicationFileRepository = new ApplicationFileRepository(true, [CampaignRepository::class]);
+
 		$emundusUserRepository        = new EmundusUserRepository();
 		$labelRepository = new LabelRepository();
+
+		// Create static cache to avoid multiple queries for the same campaign or application file when exporting all choices
+		$staticCampaigns = [];
+		$staticApplicationFiles = [];
 
 		$userPrograms = $emundusUserRepository->getUserProgramsCodes($this->_user->id);
 		if (!empty($program) && $program != 'all')
@@ -2684,18 +2698,38 @@ class EmundusControllerApplication extends EmundusController
 
 		foreach ($applicationChoices->getItems() as $key => $applicationChoice)
 		{
-			if (empty($applicationChoice->getApplicationFile()))
+			assert($applicationChoice instanceof ApplicationChoicesEntity);
+
+			if(in_array($applicationChoice->getCampaignId(), array_keys($staticCampaigns)))
+			{
+				$campaign = $staticCampaigns[$applicationChoice->getCampaignId()];
+			}
+			else
+			{
+				$campaign = $campaignRepository->getById($applicationChoice->getCampaignId());
+				$staticCampaigns[$applicationChoice->getCampaignId()] = $campaign;
+			}
+
+			if(in_array($applicationChoice->getFnum(), array_keys($staticApplicationFiles)))
+			{
+				$applicationFile = $staticApplicationFiles[$applicationChoice->getFnum()];
+			}
+			else
+			{
+				$applicationFile = $applicationFileRepository->getByFnum($applicationChoice->getFnum());
+				$staticApplicationFiles[$applicationChoice->getFnum()] = $applicationFile;
+			}
+
+			if (empty($applicationFile))
 			{
 				continue;
 			}
-
-			assert($applicationChoice instanceof ApplicationChoicesEntity);
 
 			$applicationChoiceObject        = new stdClass();
 			$applicationChoiceObject->id    = $applicationChoice->getId();
 			$applicationChoiceObject->label = ['fr' => $applicationChoice->getOrder(), 'en' => $applicationChoice->getOrder()];
 
-			$labels = $labelRepository->getByFnum($applicationChoice->getApplicationFile()->getFnum());
+			$labels = $labelRepository->getByFnum($applicationChoice->getFnum());
 
 			// Add more elements
 			$applicationChoiceObject->additional_columns = [
@@ -2704,7 +2738,7 @@ class EmundusControllerApplication extends EmundusController
 					'',
 					ListDisplayEnum::ALL,
 					'c.label',
-					$applicationChoice->getCampaign()->getLabel()
+					$campaign->getLabel()
 				),
 				new AdditionalColumn(
 					Text::_('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_STATUS'),
@@ -2738,9 +2772,9 @@ class EmundusControllerApplication extends EmundusController
 					[
 						new AdditionalColumnTag(
 							Text::_('COM_EMUNDUS_ACCESS_STATUS'),
-							$applicationChoice->getApplicationFile()->getStatus()->getLabel(),
+							$applicationFile->getStatus()->getLabel(),
 							'',
-							'label label-' . $applicationChoice->getApplicationFile()->getStatus()->getColor()
+							'label label-' . $applicationFile->getStatus()->getColor()
 						)
 					],
 					ListColumnTypesEnum::TAGS
@@ -2855,15 +2889,16 @@ class EmundusControllerApplication extends EmundusController
 	public function getallcampaignsforfilter(): EmundusResponse
 	{
 		$emundusUserRepository = new EmundusUserRepository();
-		$userPrograms          = $emundusUserRepository->getUserProgramsCodes($this->user->id);
+		$userPrograms          = $emundusUserRepository->getUserProgramsIds($this->user->id);
 
-		$campaignRepository = new CampaignRepository();
+		$campaignRepository = new CampaignRepository(false);
+		$userCampaignsIds = $campaignRepository->getCampaignIdsByPrograms($userPrograms);
 		$campaigns          = $campaignRepository->getChildrenCampaigns();
 
 		$data = [];
 		foreach ($campaigns as $campaign)
 		{
-			if (!in_array($campaign->getProgram()->getCode(), $userPrograms))
+			if (!in_array($campaign->getId(), $userCampaignsIds))
 			{
 				continue;
 			}
@@ -2914,7 +2949,13 @@ class EmundusControllerApplication extends EmundusController
 			$ids = [];
 		}
 
-		$applicationChoicesRepository = new ApplicationChoicesRepository();
+		$applicationChoicesRepository = new ApplicationChoicesRepository(false);
+		$campaignRepository = new CampaignRepository(false);
+		$applicationFileRepository = new ApplicationFileRepository(true, [CampaignRepository::class]);
+
+		// Create static cache to avoid multiple queries for the same campaign or application file when exporting all choices
+		$staticCampaigns = [];
+		$staticApplicationFiles = [];
 
 		$moreFormId   = $applicationChoicesRepository->getMoreFormId();
 		$moreElements = $applicationChoicesRepository->getChoicesMoreElements($moreFormId);
@@ -2947,12 +2988,149 @@ class EmundusControllerApplication extends EmundusController
 			$rows = [];
 			foreach ($applicationChoices->getItems() as $applicationChoice)
 			{
+				assert($applicationChoice instanceof ApplicationChoicesEntity);
+
+				if(in_array($applicationChoice->getCampaignId(), array_keys($staticCampaigns)))
+				{
+					$campaign = $staticCampaigns[$applicationChoice->getCampaignId()];
+				}
+				else
+				{
+					$campaign = $campaignRepository->getById($applicationChoice->getCampaignId());
+					$staticCampaigns[$applicationChoice->getCampaignId()] = $campaign;
+				}
+
+				if(in_array($applicationChoice->getFnum(), array_keys($staticApplicationFiles)))
+				{
+					$applicationFile = $staticApplicationFiles[$applicationChoice->getFnum()];
+				}
+				else
+				{
+					$applicationFile = $applicationFileRepository->getByFnum($applicationChoice->getFnum());
+					$staticApplicationFiles[$applicationChoice->getFnum()] = $applicationFile;
+				}
+
 				$row = [
-					$applicationChoice->getCampaign()->getLabel(),
+					$campaign->getLabel(),
 					$applicationChoice->getState()->getLabel(),
-					$applicationChoice->getApplicationFile()->getUser()->name,
-					$applicationChoice->getApplicationFile()->getStatus()->getLabel(),
+					$applicationFile->getUser()->name,
+					$applicationFile->getStatus()->getLabel(),
 				];
+				foreach ($moreElements as $moreElement)
+				{
+					if($moreElement['hidden'] == 1)
+					{
+						continue;
+					}
+
+					$row[] = (isset($applicationChoice->getMoreProperties()[$moreElement['name']]) && !empty($applicationChoice->getMoreProperties()[$moreElement['name']]['formatted_value'])) ? $applicationChoice->getMoreProperties()[$moreElement['name']]['formatted_value'] : '';
+				}
+				$rows[] = $row;
+
+				fputcsv($fp, $row, ';');
+			}
+
+			fclose($fp);
+
+			$nb_cols = count($columns);
+			$nb_rows = count($rows);
+
+			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/users.php');
+			$m_users  = new EmundusModelUsers();
+			$xls_file = $m_users->convertCsvToXls($excel_filename, $nb_cols, $nb_rows, 'export_application_choices_' . date('Ymd_His'), ';');
+
+			$excel_filepath = '';
+			if (!empty($xls_file))
+			{
+				$excel_filepath = JPATH_SITE . '/tmp/' . $xls_file;
+			}
+
+			header('Content-Type: application/vnd.ms-excel');
+			header('Content-Disposition: attachment; filename="' . basename($excel_filepath) . '"');
+			header('Content-Length: ' . filesize($excel_filepath));
+
+			$response['download_file'] = Uri::root() . 'tmp/' . basename($excel_filepath);
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => 'application_choices', 'mode' => CrudEnum::READ]
+	])]
+	public function exportapplicationchoicesall(): void
+	{
+		$response['code']    = 200;
+		$response['status']  = true;
+		$response['message'] = Text::_('COM_EMUNDUS_APPLICATION_CHOICES_EXPORT_EXCEL_SUCCESS');
+
+		$applicationChoicesRepository = new ApplicationChoicesRepository(false);
+		$campaignRepository = new CampaignRepository(false);
+		$applicationFileRepository = new ApplicationFileRepository(true, [CampaignRepository::class]);
+
+		// Create static cache to avoid multiple queries for the same campaign or application file when exporting all choices
+		$staticCampaigns = [];
+		$staticApplicationFiles = [];
+
+		$moreFormId   = $applicationChoicesRepository->getMoreFormId();
+		$moreElements = $applicationChoicesRepository->getChoicesMoreElements($moreFormId);
+
+		$applicationChoices           = $applicationChoicesRepository->getAllChoices('DESC', '', 0, 0, 't.id', [], null, $moreFormId);
+		if(!empty($applicationChoices->getItems()))
+		{
+			$excel_filename = 'export_application_choices_' . date('Ymd_His') . '.csv';
+			$excel_filepath = JPATH_SITE . '/tmp/' . $excel_filename;
+			$fp             = fopen($excel_filepath, 'w');
+
+			$columns = [
+				Text::_('COM_EMUNDUS_APPLICATION_CHOICE_CAMPAIGN'),
+				Text::_('COM_EMUNDUS_APPLICATION_CHOICE_STATUS'),
+				Text::_('COM_EMUNDUS_REGISTRANTS_USER'),
+				Text::_('COM_EMUNDUS_ACCESS_STATUS'),
+			];
+			foreach ($moreElements as $moreElement)
+			{
+				if($moreElement['hidden'] == 1)
+				{
+					continue;
+				}
+
+				$columns[] = $moreElement['label'];
+			}
+			fputcsv($fp, $columns, ';');
+
+			$rows = [];
+			foreach ($applicationChoices->getItems() as $applicationChoice)
+			{
+				assert($applicationChoice instanceof ApplicationChoicesEntity);
+
+				if(in_array($applicationChoice->getCampaignId(), array_keys($staticCampaigns)))
+				{
+					$campaign = $staticCampaigns[$applicationChoice->getCampaignId()];
+				}
+				else
+				{
+					$campaign = $campaignRepository->getById($applicationChoice->getCampaignId());
+					$staticCampaigns[$applicationChoice->getCampaignId()] = $campaign;
+				}
+
+				if(in_array($applicationChoice->getFnum(), array_keys($staticApplicationFiles)))
+				{
+					$applicationFile = $staticApplicationFiles[$applicationChoice->getFnum()];
+				}
+				else
+				{
+					$applicationFile = $applicationFileRepository->getByFnum($applicationChoice->getFnum());
+					$staticApplicationFiles[$applicationChoice->getFnum()] = $applicationFile;
+				}
+
+				$row = [
+					$campaign->getLabel(),
+					$applicationChoice->getState()->getLabel(),
+					$applicationFile->getUser()->name,
+					$applicationFile->getStatus()->getLabel(),
+				];
+
 				foreach ($moreElements as $moreElement)
 				{
 					if($moreElement['hidden'] == 1)

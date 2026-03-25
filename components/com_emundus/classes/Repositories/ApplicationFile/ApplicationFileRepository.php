@@ -145,11 +145,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 		if(!empty($result))
 		{
-			$applicationFileEntity = new ApplicationFileEntity(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($result->applicant_id));
-			$applicationFileEntity->setFnum($result->fnum);
-			$applicationFileEntity->setCampaignId($result->campaign_id);
-			$applicationFileEntity->setStatus($result->status);
-			$applicationFileEntity->setPublished($result->published);
+			$applicationFileEntity = $this->factory->fromDbObject($result, $this->withRelations, $this->exceptRelations);
 		}
 
 		return $applicationFileEntity;
@@ -169,7 +165,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 		if (!empty($result))
 		{
-			$applicationFileEntity = $this->factory->fromDbObject($result);
+			$applicationFileEntity = $this->factory->fromDbObject($result, $this->withRelations, $this->exceptRelations);
 		}
 
 		return $applicationFileEntity;
@@ -177,15 +173,22 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 	public function getCampaignIds(array $fnums): array
 	{
-		$fnums = array_unique($fnums);
-		$fnums = implode(',', $this->db->quote($fnums));
+		$campaignIds = [];
 
-		$this->query->clear()
-			->select('campaign_id')
-			->from('#__emundus_campaign_candidature')
-			->where('fnum IN (' . $fnums . ')');
-		$this->db->setQuery($this->query);
-		return $this->db->loadColumn();
+		$fnums = array_unique($fnums);
+		if (!empty($fnums))
+		{
+			$this->query->clear()
+				->select('DISTINCT campaign_id')
+				->from('#__emundus_campaign_candidature')
+				->where('fnum IN (' . implode(',', $this->db->quote($fnums)) . ')');
+
+			$this->db->setQuery($this->query);
+			$campaignIds = $this->db->loadColumn();
+			$campaignIds = array_map('intval', $campaignIds);
+		}
+
+		return $campaignIds;
 	}
 
 	public function flush(ApplicationFileEntity $applicationFileEntity, int $user_id = 0): bool
@@ -221,6 +224,8 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 				$applicationFileEntity->setId($ccid);
 			}
+
+			// TODO: udpate status and everything else
 
 			if(!empty($applicationFileEntity->getData())) {
 				foreach ($applicationFileEntity->getData() as $table => $data) {

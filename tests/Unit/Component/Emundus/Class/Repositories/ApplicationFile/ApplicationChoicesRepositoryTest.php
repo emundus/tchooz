@@ -137,7 +137,7 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 
 		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['applicant']);
 
-		$applicationChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0]);
+		$applicationChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0], $this->campaignsFixtures[0]->getId());
 
 		// Create new choice
 		$flushed = $this->model->flush($applicationChoice);
@@ -159,7 +159,7 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 
 		$this->expectException(\InvalidArgumentException::class);
 		$this->expectExceptionMessage('Campaign ID and Fnum are required to flush ApplicationChoicesEntity');
-		$otherCampaignChoice = new ApplicationChoicesEntity('', $user, $this->campaignsFixtures[2]);
+		$otherCampaignChoice = new ApplicationChoicesEntity('', $user, $this->campaignsFixtures[2], $this->campaignsFixtures[2]->getId());
 		$this->model->flush($otherCampaignChoice);
 
 		$this->clearFixtures();
@@ -173,7 +173,7 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 
 		$this->expectException(\InvalidArgumentException::class);
 		$this->expectExceptionMessage(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_INVALID_PARENT'));
-		$otherCampaignChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[2]);
+		$otherCampaignChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[2], $this->campaignsFixtures[2]->getId());
 		$this->model->flush($otherCampaignChoice);
 
 		$this->clearFixtures();
@@ -185,13 +185,13 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 
 		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['applicant']);
 
-		$applicationChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0]);
+		$applicationChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0], $this->campaignsFixtures[0]->getId());
 		$this->model->flush($applicationChoice);
 
 		// Try to create another choice for the same campaign
 		$this->expectException(\InvalidArgumentException::class);
 		$this->expectExceptionMessage(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_ALREADY_EXIST'));
-		$duplicateChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0]);
+		$duplicateChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0], $this->campaignsFixtures[0]->getId());
 		$this->model->flush($duplicateChoice);
 
 		$this->clearFixtures();
@@ -207,7 +207,7 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 		// Try to create another choice for an unpublished campaign
 		$this->expectException(\InvalidArgumentException::class);
 		$this->expectExceptionMessage(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_INVALID'));
-		$unpublishedCampaignChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0]);
+		$unpublishedCampaignChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0], $this->campaignsFixtures[0]->getId());
 		$this->model->flush($unpublishedCampaignChoice);
 
 		$this->clearFixtures();
@@ -219,7 +219,7 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 
 		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['applicant']);
 
-		$applicationChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0]);
+		$applicationChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0], $this->campaignsFixtures[0]->getId());
 		$this->model->flush($applicationChoice);
 
 		// Delete choice
@@ -236,7 +236,7 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 
 		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['applicant']);
 
-		$applicationChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0]);
+		$applicationChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0], $this->campaignsFixtures[0]->getId());
 		$this->model->flush($applicationChoice);
 
 		// Retrieve choice by ID
@@ -260,7 +260,7 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 		$this->assertIsArray($choices);
 		$this->assertCount(0, $choices);
 
-		$applicationChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0]);
+		$applicationChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0], $this->campaignsFixtures[0]->getId());
 		$this->model->flush($applicationChoice);
 
 		// Retrieve choices by Fnum
@@ -270,7 +270,7 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 		$this->assertEquals($applicationChoice->getId(), $choices[0]->getId());
 
 		// Add another choice
-		$applicationChoice2 = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[1], 0, ChoicesStateEnum::ACCEPTED);
+		$applicationChoice2 = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[1], $this->campaignsFixtures[1]->getId(), 0, ChoicesStateEnum::ACCEPTED);
 		$this->model->flush($applicationChoice2);
 		$choices = $this->model->getChoicesByFnum($this->dataset['fnum']);
 		$this->assertIsArray($choices);

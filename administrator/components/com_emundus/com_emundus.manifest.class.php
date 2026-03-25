@@ -63,6 +63,8 @@ class Com_EmundusInstallerScript
 
 	public function preflight(string $type, object $parent): void
 	{
+		EmundusHelperUpdate::displayMessage('Exécution des tâches pré-installation');
+
 		if (version_compare(PHP_VERSION, '7.4.0', '<'))
 		{
 			EmundusHelperUpdate::displayMessage('This extension works with PHP 7.4.0 or newer. Please contact your web hosting provider to update your PHP version.', 'error');
@@ -89,6 +91,12 @@ class Com_EmundusInstallerScript
 			];
 
 			EmundusHelperUpdate::createTable('#__emundus_version', $columns,[], '', [], $primary_key_options);
+		}
+
+		if (!$this->updateTablesBeforeFilesScripts())
+		{
+			EmundusHelperUpdate::displayMessage('Échec de mise à jour des tables avant les scripts de fichiers.', 'error');
+			exit;
 		}
 
 		$this->generateAutoloadTables();
@@ -1820,6 +1828,38 @@ class Com_EmundusInstallerScript
 		}
 
 		return $checked;
+	}
+
+	/**
+	 * Update tables before files scripts to avoid errors in case of missing columns
+	 *
+	 * E.g. : jos_emundus_setup_actions table is used to create new actions, but since 2.17, a new columns is used in repositories.
+	 * So, we add the column before scripts to ensure installation still works
+	 *
+	 * @return bool
+	 */
+	private function updateTablesBeforeFilesScripts(): bool
+	{
+		$updates = [];
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		$table_existing = $db->setQuery('SHOW TABLE STATUS WHERE Name LIKE ' . $db->quote('jos_emundus_setup_step_types'))->loadResult();
+		if (!empty($table_existing))
+		{
+			$result = EmundusHelperUpdate::addColumn('#__emundus_setup_step_types', 'code', 'varchar', 50);
+			$updates[] = $result['status'];
+		}
+
+		// since 2.17.0
+		$result = EmundusHelperUpdate::addColumn('jos_emundus_setup_actions', 'type', 'VARCHAR', 20, 0, 'file');
+		$updates[] = $result['status'];
+		if (!$result['status'])
+		{
+			EmundusHelperUpdate::displayMessage($result['message'], 'error');
+		}
+
+		return !in_array(false, $updates);
 	}
 
 	private function generateAutoloadTables(): void

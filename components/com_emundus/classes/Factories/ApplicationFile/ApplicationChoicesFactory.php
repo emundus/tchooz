@@ -131,6 +131,7 @@ class ApplicationChoicesFactory implements DBFactory
 			fnum: $dbObject->fnum,
 			user: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($dbObject->user_id),
 			campaign: $withRelations ? $campaignRepository->getById((int) $dbObject->campaign_id) : null,
+			campaign_id: $dbObject->campaign_id,
 			order: (int) $dbObject->order,
 			state: ChoicesStateEnum::tryFrom($dbObject->state),
 			id: (int) $dbObject->id,
