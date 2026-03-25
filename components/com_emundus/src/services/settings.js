@@ -456,8 +456,7 @@ export default {
 		}
 	},
 
-	async getAddonParameters(addonType)
-	{
+	async getAddonParameters(addonType) {
 		try {
 			return await fetchClient.post('getaddonparameters', {
 				addon_type: addonType,

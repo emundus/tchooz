@@ -50,8 +50,7 @@ export default {
 					this.loading = false;
 				});
 		},
-		onValueUpdated(param)
-		{
+		onValueUpdated(param) {
 			this.addon.configuration[param.param] = param.value;
 		},
 		saveAddon() {
