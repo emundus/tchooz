@@ -13,6 +13,8 @@ stages:
   - test
   - release
   - deploy
+  - deploy-staging
+  - deploy-production
 
 include:
 - project: 'emundus/devops/ci-cd-templates'
