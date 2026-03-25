@@ -17,6 +17,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -106,9 +107,9 @@ if (isset($user->fnum) && !empty($user->fnum))
 	$m_workflow    = new EmundusModelWorkflow();
 	$m_campaign	   = new EmundusModelCampaign();
 
-	$current_application = $m_application->getApplication($user->fnum);
-
-	$campaign_name = $current_application->label;
+	$applicationFileRepository = new ApplicationFileRepository();
+	$applicationFile = $applicationFileRepository->getByFnum($user->fnum);
+	$campaign_name = $applicationFile->getCampaign()->getLabel();
 
 	$fnumInfos = $m_files->getFnumInfos($user->fnum);
 

@@ -5140,6 +5140,13 @@ class EmundusModelApplication extends ListModel
 		}
 	}
 
+	/**
+	 * @deprecated use ApplicationFileRepository::getByFnum instead
+	 * @param $fnum
+	 *
+	 * @return mixed
+	 * @throws Exception
+	 */
 	public function getApplication($fnum)
 	{
 		$result = null;

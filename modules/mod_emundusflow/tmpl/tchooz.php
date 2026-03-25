@@ -1,15 +1,18 @@
 <?php // no direct access
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 
 defined('_JEXEC') or die('Restricted access');
 
-$config      = JFactory::getConfig();
+$config      = Factory::getApplication()->getConfig();
 $site_offset = $config->get('offset');
 
 $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 $dateTime = $dateTime->setTimezone(new DateTimeZone($site_offset));
 $now      = $dateTime->format('Y-m-d H:i:s');
+
+assert($applicationFile instanceof ApplicationFileEntity);
 ?>
 
 <style>
@@ -156,9 +159,9 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			<?php
 			$color      = '#0A53CC';
 			$background = '#C8E1FE';
-			if (!empty($current_application->tag_color)) {
-				$color = $current_application->tag_color;
-				switch ($current_application->tag_color) {
+			if (!empty($applicationFile->getCampaign()->getProgram()->getColor())) {
+				$color = $applicationFile->getCampaign()->getProgram()->getColor();
+				switch ($applicationFile->getCampaign()->getProgram()->getColor()) {
 					case '#106949':
 						$background = '#DFF5E9';
 						break;
@@ -179,7 +182,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
                     <button class="tw-btn-primary"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
                 </a>
 			<?php endif; ?>
-            <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>"
+            <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $applicationFile->getFnum() ?>"
                target="blank" title="<?php echo JText::_('PRINT') ?>">
                 <button class="tw-btn-secondary mod_emundus_flow___print">
                     <span class="material-symbols-outlined" style="font-size: 19px">print</span>
@@ -201,7 +204,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
                 <div class="tw-flex tw-items-center em-flex-wrap">
                     <p class="em-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
                     <p class="em-programme-tag" style="color: <?php echo $color ?>;margin: unset;padding: 0">
-						<?php echo $current_application->prog_label; ?>
+						<?php echo $applicationFile->getCampaign()->getProgram()->getLabel(); ?>
                     </p>
                 </div>
 			<?php endif; ?>
@@ -209,8 +212,8 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			<?php if ($show_status == 1) : ?>
                 <div class="tw-flex tw-items-center">
                     <p class="em-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_STATUS'); ?> : </p>
-                    <div class="mod_emundus_flow___status_<?= $current_application->class; ?> tw-flex">
-                        <span class="label label-<?= $current_application->class; ?>"><?= $current_application->value ?></span>
+                    <div class="mod_emundus_flow___status_<?= $applicationFile->getStatus()->getColor(); ?> tw-flex">
+                        <span class="label label-<?=  $applicationFile->getStatus()->getColor() ?>"><?= $applicationFile->getStatus()->getLabel() ?></span>
                     </div>
                 </div>
 			<?php endif; ?>
@@ -230,7 +233,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 	$file_tags_display = '';
 	if (!empty($file_tags)) {
 	    $m_email = new EmundusModelEmails();
-	    $emundusUser = JFactory::getSession()->get('emundusUser');
+	    $emundusUser = Factory::getApplication()->getSession()->get('emundusUser');
 
 	    $post = array(
 		    'APPLICANT_ID'   => $user->id,
@@ -281,6 +284,8 @@ if (!empty($campaign_languages) && !in_array($current_lang_id, $campaign_languag
 
     <?php
 }
+
+
 ?>
 
 <script>
