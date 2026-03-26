@@ -6170,6 +6170,11 @@ class EmundusModelFiles extends JModelLegacy
 					$base_url = $siteurl;
 				}
 
+				if (!empty($base_url) && !str_ends_with($base_url, '/'))
+				{
+					$base_url .= '/';
+				}
+
 				$dataresult = [
 					'start' => $start, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
 					'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,

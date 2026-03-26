@@ -40,6 +40,12 @@ class Release2_17_0Installer extends ReleaseInstaller
 				\EmundusHelperUpdate::updateExtensionParam('create_groups_template', $emundusParams->get('evaluator_group') . ',' . $emundusParams->get('program_manager_group'), '');
 			}
 
+			$query->clear()
+				->delete($this->db->quoteName('#__emundus_setup_languages'))
+				->where($this->db->quoteName('type') . ' <> ' . $this->db->quote('override'));
+			$this->db->setQuery($query);
+			$this->tasks[] = $this->db->execute();
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
