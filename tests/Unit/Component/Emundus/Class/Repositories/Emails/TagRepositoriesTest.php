@@ -5,6 +5,12 @@ namespace Unit\Component\Emundus\Class\Repositories\Emails;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Repositories\Emails\TagRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Emails
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Emails\TagRepository
+ */
 class TagRepositoriesTest extends UnitTestCase
 {
 	private TagRepository $repository;

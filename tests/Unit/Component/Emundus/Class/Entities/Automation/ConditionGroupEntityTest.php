@@ -12,6 +12,12 @@ use Tchooz\Enums\Automation\ConditionOperatorEnum;
 use Tchooz\Enums\Automation\ConditionsAndorEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Entities\Automation
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Entities\Automation\ConditionGroupEntity
+ */
 class ConditionGroupEntityTest extends UnitTestCase
 {
 	/**

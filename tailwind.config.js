@@ -153,6 +153,7 @@ module.exports = {
                     900: 'var(--neutral-900)',
                 },
                 main: {
+                    25: 'var(--main-25)',
                     50: 'var(--main-50)',
                     100: 'var(--main-100)',
                     200: 'var(--main-200)',

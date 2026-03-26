@@ -6,6 +6,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Automation\Comparators\DateComparator;
 use Tchooz\Enums\Automation\ConditionOperatorEnum;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Entities\Automation\Comparators
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Entities\Automation\Comparators\DateComparator
+ */
 class DateComparatorTest extends UnitTestCase
 {
 	private DateComparator $comparator;

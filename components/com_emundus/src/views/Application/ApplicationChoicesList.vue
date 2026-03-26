@@ -2,7 +2,7 @@
 	<div id="application-choices-list">
 		<list
 			v-if="!loading"
-			:default-lists="configString"
+			:default-lists="config"
 			:encoded="false"
 			:default-type="'applicationchoices'"
 			:key="renderingKey"
@@ -60,6 +60,15 @@ export default {
 									label: 'COM_EMUNDUS_APPLICATION_CHOICES_EXPORT_EXCEL',
 									controller: 'application',
 									name: 'exportapplicationchoices',
+									method: 'get',
+									multiple: true,
+									exportModal: false,
+								},
+								{
+									action: 'exportapplicationchoicesall',
+									label: 'COM_EMUNDUS_APPLICATION_CHOICES_EXPORT_EXCEL_ALL',
+									controller: 'application',
+									name: 'exportapplicationchoicesall',
 									method: 'get',
 									multiple: true,
 									exportModal: false,
@@ -142,6 +151,8 @@ export default {
 					}
 				}
 
+				this.loading = false;
+			} else {
 				this.loading = false;
 			}
 		});

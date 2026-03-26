@@ -6,6 +6,12 @@ use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Payment\TransactionEntity;
 use Tchooz\Factories\Payment\TransactionFactory;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Factories\Payment
+ *
+ * @since       version 1.0.0
+ * @covers     \Tchooz\Factories\Payment\TransactionFactory
+ */
 class TransactionFactoryTest extends UnitTestCase
 {
 	private TransactionFactory $factory;

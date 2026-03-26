@@ -133,11 +133,24 @@ class EmundusControllerTask extends BaseController
 					}
 				}
 
+				$action = $task->getAction();
+				if (empty($action) && !empty($task->getMetadata()))
+				{
+					$action = \Tchooz\Factories\Automation\ActionFactory::fromSerialized($task->getMetadata()['actionEntity']);
+				}
+
+				if (!empty($action))
+				{
+					$taskLabel = '[#' . $task->getId() . '] ' .$action->getLabelForLog() . (!empty($to) ? Text::_('COM_EMUNDUS_TASK_TARGET') .' : ' . $to : '');
+				}
+				else
+				{
+					$taskLabel = '[#' . $task->getId() . ']';
+				}
+
 				$serializedTask          = $task->serialize();
 				$serializedTask['metadata'] = null; // We don't want to send all the metadata to the frontend, it can be heavy and not useful in most cases. We can add specific metadata fields if needed.
-				$serializedTask['label'] = [
-					'fr' => '[#' . $task->getId() . '] ' . (!empty($task->getAction()) ? $task->getAction()->getLabelForLog() : '') . (!empty($to) ? ' (' . Text::_('COM_EMUNDUS_TASK_TARGET') .' : ' . $to . ')': ''),
-				];
+				$serializedTask['label'] = ['fr' => $taskLabel];
 
 				$createdAt = EmundusHelperDate::displayDate($task->getCreatedAt()->format('Y-m-d H:i:s'), 'd/m/Y H:i', 0);
 				$startedAt = !empty($task->getStartedAt()) ? EmundusHelperDate::displayDate($task->getStartedAt()->format('Y-m-d H:i:s'), 'd/m/Y H:i', 0) : Text::_('COM_EMUNDUS_TASK_NOT_STARTED');

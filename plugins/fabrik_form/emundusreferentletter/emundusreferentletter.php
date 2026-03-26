@@ -15,6 +15,7 @@
 // No direct access
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
@@ -24,44 +25,8 @@ defined('_JEXEC') or die('Restricted access');
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
-/**
- * Create a Joomla user from the forms data
- *
- * @package     Joomla.Plugin
- * @subpackage  Fabrik.form.juseremundus
- * @since       3.0
- */
 class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 {
-	/**
-	 * Status field
-	 *
-	 * @var  string
-	 */
-	protected $URLfield = '';
-
-	/**
-	 * Get an element name
-	 *
-	 * @param   string  $pname  Params property name to look up
-	 * @param   bool    $short  Short (true) or full (false) element name, default false/full
-	 *
-	 * @return    string    element full name
-	 */
-	public function getFieldName($pname, $short = false)
-	{
-		$params = $this->getParams();
-
-		if ($params->get($pname) == '')
-		{
-			return '';
-		}
-
-		$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($params->get($pname));
-
-		return $short ? $elementModel->getElement()->name : $elementModel->getFullName();
-	}
-
 	/**
 	 * Get the fields value regardless of whether its in joined data or no
 	 *
@@ -138,15 +103,24 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 	 */
 	public function onBeforeCalculations()
 	{
+		Log::addLogger(['text_file' => 'com_emundus.filerequest.php'], Log::ALL, ['com_emundus']);
 
-		jimport('joomla.utilities.utility');
-		jimport('joomla.log.log');
-		JLog::addLogger(['text_file' => 'com_emundus.filerequest.php'], JLog::ALL, ['com_emundus']);
-
-		include_once(JPATH_BASE . '/components/com_emundus/models/files.php');
-		include_once(JPATH_BASE . '/components/com_emundus/models/emails.php');
-		include_once(JPATH_BASE . '/components/com_emundus/models/profile.php');
-		include_once(JPATH_BASE . '/components/com_emundus/helpers/access.php');
+		if(!class_exists('EmundusModelFiles'))
+		{
+			include_once(JPATH_BASE . '/components/com_emundus/models/files.php');
+		}
+		if(!class_exists('EmundusModelEmails'))
+		{
+			include_once(JPATH_BASE . '/components/com_emundus/models/emails.php');
+		}
+		if(!class_exists('EmundusModelProfile'))
+		{
+			include_once(JPATH_BASE . '/components/com_emundus/models/profile.php');
+		}
+		if(!class_exists('EmundusHelperAccess'))
+		{
+			include_once(JPATH_BASE . '/components/com_emundus/helpers/access.php');
+		}
 
 		$query   = $this->_db->getQuery(true);
 		$form_id = $this->app->getInput()->getInt('formid', 0);
@@ -257,17 +231,17 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
                 $h_menu = new EmundusHelperMenu;
                 $getformids = $h_menu->getUserApplicationMenu($fnum_detail['profile_id']);
 
+	            $formid = [];
                 foreach ($getformids as $getformid) {
                     $formid[] = $getformid->form_id;
                 }
-
-                $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
 
                 if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
                     mkdir(EMUNDUS_PATH_ABS.$student_id);
                     chmod(EMUNDUS_PATH_ABS.$student_id, 0755);
                 }
 
+	            $file = JPATH_LIBRARIES.'/emundus/pdf.php';
                 require_once($file);
 
                 // Here we call the profile by campaign function, which will get the profile of the campaign's initial phase
@@ -290,7 +264,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
                     $applicant_pdf[] = JPATH_BASE.str_replace("\\", "/", '/images/emundus/files/'.$student->id.'/'.$last_file);
                 }
             } catch (Exception $e) {
-                JLog::add('Cannot generate pdf to send to referent = '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                Log::add('Cannot generate pdf to send to referent = '.$e->getMessage(), Log::ERROR, 'com_emundus');
             }
         }
         //
@@ -438,7 +412,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 						if ($mailer->Send() !== true)
 						{
 							$this->app->enqueueMessage(Text::_('MESSAGE_NOT_SENT') . ' : ' . $recipient['email'], 'error');
-							JLog::add('Cannot send email', JLog::ERROR, 'com_emundus');
+							Log::add('Cannot send email', Log::ERROR, 'com_emundus');
 						}
 						else
 						{

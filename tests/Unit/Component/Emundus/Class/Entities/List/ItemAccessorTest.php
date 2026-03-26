@@ -14,10 +14,10 @@ use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Entities\List\ItemAccessor;
 
 /**
- * @package     Unit\Component\Emundus\Helper
+ * @package     Unit\Component\Emundus\Class\List
  *
  * @since       version 1.0.0
- * @covers      \Tchooz\Entities\NumericSign\Request
+ * @covers      \Tchooz\Entities\List\ItemAccessor
  */
 class ItemAccessorTest extends UnitTestCase
 {

@@ -385,6 +385,11 @@ class TaskRepository
 		if (!empty($action->getId()))
 		{
 			$task  = new TaskEntity(0, TaskStatusEnum::PENDING, $action, $userId, ['actionTargetEntity' => $actionTargetEntity->serialize()]);
+			if (!empty($action->getPriority()))
+			{
+				$task->setPriority($action->getPriority());
+			}
+			
 			$saved = $this->saveTask($task);
 
 			if (!$saved)

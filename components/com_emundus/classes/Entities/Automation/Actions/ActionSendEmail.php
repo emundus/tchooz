@@ -17,6 +17,7 @@ use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\Task\TaskPriorityEnum;
 
 class ActionSendEmail extends ActionEntity
 {
@@ -177,5 +178,10 @@ class ActionSendEmail extends ActionEntity
 		}
 
 		return $labelForLog;
+	}
+
+	public function getPriority(): TaskPriorityEnum
+	{
+		return TaskPriorityEnum::HIGH;
 	}
 }

@@ -84,7 +84,7 @@ class AttachmentTypeRepository extends EmundusRepository
 	 *
 	 * @return array<AttachmentType>
 	 */
-	public function get(array $filters = [], int $limit = 10, int $page = 1, string $select = '*', string $order = ''): array
+	public function get(array $filters = [], int $limit = 10, int $page = 1, string|array $select = '*', string $order = '', string $search = '', bool $buildEntity = true): array
 	{
 		$types = [];
 

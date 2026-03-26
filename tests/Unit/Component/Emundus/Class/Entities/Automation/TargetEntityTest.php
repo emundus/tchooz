@@ -11,6 +11,12 @@ use Tchooz\Entities\Automation\TargetEntity;
 use Tchooz\Entities\Automation\TargetPredefinitions\ApplicantOtherFilesPredefinition;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Entities\Automation
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Entities\Automation\TargetEntity
+ */
 class TargetEntityTest extends UnitTestCase
 {
 	private User $coordinatorUser;

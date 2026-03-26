@@ -5,6 +5,12 @@ namespace Unit\Component\Emundus\Class\Repositories\Attachment;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Repositories\Attachments\AttachmentTypeRepository;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Repositories\Attachment
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Repositories\Attachments\AttachmentTypeRepository
+ */
 class AttachmentTypeRepositoryTest extends UnitTestCase
 {
 	private AttachmentTypeRepository $repository;

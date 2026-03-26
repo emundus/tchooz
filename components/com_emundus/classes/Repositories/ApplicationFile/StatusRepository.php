@@ -15,11 +15,13 @@ use Tchooz\Factories\ApplicationFile\StatusFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
 
-#[TableAttribute(
-	table: '#__emundus_setup_status',
-	alias: 'ess',
-	columns: ['id', 'step', 'value', 'ordering', 'class']
-)]
+#[TableAttribute(table: 'jos_emundus_setup_status', alias: 'ess', columns: [
+	'id',
+	'step',
+	'value',
+	'ordering',
+	'class'
+])]
 class StatusRepository extends EmundusRepository implements RepositoryInterface
 {
 	private StatusFactory $factory;
@@ -34,6 +36,7 @@ class StatusRepository extends EmundusRepository implements RepositoryInterface
 	public function delete(int $id): bool
 	{
 		// TODO: Implement delete() method.
+		return false;
 	}
 
 	/**
@@ -44,12 +47,25 @@ class StatusRepository extends EmundusRepository implements RepositoryInterface
 	{
 		$statuses = [];
 
-		$query = $this->db->getQuery(true)
-			->select($this->columns)
-			->from($this->db->quoteName($this->tableName, $this->alias))
-			->order($this->db->quoteName('ordering') . ' ASC');
-		$this->db->setQuery($query);
-		$results = $this->db->loadObjectList();
+		$cacheKey = 'all_statuses';
+		if ($this->cache->contains($cacheKey)) {
+			$results = $this->cache->get($cacheKey);
+		}
+
+		if(empty($results))
+		{
+			$query = $this->db->createQuery()
+				->select($this->columns)
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->order($this->db->quoteName($this->alias . '.ordering') . ' ASC');
+			$this->db->setQuery($query);
+			$results = $this->db->loadObjectList();
+
+			if(!empty($results))
+			{
+				$this->cache->store($results, $cacheKey);
+			}
+		}
 
 		foreach ($results as $status) {
 			$statuses[] = $this->factory->fromDbObject($status, $this->withRelations);
@@ -62,14 +78,24 @@ class StatusRepository extends EmundusRepository implements RepositoryInterface
 	{
 		$status_entity = null;
 
-		$query = $this->db->getQuery(true)
-			->select($this->columns)
-			->from($this->tableName)
-			->where($this->db->quoteName('id') . ' = ' . $id);
-		$this->db->setQuery($query);
-		$status = $this->db->loadObject();
+		$cacheKey = 'status_id_' . $id;
+		if ($this->cache->contains($cacheKey)) {
+			$status = $this->cache->get($cacheKey);
+		}
+
+		if(empty($status))
+		{
+			$query = $this->db->createQuery()
+				->select($this->columns)
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->where($this->db->quoteName($this->alias. '.id') . ' = ' . $id);
+			$this->db->setQuery($query);
+			$status = $this->db->loadObject();
+		}
 
 		if (!empty($status)) {
+			$this->cache->store($status, $cacheKey);
+
 			$status_entity = $this->factory->fromDbObject($status, $this->withRelations);
 		}
 
@@ -80,17 +106,34 @@ class StatusRepository extends EmundusRepository implements RepositoryInterface
 	{
 		$status_entity = null;
 
-		$query = $this->db->getQuery(true)
-			->select($this->columns)
-			->from($this->db->quoteName($this->tableName, $this->alias))
-			->where($this->db->quoteName('step') . ' = ' . $step);
-		$this->db->setQuery($query);
-		$status = $this->db->loadObject();
+		$cacheKey = 'status_step_' . $step;
+		if ($this->cache->contains($cacheKey))
+		{
+			$status = $this->cache->get($cacheKey);
+		}
 
-		if (!empty($status)) {
+		if (empty($status))
+		{
+			$query = $this->db->getQuery(true)
+				->select($this->columns)
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->where($this->db->quoteName($this->alias . '.step') . ' = ' . $step);
+			$this->db->setQuery($query);
+			$status = $this->db->loadObject();
+		}
+
+		if (!empty($status))
+		{
+			$this->cache->store($status, $cacheKey);
+
 			$status_entity = $this->factory->fromDbObject($status, $this->withRelations);
 		}
 
 		return $status_entity;
+	}
+
+	public function getFactory(): StatusFactory
+	{
+		return $this->factory;
 	}
 }

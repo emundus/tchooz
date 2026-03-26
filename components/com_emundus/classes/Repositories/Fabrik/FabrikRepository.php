@@ -344,6 +344,35 @@ class FabrikRepository
 		return $element;
 	}
 
+	public function getElementsByIds(array $ids): array
+	{
+		$elements = [];
+
+		if (!empty($ids))
+		{
+			try
+			{
+				$this->elementFilters = array_merge($this->elementFilters, ['id' => $ids]);
+				$query   = $this->buildElementQuery(true);
+				$this->applyElementFilters($query, true);
+
+				$this->db->setQuery($query);
+				$elementObjects = $this->db->loadObjectList();
+
+				if (!empty($elementObjects))
+				{
+					$elements = $this->factory->fromDbObjects($elementObjects, $this->withRelations, FabrikObjectsEnum::ELEMENT);
+				}
+			}
+			catch (\Exception $e)
+			{
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $elements;
+	}
+
 	public function buildElementQuery(bool $withJoins = false): QueryInterface
 	{
 		$query = $this->db->getQuery(true);
@@ -380,7 +409,13 @@ class FabrikRepository
 		$filters = $this->elementFilters;
 		if (in_array('id', array_keys($filters)))
 		{
-			$query->where($this->db->quoteName('fe.id') . ' = ' . $this->db->quote($filters['id']));
+			if(is_array($filters['id']))
+			{
+				$query->where($this->db->quoteName('fe.id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $filters['id'])) . ')');
+			}
+			else {
+				$query->where($this->db->quoteName('fe.id') . ' = ' . $this->db->quote($filters['id']));
+			}
 		}
 
 		if (in_array('group_id', array_keys($filters)))

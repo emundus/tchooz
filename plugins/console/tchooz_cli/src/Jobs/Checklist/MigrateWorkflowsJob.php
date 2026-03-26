@@ -20,6 +20,8 @@ use Tchooz\Entities\Workflow\CampaignStepDateEntity;
 use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\WorkflowEntity;
 use Tchooz\Factories\Workflow\StepFactory;
+use Tchooz\Repositories\Groups\GroupRepository;
+use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 
 class MigrateWorkflowsJob extends TchoozChecklistJob
@@ -159,6 +161,9 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 			$steps_by_program = [];
 			$steps_by_campaign = [];
 
+			$programRepository = new ProgramRepository();
+			$groupRepository = new GroupRepository();
+
 			foreach ($workflows as $step) {
 				$newStepEntity = StepFactory::fromV1Step($step);
 				if (empty($step['program_codes']) && empty($step['campaign_ids'])) {
@@ -244,6 +249,13 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 							$program['label'] = $program['label'] . ' - ' . $campaign_id;
 							$new_program = $this->duplicateProgram($program);
 							Log::add('Program ' . $program['code'] . ' duplicated to ' . $new_program['code'], Log::INFO, self::getJobName());
+
+							// Associate the new program to groups associated to the old program
+							$groups = $programRepository->getGroupsByProgramCode($program['code']);
+							foreach ($groups as $group) {
+								$groupRepository->addProgram($group->getId(), $new_program['code']);
+							}
+							Log::add('Program ' . $new_program['code'] . ' associated to groups: ' . implode(',', array_map(fn($g) => $g->getId(), $groups)), Log::INFO, self::getJobName());
 
 							$campaign = $this->m_campaign->getCampaignByID($campaign_id);
 							$updated = $this->m_campaign->updateCampaign(
