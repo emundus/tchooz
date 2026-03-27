@@ -230,16 +230,16 @@ class ApplicationFileEntity
 			'id'                 => $this->id,
 			'user'               => $this->user->name,
 			'fnum'               => $this->fnum,
-			'status'             => $this->status,
+			'status'             => $this->status->__serialize(),
 			'campaign_id'        => $this->campaign_id,
-			'campaign'           => $this->campaign,
+			'campaign'           => $this->campaign->__serialize(),
 			'date_submitted'     => $this->date_submitted,
 			'published'          => $this->published,
 			'data'               => $this->data,
 			'formProgress'       => $this->formProgress,
 			'attachmentProgress' => $this->attachmentProgress,
 			'updated_at'         => $this->updated_at,
-			'updated_by'         => $this->updated_by,
+			'updated_by'         => $this->updated_by->name,
 		];
 	}
 }
