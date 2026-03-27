@@ -632,13 +632,7 @@ class EmundusModelFormbuilder extends ListModel
 				if ($type === 'default')
 				{
 					$query = "ALTER TABLE jos_emundus_" . $prid . "_" . $increment . "
-		            ADD CONSTRAINT jos_emundus_" . $prid . "_" . $increment . "_ibfk_1
-		            FOREIGN KEY (user) REFERENCES jos_emundus_users (user_id) ON DELETE CASCADE ON UPDATE CASCADE;";
-					$this->db->setQuery($query);
-					$this->db->execute();
-
-					$query = "ALTER TABLE jos_emundus_" . $prid . "_" . $increment . "
-		            ADD CONSTRAINT jos_emundus_" . $prid . "_" . $increment . "_ibfk_2
+		            ADD CONSTRAINT jos_emundus_" . $prid . "_" . $increment . "_ibfk_fnum
 		            FOREIGN KEY (fnum) REFERENCES jos_emundus_campaign_candidature (fnum) ON DELETE CASCADE ON UPDATE CASCADE;";
 					$this->db->setQuery($query);
 					$this->db->execute();
