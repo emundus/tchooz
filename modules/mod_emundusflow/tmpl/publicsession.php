@@ -1,5 +1,6 @@
 <?php
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
@@ -7,6 +8,9 @@ use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 defined('_JEXEC') or die('Restricted access');
 
 assert($applicationFile instanceof ApplicationFileEntity);
+$document = Factory::getApplication()->getDocument();
+$wa       = $document->getWebAssetManager();
+$wa->registerAndUseScript('mod_emundusflow.publicsession', 'modules/mod_emundusflow/script/publicsession.js');
 
 $applicationFileAccessRepository = new ApplicationFileAccessRepository();
 $access = $applicationFileAccessRepository->getByApplicationFileId($applicationFile->getId());
@@ -33,7 +37,10 @@ if ($interval->format('%R%a') < 8)
     </div>
 
     <div class="tw-mt-4 tw-flex tw-justify-end">
-        <button id="renew-public-access-token" class="tw-btn-secondary"> <?= Text::_('COM_EMUNDUS_FILE_ACCESS_TOKEN_RENEW') ?></button>
+        <button id="renew-public-access-token" class="tw-btn-secondary">
+            <span class="material-symbols-outlined tw-mr-1">key_vertical</span>
+            <span><?= Text::_('COM_EMUNDUS_FILE_ACCESS_TOKEN_RENEW') ?></span>
+        </button>
     </div>
 </div>
 

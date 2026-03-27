@@ -20,6 +20,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use Joomla\Utilities\ArrayHelper;
 use Tchooz\Attributes\AccessAttribute;
 use Tchooz\EmundusResponse;
@@ -3227,6 +3228,41 @@ class EmundusControllerApplication extends EmundusController
 			{
 				$response = EmundusResponse::ok();
 			}*/
+		}
+
+		return $response;
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
+	public function renewApplicationAccessToken(): EmundusResponse
+	{
+		$this->checkToken();
+		$response = EmundusResponse::denied();
+
+		$fnum = EmundusPublicAccess::getPublicAccessFnum();
+
+		if (empty($fnum))
+		{
+			return $response;
+		}
+
+		$applicationFileRepository = new ApplicationFileRepository();
+		$applicationFile = $applicationFileRepository->getByFnum($fnum);
+
+		if (!$applicationFile->isPublic())
+		{
+			return $response;
+		}
+
+		$applicationFileAccessRepository = new ApplicationFileAccessRepository();
+		$newPlainToken = $applicationFileAccessRepository->renewToken($applicationFile);
+
+		if (!empty($newPlainToken))
+		{
+			$session = Factory::getApplication()->getSession();
+			$session->set(EmundusPublicAccess::SESSION_PUBLIC_TOKEN_KEY, $newPlainToken);
+			$session->set(EmundusPublicAccess::SESSION_PUBLIC_STORED_ACCESS_KEY, false);
+			$response = EmundusResponse::ok();
 		}
 
 		return $response;
