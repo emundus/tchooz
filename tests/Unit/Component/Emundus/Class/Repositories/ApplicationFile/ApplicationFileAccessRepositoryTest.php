@@ -512,5 +512,61 @@ class ApplicationFileAccessRepositoryTest extends UnitTestCase
 
 		$this->repository->renewToken($this->publicApplicationFile);
 	}
-}
 
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository::revokeAccess
+	 */
+	public function testRevokeAccessDeletesExistingAccess(): void
+	{
+		$this->repository->generateAccessFileToken($this->publicApplicationFile);
+
+		$access = $this->repository->getByApplicationFile($this->publicApplicationFile);
+		$this->assertNotNull($access, 'Un accès doit exister avant la révocation');
+
+		$revoked = $this->repository->revokeAccess($this->publicApplicationFile);
+
+		$this->assertTrue($revoked, 'La révocation doit retourner true quand un accès existait');
+
+		$accessAfterRevoke = $this->repository->getByApplicationFile($this->publicApplicationFile);
+		$this->assertNull($accessAfterRevoke, 'Aucun accès ne doit exister après la révocation');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository::revokeAccess
+	 */
+	public function testRevokeAccessReturnsTrueWhenNoAccessExists(): void
+	{
+		$revoked = $this->repository->revokeAccess($this->publicApplicationFile);
+
+		$this->assertTrue($revoked, 'La révocation doit retourner true même si aucun accès n\'existait');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository::revokeAccess
+	 */
+	public function testRevokeAccessReturnsFalseWhenApplicationFileHasNoId(): void
+	{
+		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['applicant']);
+		$fileWithoutId = new ApplicationFileEntity($user, '', 0, $this->dataset['campaign']);
+
+		$revoked = $this->repository->revokeAccess($fileWithoutId);
+
+		$this->assertFalse($revoked, 'La révocation doit retourner false si le dossier n\'a pas d\'ID');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository::revokeAccess
+	 */
+	public function testRevokeAccessInvalidatesToken(): void
+	{
+		$token = $this->repository->generateAccessFileToken($this->publicApplicationFile);
+
+		$isValidBefore = $this->repository->verifyAccessToken($token, $this->publicApplicationFile);
+		$this->assertTrue($isValidBefore, 'Le token doit être valide avant la révocation');
+
+		$this->repository->revokeAccess($this->publicApplicationFile);
+
+		$isValidAfter = $this->repository->verifyAccessToken($token, $this->publicApplicationFile);
+		$this->assertFalse($isValidAfter, 'Le token ne doit plus être valide après la révocation');
+	}
+}

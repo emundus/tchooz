@@ -257,4 +257,38 @@ class ApplicationFileAccessRepository extends EmundusRepository
 
 		return $token;
 	}
+
+	/**
+	 * @param   ApplicationFileEntity  $applicationFile
+	 *
+	 * @return bool
+	 */
+	public function revokeAccess(ApplicationFileEntity $applicationFile): bool
+	{
+		$revoked = false;
+
+		if (!empty($applicationFile->getId()))
+		{
+			$accesses = $this->get(['ccid' => $applicationFile->getId()]);
+			if (!empty($accesses))
+			{
+				$accessIds = array_map(function ($access) {
+					return $access->getId();
+				}, $accesses);
+
+				$query = $this->db->createQuery();
+				$query->delete($this->tableName)
+					->where('id IN ('  . implode(',', $accessIds) . ')');
+
+				$this->db->setQuery($query);
+				$revoked = $this->db->execute();
+			}
+			else
+			{
+				$revoked = true;
+			}
+		}
+
+		return $revoked;
+	}
 }

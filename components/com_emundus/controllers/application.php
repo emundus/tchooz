@@ -45,6 +45,7 @@ use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Controller\EmundusController;
+use Tchooz\Services\ApplicationFile\ApplicationFileService;
 
 class EmundusControllerApplication extends EmundusController
 {
@@ -3220,14 +3221,12 @@ class EmundusControllerApplication extends EmundusController
 				}
 			}
 
-			// ! TODO: need feature #671
-			throw new Exception(Text::_('WAITING_FOR_UPDATE_OWNER_SERVICE'), 404);
 
-			/*$service = new ApplicationFileService();
+			$service = new ApplicationFileService();
 			if ($service->updateOwner($applicationFile, $newOwnerId, $this->user->id))
 			{
 				$response = EmundusResponse::ok();
-			}*/
+			}
 		}
 
 		return $response;

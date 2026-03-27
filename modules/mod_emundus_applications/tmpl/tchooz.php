@@ -856,6 +856,17 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                         </div>
                                     </div>
 								<?php endif; ?>
+
+                                <div id="import_file">
+                                    <div class="hover-and-tile-container hover-and-tile-container-action tw-border-dashed tw-cursor-pointer" style="height: 300px;">
+                                        <div id="tile-hover-offset-request"></div>
+                                        <div class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center tw-cursor-pointer">
+                                            <div id="background-shapes" class="tw-cursor-pointer" alt="Fond formes"></div>
+                                            <span class="material-symbols-outlined tw-w-fit tw-cursor-pointer">download</span>
+                                            <p class="tw-w-fit tw-cursor-pointer"><?= Text::_('IMPORT_FILE_FROM_PUBLIC_ACCESS_TITLE') ?></p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 						<?php endforeach; ?>
                     </div>
@@ -863,17 +874,6 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 			<?php endforeach ?>
 		<?php endforeach; ?>
 	<?php endif; ?>
-
-    <div class="em-mt-32" id="import_file">
-        <div class="hover-and-tile-container hover-and-tile-container-action tw-border-dashed tw-cursor-pointer" style="width: 50%; height: 300px;">
-            <div id="tile-hover-offset-request"></div>
-            <div class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center tw-cursor-pointer">
-                <div id="background-shapes" class="tw-cursor-pointer" alt="Fond formes"></div>
-                <span class="material-symbols-outlined tw-w-fit tw-cursor-pointer">download</span>
-                <p class="tw-w-fit tw-cursor-pointer"><?= Text::_('IMPORT_FILE_FROM_PUBLIC_ACCESS_TITLE') ?></p>
-            </div>
-        </div>
-    </div>
 </div>
 
 <div class="em-mt-32" id="applications_list_view" style="display: none">

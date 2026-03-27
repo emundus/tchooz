@@ -93,9 +93,10 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 		$app = Factory::getApplication();
 
 		return [
-			'onAfterRoute' => 'onAfterRoute',
-			'onUserLogout' => 'onUserLogout',
-			'onAfterSubmitFile' => 'onAfterSubmitFile',
+			'onAfterRoute'       => 'onAfterRoute',
+			'onUserLogout'       => 'onUserLogout',
+			'onAfterSubmitFile'  => 'onAfterSubmitFile',
+			'onAfterUpdateOwner' => 'onAfterUpdateOwner',
 		];
 	}
 
@@ -188,6 +189,58 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 		{
 			assert($event->getArgument('context') instanceof EventContextEntity);
 			$this->destroyPublicSession(false, $event->getArgument('context')->getFiles()[0]);
+		}
+	}
+
+	/**
+	 * @param   GenericEvent  $event
+	 *
+	 * @return void
+	 */
+	public function onAfterUpdateOwner(GenericEvent $event): void
+	{
+		Log::addLogger(['text_file' =>  'plg_system_emunduspublicaccess.php'], Log::ALL, ['plg_system_emunduspublicaccess']);
+
+		Log::add('onAfterUpdateOwner event triggered in EmundusPublicAccess plugin.', Log::DEBUG, 'plg_system_emunduspublicaccess');
+
+		if ($event->hasArgument('context'))
+		{
+			assert($event->getArgument('context') instanceof EventContextEntity);
+
+			$applicationFileRepository = new ApplicationFileRepository();
+			$applicationFileAccessRepository = new ApplicationFileAccessRepository();
+			$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
+
+			foreach ($event->getArgument('context')->getFiles() as $fnum)
+			{
+				$applicationFile = $applicationFileRepository->getByFnum($fnum);
+
+				if ($systemUserId !== $applicationFile->getUser()->id)
+				{
+					if ($applicationFile->isPublic())
+					{
+						$applicationFile->setIsPublic(false);
+						if (!$applicationFileRepository->flush($applicationFile))
+						{
+							Log::add('Failed to set file as not public anymore.', Log::ERROR, 'plg_system_emunduspublicaccess');
+						}
+					}
+
+					if (!$applicationFileAccessRepository->revokeAccess($applicationFile))
+					{
+						Log::add('Failed to revoke public access for fnum: ' . $fnum . ' after ownership change.', Log::ERROR, 'plg_system_emunduspublicaccess');
+					}
+				}
+				else
+				{
+					// if owner is system public user, make sure file is public
+					if (!$applicationFile->isPublic())
+					{
+						$applicationFile->setIsPublic(true);
+						$applicationFileRepository->flush($applicationFile);
+					}
+				}
+			}
 		}
 	}
 
@@ -468,6 +521,8 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 
 			throw new \Exception(Text::_('COM_EMUNDUS_PUBLIC_ACCESS_SESSION_EXPIRED'), 403);
 		}
+
+
 
 		// Security: if a fnum is in the URL, it MUST match the session fnum.
 		// This prevents a public user from navigating to another user's file

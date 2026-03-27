@@ -31,7 +31,9 @@ use Tchooz\Repositories\RepositoryInterface;
 		'date_submitted',
 		'user_id',
 		'form_progress',
-		'attachment_progress'
+		'attachment_progress',
+		'public',
+		'anonymous',
 	]
 )]
 class ApplicationFileRepository extends EmundusRepository implements RepositoryInterface
@@ -236,6 +238,8 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 					'date_submitted'      => $applicationFileEntity->getDateSubmitted()?->format('Y-m-d H:i:s'),
 					'form_progress'       => $applicationFileEntity->getFormProgress(),
 					'attachment_progress' => $applicationFileEntity->getAttachmentProgress(),
+					'anonymous'           => $applicationFileEntity->isAnonymous() ? 1 : 0,
+					'public'              => $applicationFileEntity->isPublic() ? 1 : 0,
 				];
 				$flushed              = $this->db->updateObject('#__emundus_campaign_candidature', $campaign_candidature, 'id');
 			}
@@ -266,7 +270,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 		$application_files = [];
 
 		$this->query->clear()
-			->select('id, fnum, status, published, campaign_id')
+			->select($this->columns)
 			->from('#__emundus_campaign_candidature')
 			->where('applicant_id = :applicant_id')
 			->bind(':applicant_id', $applicant_id, ParameterType::INTEGER);
@@ -279,13 +283,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 			{
 				if (!empty($result->fnum))
 				{
-					$application_file = new ApplicationFileEntity($user);
-					$application_file->setFnum($result->fnum);
-					$application_file->setStatus($result->status);
-					$application_file->setPublished($result->published);
-					$application_file->setCampaignId($result->campaign_id);
-
-					$application_files[] = $application_file;
+					$application_files[] = $this->factory->fromDbObject($result, $this->withRelations, $this->exceptRelations);
 				}
 			}
 		}
@@ -323,6 +321,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 				'form_progress'       => 0,
 				'attachment_progress' => 0,
 				'public'              => $applicationFileEntity->isPublic() ? 1 : 0,
+				'anonymous'           => $applicationFileEntity->isAnonymous() ? 1 : 0,
 			];
 			$campaign_candidature = (object) $campaign_candidature;
 			$this->db->insertObject('#__emundus_campaign_candidature', $campaign_candidature);
