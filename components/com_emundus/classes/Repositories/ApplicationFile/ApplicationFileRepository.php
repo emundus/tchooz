@@ -271,9 +271,9 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 		$this->query->clear()
 			->select($this->columns)
-			->from('#__emundus_campaign_candidature')
-			->where('applicant_id = :applicant_id')
-			->bind(':applicant_id', $applicant_id, ParameterType::INTEGER);
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->where($this->db->quoteName($this->alias . '.applicant_id') . ' = ' . $this->db->quote($applicant_id));
+
 		$this->db->setQuery($this->query);
 		$results = $this->db->loadObjectList();
 
