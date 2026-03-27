@@ -15,6 +15,7 @@ use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 
 if (EmundusPublicAccess::isPublicAccessSession())
@@ -46,7 +47,6 @@ $wa->registerAndUseStyle('mod_emundus_applications', 'modules/mod_emundus_applic
 $wa->registerAndUseScript('com_emundus_selectize', 'media/com_emundus/lib/selectize/dist/js/standalone/selectize.js');
 $wa->registerAndUseStyle('com_emundus_selectize', 'media/com_emundus/lib/selectize/dist/css/selectize.default.css');
 $wa->useScript('jquery');
-$wa->registerAndUseScript('mod_emundus_applications.publicaccess', 'modules/mod_emundus_applications/script/publicaccess.js');
 $user = $app->getSession()->get('emundusUser');
 
 if (empty($user->firstname) && empty($user->lastname))
@@ -77,6 +77,18 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	include_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 	include_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 	$m_application = new EmundusModelApplication();
+
+	$displayImportPublicFilesAction = false;
+	$addonRepository = new AddonRepository();
+	$publicSessionAddon = $addonRepository->getByName('public_session');
+	if ($publicSessionAddon->getValue()->isEnabled())
+	{
+		if ($publicSessionAddon->getValue()->getParams()['display_import_public_file_action'] == 1)
+		{
+			$wa->registerAndUseScript('mod_emundus_applications.publicaccess', 'modules/mod_emundus_applications/script/publicaccess.js');
+			$displayImportPublicFilesAction = true;
+		}
+	}
 
 	$document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->');
 	$document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->');
