@@ -74,6 +74,7 @@
 import axios from 'axios';
 import Attachments from '@/views/Attachments.vue';
 import filesService from '@/services/files.js';
+import applicationService from '@/services/application.js';
 import errors from '@/mixins/errors.js';
 import Comments from '@/views/Comments.vue';
 import Modal from '@/components/Modal.vue';
@@ -169,23 +170,43 @@ export default {
 			}
 
 			if (typeof this.$props.file == 'string') {
-				filesService.getFile(fnum).then((result) => {
-					if (result.status == 1) {
-						this.$props.file = result.data;
-						this.access = result.rights;
-						this.updateURL(this.$props.file.fnum);
-						this.getApplicationForm();
-						if (this.$props.type === 'evaluation') {
-							this.getEvaluationForm();
-						}
-					} else {
-						this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', 'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC').then(
-							(confirm) => {
-								if (confirm === true) {
-									this.showModal = false;
+				applicationService.getByFnum(fnum).then((result) => {
+					if (result.status) {
+						this.$props.file = {
+							fnum: result.data.fnum,
+							applicant_id: result.data.owner_id,
+							applicant_name: result.data.user,
+							campaign: result.campaign_id,
+							is_anonym: 0,
+							status: result.status.label,
+							status_color: result.status.color,
+						};
+
+						applicationService.getUserAccessRightsUponFnum(result.data.fnum).then((response) => {
+							if (response.status) {
+								this.access = response.data;
+
+								this.updateURL(this.$props.file.fnum);
+								this.getApplicationForm();
+								if (this.$props.type === 'evaluation') {
+									this.getEvaluationForm();
 								}
-							},
-						);
+							} else {
+								this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', result.msg).then((confirm) => {
+									if (confirm === true) {
+										this.showModal = false;
+									}
+								});
+								this.loading = false;
+							}
+						});
+					} else {
+						this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', result.msg).then((confirm) => {
+							if (confirm === true) {
+								this.showModal = false;
+							}
+						});
+						this.loading = false;
 					}
 				});
 			} else {
