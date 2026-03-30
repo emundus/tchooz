@@ -2,7 +2,7 @@
 	<div id="form-builder-page">
 		<div
 			v-if="canUpdate"
-			class="tw-flex tw-flex-col tw-rounded-coordinator tw-border-2 tw-border-transparent tw-p-2 hover:tw-border-profile-full hover:tw-bg-neutral-300"
+			class="tw-flex tw-flex-col tw-rounded-md tw-border-2 tw-border-transparent tw-p-2 hover:tw-border-profile-full hover:tw-bg-neutral-300"
 		>
 			<div class="tw-flex tw-cursor-pointer tw-items-center tw-justify-between">
 				<span

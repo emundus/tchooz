@@ -126,7 +126,7 @@ list-style: none;
 
 #catalogue_container.mod_emundus_campaign__content {
     flex: 0 0 77%;
-    width: min-content !important;
+    width: 77% !important;
     margin-top: 0;
 }
 
@@ -146,6 +146,10 @@ list-style: none;
     box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
     border-radius: 16px;
     height: auto;
+}
+
+.fabrikFiltersBlock .filtertable .em-filter-body div > p:nth-child(2) > select {
+	width: 100%;
 }
 
 .catalogue_filters_container .fabrik_filter_submit.button {
@@ -269,18 +273,31 @@ list-style: none;
 	height: auto;
 	align-items: center;
 	gap: 16px;
+	min-height: 0;
 }
 
 #catalogue_container.tabs  .mod_emundus_campaign__list_items_tabs .mod_emundus_campaign__list_content_container {
   flex: 1 0 0 ;
+  min-width: 0;
 }
 
+#catalogue_container.tabs  .mod_emundus_campaign__list_items_tabs .mod_emundus_campaign__list_content_container > div:first-child {
+	gap: 16px;
+}
 
 #catalogue_container.tabs  .mod_emundus_campaign__list_items_tabs .mod_emundus_campaign__list_content_container .em-text-neutral-600 {
    display: flex;
     gap: 16px;
     flex-wrap: wrap;
     justify-content: space-between;
+}
+
+#catalogue_container.tabs  .mod_emundus_campaign__list_items_tabs .mod_emundus_campaign__list_content_container .em-text-neutral-600 > div:nth-child(2) {
+	width: 100%;
+}
+
+#catalogue_container.tabs  .mod_emundus_campaign__list_items_tabs .mod_emundus_campaign__list_content_container .em-text-neutral-600 > div:nth-child(2) > p {
+	width: 100% !important;
 }
 
 #catalogue_container.tabs .container-actions button {
@@ -371,7 +388,7 @@ form.fabrikForm select {
 	}
 	
 	.catalogue_filters_container .em-filter-intro h4::after {
-	    left: 20px;
+	    left: 16px;
 	}
 	
 	.fabrikDataContainer > .em-mb-16 {
@@ -464,6 +481,12 @@ form.fabrikForm select {
    #catalogue_container .mod_emundus_campaign__list_items {
 		   grid-template-columns: repeat(2, minmax(200px, 1fr)) !important;
 	} 
+}
+
+@media screen and (max-width: 908px) {
+	.catalogue form .catalogue_filters_container {
+		flex: 0 0 77%;
+	}
 }
 
 @media screen and (max-width: 1352px) {

@@ -753,6 +753,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			$params['average_multiple_elements'] = json_encode([
 				'average_multiple_element' => [''],
 				'average_multiple_weight'  => ['1'],
+				'average_multiple_max' => ['20'],
 			]);
 			$params['used_as_total']             = 0;
 		}

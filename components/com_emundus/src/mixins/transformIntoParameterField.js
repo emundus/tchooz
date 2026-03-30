@@ -225,6 +225,7 @@ export default {
 					if (values[group.id] && Array.isArray(values[group.id])) {
 						group.rows = values[group.id].map((rowValues) => {
 							return {
+								id: Date.now() + Math.random(),
 								parameters: group.parameters.map((parameter) => {
 									let paramCopy = JSON.parse(JSON.stringify(parameter));
 									// set value from rowValues

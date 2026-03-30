@@ -21,7 +21,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
         attachedToForm: function () {
             this.options.elements_to_observe.each(function (element) {
                 if (element.weight) {
-                    this.weight += parseInt(element.weight);
+                    this.weight += parseFloat(element.weight);
                 }
             }.bind(this));
 
@@ -66,73 +66,62 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
         },
 
         calc: function(event, element_to_observe) {
-            if (this.weight < 1) {
+            if (this.weight <= 0) {
                 return;
             }
 
-            // get all elements to observe values
-            let values = [];
+            // weighted values: array of {value, weight}
+            let weightedValues = [];
 
             this.options.elements_to_observe.each(function (element) {
+                let elementWeight = parseFloat(element.weight) || 0;
+
                 if (this.form.formElements[element.element]) {
                     let elementValue = this.form.formElements[element.element].getValue();
 
                     if (isNaN(elementValue) || elementValue === '') {
-                        values.push(0);
+                        weightedValues.push({value: 0, weight: elementWeight});
                     } else {
                         // normalize value to averageOver
                         elementValue = (parseFloat(elementValue) * this.averageOver) / element.max;
-
-                        // push element as much as its weight, and normalized to averageOver
-                        for (var i = 0; i < parseInt(element.weight); i++) {
-                            values.push(parseFloat(elementValue));
-                        }
+                        weightedValues.push({value: parseFloat(elementValue), weight: elementWeight});
                     }
                 } else {
                     this.form.repeatGroupMarkers.each(function (index, group_id) {
 
                         let nb_repeat = 0;
-                        let repeat_values = [];
+                        let repeat_sum = 0;
 
                         for (let i = 0; i < index; i++) {
                             if (this.form.formElements[element.element + '_' + i] && this.form.formElements[element.element + '_' + i].groupid == group_id) {
                                 let elementValue = this.form.formElements[element.element + '_' + i].getValue();
 
                                 if (isNaN(elementValue) || elementValue === '') {
-                                    repeat_values.push(0);
+                                    repeat_sum += 0;
                                 } else {
                                     elementValue = (parseFloat(elementValue) * this.averageOver) / element.max;
-
-                                    // push element as much as its weight
-                                    for (var j = 0; j < parseInt(element.weight); j++) {
-                                        repeat_values.push(parseFloat(elementValue));
-                                    }
+                                    repeat_sum += parseFloat(elementValue);
                                 }
                                 nb_repeat++;
                             }
                         }
 
                         if (nb_repeat > 0) {
-                            // avg of repeat_values
-                            let sum = 0;
-                            repeat_values.each(function (value) {
-                                sum += parseFloat(value);
-                            });
-
-                            let average = parseFloat(sum / nb_repeat).toFixed(2);
-                            values.push(average);
+                            // avg of repeat values, then apply weight
+                            let repeatAverage = repeat_sum / nb_repeat;
+                            weightedValues.push({value: repeatAverage, weight: elementWeight});
                         }
                     }.bind(this));
                 }
             }.bind(this));
 
-            // calculate average
-            let sum = 0;
-            values.each(function (value) {
-                sum += parseFloat(value);
+            // calculate weighted average: sum(value * weight) / sum(weight)
+            let weightedSum = 0;
+            weightedValues.each(function (item) {
+                weightedSum += item.value * item.weight;
             });
 
-            let average = parseFloat(sum / this.weight).toFixed(2);
+            let average = parseFloat(weightedSum / this.weight).toFixed(2);
 
             // set average value
             this.update(average);
