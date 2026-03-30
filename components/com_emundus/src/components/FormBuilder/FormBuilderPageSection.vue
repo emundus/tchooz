@@ -15,7 +15,7 @@
 			<div class="section-content em-p-32 tw-w-full" :class="{ closed: closedSection }">
 				<div
 					v-if="canUpdate"
-					class="tw-flex tw-cursor-pointer tw-flex-col tw-rounded-coordinator tw-border-2 tw-border-transparent tw-p-2 hover:tw-border-profile-full hover:tw-bg-neutral-300"
+					class="tw-flex tw-cursor-pointer tw-flex-col tw-rounded-md tw-border-2 tw-border-transparent tw-p-2 hover:tw-border-profile-full hover:tw-bg-neutral-300"
 				>
 					<div class="tw-flex tw-w-full tw-items-center tw-justify-between">
 						<label
