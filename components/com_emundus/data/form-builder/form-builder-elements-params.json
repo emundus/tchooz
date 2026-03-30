@@ -713,14 +713,14 @@
           "sysadmin_only": false
         },
         {
-          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_NUMBERS",
-          "name": "decimal_numbers",
-          "type": "number",
-          "helptext": "",
-          "placeholder": "",
-          "published": true,
-          "sysadmin_only": false
-        }
+					"label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_NUMBERS",
+					"name": "decimal_numbers",
+					"type": "number",
+					"helptext": "",
+					"placeholder": "",
+					"published": true,
+					"sysadmin_only": false
+				}
       ]
     }
   ],
@@ -786,7 +786,8 @@
 					"helptext": "",
 					"placeholder": "",
 					"published": true,
-					"sysadmin_only": false
+					"sysadmin_only": false,
+					"default": 20
 				}
       ]
     }

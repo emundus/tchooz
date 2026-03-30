@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="form-builder-page-section-element tw-my-3 tw-flex tw-flex-col tw-items-start tw-justify-start tw-rounded-coordinator tw-border-2 tw-border-transparent tw-p-3"
+		class="form-builder-page-section-element test tw-my-3 tw-flex tw-flex-col tw-items-start tw-justify-start tw-rounded-md tw-border-2 tw-border-transparent tw-p-3"
 		:id="'element_' + element.id"
 		v-show="element.publish !== -2"
 		:class="{
