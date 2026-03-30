@@ -24,6 +24,13 @@ if ($pageClass !== '') :
 	echo '<div class="' . $pageClass . '">';
 endif;
 
+$notes = $this->params->get('note', '');
+if(!empty($notes)){
+    $notes = explode(',',$notes);
+} else {
+    $notes = [];
+}
+
 if ($this->tablePicker != '') : ?>
     <div style="text-align:right"><?php echo Text::_('COM_FABRIK_LIST') ?>: <?php echo $this->tablePicker; ?></div>
 <?php
@@ -80,10 +87,12 @@ endif;
 	            <?php if ($this->showFilters) : ?>
                 <div class="em-flex-row em-flex-space-between em-mb-16">
 	                <h1><?php $title = explode(' - ', $this->table->label); echo $title = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0])); ?></h1>
-                    <div class="em-flex-row-justify-end em-gap-8 fabrik-switch-view-buttons">
-                        <button type="button" onclick="switchView('list')" class="em-pointer material-symbols-outlined fabrik-switch-view-icon active" id="fabrik_switch_view_list_icon">menu</button>
-                        <button type="button" onclick="switchView('grid')" class="em-pointer material-symbols-outlined fabrik-switch-view-icon" id="fabrik_switch_view_grid_icon">grid_view</button>
-                    </div>
+                    <?php if(!in_array('list_only', $notes) && !in_array('grid_only', $notes)) : ?>
+                        <div class="em-flex-row-justify-end em-gap-8 fabrik-switch-view-buttons">
+                            <button type="button" onclick="switchView('list')" class="em-pointer material-symbols-outlined fabrik-switch-view-icon active" id="fabrik_switch_view_list_icon">menu</button>
+                            <button type="button" onclick="switchView('grid')" class="em-pointer material-symbols-outlined fabrik-switch-view-icon" id="fabrik_switch_view_grid_icon">grid_view</button>
+                        </div>
+                    <?php endif; ?>
                 </div>
 	            <?php if ($this->showFilters) : ?>
                 <div class="em-w-100 em-mb-16">
@@ -139,6 +148,18 @@ endif;
 
   window.addEventListener('DOMContentLoaded', (event) => {
 	  let selected_view = sessionStorage.getItem('catalogue___selected_view');
+      <?php if(in_array('default_grid', $notes)) : ?>
+          if(selected_view === null){
+              selected_view = 'grid';
+          }
+      <?php endif; ?>
+
+      <?php if(in_array('list_only', $notes)) : ?>
+      selected_view = 'list';
+      <?php elseif(in_array('grid_only', $notes)) : ?>
+      selected_view = 'grid';
+      <?php endif; ?>
+
 	  if (selected_view !== null) {
 		  this.switchView(selected_view);
 	  }
@@ -150,14 +171,18 @@ endif;
             case 'list':
                 document.getElementById("catalogue_container").classList.add("tabs");
                 document.getElementById("catalogue_container").classList.remove("cards");
-                document.getElementById("fabrik_switch_view_list_icon").classList.add("active");
-                document.getElementById("fabrik_switch_view_grid_icon").classList.remove("active");
+                <?php if(!in_array('list_only', $notes) && !in_array('grid_only', $notes)) : ?>
+                    document.getElementById("fabrik_switch_view_list_icon").classList.add("active");
+                    document.getElementById("fabrik_switch_view_grid_icon").classList.remove("active");
+                <?php endif; ?>
                 break;
             case 'grid':
                 document.getElementById("catalogue_container").classList.remove("tabs");
                 document.getElementById("catalogue_container").classList.add("cards");
-                document.getElementById("fabrik_switch_view_list_icon").classList.remove("active");
-                document.getElementById("fabrik_switch_view_grid_icon").classList.add("active");
+                <?php if(!in_array('list_only', $notes) && !in_array('grid_only', $notes)) : ?>
+                    document.getElementById("fabrik_switch_view_list_icon").classList.remove("active");
+                    document.getElementById("fabrik_switch_view_grid_icon").classList.add("active");
+                <?php endif; ?>
                 break;
 
         }
