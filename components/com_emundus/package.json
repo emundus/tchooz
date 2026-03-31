@@ -23,7 +23,7 @@
     "@schedule-x/translations": "^4.1.0",
     "@schedule-x/vue": "^4.0.0",
     "autoprefixer": "^10.4.23",
-    "axios": "^1.13.2",
+    "axios": "1.14.0",
     "dompurify": "^3.3.1",
     "fusioncharts": "^4.2.0",
     "libphonenumber-js": "^1.12.34",
