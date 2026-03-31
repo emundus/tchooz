@@ -22,6 +22,9 @@ use Tchooz\Repositories\Automation\EventsRepository;
  *
  * @since       version 1.0.0
  * @covers      \Tchooz\Repositories\Automation\AutomationRepository
+ * @covers      \Tchooz\Repositories\Automation\ConditionRepository
+ * @covers      \Tchooz\Repositories\Automation\ActionRepository
+ * @covers      \Tchooz\Repositories\Automation\TargetRepository
  */
 class AutomationRepositoryTest extends UnitTestCase
 {
@@ -233,6 +236,10 @@ class AutomationRepositoryTest extends UnitTestCase
 
 	/**
 	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::duplicateAutomation
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::cloneConditionGroupRecursive
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::flush
+	 * @covers \Tchooz\Repositories\Automation\ConditionRepository::saveGroupCondition
+	 * @covers \Tchooz\Repositories\Automation\ConditionRepository::saveCondition
 	 * @return void
 	 */
 	public function testDuplicateAutomation(): void
@@ -251,11 +258,22 @@ class AutomationRepositoryTest extends UnitTestCase
 		$automationToDuplicate->addAction($action);
 		$condition	  = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
 		$conditionGroup = new ConditionGroupEntity(0, [$condition]);
+
+		$subCondition = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'campaign_id', ConditionOperatorEnum::EQUALS, 5);
+		$subGroup = new ConditionGroupEntity(0, [$subCondition], ConditionsAndorEnum::OR);
+		$conditionGroup->addSubGroup($subGroup);
+
 		$automationToDuplicate->addConditionGroup($conditionGroup);
 
 		$saved = $this->repository->flush($automationToDuplicate);
 		$this->assertTrue($saved);
 		$this->h_dataset->addToSamples('automations', $automationToDuplicate->getId());
+
+		$this->assertGreaterThan(0, $automationToDuplicate->getId(), 'Condition group ID should not be empty after save');
+		$this->assertGreaterThan(0, $conditionGroup->getId(), 'Condition group ID should not be empty after save');
+		$this->assertGreaterThan(0, $condition->getId(), 'Condition ID should not be empty after save');
+		$this->assertGreaterThan(0, $subGroup->getId(), 'Sub group ID should not be empty after save');
+		$this->assertGreaterThan(0, $subCondition->getId(), 'Sub condition ID should not be empty after save');
 
 		$duplicatedAutomation = $this->repository->duplicateAutomation($automationToDuplicate);
 		$this->assertNotNull($duplicatedAutomation);
@@ -269,6 +287,34 @@ class AutomationRepositoryTest extends UnitTestCase
 		$this->assertCount(1, $duplicatedAutomation->getActions(), 'There should be one action in the duplicated automation');
 		$this->assertEquals($automationToDuplicate->getActions()[0]->getParameterValue(ActionUpdateStatus::STATUS_PARAMETER), $duplicatedAutomation->getActions()[0]->getParameterValue(ActionUpdateStatus::STATUS_PARAMETER), 'Action parameters should be the same');
 		$this->assertNotEquals($automationToDuplicate->getActions()[0]->getId(), $duplicatedAutomation->getActions()[0]->getId(), 'Action IDs should be different');
+
+		// Verify that the conditions and conditions groups are duplicated, but have different IDs
+		$this->assertCount(count($automationToDuplicate->getConditionsGroups()), $duplicatedAutomation->getConditionsGroups(), 'There should be the same number of condition groups');
+		$originalGroup = $automationToDuplicate->getConditionsGroups()[0];
+		$duplicatedGroup = $duplicatedAutomation->getConditionsGroups()[0];
+		$this->assertNotEquals($originalGroup->getId(), $duplicatedGroup->getId(), 'Condition group IDs should be different');
+		$this->assertCount(count($originalGroup->getConditions()), $duplicatedGroup->getConditions(), 'There should be the same number of conditions in the group');
+		$this->assertNotEquals($originalGroup->getConditions()[0]->getId(), $duplicatedGroup->getConditions()[0]->getId(), 'Condition IDs should be different');
+		$this->assertEquals($duplicatedGroup->getId(), $duplicatedGroup->getConditions()[0]->getGroupId(), 'Duplicated condition should be linked to the duplicated group');
+		$this->assertEquals($originalGroup->getConditions()[0]->getField(), $duplicatedGroup->getConditions()[0]->getField(), 'Condition fields should be the same');
+		$this->assertEquals($originalGroup->getConditions()[0]->getOperator(), $duplicatedGroup->getConditions()[0]->getOperator(), 'Condition operators should be the same');
+		$this->assertEquals($originalGroup->getConditions()[0]->getValue(), $duplicatedGroup->getConditions()[0]->getValue(), 'Condition values should be the same');
+
+		// Verify that subgroups are duplicated recursively with different IDs and correct links
+		$this->assertCount(count($originalGroup->getSubGroups()), $duplicatedGroup->getSubGroups(), 'There should be the same number of subgroups');
+		$originalSubGroup = $originalGroup->getSubGroups()[0];
+		$duplicatedSubGroup = $duplicatedGroup->getSubGroups()[0];
+		$this->assertNotEquals($originalSubGroup->getId(), $duplicatedSubGroup->getId(), 'Subgroup IDs should be different');
+		$this->assertGreaterThan(0, $duplicatedSubGroup->getId(), 'Duplicated subgroup ID should not be empty');
+		$this->assertEquals($originalSubGroup->getOperator(), $duplicatedSubGroup->getOperator(), 'Subgroup operators should be the same');
+		$this->assertEquals($duplicatedGroup->getId(), $duplicatedSubGroup->getParentId(), 'Duplicated subgroup parent_id should reference the duplicated parent group');
+		$this->assertCount(count($originalSubGroup->getConditions()), $duplicatedSubGroup->getConditions(), 'There should be the same number of conditions in the subgroup');
+		$this->assertNotEquals($originalSubGroup->getConditions()[0]->getId(), $duplicatedSubGroup->getConditions()[0]->getId(), 'Subgroup condition IDs should be different');
+		$this->assertGreaterThan(0, $duplicatedSubGroup->getConditions()[0]->getId(), 'Duplicated subgroup condition ID should not be empty');
+		$this->assertEquals($duplicatedSubGroup->getId(), $duplicatedSubGroup->getConditions()[0]->getGroupId(), 'Duplicated subgroup condition should be linked to the duplicated subgroup');
+		$this->assertEquals($originalSubGroup->getConditions()[0]->getField(), $duplicatedSubGroup->getConditions()[0]->getField(), 'Subgroup condition fields should be the same');
+		$this->assertEquals($originalSubGroup->getConditions()[0]->getOperator(), $duplicatedSubGroup->getConditions()[0]->getOperator(), 'Subgroup condition operators should be the same');
+		$this->assertEquals($originalSubGroup->getConditions()[0]->getValue(), $duplicatedSubGroup->getConditions()[0]->getValue(), 'Subgroup condition values should be the same');
 
 		// Verify that the target of the action is also duplicated
 		$this->assertCount(1, $duplicatedAutomation->getActions()[0]->getTargets(), 'There should be one target in the action of the duplicated automation');

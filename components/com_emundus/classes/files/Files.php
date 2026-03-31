@@ -9,6 +9,9 @@ use Throwable;
 
 use Joomla\CMS\Factory;
 
+/**
+ * @deprecated Use ApplicationFileRepository instead
+ */
 class Files
 {
 	protected \Joomla\CMS\User\User $current_user;
@@ -205,7 +208,7 @@ class Files
 					$db->setQuery($query);
 					$status = $db->loadAssocList();
 				}
-				catch (Exception $e) {
+				catch (\Exception $e) {
 					JLog::add('Failed to get campaigns for filters ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 				}
 
@@ -312,7 +315,7 @@ class Files
 				$db->setQuery($query);
 				$this->campaigns = $db->loadAssocList();
 			}
-			catch (Exception $e) {
+			catch (\Exception $e) {
 				JLog::add('Problem when getting my campaigns : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
 			}
 		}
@@ -584,7 +587,7 @@ class Files
 				return $db->loadObject();
 			}
 		}
-		catch (Exception $e) {
+		catch (\Exception $e) {
 			JLog::add('Problem when build query with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
 
 			return 0;
@@ -625,11 +628,15 @@ class Files
 				return $db->loadObject();
 			}
 		}
-		catch (Exception $e) {
+		catch (\Exception $e) {
 			JLog::add('Problem when build query with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
-
-			return 0;
 		}
+
+		$emptyData = null;
+		if ($return == 'assoc' || $return == 'column') {
+			$emptyData = [];
+		}
+		return $emptyData;
 	}
 
 	public function buildAssocGroups($files)
@@ -692,7 +699,7 @@ class Files
 
 			return $files;
 		}
-		catch (Exception $e) {
+		catch (\Exception $e) {
 			JLog::add('Problem when build query with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
 
 			return $files;
@@ -721,7 +728,7 @@ class Files
 			}
 
 		}
-		catch (Exception $e) {
+		catch (\Exception $e) {
 			JLog::add('Problem when build query with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
 		}
 
@@ -814,7 +821,7 @@ class Files
 								$db->setQuery($query);
 								$values = $db->loadAssocList();
 							}
-							catch (Exception $e) {
+							catch (\Exception $e) {
 								JLog::add('Failed to get filter values ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 							}
 						}
@@ -912,7 +919,7 @@ class Files
 								$db->setQuery($query);
 								$element_data = $db->loadAssoc();
 							}
-							catch (Exception $e) {
+							catch (\Exception $e) {
 								$element_data = [];
 							}
 
@@ -932,7 +939,7 @@ class Files
 										$db->setQuery($query);
 										$join = $db->loadAssoc();
 									}
-									catch (Exception $e) {
+									catch (\Exception $e) {
 										$join = [];
 									}
 
@@ -1050,7 +1057,7 @@ class Files
 			$db->setQuery($query);
 			$comments = $db->loadObjectList();
 		}
-		catch (Exception $e) {
+		catch (\Exception $e) {
 			JLog::add('Problem when get comments : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
 		}
 
@@ -1074,7 +1081,7 @@ class Files
 				$db->setQuery($query);
 				$comment = $db->loadObject();
 			}
-			catch (Exception $e) {
+			catch (\Exception $e) {
 				JLog::add('Problem when get comment : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
 			}
 		}
@@ -1114,7 +1121,7 @@ class Files
 				$comment = $this->getComment($last_comment_id);
 			}
 		}
-		catch (Exception $e) {
+		catch (\Exception $e) {
 			JLog::add('Problem when save comment : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
 		}
 
@@ -1134,7 +1141,7 @@ class Files
 			$db->setQuery($query);
 			$result = $db->execute();
 		}
-		catch (Exception $e) {
+		catch (\Exception $e) {
 			JLog::add('Problem when delete comment : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
 		}
 

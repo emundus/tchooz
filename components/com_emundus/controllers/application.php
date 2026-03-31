@@ -27,6 +27,7 @@ use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnTag;
 use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\List\ListColumnTypesEnum;
@@ -41,6 +42,8 @@ use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Controller\EmundusController;
+use Tchooz\Repositories\Workflow\StepRepository;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
 
 class EmundusControllerApplication extends EmundusController
 {
@@ -3165,5 +3168,226 @@ class EmundusControllerApplication extends EmundusController
 		}
 
 		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => 'application_choices', 'mode' => CrudEnum::READ]
+	])]
+	public function exportapplicationchoicesall(): void
+	{
+		$response['code']    = 200;
+		$response['status']  = true;
+		$response['message'] = Text::_('COM_EMUNDUS_APPLICATION_CHOICES_EXPORT_EXCEL_SUCCESS');
+
+		$applicationChoicesRepository = new ApplicationChoicesRepository(false);
+		$campaignRepository = new CampaignRepository(false);
+		$applicationFileRepository = new ApplicationFileRepository(true, [CampaignRepository::class]);
+
+		// Create static cache to avoid multiple queries for the same campaign or application file when exporting all choices
+		$staticCampaigns = [];
+		$staticApplicationFiles = [];
+
+		$moreFormId   = $applicationChoicesRepository->getMoreFormId();
+		$moreElements = $applicationChoicesRepository->getChoicesMoreElements($moreFormId);
+
+		$applicationChoices           = $applicationChoicesRepository->getAllChoices('DESC', '', 0, 0, 't.id', [], null, $moreFormId);
+		if(!empty($applicationChoices->getItems()))
+		{
+			$excel_filename = 'export_application_choices_' . date('Ymd_His') . '.csv';
+			$excel_filepath = JPATH_SITE . '/tmp/' . $excel_filename;
+			$fp             = fopen($excel_filepath, 'w');
+
+			$columns = [
+				Text::_('COM_EMUNDUS_APPLICATION_CHOICE_CAMPAIGN'),
+				Text::_('COM_EMUNDUS_APPLICATION_CHOICE_STATUS'),
+				Text::_('COM_EMUNDUS_REGISTRANTS_USER'),
+				Text::_('COM_EMUNDUS_ACCESS_STATUS'),
+			];
+			foreach ($moreElements as $moreElement)
+			{
+				if($moreElement['hidden'] == 1)
+				{
+					continue;
+				}
+
+				$columns[] = $moreElement['label'];
+			}
+			fputcsv($fp, $columns, ';');
+
+			$rows = [];
+			foreach ($applicationChoices->getItems() as $applicationChoice)
+			{
+				assert($applicationChoice instanceof ApplicationChoicesEntity);
+
+				if(in_array($applicationChoice->getCampaignId(), array_keys($staticCampaigns)))
+				{
+					$campaign = $staticCampaigns[$applicationChoice->getCampaignId()];
+				}
+				else
+				{
+					$campaign = $campaignRepository->getById($applicationChoice->getCampaignId());
+					$staticCampaigns[$applicationChoice->getCampaignId()] = $campaign;
+				}
+
+				if(in_array($applicationChoice->getFnum(), array_keys($staticApplicationFiles)))
+				{
+					$applicationFile = $staticApplicationFiles[$applicationChoice->getFnum()];
+				}
+				else
+				{
+					$applicationFile = $applicationFileRepository->getByFnum($applicationChoice->getFnum());
+					$staticApplicationFiles[$applicationChoice->getFnum()] = $applicationFile;
+				}
+
+				$row = [
+					$campaign->getLabel(),
+					$applicationChoice->getState()->getLabel(),
+					$applicationFile->getUser()->name,
+					$applicationFile->getStatus()->getLabel(),
+				];
+
+				foreach ($moreElements as $moreElement)
+				{
+					if($moreElement['hidden'] == 1)
+					{
+						continue;
+					}
+
+					$row[] = (isset($applicationChoice->getMoreProperties()[$moreElement['name']]) && !empty($applicationChoice->getMoreProperties()[$moreElement['name']]['formatted_value'])) ? $applicationChoice->getMoreProperties()[$moreElement['name']]['formatted_value'] : '';
+				}
+				$rows[] = $row;
+
+				fputcsv($fp, $row, ';');
+			}
+
+			fclose($fp);
+
+			$nb_cols = count($columns);
+			$nb_rows = count($rows);
+
+			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/users.php');
+			$m_users  = new EmundusModelUsers();
+			$xls_file = $m_users->convertCsvToXls($excel_filename, $nb_cols, $nb_rows, 'export_application_choices_' . date('Ymd_His'), ';');
+
+			$excel_filepath = '';
+			if (!empty($xls_file))
+			{
+				$excel_filepath = JPATH_SITE . '/tmp/' . $xls_file;
+			}
+
+			header('Content-Type: application/vnd.ms-excel');
+			header('Content-Disposition: attachment; filename="' . basename($excel_filepath) . '"');
+			header('Content-Length: ' . filesize($excel_filepath));
+
+			$response['download_file'] = Uri::root() . 'tmp/' . basename($excel_filepath);
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(AccessLevelEnum::PARTNER, [
+		['id' => 1, 'mode' => CrudEnum::READ]
+	])]
+	public function getByFnum(): EmundusResponse
+	{
+		$this->checkToken('get');
+		$response = new EmundusResponse(false, Text::_('ACCESS_DENIED'), 403);
+
+		$fnum = $this->app->getInput()->getString('fnum', '');
+
+		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(1, CrudEnum::READ->value, $this->user->id, $fnum))
+		{
+			$applicationFileRepository = new ApplicationFileRepository();
+			$applicationFile = $applicationFileRepository->getByFnum($fnum);
+
+			if (!empty($applicationFile))
+			{
+				$response = new EmundusResponse(true, Text::_('APPLICATION_FILE_RETRIEVED'), 200, $applicationFile->__serialize());
+			}
+			else
+			{
+				$response = new EmundusResponse(false, Text::_('APPLICATION_FILE_NOT_FOUND'), 404);
+			}
+		}
+
+		return $response;
+	}
+
+	#[AccessAttribute(AccessLevelEnum::PARTNER, [
+		['id' => 1, 'mode' => CrudEnum::READ]
+	])]
+	public function getUserAccessRightsUponFnum(): EmundusResponse
+	{
+		$this->checkToken('get');
+
+		$response = new EmundusResponse(false, Text::_('ACCESS_DENIED'), 403);
+		$fnum = $this->app->getInput()->getString('fnum', '');
+
+		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(1, CrudEnum::READ->value, $this->user->id, $fnum))
+		{
+			// TODO: maybe use action enum
+			$evaluationActionIds = [5];
+
+			$workflowRepository = new WorkflowRepository();
+			$workflow = $workflowRepository->getWorkflowByFnum($fnum, true);
+
+			if (!empty($workflow))
+			{
+				foreach ($workflow->getSteps() as $step)
+				{
+					if ($step->isEvaluationStep())
+					{
+						if (!in_array($step->getType()->getId(), $evaluationActionIds))
+						{
+							$evaluationActionIds[] = $step->getType()->getId();
+						}
+					}
+				}
+			}
+
+			$evalAccesses = [
+				'r' => false,
+				'u' => false,
+				'c' => false
+			];
+			foreach ($evaluationActionIds as $actionId)
+			{
+				foreach ($evalAccesses as $mode => $value)
+				{
+					if (EmundusHelperAccess::asAccessAction($actionId, $mode, $this->user->id, $fnum))
+					{
+						$evalAccesses[$mode] = true;
+					}
+				}
+			}
+
+			$accessByActions = [
+				1  => [
+					'r' => \EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id, $fnum)
+				],
+				4 => [
+					'r' => \EmundusHelperAccess::asAccessAction(4, 'r', $this->user->id, $fnum),
+					'u' => \EmundusHelperAccess::asAccessAction(4, 'u', $this->user->id, $fnum),
+					'c' => \EmundusHelperAccess::asAccessAction(4, 'c', $this->user->id, $fnum),
+				],
+				5 => $evalAccesses,
+				10 => [
+					'r' => \EmundusHelperAccess::asAccessAction(10, 'r', $this->user->id, $fnum),
+					'c' => \EmundusHelperAccess::asAccessAction(10, 'c', $this->user->id, $fnum),
+					'u' => \EmundusHelperAccess::asAccessAction(10, 'u', $this->user->id, $fnum),
+					'd' => \EmundusHelperAccess::asAccessAction(10, 'd', $this->user->id, $fnum),
+				],
+				36 => [
+					'r' => \EmundusHelperAccess::asAccessAction(36, 'r', $this->user->id, $fnum),
+					'c' => \EmundusHelperAccess::asAccessAction(36, 'c', $this->user->id, $fnum),
+					'u' => \EmundusHelperAccess::asAccessAction(36, 'u', $this->user->id, $fnum),
+					'd' => \EmundusHelperAccess::asAccessAction(36, 'd', $this->user->id, $fnum),
+				]
+			];
+
+			$response = EmundusResponse::ok($accessByActions);
+		}
+
+		return $response;
 	}
 }
