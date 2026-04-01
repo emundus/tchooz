@@ -164,9 +164,9 @@ class Stripe
 					}
 
 					if (!empty($alteration->getProduct()) && $alteration->getProduct()->getId() === $product->getId()) {
-						if ($alteration->getType() === AlterationType::TYPE_FIXED) {
+						if ($alteration->getType() === AlterationType::FIXED) {
 							$items[] = $factory->createStripeItem($alteration->getAmount(), $transaction->getCurrency(), $alteration->getDescription(), '', 1, ['type' => 'alteration']);
-						} elseif ($alteration->getType() === AlterationType::TYPE_PERCENTAGE) {
+						} elseif ($alteration->getType() === AlterationType::PERCENTAGE) {
 							$amount_of_product += ($amount_of_product * $alteration->getAmount() / 100);
 						}
 					}
@@ -180,9 +180,9 @@ class Stripe
 				}
 
 				if (empty($alteration->getProduct())) {
-					if ($alteration->getType() === AlterationType::TYPE_FIXED) {
+					if ($alteration->getType() === AlterationType::FIXED) {
 						$items[] = $factory->createStripeItem($alteration->getAmount(), $transaction->getCurrency(), $alteration->getDescription(), '', 1, ['type' => 'alteration']);
-					} elseif ($alteration->getType() === AlterationType::TYPE_PERCENTAGE) {
+					} elseif ($alteration->getType() === AlterationType::PERCENTAGE) {
 						$alteration_amount = 0;
 						foreach ($items as &$item) {
 							if (isset($item['price_data']['unit_amount'])) {
