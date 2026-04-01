@@ -18,13 +18,10 @@ use Joomla\CMS\MVC\Controller\BaseController;
  */
 class RulesLogsController extends BaseController
 {
-    
-
-    /* Redirecciona las peticiones al componente */
-    function redireccion()
-    {
+    /**
+	 * Redirecciona las peticiones al componente
+	 */
+    function redireccion():void {
         $this->setRedirect('index.php?option=com_securitycheckpro&controller=rules&view=rules&'. Session::getFormToken() .'=1');
     }
-
-
 }

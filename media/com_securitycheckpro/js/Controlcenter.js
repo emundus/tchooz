@@ -5,6 +5,21 @@
  */
 "use strict";
 
+	document.addEventListener('DOMContentLoaded', function () {
+		// Botones de "Más info"
+		document.querySelectorAll('.js-info').forEach(function (btn) {
+			btn.addEventListener('click', function () {
+				var title = this.dataset.title || '';
+				var body  = this.dataset.body  || '';
+				if (typeof configure_toast === 'function') {
+					configure_toast(title, body);
+				} else {
+					console.error('configure_toast not defined');
+				}
+			});
+		});
+	});
+
     var Password = {
  
       _pattern : /[a-zA-Z0-9]/, 

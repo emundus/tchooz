@@ -31,7 +31,15 @@
 			<option value="0">COM_SECURITYCHECKPRO_NO</option>
 		</field>		
 		
-		<field name="avoid_proxies" type="radio" default="0" label="COM_SECURITYCHECKPRO_AVOID_PROXIES_LABEL" description="COM_SECURITYCHECKPRO_AVOID_PROXIES_DESCRIPTION">
+		<field name="trust_ip_overrides" type="radio" default="0" label="COM_SECURITYCHECKPRO_TRUST_IP_OVERRIDES_LABEL" description="COM_SECURITYCHECKPRO_TRUST_IP_OVERRIDES_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		
+		<field name="trusted_proxies" type="text" default="" size="30" label="COM_SECURITYCHECKPRO_TRUSTED_PROXIES_CSV_LABEL" description="COM_SECURITYCHECKPRO_TRUSTED_PROXIES_CSV_DESCRIPTION">	
+		</field>
+		
+		<field name="allow_overrides_when_remote_is_private" type="radio" default="0" label="COM_SECURITYCHECKPRO_ALLOW_OVERRIDES_WHEN_REMOTE_IS_PRIVATE" description="COM_SECURITYCHECKPRO_ALLOW_OVERRIDES_WHEN_REMOTE_IS_PRIVATE_DESC">
 			<option value="1">COM_SECURITYCHECKPRO_YES</option>
 			<option value="0">COM_SECURITYCHECKPRO_NO</option>
 		</field>

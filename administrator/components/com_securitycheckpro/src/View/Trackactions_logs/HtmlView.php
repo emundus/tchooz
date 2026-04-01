@@ -14,14 +14,42 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
-use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use Joomla\CMS\Form\Form;
+use Joomla\CMS\Pagination\Pagination;
+use Joomla\Registry\Registry;
+use Joomla\CMS\Application\CMSApplication;
 
-
-/**
- * Main Admin View
- */
 class HtmlView extends BaseHtmlView {
     
+	/**
+	 * The model state
+	 *
+	 * @since  1.6
+	 * @var    Registry
+	 */
+	public $state;
+	
+	/**
+	 * Pagination object
+	 *
+	 * @var Pagination
+	 */
+	public $pagination = null;
+	
+	/**
+	 * The search tools form
+	 *
+	 * @var    Form|null	 
+	 */
+	public $filterForm;
+	
+	/**
+	 * Los items a mostrar
+	 *
+	 * @var array<string,mixed>|null
+	 */
+    public $items = [];
+	
     /**
      * Display the main view
      *
@@ -30,20 +58,22 @@ class HtmlView extends BaseHtmlView {
      */
     function display($tpl = null) {
 		
-		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_TRACKACTIONS_LOGS_TEXT'), 'securitycheckpro');
-        if (Factory::getApplication()->getIdentity()->authorise('core.delete', 'com_securitycheckpro')) {
-            ToolBarHelper::custom('delete', 'delete', 'delete', 'COM_SECURITYCHECKPRO_DELETE');
-            ToolBarHelper::custom('delete_all', 'delete', 'delete', 'COM_SECURITYCHECKPRO_DELETE_ALL', false);
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+        $app     = Factory::getApplication();
+		
+		ToolbarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_TRACKACTIONS_LOGS_TEXT'), 'securitycheckpro');
+        if ($app->getIdentity()->authorise('logs.deleteall', 'com_securitycheckpro')) {
+            ToolbarHelper::custom('delete', 'delete', 'delete', 'COM_SECURITYCHECKPRO_DELETE');
+            ToolbarHelper::custom('delete_all', 'delete', 'delete', 'COM_SECURITYCHECKPRO_DELETE_ALL', false);
         }
-        if (Factory::getApplication()->getIdentity()->authorise('core.admin', 'com_userlogs') || Factory::getApplication()->getIdentity()->authorise('core.options', 'com_userlogs')) {
-            ToolBarHelper::custom('exportLogs', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_EXPORT_LOGS_CSV', false);
+        if ($app->getIdentity()->authorise('logs.export', 'com_securitycheckpro')) {
+            ToolbarHelper::custom('exportLogs', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_EXPORT_LOGS_CSV', false);
         }
 		
 		// Load css and js
 		$this->document->getWebAssetManager()
-		  ->usePreset('com_securitycheckpro.common');
-
-        // Obtenemos los datos del modelo
+		  ->usePreset('com_securitycheckpro.common')
+		  ->useScript('com_securitycheckpro.Trackactions');
             
         $this->state= $this->get('State');
         $this->filterForm    = $this->get('FilterForm');
@@ -53,27 +83,15 @@ class HtmlView extends BaseHtmlView {
         $ip_address = $this->state->get('filter.ip_address');
         $daterange = $this->state->get('daterange');
             
-        $app        = Factory::getApplication();
-        $search = $app->getUserState('filter.search', '');
+		$search = $app->getUserState('filter.search', '');
         $listDirn = $this->state->get('list.direction');
         $listOrder = $this->state->get('list.ordering');
-
-        // Extraemos información necesaria 
-       $common_model = new BaseModel();
-
-        $logs_pending = $common_model->LogsPending();
-        $trackactions_plugin_exists = $common_model->PluginStatus(8);
-        $this->logs_pending = $logs_pending;
-        $this->trackactions_plugin_exists = $trackactions_plugin_exists;    
+  
 
         //  Parámetros del componente
-        $items= $this->get('Items');
-        $this->pagination = $this->get('Pagination');
-
-        // ... y los ponemos en el template
-        $this->items = $items;
-
-        if (!empty($items)) {
+        $this->items = $this->get('Items');
+       
+        if (!empty($this->items)) {
             $this->pagination = $this->get('Pagination');            
         }
         

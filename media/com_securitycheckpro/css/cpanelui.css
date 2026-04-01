@@ -987,3 +987,273 @@ footer.sticky-footer {
 .pull-right{
 	float: right !important;
 }
+
+/* ===== Modo compacto global ===== */
+#adminForm.scp-compact .nav-tabs .nav-link { padding:.35rem .75rem; font-size:.95rem; }
+#adminForm.scp-compact .alert { padding:.55rem .8rem; font-size:.95rem; }
+#adminForm.scp-compact .form-select, 
+#adminForm.scp-compact .form-control { font-size:.9rem; }
+#adminForm.scp-compact .btn { font-size:.9rem; }
+
+/* Campos en grid */
+#adminForm .scp-field .fw-semibold { font-size:.95rem; }
+#adminForm .scp-field small { font-size:.82rem; color:#6c757d; }
+
+/* Badges "applied" bien alineados */
+#adminForm .scp-applied { white-space:nowrap; }
+
+/* Textareas compactas por defecto */
+#adminForm .scp-textarea {
+  min-height: 90px;
+  max-height: 160px;
+  resize: vertical;
+  line-height: 1.2;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: .9rem;
+}
+
+/* Textarea expandida (igual) */
+#adminForm .scp-textarea.is-expanded {
+  position: fixed;
+  left: 50%;
+  top: 8vh;
+  transform: translateX(-50%);
+  width: min(1200px, 92vw);
+  height: 70vh;
+  max-height: 70vh;
+  z-index: 1060;
+  background: #fff;
+  box-shadow: 0 1rem 2rem rgba(0,0,0,.2);
+  resize: none;
+  border-radius: .5rem;
+}
+
+/* Botón Expand/Close por defecto (pequeño) */
+#adminForm .scp-expander {
+  position: absolute;
+  right: .5rem;
+  bottom: .5rem;
+  z-index: 1061;
+  padding: .2rem .5rem;
+}
+
+/* Botón Close cuando expandido:
+   pequeño, en la ESQUINA SUPERIOR DERECHA del overlay */
+#adminForm .scp-expander.is-expanded {
+  position: fixed;
+  /* borde derecho del overlay */
+  right: calc((100vw - min(1200px, 92vw)) / 2 + .75rem);
+  top: calc(8vh + .75rem);
+  bottom: auto;
+  left: auto;
+  z-index: 1062;
+  padding: .25rem .6rem;
+}
+
+/* Evita que el botón crezca raro en algunos temas */
+#adminForm .scp-expander.btn {
+  display: inline-block;
+  min-width: auto;
+  width: auto;
+  height: auto;
+}
+
+
+/* Ajustes responsive */
+@media (max-width: 1200px) {
+  #adminForm.scp-compact .nav-tabs .nav-link { font-size:.9rem; }
+}
+
+/* Evita la barra horizontal en desktop, permítela en móvil si hiciera falta */
+.scp-wrap { overflow-x: auto; }
+@media (min-width: 992px) { /* ≥lg */
+  .scp-wrap { overflow-x: visible !important; }
+}
+
+/* Más aire entre filas y separación visual suave */
+#adminForm .scp-field {
+  margin: .35rem 0;
+  padding: .5rem 0;
+  border-top: 1px solid var(--bs-border-color, rgba(0,0,0,.075));
+}
+#adminForm .scp-field:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+
+/* Mueve SOLO el expander de backend_exceptions a la parte superior derecha */
+#backend_exceptions + .scp-expander {
+  top: .5rem;
+  right: .5rem;
+  bottom: auto;           /* ya no en la esquina inferior */
+}
+
+/* Asegura que el dropdown manda siempre por encima */
+#adminForm .dropdown-menu { z-index: 1080; }
+
+/* Y el expander normal queda por debajo del dropdown */
+#adminForm .scp-expander { z-index: 1; }
+#adminForm .scp-textarea.is-expanded + .scp-expander { z-index: 1062; } /* solo cuando el editor está expandido */
+
+/* Asegura que no se compriman en exceso en algunas plantillas */
+#adminForm .scp-field .col-md-4 { padding-right: .75rem; }
+#adminForm .scp-field .col-md-8 { padding-left: .75rem; }
+
+/* Navigation */
+/* Base / Desktop */
+.scp-toolbar{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;justify-content:space-between}
+.scp-toolbar .btn-group{flex:1 1 auto;display:flex;gap:.5rem}
+.scp-toolbar .btn-group.shrink{flex:0 1 auto}
+.scp-toolbar .btn,.scp-toolbar .dropdown-toggle{white-space:nowrap}
+.scp-toolbar .btn .badge{margin-left:.4rem}
+
+/* XS/Móvil (≤576px) */
+@media (max-width:576px){
+  .scp-toolbar{flex-direction:column;align-items:stretch;gap:.75rem}
+  .scp-toolbar .btn-group{flex:1 1 100%;display:flex;flex-direction:column;gap:.5rem}
+  .scp-toolbar .btn-group.shrink{flex:1 1 100%}
+  .scp-toolbar .btn,.scp-toolbar .dropdown-toggle{width:100%;justify-content:flex-start}
+  .scp-toolbar .dropdown-menu{
+    position:static!important; /* se integra en el flujo, no se corta */
+    float:none;width:100%;
+    margin-top:.25rem;box-shadow:none;border-radius:.5rem;
+  }
+  .scp-toolbar .dropdown-menu .dropdown-item{padding:.65rem .9rem}
+}
+
+/* SOLO para tu componente */
+#com_securitycheckpro .btn {
+  border-radius: .5rem !important;
+  height: 38px;                 /* asegura misma altura */
+  line-height: 1.4;
+  padding: 0.375rem 0.75rem;    /* padding uniforme */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dropdown menu dentro del componente */
+#com_securitycheckpro .dropdown-menu {
+  --bs-dropdown-color: #212529;
+  --bs-dropdown-link-color: #212529;
+  --bs-dropdown-link-hover-bg: #f2f4f7;
+  --bs-dropdown-link-hover-color: #000000;
+  --bs-dropdown-border-color: #d0d7de;
+  --bs-dropdown-header-color: #333333;
+
+  color: var(--bs-dropdown-color) !important;
+  border: 1px solid var(--bs-dropdown-border-color) !important;
+  border-radius: .5rem;
+  box-shadow: 0 8px 16px rgba(0,0,0,.12);
+  z-index: 1080;
+  min-width: 16rem;
+}
+
+/* Header dentro del dropdown */
+#com_securitycheckpro .dropdown-menu .dropdown-header {
+  background: #f6f8fa;
+  color: var(--bs-dropdown-header-color) !important;
+  font-weight: 600;
+  border-radius: .5rem .5rem 0 0; /* redondeo arriba */
+}
+
+/* Items del dropdown */
+#com_securitycheckpro .dropdown-menu .dropdown-item {
+  padding: .5rem 1rem;
+  border-radius: .375rem;
+}
+
+#com_securitycheckpro .dropdown-menu .dropdown-item:hover,
+#com_securitycheckpro .dropdown-menu .dropdown-item:focus {
+  background-color: var(--bs-dropdown-link-hover-bg) !important;
+  color: var(--bs-dropdown-link-hover-color) !important;
+}
+
+/* Botón que abre dropdown */
+#com_securitycheckpro .btn.dropdown-toggle {
+  border-radius: .5rem !important;
+}
+
+/* ===== Mockup 1 look & feel (ajustado + HERO) ===== */
+.scp-grid { display:grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
+@media (max-width: 1199.98px){ .scp-grid{grid-template-columns: repeat(2,1fr);} }
+@media (max-width: 575.98px){ .scp-grid{grid-template-columns: 1fr;} }
+
+.scp-card {
+    border:1px solid #e9edf2; border-radius: .75rem;
+    box-shadow: 0 1px 2px rgba(16,24,40,.06);
+}
+.scp-card__body { padding: .85rem .85rem 1rem; text-align:center; }
+.scp-card__icon .fa { font-size:1.5rem; color:#16a34a; }
+.scp-card__title { font-weight:600; margin-top:.25rem; }
+.scp-card__status { margin:.45rem 0 .2rem; }
+.scp-card__actions .btn { margin-top:.2rem; }
+
+.scp-chip {
+    display:inline-block; padding:.18rem .5rem; border-radius:999px;
+    font-size:.78rem; font-weight:600; letter-spacing:.1px;
+    background:#eef2f7; color:#334155;
+}
+.scp-chip--ok { background:#e7f6ee; color:#166534; }
+.scp-chip--ko { background:#fde2e1; color:#9b1c1c; }
+.scp-chip--dark { background:#e5e7eb; color:#111827; }
+
+.scp-section { margin-top: .8rem; }
+
+/* ===== HERO ===== */
+.scp-hero {
+    display:grid; grid-template-columns: 1fr auto; gap:1rem;
+    align-items:center; padding:1rem 1.25rem;
+    background: linear-gradient(90deg,#0f1e35 0%, #152a49 100%);
+    color:#fff; border-radius:.9rem; margin:.3rem 0 1rem 0;
+    box-shadow: 0 4px 16px rgba(7,12,24,.25);
+}
+.scp-hero__title { font-size:1.25rem; font-weight:700; margin:0 0 .25rem; }
+.scp-hero__subtitle { opacity:.9; margin:0; }
+.scp-hero__gauge { transform: scale(1.15); transform-origin:right center; }
+
+/* Botón del HERO más visible en fondo oscuro */
+.btn-hero {
+  /* usa Bootstrap 'btn-warning' pero por si cambias tema */
+  background: #f59e0b; /* aprox. warning */
+  color: #111827;      /* oscuro para contraste */
+  border: 0;
+}
+
+/* Disposición principal: izq (suscripciones + config) / dcha (stats) */
+.scp-two-cols { display:grid; grid-template-columns: 1.05fr 1fr; gap:1rem; }
+@media (max-width: 991.98px){ .scp-two-cols{ grid-template-columns: minmax(0, 1fr) !important; } }
+
+/* Cards estándar */
+.card.shadow-soft { box-shadow: 0 1px 2px rgba(16,24,40,.06); border-radius:.75rem; border:1px solid #e9edf2; }
+.card .card-header { font-weight:600; border-bottom:1px solid #edf1f6; padding:.6rem .9rem; }
+.card .card-body { padding:.8rem .9rem; }
+
+/* Stats compactas */
+#piechart { max-height: 220px; } /* más pequeño */
+.centrado, .center { text-align:center; }
+.text-right { text-align:right; }
+
+/* Card de configuración (agrupa Easy Config + Lock) */
+/* Cajas de configuración (Easy Config + Lock) */
+.sci-grid-two { display:grid; grid-template-columns: 1fr 1fr; gap:.75rem; }
+@media (max-width: 575.98px){ .sci-grid-two{ grid-template-columns: 1fr; } }
+
+.scp-two-up {
+  display: flex;
+  gap: 1rem;
+}
+.scp-two-up > .card {
+  flex: 1 1 0;   /* cada card crece y ocupa la mitad */
+  min-width: 0;  /* evita desbordes */
+}
+@media (max-width: 991.98px){
+  .scp-two-up { flex-direction: column; }
+}
+
+.sci-box {
+  border:1px solid #e9edf2; border-radius:.6rem; padding: .9rem; 
+}
+.sci-box .sci-title { font-weight:600; margin-bottom:.4rem; display:flex; align-items:center; gap:.4rem; }
+.sci-box .sci-body  { font-size:.92rem; }
+
