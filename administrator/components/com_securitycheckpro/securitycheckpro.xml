@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="3.6" method="upgrade">
+<extension type="component" method="upgrade" version="5.0">
 <name>Securitycheck Pro</name>
-<creationDate>05-08-2025</creationDate>
+<creationDate>23-02-2026</creationDate>
 <author>Jose A. Luque</author>
 <authorEmail>contacto@protegetuordenador.com</authorEmail>
 <authorUrl>securitycheck.protegetuordenador.com</authorUrl>
 <copyright>Copyright www.protegetuordenador.com</copyright>
 <license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
-<version>4.2.5</version>
+<version>5.0.3</version>
 <description>COM_SECURITYCHECKPRO_DESCRIPTION</description>
 <namespace path="src">SecuritycheckExtensions\Component\SecuritycheckPro</namespace>
 <dlid prefix="dlid=" suffix=""/>
@@ -26,7 +26,10 @@
 
 <administration>
 <!-- Administration Menu Section -->
-<menu view="cpanel">Securitycheck Pro</menu>
+<menu link="index.php?option=com_securitycheckpro"
+    img="../media/com_securitycheckpro/images/logo_securitycheck_pro_joomla.png">
+    Securitycheck Pro
+</menu>
 
 <submenu>
     <menu link="option=com_securitycheckpro">COM_SECURITYCHECKPRO_CPANEL_MAIN_MENU</menu>

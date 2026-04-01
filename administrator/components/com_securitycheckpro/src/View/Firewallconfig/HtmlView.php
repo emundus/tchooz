@@ -15,12 +15,176 @@ use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FirewallconfigModel;
+use Joomla\CMS\Pagination\Pagination;
+use Joomla\CMS\Application\CMSApplication;
 
-/**
- * Main Admin View
- */
 class HtmlView extends BaseHtmlView {
     
+	// Propiedades tipadas con valores por defecto claros
+    public bool   $exclude_exceptions_if_vulnerable = true;
+    public int   $check_header_referer = 1;
+    public int   $check_base_64 = 1;
+    public string $base64_exceptions = 'com_hikashop';
+    public string $strip_tags_exceptions = 'com_jdownloads,com_hikashop,com_phocaguestbook';
+    public string $duplicate_backslashes_exceptions = 'com_kunena,com_securitycheckprocontrolcenter';
+    public string $line_comments_exceptions = 'com_comprofiler';
+    public string $sql_pattern_exceptions = '';
+    public string $if_statement_exceptions = '';
+    public string $using_integers_exceptions = 'com_dms,com_comprofiler,com_jce,com_contactenhanced,com_securitycheckprocontrolcenter';
+    public string $lfi_exceptions = '';
+    public string $escape_strings_exceptions = 'com_kunena,com_jce,com_user';
+    public string $second_level_exceptions = '';
+    public int    $strip_all_tags = 1;
+    public string $tags_to_filter = 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,id,iframe,ilayer,layer,link,meta,name,object,script,style,title,xml,svg,input,a';
+	public string $current_ip = '';
+	public string $range_example = '';
+	public string $cidr_v4_example = '';
+	/**
+	 * @var string[]
+	 */
+	public ?array $whitelist_elements = [];
+	/**
+	 * @var string[]
+	 */
+	public ?array $blacklist_elements = [];
+	/**
+	 * @var string[]
+	 */
+	public ?array $dynamic_blacklist_elements = [];	
+	/**
+     * State data
+     *
+     * @var    \Joomla\Registry\Registry
+     * @since  3.2
+     */
+    public $state;	
+	public int $dynamic_blacklist = 1;
+	public int    $dynamic_blacklist_time = 60000;
+	public int    $dynamic_blacklist_counter = 2;
+	public int    $blacklist_email = 0;
+	public string    $priority1 = 'Whitelist';
+	public string    $priority2 = 'DynamicBlacklist';
+	public string    $priority3 = 'Blacklist';
+	public int    $logs_attacks = 1;
+	public int	  $scp_delete_period = 60;
+	public int    $log_limits_per_ip_and_day = 0;
+	public int   $add_access_attempts_logs = 0;
+	public string   $methods = 'GET,POST,REQUEST';	
+	public int   $mode = 1;
+	public int   $email_active = 0;
+	public string   $email_subject = 'Securitycheck Pro alert!';
+	public string   $email_body = 'Securitycheck Pro has generated a new alert. Please, check your logs.';
+	public string   $email_to = 'youremail@yourdomain.com';
+	public string   $email_from_domain = 'me@mydomain.com';
+	public string   $email_from_name = 'Your name';
+	public int   $email_add_applied_rule = 1;
+	public int   $email_max_number = 20;
+	public int $redirect_after_attack = 0;
+	public int   $redirect_options = 1;
+	public string   $redirect_url = '';
+	public string   $custom_code = 'The webmaster has forbidden your access to this site';
+	public int   $second_level = 1;
+	public int   $second_level_redirect = 1;
+	public int   $second_level_limit_words = 3;
+	public string   $second_level_words = 'ZHJvcCx1cGRhdGUsc2V0LGFkbWluLHNlbGVjdCx1c2VyLHBhc3N3b3JkLGNvbmNhdCxsb2dpbixs
+	b2FkX2ZpbGUsYXNjaWksY2hhcix1bmlvbixmcm9tLGdyb3VwIGJ5LG9yZGVyIGJ5LGluc2VydCx2
+	YWx1ZXMscGFzcyx3aGVyZSxzdWJzdHJpbmcsYmVuY2htYXJrLG1kNSxzaGExLHNjaGVtYSx2ZXJz
+	aW9uLHJvd19jb3VudCxjb21wcmVzcyxlbmNvZGUsaW5mb3JtYXRpb25fc2NoZW1hLHNjcmlwdCxq
+	YXZhc2NyaXB0LGltZyxzcmMsaW5wdXQsYm9keSxpZnJhbWUsZnJhbWUsJF9QT1NULGV2YWwsJF9S
+	RVFVRVNULGJhc2U2NF9kZWNvZGUsZ3ppbmZsYXRlLGd6dW5jb21wcmVzcyxnemluZmxhdGUsc3Ry
+	dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==';
+	public int   $session_protection_active = 1;
+	public int   $session_hijack_protection = 1;
+	public int   $track_failed_logins = 0;
+	public int   $logins_to_monitorize = 2;
+	public int   $write_log = 1;
+	public int   $actions_failed_login = 1;
+	public int   $email_on_admin_login = 0;
+	public int   $forbid_admin_frontend_login = 0;
+	public int   $forbid_new_admins = 0;
+	public int   $session_hijack_protection_what_to_check = 0;
+	/**
+	 * @var string[]
+	 */
+	public array   $session_protection_groups = ['0' => '8'];
+	public int   $detect_arbitrary_strings = 0;
+	public int  $check_if_user_is_spammer = 1;
+	public int   $spammer_action = 1;
+	public int   $spammer_write_log = 1;
+	/**
+	 * @var string[]
+	 */
+	public array   $spammer_what_to_check = ['Email','IP','Username'];
+	public int   $spammer_limit = 3;
+	public string   $include_urls_spam_protection = '';
+	public string   $forms_to_include_honeypot_in = '';
+	public bool   $plugin_installed = false;
+	public int   $delete_period = 0;
+	public int   $ip_logging = 0;
+	/**
+	 * @var string[]
+	 */
+	public array   $loggable_extensions = ['0' => 'com_banners','1' => 'com_cache','2' => 'com_categories','3' => 'com_config','4' => 'com_contact','5' => 'com_content','6' => 'com_installer','7' => 'com_media','8' => 'com_menus','9' => 'com_messages','10' => 'com_modules','11' => 'com_newsfeeds','12' => 'com_plugins','13' => 'com_redirect','14' => 'com_tags','15' => 'com_templates','16' => 'com_users'];
+	public bool   $plugin_trackactions_installed = false;
+	public int   $upload_scanner_enabled = 1;
+	public int   $check_multiple_extensions = 1;
+	public string   $mimetypes_blacklist = 'application/x-dosexec,application/x-msdownload ,text/x-php,application/x-php,application/x-httpd-php,application/x-httpd-php-source,application/javascript,application/xml';
+	public string   $extensions_blacklist = 'php,js,exe,xml';
+	public int   $delete_files = 1;
+	public int   $actions_upload_scanner = 0;
+	public ?int   $url_inspector_enabled = 0;
+	public int   $write_log_inspector = 1;
+	public int   $send_email_inspector = 1;
+	public int   $action_inspector = 2;	
+	public string   $inspector_forbidden_words = 'wp-login.php,.git,owl.prev,tmp.php,home.php,Guestbook.php,aska.cgi,default.asp,jax_guestbook.php,bbs.cg,gastenboek.php,light.cgi,yybbs.cgi,wsdl.php,wp-content,cache_aqbmkwwx.php,.suspected,seo-joy.cgi,google-assist.php,wp-main.php,sql_dump.php,xmlsrpc.php';
+	
+	/**
+	 * Pagination object
+	 *
+	 * @var Pagination
+	 */
+	public ?Pagination $pagination_blacklist = null;
+	
+	/**
+	 * Pagination object
+	 *
+	 * @var Pagination
+	 */
+	public ?Pagination $pagination_dynamic_blacklist = null;
+	
+	/**
+	 * Pagination object
+	 *
+	 * @var Pagination
+	 */
+	public ?Pagination $pagination_whitelist = null;
+	
+	/**
+	 * @var BaseModel
+	 */
+	public $basemodel;
+	
+	/**
+	 * @var FirewallconfigModel
+	 */
+	public $firewallconfigmodel;
+	
+	/**
+	 * @var string
+	 */
+	public $activeParent;
+	
+	/**
+	 * @var string
+	 */
+	public $activeChild;
+	
+	/**
+	 * @var string
+	 */
+	public $activeExceptions;
+	
     /**
      * Display the main view
      *
@@ -29,55 +193,70 @@ class HtmlView extends BaseHtmlView {
      */
     function display($tpl = null) {
 		  
-		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_WAF_CONFIG'), 'securitycheckpro');
-		ToolBarHelper::save();
-        ToolBarHelper::apply();
+		ToolbarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_WAF_CONFIG'), 'securitycheckpro');
+		ToolbarHelper::apply('firewallconfig.apply');
+        ToolbarHelper::save('firewallconfig.save');
 		
 		// Load css and js
 		$this->document->getWebAssetManager()
 		  ->usePreset('com_securitycheckpro.common')		 
 		  ->useScript('com_securitycheckpro.Firewallconfig');
 		
-		// Obtenemos el modelo
+		// Obtenemos el modelo de esta vista (FirewallconfigModel)
+		/** @var FirewallconfigModel $model */
         $model = $this->getModel();
+		
+		// BaseModel
+        $this->basemodel = new BaseModel();
+		
+		$this->firewallconfigmodel = $model;
+		
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app = Factory::getApplication();
+		
+		// Pane por defecto (ajusta si quieres otro por defecto)
+		$defaultParent = 'li_lists_tab';
+		$defaultChild  = 'li_blacklist_tab';	
+		$defaultExceptions  = 'li_header_referer_tab';	
+		
+		// Lee del request (si viene del form) o de la sesión (si no)
+		$this->activeParent = $app->getUserStateFromRequest(
+			'com_securitycheckpro.WafConfigurationTabs.active',
+			'activeTab_WafConfigurationTabs',
+			$defaultParent
+		);
+		
+		$this->activeChild = $app->getUserStateFromRequest(
+			'com_securitycheckpro.ListsTabs.active',
+			'activeTab_ListsTabs',
+			$defaultChild
+		);
+		
+		$this->activeExceptions = $app->getUserStateFromRequest(
+			'com_securitycheckpro.ExceptionsTabs.active',
+			'activeTab_ExceptionsTabs',
+			$defaultExceptions
+		);			
 		
 		// Filtro
         $this->state= $model->getState();
-        $lists = $this->state->get('filter.lists_search');       
-
+        
         //  Parámetros del plugin
         $items= $model->getConfig();
-				
+		
 		// Lista negra
-		$blacklist_elements = $model->getTableData("blacklist");        
-        $pagination_blacklist = null;
-		
-        if ( !is_null($blacklist_elements) ) {            
-            $blacklist_elements = $model->filter_data($blacklist_elements, $pagination_blacklist);
-        }
-		
+		[$this->blacklist_elements, $this->pagination_blacklist]
+			= $model->getListWithPagination('blacklist', 'blacklist');
+
 		// Lista negra dinámica
-		$dynamic_blacklist_elements = $model->getTableData("dynamic_blacklist");        
-        $pagination_dynamic_blacklist = null;
-		
-        if ( !is_null($dynamic_blacklist_elements) ) {            
-            $dynamic_blacklist_elements = $model->filter_data($dynamic_blacklist_elements, $pagination_dynamic_blacklist);
-        }
+		[$this->dynamic_blacklist_elements, $this->pagination_dynamic_blacklist]
+			= $model->getListWithPagination('dynamic_blacklist', 'dynamic_blacklist');
 
-        // Lista blanca
-		$whitelist_elements = $model->getTableData("whitelist");		
-		$pagination_whitelist = null;
-
-        if ( !is_null($whitelist_elements) ) {                
-            $whitelist_elements = $model->filter_data($whitelist_elements, $pagination_whitelist);
-        }
-
-        // Información para la barra de navegación
-        $logs_pending = $model->LogsPending();
-        $trackactions_plugin_exists = $model->PluginStatus(8);
-        $this->logs_pending = $logs_pending;
-        $this->trackactions_plugin_exists = $trackactions_plugin_exists;
-		
+		// Lista blanca
+		[$this->whitelist_elements, $this->pagination_whitelist]
+			= $model->getListWithPagination('whitelist', 'whitelist');
+						
+				
 		$current_ip = "";
 		$range_example = "";
 		// Contribution of George Acu - thanks!
@@ -97,7 +276,7 @@ class HtmlView extends BaseHtmlView {
 		{
 			# specific header for proxies
 			$current_ip = $_SERVER['HTTP_X_FORWARDED_FOR']; 
-			$result_ip_address = explode(', ', $clientIpAddress);
+			$result_ip_address = explode(', ', $current_ip);
 			$current_ip = $result_ip_address[0];
 		} elseif (isset($_SERVER['REMOTE_ADDR']))
 		{
@@ -111,481 +290,123 @@ class HtmlView extends BaseHtmlView {
 		$range_example = implode('.', $range_example);
 		$cidr_v4_example = $current_ip . "/20";
 
-        $this->blacklist_elements = $blacklist_elements;
-        $this->dynamic_blacklist_elements = $dynamic_blacklist_elements;
-        $this->whitelist_elements = $whitelist_elements; 
-		$this->dynamic_blacklist = $items['dynamic_blacklist'];
-        $this->dynamic_blacklist_time = $items['dynamic_blacklist_time'];
-        $this->dynamic_blacklist_counter = $items['dynamic_blacklist_counter'];
-        $this->blacklist_email = $items['blacklist_email'];
-        $this->priority1 = $items['priority1'];
-        $this->priority2 = $items['priority2'];
-        $this->priority3 = $items['priority3'];
+      	$this->dynamic_blacklist = (int) ($items['dynamic_blacklist'] ?? $this->dynamic_blacklist);
+		$this->dynamic_blacklist_time = (int) ($items['dynamic_blacklist_time'] ?? $this->dynamic_blacklist_time);
+		$this->dynamic_blacklist_counter = (int) ($items['dynamic_blacklist_counter'] ?? $this->dynamic_blacklist_counter);
+		$this->blacklist_email = (int) ($items['blacklist_email'] ?? $this->blacklist_email);
+		$this->priority1 = (string) ($items['priority1'] ?? $this->priority1);
+		$this->priority2 = (string) ($items['priority2'] ?? $this->priority2);
+		$this->priority3 = (string) ($items['priority3'] ?? $this->priority3);		
 		$this->current_ip = $current_ip;
 		$this->range_example = $range_example;
 		$this->cidr_v4_example = $cidr_v4_example;
         
         // Pestaña methods
-        $methods= null;
-        if (!is_null($items['methods'])) {
-            $this->methods = $items['methods'];
-        }
-
-        // Pestaña Mode
-        $mode= null;
-        if (!is_null($items['mode'])) {
-            $this->mode = $items['mode'];
-        }
+		$this->methods = (string) ($items['methods'] ?? $this->methods);
+        
+        // Pestaña Mode       
+		$this->mode = (int) ($items['mode'] ?? $this->mode);
 
         // Pestaña Logs
-        $logs_attacks= 1;
-        $scp_delete_period= 60;
-        $log_limits_per_ip_and_day = null;
-        $add_geoblock_logs = null;
-        $add_access_attempts_logs = null;
-
-        if (!is_null($items['scp_delete_period'])) {
-            $scp_delete_period = $items['scp_delete_period'];    
-        }
-
-        if (!is_null($items['logs_attacks'])) {
-            $logs_attacks = $items['logs_attacks'];    
-        }
-
-        if (!is_null($items['log_limits_per_ip_and_day'])) {
-            $log_limits_per_ip_and_day = $items['log_limits_per_ip_and_day'];    
-        }
-
-        if (!is_null($items['add_geoblock_logs'])) {
-            $add_geoblock_logs = $items['add_geoblock_logs'];    
-        }
-
-        if (!is_null($items['add_access_attempts_logs'])) {
-            $add_access_attempts_logs = $items['add_access_attempts_logs'];    
-        }
-
-        $this->logs_attacks = $logs_attacks;
-        $this->scp_delete_period = $scp_delete_period;
-        $this->log_limits_per_ip_and_day = $log_limits_per_ip_and_day;
-        $this->add_geoblock_logs = $add_geoblock_logs;
-        $this->add_access_attempts_logs = $add_access_attempts_logs;
-
-        // Pestaña Redirection
-        $redirect_after_attack= null;
-        $redirect_options = null;
-
-        if (!is_null($items['redirect_after_attack'])) {
-            $redirect_after_attack = $items['redirect_after_attack'];    
-        }
-
-        if (!is_null($items['redirect_options'])) {
-            $redirect_options = $items['redirect_options'];    
-        }
-
-        $redirect_url = $items['redirect_url'];    
-        $custom_code = $items['custom_code'];
-
-        if (is_null($custom_code)) {
-            $custom_code = "<h1 style=\"text-align:center;\">" . Text::_('COM_SECURITYCHECKPRO_403_ERROR') . "</h1>";
-        }
-
-        $this->redirect_after_attack = $redirect_after_attack;
-        $this->redirect_options = $redirect_options;
-        $this->redirect_url = $redirect_url;
-        $this->custom_code = $custom_code;
+       	$this->scp_delete_period = (int) ($items['scp_delete_period'] ?? $this->scp_delete_period);
+		$this->logs_attacks = (int) ($items['logs_attacks'] ?? $this->logs_attacks);
+        $this->log_limits_per_ip_and_day = (int) ($items['log_limits_per_ip_and_day'] ?? $this->log_limits_per_ip_and_day);
+		$this->add_access_attempts_logs = (int) ($items['add_access_attempts_logs'] ?? $this->add_access_attempts_logs);
+		
+		 // Pestaña Redirection
+		$this->redirect_after_attack = (int) ($items['redirect_after_attack'] ?? $this->redirect_after_attack);
+        $this->redirect_options = (int) ($items['redirect_options'] ?? $this->redirect_options);
+		$this->redirect_url = (string) ($items['redirect_url'] ?? $this->redirect_url);
+		$this->custom_code = (string) ($items['custom_code'] ?? $this->custom_code);
 
         // Pestaña Second level
-        $second_level= null;
-        $second_level_redirect = null;
-        $second_level_limit_words = null;
-        $second_level_words = null;
-
-        if (!is_null($items['second_level'])) {
-            $second_level = $items['second_level'];    
-        }
-
-        if (!is_null($items['second_level_redirect'])) {
-            $second_level_redirect = $items['second_level_redirect'];    
-        }
-
-        if (!is_null($items['second_level_limit_words'])) {
-            $second_level_limit_words = $items['second_level_limit_words'];    
-        }
-
-        if (!is_null($items['second_level_words'])) {
-            $second_level_words = $items['second_level_words'];    
-        }
-
-        $this->second_level = $second_level;
-        $this->second_level_redirect = $second_level_redirect;
-        $this->second_level_limit_words = $second_level_limit_words;
-
-        // Si el string "second_level_words" contiene comas significa que no está codificado en base64. Desde la versión 3.1.6 se codifica así para evitar problemas con una regla de mod_security.
-        if (substr_count($second_level_words, ",") > 2) {    
-            $second_level_words = base64_encode($second_level_words);
-        }
-
-        $this->second_level_words = $second_level_words;
-
+		$this->second_level = (int) ($items['second_level'] ?? $this->second_level);
+		$this->second_level_redirect = (int) ($items['second_level_redirect'] ?? $this->second_level_redirect);
+        $this->second_level_limit_words = (int) ($items['second_level_limit_words'] ?? $this->second_level_limit_words);
+		$this->second_level_words = (string) ($items['second_level_words'] ?? $this->second_level_words);
+       
         // Pestaña Email notifications
-        $email_active= null;
-        $email_subject = null;
-        $email_body = null;
-        $email_add_applied_rule = null;
-        $email_to = null;
-        $email_from_domain = null;
-        $email_from_name = null;
-        $email_max_number = null;
-
-        if (!is_null($items['email_active'])) {
-            $email_active = $items['email_active'];    
-        }
-
-        if (!is_null($items['email_subject'])) {
-            $email_subject = $items['email_subject'];    
-        }
-
-        if (!is_null($items['email_body'])) {
-            $email_body = $items['email_body'];    
-        }
-
-        if (!is_null($items['email_add_applied_rule'])) {
-            $email_add_applied_rule = $items['email_add_applied_rule'];    
-        }
-
-        if (!is_null($items['email_to'])) {
-            $email_to = $items['email_to'];    
-        }
-
-        if (!is_null($items['email_from_domain'])) {
-            $email_from_domain = $items['email_from_domain'];    
-        }
-
-        if (!is_null($items['email_from_name'])) {
-            $email_from_name = $items['email_from_name'];    
-        }
-
-        if (!is_null($items['email_max_number'])) {
-            $email_max_number = $items['email_max_number'];    
-        }
-
-        $this->email_active = $email_active;
-        $this->email_subject = $email_subject;
-        $this->email_body = $email_body;
-        $this->email_add_applied_rule = $email_add_applied_rule;
-        $this->email_to = $email_to;
-        $this->email_from_domain = $email_from_domain;
-        $this->email_from_name = $email_from_name;
-        $this->email_max_number = $email_max_number;
-
+		$this->email_active = (int) ($items['email_active'] ?? $this->email_active);
+		$this->email_subject = (string) ($items['email_subject'] ?? $this->email_subject);
+		$this->email_body = (string) ($items['email_body'] ?? $this->email_body);
+        $this->email_add_applied_rule = (string) ($items['email_add_applied_rule'] ?? $this->email_add_applied_rule);
+		$this->email_to = (string) ($items['email_to'] ?? $this->email_to);
+        $this->email_from_domain = (string) ($items['email_from_domain'] ?? $this->email_from_domain);
+		$this->email_from_name = (string) ($items['email_from_name'] ?? $this->email_from_name);
+        $this->email_max_number = (int) ($items['email_max_number'] ?? $this->email_max_number);
+				
         // Pestaña filter exceptions
-        $check_header_referer= null;
-        $check_base_64 = null;
-        $base64_exceptions = null;
-        $strip_tags_exceptions = null;
-        $duplicate_backslashes_exceptions = null;
-        $line_comments_exceptions = null;
-        $sql_pattern_exceptions = null;
-        $if_statement_exceptions = null;
-        $using_integers_exceptions = null;
-        $escape_strings_exceptions = null;
-        $lfi_exceptions = null;
-        $second_level_exceptions = null;
-        $exclude_exceptions_if_vulnerable = 1;
-        $strip_all_tags = null;
-        $tags_to_filter = null;
-
-        if (!is_null($items['check_header_referer'])) {
-            $check_header_referer = $items['check_header_referer'];    
-        }
-
-        if (!is_null($items['check_base_64'])) {
-            $check_base_64 = $items['check_base_64'];    
-        }
-
-        if (!is_null($items['base64_exceptions'])) {
-            $base64_exceptions = $items['base64_exceptions'];    
-        }
-
-        if (!is_null($items['strip_tags_exceptions'])) {
-            $strip_tags_exceptions = $items['strip_tags_exceptions'];    
-        }
-
-        if (!is_null($items['duplicate_backslashes_exceptions'])) {
-            $duplicate_backslashes_exceptions = $items['duplicate_backslashes_exceptions'];    
-        }
-
-        if (!is_null($items['line_comments_exceptions'])) {
-            $line_comments_exceptions = $items['line_comments_exceptions'];    
-        }
-
-        if (!is_null($items['sql_pattern_exceptions'])) {
-            $sql_pattern_exceptions = $items['sql_pattern_exceptions'];    
-        }
-
-        if (!is_null($items['if_statement_exceptions'])) {
-            $if_statement_exceptions = $items['if_statement_exceptions'];    
-        }
-
-        if (!is_null($items['using_integers_exceptions'])) {
-            $using_integers_exceptions = $items['using_integers_exceptions'];    
-        }
-
-        if (!is_null($items['lfi_exceptions'])) {
-            $lfi_exceptions = $items['lfi_exceptions'];    
-        }
-
-        if (!is_null($items['escape_strings_exceptions'])) {
-            $escape_strings_exceptions = $items['escape_strings_exceptions'];    
-        }
-
-        if (!is_null($items['second_level_exceptions'])) {
-            $second_level_exceptions = $items['second_level_exceptions'];    
-        }
-
-        if (!is_null($items['strip_all_tags'])) {
-            $strip_all_tags = $items['strip_all_tags'];    
-        }
-
-        if (!is_null($items['tags_to_filter'])) {
-            $tags_to_filter = $items['tags_to_filter'];    
-        }
+        $this->exclude_exceptions_if_vulnerable = (bool) ($items['exclude_exceptions_if_vulnerable'] ?? false);		
+        $this->check_header_referer = (int) ($items['check_header_referer'] ?? $this->check_header_referer);
+		$this->check_base_64 = (int) ($items['check_base_64'] ?? $this->check_base_64);
+        $this->base64_exceptions = (string) ($items['base64_exceptions'] ?? $this->base64_exceptions);
+		$this->strip_tags_exceptions = (string) ($items['strip_tags_exceptions'] ?? $this->strip_tags_exceptions);
+        $this->duplicate_backslashes_exceptions = (string) ($items['duplicate_backslashes_exceptions'] ?? $this->duplicate_backslashes_exceptions);
+	    $this->line_comments_exceptions = (string) ($items['line_comments_exceptions'] ?? $this->line_comments_exceptions);
+        $this->sql_pattern_exceptions = (string) ($items['sql_pattern_exceptions'] ?? $this->sql_pattern_exceptions);
+		$this->if_statement_exceptions = (string) ($items['if_statement_exceptions'] ?? $this->if_statement_exceptions);
+        $this->using_integers_exceptions = (string) ($items['using_integers_exceptions'] ?? $this->using_integers_exceptions);
+        $this->lfi_exceptions = (string) ($items['lfi_exceptions'] ?? $this->lfi_exceptions);
+		$this->escape_strings_exceptions = (string) ($items['escape_strings_exceptions'] ?? $this->escape_strings_exceptions);
+		$this->second_level_exceptions = (string) ($items['second_level_exceptions'] ?? $this->second_level_exceptions);
+		$this->strip_all_tags = (int) ($items['strip_all_tags'] ?? $this->strip_all_tags);
+		$this->tags_to_filter = (string) ($items['tags_to_filter'] ?? $this->tags_to_filter);
 		
-		if (!is_null($items['exclude_exceptions_if_vulnerable'])) {
-            $exclude_exceptions_if_vulnerable = $items['exclude_exceptions_if_vulnerable'];    
-        }
-                
-        $this->check_header_referer = $check_header_referer;
-        $this->check_base_64 = $check_base_64;
-        $this->base64_exceptions = $base64_exceptions;
-        $this->strip_tags_exceptions = $strip_tags_exceptions;
-        $this->duplicate_backslashes_exceptions = $duplicate_backslashes_exceptions;
-        $this->line_comments_exceptions = $line_comments_exceptions;
-        $this->sql_pattern_exceptions = $sql_pattern_exceptions;
-        $this->if_statement_exceptions = $if_statement_exceptions;
-        $this->using_integers_exceptions = $using_integers_exceptions;
-        $this->lfi_exceptions = $lfi_exceptions;
-        $this->escape_strings_exceptions = $escape_strings_exceptions;
-        $this->second_level_exceptions = $second_level_exceptions;
-        $this->exclude_exceptions_if_vulnerable = $exclude_exceptions_if_vulnerable;
-        $this->strip_all_tags = $strip_all_tags;
-        $this->tags_to_filter = $tags_to_filter;
 
         // Pestaña user session protection
-        $session_protection_active= null;
-        $session_hijack_protection = null;
-		$session_hijack_protection_what_to_check = null;
-        $track_failed_logins = null;
-        $write_log = null;
-        $logins_to_monitorize = null;
-        $actions_failed_login = null;
-        $email_on_admin_login = null;
-        $forbid_admin_frontend_login = null;
-        $forbid_new_admins = null;
-
-        if (!is_null($items['session_protection_active'])) {
-            $session_protection_active = $items['session_protection_active'];    
-        }
-
-        if (!is_null($items['session_hijack_protection'])) {
-            $session_hijack_protection = $items['session_hijack_protection'];    
-        }
-		
-		if (!is_null($items['session_hijack_protection_what_to_check'])) {
-            $session_hijack_protection_what_to_check = $items['session_hijack_protection_what_to_check'];    
-        } else 
-		{
-			$session_hijack_protection_what_to_check = 0;
-		}
-
-        if (!is_null($items['track_failed_logins'])) {
-            $track_failed_logins = $items['track_failed_logins'];    
-        }
-
-        if (!is_null($items['write_log'])) {
-            $write_log = $items['write_log'];    
-        }
-
-        if (!is_null($items['logins_to_monitorize'])) {
-            $logins_to_monitorize = $items['logins_to_monitorize'];    
-        }
-
-        if (!is_null($items['actions_failed_login'])) {
-            $actions_failed_login = $items['actions_failed_login'];    
-        }
-
-        if (!is_null($items['email_on_admin_login'])) {
-            $email_on_admin_login = $items['email_on_admin_login'];    
-        }
-
-        if (!is_null($items['forbid_admin_frontend_login'])) {
-            $forbid_admin_frontend_login = $items['forbid_admin_frontend_login'];    
-        }
-
-        if (!is_null($items['forbid_new_admins'])) {
-            $forbid_new_admins = $items['forbid_new_admins'];    
-        }
-
-        $this->session_protection_active = $session_protection_active;
-        $this->session_hijack_protection = $session_hijack_protection;
-		$this->session_hijack_protection_what_to_check = $session_hijack_protection_what_to_check;
-        $this->track_failed_logins = $track_failed_logins;
-        $this->write_log = $write_log;
-        $this->logins_to_monitorize = $logins_to_monitorize;
-        $this->actions_failed_login = $actions_failed_login;
-        $this->session_protection_groups = $items['session_protection_groups'];
-        $this->email_on_admin_login = $email_on_admin_login;
-        $this->forbid_admin_frontend_login = $forbid_admin_frontend_login;
-        $this->forbid_new_admins = $forbid_new_admins;
-
-        
+        $this->session_protection_active = (int) ($items['session_protection_active'] ?? $this->session_protection_active);
+		$this->session_hijack_protection = (int) ($items['session_hijack_protection'] ?? $this->session_hijack_protection);
+        $this->session_hijack_protection_what_to_check = (int) ($items['session_hijack_protection_what_to_check'] ?? $this->session_hijack_protection_what_to_check);
+		$this->track_failed_logins = (int) ($items['track_failed_logins'] ?? $this->track_failed_logins);
+        $this->write_log = (int) ($items['write_log'] ?? $this->write_log);
+		$this->logins_to_monitorize = (int) ($items['logins_to_monitorize'] ?? $this->logins_to_monitorize);
+		$this->actions_failed_login = (int) ($items['actions_failed_login'] ?? $this->actions_failed_login);
+		$this->email_on_admin_login = (int) ($items['email_on_admin_login'] ?? $this->email_on_admin_login);
+        $this->forbid_admin_frontend_login = (int) ($items['forbid_admin_frontend_login'] ?? $this->forbid_admin_frontend_login);
+		$this->forbid_new_admins = (int) ($items['forbid_new_admins'] ?? $this->forbid_new_admins);
+                
         // Pestaña upload scanner
-        $upload_scanner_enabled = 0;
-        $check_multiple_extensions = 0;
-        $extensions_blacklist  = "php,js,exe,xml";
-		$mimetype_blacklist  = "application/x-dosexec,application/x-msdownload ,text/x-php,application/x-php,application/x-httpd-php,application/x-httpd-php-source,application/javascript,application/xml";
-        $delete_files = 0;
-        $actions_upload_scanner = 0;
-
-        $upload_scanner_enabled = $items['upload_scanner_enabled'];    
-        $check_multiple_extensions = $items['check_multiple_extensions'];    
-        $extensions_blacklist = $items['extensions_blacklist'];
-		$mimetypes_blacklist = $items['mimetypes_blacklist'];
-        $delete_files = $items['delete_files'];
-        $actions_upload_scanner = $items['actions_upload_scanner'];
-
-        $this->upload_scanner_enabled = $upload_scanner_enabled;
-        $this->check_multiple_extensions = $check_multiple_extensions;
-		$this->extensions_blacklist = $extensions_blacklist;
-        $this->mimetypes_blacklist = $mimetypes_blacklist;
-        $this->delete_files = $delete_files;
-        $this->actions_upload_scanner = $actions_upload_scanner;
-
+       	$this->upload_scanner_enabled = (int) ($items['upload_scanner_enabled'] ?? $this->upload_scanner_enabled);
+		$this->check_multiple_extensions = (int) ($items['check_multiple_extensions'] ?? $this->check_multiple_extensions);
+		$this->extensions_blacklist = (string) ($items['extensions_blacklist'] ?? $this->extensions_blacklist);
+		$this->mimetypes_blacklist = (string) ($items['mimetypes_blacklist'] ?? $this->mimetypes_blacklist);
+	    $this->delete_files = (int) ($items['delete_files'] ?? $this->delete_files);
+	    $this->actions_upload_scanner = (int) ($items['actions_upload_scanner'] ?? $this->actions_upload_scanner);
+		
         // Pestaña spam protection
-        $check_if_user_is_spammer= null;
-        $spammer_action=null;
-        $spammer_write_log=null;
-        $spammer_limit=3;
-        $plugin_installed=false;
-		$detect_arbitrary_strings = 1;
-
         // Chequeamos si el plugin 'Spam protection' está instalado
-        $plugin_installed = $model->is_plugin_installed('system', 'securitycheck_spam_protection');
-
-        if (!is_null($items['check_if_user_is_spammer'])) {
-            $check_if_user_is_spammer = $items['check_if_user_is_spammer'];    
-        }
-        if (!is_null($items['spammer_action'])) {
-            $spammer_action = $items['spammer_action'];    
-        }
-        if (!is_null($items['spammer_write_log'])) {
-            $spammer_write_log = $items['spammer_write_log'];    
-        }
-        if (!is_null($items['spammer_limit'])) {
-            $spammer_limit = $items['spammer_limit'];    
-        }
-        if (!is_null($items['spammer_what_to_check'])) {
-            $spammer_what_to_check = $items['spammer_what_to_check'];    
-        }
-		 if (!is_null($items['detect_arbitrary_strings'])) {
-            $detect_arbitrary_strings = $items['detect_arbitrary_strings'];    
-        }
-
-        $this->check_if_user_is_spammer = $check_if_user_is_spammer;
-        $this->spammer_action = $spammer_action;
-        $this->spammer_write_log = $spammer_write_log;
-        $this->spammer_limit = $spammer_limit;
-        $this->plugin_installed = $plugin_installed;
-        $this->spammer_what_to_check = $spammer_what_to_check;
-		$this->detect_arbitrary_strings = $detect_arbitrary_strings;
-
+        $this->plugin_installed = $model->is_plugin_installed('system', 'securitycheck_spam_protection');		
+		$this->check_if_user_is_spammer = (int) ($items['check_if_user_is_spammer'] ?? $this->check_if_user_is_spammer);
+		$this->spammer_action = (int) ($items['spammer_action'] ?? $this->spammer_action);
+		$this->spammer_write_log = (int) ($items['spammer_write_log'] ?? $this->spammer_write_log);
+        $this->spammer_limit = (int) ($items['spammer_limit'] ?? $this->spammer_limit);
+        $this->spammer_what_to_check = (array) ($items['spammer_what_to_check'] ?? $this->spammer_what_to_check);
+		$this->forms_to_include_honeypot_in = (string) ($items['forms_to_include_honeypot_in'] ?? $this->forms_to_include_honeypot_in);
+        $this->include_urls_spam_protection = (string) ($items['include_urls_spam_protection'] ?? $this->include_urls_spam_protection);
+		$this->detect_arbitrary_strings = (int) ($items['detect_arbitrary_strings'] ?? $this->detect_arbitrary_strings);
+		$this->session_protection_groups = (array) ($items['session_protection_groups'] ?? $this->session_protection_groups);
+        
         // Pestaña url inspector
         // Esta el plugin habilitado?
-        $url_inspector_enabled= $model->PluginStatus(7);
-
-        // Extraemos los elementos que nos interesan...
-        $inspector_forbidden_words= null;
-        $write_log_inspector= null;
-        $action_inspector= 2;
-        $send_email_inspector = 0;
-		$forms_to_include_honeypot_in = null;
-		$include_urls_spam_protection = null;
-
-        if (!is_null($items['inspector_forbidden_words'])) {
-            $inspector_forbidden_words = $items['inspector_forbidden_words'];    
-        }
-		
-		if (!is_null($items['forms_to_include_honeypot_in'])) {
-            $forms_to_include_honeypot_in = $items['forms_to_include_honeypot_in'];    
-        }
-		
-		if (!is_null($items['include_urls_spam_protection'])) {
-            $include_urls_spam_protection = $items['include_urls_spam_protection'];    
-        }
-
-        if (!is_null($items['write_log_inspector'])) {
-            $write_log_inspector = $items['write_log_inspector'];    
-        }
-
-        if (!is_null($items['action_inspector'])) {
-            $action_inspector = $items['action_inspector'];    
-        }
-
-        if (!is_null($items['send_email_inspector'])) {
-            $send_email_inspector = $items['send_email_inspector'];    
-        }
-
-        $this->inspector_forbidden_words = $inspector_forbidden_words;
-		$this->forms_to_include_honeypot_in = $forms_to_include_honeypot_in;
-		$this->include_urls_spam_protection = $include_urls_spam_protection;
-        $this->write_log_inspector = $write_log_inspector;
-        $this->action_inspector = $action_inspector;
-        $this->send_email_inspector = $send_email_inspector;
-        $this->url_inspector_enabled = $url_inspector_enabled;
+        $this->url_inspector_enabled= $model->PluginStatus(7);
+		$this->inspector_forbidden_words = (string) ($items['inspector_forbidden_words'] ?? $this->inspector_forbidden_words);		
+		$this->write_log_inspector = (int) ($items['write_log_inspector'] ?? $this->write_log_inspector);
+		$this->action_inspector = (int) ($items['action_inspector'] ?? $this->action_inspector);
+		$this->send_email_inspector = (int) ($items['send_email_inspector'] ?? $this->send_email_inspector);
 
         // Pestaña track actions
-        $delete_period= 0;
-        $ip_logging=null;
-        $plugin_trackactions_installed=false;
-        $loggable_extensions=null;
-
         // Chequeamos si el plugin 'Track actions' está instalado
-        $plugin_trackactions_installed = $model->is_plugin_installed('system', 'trackactions');
-
-        if (!is_null($items['delete_period'])) {
-            $delete_period = $items['delete_period'];
-        }
-        if (!is_null($items['ip_logging'])) {
-            $ip_logging = $items['ip_logging'];    
-        }
-        if (!is_null($items['loggable_extensions'])) {
-            $loggable_extensions = $items['loggable_extensions'];    
-        }
-
-        $this->delete_period = $delete_period;
-        $this->ip_logging = $ip_logging;
-        $this->plugin_trackactions_installed = $plugin_trackactions_installed;
-        $this->loggable_extensions = $loggable_extensions;
-        
-        // Añadimos también la paginación (comparamos las dos paginaciones y asignamos la mayor)
-        if ((!is_null($pagination_blacklist)) && (!is_null($pagination_whitelist))) {
-            if (($blacklist_elements) > ($whitelist_elements)) {
-                $this->pagination = $pagination_blacklist;
-            } else
-            {
-                $this->pagination = $pagination_whitelist;                
-            }
-        } else if (!is_null($pagination_blacklist)) {
-            $this->pagination = $pagination_blacklist;    
-        } else if (!is_null($pagination_whitelist)) {
-            $this->pagination = $pagination_whitelist;    
-        }
+        $this->plugin_trackactions_installed = $model->is_plugin_installed('system', 'trackactions');
+		$this->delete_period = (int) ($items['delete_period'] ?? $this->delete_period);
+		$this->ip_logging = (int) ($items['ip_logging'] ?? $this->ip_logging);
+		$this->loggable_extensions = (array) ($items['loggable_extensions'] ?? $this->loggable_extensions);
+              
 		
 		// Also comes common data from SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\DisplayController
 		
 		// Pass parameters to the cpanel.js script using Joomla's script options API
 		$this->document->addScriptOptions('securitycheckpro.Firewallconfig.currentip', $this->current_ip);
-		$this->document->addScriptOptions('securitycheckpro.Firewallconfig.dynamicblacklistText', addslashes(Text::_('COM_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_MESSAGE')));
+		Text::script('COM_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_MESSAGE');
 			
         
         parent::display($tpl);  

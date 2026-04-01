@@ -14,14 +14,25 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
-use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\SysinfoModel;
 
 
-/**
- * Main Admin View
- */
 class HtmlView extends BaseHtmlView {
     
+	/**
+	 * Los items a mostrar
+	 *
+	 * @var array<string, mixed>
+	 */
+    public $system_info = [];
+	
+	/**
+	 * El modelo
+	 *
+	 * @var SysinfoModel
+	 */
+    public $model = null;
+	
     /**
      * Display the main view
      *
@@ -30,7 +41,7 @@ class HtmlView extends BaseHtmlView {
      */
     function display($tpl = null) {
 		   
-		ToolBarHelper::title(Text::_('Securitycheck Pro').' | '.Text::_('COM_SECURITYCHECKPRO_SYSTEM_INFORMATION'), 'securitycheckpro');
+		ToolbarHelper::title(Text::_('Securitycheck Pro').' | '.Text::_('COM_SECURITYCHECKPRO_SYSTEM_INFORMATION'), 'securitycheckpro');
 		
 		// Load css and js
 		$this->document->getWebAssetManager()
@@ -38,17 +49,11 @@ class HtmlView extends BaseHtmlView {
 		  ->useScript('bootstrap.tab')		  
 		  ->useScript('com_securitycheckpro.Sysinfo');
                         
-        // Obtenemos los datos del modelo
-        $model = $this->getModel("sysinfo");
+        // Obtenemos el modelo de esta vista (Sysinfo)
+		/** @var SysinfoModel $model */
+       	$this->model= $this->getModel();
         
-        $system_info = $model->getInfo();        
-        $logs_pending = $model->LogsPending();
-        $trackactions_plugin_exists = $model->PluginStatus(8);
-                                
-        // Ponemos los datos y la paginación en el template
-        $this->system_info = $system_info;
-        $this->logs_pending = $logs_pending;
-        $this->trackactions_plugin_exists = $trackactions_plugin_exists;
+		$this->system_info = $this->model->getInfo(); 
                             
         parent::display($tpl);
     }

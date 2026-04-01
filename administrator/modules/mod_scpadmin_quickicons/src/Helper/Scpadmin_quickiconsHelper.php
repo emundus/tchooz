@@ -14,19 +14,22 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Language\Text;
+use Joomla\Registry\Registry;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\CpanelModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FilemanagerModel;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
+use Joomla\CMS\Application\CMSApplication;
 
 class Scpadmin_quickiconsHelper
 {
     /**
      * Stack to hold buttons
      *
+	 * @var array<string,mixed>
      * @since 1.6
      */
-    protected static $buttons = array();
+    protected static $buttons = [];
 
     /**
      * Helper method to return button list.
@@ -34,9 +37,9 @@ class Scpadmin_quickiconsHelper
      * This method returns the array by reference so it can be
      * used to add custom buttons or remove default ones.
      *
-     * @param JRegistry    The module parameters.
+     * @param Registry   $params	 The module parameters.
      *
-     * @return array    An array of buttons
+     * @return array<string,mixed>|null   An array of buttons
      * @since  1.6
      */
     public static function &getButtons($params)
@@ -61,7 +64,7 @@ class Scpadmin_quickiconsHelper
         }
 
         // Make sure Securitycheck Pro Component is enabled
-        if (!ComponentHelper::isEnabled('com_securitycheckpro', true)) {
+        if (!ComponentHelper::isEnabled('com_securitycheckpro')) {
             Factory::getApplication()->enqueueMessage(Text::_('MOD_SECURITYCHECKPRO_NOT_ENABLED'), 'error');
             return;
         }
@@ -75,31 +78,36 @@ class Scpadmin_quickiconsHelper
         $params->def('check_malwarescan', 1); // Check malwarescan
 
         // Load the language files
-        $jlang = Factory::getApplication()->getLanguage();
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app       = Factory::getApplication();
+        $jlang = $app->getLanguage();
         $jlang->load('mod_scpadmin_quickicons', JPATH_ADMINISTRATOR, 'en-GB', true);
         $jlang->load('mod_scpadmin_quickicons', JPATH_ADMINISTRATOR, $jlang->getDefault(), true);
         $jlang->load('mod_scpadmin_quickicons', JPATH_ADMINISTRATOR, null, true);
 
         // Import Securitycheckpros models
-        
-        $cpanel_model = new CpanelModel();
-        $filemanager_model = new FilemanagerModel();
-    
-        $mainframe = Factory::getApplication();
-    
-        if ((empty($cpanel_model)) || (empty($filemanager_model))) {        
-            $mainframe->setUserState("exists_filemanager", false);    
-            return;
-        } else if (!empty($filemanager_model)) {
-            $mainframe->setUserState("exists_filemanager", true);
-        }
-        
+				
+		$component = $app->bootComponent('com_securitycheckpro');
+		$mvcFactory = $component->getMVCFactory();
+		
+		$cpanel_model = $mvcFactory->createModel('Cpanel', 'Administrator');
+		$filemanager_model = $mvcFactory->createModel('Filemanager', 'Administrator');
+
+		if ( ($cpanel_model === null) || ($filemanager_model === null) ) {
+			$app->setUserState("exists_filemanager", false);
+			return;
+		} else {
+			$app->setUserState("exists_filemanager", true);
+		}
+		      
+		$document = $app->getDocument();
+		
         $key = (string)$params;
         if (!isset(self::$buttons[$key])) {
             $context = $params->get('context', 'mod_scpadmin_quickicons');
             if ($context == 'mod_scpadmin_quickicons') {
                 // Load mod_scpadmin_quickicons language file in case this method is called before rendering the module
-                Factory::getApplication()->getLanguage()->load('mod_scpadmin_quickicons');
+                $app->getLanguage()->load('mod_scpadmin_quickicons');
             }
             // Array is empty because we will add icons later
             self::$buttons[$key] = array();
@@ -120,11 +128,10 @@ class Scpadmin_quickiconsHelper
                 $query = "SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable='Indefinido'";
                 $db->setQuery($query);
                 $db->execute();    
-                $undefined_vuln_extensions = $db->loadResult();
-            
+                $undefined_vuln_extensions = $db->loadResult();				
+				            
                 if ($vuln_extensions > 0) {
-						$check_vulnerable_extensions_image = 'fa fa-exclamation';
-                        $document = Factory::getApplication()->getDocument();
+						$check_vulnerable_extensions_image = 'fa fa-exclamation';                        
                         $document->addScriptDeclaration(
                             "
 						function scp_vuln_extensions() {
@@ -142,7 +149,6 @@ class Scpadmin_quickiconsHelper
                     $check_vulnerable_extensions_label = Text::_('MOD_SECURITYCHECKPRO_VULNERABLE_EXTENSIONS');
                 } else if  ($undefined_vuln_extensions > 0) {
                         $check_vulnerable_extensions_image = 'fa fa-question-circle ';
-                        $document = Factory::getApplication()->getDocument();
                         $document->addScriptDeclaration(
                             "
 						function scp_vuln_extensions() {
@@ -161,7 +167,6 @@ class Scpadmin_quickiconsHelper
                 } else
                 {
                         $check_vulnerable_extensions_image = 'fa fa-check-circle ';
-                        $document = Factory::getApplication()->getDocument();
                         $document->addScriptDeclaration(
                             "
 						function scp_vuln_extensions() {
@@ -196,8 +201,7 @@ class Scpadmin_quickiconsHelper
                 (int) $logs_pending = $cpanel_model->LogsPending();
 				                
                 if ($logs_pending == 0) {
-                        $check_not_readed_logs_image = 'fa fa-file';
-                        $document = Factory::getApplication()->getDocument();
+                        $check_not_readed_logs_image = 'fa fa-file';                      
                         $document->addScriptDeclaration(
                             "
 						function scp_logs() {
@@ -216,7 +220,6 @@ class Scpadmin_quickiconsHelper
                 } else
                 {
                         $check_not_readed_logs_image = 'fa fa-file-alt';
-                        $document = Factory::getApplication()->getDocument();                       
                         $document->addScriptDeclaration(
                             "
 						function scp_logs() {
@@ -252,7 +255,6 @@ class Scpadmin_quickiconsHelper
 				
 				if ($files_with_incorrect_permissions == 0) {
                         $check_file_permissions_image = 'fa fa-check-square';
-                        $document = Factory::getApplication()->getDocument();
                         $document->addScriptDeclaration(
                             "
 						function scp_permissions() {
@@ -271,7 +273,6 @@ class Scpadmin_quickiconsHelper
                 } else
                 {
                         $check_file_permissions_image = 'fa fa-square';
-                        $document = Factory::getApplication()->getDocument();
                         $document->addScriptDeclaration(
                             "
 						function scp_permissions() {
@@ -306,7 +307,6 @@ class Scpadmin_quickiconsHelper
 				                
                 if ($files_with_bad_integrity == 0) {
                         $check_file_integrity_image = 'fa fa-lock';
-                        $document = Factory::getApplication()->getDocument();
                         $document->addScriptDeclaration(
                             "
 						function scp_integrity() {
@@ -324,7 +324,6 @@ class Scpadmin_quickiconsHelper
                 } else
                 {
                         $check_file_integrity_image = 'fa fa-unlock';
-                        $document = Factory::getApplication()->getDocument();
                         $document->addScriptDeclaration(
                             "
 						function scp_integrity() {
@@ -359,7 +358,6 @@ class Scpadmin_quickiconsHelper
 				
                 if ($suspicious_files == 0) {
                         $check_malwarescan_image = 'fa fa-thumbs-up';
-                        $document = Factory::getApplication()->getDocument();
                         $document->addScriptDeclaration(
                             "
 						function scp_malware() {
@@ -377,7 +375,6 @@ class Scpadmin_quickiconsHelper
                 } else 
                 {
                         $check_malwarescan_image = 'fa fa-bug';
-                        $document = Factory::getApplication()->getDocument();
                         $document->addScriptDeclaration(
                             "
 						function scp_malware() {
@@ -412,8 +409,8 @@ class Scpadmin_quickiconsHelper
     /**
      * Get the alternate title for the module
      *
-     * @param JRegistry    The module parameters.
-     * @param object        The module.
+     * @param Registry    $params	The module parameters.
+     * @param object      $module   The module.
      *
      * @return string    The alternate title for the module.
      */

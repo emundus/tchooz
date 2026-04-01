@@ -10,10 +10,12 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Table\Table;
+
 /**
  * Logs Table class
  */
-class TableLogs extends JTable
+class TableLogs extends Table
 {
     /**
      * Primary Key
@@ -26,17 +28,43 @@ class TableLogs extends JTable
      * @var string
      */
     var $ip = null;
+	
+	/**
+     * @var string
+     */
     var $time = null;
+	
+	/**
+     * @var string
+     */
     var $tag_description = null;
+	
+	/**
+     * @var string
+     */
     var $description = null;
+	
+	/**
+     * @var string
+     */
     var $type = null;
+	
+	/**
+     * @var string
+     */
     var $uri = null;
+	
+	/**
+     * @var int
+     */
     var $marked = 0;
 
     /**
      * Constructor
      *
-     * @param object Database connector object
+     * @param object $db Database connector object
+	 *
+	 * @return void
      */
     function TableLogs(&$db)
     {
