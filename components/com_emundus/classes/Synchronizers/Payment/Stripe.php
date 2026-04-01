@@ -151,12 +151,15 @@ class Stripe
 		}
 		else
 		{
+			// Step 1: Calculate each product's price after product-specific alterations
+			// This mirrors the first loop in CartEntity::calculateTotal()
+			$product_lines = [];
 			foreach ($cart->getProducts() as $product) {
 				if (!($product instanceof ProductEntity)) {
 					continue;
 				}
 
-				$amount_of_product = $product->getPrice(); // Amount in euros
+				$product_price = $product->getPrice();
 
 				foreach ($cart->getPriceAlterations() as $alteration) {
 					if (!($alteration instanceof AlterationEntity)) {
@@ -165,15 +168,23 @@ class Stripe
 
 					if (!empty($alteration->getProduct()) && $alteration->getProduct()->getId() === $product->getId()) {
 						if ($alteration->getType() === AlterationType::FIXED) {
-							$items[] = $factory->createStripeItem($alteration->getAmount(), $transaction->getCurrency(), $alteration->getDescription(), '', 1, ['type' => 'alteration']);
+							$product_price += $alteration->getAmount();
 						} elseif ($alteration->getType() === AlterationType::PERCENTAGE) {
-							$amount_of_product += ($amount_of_product * $alteration->getAmount() / 100);
+							$product_price += $product_price * ($alteration->getAmount() / 100);
 						}
 					}
 				}
 
-				$items[] = $factory->createStripeItem($amount_of_product, $transaction->getCurrency(), $product->getLabel(), $product->getDescription());
+				$product_lines[] = [
+					'label'       => $product->getLabel(),
+					'description' => $product->getDescription(),
+					'amount'      => $product_price, // in euros, after product-specific alterations
+				];
 			}
+
+			// Step 2: Apply global alterations (no product) on the subtotal
+			// This mirrors the second loop in CartEntity::calculateTotal()
+			$subtotal = array_sum(array_column($product_lines, 'amount'));
 
 			foreach ($cart->getPriceAlterations() as $alteration) {
 				if (!($alteration instanceof AlterationEntity)) {
@@ -181,25 +192,34 @@ class Stripe
 				}
 
 				if (empty($alteration->getProduct())) {
-					if ($alteration->getType() === AlterationType::FIXED) {
-						$items[] = $factory->createStripeItem($alteration->getAmount(), $transaction->getCurrency(), $alteration->getDescription(), '', 1, ['type' => 'alteration']);
-					} elseif ($alteration->getType() === AlterationType::PERCENTAGE) {
-						// Sum current items total in euros (unit_amount is in cents)
-						$current_total_euros = 0;
-						foreach ($items as $item) {
-							if (isset($item['price_data']['unit_amount'])) {
-								$current_total_euros += $item['price_data']['unit_amount'] / 100;
+					if ($alteration->getType() === AlterationType::FIXED || $alteration->getType() === AlterationType::ADJUST_BALANCE) {
+						// Distribute the fixed global alteration proportionally across products
+						if ($subtotal != 0) {
+							foreach ($product_lines as &$line) {
+								$line['amount'] += $alteration->getAmount() * ($line['amount'] / $subtotal);
 							}
+							unset($line);
 						}
-
-						// Apply percentage on the current total, same logic as CartEntity::calculateTotal()
-						$alteration_amount = $current_total_euros * ($alteration->getAmount() / 100);
-						$items[] = $factory->createStripeItem($alteration_amount, $transaction->getCurrency(), $alteration->getDescription(), '', 1, ['type' => 'alteration']);
+						$subtotal += $alteration->getAmount();
+					} elseif ($alteration->getType() === AlterationType::PERCENTAGE) {
+						// Apply percentage on each product proportionally (same ratio as before)
+						foreach ($product_lines as &$line) {
+							$line['amount'] += $line['amount'] * ($alteration->getAmount() / 100);
+						}
+						unset($line);
+						$subtotal += $subtotal * ($alteration->getAmount() / 100);
 					}
 				}
 			}
 
-			// Assert sum of all items equals the cart total (both in euros)
+			// Step 3: Build Stripe items, ensuring no negative amounts
+			// Stripe requires unit_amount to be a non-negative integer
+			foreach ($product_lines as $line) {
+				$amount = max(0, $line['amount']);
+				$items[] = $factory->createStripeItem($amount, $transaction->getCurrency(), $line['label'], $line['description']);
+			}
+
+			// Step 4: Assert sum of all items equals the cart total (both in euros)
 			$sum = array_sum(array_map(function($item) {
 				return isset($item['price_data']['unit_amount']) ? $item['price_data']['unit_amount'] / 100 : 0;
 			}, $items));
