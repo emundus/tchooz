@@ -156,7 +156,7 @@ class Stripe
 					continue;
 				}
 
-				$amount_of_product = $product->getPrice(); // Amount in cents
+				$amount_of_product = $product->getPrice(); // Amount in euros
 
 				foreach ($cart->getPriceAlterations() as $alteration) {
 					if (!($alteration instanceof AlterationEntity)) {
@@ -174,6 +174,7 @@ class Stripe
 
 				$items[] = $factory->createStripeItem($amount_of_product, $transaction->getCurrency(), $product->getLabel(), $product->getDescription());
 			}
+
 			foreach ($cart->getPriceAlterations() as $alteration) {
 				if (!($alteration instanceof AlterationEntity)) {
 					continue;
@@ -183,25 +184,27 @@ class Stripe
 					if ($alteration->getType() === AlterationType::FIXED) {
 						$items[] = $factory->createStripeItem($alteration->getAmount(), $transaction->getCurrency(), $alteration->getDescription(), '', 1, ['type' => 'alteration']);
 					} elseif ($alteration->getType() === AlterationType::PERCENTAGE) {
-						$alteration_amount = 0;
-						foreach ($items as &$item) {
+						// Sum current items total in euros (unit_amount is in cents)
+						$current_total_euros = 0;
+						foreach ($items as $item) {
 							if (isset($item['price_data']['unit_amount'])) {
-								// Calculate the percentage of the item amount
-								$alteration_amount += ($item['price_data']['unit_amount'] / 100) * $alteration->getAmount();
+								$current_total_euros += $item['price_data']['unit_amount'] / 100;
 							}
 						}
 
+						// Apply percentage on the current total, same logic as CartEntity::calculateTotal()
+						$alteration_amount = $current_total_euros * ($alteration->getAmount() / 100);
 						$items[] = $factory->createStripeItem($alteration_amount, $transaction->getCurrency(), $alteration->getDescription(), '', 1, ['type' => 'alteration']);
 					}
 				}
 			}
 
-			// assert sum of all items is equal to the total amount of the cart
+			// Assert sum of all items equals the cart total (both in euros)
 			$sum = array_sum(array_map(function($item) {
-				return isset($item['price_data']['unit_amount']) ? (float)($item['price_data']['unit_amount'] / 100) : 0;
+				return isset($item['price_data']['unit_amount']) ? $item['price_data']['unit_amount'] / 100 : 0;
 			}, $items));
 
-			if ($cart->getTotal() !== $sum) {
+			if (round($cart->getTotal(), 2) !== round($sum, 2)) {
 				Log::add('Stripe checkout session total amount mismatch: cart total is ' . $cart->getTotal() . ', but items sum is ' . $sum, Log::ERROR, 'com_emundus.stripe');
 				throw new \Exception('Total amount mismatch between cart and items');
 			}
