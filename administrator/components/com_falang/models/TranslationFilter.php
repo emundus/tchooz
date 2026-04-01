@@ -960,6 +960,7 @@ class JFContentParams extends CMSObject
      * @update 5.18 add editor custom fields copy/translate (message for original)
      * @update 5.21 skip display of copy/transate/original for JFormFieldACFGAllery
      *              custom fields with a specific language code are not displayed for translation
+     * @update remove duplicate test
      * */
     function render($type)
     {
@@ -1106,7 +1107,6 @@ class JFContentParams extends CMSObject
 
                             <!-- the field can be displayed -->
                             <?php echo $field->renderField(); ?>
-                            <?php if ($field instanceof ('JFormFieldACFGAllery')){continue;} ?>
                             <?php if (in_array($field->type , $supported_original) ) { ?>
                                 <div class="control-group falang">
                                     <div class="control-label">&nbsp;</div>
