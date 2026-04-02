@@ -25,6 +25,9 @@ use Joomla\Plugin\Emundus\Parcoursup\Factory\ParcoursupFactory;
 use Joomla\Plugin\Emundus\Parcoursup\Factory\UserFactory;
 use Joomla\Plugin\Emundus\Parcoursup\Repository\ParcoursupRepository;
 use Joomla\Plugin\Emundus\Parcoursup\Repository\UserRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\User\UserCategoryRepository;
 
 /**
  * Task plugin with routines to check in a checked out item.
@@ -103,7 +106,9 @@ class Parcoursup extends CMSPlugin implements SubscriberInterface
 			$mUsers            = new \EmundusModelUsers();
 			$userRepository    = new UserRepository($mUsers);
 			$userFactory       = new UserFactory();
-			$repository        = new ParcoursupRepository($this->getDatabase(), $userRepository);
+			$campaignRepository = new CampaignRepository();
+			$applicationChoicesRepository = new ApplicationChoicesRepository();
+			$repository        = new ParcoursupRepository($this->getDatabase(), $userRepository, $campaignRepository, $applicationChoicesRepository);
 			$parcoursupFactory = new ParcoursupFactory($this->getDatabase(), $userFactory);
 
 			$datasToImport = $repository->getDatas();
