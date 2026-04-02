@@ -15,14 +15,38 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
-use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use Joomla\Registry\Registry;
+use Joomla\CMS\Pagination\Pagination;
+use Joomla\CMS\User\User;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\RulesModel;
 
-
-/**
- * Main Admin View
- */
 class HtmlView extends BaseHtmlView {
     
+	/**
+	 * The model state
+	 *
+	 * @since  1.6
+	 * @var    Registry
+	 */
+	public $state;
+	
+	/**
+	 * Pagination object
+	 *
+	 * @var Pagination
+	 */
+	public ?Pagination $pagination = null;
+	
+	/**
+	 * Los items a mostrar
+	 *
+	 * @var array<string,mixed>|null
+	 */
+    public $items = [];
+	
+	/** @var User */
+    public User $user;
+	
     /**
      * Display the main view
      *
@@ -31,10 +55,10 @@ class HtmlView extends BaseHtmlView {
      */
     function display($tpl = null) {
 		 
-		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' . Text::_('COM_SECURITYCHECKPRO_CPANEL_RULES_TEXT'), 'securitycheckpro');
-        ToolBarHelper::publish('apply_rules', Text::_('COM_SECURITYCHECKPRO_RULES_APPLY'), true);
-        ToolBarHelper::unpublish('not_apply_rules', Text::_('COM_SECURITYCHECKPRO_RULES_NOT_APPLY'), true);
-        ToolBarHelper::custom('rules_logs', 'users', 'users', 'COM_SECURITYCHECKPRO_RULES_VIEW_LOGS', false);
+		ToolbarHelper::title(Text::_('Securitycheck Pro').' | ' . Text::_('COM_SECURITYCHECKPRO_CPANEL_RULES_TEXT'), 'securitycheckpro');
+        ToolbarHelper::publish('rules.apply_rules', Text::_('COM_SECURITYCHECKPRO_RULES_APPLY'), true);
+        ToolbarHelper::unpublish('rules.not_apply_rules', Text::_('COM_SECURITYCHECKPRO_RULES_NOT_APPLY'), true);
+        ToolbarHelper::custom('rules.rules_logs', 'users', 'users', 'COM_SECURITYCHECKPRO_RULES_VIEW_LOGS', false);
 		
 		// Load css and js
 		$this->document->getWebAssetManager()
@@ -45,23 +69,21 @@ class HtmlView extends BaseHtmlView {
         $this->state= $this->get('State');
         $acl_search = $this->state->get('filter.acl_search');
 
-        $model = $this->getModel("rules");
-        $items = $model->load();
+        // Obtenemos el modelo de esta vista (Rules)
+		/** @var RulesModel $model */
+       	$model= $this->getModel();
+		
+        $this->items = $model->load();
 
-        // Información para la barra de navegación        
-        $common_model = new BaseModel();
-
-        $logs_pending = $common_model->LogsPending();
-        $trackactions_plugin_exists = $common_model->PluginStatus(8);
-        $this->logs_pending = $logs_pending;
-        $this->trackactions_plugin_exists = $trackactions_plugin_exists;
-
-        // Ponemos los datos en el template
-        $this->items = $items;
-
-        if (!empty($items)) {
-            $this->pagination = $this->get('Pagination');    
+        if (!empty($this->items)) {
+            $this->pagination = $model->getPagination();    
         }
+		
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+        $app     = Factory::getApplication();
+		
+		$this->user = $app->getIdentity();
+		
         
         parent::display($tpl);  
     }

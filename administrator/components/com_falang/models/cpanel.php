@@ -649,6 +649,9 @@ class CPanelModelCPanel extends BaseDatabaseModel
 		return $unpublishedTranslations;
 	}
 
+    /*
+     * @update 6.3 remove last getDbo() Call
+     * */
 	public function updateDownloadId(){
 
 		// For joomla versions < 3.1 (no extra query available)
@@ -656,7 +659,7 @@ class CPanelModelCPanel extends BaseDatabaseModel
 			return;
 		}
 
-		$db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 		// Get current extension ID
 		$extension_id = $this->getExtensionId();
 		if (!$extension_id)
@@ -702,11 +705,12 @@ class CPanelModelCPanel extends BaseDatabaseModel
 	 * @return  extension id
 	 *
 	 * @since 1.1.7
+     * @update 6.3 remove getDbo() call
 	 *
 	 */
 	public function getExtensionId()
 	{
-		$db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 		$extensionType = 'package';
 		$extensionElement = 'pkg_falang';
 		// Get current extension ID

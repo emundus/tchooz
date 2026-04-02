@@ -53,8 +53,7 @@
 			"type": "script",
 			"uri": "com_securitycheckpro/Common.js",
 			"dependencies": [
-				"core",
-				"jquery"
+				"core"
 			],
 			"attributes": {
 				"defer": true
@@ -67,7 +66,7 @@
 			"uri": "com_securitycheckpro/Cpanel.js",
 			"dependencies": [
 				"core",
-				"jquery",
+				"bootstrap.popover",
 				"com_securitycheckpro.common"
 			],
 			"attributes": {
@@ -106,8 +105,7 @@
 			"type": "script",
 			"uri": "com_securitycheckpro/Dbcheck.js",
 			"dependencies": [
-				"core",
-				"jquery",				
+				"core",				
 				"com_securitycheckpro.common"
 			],
 			"attributes": {
@@ -121,7 +119,6 @@
 			"uri": "com_securitycheckpro/Filemanager.js",
 			"dependencies": [
 				"core",
-				"jquery",				
 				"com_securitycheckpro.common"
 			],
 			"attributes": {
@@ -135,7 +132,6 @@
 			"uri": "com_securitycheckpro/Fileintegrity.js",
 			"dependencies": [
 				"core",
-				"jquery",				
 				"com_securitycheckpro.common"
 			],
 			"attributes": {
@@ -148,8 +144,7 @@
 			"type": "script",
 			"uri": "com_securitycheckpro/Malwarescan.js",
 			"dependencies": [
-				"core",
-				"jquery",				
+				"core",								
 				"com_securitycheckpro.common"
 			],
 			"attributes": {
@@ -162,8 +157,8 @@
 			"type": "script",
 			"uri": "com_securitycheckpro/Onlinechecks.js",
 			"dependencies": [
-				"core",
-				"jquery",				
+				"core",					
+				"bootstrap.modal",
 				"com_securitycheckpro.common"
 			],
 			"attributes": {
@@ -177,7 +172,8 @@
 			"uri": "com_securitycheckpro/Protection.js",
 			"dependencies": [
 				"core",
-				"jquery",				
+				"bootstrap.tab",
+				"bootstrap.modal",					
 				"com_securitycheckpro.common"
 			],
 			"attributes": {
@@ -191,7 +187,6 @@
 			"uri": "com_securitycheckpro/Rules.js",
 			"dependencies": [
 				"core",
-				"jquery",				
 				"com_securitycheckpro.common"
 			],
 			"attributes": {
@@ -204,8 +199,7 @@
 			"type": "script",
 			"uri": "com_securitycheckpro/Ruleslog.js",
 			"dependencies": [
-				"core",
-				"jquery",				
+				"core",								
 				"com_securitycheckpro.common"
 			],
 			"attributes": {
@@ -219,7 +213,6 @@
 			"uri": "com_securitycheckpro/Securitycheckpros.js",
 			"dependencies": [
 				"core",
-				"jquery",				
 				"com_securitycheckpro.common"
 			],
 			"attributes": {
@@ -233,7 +226,9 @@
 			"uri": "com_securitycheckpro/Sysinfo.js",
 			"dependencies": [
 				"core",
-				"jquery",				
+				"bootstrap.tab",
+				"bootstrap.modal",
+				"bootstrap.popover",
 				"com_securitycheckpro.common"
 			],
 			"attributes": {
@@ -246,8 +241,7 @@
 			"type": "script",
 			"uri": "com_securitycheckpro/Upload.js",
 			"dependencies": [
-				"core",
-				"jquery",				
+				"core",								
 				"com_securitycheckpro.common"
 			],
 			"attributes": {
@@ -261,14 +255,29 @@
 			"uri": "com_securitycheckpro/Firewallconfig.js",
 			"dependencies": [
 				"core",
-				"jquery",				
+				"bootstrap.tab",
+				"bootstrap.modal",
+				"bootstrap.popover",
 				"com_securitycheckpro.common"
 			],
 			"attributes": {
 				"defer": true
 			}
 		},
-		
+		{
+			"name": "com_securitycheckpro.Trackactions",
+			"description": "Trackactions JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Trackactions.js",
+			"dependencies": [
+				"core",				
+				"bootstrap.popover",
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},		
 		{
 			"name": "com_securitycheckpro.common",
 			"type": "preset",

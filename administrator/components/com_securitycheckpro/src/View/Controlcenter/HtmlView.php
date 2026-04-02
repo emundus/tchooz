@@ -16,12 +16,58 @@ use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FilemanagerModel;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\ControlcenterModel;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use Joomla\CMS\Application\CMSApplication;
 
-
-/**
- * Main Admin View
- */
 class HtmlView extends BaseHtmlView {
+	
+	/**
+	 * Nombre del fichero de logs
+	 *
+	 * @var  string
+	 */
+    public $log_filename = '';
+	
+	/**
+	 * Indica si el archivo error.php existe
+	 *
+	 * @var  bool|int
+	 */
+    public $error_file_exists = 0;
+	
+	/**
+	 * Indica si la opción 'Control Center' está habilitada
+	 *
+	 * @var  bool|int
+	 */
+    public $control_center_enabled = false;
+	
+	/**
+	 * Clave secreta
+	 *
+	 * @var  string
+	 */
+    public $secret_key = '';
+	
+	/**
+	 * Url del Control Center
+	 *
+	 * @var  string
+	 */
+    public $control_center_url = '';
+	
+	/**
+	 * Token
+	 *
+	 * @var  string
+	 */
+    public $token = '';
+	
+	/**
+	 * @var BaseModel
+	 */
+	public $basemodel;
     
     /**
      * Display the main view
@@ -31,9 +77,12 @@ class HtmlView extends BaseHtmlView {
      */
     function display($tpl = null) {
 		
-		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_CPANEL_CONTROLCENTER_TEXT'), 'securitycheckpro');
-		ToolBarHelper::apply();
+		ToolbarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_CPANEL_CONTROLCENTER_TEXT'), 'securitycheckpro');
+		ToolbarHelper::apply();
 		ToolbarHelper::save();
+		
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app = Factory::getApplication();
 		
 		// Load css and js
 		$this->document->getWebAssetManager()
@@ -41,62 +90,47 @@ class HtmlView extends BaseHtmlView {
 		  ->useScript('bootstrap.toast')  
 		  ->useScript('com_securitycheckpro.Controlcenter');
 
-        // Obtenemos el modelo
+        // Obtenemos el modelo de esta vista (Controlcenter)
+		/** @var ControlcenterModel $model */
         $model = $this->getModel();
-
+		
         //  Parámetros del plugin
         $items= $model->getControlCenterConfig();
 		
-        // Información para la barra de navegación
-        $logs_pending = $model->LogsPending();
-        $trackactions_plugin_exists = $model->PluginStatus(8);
-        $this->logs_pending = $logs_pending;
-        $this->trackactions_plugin_exists = $trackactions_plugin_exists;
+		// BaseModel
+        $this->basemodel = new BaseModel();
 		
+		 /** @var FilemanagerModel $filemanager_model */
 		$filemanager_model = new FilemanagerModel();
+				
 		$this->log_filename = $filemanager_model->get_log_filename("controlcenter_log", true);
 		if ( !empty($this->log_filename) ) {
-			Factory::getApplication()->setUserState('download_controlcenter_log', $this->log_filename);
+			$app->setUserState('download_controlcenter_log', $this->log_filename);
 		} else {
-			Factory::getApplication()->setUserState('download_controlcenter_log', null);
+			$app->setUserState('download_controlcenter_log', null);
 		}
 		
-		// Chequeamos si existe el fichero de error
-		$this->error_file_exists = 0;
+		// Chequeamos si existe el fichero de error		
 		$folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
 		if (file_exists($folder_path . "error.php")) {
 			$this->error_file_exists = 1;
 		}
 
-        // Extraemos los elementos que nos interesan...
-        $control_center_enabled= null;
-        $secret_key= null;
-		$control_center_url = null;
-		$token = null;
-
-
-        if ( (array_key_exists('control_center_enabled',$items)) && (!is_null($items['control_center_enabled'])) ) {
-            $control_center_enabled = $items['control_center_enabled'];    
+        if ( array_key_exists('control_center_enabled',$items) ) {
+            $this->control_center_enabled = $items['control_center_enabled'];    
         }
 
-        if ( (array_key_exists('secret_key',$items)) && (!is_null($items['secret_key'])) ) {
-            $secret_key = $items['secret_key'];    
+        if ( array_key_exists('secret_key',$items) ) {
+            $this->secret_key = $items['secret_key'];    
         }
 		
-		if ( (array_key_exists('control_center_url',$items)) && (!is_null($items['control_center_url'])) ) {
-            $control_center_url = $items['control_center_url'];    
+		if ( array_key_exists('control_center_url',$items) ) {
+            $this->control_center_url = $items['control_center_url'];    
         }
 		
-		if ( (array_key_exists('token',$items)) && (!is_null($items['token'])) ) {
-            $token = $items['token'];    
-        }
-
-        // ... y los ponemos en el template
-        $this->control_center_enabled = $control_center_enabled;
-        $this->secret_key = $secret_key;
-		$this->control_center_url = $control_center_url;
-		$this->token = $token;
-		
+		if ( array_key_exists('token',$items ) ) {
+            $this->token = $items['token'];    
+        }		
         
         parent::display($tpl);  
     }

@@ -1,217 +1,128 @@
 <?php
-/*
-* PHP Subnet Calculator v1.3.
-* Copyright 01/11/2012 Randy McAnally
-* Released under GNU GPL.
-* Special thanks to krischan at jodies.cx for ipcalc.pl http://jodies.de/ipcalc
-* The presentation and concept was mostly taken from ipcalc.pl.
-* Modified by Jose A. Luque for the component Securitycheck Pro
-*/
+declare(strict_types=1);
+
+/**
+ * @Securitycheckpro component
+ * @copyright Copyright (c) 2011 - Jose A. Luque / Securitycheck Extensions
+ * @license   GNU General Public License version 3, or later
+ */
 
 namespace SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model;
 
 defined('_JEXEC') or die('Restricted access');
 
-use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use Joomla\CMS\Factory;
+use Joomla\Utilities\IpHelper;
+use Joomla\Registry\Registry;
+use Joomla\CMS\Component\ComponentHelper;
 
-class IPModel extends BaseModel
+class IpModel
 {
+	
+	protected function getComponentParams(): Registry
+	{
+		return ComponentHelper::getParams('com_securitycheckpro');
+	}
 
-    function __construct()
-    {
-        parent::__construct();
+	/**
+	 * Obtiene la IP cliente para el uso en la aplicación (modo seguro para un product usado por clientes).
+	 *
+	 * Políticas:
+	 *  - Por defecto: no permitir overrides (ignora X-Forwarded-For y vendor headers).
+	 *  - Si el administrador habilita 'trust_ip_overrides' y proporciona trusted_proxies: se permiten overrides solo si REMOTE_ADDR pertenece a trusted_proxies.
+	 *  - Si 'trust_ip_overrides' habilitado + trusted_proxies vacío + allow_overrides_when_remote_is_private=true:
+	 *      se permiten overrides únicamente cuando REMOTE_ADDR es una IP privada/loopback (uso en LAN/dev).
+	 *
+	 * @return string|null IP válida o null si no se puede determinar
+	 */
+	function getClientIpForSecuritycheckPro(): ?string
+	{
+		// Lee params del componente
+		$params = $this->getComponentParams();
 
-    }
-    
-    /* Extract info of an ip and cidr */
-    public function get_ip_info($ip, $cidr = null)
-    {
-        $maxSubNets = '2048'; // Stop memory leak from invalid input or large ranges
-        $superNet = $ip;
-        $superNetMask = ''; // optional
-        $subNetCdr = $cidr;
-        $subNetMask = ''; // optional
-        
-        // Array which contain all the info needed
-        $ip_info = array (
-        "network"    => '',
-        "netmask"    => '',
-        "wildcard"    => '',
-        "broadcast"    => '',
-        "hostmax"    => '',
-        "hostmin"    => ''
-        );
-        
-        /* Are we providing a cidr? */
-        $existe_barra = strstr($superNet, "/");
-                
-        // Calculate supernet mask and cdr
-        if ($existe_barra != false) {  //if cidr type mask
-            $charHost = inet_pton(strtok($superNet, '/'));
-            $charMask = $this->_cdr2Char(strtok('/'), strlen($charHost));
-        } else
-        {
-            $charHost = inet_pton($superNet);
-            $charMask = inet_pton($superNetMask);
-        }
-        
-        // Single host mask used for hostmin and hostmax bitwise operations
-        $charHostMask = substr($this->_cdr2Char(127), -strlen($charHost));
-        $charWC = ~$charMask; // Supernet wildcard mask
-        $charNet = $charHost & $charMask; // Supernet network address
-        $charBcst = $charNet | ~$charMask; // Supernet broadcast
-        $charHostMin = $charNet | ~$charHostMask; // Minimum host
-        $charHostMax = $charBcst & $charHostMask; // Maximum host
-        
-        // Store the info
-        //$ip_info["network"] = inet_ntop($charNet)."/".$this->_char2Cdr($charMask);
-        $ip_info["network"] = inet_ntop($charNet);
-        $ip_info["netmask"] = inet_ntop($charMask)." = /".$this->_char2Cdr($charMask);
-        $ip_info["wildcard"] = inet_ntop($charWC);
-        $ip_info["broadcast"] = inet_ntop($charBcst);
-        $ip_info["hostmin"] = inet_ntop($charHostMin);
-        $ip_info["hostmax"] = inet_ntop($charHostMax);
-        
-        return $ip_info;    
-        
-    }
-    
-    // Check if an IPv4 address is in subnet
-    public function cidr_match($ip,$network,$cidr)
-    {
-        if ((ip2long($ip) & ~((1 << (32 - $cidr)) - 1) ) == ip2long($network)) {
-            return true;
-        }
+		$trustOverrides = (bool) $params->get('trust_ip_overrides', false);
+		$trustedProxiesCsv = (string) $params->get('trusted_proxies', '');
+		$allowWhenRemotePrivate = (bool) $params->get('allow_overrides_when_remote_is_private', false);
 
-        return false;
-    }
-    
-    // Check if an IPv4 address is in subnet
-    function ip_in_range( $ip, $range )
-    {
-        if (strpos($range, '/') == false) {
-            $range .= '/32';
-        }
-        // $range is in IP/CIDR format eg 127.0.0.1/24
-        list( $range, $netmask ) = explode('/', $range, 2);
-        $range_decimal = ip2long($range);
-        $ip_decimal = ip2long($ip);
-        $wildcard_decimal = pow(2, ( 32 - $netmask )) - 1;
-        $netmask_decimal = ~ $wildcard_decimal;
-        return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
-    }    
-    
-    public function checkIPv6WithinRange($ipv6, $range)
-    {
-        list ($net, $mask) = preg_split("/\//", $range);
+		$trustedProxies = [];
+		if ($trustedProxiesCsv !== '') {
+			// normaliza CSV -> array, permite comas y saltos de línea
+			$items = preg_split('/[\r\n,]+/', $trustedProxiesCsv, flags: PREG_SPLIT_NO_EMPTY);
+			if ($items !== false) {
+				$trustedProxies = array_map(static fn($v) => trim((string) $v), $items);
+			}
+		}
 
-        if ($mask % 4) {
-            return false; //"Only masks divisible by 4 are supported"
-        }
-            
-        $stripChars = (128-$mask)/4;
+		$server = $_SERVER;
+		$remoteAddr = (string) ($server['REMOTE_ADDR'] ?? '');
 
-        $hexNet = bin2hex(inet_pton($net));
-        $reducedNet = substr($hexNet, 0, 0 - $stripChars);
+		// Heurística segura: por defecto no permitimos overrides
+		$allowOverridesNow = false;
 
-        $hexIp = bin2hex(inet_pton($ipv6));
-        $reducedIp = substr($hexIp, 0, 0 - $stripChars);
+		if ($trustOverrides) {
+			if (!empty($trustedProxies)) {
+				// Si hay proxies confiables definidos, sólo permitimos overrides si REMOTE_ADDR está en la lista
+				$allowOverridesNow = IpHelper::IPinList($remoteAddr, $trustedProxies);
+			} elseif ($allowWhenRemotePrivate) {
+				// Si no hay proxies definidos pero admin marcó 'allowWhenRemotePrivate',
+				// permitimos overrides solo cuando REMOTE_ADDR es una IP privada/loopback.
+				if ($this->isPrivateOrReservedIp($remoteAddr)) {
+					$allowOverridesNow = true;
+				} else {
+					$allowOverridesNow = false;
+				}
+			} else {
+				$allowOverridesNow = false;
+			}
+		}
 
-        return $reducedIp === $reducedNet;
-    }
+		// Configura IpHelper para que tenga o no en cuenta los overrides
+		IpHelper::setAllowIpOverrides($allowOverridesNow);
 
-    // Convert array of short unsigned integers to binary
-    function _packBytes($array)
-    {
-        foreach ( $array as $byte )
-        {
-            $chars .= pack('C', $byte);
-        }
-        return $chars;
-    }
-    
-    // Convert binary to array of short integers
-    function _unpackBytes($string)
-    {
-        return unpack('C*', $string);
-    }
-    
-    // Add array of short unsigned integers
-    function _addBytes($array1,$array2)
-    {
-        $result = array();
-        $carry = 0;
-        foreach ( array_reverse($array1, true) as $value1 ) {
-            $value2 = array_pop($array2);
-            if (empty($result) ) { $value2++; 
-            }
-            $newValue = $value1 + $value2 + $carry;
-            if ($newValue > 255) {
-                 $newValue = $newValue - 256;
-                 $carry = 1;
-            } else {
-                $carry = 0;
-            }
-            array_unshift($result, $newValue);
-        }
-        return $result;
-    }
-    
-    /* Useful Functions */
-    function _cdr2Bin($cdrin,$len=4)
-    {
-        if ($len > 4 || $cdrin > 32) { // Are we ipv6?
-            return str_pad(str_pad("", $cdrin, "1"), 128, "0");
-        } else
-        {
-            return str_pad(str_pad("", $cdrin, "1"), 32, "0");
-        }
-    }
-    
-    function _bin2Cdr($binin)
-    {
-        return strlen(rtrim($binin, "0"));
-    }
-    
-    function _cdr2Char($cdrin,$len=4)
-    {
-        $hex = $this->_bin2Hex($this->_cdr2Bin($cdrin, $len));
-        return $this->_hex2Char($hex);
-    }
-    
-    function _char2Cdr($char)
-    {
-        $bin = $this->_hex2Bin($this->_char2Hex($char));
-        return $this->_bin2Cdr($bin);
-    }
-    
-    function _hex2Char($hex)
-    {
-        return pack('H*', $hex);
-    }
-    
-    function _char2Hex($char)
-    {
-        $hex = unpack('H*', $char);
-        return array_pop($hex);
-    }
-    
-    function _hex2Bin($hex)
-    {
-        $bin='';
-        for($i=0;$i<strlen($hex);$i++) {
-            $bin.=str_pad(decbin(hexdec($hex[$i])), 4, '0', STR_PAD_LEFT);
-        }
-        return $bin;
-    }
-    
-    function _bin2Hex($bin)
-    {
-        $hex='';
-        for($i=strlen($bin)-4;$i>=0;$i-=4) {
-            $hex.=dechex(bindec(substr($bin, $i, 4)));
-        }
-        return strrev($hex);
-    }
+		// Glue para vendors: si cliente habilitó overrides y el servidor recibe headers vendor-specific,
+		// podemos mapear CF-Connecting-IP -> HTTP_CLIENT_IP para que IpHelper lo considere.
+		// Esto solo se hace si allowOverridesNow === true (sino riesgo de spoofing).
+		if ($allowOverridesNow) {
+			if (empty($server['HTTP_CLIENT_IP']) && !empty($server['HTTP_CF_CONNECTING_IP'])) {
+				// Setear en superglobal para que IpHelper la lea (no persiste fuera de este request)
+				$_SERVER['HTTP_CLIENT_IP'] = (string) $server['HTTP_CF_CONNECTING_IP'];
+			}
+			if (empty($server['HTTP_CLIENT_IP']) && !empty($server['HTTP_TRUE_CLIENT_IP'])) {
+				$_SERVER['HTTP_CLIENT_IP'] = (string) $server['HTTP_TRUE_CLIENT_IP'];
+			}
+		}
+
+		$ip = IpHelper::getIp(); // devuelve string ('' si no hay)
+		if ($ip === '') {
+			return null;
+		}
+
+		// Reglas de validación finales (puedes ajustarlas): rechazamos IPs inválidas o no válidas
+		if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
+			return null;
+		}
+
+		return $ip;
+	}
+
+	/**
+	 * Comprueba si la IP es privada/loopback/reservada.
+	 * @param string $ip
+	 * @return bool
+	 */
+	function isPrivateOrReservedIp(string $ip): bool
+	{
+		if ($ip === '') {
+			return false;
+		}
+
+		// Si FILTER_VALIDATE_IP con flags NO_PRIV_RANGE | NO_RES_RANGE falla pero sin flags pasa => es privada/reservada
+		$publicValid = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+		if ($publicValid === false && filter_var($ip, FILTER_VALIDATE_IP) !== false) {
+			return true;
+		}
+
+		return false;
+	}
     
 }

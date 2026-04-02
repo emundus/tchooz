@@ -12,7 +12,7 @@ jQuery( document ).ready(function() {
     return;
   }
 
-  tbl = jQuery(jFalangTable.tableselector);
+  tbl = jQuery(jFalangTable.tableselector).not('.calendar-container >'+jFalangTable.tableselector);
 
   if (tbl.length > 0) {
     tbl = tbl[0];

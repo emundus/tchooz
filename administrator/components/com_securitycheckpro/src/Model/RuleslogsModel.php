@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * @Securitycheckpro component
  * @copyright Copyright (c) 2011 - Jose A. Luque / Securitycheck Extensions
@@ -7,23 +9,23 @@
  
 namespace SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model;
 
-// Chequeamos si el archivo está incluído en Joomla!
-defined('_JEXEC') or die();
+// @codeCoverageIgnoreStart
+defined('_JEXEC') or die;
+// @codeCoverageIgnoreEnd
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
+use Joomla\CMS\Application\CMSApplication;
 
-/**
- * Modelo Securitycheck
- */
-class RulesLogsModel extends BaseDatabaseModel
+class RuleslogsModel extends BaseDatabaseModel
 {
 
     /**
-     * Objeto Pagination * @var object 
+     * Objeto Pagination 
+	 * @var Pagination 
      */
     var $_pagination = null;
 
@@ -34,77 +36,120 @@ class RulesLogsModel extends BaseDatabaseModel
 
     function __construct()
     {
-        parent::__construct();
-    
-    
+        parent::__construct();  
+		
+		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
         $mainframe = Factory::getApplication();
     
         // Obtenemos las variables de paginación de la petición
-        $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-        $jinput = Factory::getApplication()->input;
-        $limitstart = $jinput->get('limitstart', 0, 'int');
+		if ( $mainframe instanceof \Joomla\CMS\Application\CMSWebApplicationInterface ) {
+			$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getConfig()->get('list_limit',20), 'int');
+			$limitstart = $mainframe->getInput()->getInt('limitstart', 0);
 
-        // En el caso de que los límites hayan cambiado, los volvemos a ajustar
-        $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
+			// En el caso de que los límites hayan cambiado, los volvemos a ajustar
+			$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
-        $this->setState('limit', $limit);
-        $this->setState('limitstart', $limitstart);
+			$this->setState('limit', $limit);
+			$this->setState('limitstart', $limitstart);
+		}
     }
 
     protected function populateState()
     {
         // Inicializamos las variables
-        $app        = Factory::getApplication();
-    
-        $search = $app->getUserStateFromRequest('filter.rules_search', 'filter_rules_search');
-        $this->setState('filter.rules_search', $search);
-    
-        parent::populateState();
+        $app = Factory::getApplication();
+		
+		if ( $app instanceof \Joomla\CMS\Application\CMSWebApplicationInterface ) {		
+			$search = $app->getUserStateFromRequest('filter.rules_search', 'filter_rules_search');
+			$this->setState('filter.rules_search', $search);
+		
+			parent::populateState();
+		}
     }
 
-    /*  Función para la paginación */
+   	/**
+     * Función para la paginación
+     *
+     *
+     * @return  Pagination
+     *     
+     */
     function getPagination()
     {
-        // Cargamos el contenido si es que no existe todavía
-        if (empty($this->_pagination)) {           
+		// Cargamos el contenido si es que no existe todavía
+        if ($this->_pagination === null) {        
             $this->_pagination = new Pagination($this->total, $this->getState('limitstart'), $this->getState('limit'));
         }
         return $this->_pagination;
     }
 
-    /* Función para cargar los logs de confianza */
-    function load_rules_logs()
-    {
-        // Creamos un nuevo objeto query
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true);
+    /**
+     * Función para cargar los logs de confianza
+     *
+     *
+     * @return  array<string>
+     *     
+     */
+    function load_rules_logs(): array
+	{
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app = Factory::getApplication();
 
-        // Obtenemos los grupos de Joomla
-        $query->select('a.*');
-        $query->from($db->quoteName('#__securitycheckpro_rules_logs') . ' AS a');
-        
-        // Filtramos los comentarios de las búsquedas si existen
-        $search = $this->getState('filter.rules_search');
-        if (!empty($search)) {
-            $search = $db->quote('%' . $db->escape($search, true) . '%');
-            $query->where('(a.ip LIKE ' . $search . ' OR a.username LIKE '. $search . ' OR a.last_entry LIKE '. $search . ' OR a.reason LIKE '. $search .')');
-        }
-    
-    
-        $db->setQuery($query);
-        $items = $db->loadObjectList();
-    
-        // Actualizamos el número total de elementos para la paginación
-        $this->total = count($items);
-    
-        /* Obtenemos el número de registros del array que hemos de mostrar. Si el límite superior es '0', entonces devolvemos todo el array */
-        $upper_limit = $this->getState('limitstart');
-        $lower_limit = $this->getState('limit');
-    
-        /* Devolvemos sólo el contenido delimitado por la paginación */
-        $items = array_splice($items, $upper_limit, $lower_limit);
+		// ACL mínima (ajusta al permiso real de tu componente)
+		if (!$app->getIdentity()->authorise('core.manage', 'com_securitycheckpro')) {
+			// Lanza excepción o devuelve vacío según tu política
+			throw new \RuntimeException('Not authorised', 403);
+		}
 
-        return $items;
-    }
+		/** @var DatabaseInterface $db */
+		$db    = Factory::getContainer()->get(DatabaseInterface::class);
+		$query = $db->getQuery(true)
+			->select($db->quoteName('a') . '.*')
+			->from($db->quoteName('#__securitycheckpro_rules_logs') . ' AS a');
+
+		// Filtro de búsqueda (no usar empty() por el caso "0")
+		$search = (string) $this->getState('filter.rules_search', '');
+		if ($search !== '') {
+			// Escapa para LIKE (true -> escapa % y _), y añade comodines controlados
+			$pattern = '%' . $db->escape($search, true) . '%';
+			$quoted  = $db->quote($pattern);
+
+			$query->where(
+				'('
+				. $db->quoteName('a.ip')        . " LIKE $quoted OR "
+				. $db->quoteName('a.username')  . " LIKE $quoted OR "
+				. $db->quoteName('a.last_entry'). " LIKE $quoted OR "
+				. $db->quoteName('a.reason')    . " LIKE $quoted"
+				. ')'
+			);
+		}
+
+		// Orden consistente para paginar de forma fiable
+		$query->order($db->quoteName('a.id') . ' DESC');
+
+		// --------- Conteo total (para paginación) ----------
+		$countQuery = clone $query;
+		$countQuery->clear('select')
+				   ->clear('order')
+				   ->select('COUNT(*)');
+
+		$db->setQuery($countQuery);
+		$this->total = (int) $db->loadResult();
+
+		// --------- Paginación en SQL ----------
+		$offset = (int) $this->getState('limitstart', 0);
+		$limit  = (int) $this->getState('limit', 20); // valor por defecto prudente
+
+		// Si limit==0, devuelve todo (pero desde SQL, no en memoria)
+		if ($limit > 0) {
+			$db->setQuery($query, $offset, $limit);
+		} else {
+			$db->setQuery($query);
+		}
+
+		$items = (array) $db->loadObjectList();
+
+		return $items;
+	}
 
 }

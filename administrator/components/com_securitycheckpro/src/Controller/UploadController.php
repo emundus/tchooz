@@ -10,16 +10,24 @@ namespace SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Contr
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Session\Session;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\SecuritycheckproBaseController;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\UploadModel;
 
 class UploadController extends SecuritycheckproBaseController
 {
-       
-    /* Acciones al pulsar el botón 'Import settings' */
-    function read_file()
-    {
-        $model = $this->getModel("upload");
+    /**
+     * Acciones al pulsar el botón 'Import settings'
+     *
+     * @return void
+     */
+    function read_file():void {
+		$model = $this->getModel('Upload');
+		if (!$model instanceof UploadModel) {
+			Factory::getApplication()->enqueueMessage('Upload model not found', 'error');
+			return;
+		}
         $res = $model->read_file();
         
         if ($res) {
