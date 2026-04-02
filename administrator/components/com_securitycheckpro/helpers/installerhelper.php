@@ -6,9 +6,57 @@ defined('_JEXEC') or die();
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Database\QueryInterface;
 
 class installerhelper {
-    	
+    
+	/**
+	 * Configuración por defecto del firewall.
+	 *
+	 * @var array{
+	 *   blacklist: string,
+	 *   whitelist: string,
+	 *   dynamic_blacklist: int,
+	 *   dynamic_blacklist_time: int,
+	 *   dynamic_blacklist_counter: int,
+	 *   blacklist_email: int,
+	 *   priority1: string,
+	 *   priority2: string,
+	 *   priority3: string,
+	 *   methods: string,
+	 *   mode: int,
+	 *   logs_attacks: int,
+	 *   log_limits_per_ip_and_day: int,
+	 *   redirect_after_attack: int,
+	 *   redirect_options: int,
+	 *   second_level: int,
+	 *   second_level_redirect: int,
+	 *   second_level_limit_words: int,
+	 *   second_level_words: string,
+	 *   email_active: int,
+	 *   email_subject: string,
+	 *   email_body: string,
+	 *   email_add_applied_rule: int,
+	 *   email_to: string,
+	 *   email_from_domain: string,
+	 *   email_from_name: string,
+	 *   email_max_number: int,
+	 *   check_header_referer: int,
+	 *   check_base_64: int,
+	 *   base64_exceptions: string,
+	 *   strip_tags_exceptions: string,
+	 *   duplicate_backslashes_exceptions: string,
+	 *   line_comments_exceptions: string,
+	 *   sql_pattern_exceptions: string,
+	 *   if_statement_exceptions: string,
+	 *   using_integers_exceptions: string,
+	 *   escape_strings_exceptions: string,
+	 *   lfi_exceptions: string,
+	 *   second_level_exceptions: string,
+	 *   session_protection_active: int,
+	 *   session_hijack_protection: int
+	 * }
+	 */
     private $defaultConfig = array(
     'blacklist'            => '',
     'whitelist'        => '',
@@ -28,7 +76,7 @@ class installerhelper {
     'second_level'            => 1,
     'second_level_redirect'            => 1,
     'second_level_limit_words'            => 3,
-    'second_level_words'            => 'drop,update,set,admin,select,user,password,concat,login,load_file,ascii,char,union,from,group by,order by,insert,values,pass,where,substring,benchmark,md5,sha1,schema,version,row_count,compress,encode,information_schema,script,javascript,img,src,input,body,iframe,frame,$_POST,eval,$_REQUEST,base64_decode,gzinflate,gzuncompress,gzinflate,strtrexec,passthru,shell_exec,createElement',
+    'second_level_words'            => 'ZHJvcCx1cGRhdGUsc2V0LGFkbWluLHNlbGVjdCx1c2VyLHBhc3N3b3JkLGNvbmNhdCxsb2dpbixsb2FkX2ZpbGUsYXNjaWksY2hhcix1bmlvbixmcm9tLGdyb3VwIGJ5LG9yZGVyIGJ5LGluc2VydCx2YWx1ZXMscGFzcyx3aGVyZSxzdWJzdHJpbmcsYmVuY2htYXJrLG1kNSxzaGExLHNjaGVtYSx2ZXJzaW9uLHJvd19jb3VudCxjb21wcmVzcyxlbmNvZGUsaW5mb3JtYXRpb25fc2NoZW1hLHNjcmlwdCxqYXZhc2NyaXB0LGltZyxzcmMsaW5wdXQsYm9keSxpZnJhbWUsZnJhbWUsJF9QT1NULGV2YWwsJF9SRVFVRVNULGJhc2U2NF9kZWNvZGUsZ3ppbmZsYXRlLGd6dW5jb21wcmVzcyxnemluZmxhdGUsc3RydHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     'email_active'            => 0,
     'email_subject'            => 'Securitycheck Pro alert!',
     'email_body'            => 'Securitycheck Pro has generated a new alert. Please, check your logs.',
@@ -54,34 +102,48 @@ class installerhelper {
     );
 
     /* Función que modifica los valores del Firewall web para aplicar una configuración básica de los filtros */
-    function Set_Easy_Config()
+    function Set_Easy_Config(): bool
     {
     
         // Inicializamos las variables
         $query = null;
         $applied = true;
-    
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-    
-        // Obtenemos los valores de las distintas opciones del Firewall Web
-        $query = $db->getQuery(true)
-            ->select(array($db->quoteName('storage_value')))
-            ->from($db->quoteName('#__securitycheckpro_storage'))
-            ->where($db->quoteName('storage_key').' = '.$db->quote('pro_plugin'));
-        $db->setQuery($query);
-        $params = $db->loadResult();
-		if( !empty($params) ) {
-			$params = json_decode($params, true);		
-            // Guardamos la configuración anterior
-            $previous_params = $params;
-        } else
-        {
-            // Establecemos los parámetros por defecto
-            $previous_params = $this->defaultConfig;
-        }
-        
+		/** @var array<string,mixed> $params */
+		$params = $this->defaultConfig;
+
+		/** @var array<string,mixed> $previous_params */
+		$previous_params = $this->defaultConfig;
+
+		/** @var \Joomla\Database\DatabaseInterface&\Joomla\Database\DatabaseDriver $db */
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
+
+		// Cargar JSON
+		/** @var QueryInterface $query */
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('storage_value'));
+		$query->from($db->quoteName('#__securitycheckpro_storage'));
+		$query->where($db->quoteName('storage_key') . ' = ' . $db->quote('pro_plugin'));
+
+		$db->setQuery($query);
+		
+		/** @var string|null $json */
+		$json = $db->loadResult();
+
+		/** @var mixed $decoded */
+		$decoded = (is_string($json) && $json !== '') ? json_decode($json, true) : null;
+
+		if (is_array($decoded)) {
+			/** @var array<string,mixed> $decoded */
+			$previous_params = $decoded;
+			$params = array_replace($this->defaultConfig, $decoded);
+		} else {
+			// previous_params ya está en defaultConfig
+			$params = $this->defaultConfig;
+		}
+			        
         // Parámetros que se desactivan o cuyo valor se deja en blanco para evitar falsos positivos
-        $params['check_header_referer'] = "0";
+        $params['check_header_referer'] = 0;
         $params['duplicate_backslashes_exceptions'] = "*";
         $params['line_comments_exceptions'] = "*";
         $params['using_integers_exceptions'] = "*";
@@ -92,46 +154,61 @@ class installerhelper {
         $params['strip_all_tags'] = 0;
 		
         // Codificamos de nuevo los parámetros y los introducimos en la BBDD
-        $params = mb_convert_encoding(json_encode($params),'UTF-8');
-        
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__securitycheckpro_storage'))
-            ->where($db->quoteName('storage_key').' = '.$db->quote('pro_plugin'));
-        $db->setQuery($query);
-        $db->execute();
-        
-        $object = (object)array(
-        'storage_key'        => 'pro_plugin',
-        'storage_value'        => $params
-        );
+        $json = json_encode($params, JSON_UNESCAPED_UNICODE);
+
+		if ($json === false) {
+			$json = '[]'; // fallback seguro
+		}
+
+		$params = mb_convert_encoding($json, 'UTF-8');
+		
+		/** @var QueryInterface $query */
+		$query = $db->getQuery(true);
+		$query->delete($db->quoteName('#__securitycheckpro_storage'));
+		$query->where($db->quoteName('storage_key') . ' = ' . $db->quote('pro_plugin'));
+		$db->setQuery($query);
+		$db->execute();
+
+		$object = (object) [
+			'storage_key'   => 'pro_plugin',			
+			'storage_value' => $params, 
+		];
         
         try 
         {
             $result = $db->insertObject('#__securitycheckpro_storage', $object);            
-        } catch (Exception $e)
-        {    
+        } catch (\Throwable $e) {
             $applied = false;
         }
                 
         // Actualizamos el valor del campo que contendrá si se ha aplicado o no esta configuración
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__securitycheckpro_storage'))
-            ->where($db->quoteName('storage_key').' = '.$db->quote('easy_config'));
-        $db->setQuery($query);
-        $db->execute();
+		/** @var QueryInterface $query */
+		$query = $db->getQuery(true);
+		$query->delete($db->quoteName('#__securitycheckpro_storage'));
+		$query->where($db->quoteName('storage_key') . ' = ' . $db->quote('easy_config'));
+		$db->setQuery($query);
+		$db->execute();
 		
-		$pr = mb_convert_encoding(json_encode(array('applied'=> true,'previous_config'=> $previous_params)),'UTF-8');
+		$prJson = json_encode(
+			['applied' => true, 'previous_config' => $previous_params],
+			JSON_UNESCAPED_UNICODE
+		);
+
+		if ($prJson === false) {
+			$prJson = '[]';
+		}
+
+		$pr = mb_convert_encoding($prJson, 'UTF-8');
         
-        $object = (object)array(
-        'storage_key'    => 'easy_config',
-        'storage_value'    => $pr
-        );
+		$object = (object) [
+			'storage_key'   => 'easy_config',
+			'storage_value' => $pr,
+		];
             
         try
         {
             $db->insertObject('#__securitycheckpro_storage', $object);
-        } catch (Exception $e)
-        {        
+        } catch (\Throwable $e) {        
             $applied = false;
         }
         

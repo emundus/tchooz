@@ -14,6 +14,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
 use Joomla\Filesystem\File;
+use Joomla\Input\Input;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\ProtectionModel;
 
 /**
  * Securitycheckpros  Controller
@@ -22,12 +24,18 @@ class ProtectionController extends SecuritycheckproBaseController
 {
     
     /* Guarda los cambios y redirige al cPanel */
-    public function apply()
-    {
-        $model = $this->getModel('protection');
-    
+    public function apply():void {
+		$model = $this->getModel('Protection');
+		if (!$model instanceof ProtectionModel) {
+			Factory::getApplication()->enqueueMessage('Protection model not found', 'error');
+			return;
+		}
+            
         // Obtenemos los valores del formulario; hemos de especificar cada uno de ellos porque el campo 'own_code' ha de contener datos en bruto
-        $jinput = Factory::getApplication()->input;
+        $app   = Factory::getApplication();
+		/** @var Input $jinput */
+		$jinput = $app->getInput();
+		
         $csp_policy = $jinput->get("csp_policy", null, 'string');    
         $referrer_policy = $jinput->get("referrer_policy", null, 'string');
 		$permissions_policy = $jinput->get("permissions_policy", null, 'string');
@@ -60,8 +68,7 @@ class ProtectionController extends SecuritycheckproBaseController
             'referrer_policy'    =>    $referrer_policy,
 			'permissions_policy'    =>    $permissions_policy
             )
-        );
-    
+        ); 
     
         $model->saveConfig($data, 'cparams');
         $this->setRedirect('index.php?option=com_securitycheckpro&controller=protection&view=protection&'. Session::getFormToken() .'=1', Text::_('COM_SECURITYCHECKPRO_CONFIGSAVED'));
@@ -70,9 +77,12 @@ class ProtectionController extends SecuritycheckproBaseController
 
 
     /* Modifica o crear el archivo .htaccess con las configuraciones seleccionadas por el usuario */
-    function protect()
-    {
-        $model = $this->getModel("protection");
+    function protect():void {
+        $model = $this->getModel('Protection');
+		if (!$model instanceof ProtectionModel) {
+			Factory::getApplication()->enqueueMessage('Protection model not found', 'error');
+			return;
+		}
 
         $status = $model->protect();
         $url = 'index.php?option=com_securitycheckpro&controller=protection&view=protection&'. Session::getFormToken() .'=1';
@@ -86,9 +96,12 @@ class ProtectionController extends SecuritycheckproBaseController
     }
 
     /* Borra el archivo .htaccess */
-    function delete_htaccess()
-    {
-        $model = $this->getModel("protection");
+    function delete_htaccess():void {
+        $model = $this->getModel('Protection');
+		if (!$model instanceof ProtectionModel) {
+			Factory::getApplication()->enqueueMessage('Protection model not found', 'error');
+			return;
+		}
 
         $status = $model->delete_htaccess();
         $url = 'index.php?option=com_securitycheckpro&controller=protection&view=protection&'. Session::getFormToken() .'=1';
@@ -102,11 +115,14 @@ class ProtectionController extends SecuritycheckproBaseController
     }
 
     /* Restaura el archivo .htaccess.original */
-    function restore_htaccess()
-    {
-        $model = $this->getModel("protection");
+    function restore_htaccess():void {
+        $model = $this->getModel('Protection');
+		if (!$model instanceof ProtectionModel) {
+			Factory::getApplication()->enqueueMessage('Protection model not found', 'error');
+			return;
+		}
 
-        $status = $model->restore_htaccess();
+        $status = $model->restoreHtaccess();
         $url = 'index.php?option=com_securitycheckpro&controller=protection&view=protection&'. Session::getFormToken() .'=1';
         if ($status) {
             $this->setRedirect($url, Text::_('COM_SECURITYCHECKPRO_ORIGINAL_HTACCESS_RESTORED'));
@@ -118,12 +134,15 @@ class ProtectionController extends SecuritycheckproBaseController
     }
 
     /* Muestra las configuraciones escogidas en una ventana, en lugar de aplicarlas mediante un archivo .htaccess.  Esto es necesario en servidores NGINX*/
-    function generate_rules()
-    {
+    function generate_rules():void {
         // Inicializamos las variables
         $txt_content = '';
     
-        $model = $this->getModel("protection");
+        $model = $this->getModel('Protection');
+		if (!$model instanceof ProtectionModel) {
+			Factory::getApplication()->enqueueMessage('Protection model not found', 'error');
+			return;
+		}
 
         $rules = $model->generate_rules();
     
@@ -139,16 +158,17 @@ class ProtectionController extends SecuritycheckproBaseController
     }
 
     /* Redirecciona las peticiones a System Info */
-    function redireccion_system_info()
-    {
+    function redireccion_system_info():void {
         $this->setRedirect('index.php?option=com_securitycheckpro&controller=filemanager&view=sysinfo&'. Session::getFormToken() .'=1');
     }
 
     /* Guarda las modificaciones a los user-agents por defecto */
-    function save_default_user_agent()
-    {
+    function save_default_user_agent():void {
           
-        $jinput = Factory::getApplication()->input;
+        $app   = Factory::getApplication();
+		/** @var Input $jinput */
+		$jinput = $app->getInput();
+		
         $new_user_agents_blacklist = $jinput->get("file_info", null, 'raw');
         // Escribimos el nuevo contenido en el fichero 'user_agent_blacklist.inc'
         $pos_header = strpos($new_user_agents_blacklist, "## Begin Securitycheck Pro Default Blacklist");

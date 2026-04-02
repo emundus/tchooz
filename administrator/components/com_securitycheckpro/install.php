@@ -19,9 +19,6 @@ use Joomla\Database\ParameterType;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 
-/**
- * Script file of Securitycheck Pro component
- */
 class com_SecuritycheckproInstallerScript
 {
     /**
@@ -32,15 +29,31 @@ class com_SecuritycheckproInstallerScript
      */
     protected $fromVersion = null;
 	
-	// Defaul values to create the scheduled task
+	/**
+     * Default execution time
+     *
+     * @var    string
+     */
 	protected $exec_time = '02:00';
+	
+	/**
+     * Default task of the old plugin
+     *
+     * @var    string
+     */
 	protected $old_task_set = 'integrity';
+	
+	/**
+     * Timeout
+     *
+     * @var    int
+     */
 	protected $cachetimeout = 1;
 	
 	/**
      * 
      *
-     * @var array Obsolete files and folders to remove after new UI  
+     * @var array<string,mixed> Obsolete files and folders to remove after new UI  
      */
     private $ObsoleteFilesAndFolders = array
     (
@@ -112,44 +125,51 @@ class com_SecuritycheckproInstallerScript
 	/**
      * Removes obsolete files and folders
      *
-     * @param array $ObsoleteFilesAndFolders
+     * @param array<string,mixed> $ObsoleteFilesAndFolders
+	 *
+     * @return  void
+	 *
      */
     private function _removeObsoleteFilesAndFolders($ObsoleteFilesAndFolders)
     {
         // Remove files
         if(!empty($ObsoleteFilesAndFolders['files'])) { foreach($ObsoleteFilesAndFolders['files'] as $file)
-            {
-                $f = JPATH_ROOT.'/'.$file;            
-                if(!file_exists($f)) { continue;
-                }
-                try{		
+        {
+            $f = JPATH_ROOT.'/'.$file;            
+            if(!file_exists($f)) { continue;
+            }
+				try{		
 					$res = File::delete($f);
-				} catch (Exception $e)
+				} catch (\Exception $e)
 				{					
 				}            
-        }
+			}
         }
         
         /* Remove folders */
         if(!empty($ObsoleteFilesAndFolders['folders'])) { foreach($ObsoleteFilesAndFolders['folders'] as $folder)
-            {
-                $f = JPATH_ROOT.'/'.$folder;
-                if( !file_exists($f) ) { continue;
-                }   
-				if( !is_dir($f) ) { continue;
-                }      
+        {
+            $f = JPATH_ROOT.'/'.$folder;
+            if( !file_exists($f) ) { continue;
+            }   
+			if( !is_dir($f) ) { continue;
+            }      
 				try{		
 					$res = Folder::delete($f);
-				} catch (Exception $e)
+				} catch (\Exception $e)
 				{
-				}
-                                            
-        }
+				}                                            
+			}
         }
     }
     
-    
-    /* Delete files and folders */
+	/**
+     * Delete files and folders since version 4
+     *
+     *
+     * @return  void
+	 *
+     */
     private function _4_version_changes()
     {
     
@@ -203,7 +223,7 @@ class com_SecuritycheckproInstallerScript
 				$id_trackactions = $db->loadResult();
 
 				if ($id_trackactions) {
-					$installer->uninstall('package', $id_trackactions, 1);
+					$installer->uninstall('package', $id_trackactions);
 					Factory::getApplication()->enqueueMessage('The Trackactions package has been uninstalled due to compatibility issues with this version. Please, install the 2.0 version or higher.', 'error');
 				}
 			}
@@ -247,7 +267,7 @@ class com_SecuritycheckproInstallerScript
 			$id_trackactions_k2 = $db->loadResult();
 
 			if ($id_trackactions_k2) {
-				$installer->uninstall('plugin', $id_trackactions_k2, 1);
+				$installer->uninstall('plugin', $id_trackactions_k2);
 				Factory::getApplication()->enqueueMessage('The Trackactions k2 plugin has been uninstalled as currently there is no K2 version for J4.', 'error');
 			}			
         }
@@ -297,8 +317,7 @@ class com_SecuritycheckproInstallerScript
 				Factory::getApplication()->enqueueMessage('The update database plugin has been disabled. Please, install 2.0 version or higher.', 'warning');
 			}
 			
-        }
-        
+        }        
     }
 	
 	    
@@ -314,13 +333,24 @@ class com_SecuritycheckproInstallerScript
      */
     public function preflight($action, $installer)
     {
+		if ($action === 'uninstall') {
+            // Si NO se está desinstalando el paquete, impedimos desinstalar este sub-elemento.
+            if (!\defined('SCP_PKG_UNINSTALLING')) {
+                Factory::getApplication()->enqueueMessage(
+                    Text::_('COM_SECURITYCHECKPRO_UNINSTALL_BLOCKED'),
+                    'warning'
+                );
+                return false; // Abortamos la desinstalación de este elemento.
+            }
+        }
+		
 		if ($action === 'update') {
             // Get the version we are updating from
             if (!empty($installer->extension->manifest_cache)) {
                 $manifestValues = json_decode($installer->extension->manifest_cache, true);
 
                 if (\array_key_exists('version', $manifestValues)) {
-                    $this->fromVersion = $manifestValues['version'];
+                    $this->fromVersion = $manifestValues['version'];					
                 }
             }
         }
@@ -344,7 +374,9 @@ class com_SecuritycheckproInstallerScript
         // Do changes for versions previous to 4.0
         $this->_4_version_changes();  
         
-        $this->uninstallExtensions();    
+        $this->uninstallExtensions();  
+		
+		return true;
         
     }
     
@@ -353,6 +385,9 @@ class com_SecuritycheckproInstallerScript
      *
      * @param string     $type   install, update or discover_update
      * @param Installer $parent 
+	 *
+	 * @return  boolean  True on success
+     *
      */
     function postflight($type, $parent)
     {
@@ -374,10 +409,8 @@ class com_SecuritycheckproInstallerScript
 				{					
 					Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
 					Factory::getApplication()->enqueueMessage('The "Easy config" option has not been applied.', 'warning');
-					return null;
-				}
-				
-				
+					return false;
+				}				
 			}
         }
         catch(\Exception $e)
@@ -385,27 +418,33 @@ class com_SecuritycheckproInstallerScript
           
         }
 		// Remove obsolete files and folders
-		$this->_removeObsoleteFilesAndFolders($this->ObsoleteFilesAndFolders);        
+		$this->_removeObsoleteFilesAndFolders($this->ObsoleteFilesAndFolders);       
+
+		return true;
     }
 	
 	/**
-     * method to install the component
+     * Method to install the component
      *
+	 * @param   Installer       $parent    The parent class
+	 *
      * @return void
      */
     function install($parent)
     {
 		// Create the scheduled task during the first install
-        if ( empty($this->fromVersion) ) {			
-           // Create the scheduled task
+        if ( empty($this->fromVersion) ) {	
+			// Create the scheduled task
 			$this->create_scheduled_task();        
         }
 	}
     
     
     /**
-     * method to update the component
+     * Method to update the component
      *
+	 * @param   Installer       $parent    The parent class
+	 *
      * @return void
      */
     function update($parent)
@@ -429,13 +468,7 @@ class com_SecuritycheckproInstallerScript
      */
     protected function uninstallExtensions()
     {
-		
-        // Don't uninstall extensions when not updating from a version older than 4.2
-       /* if (empty($this->fromVersion) || version_compare($this->fromVersion, '4.2', 'ge')) {			
-            return true;
-        }*/
-
-        $extensions = [
+		$extensions = [
             /**
              * Define here the extensions to be uninstalled and optionally migrated on update.
              * For each extension, specify an associative array with following elements (key => value):
@@ -503,15 +536,21 @@ class com_SecuritycheckproInstallerScript
         }
     }
 	
+	/**
+	 * Crea las tareas programadas
+	 *
+	 * @return void
+	 */
 	private function create_scheduled_task(){
 				
-        /** @var SchedulerComponent $component */
+		$task = [];
+		
+        /** @var \Joomla\CMS\Extension\ComponentInterface $component */
         $component = Factory::getApplication()->bootComponent('com_scheduler');
 
-        /** @var TaskModel $model*/
+        /** @var \Joomla\Component\Scheduler\Administrator\Model\TaskModel $model */
         $model = $component->getMVCFactory()->createModel('Task', 'Administrator', ['ignore_request' => true]);
 		
-						
 		try {
 			$task = [
 				'title'           => 'SCP Cron',
@@ -537,7 +576,7 @@ class com_SecuritycheckproInstallerScript
 	/**
      * Migrate plugin parameters of obsolete system plugin to simulate cron
      *
-     * @param   \stdClass  $rowOld  Object with the obsolete plugin's record in the `#__extensions` table
+	 * @param   string             $data    The data of the old plugin
      *
      * @return  void
      *
@@ -561,9 +600,9 @@ class com_SecuritycheckproInstallerScript
 		if (!empty($old_plugin_config)){
 			$old_plugin_params = json_decode($old_plugin_config->storage_value,true);
 			if ((int) $old_plugin_params['launch_time'] < 10) {
-				$this->exect_time = '0' . $old_plugin_params['launch_time'] . ':00';
+				$this->exec_time = '0' . $old_plugin_params['launch_time'] . ':00';
 			} else {
-				$this->exect_time = $old_plugin_params['launch_time'] . ':00';
+				$this->exec_time = $old_plugin_params['launch_time'] . ':00';
 			}
 			$this->old_task_set = $old_plugin_params['tasks'];
 		} 		

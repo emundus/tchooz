@@ -104,7 +104,6 @@ final class SessionGC extends CMSPlugin implements SubscriberInterface
     private function sessionGC(ExecuteTaskEvent $event): int
     {
         $enableGC = (int) $event->getArgument('params')->enable_session_gc ?? 1;
-
 	    $session = $this->getApplication()->getSession();
 	    if($this->getApplication()->getName() === 'cli' && !empty($this->container))
 	    {
@@ -112,7 +111,7 @@ final class SessionGC extends CMSPlugin implements SubscriberInterface
 	    }
 
 	    if ($enableGC) {
-		    $session->gc();
+	        $session->gc();
         }
 
         $enableMetadata = (int) $event->getArgument('params')->enable_session_metadata_gc ?? 1;

@@ -15,14 +15,34 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
-use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use Joomla\CMS\Pagination\Pagination;
+use Joomla\Registry\Registry;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\RuleslogsModel;
 
-
-/**
- * Main Admin View
- */
 class HtmlView extends BaseHtmlView {
     
+	/**
+	 * The model state
+	 *
+	 * @since  1.6
+	 * @var    Registry
+	 */
+	public $state;
+	
+	/**
+	 * Pagination object
+	 *
+	 * @var Pagination
+	 */
+	public ?Pagination $pagination = null;
+	
+	/**
+	 * Los detalles de las entradas de confianza
+	 *
+	 * @var array<string,mixed>|null
+	 */
+    public $log_details = [];
+	
     /**
      * Display the main view
      *
@@ -31,7 +51,7 @@ class HtmlView extends BaseHtmlView {
      */
     function display($tpl = null) {
 		
-		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_RULES_VIEW_LOGS'), 'securitycheckpro');
+		ToolbarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_RULES_VIEW_LOGS'), 'securitycheckpro');
 		
 		// Load css and js
 		$this->document->getWebAssetManager()
@@ -42,21 +62,12 @@ class HtmlView extends BaseHtmlView {
         $this->state= $this->get('State');
         $search = $this->state->get('filter.rules_search');
     
-        $model = $this->getModel("ruleslogs");
-        $log_details = $model->load_rules_logs();
-    
-        // Información para la barra de navegación
-        $common_model = new BaseModel();
-
-        $logs_pending = $common_model->LogsPending();
-        $trackactions_plugin_exists = $common_model->PluginStatus(8);
-        $this->logs_pending = $logs_pending;
-        $this->trackactions_plugin_exists = $trackactions_plugin_exists;
-    
-        // Ponemos los datos y la paginación en el template
-        $this->log_details = $log_details;
-        
-        if (!empty($log_details)) {
+        // Obtenemos el modelo de esta vista (Ruleslogs)
+		/** @var RuleslogsModel $model */
+       	$model= $this->getModel();
+        $this->log_details = $model->load_rules_logs();
+            
+        if (!empty($this->log_details)) {
             $this->pagination = $this->get('Pagination');    
         }
 		

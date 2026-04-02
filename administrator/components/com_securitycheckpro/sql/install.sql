@@ -169,7 +169,8 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_rules` (
 `group_id` INT(10),
 `rules_applied` TINYINT(1) DEFAULT 0,
 `last_change` DATETIME,
-PRIMARY KEY (`id`)
+PRIMARY KEY (`id`),
+UNIQUE KEY `idx_rules_group_id` (`group_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_rules_logs`;

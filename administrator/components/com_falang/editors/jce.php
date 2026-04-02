@@ -55,9 +55,18 @@ use Joomla\CMS\Language\Text;
     * from : 5.11
     * Set the translation in field work with editor and textarea mode
     * @update 5.12 fix copy / translation test not set correctly
+    * @udate 6.5 fix htmlentities use the textarea system no need of extra function or jquery
+    *            https://stackoverflow.com/questions/1147359/how-to-decode-html-entities-using-jquery
+    *
     * */
     function setTranslation(fieldname, value) {
         //check if we want ot add the translation to the editor
+        //get the value with html entities decoded
+        var textArea = document.createElement('textarea');
+        textArea.innerHTML = value.trim();
+        value = textArea.value;
+        textArea.remove();
+
         if ( typeof(tinyMCE)=="object") {
             editor = tinyMCE.editors[fieldname];
         }
