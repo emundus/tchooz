@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * @Securitycheckpro component
  * @copyright Copyright (c) 2011 - Jose A. Luque / Securitycheck Extensions
@@ -7,226 +9,346 @@
  
 namespace SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model;
 
-// Chequeamos si el archivo está incluído en Joomla!
-defined('_JEXEC') or die();
+// @codeCoverageIgnoreStart
+defined('_JEXEC') or die;
+// @codeCoverageIgnoreEnd
 
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Pagination\Pagination;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Database\ParameterType;
+use Joomla\CMS\Session\Session;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Application\CMSApplication;
 
-/**
- * Modelo Securitycheck
- */
-class RulesModel extends BaseModel
+class RulesModel extends BaseDatabaseModel
 {
 
     /**
-     * Objeto Pagination * @var object 
+     * Objeto Pagination 
+	 * @var Pagination 
      */
     var $_pagination = null;
 
     /**
-     * @var array Group list 
+	 * Total number of files of Pagination 
+     * @var int $total
      */
-    private $groups = array();
-
-    /**
-     * @var int Total number of files of Pagination 
-     */
-    var $total = 0;
+    public int $total = 0;
+	
+	public BaseModel $basemodel;
 	
     function __construct()
     {
-        parent::__construct();
-    
-    
+        parent::__construct();    
+		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
         $mainframe = Factory::getApplication();	
-		    
-        // Obtenemos las variables de paginación de la petición
-        $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-        $limitstart = $mainframe->input->get('limitstart', 0, 'int');
+		
+		if ( $mainframe instanceof \Joomla\CMS\Application\CMSWebApplicationInterface ) {		    
+			// Obtenemos las variables de paginación de la petición
+			$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getConfig()->get('list_limit',20), 'int');
+			$limitstart = $mainframe->getInput()->getInt('limitstart', 0);
 
-        // En el caso de que los límites hayan cambiado, los volvemos a ajustar
-        $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
+			// En el caso de que los límites hayan cambiado, los volvemos a ajustar
+			$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
-        $this->setState('limit', $limit);
-        $this->setState('limitstart', $limitstart);
+			$this->setState('limit', $limit);
+			$this->setState('limitstart', $limitstart);
+			
+			$this->basemodel = new BaseModel();
+		}
     }
 
-    protected function populateState()
-    {
-        // Inicializamos las variables
-        $app        = Factory::getApplication();
-    
-        $search = $app->getUserStateFromRequest('filter.acl_search', 'filter_acl_search');
-        $this->setState('filter.acl_search', $search);
-    
-        parent::populateState();
-    }
+    protected function populateState(): void
+	{
+		$app = Factory::getApplication();
 
-    /*  Función para la paginación */
+		if ($app instanceof \Joomla\CMS\Application\CMSWebApplicationInterface) {
+
+			// Usa una clave de contexto para no mezclar estados con otras vistas
+			$context = 'com_securitycheckpro.rules';
+
+			// Lee el valor anterior SIN getState() para evitar recursión
+			$prevSearch = (string) $app->getUserState($context . '.filter.acl_search', '');
+
+			// Carga/actualiza el filtro desde la request
+			$search = (string) $app->getUserStateFromRequest(
+				$context . '.filter.acl_search',
+				'filter_acl_search',
+				''
+			);
+
+			// Guarda en el estado del modelo (esto es seguro)
+			$this->setState('filter.acl_search', $search);
+
+			// Inicializa el resto de estados (limit, ordering, etc.)
+			parent::populateState();
+
+			// Si cambió el filtro, resetea la primera página
+			if ($search !== $prevSearch) {
+				$this->setState('limitstart', 0);
+			}
+		}
+	}
+
+
+    /**
+     * Función para la paginación
+     *
+     *
+     * @return  Pagination
+     *     
+     */
     function getPagination()
     {
-        // Cargamos el contenido si es que no existe todavía
-        if (empty($this->_pagination)) {            
+		// Cargamos el contenido si es que no existe todavía
+        if ($this->_pagination === null) {         
             $this->_pagination = new Pagination($this->total, $this->getState('limitstart'), $this->getState('limit'));
         }
         return $this->_pagination;
     }
 
-    /* Función para cargar los grupos del sistema */
-    function load($data = null)
+   	/** @return array<object> */
+    public function load(?string $data = null): array
     {
-        // Creamos un nuevo objeto query
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+
+        // --- Sincroniza reglas de forma atómica ---
+        $this->syncRulesAtomically($db);
+
+        // --- Filtros y orden ---
+        $search    = (string) ($this->getState('filter.acl_search') ?? '');
+        $ordering  = (string) ($this->getState('list.ordering') ?? 'a.lft');
+        $direction = strtoupper((string) ($this->getState('list.direction') ?? 'ASC'));
+        $offset    = (int) ($this->getState('limitstart') ?? 0);
+        $limit     = (int) ($this->getState('limit') ?? 20);
+
+        // Whitelist de columnas permitidas
+        $allowedOrder = [
+            'a.id' => $db->quoteName('a.id'),
+            'a.lft' => $db->quoteName('a.lft'),
+            'a.rgt' => $db->quoteName('a.rgt'),
+            'a.parent_id' => $db->quoteName('a.parent_id'),
+            'a.title' => $db->quoteName('a.title'),
+            'b.rules_applied' => $db->quoteName('b.rules_applied'),
+            'b.last_change' => $db->quoteName('b.last_change'),
+        ];
+        $orderCol = $allowedOrder[$ordering] ?? $db->quoteName('a.lft');
+        $dir = $direction === 'DESC' ? 'DESC' : 'ASC';
+
+        // --- Query principal ---
+        $query = $db->getQuery(true)
+            ->select([
+                $db->quoteName('a.id'),
+                $db->quoteName('a.lft'),
+                $db->quoteName('a.rgt'),
+                $db->quoteName('a.parent_id'),
+                $db->quoteName('a.title'),
+                $db->quoteName('b.group_id'),
+                $db->quoteName('b.rules_applied'),
+                $db->quoteName('b.last_change'),
+                'COUNT(DISTINCT ' . $db->quoteName('c2.id') . ') AS ' . $db->quoteName('level'),
+            ])
+            ->from($db->quoteName('#__usergroups') . ' AS ' . $db->quoteName('a'))
+            ->join(
+                'LEFT OUTER',
+                $db->quoteName('#__usergroups') . ' AS ' . $db->quoteName('c2')
+                . ' ON ' . $db->quoteName('a.lft') . ' > ' . $db->quoteName('c2.lft')
+                . ' AND ' . $db->quoteName('a.rgt') . ' < ' . $db->quoteName('c2.rgt')
+            )
+            ->join(
+                'LEFT OUTER',
+                $db->quoteName('#__securitycheckpro_rules') . ' AS ' . $db->quoteName('b')
+                . ' ON ' . $db->quoteName('a.id') . ' = ' . $db->quoteName('b.group_id')
+            )
+            ->group(
+                implode(', ', [
+                    $db->quoteName('a.id'),
+                    $db->quoteName('b.group_id'),
+                    $db->quoteName('a.lft'),
+                    $db->quoteName('a.rgt'),
+                    $db->quoteName('a.parent_id'),
+                    $db->quoteName('a.title'),
+                    $db->quoteName('b.rules_applied'),
+                    $db->quoteName('b.last_change'),
+                ])
+            )
+            ->order($orderCol . ' ' . $dir);
+     
+		if ($search !== '') {
+			if (stripos($search, 'id:') === 0) {
+				$id = (int) substr($search, 3);
+				$query->where($db->quoteName('a.id') . ' = :gid')
+					  ->bind(':gid', $id, ParameterType::INTEGER); 
+			} else {
+				$like = '%' . $search . '%';
+				$query->where($db->quoteName('a.title') . ' LIKE :ttl')
+					  ->bind(':ttl', $like, ParameterType::STRING); 
+			}
+		}
+
+
+        // --- Total alineado con filtros ---
+		$countQuery = clone $query;
+		$countQuery->clear('select')->clear('order')->clear('limit')->clear('offset')->clear('group');
+		// OJO: DISTINCT por el join con c2
+		$countQuery->select('COUNT(DISTINCT ' . $db->quoteName('a.id') . ')');
+		$db->setQuery($countQuery);
+		$this->total = (int) $db->loadResult();
+
+
+        // Después de calcular $this->total:
+		$offset = (int) ($this->getState('limitstart') ?? 0);
+		$limit  = (int) ($this->getState('limit') ?? 20);
+
+		if ($limit > 0 && $offset >= $this->total) {
+			$offset = max(0, (int) (floor(($this->total - 1) / $limit) * $limit));
+			$this->setState('limitstart', $offset);
+		}
+
+		// Paginación en SQL (con offset quizá reajustado)
+		$db->setQuery($query, $offset, $limit > 0 ? $limit : 0);
+		/** @var array<object> $rows */
+		$rows = (array) $db->loadObjectList();
+
+        return $rows;
+    }
+
+    private function syncRulesAtomically(DatabaseInterface $db): void
+	{
+		$db->transactionStart();
+
+		try {
+			$timestamp = (string) $this->basemodel->get_Joomla_timestamp();
+
+			$q = $db->getQuery(true)
+				->select([$db->quoteName('id'), $db->quoteName('title')])
+				->from($db->quoteName('#__usergroups'));
+			$db->setQuery($q);
+
+			/** @var array<int, object> $groups */
+			$groups = (array) $db->loadObjectList();
+
+			$columns = array_map(
+				static fn(string $col): string => (string) $db->quoteName($col),
+				['group_id', 'rules_applied', 'last_change']
+			);
+
+			foreach ($groups as $g) {
+				$gid = (int) ($g->id ?? 0);
+				if ($gid <= 0) {
+					continue;
+				}
+
+				$sql = sprintf(
+					'INSERT INTO %s (%s) VALUES (%d, %d, %s) ' .
+					'ON DUPLICATE KEY UPDATE %s = VALUES(%s)',
+					$db->quoteName('#__securitycheckpro_rules'),
+					implode(', ', $columns),
+					$gid,
+					0,
+					$db->quote($timestamp),
+					$db->quoteName('last_change'),
+					$db->quoteName('last_change')
+				);
+
+				$db->setQuery($sql);
+				$db->execute();
+			}
+
+			$db->transactionCommit();
+		} catch (\Throwable $e) {
+			$db->transactionRollback();
+			Log::add('RulesModel. syncRulesAtomically error: ' . $e->getMessage(), Log::ERROR, 'com_securitycheckpro');
+		}
+	}
+    
+	/**
+     * Cambia el estado de reglas para los grupos recibidos en la request (cid[]).
+     * @return bool True si se actualiza sin errores (0 cambios también cuenta como éxito).
+     */
+    public function setRulesAppliedFromRequest(bool $apply): bool
+    {
+        $app = Factory::getApplication();
+
+        // CSRF + método
+        if (!Session::checkToken('post')) {
+            throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+        }
+        if ($app->getInput()->getMethod() !== 'POST') {
+            throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 405);
+        }
+
+        // ACL
+        $user = $app->getIdentity();
+        if (!$user->authorise('core.edit.state', 'com_securitycheckpro')) {
+            throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+        }
+
+        // IDs
+        $ids = (array) $app->getInput()->get('cid', [], 'array');
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+        $ids = array_filter($ids, static fn (int $v): bool => $v > 0);
+        if ($ids === []) {
+            return true; // Nada que hacer
+        }
+
+        // Timestamp (si prefieres DB NOW() ajusta set() en consecuencia)
+        $timestamp = $this->basemodel->get_Joomla_timestamp(); // string seguro/controlado
+
+        /** @var DatabaseInterface $db */
         $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
 
-        // Obtenemos los grupos de Joomla
-        $query_groups = "SELECT * FROM #__usergroups";
-        $db->setQuery($query_groups);
-        $joomla_groups = $db->loadObjectList();
-    
-        // Actualizamos el número total de grupos
-        $this->total = count($joomla_groups);
-    
-        // Timestamp
-        $timestamp = $this->get_Joomla_timestamp();
-    
-        // Comprobamos si hay que añadir algún grupo a la tabla '#__securitycheckpro_rules'
-        foreach ($joomla_groups as $element)
-        {
-            $array_val = get_object_vars($element);
-            $group_id = (int) $array_val["id"];
-            $title = $array_val["title"];
-            $rules_applied = (int) 1;
-                
-            $query_rules = "SELECT * FROM #__securitycheckpro_rules WHERE group_id = " . $db->escape($group_id);
-        
-            $db->setQuery($query_rules);
-            $element_exists = $db->loadObjectList();
-        
-            // Si no existe, lo añadimos
-            if (empty($element_exists)) {
-                  $valor = (object) array(
-                 'group_id' => $group_id,
-                 'rules_applied' => $rules_applied,
-                 'last_change' =>  $timestamp,
-                  );
-                  $insert_result = $db->insertObject('#__securitycheckpro_rules', $valor, 'id');
-            }
+        // Placeholders nombrados por id
+        $ph = [];
+        foreach ($ids as $i => $_) {
+            $ph[] = ':id' . $i;
         }
-    
-        // Volvemos a construir la consulta
-        $query->select('a.id, a.lft, a.rgt, a.parent_id, a.title, b.rules_applied, b.last_change');
-        $query->from($db->quoteName('#__usergroups') . ' AS a');
-        
-        // Añadimos los niveles de cada grupo...
-        $query->select('COUNT(DISTINCT c2.id) AS level')
-            ->join('LEFT OUTER', $db->quoteName('#__usergroups') . ' AS c2 ON a.lft > c2.lft AND a.rgt < c2.rgt')
-            ->group('a.id, b.group_id, a.lft, a.rgt, a.parent_id, a.title, b.rules_applied, b.last_change');
-    
-        // ... y si las reglas han de aplicarse
-        $query->select('b.group_id, b.rules_applied, b.last_change')
-            ->join('LEFT OUTER', $db->quoteName('#__securitycheckpro_rules') . ' AS b ON a.id = b.group_id');
-        
-        // Filtramos los comentarios de las búsquedas si existen
-        $search = $this->getState('filter.acl_search');
-        if (!empty($search)) {
-            if (stripos($search, 'id:') === 0) {
-                $query->where('a.id = ' . (int) substr($search, 3));
-            }
-            else
-            {
-                $search = $db->quote('%' . $db->escape($search, true) . '%');
-                $query->where('a.title LIKE ' . $search);
-            }
+
+        $applied = $apply ? 1 : 0;    
+		$ts      = (string) $timestamp; 
+
+		$query
+			->update($db->quoteName('#__securitycheckpro_rules'))
+			->set($db->quoteName('rules_applied') . ' = :applied')
+			->set($db->quoteName('last_change')   . ' = :ts')
+			->where($db->quoteName('group_id') . ' IN (' . implode(',', $ph) . ')');
+
+		$query->bind(':applied', $applied, ParameterType::INTEGER);
+		$query->bind(':ts', $ts, ParameterType::STRING);
+
+		foreach ($ids as $i => $val) {
+			$idVal = (int) $val; // por referencia también
+			$query->bind(':id' . $i, $idVal, ParameterType::INTEGER);
+		}
+
+        try {
+            $db->transactionStart();
+            $db->setQuery($query)->execute();
+            $db->transactionCommit();
+            return true;
+        } catch (\Throwable $e) {
+            $db->transactionRollback();
+            Log::add('RulesModel. setRulesAppliedFromRequest error: ' . $e->getMessage(), Log::ERROR, 'com_securitycheckpro');
+            return false;
         }
-    
-        // Ordenamos la consulta
-        $query->order($db->escape($this->getState('list.ordering', 'a.lft')) . ' ' . $db->escape($this->getState('list.direction', 'ASC')));
-		$db->setQuery($query);
-        $groups = $db->loadObjectList();
-        
-        //Obtenemos el número de registros del array que hemos de mostrar. Si el límite superior es '0', entonces devolvemos todo el array
-        $upper_limit = $this->getState('limitstart');
-        $lower_limit = $this->getState('limit');
-    
-        // Devolvemos sólo el contenido delimitado por la paginación 
-        $groups = array_splice($groups, $upper_limit, $lower_limit);
-    
-        return $groups;
     }
 
-
-    /*  Función que cambia el estado de los grupos pasados como argumento. A dichos grupos se les aplicarán las reglas del Firewall. */
-    function apply_rules()
+    // Mantén estas dos para compatibilidad con tus tareas/acciones
+    public function apply_rules(): bool
     {
-        $resultado = true;
-    
-        $jinput = Factory::getApplication()->input;
-        $uids = $jinput->getVar('cid', '', 'array');
-    
-        // Timestamp
-        $timestamp = $this->get_Joomla_timestamp();
-    
-        ArrayHelper::toInteger($uids, array());
-        
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-        foreach($uids as $uid) 
-        {
-            try 
-            {
-                  $sql = "UPDATE #__securitycheckpro_rules SET rules_applied=1,last_change='" .$timestamp ."' WHERE group_id='{$uid}'";
-                  $db->setQuery($sql);
-                  $db->execute();    
-            } catch (Exception $e)
-            {
-                $resultado = false;
-                break(1);
-            }
-        
-        }
-
-    
-        return $resultado;
+        return $this->setRulesAppliedFromRequest(true);
     }
 
-    /*  Función que cambia el estado de los grupos pasados como argumento. A dichos grupos NO se les aplicarán las reglas del Firewall. */
-    function not_apply_rules()
+    public function not_apply_rules(): bool
     {
-        $resultado = true;
-    
-        $jinput = Factory::getApplication()->input;
-        $uids = $jinput->getVar('cid', '', 'array');
-    
-        // Timestamp
-        $timestamp = $this->get_Joomla_timestamp();
-    
-        ArrayHelper::toInteger($uids, array());
-        
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-        foreach($uids as $uid)
-        {
-            try 
-            {
-                  $sql = "UPDATE #__securitycheckpro_rules SET rules_applied=0,last_change='" .$timestamp ."' WHERE group_id='{$uid}'";
-                  $db->setQuery($sql);
-                  $db->execute();
-            }    catch (Exception $e)
-            {
-                $resultado = false;
-                break(1);
-            }
-        
-        
-        }
-
-    
-        return $resultado;
+        return $this->setRulesAppliedFromRequest(false);
     }
 
 }

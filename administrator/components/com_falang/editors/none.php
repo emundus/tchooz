@@ -18,14 +18,14 @@ use Joomla\CMS\Language\Text;
             innerHTML = "";
             if (action == "copy") {
                 srcEl = document.getElementById("original_value_" + fieldname);
-                setTranslation("refField_" + , srcEl.innerHTML);
+                setTranslation("refField_" + fieldname , srcEl.innerHTML);
             }
             if (action == "translate") {
                 srcEl = document.getElementById("original_value_" + fieldname);
-                translateService("refField_" + , srcEl.innerHTML);
+                translateService("refField_" + fieldname , srcEl.innerHTML);
             }
             if (action == "clear") {
-                setTranslation("refField_" + , "");
+                setTranslation("refField_" + fieldname, "");
             }
         } catch (e) {
             console.log(e.message);
@@ -36,8 +36,18 @@ use Joomla\CMS\Language\Text;
     /*
     * from : 5.11
     * Set the translation in field work with editor and textarea mode
+    * @udate 6.5 fix htmlentities use the textarea system no need of extra function or jquery
+    *            https://stackoverflow.com/questions/1147359/how-to-decode-html-entities-using-jquery
+    *
     * */
     function setTranslation(fieldname, value) {
+
+        //get the value with html entities decoded
+        var textArea = document.createElement('textarea');
+        textArea.innerHTML = value.trim();
+        value = textArea.value;
+        textArea.remove();
+
         srcEl = document.getElementById(fieldname);
         //console.log(srcEl);
         //both need to be done in case we are

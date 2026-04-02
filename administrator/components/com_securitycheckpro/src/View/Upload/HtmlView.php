@@ -14,12 +14,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
-use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 
-
-/**
- * Main Admin View
- */
 class HtmlView extends BaseHtmlView {
     
     /**
@@ -30,21 +25,12 @@ class HtmlView extends BaseHtmlView {
      */
     function display($tpl = null) {
 		  
-		ToolBarHelper::title(Text::_('Securitycheck Pro').' | '.Text::_('COM_SECURITYCHECKPRO_IMPORT_CONFIG_TITLE'), 'securitycheckpro');
+		ToolbarHelper::title(Text::_('Securitycheck Pro').' | '.Text::_('COM_SECURITYCHECKPRO_IMPORT_CONFIG_TITLE'), 'securitycheckpro');
 		
 		// Load css and js
 		$this->document->getWebAssetManager()
 		  ->usePreset('com_securitycheckpro.common')		 
-		  ->useScript('com_securitycheckpro.Upload');
-                        
-        // Obtenemos los datos del modelo
-        $model = $this->getModel();
-        $common_model = new BaseModel();
-
-        $logs_pending = $common_model->LogsPending();
-        $trackactions_plugin_exists = $common_model->PluginStatus(8);
-        $this->logs_pending = $logs_pending;
-        $this->trackactions_plugin_exists = $trackactions_plugin_exists;
+		  ->useScript('com_securitycheckpro.Upload');       
         
         parent::display($tpl);  
     }

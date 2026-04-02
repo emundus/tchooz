@@ -287,7 +287,7 @@ else {
 
                         <?php if( strtolower($field->Type)=='hiddentext') { ?>
                             <input type="hidden" name="id_<?php echo $field->Name;?>" value="<?php echo $translationContent->id;?>" />
-                            <input type="hidden" name="origValue_<?php echo $field->Name;?>" value='<?php echo md5( $field->originalValue );?>' />
+                            <input type="hidden" name="origValue_<?php echo $field->Name;?>" value='<?php echo md5(string: $field->originalValue?? '' );?>' />
                             <textarea  name="origText_<?php echo $field->Name;?>" style="display:none"><?php echo $field->originalValue;?></textarea>
                             <textarea name="refField_<?php echo $field->Name;?>"  style="display:none"><?php echo $translationContent->value; ?></textarea>
                             <?php
@@ -383,7 +383,7 @@ else {
                                       ?>
                             </span>
                             <!-- use for -->
-                            <input type="hidden" name="origValue_<?php echo $field->Name;?>" value='<?php echo md5( $field->originalValue );?>' />
+                            <input type="hidden" name="origValue_<?php echo $field->Name;?>" value='<?php echo md5(string: $field->originalValue ?? '' );?>' />
 
 
 		                    <?php if ( strtolower($field->Type)=='readonlytext'){
@@ -455,7 +455,15 @@ else {
                                             //need to pass the id at the end or it was not working with codemirror
                                             echo $wysiwygeditor->display("refField_" . $field->Name, htmlspecialchars($translationContent->value ?? '', ENT_COMPAT, 'UTF-8'), '100%', '300', '70', '15', $field->ebuttons, "refField_" . $field->Name);
                                         } else { ?>
-                                            <div><?php echo Text::_('COM_FALANG_YOOTHEME_BUILDER_CONTENT_MESSAGE'); ?></div>
+                                            <div>
+                                                <?php  echo Text::_('COM_FALANG_YOOTHEME_BUILDER_CONTENT_MESSAGE'); ?>
+                                                <div style="display:none">
+                                                <?php
+                                                    //display the editor but hide it to have the introtext saved normally (use for search)
+                                                    echo $wysiwygeditor->display("refField_" . $field->Name, htmlspecialchars($translationContent->value ?? '', ENT_COMPAT, 'UTF-8'), '100%', '300', '70', '15', $field->ebuttons, "refField_" . $field->Name);
+                                                ?>
+                                                </div>
+                                            </div>
                                             <?php } ?>
                                     <?php } //end if htmltext?>
 
@@ -563,7 +571,7 @@ else {
                 <input type="hidden" name="id_<?php echo $field->Name; ?>"
                        value="<?php echo $translationContent->id; ?>"/>
                 <input type="hidden" name="origValue_<?php echo $field->Name; ?>"
-                       value='<?php echo md5($field->originalValue); ?>'/>
+                       value='<?php echo md5(string: $field->originalValue ?? ''); ?>'/>
 
                 <textarea name="origText_<?php echo $field->Name; ?>"
                           style="display:none"><?php echo $field->originalValue; ?></textarea>

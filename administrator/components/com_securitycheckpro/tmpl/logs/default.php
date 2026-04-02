@@ -1,204 +1,312 @@
-﻿<?php 
+<?php
 /**
  * @Securitycheckpro component
  * @copyright Copyright (c) 2011 - Jose A. Luque / Securitycheck Extensions
- * @license   GNU General Public License version 3, or later
+ * @license   GNU GPL v3 or later
  */
 
-defined('_JEXEC') or die('Restricted access');
-use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Uri\Uri;
-use Joomla\CMS\Router\Route;
-use Joomla\CMS\Layout\LayoutHelper;
+defined('_JEXEC') or die;
 
-// Load plugin language
-$lang2 = Factory::getApplication()->getLanguage();
-$lang2->load('plg_system_securitycheckpro');
-            
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Router\Route;
+use Joomla\Filesystem\Path;
+use Joomla\CMS\Uri\Uri;
+
+/** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\View\Logs\HtmlView $this */
+
+// Cargar idioma del plugin en el backend (evita null en Joomla 5/6)
+$lang = Factory::getApplication()->getLanguage();
+$lang->load('plg_system_securitycheckpro', JPATH_ADMINISTRATOR);
+
+// Ordenación actual
 $listOrder = $this->escape($this->state->get('list.ordering'));
-$listDirn = $this->escape($this->state->get('list.direction'));
+$listDirn  = $this->escape($this->state->get('list.direction'));
+
+
+// Prefijos/paths
+$mediaBase = rtrim(Uri::root(), '/') . '/media/com_securitycheckpro/images';
+
+// Mapeo de tipo->icono
+$iconMap = [
+    'XSS'                    => 'xss.png',
+    'XSS_BASE64'             => 'xss_base64.png',
+    'SQL_INJECTION'          => 'sql_injection.png',
+    'SQL_INJECTION_BASE64'   => 'sql_injection_base64.png',
+    'LFI'                    => 'local_file_inclusion.png',
+    'LFI_BASE64'             => 'local_file_inclusion_base64.png',
+    'IP_PERMITTED'           => 'permitted.png',
+    'IP_BLOCKED'             => 'blocked.png',
+    'IP_BLOCKED_DINAMIC'     => 'dinamically_blocked.png',
+    'SECOND_LEVEL'           => 'second_level.png',
+    'USER_AGENT_MODIFICATION'=> 'http.png',
+    'REFERER_MODIFICATION'   => 'http.png',
+    'SESSION_PROTECTION'     => 'session_protection.png',
+    'SESSION_HIJACK_ATTEMPT' => 'session_hijack.png',
+    'MULTIPLE_EXTENSIONS'    => 'upload_scanner.png',
+    'FORBIDDEN_EXTENSION'    => 'upload_scanner.png',
+    'SPAM_PROTECTION'        => 'spam_protection.png',
+    'URL_INSPECTOR'          => 'url_inspector.png',
+];
+
+// Claves permitidas para tag_description (evita concatenaciones peligrosas)
+$allowedTagKeys = [
+    'TAGS_STRIPPED',
+    'DUPLICATE_BACKSLASHES',
+    'LINE_COMMENTS',
+    'SQL_PATTERN',
+    'IF_STATEMENT',
+    'INTEGERS',
+    'BACKSLASHES_ADDED',
+    'LFI',
+    'IP_BLOCKED',
+    'IP_BLOCKED_DINAMIC',
+    'IP_PERMITTED',
+    'FORBIDDEN_WORDS',
+    'SESSION_PROTECTION',
+    'UPLOAD_SCANNER',
+    'FAILED_LOGIN_ATTEMPT_LABEL',
+	'URL_FORBIDDEN_WORDS',
+	'HEURISTIC_SQL',
+	'SPAM_PROTECTION',
+	'URL_FORBIDDEN_WORDS'
+];
+
+// Función utilitaria: sanitiza texto plano con sustitución
+$esc = static function ($value): string {
+    return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+};
+
+// Función utilitaria: decodifica base64 de forma segura y limita longitud
+$safeBase64 = static function (?string $b64, int $max = 4000) use ($esc): string {
+    if ($b64 === null || $b64 === '') {
+        return '';
+    }
+    $decoded = base64_decode($b64, true); // strict
+    if ($decoded === false) {
+        return Text::_('COM_SECURITYCHECKPRO_INVALID_BASE64');
+    }
+    // Limitar tamaño para evitar payloads enormes en el DOM
+    if (mb_strlen($decoded, 'UTF-8') > $max) {
+        $decoded = mb_substr($decoded, 0, $max, 'UTF-8') . '…';
+    }
+    return $esc($decoded);
+};
 ?>
 
-
-<form action="<?php echo Route::_('index.php?option=com_securitycheckpro&view=logs');?>" class="margin-left-10 margin-right-10" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo Route::_('index.php?option=com_securitycheckpro&view=logs'); ?>"
+      method="post" name="adminForm" id="adminForm" class="margin-left-10 margin-right-10">
 
     <?php 
-    // Cargamos la navegación
-    require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/navigation.php';
+    // Navegación (include robusto)
+    $navFile = Path::clean(JPATH_ADMINISTRATOR . '/components/com_securitycheckpro/helpers/navigation.php');
+    if (is_file($navFile)) {
+        require $navFile;
+    }
     ?>
 
-    <?php if (!($this->logs_attacks)) { ?>
-            <div class="alert alert-danger text-center margen_inferior">
-                <h2><?php echo Text::_('COM_SECURITYCHECKPRO_LOGS_RECORD_DISABLED'); ?></h2>
-                <div id="top"><?php echo Text::_('COM_SECURITYCHECKPRO_LOGS_RECORD_DISABLED_TEXT'); ?></div>
-            </div>
-    <?php } ?>
-        
-             
-            <!-- Contenido principal -->            
-            <div class="card mb-3">
-                <div class="card-body">           
-					<?php
-						echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this));
-					?>                   
-                </div>                
-                <div class="logs-style">
-                    <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-							<tr>
-                                <th class="center">
-									<?php echo HTMLHelper::_('grid.sort', 'Ip', 'ip', $listDirn, $listOrder); ?>                
-                                </th>                                        
-                                <th class="center">
-									<?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_TIME', 'time', $listDirn, $listOrder); ?>                
-                                </th>
-								<th class="center">
-									<?php echo Text::_('COM_SECURITYCHECKPRO_USER'); ?>
-                                </th>
-                                <th class="center">
-									<?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_DESCRIPTION', 'description', $listDirn, $listOrder); ?>            
-                                </th>
-                                <th class="center width-35">
-									<?php echo Text::_('COM_SECURITYCHECKPRO_LOG_URI'); ?>
-                                </th>
-                                <th class="center">
-									<?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_TYPE_COMPONENT', 'component', $listDirn, $listOrder); ?>                
-                                </th>
-                                <th class="center">
-									<?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_TYPE', 'type', $listDirn, $listOrder); ?>                    
-                                </th>
-                                <th class="center">
-									<?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_READ', 'marked', $listDirn, $listOrder); ?>                
-                                </th>
-                                <th class="center">
-                                    <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
-                                </th>                                        
-                            </tr>
-                        </thead>
-                        <?php                                
-                            if (!empty($this->items) ) {        
-                                $k = 0;
-                                foreach ($this->items as &$row) {    
-                        ?>
-							<tr>
-                                <td align="center">
-                                    <?php 
-                                    $ip_sanitized =  htmlentities($row->ip);                                                                
-                                    echo '<a href="https://www.whois.com/whois/' . $ip_sanitized . '" id="whois_button" target="_blank" data-bs-toggle="tooltip" title="'. Text::_('COM_SECURITYCHECKPRO_WHOIS') .'" rel="noopener noreferrer">'. " " . $ip_sanitized.'</a>';                                                    
-                                    ?>                                                        
-                                </td>                                        
-                                <td align="center">
-                                    <?php echo $row->time; ?>    
-                                </td>
-                                <td align="center">
-									<?php 
-                                    $username_sanitized =  htmlentities($row->username);
-									echo $username_sanitized; ?>    
-                                </td>
-                                <td align="center">
-                                    <?php $title = Text::_('COM_SECURITYCHECK_ORIGINAL_STRING'); ?>
-                                    <?php $decoded_string = base64_decode($row->original_string); ?>
-									<?php $decoded_string = htmlentities($decoded_string, ENT_QUOTES, "UTF-8"); ?>
-									<?php $description_sanitized =  htmlentities($row->description); ?>
-                                    <?php echo Text::_('COM_SECURITYCHECKPRO_' .$row->tag_description); ?>
-                                    <?php echo Text::_(':' .$description_sanitized); ?>
-                                    <?php echo "<br />"; ?>
-										<textarea cols="30" rows="1" readonly><?php echo $decoded_string ?></textarea>
-                                </td>    
-                                <td align="center; style=\"word-break:break-all\"">
-                                    <?php $uri_sanitized =  htmlentities($row->uri); echo $uri_sanitized;?>
-                                </td>
-                                        <td align="center">
-                                        <?php $component_sanitized = htmlentities($row->component);
-                                        echo substr(($component_sanitized), 0, 40);    ?>    
-                                        </td>
-                                        <td align="center">
-                                        <?php 
-                                        $type_sanitized =  htmlentities($row->type);
-                                        $type = $type_sanitized;            
-                                        if ($type == 'XSS' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/xss.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'XSS_BASE64' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/xss_base64.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'SQL_INJECTION' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/sql_injection.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'SQL_INJECTION_BASE64' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/sql_injection_base64.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'LFI' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/local_file_inclusion.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'LFI_BASE64' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/local_file_inclusion_base64.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'IP_PERMITTED' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/permitted.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'IP_BLOCKED' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/blocked.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'IP_BLOCKED_DINAMIC' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/dinamically_blocked.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'SECOND_LEVEL' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/second_level.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'USER_AGENT_MODIFICATION' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/http.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'REFERER_MODIFICATION' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/http.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'SESSION_PROTECTION' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/session_protection.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'SESSION_HIJACK_ATTEMPT' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/session_hijack.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if (($type == 'MULTIPLE_EXTENSIONS') || ($type == 'FORBIDDEN_EXTENSION') ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/upload_scanner.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'SPAM_PROTECTION' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/spam_protection.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }else if ($type == 'URL_INSPECTOR' ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/url_inspector.png" title="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'" alt="' . Text::_('COM_SECURITYCHECKPRO_TITLE_' .$row->type) .'">');
-                                        }            
-                                        ?>
-                                        </td>
-                                        <td align="center">
-                                        <?php 
-                                        $marked = $row->marked;            
-                                        if ($marked == 1 ) {
-                                            echo ('<img src="../media/com_securitycheckpro/images/read.png" title="' . Text::_('COM_SECURITYCHECKPRO_LOG_READ') .'" alt="' . Text::_('COM_SECURITYCHECKPRO_LOG_READ') .'">');
-                                        } else {
-                                            echo ('<img src="../media/com_securitycheckpro/images/no_read.png" title="' . Text::_('COM_SECURITYCHECKPRO_LOG_UNREAD') .'" alt="' . Text::_('COM_SECURITYCHECKPRO_LOG_UNREAD') .'">');
-                                        }
-                                        ?>
-                                        </td>
-                                        <td align="center">
-                                        <?php echo HTMLHelper::_('grid.id', $k, $row->id); ?>
-                                        </td>
-                                    </tr>
-                                        <?php
-                                        $k = $k+1;
-                                    }
-                                }
-                                ?>                            
-                            </table>                        
-                        </div>    
-                        
-        <?php
-        if (!empty($this->items) ) {        
-            ?>
+    <?php if (empty($this->logs_attacks)) : ?>
+        <div class="alert alert-danger text-center margen_inferior" role="alert">
+            <h2 class="h4 m-0"><?php echo Text::_('COM_SECURITYCHECKPRO_LOGS_RECORD_DISABLED'); ?></h2>
+            <div id="top" class="mt-2"><?php echo Text::_('COM_SECURITYCHECKPRO_LOGS_RECORD_DISABLED_TEXT'); ?></div>
+        </div>
+    <?php endif; ?>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <?php echo LayoutHelper::render('joomla.searchtools.default', ['view' => $this]); ?>
+        </div>
+
+        <div class="logs-style">
+            <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th class="text-center">
+                            <?php echo HTMLHelper::_('grid.sort', 'Ip', 'a.ip', $listDirn, $listOrder); ?>
+                        </th>
+                        <th class="text-center">
+                            <?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_TIME', 'a.time', $listDirn, $listOrder); ?>
+                        </th>
+                        <th class="text-center">
+                            <?php echo Text::_('COM_SECURITYCHECKPRO_USER'); ?>
+                        </th>
+                        <th class="text-center">
+                            <?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_DESCRIPTION', 'a.description', $listDirn, $listOrder); ?>
+                        </th>
+                        <th class="text-center width-35">
+                            <?php echo Text::_('COM_SECURITYCHECKPRO_LOG_URI'); ?>
+                        </th>
+                        <th class="text-center">
+                            <?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_TYPE_COMPONENT', 'a.component', $listDirn, $listOrder); ?>
+                        </th>
+                        <th class="text-center">
+                            <?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_TYPE', 'a.type', $listDirn, $listOrder); ?>
+                        </th>
+                        <th class="text-center">
+                            <?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_READ', 'a.marked', $listDirn, $listOrder); ?>
+                        </th>
+                        <th class="text-center">
+                            <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" aria-label="<?php echo $esc(Text::_('JGLOBAL_CHECK_ALL')); ?>">
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                <?php if (!empty($this->items)) :  
+					$i = 0;
+                    foreach ($this->items as $row) :
+                        // Campos sanitizados
+                        $ip        = $esc($row->ip ?? '');
+                        $username  = $esc($row->username ?? '');
+                        $desc      = $esc($row->description ?? '');
+                        $uri       = $esc($row->uri ?? '');
+                        $component = $esc($row->component ?? '');
+                        $type      = $esc($row->type ?? '');
+                        $marked    = (int) ($row->marked ?? 0);
+
+                        // whois seguro (sólo si IP válida)
+                        $whoisHref = null;
+                        if (filter_var($row->ip ?? '', FILTER_VALIDATE_IP)) {
+                            $whoisHref = 'https://www.whois.com/whois/' . rawurlencode((string) $row->ip);
+                        }
+
+                        // Fecha/hora (si viene en formato timestamp o string compatible)
+                        $timeVal = $row->time ?? '';
+                        $timeOut = $timeVal !== '' ? HTMLHelper::_('date', $timeVal, Text::_('DATE_FORMAT_LC2')) : '';
+
+                        // tag_description seguro con whitelist
+                        $tagKeyRaw = (string) ($row->tag_description ?? '');
+						$tagKey    = strtoupper(trim($tagKeyRaw));
+						$tagKey = in_array($tagKey, $allowedTagKeys, true) ? $tagKey : '';
+						
+						$tagTxt = $tagKey !== ''
+							? Text::_('COM_SECURITYCHECKPRO_' . $tagKey)
+							: Text::_('COM_SECURITYCHECKPRO_UNKNOWN_EVENT');
+
+                        // original_string (base64) a texto seguro, acotado
+                        $decodedOriginal = $safeBase64($row->original_string ?? '', 4000);
+
+                        // Icono por tipo
+                        $iconFile = $iconMap[$type] ?? null;
+                        $iconHtml = $iconFile
+                            ? HTMLHelper::_(
+                                'image',
+                                $mediaBase . '/' . $iconFile,
+                                $esc(Text::_('COM_SECURITYCHECKPRO_TITLE_' . $type)),
+                                [
+                                    'title' => $esc(Text::_('COM_SECURITYCHECKPRO_TITLE_' . $type)),
+                                    'loading' => 'lazy',
+                                    'decoding' => 'async',
+                                    'class' => 'img-fluid',
+                                ]
+                              )
+                            : $esc($type); // fallback textual si no hay icono
+                    ?>
+                    <tr>
+                        <td class="text-center">
+                            <?php if ($whoisHref) : ?>
+                                <a href="<?php echo $whoisHref; ?>" class="whois-link"
+                                   target="_blank" rel="noopener noreferrer"
+                                   data-bs-toggle="tooltip"
+                                   title="<?php echo $esc(Text::_('COM_SECURITYCHECKPRO_WHOIS')); ?>">
+                                    <?php echo $ip; ?>
+                                </a>
+                            <?php else : ?>
+                                <?php echo $ip !== '' ? $ip : '—'; ?>
+                            <?php endif; ?>
+                        </td>
+
+                        <td class="text-center">
+                            <?php echo $timeOut !== '' ? $timeOut : '—'; ?>
+                        </td>
+
+                        <td class="text-center">
+                            <?php echo $username !== '' ? $username : '—'; ?>
+                        </td>
+
+                        <td class="text-center">
+                            <div>
+                                <strong><?php echo $tagTxt; ?></strong>
+                                <?php if ($desc !== '') : ?>
+                                    <?php echo ': ' . $desc; ?>
+                                <?php endif; ?>
+                            </div>
+                            <div class="mt-2">
+                                <label class="visually-hidden" for="orig_<?php echo (int) ($row->id ?? $i); ?>">
+                                    <?php echo Text::_('COM_SECURITYCHECK_ORIGINAL_STRING'); ?>
+                                </label>
+                                <textarea id="orig_<?php echo (int) ($row->id ?? $i); ?>"
+                                          cols="30" rows="2" readonly
+                                          class="form-control form-control-sm"><?php echo $decodedOriginal; ?></textarea>
+                            </div>
+                        </td>
+
+                        <td class="text-center" style="word-break: break-all;">
+                            <?php echo $uri !== '' ? $uri : '—'; ?>
+                        </td>
+
+                        <td class="text-center">
+                            <?php echo $component !== '' ? mb_substr($component, 0, 40, 'UTF-8') : '—'; ?>
+                        </td>
+
+                        <td class="text-center">
+                            <?php echo $iconHtml; ?>
+                        </td>
+
+                        <td class="text-center">
+                            <?php
+                            echo HTMLHelper::_(
+                                'image',
+                                $mediaBase . '/' . ($marked ? 'read.png' : 'no_read.png'),
+                                $marked ? Text::_('COM_SECURITYCHECKPRO_LOG_READ') : Text::_('COM_SECURITYCHECKPRO_LOG_UNREAD'),
+                                [
+                                    'title' => $marked ? Text::_('COM_SECURITYCHECKPRO_LOG_READ') : Text::_('COM_SECURITYCHECKPRO_LOG_UNREAD'),
+                                    'loading' => 'lazy',
+                                    'decoding' => 'async',
+                                ]
+                            );
+                            ?>
+                        </td>
+
+                        <td class="text-center">
+                            <?php echo HTMLHelper::_('grid.id', $i, (int) ($row->id ?? 0)); ?>
+                        </td>
+                    </tr>
+                    <?php
+                    $i++;
+                    endforeach;
+                else : ?>
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">
+                            <?php echo Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <?php if (!empty($this->items)) : ?>
             <div class="margin-left-10">
-				<?php echo $this->pagination->getListFooter();?>                            
-            </div>                            
-        <?php }    ?>                        
-                      
-            <div class="col-md-6 col-lg-8 mb-md-0 mb-4 margin-top-10">
-                <p class="mb-0">
-                    <?php echo Text::_('COM_SECURITYCHECKPRO_COPYRIGHT'); ?> | <?php echo Text::_('COM_SECURITYCHECKPRO_ICONS_ATTRIBUTION'); ?>
-                </p>                                
+                <?php echo $this->pagination->getListFooter(); ?>
             </div>
-        </div>                              
+        <?php endif; ?>
+
+        <div class="col-md-6 col-lg-8 mb-md-0 mb-4 margin-top-10">
+            <p class="mb-0">
+                <?php echo Text::_('COM_SECURITYCHECKPRO_COPYRIGHT'); ?>
+                | <?php echo Text::_('COM_SECURITYCHECKPRO_ICONS_ATTRIBUTION'); ?>
+            </p>
         </div>
     </div>
-</div>
 
-<input type="hidden" name="option" value="com_securitycheckpro" />
-<input type="hidden" name="task" value="" />
-<input type="hidden" name="boxchecked" value="0" />
-<input type="hidden" name="controller" value="securitycheckpro" />
-<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
-<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
+    <input type="hidden" name="option" value="com_securitycheckpro">
+    <input type="hidden" name="task" value="">
+    <input type="hidden" name="boxchecked" value="0">
+    <input type="hidden" name="controller" value="securitycheckpro">	
+	<input type="hidden" name="filter_order"     value="<?= $esc($listOrder); ?>">
+	<input type="hidden" name="filter_order_Dir" value="<?= $esc($listDirn); ?>">  
+    <?php echo HTMLHelper::_('form.token'); ?>
 </form>

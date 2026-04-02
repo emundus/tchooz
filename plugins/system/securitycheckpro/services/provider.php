@@ -26,10 +26,8 @@ return new class implements ServiceProviderInterface {
 	 *
 	 * @since   9.0.0
 	 */
-	public function register(Container $container)
+	public function register(Container $container):void
 	{
-		//$container->registerServiceProvider(new MVCFactory('\\SecuritycheckExtensions\\Component\\SecuritycheckPro'));
-
 		$container->set(
 			PluginInterface::class,
 			function (Container $container) {
@@ -42,8 +40,7 @@ return new class implements ServiceProviderInterface {
 				);
 
 				$plugin->setApplication(Factory::getApplication());
-				//$plugin->setDatabase($container->get('DatabaseDriver'));
-
+				
 				return $plugin;
 			}
 		);

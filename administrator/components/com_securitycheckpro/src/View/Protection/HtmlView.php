@@ -16,13 +16,44 @@ use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\ProtectionModel;
+use Joomla\CMS\Application\CMSApplication;
 
-
-/**
- * Main Admin View
- */
 class HtmlView extends BaseHtmlView {
     
+	/**
+	 * Contiene la configuración
+	 *
+	 * @var array<string, string>|null
+	 */
+    public $protection_config = [];
+	
+	/**
+	 * Contiene la configuración aplicada
+	 *
+	 * @var array<string, int|list<string>|string>
+	 */
+    public $config_applied = [];
+	
+	/**
+	 * Indica si existe al archivo .htaccess
+	 *
+	 * @var bool
+	 */
+    public $ExistsHtaccess = false;
+	
+	/**
+	 * Tipo de servidor
+	 *
+	 * @var string
+	 */
+    public $server = '';
+	
+	/**
+	 * @var BaseModel
+	 */
+	public $basemodel;
+	
     /**
      * Display the main view
      *
@@ -31,54 +62,48 @@ class HtmlView extends BaseHtmlView {
      */
     function display($tpl = null) {
 		
-		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT'), 'securitycheckpro');		
+		ToolbarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT'), 'securitycheckpro');		
 				  
         // Si existe el fichero .htaccess, mostramos la opción para borrarlo.
-        // Obtenemos el modelo
-        $model = $this->getModel();
+        // Obtenemos el modelo de esta vista (Protection)
+		/** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\ProtectionModel $model */
+       	$model= $this->getModel();
+		
+		// BaseModel
+        $this->basemodel = new BaseModel();
+		
         // ... y el tipo de servidor web
+		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
         $mainframe = Factory::getApplication();
-        $server = $mainframe->getUserState("server", 'apache');
+        $this->server = $mainframe->getUserState("server", 'apache');
 
-        if (($server == 'apache') || ($server == 'iis')) {
+        if (($this->server == 'apache') || ($this->server == 'iis')) {
             if ($model->ExistsFile('.htaccess.original')) {
-                  ToolBarHelper::custom('restore_htaccess', 'redo-2', 'redo-2', 'COM_SECURITYCHECKPRO_RESTORE_HTACCESS', false);
+                  ToolbarHelper::custom('restore_htaccess', 'redo-2', 'redo-2', 'COM_SECURITYCHECKPRO_RESTORE_HTACCESS', false);
             }
             if ($model->ExistsFile('.htaccess')) {
-                ToolBarHelper::custom('delete_htaccess', 'file-remove', 'file-remove', 'COM_SECURITYCHECKPRO_DELETE_HTACCESS', false);
+                ToolbarHelper::custom('delete_htaccess', 'file-remove', 'file-remove', 'COM_SECURITYCHECKPRO_DELETE_HTACCESS', false);
             }
-            ToolBarHelper::custom('protect', 'key', 'key', 'COM_SECURITYCHECKPRO_PROTECT', false);
-        } else if ($server == 'nginx') {
-            ToolBarHelper::custom('generate_rules', 'key', 'key', 'COM_SECURITYCHECKPRO_GENERATE_RULES', false);
+            ToolbarHelper::custom('protect', 'key', 'key', 'COM_SECURITYCHECKPRO_PROTECT', false);
+        } else if ($this->server == 'nginx') {
+            ToolbarHelper::custom('generate_rules', 'key', 'key', 'COM_SECURITYCHECKPRO_GENERATE_RULES', false);
         }
 
-        ToolBarHelper::apply();
+        ToolbarHelper::apply();
 		
 		// Load css and js
 		$this->document->getWebAssetManager()
 		  ->usePreset('com_securitycheckpro.common')
 		  ->useScript('bootstrap.tab')		 
-		  ->useScript('bootstrap.toast')		 
 		  ->useScript('com_securitycheckpro.Protection');
 
         // Obtenemos la configuración actual...
-        $config = $model->getConfig();
-        // ... y la que hemos aplicado en el fichero .htaccess existente
-        $config_applied = $model->GetconfigApplied();
-
-        $this->protection_config = $config;
-        $this->config_applied = $config_applied;
-        $this->ExistsHtaccess = $model->ExistsFile('.htaccess');
-        $this->server = $server;
-
-        // Extraemos información necesaria 
-        $common_model = new BaseModel();
-
-        $logs_pending = $common_model->LogsPending();
-        $trackactions_plugin_exists = $common_model->PluginStatus(8);
-        $this->logs_pending = $logs_pending;
-        $this->trackactions_plugin_exists = $trackactions_plugin_exists;
+        $this->protection_config = $model->getConfig();
 		
+        // ... y la que hemos aplicado en el fichero .htaccess existente
+        $this->config_applied = $model->GetconfigApplied();
+        $this->ExistsHtaccess = $model->ExistsFile('.htaccess');
+        		
 		$params = ComponentHelper::getParams('com_securitycheckpro');
 		$size = $params->get('secret_key_length', 20); 
 		

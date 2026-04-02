@@ -18,11 +18,6 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLRegistryAwareTrait;
 use Psr\Container\ContainerInterface;
 
-/**
- * Component class for com_mywalks
- *
- * @since  4.0.0
- */
 class SecuritycheckProComponent extends MVCComponent implements
 BootableExtensionInterface, RouterServiceInterface
 {
@@ -44,6 +39,6 @@ BootableExtensionInterface, RouterServiceInterface
 	 */
 	public function boot(ContainerInterface $container)
 	{
-		//$this->getRegistry()->register('mywalksadministrator', new AdministratorService);
+		
 	}
 }
