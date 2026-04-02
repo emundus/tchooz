@@ -236,7 +236,7 @@ class EmundusControllerEvents extends EmundusController
 			$users_id = [];
 		}
 
-		if (empty($registrant_id) || empty($availability) || empty($event_id))
+		if (empty($availability) || empty($event_id))
 		{
 			throw new InvalidArgumentException('Missing required parameters');
 		}
