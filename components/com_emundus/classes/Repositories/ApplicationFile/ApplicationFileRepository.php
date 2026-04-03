@@ -90,33 +90,33 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 	public function applyFilters(QueryInterface $query, array $filters = []): void
 	{
 		// Implement filter application logic here
-		if(in_array('status', array_keys($filters)))
+		if (in_array('status', array_keys($filters)))
 		{
 			$query->where('status = :status')
 				->bind(':status', $filters['status'], ParameterType::INTEGER);
 		}
 
-		if(in_array('published', array_keys($filters)))
+		if (in_array('published', array_keys($filters)))
 		{
 			$query->where('published = :published')
 				->bind(':published', $filters['published'], ParameterType::INTEGER);
 		}
 
-		if(in_array('campaign_id', array_keys($filters)))
+		if (in_array('campaign_id', array_keys($filters)))
 		{
 			$query->where('campaign_id = :campaign_id')
 				->bind(':campaign_id', $filters['campaign_id'], ParameterType::INTEGER);
 		}
 
-		if(in_array('applicant_id', array_keys($filters)))
+		if (in_array('applicant_id', array_keys($filters)))
 		{
 			$query->where('applicant_id = :applicant_id')
 				->bind(':applicant_id', $filters['applicant_id'], ParameterType::INTEGER);
 		}
 
-		if(in_array('fnum', array_keys($filters)))
+		if (in_array('fnum', array_keys($filters)))
 		{
-			if(is_array($filters['fnum']))
+			if (is_array($filters['fnum']))
 			{
 				$fnums = implode(',', $this->db->quote($filters['fnum']));
 
@@ -142,7 +142,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 		$this->db->setQuery($this->query);
 		$result = $this->db->loadObject();
 
-		if(!empty($result))
+		if (!empty($result))
 		{
 			$applicationFileEntity = $this->factory->fromDbObject($result, $this->withRelations, $this->exceptRelations);
 		}
@@ -213,7 +213,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 				throw new \Exception('Invalid fnum');
 			}
 
-			if(empty($applicationFileEntity->getId()))
+			if (empty($applicationFileEntity->getId()))
 			{
 				$ccid = $this->createCampaignCandidature($applicationFileEntity, $user_id);
 				if (empty($ccid))
@@ -222,19 +222,33 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 				}
 
 				$applicationFileEntity->setId($ccid);
+				$flushed = true;
+			}
+			else
+			{
+				// Update application file
+				$campaign_candidature = (object) [
+					'id'                  => $applicationFileEntity->getId(),
+					'applicant_id'        => $applicationFileEntity->getUser()->id,
+					'published'           => $applicationFileEntity->getPublished(),
+					'campaign_id'         => $applicationFileEntity->getCampaign()->getId(),
+					'date_submitted'      => $applicationFileEntity->getDateSubmitted()?->format('Y-m-d H:i:s'),
+					'form_progress'       => $applicationFileEntity->getFormProgress(),
+					'attachment_progress' => $applicationFileEntity->getAttachmentProgress(),
+				];
+				$flushed              = $this->db->updateObject('#__emundus_campaign_candidature', $campaign_candidature, 'id');
 			}
 
-			// TODO: udpate status and everything else
-
-			if(!empty($applicationFileEntity->getData())) {
-				foreach ($applicationFileEntity->getData() as $table => $data) {
-					if(!$this->insertDatas($data, $table, $applicationFileEntity->getFnum(), $applicationFileEntity->getId(), $user_id)) {
+			if (!empty($applicationFileEntity->getData()))
+			{
+				foreach ($applicationFileEntity->getData() as $table => $data)
+				{
+					if (!$this->insertDatas($data, $table, $applicationFileEntity->getFnum(), $applicationFileEntity->getId(), $user_id))
+					{
 						throw new \Exception('Failed to insert data into ' . $table);
 					}
 				}
 			}
-
-			$flushed = true;
 		}
 		catch (\Exception $e)
 		{

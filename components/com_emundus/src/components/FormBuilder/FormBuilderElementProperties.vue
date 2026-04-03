@@ -173,6 +173,13 @@
 					</div>
 
 					<FormBuilderElementParams :element="element" :params="params" :key="element.id" :databases="databases" />
+
+					<FormBuilderEmundusCalculationParams
+						v-if="element.plugin === 'emundus_calculation'"
+						:element="element"
+						:key="element.id"
+						@updateParams="onUpdateParams"
+					/>
 				</div>
 			</div>
 
@@ -198,16 +205,19 @@ import FormBuilderElementParams from '@/components/FormBuilder/FormBuilderElemen
 import TipTapEditor from 'tip-tap-editor';
 import 'tip-tap-editor/tip-tap-editor.css';
 import '../../../../../templates/g5_helium/css/editor.css';
+import alerts from '@/mixins/alerts.js';
 
 import { useGlobalStore } from '@/stores/global.js';
 
 import formBuilderMixin from '@/mixins/formbuilder.js';
 import FormBuilderElementOptions from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementOptions.vue';
 import Loader from '@/components/Atoms/Loader.vue';
+import FormBuilderEmundusCalculationParams from '@/components/FormBuilder/FormBuilderElements/FormBuilderEmundusCalculationParams.vue';
 
 export default {
 	name: 'FormBuilderElementProperties',
 	components: {
+		FormBuilderEmundusCalculationParams,
 		Loader,
 		FormBuilderElementOptions,
 		FormBuilderElementParams,
@@ -223,7 +233,7 @@ export default {
 			required: true,
 		},
 	},
-	mixins: [formBuilderMixin],
+	mixins: [formBuilderMixin, alerts],
 	data() {
 		return {
 			databases: [],
@@ -303,27 +313,37 @@ export default {
 				}
 			}
 
-			formBuilderService.updateParams(this.element).then((response) => {
-				if (response.status) {
-					this.loading = false;
-					this.updateLastSave();
-					this.$emit('close');
+			formBuilderService
+				.updateParams(this.element)
+				.then((response) => {
+					if (response.status) {
+						this.loading = false;
+						this.updateLastSave();
+						this.$emit('close');
 
-					if (['radiobutton', 'checkbox', 'dropdown', 'orderlist'].includes(this.element.plugin)) {
-						formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then((response) => {
-							if (response) {
-								this.element.params.sub_options.sub_labels.forEach((label, index) => {
-									this.element.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
-								});
-							}
+						if (['radiobutton', 'checkbox', 'dropdown', 'orderlist'].includes(this.element.plugin)) {
+							formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then((response) => {
+								if (response) {
+									this.element.params.sub_options.sub_labels.forEach((label, index) => {
+										this.element.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
+									});
+								}
 
-							this.loading = false;
-							this.updateLastSave();
-							this.$emit('close');
-						});
+								this.loading = false;
+								this.updateLastSave();
+								this.$emit('close');
+							});
+						}
+					} else {
+						this.alertError(response.msg);
+						this.loading = false;
 					}
-				}
-			});
+				})
+				.catch((error) => {
+					this.alertError(error.message).then(() => {
+						this.loading = false;
+					});
+				});
 		},
 		togglePublish() {
 			this.element.publish = !this.element.publish;
@@ -362,6 +382,9 @@ export default {
 					labelInput.focus();
 				}
 			});
+		},
+		onUpdateParams(params) {
+			this.element.params = { ...this.element.params, ...params };
 		},
 	},
 	computed: {

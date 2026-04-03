@@ -14,6 +14,11 @@ use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\QueryInterface;
 use Joomla\Plugin\Emundus\Parcoursup\Entity\ParcoursupEntity;
+use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
+use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\User\UserCategoryRepository;
 
 class ParcoursupRepository
 {
@@ -24,15 +29,29 @@ class ParcoursupRepository
 	
 	private array $config = [];
 
+	private int $parcoursupUserCategory = 0;
+
 	public function __construct(
 		private DatabaseInterface  $db,
-		private UserRepository     $userRepository
+		private UserRepository     $userRepository,
+		private CampaignRepository $campaignRepository,
+		private ApplicationChoicesRepository $applicationChoicesRepository
 	)
 	{
 		$this->query = $this->db->getQuery(true);
 		$this->subQuery = $this->db->getQuery(true);
 		
 		$this->config = $this->getParcoursupConfig();
+
+		$userCategoryRepository = new UserCategoryRepository();
+		$userCategories = $userCategoryRepository->getAllCategories();
+		foreach ($userCategories as $userCategory) {
+			if($userCategory->label === 'Parcoursup')
+			{
+				$this->parcoursupUserCategory = $userCategory->id;
+				break;
+			}
+		}
 	}
 
 	public function getDatas(): array
@@ -127,6 +146,20 @@ class ParcoursupRepository
 					$fnum = $this->createFile($datas->getCampaignId(), $userId);
 				}
 			}
+			$datas->setUserId($userId);
+			$datas->getUser()->id = $userId;
+
+			// Check if we have a Parcoursup user category
+			if(!empty($this->parcoursupUserCategory))
+			{
+				$this->query->clear()
+					->update($this->db->quoteName('#__emundus_users'))
+					->set($this->db->quoteName('user_category') . ' = ' . $this->db->quote($this->parcoursupUserCategory))
+					->where($this->db->quoteName('user_id') . ' = ' . $this->db->quote($userId));
+				$this->db->setQuery($this->query);
+				$this->db->execute();
+			}
+			//
 
 			if (empty($fnum))
 			{
@@ -136,6 +169,97 @@ class ParcoursupRepository
 			if ($this->fillFnum($datas, $fnum, $userId))
 			{
 				$flushed = $fnum;
+			}
+			
+			// Check if we have choice_cid in applicationFile, if yes add application choices to application file via ApplicationChoicesRepository
+			if(!empty($datas->getApplicationFileKey('choice_cid')))
+			{
+				// Check if not already have a choice for this campaign
+				$applicationChoiceEntity = null;
+				$applicationChoices = $this->applicationChoicesRepository->getChoicesByFnum($fnum);
+				foreach ($applicationChoices as $choice)
+				{
+					if($choice->getCampaignId() === $datas->getApplicationFileKey('choice_cid'))
+					{
+						$applicationChoiceEntity = $choice;
+					}
+				}
+
+				if(empty($applicationChoiceEntity)) {
+					$campaignEntity = $this->campaignRepository->getById($datas->getApplicationFileKey('choice_cid'));
+
+					if(!empty($campaignEntity))
+					{
+						$applicationChoiceEntity      = new ApplicationChoicesEntity(
+							$fnum,
+							$datas->getUser(),
+							$campaignEntity,
+							$datas->getApplicationFileKey('choice_cid'),
+							0,
+							ChoicesStateEnum::WAITING
+						);
+
+						$this->applicationChoicesRepository->flush($applicationChoiceEntity);
+					}
+				}
+
+				if(!empty($applicationChoiceEntity->getId()))
+				{
+					$this->query->clear()
+						->select('*')
+						->from($this->db->quoteName('#__emundus_campaign_candidature_choices_more'))
+						->where('parent_id = ' . $applicationChoiceEntity->getId());
+					$this->db->setQuery($this->query);
+					$moreApplicationChoice = $this->db->loadObject();
+
+					if(empty($moreApplicationChoice))
+					{
+						$moreApplicationChoice = (object)[
+							'parent_id' => $applicationChoiceEntity->getId(),
+						];
+						$this->db->insertObject('#__emundus_campaign_candidature_choices_more', $moreApplicationChoice);
+						$moreApplicationChoice->id = $this->db->insertid();
+					}
+					
+					// If we have datas on jos_emundus_campaign_candidature_choices_more table, we can update them with the application file datas
+					$attributes = array_keys($datas->getApplicationFile());
+					// Get attributes that start by jos_emundus_campaign_candidature_choices_more
+					$moreAttributes = array_filter($attributes, function($attribute) {
+						return str_starts_with($attribute, 'jos_emundus_campaign_candidature_choices_more');
+					});
+
+					foreach ($moreAttributes as $attribute)
+					{
+						$value = $datas->getApplicationFileKey($attribute);
+
+						if(!empty($value))
+						{
+							if(!is_array($value))
+							{
+								$value = [$value];
+							}
+
+							$attributeArray = explode('___', $attribute);
+
+							$this->query->clear()
+								->delete($this->db->quoteName($attributeArray[0]))
+								->where('parent_id = ' . $moreApplicationChoice->id);
+							$this->db->setQuery($this->query);
+							$this->db->execute();
+
+
+							foreach ($value as $v)
+							{
+								$moreData = (object) [
+									'parent_id'        => $moreApplicationChoice->id,
+									$attributeArray[1] => $v
+								];
+
+								$this->db->insertObject($attributeArray[0], $moreData);
+							}
+						}
+					}
+				}
 			}
 			//
 

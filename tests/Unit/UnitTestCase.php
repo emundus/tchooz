@@ -146,9 +146,9 @@ abstract class UnitTestCase extends TestCase
 	{
 		$this->h_dataset->deleteSampleUser($this->dataset['applicant']);
 		$this->h_dataset->deleteSampleUser($this->dataset['coordinator']);
-		$this->h_dataset->deleteSampleProgram($this->dataset['program']['programme_id']);
-		$this->h_dataset->deleteSampleCampaign($this->dataset['campaign']);
 		$this->h_dataset->deleteSampleFile($this->dataset['fnum']);
+		$this->h_dataset->deleteSampleCampaign($this->dataset['campaign']);
+		$this->h_dataset->deleteSampleProgram($this->dataset['program']['programme_id']);
 		$this->h_dataset->deleteSamples();
 	}
 

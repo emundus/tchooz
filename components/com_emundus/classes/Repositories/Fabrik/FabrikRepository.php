@@ -131,6 +131,48 @@ class FabrikRepository
 	}
 
 	/**
+	 * @param   int  $elementId
+	 *
+	 * @return FabrikFormEntity|null
+	 *
+	 * @since version
+	 */
+	public function getFormFromElementId(int $elementId): ?FabrikFormEntity
+	{
+		$form = null;
+
+		if (!empty($elementId))
+		{
+			try
+			{
+				$query = $this->db->createQuery();
+
+				$query->select(self::FABRIK_FORM_COLUMNS)
+					->from($this->db->quoteName('#__fabrik_forms', 'ff'))
+					->leftJoin($this->db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->db->quoteName('fl.form_id') . ' = ' . $this->db->quoteName('ff.id'))
+					->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->db->quoteName('ffg.form_id') . ' = ' . $this->db->quoteName('ff.id'))
+					->leftJoin($this->db->quoteName('#__fabrik_elements', 'fe') . ' ON ' . $this->db->quoteName('fe.group_id') . ' = ' . $this->db->quoteName('ffg.group_id'))
+					->where($this->db->quoteName('ff.published') . ' = 1')
+					->where($this->db->quoteName('fe.id') . ' = ' . $this->db->quote($elementId));
+
+				$this->db->setQuery($query);
+				$form = $this->db->loadObject();
+
+				if (!empty($form))
+				{
+					$form = $this->factory->buildFormEntity($form, $this->withRelations);
+				}
+			}
+			catch (\Exception $e)
+			{
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $form;
+	}
+
+	/**
 	 * @param   int  $profileId
 	 *
 	 * @return array<FabrikFormEntity>
@@ -373,6 +415,48 @@ class FabrikRepository
 		return $elements;
 	}
 
+	/**
+	 * @param   array  $filters
+	 * @param   int    $limit
+	 * @param   int    $page
+	 *
+	 * @return array<FabrikElementEntity>
+	 */
+	public function getElements(array $filters, int $limit = 100, int $page = 1): array
+	{
+		$elements = [];
+
+		try
+		{
+			$query = $this->buildElementQuery($this->withRelations);
+			$this->elementFilters = array_merge($this->elementFilters, $filters);
+			$this->applyElementFilters($query, $this->withRelations);
+
+			$offset = ($page - 1) * $limit;
+			$query->setLimit($limit, $offset);
+
+			$this->db->setQuery($query);
+			$elementObjects = $this->db->loadObjectList();
+
+			if (!empty($elementObjects))
+			{
+				// todo: nonsense, factory should not be instantiated this way, nor having as a parameter of the repository, need to rethink this
+				if (empty($this->factory))
+				{
+					$this->factory = new FabrikFactory($this);
+				}
+
+				$elements = $this->factory->fromDbObjects($elementObjects, $this->withRelations, FabrikObjectsEnum::ELEMENT);
+			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $elements;
+	}
+
 	public function buildElementQuery(bool $withJoins = false): QueryInterface
 	{
 		$query = $this->db->getQuery(true);
@@ -427,6 +511,11 @@ class FabrikRepository
 		{
 			$query->where($this->db->quoteName('fg.published') . ' = 1')
 				->where($this->db->quoteName('fl.published') . ' = 1');
+
+			if (in_array('form_id', array_keys($filters)))
+			{
+				$query->where($this->db->quoteName('ff.form_id') . ' = ' . $this->db->quote($filters['form_id']));
+			}
 		}
 
 		if (in_array('published', array_keys($filters)))
@@ -445,6 +534,28 @@ class FabrikRepository
 		if (in_array('excluded_elements', array_keys($filters)))
 		{
 			$query->where($this->db->quoteName('fe.name') . ' NOT IN (' . implode(',', array_map([$this->db, 'quote'], $filters['excluded_elements'])) . ')');
+		}
+
+		if (in_array('plugin', array_keys($filters)))
+		{
+			if (is_array($filters['plugin']))
+			{
+				$query->where($this->db->quoteName('fe.plugin') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $filters['plugin'])) . ')');
+			} else {
+				$query->where($this->db->quoteName('fe.plugin') . ' = ' . $this->db->quote($filters['plugin']));
+			}
+		}
+
+		if (in_array('name', array_keys($filters)))
+		{
+			if (is_array($filters['name']))
+			{
+				$query->where($this->db->quoteName('fe.name') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $filters['name'])) . ')');
+			}
+			else
+			{
+				$query->where($this->db->quoteName('fe.name') . ' = ' . $this->db->quote($filters['name']));
+			}
 		}
 	}
 

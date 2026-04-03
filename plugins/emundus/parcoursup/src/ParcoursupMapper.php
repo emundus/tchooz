@@ -47,6 +47,24 @@ class ParcoursupMapper
 			if (!empty($programmeCode))
 			{
 				$cid = $this->getCampaignId($programmeCode);
+				if(empty($cid))
+				{
+					continue;
+				}
+				$choiceCid = 0;
+
+				// If the campaign have a campaign parent, we use the parent campaign to link the application
+				$query->clear()
+					->select('parent_id')
+					->from('#__emundus_setup_campaigns')
+					->where('id = ' . (int) $cid);
+				$this->database->setQuery($query);
+				$parentId = $this->database->loadResult();
+				if(!empty($parentId))
+				{
+					$choiceCid = $cid;
+					$cid = $parentId;
+				}
 
 				$applicants = $formation[$this->applicantsAttribute];
 
@@ -54,6 +72,7 @@ class ParcoursupMapper
 				{
 					$application = [
 						'campaign_id' => $cid,
+						'choice_cid' => $choiceCid,
 					];
 					foreach ($this->config['fields'] as $field)
 					{
@@ -98,7 +117,17 @@ class ParcoursupMapper
 				case 'list':
 					if (!empty($value))
 					{
-						$value = $field['options'][$value];
+						if(is_array($value))
+						{
+							foreach ($value as &$item)
+							{
+								$item = $field['options'][$item] ?? $item;
+							}
+						}
+						else
+						{
+							$value = $field['options'][$value];
+						}
 					}
 					break;
 				case 'date':

@@ -2,7 +2,6 @@
 
 namespace Tchooz\Entities\Automation\Actions;
 
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -91,7 +90,7 @@ class ActionExport extends ActionEntity
 			$parameters = $this->getParameterValues();
 			$langCode   = $parameters['lang'];
 
-			$lang = Factory::getApplication()->getLanguage();
+			$lang = Factory::$language;
 			$lang->setDefault($langCode);
 			$lang->load('com_emundus', JPATH_SITE . '/components/com_emundus', $langCode);
 			$lang->load('', JPATH_SITE, $langCode);

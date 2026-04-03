@@ -936,6 +936,10 @@ export default {
 				this.loading = false;
 			}
 		},
+
+		selectedPage(newValue) {
+			useFormBuilderStore().updateFormId(newValue);
+		},
 	},
 };
 </script>

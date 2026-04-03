@@ -14,7 +14,7 @@ const alerts = {
 				},
 			};
 
-			if (text.length > 0) {
+			if (text && text.length > 0) {
 				if (textIsHTML) {
 					options.html = text;
 				} else {

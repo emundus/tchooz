@@ -3,7 +3,7 @@
         'name' => 'emundus/tchooz',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '00b80cc60b53ec2c6010e27af14223f6dc16792f',
+        'reference' => 'a5209be75f6a8f009b2a81e252180e83bdbfc529',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -96,7 +96,7 @@
         'emundus/tchooz' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '00b80cc60b53ec2c6010e27af14223f6dc16792f',
+            'reference' => 'a5209be75f6a8f009b2a81e252180e83bdbfc529',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -437,6 +437,30 @@
             'aliases' => array(),
             'dev_requirement' => true,
         ),
+        'psr/cache' => array(
+            'pretty_version' => '3.0.0',
+            'version' => '3.0.0.0',
+            'reference' => 'aa5030cfa5405eccfdcb1083ce040c2cb8d253bf',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../psr/cache',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'psr/cache-implementation' => array(
+            'dev_requirement' => false,
+            'provided' => array(
+                0 => '2.0|3.0',
+            ),
+        ),
+        'psr/container' => array(
+            'pretty_version' => '2.0.2',
+            'version' => '2.0.2.0',
+            'reference' => 'c71ecc56dfe541dbd90c5360474fbc405f8d5963',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../psr/container',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'psr/http-client' => array(
             'pretty_version' => '1.0.3',
             'version' => '1.0.3.0',
@@ -449,8 +473,8 @@
         'psr/http-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'psr/http-factory' => array(
@@ -465,8 +489,8 @@
         'psr/http-factory-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'psr/http-message' => array(
@@ -481,8 +505,8 @@
         'psr/http-message-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'psr/log' => array(
@@ -502,6 +526,12 @@
             'install_path' => __DIR__ . '/../psr/simple-cache',
             'aliases' => array(),
             'dev_requirement' => false,
+        ),
+        'psr/simple-cache-implementation' => array(
+            'dev_requirement' => false,
+            'provided' => array(
+                0 => '1.0|2.0|3.0',
+            ),
         ),
         'ralouphie/getallheaders' => array(
             'pretty_version' => '3.0.3',
@@ -575,12 +605,45 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'symfony/cache' => array(
+            'pretty_version' => 'v7.4.5',
+            'version' => '7.4.5.0',
+            'reference' => '8dde98d5a4123b53877aca493f9be57b333f14bd',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../symfony/cache',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'symfony/cache-contracts' => array(
+            'pretty_version' => 'v3.6.0',
+            'version' => '3.6.0.0',
+            'reference' => '5d68a57d66910405e5c0b63d6f0af941e66fc868',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../symfony/cache-contracts',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'symfony/cache-implementation' => array(
+            'dev_requirement' => false,
+            'provided' => array(
+                0 => '1.1|2.0|3.0',
+            ),
+        ),
         'symfony/deprecation-contracts' => array(
             'pretty_version' => 'v3.6.0',
             'version' => '3.6.0.0',
             'reference' => '63afe740e99a13ba87ec199bb07bbdee937a5b62',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/deprecation-contracts',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'symfony/expression-language' => array(
+            'pretty_version' => 'v7.4.4',
+            'version' => '7.4.4.0',
+            'reference' => 'f3a6497eb6573e185f2ec41cd3b3f0cd68ddf667',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../symfony/expression-language',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
@@ -620,6 +683,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'symfony/service-contracts' => array(
+            'pretty_version' => 'v3.6.1',
+            'version' => '3.6.1.0',
+            'reference' => '45112560a3ba2d715666a509a0bc9521d10b6c43',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../symfony/service-contracts',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'symfony/var-dumper' => array(
             'pretty_version' => 'v7.4.4',
             'version' => '7.4.4.0',
@@ -628,6 +700,15 @@
             'install_path' => __DIR__ . '/../symfony/var-dumper',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'symfony/var-exporter' => array(
+            'pretty_version' => 'v7.4.0',
+            'version' => '7.4.0.0',
+            'reference' => '03a60f169c79a28513a78c967316fbc8bf17816f',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../symfony/var-exporter',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'tecnickcom/tcpdf' => array(
             'pretty_version' => '6.10.1',

@@ -92,4 +92,23 @@ export default {
 			return false;
 		}
 	},
+
+	async getUpdateOwnerFiles() {
+		try {
+			return await client.get('getupdateownerfiles');
+		} catch (e) {
+			return false;
+		}
+	},
+
+	async updateOwner(ownerId) {
+		try {
+			return await client.post('updateowner', { owner: ownerId });
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
 };

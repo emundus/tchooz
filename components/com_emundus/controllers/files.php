@@ -13,14 +13,13 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Database\ParameterType;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Joomla\CMS\Factory;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Attributes\AccessAttribute;
@@ -29,13 +28,11 @@ use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Entities\Filters\FilterEntity;
 use Tchooz\Enums\Filters\FilterModeEnum;
 use Tchooz\Factories\Filters\FilterFactory;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Filters\FilterRepository;
-use \Tchooz\Traits\TraitResponse;
+use Tchooz\Services\ApplicationFile\ApplicationFileService;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Controller\EmundusController;
-
-use Gotenberg\Gotenberg;
-use Gotenberg\Stream;
 
 jimport('joomla.application.component.controller');
 jimport('joomla.user.helper');
@@ -4898,6 +4895,99 @@ class EmundusControllerFiles extends EmundusController
 		$response['code']    = 200;
 		$response['status']  = true;
 		$response['message'] = Text::_('FILTER_DELETED');
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(AccessLevelEnum::PARTNER, [['id' => 'update_owner', 'mode' => CrudEnum::CREATE]])]
+	public function getupdateownerfiles()
+	{
+		$this->checkToken('get');
+		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
+
+		$fnums = $this->app->getUserState('com_emundus.files.updateowner.fnums');
+
+		if (!empty($fnums))
+		{
+			$applicationFilesRepository = new ApplicationFileRepository();
+			$data                       = [];
+			foreach ($fnums as $fnum)
+			{
+				$applicationFile = $applicationFilesRepository->getByFnum($fnum);
+				if (!empty($applicationFile) && $applicationFile instanceof ApplicationFileEntity)
+				{
+					$data[] = $applicationFile->__serialize();
+				}
+			}
+
+			$response = [
+				'code'    => 200,
+				'status'  => true,
+				'message' => '',
+				'data'    => $data
+			];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(AccessLevelEnum::PARTNER, [['id' => 'update_owner', 'mode' => CrudEnum::CREATE]])]
+	public function updateowner(): void
+	{
+		$this->checkToken();
+		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
+
+		try
+		{
+			$newOwner = $this->input->post->getInt('owner', 0);
+			if(empty($newOwner))
+			{
+				throw new Exception(Text::_('MISSING_PARAMS'));
+			}
+
+			$actionRepository  = new ActionRepository();
+			$updateOwnerAction = $actionRepository->getByName('update_owner');
+
+			$fnumsUpdated = [];
+
+			$applicationFileRepository = new ApplicationFileRepository();
+			$applicationFileService = new ApplicationFileService();
+			$fnums = $this->app->getUserState('com_emundus.files.updateowner.fnums');
+			foreach ($fnums as $fnum)
+			{
+				if (EmundusHelperAccess::asAccessAction($updateOwnerAction->getId(), CrudEnum::CREATE->value, $this->_user->id, $fnum))
+				{
+					$applicationFile = $applicationFileRepository->getByFnum($fnum);
+					if(!empty($applicationFile) && $applicationFile instanceof ApplicationFileEntity)
+					{
+						if($applicationFileService->updateOwner($applicationFile, $newOwner, $this->_user->id))
+						{
+							$fnumsUpdated[] = $fnum;
+						}
+					}
+				}
+			}
+
+			if (empty($fnumsUpdated))
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_UPDATE_OWNER_NO_FILE_UPDATED'));
+			}
+
+			$response = [
+				'code' => 200,
+				'status' => true,
+				'data' => $fnumsUpdated,
+				'message' => Text::sprintf('COM_EMUNDUS_UPDATE_OWNER_SUCCESS')
+			];
+		}
+		catch (Exception $e)
+		{
+			$response = [
+				'code' => 500,
+				'status' => false,
+				'message' => $e->getMessage()
+			];
+		}
+
 		$this->sendJsonResponse($response);
 	}
 }

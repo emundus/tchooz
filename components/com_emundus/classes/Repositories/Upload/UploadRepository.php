@@ -57,7 +57,7 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 	public function getByFnum(string $fnum): array
 	{
 		$entities = [];
-		$objects = $this->getItemsByField('fnum', $fnum);
+		$objects  = $this->getItemsByField('fnum', $fnum);
 
 		if (!empty($objects))
 		{
@@ -118,22 +118,22 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 		if (empty($entity->getId()))
 		{
 			$object = (object) [
-				'timedate' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
-				'user_id' => $entity->getUserId(),
-				'fnum' => $entity->getFnum(),
-				'campaign_id' => $entity->getCampaignId(),
-				'attachment_id' => $entity->getAttachmentId(),
-				'filename' => $entity->getFilename(),
-				'description' => $entity->getDescription(),
+				'timedate'       => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
+				'user_id'        => $entity->getUserId(),
+				'fnum'           => $entity->getFnum(),
+				'campaign_id'    => $entity->getCampaignId(),
+				'attachment_id'  => $entity->getAttachmentId(),
+				'filename'       => $entity->getFilename(),
+				'description'    => $entity->getDescription(),
 				'local_filename' => $entity->getLocalFilename(),
-				'size' => $entity->getSize(),
-				'is_validated' => $entity->getValidationStatus()->value,
-				'signed_file' => $entity->isSigned() ? 1 : 0,
-				'thumbnail' => $entity->getThumbnail(),
+				'size'           => $entity->getSize(),
+				'is_validated'   => $entity->getValidationStatus()->value,
+				'signed_file'    => $entity->isSigned() ? 1 : 0,
+				'thumbnail'      => $entity->getThumbnail(),
 				'can_be_deleted' => (int) $entity->canBeDeleted(),
-				'can_be_viewed' => (int) $entity->canBeViewed(),
-				'modified' => null,
-				'modified_by' => null,
+				'can_be_viewed'  => (int) $entity->canBeViewed(),
+				'modified'       => null,
+				'modified_by'    => null,
 			];
 
 			if ($this->db->insertObject($this->tableName, $object))
@@ -145,24 +145,24 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 		else
 		{
 			$object = (object) [
-				'id' => $entity->getId(),
-				'user_id' => $entity->getUserId(),
-				'fnum' => $entity->getFnum(),
-				'campaign_id' => $entity->getCampaignId(),
-				'attachment_id' => $entity->getAttachmentId(),
-				'filename' => $entity->getFilename(),
-				'description' => $entity->getDescription(),
+				'id'             => $entity->getId(),
+				'user_id'        => $entity->getUserId(),
+				'fnum'           => $entity->getFnum(),
+				'campaign_id'    => $entity->getCampaignId(),
+				'attachment_id'  => $entity->getAttachmentId(),
+				'filename'       => $entity->getFilename(),
+				'description'    => $entity->getDescription(),
 				'local_filename' => $entity->getLocalFilename(),
 				'size' => $entity->getSize(),
 				'is_validated' => $entity->getValidationStatus()->value,
 				'signed_file' => $entity->isSigned() ? 1 : 0,
 				'thumbnail' => $entity->getThumbnail(),
 				'can_be_deleted' => (int) $entity->canBeDeleted(),
-				'can_be_viewed' => (int) $entity->canBeViewed(),
-				'modified' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
-				'modified_by' => $entity->getModifiedBy() ?: null,
+				'can_be_viewed'  => (int) $entity->canBeViewed(),
+				'modified'       => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
+				'modified_by'    => $entity->getModifiedBy() ?: null,
 			];
-			
+
 			$flushed = $this->db->updateObject($this->tableName, $object, 'id');
 		}
 

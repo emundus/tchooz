@@ -41,7 +41,7 @@ define(['jquery', 'fab/element'],
         {
             if (this.HTMLSelectElement.options.length === 1)
             {
-                this.HTMLSelectElement.setAttribute('tabindex', -1)
+                this.HTMLSelectElement.setAttribute('tabindex', -1);
                 this.HTMLSelectElement.style.pointerEvents = 'none';
                 this.HTMLSelectElement.style.backgroundImage = 'none';
                 this.HTMLSelectElement.style.textAlign = 'end';
@@ -134,7 +134,7 @@ define(['jquery', 'fab/element'],
 
         addMask: function ()
         {
-            if(this.mask) {
+            if (this.mask) {
                 this.mask.destroy();
             }
 

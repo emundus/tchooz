@@ -344,7 +344,7 @@
 								:class="{ 'is-invalid !tw-border-red-600': errors.progCode }"
 								v-model="form.training"
 								v-on:change="setCategory"
-								:disabled="this.programs.length <= 0"
+								:disabled="!this.programs || this.programs.length <= 0"
 							>
 								<option value="">
 									{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG') }}
@@ -833,7 +833,7 @@ export default {
 						this.displayPrograms = false;
 					} else {
 						if (response.status) {
-							this.programs = response.data.datas;
+							this.programs = response.data.datas || [];
 						} else {
 							this.programs = [];
 						}

@@ -518,4 +518,48 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 
 		return $users;
 	}
+
+	/**
+	 * Get all applicants (users having a profile associated to an active campaign)
+	 *
+	 * @return EmundusUserEntity[]
+	 */
+	public function getAllApplicants(int $limit = 30, string $search = ''): array
+	{
+		$emundus_user_entities = [];
+
+		// Get applicants profiles
+		$query = $this->db->getQuery(true);
+
+		$query->select('id')
+			->from($this->db->quoteName('#__emundus_setup_profiles', 'esp'))
+			->where('esp.published = 1');
+		$this->db->setQuery($query);
+		$applicant_profiles = $this->db->loadColumn();
+
+		$query->clear()
+			->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->leftJoin($this->db->quoteName('#__users', 'u') . ' ON u.id = '.$this->alias.'.user_id')
+			->leftJoin($this->db->quoteName('#__emundus_users_profiles', 'eup') . ' ON eup.user_id = '.$this->alias.'.user_id')
+			->where('eup.profile_id IN (' . implode(',', $applicant_profiles) . ')')
+			->orWhere($this->alias.'.profile IN (' . implode(',', $applicant_profiles) . ')')
+			->group($this->alias.'.id');
+
+		if(!empty($search)) {
+			$search = $this->db->quote('%' . $this->db->escape($search, true) . '%');
+			$query->where('(' . $this->alias.'.firstname LIKE ' . $search . ' OR ' . $this->alias.'.lastname LIKE ' . $search . ' OR u.email LIKE ' . $search . ')');
+		}
+
+		$this->db->setQuery($query, 0, $limit);
+		$emundus_users = $this->db->loadAssocList();
+
+		if (!empty($emundus_users)) {
+			foreach ($emundus_users as $emundus_user) {
+				$emundus_user_entities[] = $this->factory->fromDbObject($emundus_user, $this->withRelations);
+			}
+		}
+
+		return $emundus_user_entities;
+	}
 }

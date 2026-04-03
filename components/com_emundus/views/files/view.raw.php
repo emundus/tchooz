@@ -118,6 +118,49 @@ class EmundusViewFiles extends JViewLegacy
 
 		switch ($layout)
 		{
+			case 'updateowner':
+				$actionRepository   = new AccessActionRepository();
+				$updateOwnerAction = $actionRepository->getByName('update_owner');
+
+
+				$fnum_array = [];
+
+				$post = file_get_contents("php://input");
+				$post = json_decode($post, true);
+				$fnums = $post['fnums'];
+				
+				if ($fnums == 'all')
+				{
+					$m_files     = new EmundusModelFiles;
+					$fnums       = $m_files->getAllFnums();
+					$fnums_infos = $m_files->getFnumsInfos($fnums, 'object');
+					$fnums       = $fnums_infos;
+				}
+				else
+				{
+					$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+				}
+
+
+				foreach ($fnums as $key => $fnum)
+				{
+
+					if ($fnum->fnum === 'em-check-all')
+					{
+						unset($fnums[$key]);
+						continue;
+					}
+
+					if (EmundusHelperAccess::asAccessAction($updateOwnerAction->getId(), CrudEnum::CREATE->value, $this->user->id, $fnum->fnum))
+					{
+						$fnum_array[] = $fnum->fnum;
+					}
+				}
+
+				// Store the fnums in the session
+				$this->app->setUserState('com_emundus.files.updateowner.fnums', $fnum_array);
+
+				break;
 			case 'export':
 				$actionRepository = new AccessActionRepository();
 				$exportAction     = $actionRepository->getByName('export');

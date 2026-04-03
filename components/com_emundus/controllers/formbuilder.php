@@ -19,9 +19,15 @@ use Joomla\CMS\Language\Text;
 use Tchooz\Attributes\AccessAttribute;
 use Tchooz\Controller\EmundusController;
 use Tchooz\EmundusResponse;
+use Tchooz\Entities\Calculation\Templates\CalculateDatesDiff;
+use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Enums\CrudEnum;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
+use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Factories\Language\LanguageFactory;
+use Tchooz\Repositories\Fabrik\FabrikRepository;
+use Tchooz\Services\Calculation\CalculationTemplateRegistry;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
 
@@ -1240,6 +1246,77 @@ class EmundusControllerFormbuilder extends EmundusController
 	{
 		$currencyList = $this->m_formbuilder->getCurrencyListOptions();
 		return EmundusResponse::ok($currencyList);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function getEmundusCalculationParameters(): EmundusResponse
+	{
+		$calculationRegistry = new CalculationTemplateRegistry(true);
+		$parameters = $calculationRegistry->getParameters();
+		$parameters = array_map(function($parameter) {
+			return $parameter->toSchema();
+		}, $parameters);
+		return EmundusResponse::ok($parameters);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
+	public function getEmundusCalculationParametersByTemplates(): EmundusResponse
+	{
+		$elementId = $this->input->getInt('element_id', 0);
+
+		$calculationRegistry = new CalculationTemplateRegistry(true);
+		$parametersByTemplates = $calculationRegistry->getParametersByTemplates();
+
+		if (!empty($elementId))
+		{
+			$fabrikRepository = new FabrikRepository(true);
+			$fabrikFactory = new FabrikFactory($fabrikRepository);
+			$fabrikRepository->setFactory($fabrikFactory);
+
+			$fabrikForm = $fabrikRepository->getFormFromElementId($elementId);
+
+			$fabrikRepository->setElementFilters(['form_id' => $fabrikForm->getId(), 'plugin' => [
+				ElementPluginEnum::DATE->value,
+				ElementPluginEnum::BIRTHDAY->value,
+				ElementPluginEnum::JDATE->value,
+			], 'hidden' => 0]);
+			$elements = $fabrikRepository->getElements([]);
+
+			foreach ($parametersByTemplates as $template => $parameters)
+			{
+				if ($template === CalculateDatesDiff::getCode())
+				{
+					foreach ($parameters as $parameter)
+					{
+
+						if (in_array($parameter->getName(), ['start_date_element', 'end_date_element']))
+						{
+							$choices = [
+								new ChoiceFieldValue(null, Text::_('COM_EMUNDUS_CALCULATION_TPL_DATES_CURRENT_DATE'))
+							];
+							foreach ($elements as $element)
+							{
+								$choices[] = new ChoiceFieldValue($fabrikForm->getId() . '.' . $element->getId(), Text::_($element->getLabel()));
+							}
+
+							$parameter->setChoices($choices);
+							$parameter->setResearch(null);
+							$parameter->setOptionsProvider(null);
+						}
+					}
+				}
+			}
+		}
+
+		$parametersByTemplates = array_map(function($parameters) {
+			return array_map(function($parameter) {
+				return $parameter->toSchema();
+			}, $parameters);
+		}, $parametersByTemplates);
+
+		return EmundusResponse::ok($parametersByTemplates);
 	}
 }
 

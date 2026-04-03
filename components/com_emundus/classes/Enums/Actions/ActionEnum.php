@@ -72,6 +72,8 @@ enum ActionEnum: string
 	case AFFECT_GROUP = 'affect_group';
 	case MAIL_GROUP = 'mail_group';
 
+	case UPDATE_OWNER = 'update_owner';
+
 	public function getLabel(): string
 	{
 		return match ($this)
@@ -104,6 +106,7 @@ enum ActionEnum: string
 			self::DECISION => Text::_('COM_EMUNDUS_DECISION'),
 			self::ADMISSION => Text::_('COM_EMUNDUS_ADMISSION'),
 			self::EVALUATION => Text::_('COM_EMUNDUS_ACCESS_EVALUATION_RIGHT'),
+			self::UPDATE_OWNER => Text::_('COM_EMUNDUS_ACL_UPDATE_OWNER'),
 
 			// Platform actions
 			self::CAMPAIGN => Text::_('COM_EMUNDUS_ACL_CAMPAIGN'),
@@ -169,6 +172,7 @@ enum ActionEnum: string
 			self::DECISION => Text::_('COM_EMUNDUS_DECISION_DESC'),
 			self::ADMISSION => Text::_('COM_EMUNDUS_ADMISSION_DESC'),
 			self::EVALUATION => Text::_('COM_EMUNDUS_ACCESS_EVALUATION_DESC'),
+			self::UPDATE_OWNER => '',
 
 			// Platform actions
 			self::CAMPAIGN => Text::_('COM_EMUNDUS_ACL_CAMPAIGN_DESC'),
@@ -232,7 +236,8 @@ enum ActionEnum: string
 			self::DECISION,
 			self::ADMISSION,
 			self::EVALUATION,
-			self::LOGS => ActionTypeEnum::FILE,
+			self::LOGS,
+			self::UPDATE_OWNER => ActionTypeEnum::FILE,
 
 			self::CAMPAIGN,
 			self::PROGRAM,
@@ -279,7 +284,7 @@ enum ActionEnum: string
 			self::MESSENGER => 7,
 			self::ACCESS_FILE => 8,
 			self::ACCESS_FILE_USERS => 9,
-			self::COPY_FILE => 10,
+			self::COPY_FILE, self::UPDATE_OWNER => 10,
 			self::SHARE_FILTERS => 11,
 			self::BOOKING => 12,
 			self::EXPORT_EXCEL => 14,

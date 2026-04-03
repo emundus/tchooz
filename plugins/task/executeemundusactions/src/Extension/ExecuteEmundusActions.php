@@ -124,11 +124,8 @@ class ExecuteEmundusActions extends CMSPlugin implements SubscriberInterface
 			{
 				// If timeout reached, check health of in progress tasks to ensure no tasks are stuck
 				$repository->checkInProgressTasksHealth();
-				Log::add('Checked health of in progress tasks after timeout.', Log::DEBUG, 'task_executeemundusactions');
 			}
 		} else {
-			Log::add('No pending tasks found to execute.', Log::DEBUG, 'task_executeemundusactions');
-
 			// No tasks to process, consider it a success and check health of in progress tasks to ensure no tasks are stuck
 			// check only here, because when there are tasks to process, they are prioritized
 			$repository->checkInProgressTasksHealth();

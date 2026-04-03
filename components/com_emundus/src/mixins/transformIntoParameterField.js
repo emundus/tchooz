@@ -113,7 +113,7 @@ export default {
 			return parameter;
 		},
 
-		async fieldsToParameterFormGroups(fields, values, display = 'block') {
+		async fieldsToParameterFormGroups(fields, values = {}, display = 'block') {
 			let defaultGroup = {
 				id: 'default-group',
 				title: '',
@@ -237,6 +237,25 @@ export default {
 									return paramCopy;
 								}),
 							};
+						});
+					} else if (values[group.id] && typeof values[group.id] === 'object') {
+						// if it's an object, we consider it's a single row and we create an array foreach entry
+						group.rows = [];
+
+						Object.keys(values[group.id]).forEach((key) => {
+							let rowValues = values[group.id][key];
+							group.rows.push({
+								parameters: group.parameters.map((parameter) => {
+									let paramCopy = JSON.parse(JSON.stringify(parameter));
+									// set value from rowValues
+									if (rowValues && rowValues.hasOwnProperty(paramCopy.param)) {
+										paramCopy.value = rowValues[paramCopy.param];
+									} else {
+										paramCopy.value = null;
+									}
+									return paramCopy;
+								}),
+							});
 						});
 					} else {
 						group.rows = [];
