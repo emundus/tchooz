@@ -3,6 +3,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
 
 header('Content-Type: text/html; charset=utf-8');
 
@@ -296,6 +297,7 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
 					{
 						// Parse redirect URL to ensure it is correct
 						$parsedUrl = parse_url($redirect_url);
+
 						parse_str($parsedUrl['query'] ?? '', $params);
 						if (empty($currentCampaign->parent_id))
 						{
@@ -322,8 +324,14 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
 						}
 						else
 						{
-							$register_url = $redirect_url . '?' . $newQuery;
-						}
+                            if (!str_contains($redirect_url, 'index.php?')) {
+                                $register_url = $redirect_url . '?' . $newQuery;
+                            }
+                            else
+                            {
+                                $register_url = $newQuery;
+                            }
+                        }
 					}
 					if (!empty($mod_em_campaign_itemid))
 					{

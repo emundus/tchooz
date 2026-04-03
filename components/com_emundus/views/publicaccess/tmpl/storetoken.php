@@ -15,7 +15,7 @@ $token = $this->compositeKey;
 ?>
 
 <div class="tw-flex tw-items-center tw-justify-center tw-min-h-[60vh] tw-mb-4">
-	<div class="emundus-form !tw-p-6 tw-rounded-coordinator-cards tw-shadow-standard tw-border tw-border-neutral-300 !tw-bg-white applicant-form">
+	<div class="emundus-form !tw-p-6 tw-rounded-coordinator-cards tw-shadow-standard tw-border tw-border-neutral-300 !tw-bg-white applicant-form tw-max-w-[500px]">
 		<!-- Header -->
 		<div class="tw-text-center tw-mb-6">
 			<span class="material-symbols-outlined tw-text-5xl tw-text-orange-500 tw-mb-2">warning</span>
@@ -69,24 +69,20 @@ $token = $this->compositeKey;
 			<?php echo Text::_('COM_EMUNDUS_STORETOKEN_CONTINUE'); ?>
 		</button>
 
-        <p class="tw-text-xs tw-text-neutral-500 tw-text-center tw-mt-4">
-			<?php echo Text::_('COM_EMUNDUS_STORETOKEN_HELP'); ?>
-		</p>
-
         <?php if (!$this->renew) : ?>
             <!-- allow user to abandon the process the first time he arrives here, leading to file deletion -->
 
             <hr class="tw-mt-4"/>
-            <button
+            <a
                 type="button"
                 id="abort-btn"
-                class="tw-w-full tw-btn-secondary tw-gap-2 tw-cursor-pointer tw-transition-all"
+                class="tw-text-red-500 tw-w-full tw-flex tw-flex-center tw-justify-center tw-gap-2 tw-cursor-pointer"
             >
-                <span class="material-symbols-outlined">
+                <span class="material-symbols-outlined tw-text-red-500">
                   logout
                 </span>
-                <span><?php echo Text::_('COM_EMUNDUS_STORETOKEN_ABORT'); ?></span>
-            </button>
+                <span class="tw-cursor-pointer"><?php echo Text::_('COM_EMUNDUS_STORETOKEN_ABORT'); ?></span>
+            </a>
         <?php endif; ?>
 	</div>
 </div>

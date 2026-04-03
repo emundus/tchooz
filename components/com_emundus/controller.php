@@ -2432,7 +2432,7 @@ class EmundusController extends JControllerLegacy
 
 		if ($this->app->getIdentity()->guest == 1)
 		{
-			$campaignId = $this->input->getInt('campaign_id', 0);
+			$campaignId = $this->input->getInt('cid', 0);
 			$applyAnonymously = $this->input->getBool('anonymous', false);
 
 			if (!empty($campaignId))

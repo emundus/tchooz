@@ -28,6 +28,14 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 
 	function markCopied(btnId, itemKey) {
+		// Update button icon
+		const iconId = btnId.replace('btn', 'icon');
+		const icon = document.getElementById(iconId);
+		if (icon) {
+			icon.textContent = 'check';
+			icon.classList.add('tw-text-green-600');
+		}
+
 		// Track copied items
 		copiedItems[itemKey] = true;
 

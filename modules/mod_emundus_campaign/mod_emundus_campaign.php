@@ -4,6 +4,7 @@ defined('_JEXEC') or die('Access Deny');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 
@@ -408,11 +409,11 @@ if ($user->guest || in_array($e_user->profile, $app_prof) || $tmpl === 'tchooz_s
 
 				if (!empty($addonParams['confirm_public_application_creation']) && $addonParams['confirm_public_application_creation'] == 1)
 				{
-					$redirect_url = '/index.php?option=com_emundus&view=publicaccess&layout=confirmpublicapplicationcreation&cid=' . $campaign->getId();
+					$redirect_url = Route::_('index.php?option=com_users&view=login');
 				}
 				else
 				{
-					$redirect_url = '/index.php?option=com_emundus&task=applyPubliclyToCampaign&campaign_id=' . $campaign->getId();
+					$redirect_url = Route::_('/index.php?option=com_emundus&task=applyPubliclyToCampaign');
 				}
 			}
 		}

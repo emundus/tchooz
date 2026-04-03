@@ -14,8 +14,10 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
+use Tchooz\Repositories\Addons\AddonRepository;
 
 /** @var \Joomla\Component\Users\Site\View\Login\HtmlView $cookieLogin */
 
@@ -295,6 +297,23 @@ else
             </a>
         </div>
 	<?php endif; ?>
+
+    <?php
+    $addonRepository = new AddonRepository();
+    $addon = $addonRepository->getByName('public_session');
+
+    if (!empty($addon) && $addon->getValue()->isEnabled())
+    {
+        $addonParams = $addon->getValue()->getParams();
+
+        if (!empty($addonParams) && $addonParams['display_retrieve_public_access_file_login_page'] == 1)
+        {
+            echo LayoutHelper::render('emundus.publicaccess.login', $this);
+        }
+    }
+
+    ?>
+
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {

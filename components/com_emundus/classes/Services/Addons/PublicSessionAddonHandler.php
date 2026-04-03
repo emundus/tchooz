@@ -76,9 +76,10 @@ class PublicSessionAddonHandler implements AddonHandlerInterface
 	public function getParameters(): array
 	{
 		return [
-			new YesnoField('display_import_public_file_action', Text::_('COM_EMUNDUS_ADDON_PUBLIC_SESSION_DISPLAY_IMPORT_FILE_ACTION_LABEL'), true),
 			(new NumericField('token_validity_duration', Text::_('COM_EMUNDUS_ADDON_PUBLIC_SESSION_DISPLAY_TOKEN_VALIDITY_DURATION_LABEL'), true))->setMin(1)->setMax(365),
+			new YesnoField('display_import_public_file_action', Text::_('COM_EMUNDUS_ADDON_PUBLIC_SESSION_DISPLAY_IMPORT_FILE_ACTION_LABEL'), true),
 			new YesnoField('confirm_public_application_creation', Text::_('COM_EMUNDUS_ADDON_PUBLIC_SESSION_CONFIRM_APPLICATION_CREATION_LABEL'), true),
+			new YesnoField('display_retrieve_public_access_file_login_page', Text::_('COM_EMUNDUS_ADDON_PUBLIC_SESSION_DISPLAY_RETRIEVE_PUBLIC_ACCESS_FILE_LOGIN_PAGE_LABEL'), true),
 		];
 	}
 }
