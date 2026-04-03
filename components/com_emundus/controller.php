@@ -2426,7 +2426,7 @@ class EmundusController extends JControllerLegacy
 	/**
 	 * @return void
 	 */
-	public function applyPubliclyToCampaign(): void
+	public function applyPubliclyToCampaign(): EmundusResponse
 	{
 		$response = EmundusResponse::denied();
 
@@ -2456,15 +2456,11 @@ class EmundusController extends JControllerLegacy
 
 					$response->code = 429;
 					$response->msg = $rateLimitResponse;
-					$this->sendJsonResponse($response);
-
-					return;
+					return $response;
 				}
-
 
 				// get system user to apply on behalf of the guest
 				$systemUserId = ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
-
 				if (!empty($systemUserId))
 				{
 					$systemUser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($systemUserId);
@@ -2513,7 +2509,7 @@ class EmundusController extends JControllerLegacy
 			}
 		}
 
-		$this->sendJsonResponse($response);
+		return $response;
 	}
 
 	/**

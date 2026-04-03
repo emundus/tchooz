@@ -35,6 +35,13 @@ class EmundusViewPublicaccess extends HtmlView
 	/** @var string Fnum pour le layout storetoken */
 	protected string $storetokenFnum = '';
 
+	/**
+	 * @var bool Indique si l'utilisateur est en train de renouveler son token (true) ou s'il vient de le créer pour la première fois (false). Utilisé pour adapter les messages affichés dans le layout storetoken.
+	 */
+	protected bool $renew = false;
+
+	protected int $campaignId = 0;
+
 	public function display($tpl = null): void
 	{
 		$app   = Factory::getApplication();
@@ -84,6 +91,8 @@ class EmundusViewPublicaccess extends HtmlView
 				$app->enqueueMessage(Text::_('COM_EMUNDUS_PUBLIC_ACCESS_CAMPAIGN_NOT_PUBLIC'));
 				$app->redirect(Route::_('index.php?option=com_users&view=login&cid=' . $campaign->getId(), false));
 			}
+
+			$this->campaignId = $campaignId;
 		}
 		else
 		{
@@ -116,6 +125,7 @@ class EmundusViewPublicaccess extends HtmlView
 
 		$this->accessToken    = $session->get(EmundusPublicAccess::SESSION_PUBLIC_TOKEN_KEY, '');
 		$this->storetokenFnum = $session->get(EmundusPublicAccess::SESSION_PUBLIC_FNUM_KEY, '');
+		$this->renew          = $session->get(EmundusPublicAccess::RENEW_TOKEN_SESSION_KEY, false);
 
 		if (empty($this->accessToken) || empty($this->storetokenFnum))
 		{

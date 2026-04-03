@@ -97,4 +97,24 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('copy-fnum-btn').addEventListener('click', function () {
 		copyToClipboard('storetoken-fnum', 'copy-fnum-btn', 'fnum');
 	});
+
+	document.getElementById('abort-btn').addEventListener('click', function()
+	{
+		fetch('/index.php?option=com_emundus&controller=application&task=abortPublicApplicationCreation', {method: 'POST', headers: {'X-CSRF-Token': Joomla.getOptions('csrf.token')}})
+			.then(function() {
+				window.location.href = '/';
+			})
+			.catch(function(err) {
+				console.error('Failed to abort application creation', err);
+				Swal.fire({
+					title: Joomla.Text._('COM_EMUNDUS_FAILED_TO_ABORT_APPLICATION_CREATION'),
+					text: '',
+					icon: 'error',
+					showConfirmButton: false,
+					customClass: {
+						title: 'em-swal-title',
+					},
+				});
+			});
+	});
 });

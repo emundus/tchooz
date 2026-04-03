@@ -3261,7 +3261,47 @@ class EmundusControllerApplication extends EmundusController
 			$session = Factory::getApplication()->getSession();
 			$session->set(EmundusPublicAccess::SESSION_PUBLIC_TOKEN_KEY, $newPlainToken);
 			$session->set(EmundusPublicAccess::SESSION_PUBLIC_STORED_ACCESS_KEY, false);
+			$session->set(EmundusPublicAccess::RENEW_TOKEN_SESSION_KEY, true);
 			$response = EmundusResponse::ok();
+		}
+
+		return $response;
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
+	public function abortPublicApplicationCreation(): EmundusResponse
+	{
+		$this->checkToken();
+		$response = EmundusResponse::denied();
+
+		$fnum = EmundusPublicAccess::getPublicAccessFnum();
+
+		if (empty($fnum))
+		{
+			return $response;
+		}
+
+		$applicationFileRepository = new ApplicationFileRepository();
+		$applicationFile = $applicationFileRepository->getByFnum($fnum);
+
+		if (!$applicationFile->isPublic())
+		{
+			return $response;
+		}
+
+		// TODO: use repository when delete method will be implemented
+		if (!class_exists('EmundusModelFiles'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+		}
+		$filesModel = new EmundusModelFiles();
+		if ($filesModel->deleteFile($applicationFile->getFnum(), $applicationFile->getUser()->id))
+		{
+			$response = EmundusResponse::ok();
+		}
+		else
+		{
+			$response = EmundusResponse::fail();
 		}
 
 		return $response;

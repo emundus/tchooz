@@ -82,6 +82,11 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	public const SESSION_PUBLIC_STORED_ACCESS_KEY = 'emundus_public_stored_access';
 
 	/**
+	 * Session key used to detect if we are in a renewal situation, or first time
+	 */
+	public const RENEW_TOKEN_SESSION_KEY = 'emundus_public_renew_token';
+
+	/**
 	 * Default maximum duration (in minutes) for a public access session.
 	 * After this delay, the session is destroyed regardless of token validity.
 	 * Configurable via plugin params (field: session_ttl).
@@ -157,7 +162,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			{
 				$uri = Uri::getInstance();
 
-				if ($uri->getVar('task') === 'markPublicAccessKeyAsStored')
+				if ($uri->getVar('task') === 'markPublicAccessKeyAsStored' || $uri->getVar('task') === 'abortPublicApplicationCreation')
 				{
 					// do nothing
 				}

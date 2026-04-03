@@ -116,5 +116,21 @@ $fnum  = $this->storetokenFnum;
         <p class="tw-text-xs tw-text-neutral-500 tw-text-center tw-mt-4">
 			<?php echo Text::_('COM_EMUNDUS_STORETOKEN_HELP'); ?>
 		</p>
+
+        <?php if (!$this->renew) : ?>
+            <!-- allow user to abandon the process the first time he arrives here, leading to file deletion -->
+
+            <hr class="tw-mt-4"/>
+            <button
+                type="button"
+                id="abort-btn"
+                class="tw-w-full tw-btn-secondary tw-gap-2 tw-cursor-pointer tw-transition-all"
+            >
+                <span class="material-symbols-outlined">
+                  logout
+                </span>
+                <span><?php echo Text::_('COM_EMUNDUS_STORETOKEN_ABORT'); ?></span>
+            </button>
+        <?php endif; ?>
 	</div>
 </div>
