@@ -1029,4 +1029,19 @@ export default {
 			return response;
 		});
 	},
+
+	async getEmundusCalculationParameters() {
+		return client.get('getEmundusCalculationParameters').then((response) => {
+			return response;
+		});
+	},
+	async getEmundusCalculationParametersByType(elementId = null) {
+		return client
+			.get('getEmundusCalculationParametersByTemplates', {
+				element_id: elementId,
+			})
+			.then((response) => {
+				return response;
+			});
+	},
 };

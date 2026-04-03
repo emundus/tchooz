@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields name="params">
+        <fieldset name="plg-emundus_calculation" label="PLG_ELEMENT_EMUNDUS_CALCULATION_SETTINGS">
+            <field
+                    name="type"
+                    label="PLG_ELEMENT_EMUNDUS_CALCULATION_TYPE"
+                    type="list"
+                    default="custom"
+            >
+                <option value="custom">PLG_ELEMENT_EMUNDUS_CALCULATION_TYPE_CUSTOM</option>
+                <option value="average">PLG_ELEMENT_EMUNDUS_CALCULATION_TYPE_AVERAGE</option>
+                <option value="percentile">PLG_ELEMENT_EMUNDUS_CALCULATION_TYPE_PERCENTILE</option>
+                <option value="dates_diff">PLG_ELEMENT_EMUNDUS_CALCULATION_TYPE_DATE_DIFF</option>
+            </field>
+
+            <field
+                    showon="type:custom"
+                    name="operation"
+                    type="text"
+                    label="PLG_ELEMENT_EMUNDUS_CALCULATION_OPERATION"
+                    description="PLG_ELEMENT_EMUNDUS_CALCULATION_OPERATION_DESC"
+            />
+
+            <field
+                    showon="type:average"
+                    name="average_form"
+                    type="subform"
+                    label=""
+                    description=""
+                    multiple="false"
+            >
+            </field>
+
+            <field
+                    showon="type:percentile"
+                    name="percentile_form"
+                    type="subform"
+                    label=""
+                    description=""
+                    multiple="false"
+            />
+
+            <field
+                    showon="type:dates_diff"
+                    name="dates_diff_form"
+                    type="subform"
+                    label=""
+                    description=""
+                    multiple="false"
+            />
+        </fieldset>
+    </fields>
+</form>
