@@ -329,7 +329,7 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
                             }
                             else
                             {
-                                $register_url = $newQuery;
+                                $register_url = 'index.php?' . $newQuery;
                             }
                         }
 					}
