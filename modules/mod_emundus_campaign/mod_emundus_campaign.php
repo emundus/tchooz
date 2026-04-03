@@ -4,6 +4,7 @@ defined('_JEXEC') or die('Access Deny');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 
 // INCLUDES
@@ -398,7 +399,22 @@ if ($user->guest || in_array($e_user->profile, $app_prof) || $tmpl === 'tchooz_s
 
 		if (!empty($campaign) && $campaign->isPublic() && $app->getIdentity()->guest === 1)
 		{
-			$redirect_url = '/index.php?option=com_emundus&task=applyPubliclyToCampaign&campaign_id=' . $campaign->getId();
+			$addonRepository = new AddonRepository();
+			$addon = $addonRepository->getByName('public_session');
+
+			if (!empty($addon) && $addon->getValue()->isEnabled())
+			{
+				$addonParams = $addon->getValue()->getParams();
+
+				if (!empty($addonParams['confirm_public_application_creation']) && $addonParams['confirm_public_application_creation'] == 1)
+				{
+					$redirect_url = '/index.php?option=com_emundus&view=publicaccess&layout=confirmpublicapplicationcreation&cid=' . $campaign->getId();
+				}
+				else
+				{
+					$redirect_url = '/index.php?option=com_emundus&task=applyPubliclyToCampaign&campaign_id=' . $campaign->getId();
+				}
+			}
 		}
 	}
 

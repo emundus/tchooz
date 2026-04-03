@@ -14,6 +14,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView;
 use Joomla\CMS\Router\Route;
 use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 
 /**
  * View for public access token entry.
@@ -52,6 +53,37 @@ class EmundusViewPublicaccess extends HtmlView
 		if ($layout === 'storetoken')
 		{
 			$this->prepareStoreTokenLayout($app);
+		}
+		else if ($layout === 'confirmpublicapplicationcreation')
+		{
+			if ($app->getIdentity()->guest != 1)
+			{
+				$app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+				$app->redirect('/');
+			}
+
+			$campaignId = $input->getInt('cid', 0);
+
+			if (empty($campaignId))
+			{
+				$app->enqueueMessage(Text::_('COM_EMUNDUS_PUBLIC_ACCESS_MISSING_CAMPAIGN_ID'), 'error');
+				$app->redirect('/');
+			}
+
+			$campaignRepository = new CampaignRepository();
+			$campaign = $campaignRepository->getById($campaignId);
+
+			if (empty($campaign))
+			{
+				$app->enqueueMessage(Text::_('COM_EMUNDUS_CAMPAIGN_NOT_FOUND'), 'error');
+				$app->redirect('/');
+			}
+
+			if (!$campaign->isPublic())
+			{
+				$app->enqueueMessage(Text::_('COM_EMUNDUS_PUBLIC_ACCESS_CAMPAIGN_NOT_PUBLIC'));
+				$app->redirect(Route::_('index.php?option=com_users&view=login&cid=' . $campaign->getId(), false));
+			}
 		}
 		else
 		{
