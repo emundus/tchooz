@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields name="params">
+        <fieldset name="plg-numeric" label="PLG_ELEMENT_NUMERIC_SETTINGS">
+            <field
+                    name="min"
+                    label="PLG_ELEMENT_NUMERIC_MIN"
+                    type="number"
+                    max="99999999"
+            />
+            <field
+                    name="max"
+                    label="PLG_ELEMENT_NUMERIC_MAX"
+                    type="number"
+                    max="99999999"
+            />
+            <field
+                    name="decimal"
+                    label="PLG_ELEMENT_NUMERIC_DECIMAL"
+                    type="number"
+                    default="2"
+                    max="10"
+            />
+            <field
+                    name="decimal_separator"
+                    label="PLG_ELEMENT_NUMERIC_DECIMAL_SEPARATOR"
+                    type="list"
+                    default=","
+            >
+                <option value=",">,</option>
+                <option value=".">.</option>
+            </field>
+            <field
+                    name="step"
+                    label="PLG_ELEMENT_NUMERIC_STEP"
+                    type="number"
+                    default="1"
+            />
+            <field
+                    name="thousand_separator"
+                    label="PLG_ELEMENT_NUMERIC_THOUSAND_SEPARATOR"
+                    type="list"
+                    default=" "
+            >
+                <option value=" ">Espace</option>
+                <option value=",">,</option>
+                <option value=".">.</option>
+                <option value="">Vide</option>
+            </field>
+        </fieldset>
+    </fields>
+</form>

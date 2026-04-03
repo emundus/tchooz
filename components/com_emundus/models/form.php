@@ -1006,7 +1006,7 @@ class EmundusModelForm extends ListModel
 									$links = $this->db->loadObjectList();
 
 									foreach ($links as $link) {
-										if (strpos($link->link, 'formid') !== false) {
+										if (str_contains($link->link, 'formid')) {
 											$formsid_arr[] = explode('=', $link->link)[3];
 										}
 									}
