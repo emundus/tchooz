@@ -287,7 +287,7 @@ class AutomationRepositoryTest extends UnitTestCase
 		$this->assertCount(1, $duplicatedAutomation->getActions(), 'There should be one action in the duplicated automation');
 		$this->assertEquals($automationToDuplicate->getActions()[0]->getParameterValue(ActionUpdateStatus::STATUS_PARAMETER), $duplicatedAutomation->getActions()[0]->getParameterValue(ActionUpdateStatus::STATUS_PARAMETER), 'Action parameters should be the same');
 		$this->assertNotEquals($automationToDuplicate->getActions()[0]->getId(), $duplicatedAutomation->getActions()[0]->getId(), 'Action IDs should be different');
-		
+
 		// Verify that the conditions and conditions groups are duplicated, but have different IDs
 		$this->assertCount(count($automationToDuplicate->getConditionsGroups()), $duplicatedAutomation->getConditionsGroups(), 'There should be the same number of condition groups');
 		$originalGroup = $automationToDuplicate->getConditionsGroups()[0];

@@ -7,6 +7,7 @@ export const useFormBuilderStore = defineStore('formbuilder', {
 		pageElements: [],
 		documentModels: [],
 		rulesKeywords: '',
+		formId: null,
 	}),
 	getters: {
 		getLastSave: (state) => state.lastSave,
@@ -14,6 +15,7 @@ export const useFormBuilderStore = defineStore('formbuilder', {
 		getDocumentModels: (state) => state.documentModels,
 		getRulesKeywords: (state) => state.rulesKeywords,
 		getPageElements: (state) => state.pageElements,
+		getFormId: (state) => state.formId,
 	},
 	actions: {
 		updateLastSave(payload) {
@@ -27,6 +29,12 @@ export const useFormBuilderStore = defineStore('formbuilder', {
 		},
 		updatePageElements(payload) {
 			this.pageElements = payload;
+		},
+		updatePages(payload) {
+			this.pages = payload;
+		},
+		updateFormId(payload) {
+			this.formId = payload;
 		},
 	},
 });

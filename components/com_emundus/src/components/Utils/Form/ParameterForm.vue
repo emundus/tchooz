@@ -56,10 +56,19 @@ export default {
 							if (watcher.field === parameter.param && watcher.events.includes('onChange')) {
 								let values = {};
 								let fieldParameter = this.findParameterByName(field.name);
-								group.parameters.forEach(function (param) {
-									// key is the parameter name, value is the parameter value
-									values[param.param] = param.value;
-								});
+
+								if (rowIndex === null) {
+									group.parameters.forEach(function (param) {
+										// key is the parameter name, value is the parameter value
+										values[param.param] = param.value;
+									});
+								} else {
+									// if the parameter is in a repeatable group, we need to get the values of the parameters in the same row
+									group.rows[rowIndex].parameters.forEach(function (param) {
+										// key is the parameter name, value is the parameter value
+										values[param.param] = param.value;
+									});
+								}
 
 								if (fieldParameter.type === 'select') {
 									fieldParameter.options = await this.provideParameterOptions(field, values);
@@ -261,6 +270,7 @@ export default {
 										:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
 										:parameter-object="row.parameters[index]"
 										:key="row.parameters[index].param + '-' + rowIndex + '-' + index"
+										:asyncAttributes="field.type === 'multiselect' ? field.multiselectOptions.asyncAttributes : null"
 										@valueUpdated="
 											(parameter, oldVal, newVal) =>
 												onParameterValueUpdated(row.parameters[index], group, rowIndex, oldVal, newVal)

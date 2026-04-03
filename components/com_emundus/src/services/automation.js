@@ -46,11 +46,12 @@ export default {
 			};
 		}
 	},
-	async getConditionsFields(type, parameters = {}) {
+	async getConditionsFields(type, parameters = {}, search = '') {
 		try {
 			return await client.get('getConditionsFields', {
 				type: type,
 				parameters: JSON.stringify(parameters),
+				search_query: search,
 			});
 		} catch (e) {
 			return {

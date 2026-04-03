@@ -4272,6 +4272,31 @@ $(document).ready(function() {
                 });
                 break;
 
+            case 'update_owner':
+                fnums = getUserCheckArray();
+
+                swal_popup_class = 'em-w-auto';
+                swal_show_confirm_button = false;
+                swal_show_cancel_button = false;
+                title = 'COM_EMUNDUS_ACCESS_UPDATE_OWNER';
+                html = '<div id="data" class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-min-w-[20vw] tw-min-h-[20vh]"><div id="update-owner-loader" class="em-loader"></div><span id="update-owner-loader-message" class="tw-mt-1">' + Joomla.Text._('COM_EMUNDUS_EXPORT_ACCESS_LOADER') + '</span></div>';
+
+                // Replace by fetch
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({fnums: fnums}),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    cache: "no-cache"
+                }).then(response => response.text()).then(data => {
+                    document.getElementById("update-owner-loader").remove();
+                    document.getElementById("update-owner-loader-message").remove();
+                    document.getElementById("data").classList.remove('tw-justify-center');
+                    $('#data').append(data);
+                });
+                break;
+
             case 'crm':
                 multipleSteps = true;
                 break;

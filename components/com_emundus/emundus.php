@@ -1332,6 +1332,15 @@ Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SERVER_TYPE_HELPTEXT');
 Text::script('COM_EMUNDUS_ONBOARD_ITEM_SELECTED');
 Text::script('COM_EMUNDUS_ONBOARD_ITEMS_SELECTED');
 
+Text::script('COM_EMUNDUS_ACCESS_UPDATE_OWNER');
+Text::script('COM_EMUNDUS_UPDATE_OWNER_NEW_OWNER_LABEL');
+Text::script('COM_EMUNDUS_UPDATE_OWNER_RUN');
+Text::script('COM_EMUNDUS_UPDATE_OWNER_NEW_OWNER_HELPTEXT');
+Text::script('COM_EMUNDUS_UPDATE_OWNER_SUCCESS');
+Text::script('COM_EMUNDUS_UPDATE_OWNER_ERROR');
+Text::script('COM_EMUNDUS_UPDATE_OWNER_FILES_WILL_BE_TRANSFERED');
+Text::script('COM_EMUNDUS_UPDATE_OWNER_FILES_WILL_BE_TRANSFERED_SUBTEXT');
+
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
 foreach ($actionlog_translation_tags as $tag => $translation)

@@ -54,6 +54,10 @@ enum ElementPluginEnum: string
 	case APPLICATION_CHOICES = 'applicationchoices';
 	case GEOLOCATION = 'emundus_geolocalisation';
 
+	case EMUNDUS_CALCULATION = 'emundus_calculation';
+
+	case NUMERIC = 'numeric';
+
 	// DEPRECATED
 	case REFERENT = 'emundusreferent';
 
@@ -107,6 +111,8 @@ enum ElementPluginEnum: string
 			self::ACTION => 'COM_EMUNDUS_FABRIK_ELEMENT_ACTION',
 			self::APPLICATION_CHOICES => 'COM_EMUNDUS_ONBOARD_TYPE_APPLICATIONCHOICES',
 			self::GEOLOCATION => 'COM_EMUNDUS_ONBOARD_TYPE_GEOLOCATION',
+			self::EMUNDUS_CALCULATION => 'COM_EMUNDUS_ONBOARD_TYPE_CALCULATION',
+			self::NUMERIC => 'COM_EMUNDUS_ONBOARD_TYPE_NUMERIC',
 
 			// DEPRECATED
 			self::REFERENT => 'COM_EMUNDUS_ONBOARD_TYPE_REFERENT',

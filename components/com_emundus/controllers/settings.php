@@ -632,9 +632,9 @@ class EmundusControllersettings extends EmundusController
 		$yaml['accent']['color-2']       = $preset['secondary'];
 		$yaml['link']['regular']         = $preset['secondary'];
 		$yaml['link']['hover']           = $preset['secondary'];
-		
+
 		$hideTchoozy = $preset['hideTchoozy'] == 1 ? 'none' : 'default';
-		
+
 		foreach($yaml['tchoozy'] as $key => $value)
 		{
 			$newValue = $hideTchoozy == 'none' ? 'none' : ($tchoozyConfig['form']['fields'][$key]['default'] ?? 'block');
@@ -3571,6 +3571,38 @@ class EmundusControllersettings extends EmundusController
 
 		echo json_encode((object) $response);
 		exit;
+	}
+
+	public function getavailableapplicants(): void
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			$limit = $this->input->getInt('limit', 30);
+			$searchQuery = $this->input->getString('search_query', '');
+
+			$emundusUserRepository = new EmundusUserRepository();
+			$applicants = $emundusUserRepository->getAllApplicants($limit, $searchQuery);
+
+			$data = [];
+			foreach ($applicants as $applicant)
+			{
+				$data[] = [
+					'value' => $applicant->getUser()->id,
+					'name' => strtoupper($applicant->getLastname()) . ' ' . $applicant->getFirstname() . ' (' . $applicant->getUser()->email . ')'
+				];
+			}
+
+			$response = [
+				'status' => true,
+				'message' => Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_AVAILABLE_APPLICANTS_FETCHED'),
+				'code' => 200,
+				'data' => $data
+			];
+		}
+
+		$this->sendJsonResponse($response);
 	}
 }
 
