@@ -24,16 +24,43 @@ class BirthdayTransformer implements FabrikTransformerInterface
 	{
 		$transformedParts = [];
 
-		$parts = explode(',', $value);
-		foreach ($parts as $i => $v)
+		if (is_string($value))
 		{
-			if (!empty($v) && $this->isValidDate($v))
+			$parts = explode(',', $value);
+			foreach ($parts as $i => $v)
 			{
-				$transformedParts[$i] = date($this->detailsDateFormat, strtotime($v));
+				if (!empty($v) && $this->isValidDate($v))
+				{
+					$transformedParts[$i] = date($this->detailsDateFormat, strtotime($v));
+				}
+				else
+				{
+					$transformedParts[$i] = '';
+				}
+			}
+		}
+		else if (is_array($value))
+		{
+			// value 1 is day, value 2 is month, value 3 is year
+			$day = $value[0] ?? '';
+			$month = $value[1] ?? '';
+			$year = $value[2] ?? '';
+
+			if (!empty($day) && !empty($month) && !empty($year))
+			{
+				$dateString = sprintf('%04d-%02d-%02d', $year, $month, $day);
+				if ($this->isValidDate($dateString))
+				{
+					$transformedParts[0] = date($this->detailsDateFormat, strtotime($dateString));
+				}
+				else
+				{
+					$transformedParts[0] = '';
+				}
 			}
 			else
 			{
-				$transformedParts[$i] = '';
+				$transformedParts[0] = '';
 			}
 		}
 
@@ -50,5 +77,12 @@ class BirthdayTransformer implements FabrikTransformerInterface
 		}
 
 		return $valid;
+	}
+
+	public function setDetailsDateFormat(string $detailsDateFormat): self
+	{
+		$this->detailsDateFormat = $detailsDateFormat;
+
+		return $this;
 	}
 }

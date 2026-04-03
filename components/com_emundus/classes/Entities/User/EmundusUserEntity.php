@@ -14,6 +14,9 @@ use Joomla\CMS\User\User;
 
 class EmundusUserEntity
 {
+	/**
+	 * @var int Emundus User id, not to be confused with Joomla User id which is stored in $user property
+	 */
 	private int $id;
 
 	private User $user;
@@ -51,6 +54,10 @@ class EmundusUserEntity
 		$this->birthDate       = $birthDate;
 	}
 
+	/**
+	 * emundus_user id, be careful not to confuse with Joomla user id which is stored in $user property
+	 * @return int
+	 */
 	public function getId(): int
 	{
 		return $this->id;

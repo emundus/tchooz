@@ -72,6 +72,12 @@ class DocuSignJwtAuthenticator
 			throw new \RuntimeException("Unable to authenticate with DocuSign via JWT.");
 		}
 
+		$userInfos = $this->client->getUserInfo($token);
+		if (!empty($userInfos) && !empty($userInfos[0]['accounts']) && !empty($userInfos[0]['accounts'][0]->getBaseUri()))
+		{
+			$this->baseUrl = $userInfos[0]['accounts'][0]->getBaseUri() . '/restapi';
+		}
+
 		$config = new Configuration();
 		$config->setHost($this->baseUrl);
 		$config->addDefaultHeader('Authorization', 'Bearer ' . $token);

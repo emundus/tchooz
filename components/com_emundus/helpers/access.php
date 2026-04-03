@@ -182,7 +182,7 @@ class EmundusHelperAccess
 	/**
 	 * Get action access right.
 	 *
-	 * @param   int     $action_id  Id or name of the action
+	 * @param   int|string     $action_id  Id or name of the action
 	 * @param   string  $crud       create/read/update/delete.
 	 *
 	 * @param   null    $user_id    The user id.

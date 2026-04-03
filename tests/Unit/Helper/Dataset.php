@@ -884,6 +884,18 @@ class Dataset
 		return $row_id;
 	}
 
+	public function getUnitTestData(string $fnum): array
+	{
+		$query = $this->db->createQuery();
+
+		$query->select('*')
+			->from('jos_emundus_unit_test_form')
+			->where('fnum = ' . $this->db->quote($fnum));
+
+		$this->db->setQuery($query);
+		return $this->db->loadAssoc();
+	}
+
 	public function deleteSampleLocation($id)
 	{
 		$query = $this->db->getQuery(true);
@@ -1105,6 +1117,12 @@ class Dataset
 		$this->samples['automation'][] = $automation->getId();
 
 		return $automation;
+	}
+
+	public function createSampleData(string $fnum, int $userId): int
+	{
+		$this->getUnitTestFabrikForm();
+		return $this->insertUnitTestFormData($userId, $fnum);
 	}
 
 	public function addToSamples(string $type, $id): void
