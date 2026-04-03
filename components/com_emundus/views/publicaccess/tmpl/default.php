@@ -61,24 +61,6 @@ $baseUrl = Uri::base();
 			<form method="post" action="<?php echo Route::_('index.php?option=com_emundus&task=authenticatepublicaccess'); ?>" id="publicAccessForm">
 				<?php echo \Joomla\CMS\HTML\HTMLHelper::_('form.token'); ?>
 
-				<!-- fnum: visible if not pre-filled, hidden if already set -->
-				<?php if (!empty($this->fnum)) : ?>
-					<input type="hidden" name="fnum" value="<?php echo $this->escape($this->fnum); ?>"/>
-				<?php else : ?>
-					<div class="tw-mb-4">
-						<label for="pa_fnum" class="tw-block tw-text-sm tw-font-medium tw-text-neutral-700 tw-mb-1">
-							<?php echo Text::_('COM_EMUNDUS_PUBLIC_ACCESS_FNUM_LABEL'); ?>
-						</label>
-						<input
-							type="text"
-							id="pa_fnum"
-							name="fnum"
-							required
-							placeholder="<?php echo Text::_('COM_EMUNDUS_PUBLIC_ACCESS_FNUM_PLACEHOLDER'); ?>"
-						/>
-					</div>
-				<?php endif; ?>
-
 				<!-- Access token -->
 				<div class="tw-mb-6">
 					<label for="pa_access_token" class="tw-block tw-text-sm tw-font-medium tw-text-neutral-700 tw-mb-1">

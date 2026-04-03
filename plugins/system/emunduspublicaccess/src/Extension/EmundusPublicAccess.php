@@ -87,6 +87,25 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	public const RENEW_TOKEN_SESSION_KEY = 'emundus_public_renew_token';
 
 	/**
+	 * Separator used to build the composite access key: <token><separator><fnum>
+	 * Chosen because it cannot appear in hex tokens nor numeric fnums.
+	 */
+	public const COMPOSITE_KEY_SEPARATOR = '::';
+
+	/**
+	 * Build a composite access key from a token and a fnum.
+	 *
+	 * @param   string  $token  The plain-text access token
+	 * @param   string  $fnum   The file number
+	 *
+	 * @return  string  The composite key in the format <token>::<fnum>
+	 */
+	public static function buildCompositeKey(string $token, string $fnum): string
+	{
+		return $token . self::COMPOSITE_KEY_SEPARATOR . $fnum;
+	}
+
+	/**
 	 * Default maximum duration (in minutes) for a public access session.
 	 * After this delay, the session is destroyed regardless of token validity.
 	 * Configurable via plugin params (field: session_ttl).
@@ -142,13 +161,28 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 					return;
 				}
 
-				$tokenParamName = $this->params->get('token_param_name', 'access_token');
-				$accessToken    = $input->post->getString($tokenParamName, '');
-				$fnum           = $input->post->getString('fnum', '');
+				// Parse composite key: <token>::<fnum>
+				$compositeKey = trim($input->post->getString('access_token', ''));
+				$accessToken  = '';
+				$fnum         = '';
+
+				if (!empty($compositeKey) && str_contains($compositeKey, self::COMPOSITE_KEY_SEPARATOR))
+				{
+					$parts = explode(self::COMPOSITE_KEY_SEPARATOR, $compositeKey, 2);
+					if (count($parts) === 2)
+					{
+						$accessToken = trim($parts[0]);
+						$fnum        = trim($parts[1]);
+					}
+				}
 
 				if (!empty($accessToken) && !empty($fnum))
 				{
 					$this->authenticatePublicAccess($accessToken, $fnum);
+				}
+				else
+				{
+					$app->redirect(Route::_('index.php?option=com_emundus&view=publicaccess&error=1&error_msg=' . urlencode(Text::_('COM_EMUNDUS_PUBLIC_ACCESS_INVALID_TOKEN')), false));
 				}
 			}
 		}

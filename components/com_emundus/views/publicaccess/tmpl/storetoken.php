@@ -11,11 +11,10 @@ use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die('Restricted access');
 
-$token = $this->accessToken;
-$fnum  = $this->storetokenFnum;
+$token = $this->compositeKey;
 ?>
 
-<div class="tw-flex tw-items-center tw-justify-center tw-min-h-[60vh]">
+<div class="tw-flex tw-items-center tw-justify-center tw-min-h-[60vh] tw-mb-4">
 	<div class="emundus-form !tw-p-6 tw-rounded-coordinator-cards tw-shadow-standard tw-border tw-border-neutral-300 !tw-bg-white applicant-form">
 		<!-- Header -->
 		<div class="tw-text-center tw-mb-6">
@@ -36,38 +35,14 @@ $fnum  = $this->storetokenFnum;
 			</p>
 		</div>
 
-		<!-- File number -->
-		<div class="tw-mb-4">
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-neutral-700 tw-mb-1">
-				<?php echo Text::_('COM_EMUNDUS_STORETOKEN_FNUM_LABEL'); ?>
-			</label>
-			<div class="tw-flex tw-items-center tw-gap-2">
-				<input
-					type="text"
-					id="storetoken-fnum"
-					value="<?php echo $this->escape($fnum); ?>"
-					readonly
-					class="tw-flex-1 tw-px-4 tw-py-2 tw-border tw-border-neutral-300 tw-rounded tw-bg-neutral-50 tw-font-mono tw-text-sm tw-select-all"
-				/>
-				<button
-					type="button"
-					id="copy-fnum-btn"
-					class="tw-px-3 tw-py-2 tw-border tw-border-neutral-300 tw-rounded tw-bg-white hover:tw-bg-neutral-100 tw-transition-colors tw-flex tw-items-center tw-gap-1"
-					title="<?php echo Text::_('COM_EMUNDUS_STORETOKEN_COPY'); ?>"
-				>
-					<span class="material-symbols-outlined tw-text-lg" id="copy-fnum-icon">content_copy</span>
-				</button>
-			</div>
-		</div>
-
-		<!-- Access key -->
+		<!-- Composite key -->
 		<div class="tw-mb-6">
 			<label class="tw-block tw-text-sm tw-font-medium tw-text-neutral-700 tw-mb-1">
 				<?php echo Text::_('COM_EMUNDUS_STORETOKEN_TOKEN_LABEL'); ?>
 			</label>
 			<div class="tw-flex tw-items-center tw-gap-2">
 				<input
-					type="text"
+					type="password"
 					id="storetoken-token"
 					value="<?php echo $this->escape($token); ?>"
 					readonly
@@ -81,25 +56,6 @@ $fnum  = $this->storetokenFnum;
 				>
 					<span class="material-symbols-outlined tw-text-lg" id="copy-token-icon">content_copy</span>
 				</button>
-			</div>
-		</div>
-
-		<!-- Checklist -->
-		<div class="tw-mb-6 tw-p-3 tw-bg-neutral-50 tw-border tw-border-neutral-200 tw-rounded-coordinator">
-			<p class="tw-text-sm tw-font-medium tw-text-neutral-700 tw-mb-2 tw-m-0">
-				<?php echo Text::_('COM_EMUNDUS_STORETOKEN_CHECKLIST_TITLE'); ?>
-			</p>
-			<div class="tw-flex tw-items-center tw-gap-2 tw-mb-1 tw-mt-2">
-				<span class="material-symbols-outlined tw-text-lg" id="check-fnum">radio_button_unchecked</span>
-				<span class="tw-text-sm tw-text-neutral-600" id="check-fnum-label">
-					<?php echo Text::_('COM_EMUNDUS_STORETOKEN_CHECKLIST_FNUM'); ?>
-				</span>
-			</div>
-			<div class="tw-flex tw-items-center tw-gap-2">
-				<span class="material-symbols-outlined tw-text-lg" id="check-token">radio_button_unchecked</span>
-				<span class="tw-text-sm tw-text-neutral-600" id="check-token-label">
-					<?php echo Text::_('COM_EMUNDUS_STORETOKEN_CHECKLIST_TOKEN'); ?>
-				</span>
 			</div>
 		</div>
 

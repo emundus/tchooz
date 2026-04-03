@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-	const copiedItems = { fnum: false, token: false };
+	const copiedItems = { token: false };
 
 	window.copyToClipboard = function(inputId, btnId, itemKey) {
 		const input = document.getElementById(inputId);
@@ -28,30 +28,11 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 
 	function markCopied(btnId, itemKey) {
-		// Update button icon
-		const iconId = btnId.replace('btn', 'icon');
-		const icon = document.getElementById(iconId);
-		if (icon) {
-			icon.textContent = 'check';
-			icon.classList.add('tw-text-green-600');
-		}
-
-		// Update checklist
-		const checkIcon = document.getElementById('check-' + itemKey);
-		const checkLabel = document.getElementById('check-' + itemKey + '-label');
-		if (checkIcon) {
-			checkIcon.textContent = 'check_circle';
-			checkIcon.classList.add('tw-text-green-600');
-		}
-		if (checkLabel) {
-			checkLabel.classList.add('tw-text-green-700', 'tw-font-medium');
-		}
-
 		// Track copied items
 		copiedItems[itemKey] = true;
 
 		// Enable continue button if both items are copied
-		if (copiedItems.fnum && copiedItems.token) {
+		if (copiedItems.token) {
 			const continueBtn = document.getElementById('continue-btn');
 			if (continueBtn) {
 				continueBtn.disabled = false;
@@ -72,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	// add event listener on #continue-btn
 	document.getElementById('continue-btn').addEventListener('click', function() {
-		if (copiedItems.fnum && copiedItems.token)
+		if (copiedItems.token)
 		{
 			window.location.href = '/index.php?option=com_emundus&task=openfile&fnum=' + Joomla.getOptions('com_emundus.fnum');
 		}
@@ -92,10 +73,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	document.getElementById('copy-token-btn').addEventListener('click', function() {
 		copyToClipboard('storetoken-token', 'copy-token-btn', 'token');
-	});
-
-	document.getElementById('copy-fnum-btn').addEventListener('click', function () {
-		copyToClipboard('storetoken-fnum', 'copy-fnum-btn', 'fnum');
 	});
 
 	document.getElementById('abort-btn').addEventListener('click', function()

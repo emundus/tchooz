@@ -35,6 +35,9 @@ class EmundusViewPublicaccess extends HtmlView
 	/** @var string Fnum pour le layout storetoken */
 	protected string $storetokenFnum = '';
 
+	/** @var string Clé composite <token>::<fnum> pour le layout storetoken */
+	protected string $compositeKey = '';
+
 	/**
 	 * @var bool Indique si l'utilisateur est en train de renouveler son token (true) ou s'il vient de le créer pour la première fois (false). Utilisé pour adapter les messages affichés dans le layout storetoken.
 	 */
@@ -133,6 +136,7 @@ class EmundusViewPublicaccess extends HtmlView
 			$app->redirect(Route::_('index.php?option=com_emundus&view=publicaccess', false));
 		}
 
+		$this->compositeKey = EmundusPublicAccess::buildCompositeKey($this->accessToken, $this->storetokenFnum);
 		$document = $app->getDocument();
 		$document->addScriptOptions('com_emundus.fnum', $this->storetokenFnum);
 		$wa = $document->getWebAssetManager();
