@@ -15,6 +15,27 @@ window.addEventListener('DOMContentLoaded', (event) => {
        }
     });
 
+    document.querySelectorAll('#emundus-application-file-actions-container .file-action').forEach((action) => {
+        const actionId = action.id;
+
+        // make sure action exists in Joomla.getOptions('mod_emundusflow.actions');
+        const registeredActions = Joomla.getOptions('mod_emundusflow.actions');
+        let foundAction = registeredActions.find((registeredAction) => {
+            return registeredAction.id === actionId;
+        });
+
+        if (foundAction)
+        {
+            action.addEventListener('click', (e) => {
+                console.log('click', actionId);
+            });
+        }
+        else
+        {
+            action.remove();
+        }
+    });
+
     // if actions container is open and user clicks outside of it, close it
     document.addEventListener('click', (e) => {
         let actionsContainer = document.getElementById('emundus-application-file-actions-container');
@@ -24,13 +45,5 @@ window.addEventListener('DOMContentLoaded', (event) => {
         {
             actionsContainer.classList.add('tw-hidden');
         }
-    });
-
-    document.querySelectorAll('#emundus-application-file-actions-container .file-action').forEach((action) => {
-        action.addEventListener('click', (e) => {
-            const actionId = action.id;
-
-            console.log('click', actionId);
-        })
     });
 });

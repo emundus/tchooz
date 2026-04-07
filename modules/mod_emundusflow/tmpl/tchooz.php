@@ -200,12 +200,15 @@ $now      = $dateTime->format('Y-m-d H:i:s');
             {
                 if (!empty($wa) && assert($wa instanceof \Joomla\CMS\WebAsset\WebAssetManager))
                 {
+                    $document->addScriptOptions('mod_emundusflow.actions', array_map(function ($action) {
+                        return $action->__serialize();
+                    }, $actions));
                     $wa->registerAndUseScript('mod_emundusflow.actions', 'modules/mod_emundusflow/script/actions.js');
                 }
 
                 ?>
                 <div class="tw-relative">
-                    <span class="material-symbols-outlined tw-cursor-pointer" id="emundus-application-file-actions">
+                    <span class="material-symbols-outlined tw-cursor-pointer !tw-flex tw-justify-self-center" id="emundus-application-file-actions">
                         more_vert
                     </span>
                     <div id="emundus-application-file-actions-container" class="tw-absolute tw-bg-white tw-shadow-lg tw-rounded tw-p-2 tw-hidden tw-transition-all tw-right-0">
