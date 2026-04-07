@@ -548,7 +548,7 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 
 		if(!empty($search)) {
 			$search = $this->db->quote('%' . $this->db->escape($search, true) . '%');
-			$query->where('(' . $this->alias.'.firstname LIKE ' . $search . ' OR ' . $this->alias.'.lastname LIKE ' . $search . ' OR u.email LIKE ' . $search . ')');
+			$query->andWhere('(' . $this->alias.'.firstname LIKE ' . $search . ' OR ' . $this->alias.'.lastname LIKE ' . $search . ' OR u.email LIKE ' . $search . ')');
 		}
 
 		$this->db->setQuery($query, 0, $limit);
