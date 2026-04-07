@@ -13,6 +13,8 @@ use EmundusModelLogs;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
+use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileAction;
+use Tchooz\Entities\ApplicationFile\Actions\RenameApplication;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
@@ -137,5 +139,20 @@ class ApplicationFileService
 		{
 			throw new \RuntimeException($exceptionMessage);
 		}
+	}
+
+	/**
+	 * @param   ApplicationFileEntity  $applicationFile
+	 *
+	 * @return array<ApplicationFileAction>
+	 */
+	public function getApplicationFileActions(ApplicationFileEntity $applicationFile): array
+	{
+		$actions = [];
+
+		// todo: get component parameters, check availability
+		$actions[] = new RenameApplication();
+
+		return $actions;
 	}
 }

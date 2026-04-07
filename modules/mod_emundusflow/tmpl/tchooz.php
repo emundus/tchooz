@@ -1,6 +1,9 @@
 <?php // no direct access
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\Plugin\Emundus\Mergeapplications\Repository\ApplicationRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Services\ApplicationFile\ApplicationFileService;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -175,31 +178,70 @@ $now      = $dateTime->format('Y-m-d H:i:s');
         <div class="tw-flex tw-items-center tw-justify-end tw-gap-2 mod_emundus_flow___buttons">
 			<?php if ($show_back_button == 1) : ?>
                 <a href="<?php echo $home_link ?>"
-                   title="<?php echo strip_tags(JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT')) ?>">
-                    <button class="tw-btn-primary"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
+                   title="<?php echo strip_tags(Text::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT')) ?>">
+                    <button class="tw-btn-primary"><?php echo Text::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
                 </a>
 			<?php endif; ?>
             <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>"
-               target="blank" title="<?php echo JText::_('PRINT') ?>">
+               target="blank" title="<?php echo Text::_('PRINT') ?>">
                 <button class="tw-btn-secondary mod_emundus_flow___print">
                     <span class="material-symbols-outlined" style="font-size: 19px">print</span>
-                    <p><?php echo JText::_('PRINT') ?></p>
+                    <p style="font-size: 19px"><?php echo Text::_('PRINT') ?></p>
                 </button>
             </a>
+            <?php
+
+            $service = new ApplicationFileService();
+            $applicationRepository = new ApplicationFileRepository();
+            $application = $applicationRepository->getByFnum($current_application->fnum);
+            $actions = $service->getApplicationFileActions($application);
+
+            if (!empty($actions))
+            {
+                if (!empty($wa) && assert($wa instanceof \Joomla\CMS\WebAsset\WebAssetManager))
+                {
+                    $wa->registerAndUseScript('mod_emundusflow.actions', 'modules/mod_emundusflow/script/actions.js');
+                }
+
+                ?>
+                <div class="tw-relative">
+                    <span class="material-symbols-outlined tw-cursor-pointer" id="emundus-application-file-actions">
+                        more_vert
+                    </span>
+                    <div id="emundus-application-file-actions-container" class="tw-absolute tw-bg-white tw-shadow-lg tw-rounded tw-p-2 tw-hidden tw-transition-all tw-right-0">
+                        <?php
+
+                        foreach ($actions as $action)
+                        {
+                            ?>
+                            <div id="<?= $action->getActionType()->value ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer">
+                                <span class="material-symbols-outlined">
+                                    <?= $action->getActionType()->getIcon() ?>
+                                </span>
+                                <p><?= $action->getActionType()->getLabel() ?></p>
+                            </div>
+                            <?php
+                        }
+                        ?>
+                    </div>
+                </div>
+                <?php
+            }
+            ?>
         </div>
     </div>
 	<?php if ($show_deadline == 1 || $show_status == 1) : ?>
         <div class="tw-flex tw-flex-col tw-mt-2 mod_emundus_flow___infos">
 			<?php if ($show_deadline == 1) : ?>
                 <div class="tw-flex tw-items-center">
-                    <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
+                    <p class="em-text-neutral-600 em-font-size-16"> <?php echo Text::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
                     <span class="tw-ml-1.5" style="white-space: nowrap"><?php echo EmundusHelperDate::displayDate($deadline,'DATE_FORMAT_EMUNDUS') ?></span>
                 </div>
 			<?php endif; ?>
 
 			<?php if ($show_programme == 1) : ?>
                 <div class="tw-flex tw-items-center em-flex-wrap">
-                    <p class="em-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
+                    <p class="em-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
                     <p class="em-programme-tag" style="color: <?php echo $color ?>;margin: unset;padding: 0">
 						<?php echo $current_application->prog_label; ?>
                     </p>
@@ -208,7 +250,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 
 			<?php if ($show_status == 1) : ?>
                 <div class="tw-flex tw-items-center">
-                    <p class="em-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_STATUS'); ?> : </p>
+                    <p class="em-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_STATUS'); ?> : </p>
                     <div class="mod_emundus_flow___status_<?= $current_application->class; ?> tw-flex">
                         <span class="label label-<?= $current_application->class; ?>"><?= $current_application->value ?></span>
                     </div>
@@ -217,7 +259,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 
 	        <?php if($fnumInfos['applicant_id'] !== Factory::getApplication()->getIdentity()->id) : ?>
                 <div class="tw-flex tw-items-center">
-                    <p class="tw-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_APPLICANT'); ?></p>
+                    <p class="tw-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_APPLICANT'); ?></p>
                     <p><?= $fnumInfos['name']; ?></p>
                 </div>
 	        <?php endif; ?>

@@ -29,6 +29,8 @@ class ApplicationFileEntity
 
 	private array $data;
 
+	private ?string $name = null;
+
 	private ?\DateTime $updated_at;
 
 	private ?User $updated_by;
@@ -50,6 +52,7 @@ class ApplicationFileEntity
 		\DateTime             $date_submitted = null,
 		int                   $formProgress = 0,
 		int                   $attachmentProgress = 0,
+		?string               $name = null,
 		\DateTime             $updated_at = null,
 		User                  $updated_by = null,
 	)
@@ -65,6 +68,7 @@ class ApplicationFileEntity
 		$this->date_submitted     = $date_submitted;
 		$this->formProgress       = $formProgress;
 		$this->attachmentProgress = $attachmentProgress;
+		$this->name               = $name;
 		$this->updated_at         = $updated_at;
 		$this->updated_by         = $updated_by;
 	}
@@ -192,6 +196,18 @@ class ApplicationFileEntity
 	public function setAttachmentProgress(int $attachmentProgress): void
 	{
 		$this->attachmentProgress = $attachmentProgress;
+	}
+
+	public function getName(): ?string
+	{
+		return $this->name;
+	}
+
+	public function setName(?string $name): self
+	{
+		$this->name = $name;
+
+		return $this;
 	}
 
 	public function getUpdatedAt(): \DateTime
