@@ -2,6 +2,8 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Session\Session;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 
 defined('_JEXEC') or die('Restricted access');
@@ -185,17 +187,22 @@ assert($applicationFile instanceof ApplicationFileEntity);
 			?>
         </div>
         <div class="tw-flex tw-items-center tw-justify-end tw-gap-2 mod_emundus_flow___buttons">
-			<?php if ($show_back_button == 1) : ?>
+			<?php if ($show_back_button == 1) :
+                if (EmundusPublicAccess::isPublicAccessSession())
+                {
+                    $home_link = '/index.php?option=com_users&task=user.logout&' . Session::getFormToken() . '=1';
+                }
+            ?>
                 <a href="<?php echo $home_link ?>"
-                   title="<?php echo strip_tags(JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT')) ?>">
-                    <button class="tw-btn-primary"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
+                   title="<?php echo strip_tags(Text::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT')) ?>">
+                    <button class="tw-btn-primary"><?php echo Text::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
                 </a>
 			<?php endif; ?>
             <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $applicationFile->getFnum() ?>"
-               target="blank" title="<?php echo JText::_('PRINT') ?>">
+               target="blank" title="<?php echo Text::_('PRINT') ?>">
                 <button class="tw-btn-secondary mod_emundus_flow___print">
                     <span class="material-symbols-outlined" style="font-size: 19px">print</span>
-                    <p><?php echo JText::_('PRINT') ?></p>
+                    <p><?php echo Text::_('PRINT') ?></p>
                 </button>
             </a>
         </div>
@@ -204,14 +211,14 @@ assert($applicationFile instanceof ApplicationFileEntity);
         <div class="tw-flex tw-flex-col tw-mt-2 mod_emundus_flow___infos">
 			<?php if ($show_deadline == 1) : ?>
                 <div class="tw-flex tw-items-center">
-                    <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
+                    <p class="em-text-neutral-600 em-font-size-16"> <?php echo Text::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
                     <span class="tw-ml-1.5" style="white-space: nowrap"><?php echo EmundusHelperDate::displayDate($deadline,'DATE_FORMAT_EMUNDUS') ?></span>
                 </div>
 			<?php endif; ?>
 
 			<?php if ($params->get('show_programme', 1) == 1) : ?>
                 <div class="tw-flex tw-items-center em-flex-wrap">
-                    <p class="em-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
+                    <p class="em-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
                     <p class="em-programme-tag" style="color: <?php echo $color ?>;margin: unset;padding: 0">
 						<?php echo $applicationFile->getCampaign()->getProgram()->getLabel(); ?>
                     </p>
@@ -220,7 +227,7 @@ assert($applicationFile instanceof ApplicationFileEntity);
 
 			<?php if ($show_status == 1) : ?>
                 <div class="tw-flex tw-items-center">
-                    <p class="em-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_STATUS'); ?> : </p>
+                    <p class="em-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_STATUS'); ?> : </p>
                     <div class="mod_emundus_flow___status_<?= $applicationFile->getStatus()->getColor(); ?> tw-flex">
                         <span class="label label-<?=  $applicationFile->getStatus()->getColor() ?>"><?= $applicationFile->getStatus()->getLabel() ?></span>
                     </div>
@@ -229,7 +236,7 @@ assert($applicationFile instanceof ApplicationFileEntity);
 
 	        <?php if($applicationFile->getUser()->id !== Factory::getApplication()->getIdentity()->id) : ?>
                 <div class="tw-flex tw-items-center">
-                    <p class="tw-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_APPLICANT'); ?></p>
+                    <p class="tw-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_APPLICANT'); ?></p>
                     <p><?= $applicationFile->getUser()->name; ?></p>
                 </div>
 	        <?php endif; ?>
