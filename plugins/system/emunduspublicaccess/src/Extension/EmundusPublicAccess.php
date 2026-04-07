@@ -195,14 +195,16 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			if (!$session->get(self::SESSION_PUBLIC_STORED_ACCESS_KEY, true))
 			{
 				$uri = Uri::getInstance();
+				$storeTokenLink = 'index.php?option=com_emundus&view=publicaccess&layout=storetoken';
 
 				if ($uri->getVar('task') === 'markPublicAccessKeyAsStored' || $uri->getVar('task') === 'abortPublicApplicationCreation')
 				{
 					// do nothing
 				}
-				else if ($uri->getVar('layout') !== 'storetoken')
+				else if ($uri->getVar('layout') !== 'storetoken' && $app->getMenu()->getActive()->link !== $storeTokenLink)
 				{
-					$redirectUrl = Route::_('/index.php?option=com_emundus&view=publicaccess&layout=storetoken', false);
+					$items = $app->getMenu()->getItems(['link'], [$storeTokenLink]);
+					$redirectUrl = !empty($items) ? $items[0]->route : Route::_($storeTokenLink, false);
 					$app->redirect($redirectUrl);
 				}
 			}

@@ -2489,7 +2489,11 @@ class EmundusController extends JControllerLegacy
 						$session->set(EmundusPublicAccess::SESSION_PUBLIC_FNUM_KEY, $applicationEntity->getFnum());
 						$session->set(EmundusPublicAccess::SESSION_PUBLIC_TOKEN_KEY, $token);
 						$session->set(EmundusPublicAccess::SESSION_PUBLIC_STORED_ACCESS_KEY, false);
-						$this->app->redirect(Route::_('/index.php?option=com_emundus&view=publicaccess&layout=storetoken'));
+
+						$storeTokenLink = 'index.php?option=com_emundus&view=publicaccess&layout=storetoken';
+						$items = $this->app->getMenu()->getItems(['link'], [$storeTokenLink]);
+						$redirectUrl = !empty($items) ? $items[0]->route : Route::_($storeTokenLink, false);
+						$this->app->redirect($redirectUrl);
 					}
 
 					$response->code = 200;

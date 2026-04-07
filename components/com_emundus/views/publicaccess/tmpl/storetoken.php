@@ -76,7 +76,7 @@ $token = $this->compositeKey;
             <a
                 type="button"
                 id="abort-btn"
-                class="tw-text-red-500 tw-w-full tw-flex tw-flex-center tw-justify-center tw-gap-2 tw-cursor-pointer"
+                class="tw-text-red-500 tw-w-full tw-flex tw-flex-center tw-justify-center tw-items-center tw-gap-2 tw-cursor-pointer"
             >
                 <span class="material-symbols-outlined tw-text-red-500">
                   logout
