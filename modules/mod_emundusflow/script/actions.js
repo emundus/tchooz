@@ -37,6 +37,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         inputValue: '',
                         showCancelButton: true,
                         reverseButtons: true,
+                        confirmButtonText: Joomla.Text._('CONFIRM'),
+                        cancelButtonText: Joomla.Text._('CANCEL'),
                         customClass: {
                             title: 'em-swal-title',
                             cancelButton: 'em-swal-cancel-button',

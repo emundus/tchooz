@@ -204,6 +204,8 @@ $now      = $dateTime->format('Y-m-d H:i:s');
                         return $action->__serialize();
                     }, $actions));
                     $wa->registerAndUseScript('mod_emundusflow.actions', 'modules/mod_emundusflow/script/actions.js');
+                    Text::script('CANCEL');
+                    Text::script('CONFIRM');
                 }
 
                 ?>
@@ -211,17 +213,17 @@ $now      = $dateTime->format('Y-m-d H:i:s');
                     <span class="material-symbols-outlined tw-cursor-pointer !tw-flex tw-justify-self-center" id="emundus-application-file-actions">
                         more_vert
                     </span>
-                    <div id="emundus-application-file-actions-container" class="tw-absolute tw-bg-white tw-shadow-lg tw-rounded tw-p-2 tw-hidden tw-transition-all tw-right-0 tw-flex tw-flex-col tw-gap-4">
+                    <div id="emundus-application-file-actions-container" class="tw-absolute tw-bg-white tw-shadow-lg tw-rounded tw-p-2 tw-hidden tw-transition-all tw-right-0 tw-flex tw-flex-col tw-gap-2">
                         <?php
 
                         foreach ($actions as $action)
                         {
                             ?>
-                            <div id="<?= $action->getActionType()->value ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2">
+                            <div id="<?= $action->getActionType()->value ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded">
                                 <span class="material-symbols-outlined">
                                     <?= $action->getActionType()->getIcon() ?>
                                 </span>
-                                <p><?= $action->getActionType()->getLabel() ?></p>
+                                <p class="tw-whitespace-nowrap"><?= $action->getActionType()->getLabel() ?></p>
                             </div>
                             <?php
                         }
