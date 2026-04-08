@@ -251,8 +251,9 @@ export default {
 									>help</span
 								>
 							</div>
-							<div class="tw-flex tw-items-center" v-show="right.action.crud.create === 1">
+							<div class="tw-flex tw-items-center">
 								<input
+									v-show="right.action.crud.create === 1"
 									id="check-create"
 									class="tw-cursor-pointer"
 									type="checkbox"
@@ -263,8 +264,9 @@ export default {
 									:disabled="!canUpdate"
 								/>
 							</div>
-							<div class="tw-flex tw-items-center" v-show="right.action.crud.read === 1">
+							<div class="tw-flex tw-items-center">
 								<input
+									v-show="right.action.crud.read === 1"
 									id="check-all-read"
 									class="tw-cursor-pointer"
 									type="checkbox"
@@ -275,8 +277,9 @@ export default {
 									:disabled="!canUpdate"
 								/>
 							</div>
-							<div class="tw-flex tw-items-center" v-show="right.action.crud.update === 1">
+							<div class="tw-flex tw-items-center">
 								<input
+									v-show="right.action.crud.update === 1"
 									id="check-all-update"
 									class="tw-cursor-pointer"
 									type="checkbox"
@@ -287,8 +290,9 @@ export default {
 									:disabled="!canUpdate"
 								/>
 							</div>
-							<div class="tw-flex tw-items-center" v-show="right.action.crud.delete === 1">
+							<div class="tw-flex tw-items-center">
 								<input
+									v-show="right.action.crud.delete === 1"
 									id="check-all-delete"
 									class="tw-cursor-pointer"
 									type="checkbox"
