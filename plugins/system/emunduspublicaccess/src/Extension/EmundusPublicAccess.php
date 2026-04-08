@@ -230,6 +230,11 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 		{
 			assert($event->getArgument('context') instanceof EventContextEntity);
 			$this->destroyPublicSession(false, $event->getArgument('context')->getFiles()[0]);
+
+			$app = Factory::getApplication();
+			$app->getSession()->set('application.queue', []);
+			$app->enqueueMessage(Text::_('COM_EMUNDUS_FILE_SUBMITTED_PUBLIC_ACCESS_MESSAGE'));
+			$app->redirect('/');
 		}
 	}
 
@@ -491,7 +496,16 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 		if (!empty($campaign))
 		{
 			$emundusSession->fnum                   = $applicationFile->getFnum();
-			$emundusSession->fnums                  = [$applicationFile->getFnum()];
+			$emundusSession->fnums                  = [
+				$applicationFile->getFnum() => [
+					'fnum'         => $applicationFile->getFnum(),
+					'applicant_id' => $applicationFile->getUser()->id,
+					'status'       => $applicationFile->getStatus()->getStep(),
+					'campaign_id'  => $applicationFile->getCampaignId(),
+					'start_date'   => $applicationFile->getCampaign()->getStartDate()->format('Y-m-d H:i:s'),
+					'end_date'     => $applicationFile->getCampaign()->getEndDate()->format('Y-m-d H:i:s'),
+				]
+			];
 			$emundusSession->campaign_id            = $campaign->getId();
 			$emundusSession->status                 = $applicationFile->getStatus()->getStep();
 			$emundusSession->candidature_incomplete = ($applicationFile->getStatus()->getStep() == 0) ? 0 : 1;
