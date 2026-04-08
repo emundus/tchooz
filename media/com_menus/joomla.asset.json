@@ -48,20 +48,6 @@
       "version": "bc3cea"
     },
     {
-      "name": "com_menus.admin-items-modal",
-      "type": "script",
-      "uri": "com_menus/admin-items-modal.min.js",
-      "dependencies": [
-        "core"
-      ],
-      "attributes": {
-        "type": "module"
-      },
-      "deprecated": true,
-      "deprecatedMsg": "Replaced with [modal-content-select-field] asset. To be removed in Joomla 6.",
-      "version": "18f50c"
-    },
-    {
       "name": "com_menus.admin-item-modal",
       "type": "script",
       "uri": "com_menus/admin-item-modal.min.js",
@@ -74,6 +60,20 @@
       "deprecated": true,
       "deprecatedMsg": "Replaced with [modal-content-select-field] asset. To be removed in Joomla 6.",
       "version": "9b90e4"
+    },
+    {
+      "name": "com_menus.admin-items-modal",
+      "type": "script",
+      "uri": "com_menus/admin-items-modal.min.js",
+      "dependencies": [
+        "core"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "deprecated": true,
+      "deprecatedMsg": "Replaced with [modal-content-select-field] asset. To be removed in Joomla 6.",
+      "version": "18f50c"
     },
     {
       "name": "com_menus.admin-menus",

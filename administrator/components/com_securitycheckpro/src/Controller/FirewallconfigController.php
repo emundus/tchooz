@@ -13,9 +13,12 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Language\Text;
+use Joomla\Input\Input;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
+use Joomla\CMS\Application\CMSApplication;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\CpanelModel;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FirewallconfigModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\SecuritycheckproBaseController;
 
 /**
@@ -25,61 +28,97 @@ class FirewallconfigController extends SecuritycheckproBaseController
 {
 
     /* Borra IPs de la lista negra */
-    function deleteip_blacklist()
-    {
-        $model = $this->getModel("firewallconfig");
+    function deleteip_blacklist():void {
+		$model = $this->getModel('Firewallconfig');
+		if (!$model instanceof FirewallconfigModel) {
+			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
+			return;
+		}
         $model->manage_list('blacklist', 'delete');
 		            
         parent::display();    
     }
 
     /* Añade un IP a la lista negra */
-    function addip_blacklist()
-    {
-        $model = $this->getModel("firewallconfig");	
+    function addip_blacklist():void {
+        $model = $this->getModel('Firewallconfig');
+		if (!$model instanceof FirewallconfigModel) {
+			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
+			return;
+		}	
 		$model->manage_list('blacklist', 'add');
             
         parent::display();    
     }
 
     /* Borra IPs de la lista blanca */
-    function deleteip_whitelist()
-    {
-        $model = $this->getModel("firewallconfig");
+    function deleteip_whitelist():void {
+        $model = $this->getModel('Firewallconfig');
+		if (!$model instanceof FirewallconfigModel) {
+			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
+			return;
+		}
         $model->manage_list('whitelist', 'delete');
             
         parent::display();    
     }
 
     /* Añade un IP a la lista blanca */
-    function addip_whitelist()
-    {
-        $model = $this->getModel("firewallconfig");
+    function addip_whitelist():void {
+        $model = $this->getModel('Firewallconfig');
+		if (!$model instanceof FirewallconfigModel) {
+			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
+			return;
+		}
 		$model->manage_list('whitelist', 'add');
             
         parent::display();    
     }
 
     /* Borra IPs de la lista negra dinámica */
-    function deleteip_dynamic_blacklist()
-    {
-        $model = $this->getModel("firewallconfig");
+    function deleteip_dynamic_blacklist():void {
+        $model = $this->getModel('Firewallconfig');
+		if (!$model instanceof FirewallconfigModel) {
+			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
+			return;
+		}
         $model->deleteip_dynamic_blacklist();
             
         parent::display();    
     }
 
     /* Guarda los cambios y redirige al cPanel */
-    public function save()
-    {
+    public function save():void {
 		
-        $model = $this->getModel('firewallconfig');
-        $jinput = Factory::getApplication()->input;
+        $model = $this->getModel('Firewallconfig');
+		if (!$model instanceof FirewallconfigModel) {
+			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
+			return;
+		}
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app   = Factory::getApplication();
+		/** @var Input $jinput */
+		$jinput = $app->getInput();       
+		
+		$parent = $jinput->get('activeTab_WafConfigurationTabs', '');
+        $child  = $jinput->get('activeTab_ListsTabs', '');
+		$exceptions  = $jinput->get('activeTab_ExceptionsTabs', '');
+		
+        if ($parent !== '') {
+            $app->setUserState('com_securitycheckpro.WafConfigurationTabs.active', $parent);
+        }
+        if ($child !== '') {
+            $app->setUserState('com_securitycheckpro.ListsTabs.active', $child);
+        }
+		
+		if ($exceptions !== '') {
+            $app->setUserState('com_securitycheckpro.ExceptionsTabs.active', $exceptions);
+        }
 		    
         //El campo 'custom_code' tendrá un formato raw
         $custom_code = $jinput->get("custom_code", null, 'raw');
     
-        $data = $jinput->getArray($_POST);
+        $data = $jinput->post->getArray();
         
         $data['base64_exceptions'] = $model->clearstring($data['base64_exceptions'], 2);
         $data['strip_tags_exceptions'] = $model->clearstring($data['strip_tags_exceptions'], 2);
@@ -150,83 +189,121 @@ class FirewallconfigController extends SecuritycheckproBaseController
             }         
         }
             
-        $this->setRedirect('index.php?option=com_securitycheckpro&view=firewallconfig&'. Session::getFormToken() .'=1');    
+        $this->setRedirect('index.php?option=com_securitycheckpro');    
     }
 
     /* Guarda los cambios */
-    public function apply()
-    {
-        $this->save('pro_plugin');
+    public function apply():void {
+        $this->save();
         $this->setRedirect('index.php?option=com_securitycheckpro&controller=firewallconfig&view=firewallconfig&'. Session::getFormToken() .'=1');
     }    
 
     /* Importa un fichero de ips a la lista pasada como argumento */
-    public function import_list()
-    {
-        $model = $this->getModel("firewallconfig");
+    public function import_list():void {
+        $model = $this->getModel('Firewallconfig');
+		if (!$model instanceof FirewallconfigModel) {
+			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
+			return;
+		}
         $model->import_list();
             
         parent::display();    
     }
 	
-	/* Acciones al pulsar el botón para exportar las Ips en la lista negra */
-    function export_list()
-    {
-		$jinput = Factory::getApplication()->input;
-		    
-        $lista = $jinput->get("export", null);
-		
-		$db = Factory::getContainer()->get(DatabaseInterface::class);
-		$database = "#__securitycheckpro_" . $lista;
-		
-		try{
-			$query = "SELECT * FROM " . $database;
-			$db->setQuery($query);
-			$db->execute();
-			$array_ips = $db->loadColumn();		
-		} catch (Exception $e)
-        {    		
-			Factory::getApplication()->enqueueMessage($e->getMessage(), error);
-        }
-		
-		if (empty($array_ips)) {
-            Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_NO_DATA_TO_EXPORT'), error);
-        } else
-        {
-			// Extraemos la lista en forma ip,ip,ip (texto plano)
-            $list = implode(",", $array_ips);
-                                    
-            // Mandamos el contenido al navegador
-            $config = Factory::getConfig();
-            $sitename = $config->get('sitename');
-            // Remove whitespaces of sitename
-            $sitename = str_replace(' ', '', $sitename);
-            $timestamp = date('mdy_his');
-            $filename = "securitycheckpro_" . $lista . "_" . $sitename . "_" . $timestamp . ".txt";
-            @ob_end_clean();    
-            ob_start();    
-            header('Content-Type: text/plain');
-            header('Content-Disposition: attachment;filename=' . $filename);
-            print $list;
-            exit();
+	/* Acciones al pulsar el botón para exportar las Ips en las listas */
+    function export_list(): void
+	{
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app    = Factory::getApplication();
+		/** @var Input $jinput */
+		$jinput = $app->getInput();
+
+		// Nombre de lista recibido (por ejemplo: "whitelist", "blacklist", etc.)
+		$lista = $jinput->getString('export', '');
+
+		// Validación básica: solo letras, números y guiones bajos.
+		if ($lista === '' || !preg_match('/^[a-z0-9_]+$/i', $lista)) {
+			$app->enqueueMessage('List to export is empty or invalid', 'error');
+			parent::display();
+			return;
 		}
-		 parent::display(); 
-		
-	}   
+
+		// Construimos nombre de tabla con prefijo
+		/** @var DatabaseInterface $db */
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
+		$tableName = $db->replacePrefix('#__securitycheckpro_' . $lista);
+
+		try {
+			// Selecciona únicamente la columna que contiene las IPs.
+			// Ajusta el nombre de columna si en tu tabla no se llama 'ip'.
+			$query = $db->getQuery(true)
+				->select($db->quoteName('ip'))
+				->from($db->quoteName($tableName));
+
+			$db->setQuery($query);
+			$array_ips = $db->loadColumn();  // array de strings (IPs)
+		} catch (\Throwable $e) {
+			$app->enqueueMessage($e->getMessage(), 'error');
+			parent::display();
+			return;
+		}
+
+		if (empty($array_ips)) {
+			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_NO_DATA_TO_EXPORT'), 'error');
+			parent::display();
+			return;
+		}
+
+		// Construimos el contenido: ip,ip,ip
+		// Filtramos valores vacíos y duplicados por si acaso.
+		$array_ips = array_values(array_unique(array_filter(array_map('trim', $array_ips))));
+		$list      = implode(',', $array_ips);
+
+		// Nombre de archivo
+		$config   = $app->getConfig();
+		$sitename = (string) $config->get('sitename', 'site');
+		$sitename = preg_replace('/\s+/', '', $sitename); // sin espacios
+		$timestamp = date('Ymd_His');                     // formato estable
+		$filename  = "securitycheckpro_{$lista}_{$sitename}_{$timestamp}.txt";
+
+		// Aseguramos que no hay salida previa y limpiamos todos los buffers
+		while (ob_get_level() > 0) {
+			@ob_end_clean();
+		}
+
+		// Enviamos cabeceras y contenido (sin usar métodos obsoletos)
+		header('Content-Type: text/plain; charset=UTF-8');
+		header('Content-Disposition: attachment; filename="' . $filename . '"');
+		header('X-Content-Type-Options: nosniff');
+		header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+		header('Pragma: no-cache');
+
+		// Opcional: Content-Length (mejor experiencia de descarga)
+		$length = strlen($list);
+		if ($length > 0) {
+			header('Content-Length: ' . (string) $length);
+		}
+
+		echo $list;
+		// Terminamos la petición aquí para evitar que Joomla agregue HTML extra
+		$app->close();
+	}  
     
     /* Envía un correo de prueba */
-    public function send_email_test()
-    {
-        $model = $this->getModel("firewallconfig");
+    public function send_email_test():void {
+        $model = $this->getModel('Firewallconfig');
+		if (!$model instanceof FirewallconfigModel) {
+			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
+			return;
+		}
         $model->send_email_test();
         $this->setRedirect('index.php?option=com_securitycheckpro&controller=firewallconfig&view=firewallconfig&'. Session::getFormToken() .'=1');
     }
 
     /* Acciones al pulsar el botón 'Enable' en la pestaña url inspector*/
-    function enable_url_inspector()
-    {
+    function enable_url_inspector():void {
         $cpanelmodel = new CpanelModel();
-        $cpanelmodel->enable_plugin('url_inspector');
+        $cpanelmodel->toggle_plugin('url_inspector', true);
     
         $this->setRedirect('index.php?option=com_securitycheckpro&controller=firewallconfig&view=firewallconfig&'. Session::getFormToken() .'=1');
         

@@ -339,10 +339,12 @@ class FalangManager {
 	 *
 	 * @param	string	Code language Tag (ex: en-GB,fr-FR)
 	 * @return	int 	Database id of this language
+     * @update 6.3 fix sp page builder warning (send * or empty to lang parameter)
 	 */
 	function getLanguageID( $langCode="" ) {
         $result =LanguageHelper::getContentLanguages([],true,'lang_code');
-        return $result[$langCode]->lang_id;
+        $default_site_language = ComponentHelper::getParams('com_languages')->get("site","en-GB");
+        return $result[$langCode]->lang_id ?? $result[$default_site_language]->lang_id;
 	}
 
 	public function getRawFieldTranslations($reftable,$reffield, $refids, $language,$only_publised = true)

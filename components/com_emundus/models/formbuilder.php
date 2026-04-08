@@ -26,8 +26,14 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseDriver;
+use Tchooz\Entities\Calculation\Templates\CalculateDatesDiff;
+use Tchooz\Entities\Fabrik\FabrikElementEntity;
 use Tchooz\Entities\Indexer\IndexEntity;
+use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
+use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Factories\Language\LanguageFactory;
+use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Language\LanguageRepository;
 use Tchooz\Services\Fabrik\ApplicantTableCreator;
 use Tchooz\Services\Fabrik\EvaluationTableCreator;
@@ -2581,6 +2587,21 @@ class EmundusModelFormbuilder extends ListModel
 			if ($element['plugin'] === 'average')
 			{
 				$element['params']['average_multiple_elements'] = json_encode($element['params']['average_multiple_elements']);
+			}
+
+			if ($element['plugin'] === ElementPluginEnum::NUMERIC->value)
+			{
+				if ((!is_numeric($element['params']['max']) && !empty($element['params']['max']))
+					|| (!is_numeric($element['params']['min']) && !empty($element['params']['min']))
+					|| (!is_numeric($element['params']['decimal']) && !empty($element['params']['decimal']))
+					|| ($element['params']['max'] > 99999999)
+					|| ($element['params']['min'] > 99999999)
+					|| ($element['params']['min'] > $element['params']['max'])
+					|| ($element['params']['decimal'] > 10)
+				)
+				{
+					throw new \Exception(Text::_('INVALID_PARAMETERS'));
+				}
 			}
 
 			// Manage alias
@@ -5791,7 +5812,167 @@ class EmundusModelFormbuilder extends ListModel
 			throw new RuntimeException('No old form id or new form id given to duplicate the groups');
 		}
 
+		if ($duplicated)
+		{
+			// once all elements have been duplicated, check emundus_calculation parameters and change it
+			$this->updateCalculationParametersAfterDuplicate($oldFormId, $newFormId);
+		}
+
 		return $duplicated;
+	}
+
+	/**
+	 * @param   int  $oldFormId
+	 * @param   int  $newFormId
+	 *
+	 * @return bool
+	 */
+	public function updateCalculationParametersAfterDuplicate(int $oldFormId, int $newFormId): bool
+	{
+		$updated = false;
+
+		if (!empty($oldFormId) && !empty($newFormId))
+		{
+			$fabrikRepository = new FabrikRepository();
+			$fabrikFactory = new FabrikFactory($fabrikRepository);
+			$fabrikRepository->setFactory($fabrikFactory);
+
+			$calcElements = $fabrikRepository->getElements([
+				'plugin' => ElementPluginEnum::EMUNDUS_CALCULATION->value,
+				'form_id' => $newFormId
+			]);
+
+			foreach ($calcElements as $element)
+			{
+				switch($element->getParamsArray()['type'])
+				{
+					case 'custom':
+						$fabrikRepository->setElementFilters([]);
+						$operation = $element->getParamsArray()['operation'];
+						if (is_string($operation))
+						{
+							$operation = json_decode($operation, true);
+						}
+
+						foreach($operation['fields'] as $key => $field)
+						{
+							if ($field['type'] === ConditionTargetTypeEnum::FORMDATA->value)
+							{
+								list($fieldFormId, $fieldElementId) = explode('.', $field['field']);
+
+								if (!empty($fieldElementId) && $fieldFormId == $oldFormId)
+								{
+									$fieldCurrentElement = $fabrikRepository->getElementById($fieldElementId);
+
+									if (!empty($fieldCurrentElement))
+									{
+										$duplicatedElements = $fabrikRepository->getElements([
+											'form_id' => $newFormId,
+											'name' => $fieldCurrentElement->getName()
+										], 1);
+
+										if (!empty($duplicatedElements))
+										{
+											$duplicatedElement = $duplicatedElements[0];
+											$operation['fields'][$key]['field'] = $newFormId . '.' . $duplicatedElement->getId();
+
+											$params = $element->getParamsArray();
+											$params['operation'] = $operation;
+											$element->setParamsRaw(json_encode($params));
+
+											$query = $this->db->createQuery();
+											$query->update('#__fabrik_elements')
+												->set('params = ' . $this->db->quote(json_encode($params)))
+												->where('id = ' . $duplicatedElement->getId());
+
+											try
+											{
+												$this->db->setQuery($query);
+												$updated = $this->db->execute();
+											}
+											catch (\Exception $e)
+											{
+												Log::add('Failed to update element ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
+											}
+										}
+									}
+								}
+							}
+						}
+
+						break;
+					case CalculateDatesDiff::getCode():
+						$fabrikRepository->setElementFilters([]);
+
+						$params = $element->getParamsArray();
+						if (is_string($params['dates_diff_form']))
+						{
+							$params['dates_diff_form'] = json_decode($params['dates_diff_form'], true);
+						}
+
+						if (!empty($params['dates_diff_form']['start_date_element']))
+						{
+							list($fieldFormId, $fieldElementId) = explode('.', $params['dates_diff_form']['start_date_element']);
+
+							$fieldCurrentElement = $fabrikRepository->getElementById($fieldElementId);
+
+							if (!empty($fieldCurrentElement))
+							{
+								$fabrikRepository->setElementFilters([]);
+								$duplicatedElements = $fabrikRepository->getElements([
+									'form_id' => $newFormId,
+									'name' => $fieldCurrentElement->getName()
+								], 1);
+
+								if (!empty($duplicatedElements))
+								{
+									$params['dates_diff_form']['start_date_element'] = $newFormId . '.' . $duplicatedElements[0]->getId();
+								}
+							}
+						}
+
+						if (!empty($params['dates_diff_form']['end_date_element']))
+						{
+							list($fieldFormId, $fieldElementId) = explode('.', $params['dates_diff_form']['end_date_element']);
+
+							$fabrikRepository->setElementFilters([]);
+							$fieldCurrentElement = $fabrikRepository->getElementById($fieldElementId);
+
+							if (!empty($fieldCurrentElement)) {
+								$fabrikRepository->setElementFilters([]);
+								$duplicatedElements = $fabrikRepository->getElements([
+									'form_id' => $newFormId,
+									'name' => $fieldCurrentElement->getName()
+								], 1);
+
+								if (!empty($duplicatedElements))
+								{
+									$params['dates_diff_form']['end_date_element'] = $newFormId . '.' . $duplicatedElements[0]->getId();
+								}
+							}
+						}
+
+						try
+						{
+							$query = $this->db->createQuery();
+							$query->update('#__fabrik_elements')
+								->set('params = ' . $this->db->quote(json_encode($params)))
+								->where('id = ' . $element->getId());
+
+							$this->db->setQuery($query);
+							$updated = $this->db->execute();
+						}
+						catch (\Exception $e)
+						{
+							Log::add('Failed to update element ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
+						}
+
+						break;
+				}
+			}
+		}
+
+		return $updated;
 	}
 
 	/**
@@ -5820,7 +6001,7 @@ class EmundusModelFormbuilder extends ListModel
 				$el_params = json_decode($element->element->params);
 
 				// Update translation files
-				if (($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options)
+				if (($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown' || $element->element->plugin === ElementPluginEnum::ORDERLIST->value) && $el_params->sub_options)
 				{
 					$sub_labels = [];
 					foreach ($el_params->sub_options->sub_labels as $index => $sub_label)

@@ -10,18 +10,16 @@
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-use Falang\Component\Administrator\Table\FalangContentTable;
 use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Form\Form;
+use Joomla\CMS\Form\FormHelper;
 use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Router;
-use Joomla\CMS\Table\Table;
-use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\CMS\Component\Router\RouterFactoryInterface;
 use Joomla\CMS\Component\Router\RouterInterface;
 use Joomla\CMS\Menu\AbstractMenu;
@@ -31,7 +29,7 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\Database\Event\ConnectionEvent;
 use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Registry\Registry;
+use Joomla\CMS\Event\Model\PrepareFormEvent;
 
 //Global definitions use for front
 if( !defined('DS') ) {
@@ -59,6 +57,7 @@ final class plgSystemFalangdriver extends CMSPlugin
      * @from 1.0
      * @update 5.4 test site and not administrator
      * @update 6.1 move displayMessage on onAfterDispach
+     * @update 6.3 override filed content language set in the onContentPrepareForm
      * */
     public function __construct(DispatcherInterface $dispatcher, $config = array())
     {
@@ -69,8 +68,6 @@ final class plgSystemFalangdriver extends CMSPlugin
         if (Factory::getApplication()->isClient('site')) {
             $dispatcher->addListener('onAfterDisconnect', [$this,'onAfterDisconnect']);
         }
-
-        $this->setupCoreFileOverride();
 
         // This plugin is only relevant for use within the frontend!
         // need to test site
@@ -147,7 +144,6 @@ final class plgSystemFalangdriver extends CMSPlugin
             }
         }
         //end fix
-
     }
 
 
@@ -588,15 +584,29 @@ final class plgSystemFalangdriver extends CMSPlugin
      * and load the custom fields in the translated form
      *
      * @udpate 5.22 remove the load custom fields in the translated form to falangcf
+     * @update 6.3 fix the frontendlanguage selection
+     * @update 6.4 fix the declare  of FrontendlanguageField already use
      */
-    function onContentPrepareForm(Form $form, $data)
+    function onContentPrepareForm(PrepareFormEvent $event)
     {
-        if (Factory::getApplication()->isClient('site')){return;}
+        $form    = $event->getForm();
+        $data    = $event->getData();
+        $context = $form->getName();
 
-	    $this->enabledTplTranslation($form,$data);
+        if (\in_array($context, ['com_users.user', 'com_users.profile', 'com_users.registration'])) {
+            FormHelper::addFieldPrefix('Falang\\CMS\\Form\\Field');
+            FormHelper::addFieldPath(JPATH_PLUGINS.'/system/falangdriver/overrides/libraries/src/Form/Field');
 
+            $file = JPATH_PLUGINS.'/system/falangdriver/overrides/libraries/src/Form/Field/FrontendlanguageField.php';
+            if (file_exists($file)){
+                require_once $file;
+            }
+        }
+
+        if (Factory::getApplication()->isClient('administrator')){
+            $this->enabledTplTranslation($event);
+        }
     }
-
 
 
     /**
@@ -605,24 +615,32 @@ final class plgSystemFalangdriver extends CMSPlugin
      *
      * @update 5.14 clean code remove jimport
      *              $this->_subject->setError not working anymaore enqueueMessage
-     *
+     * @update 6.3 change signature
+     *             add check context use Form
      */
-	private function enabledTplTranslation($form, $data){
+	private function enabledTplTranslation(PrepareFormEvent $event){
 
-		$params = ComponentHelper::getParams('com_falang');
-		$show_tpl_lang = $params->get('show_tpl_lang');
+        $form    = $event->getForm();
+        $data    = $event->getData();
+        $context = $form->getName();
 
-		if (!isset($show_tpl_lang) || $show_tpl_lang == '0' ) {return;}
+        if (\in_array($context, ['com_templates.style'])) {
 
-		if (!($form instanceof JForm))
-		{
-            Factory::getApplication()->enqueueMessage('JERROR_NOT_A_FORM',Factory::getApplication()::MSG_ALERT);
-            return;
-		}
-		if ((is_array($data) && array_key_exists('home', $data))
-			|| ((is_object($data) && isset($data->home) ))) {
-			$form->setFieldAttribute('home', 'readonly', 'false');
-		}
+            $params = ComponentHelper::getParams('com_falang');
+            $show_tpl_lang = $params->get('show_tpl_lang');
+
+            if (!isset($show_tpl_lang) || $show_tpl_lang == '0' ) {return;}
+
+            if (!($form instanceof Form))
+            {
+                Factory::getApplication()->enqueueMessage('JERROR_NOT_A_FORM',Factory::getApplication()::MSG_ALERT);
+                return;
+            }
+            if ((is_array($data) && array_key_exists('home', $data))
+                || ((is_object($data) && isset($data->home) ))) {
+                $form->setFieldAttribute('home', 'readonly', 'false');
+            }
+        }
 	}
 
 	/*
@@ -710,18 +728,6 @@ final class plgSystemFalangdriver extends CMSPlugin
         );
 
     }
-
-	//@since 3.4.3
-	public function setupCoreFileOverride(){
-		//for front and back
-		//override Front-end Language file for site and admin section. use for user language configuration
-		JLoader::register('Joomla\CMS\Form\Field\FrontendlanguageField', dirname(__FILE__).'/overrides/libraries/src/Form/Field/FrontendlanguageField.php', true);
-
-		//for back
-
-		//for front
-
-	}
 
     /*
      * Display message on Indexed content view

@@ -16,12 +16,17 @@ use SecuritycheckExtensions\Component\SecuritycheckPro\Site\Model\JsonModel;
 
 class DisplayController extends BaseController
 {
- 	// Definimos las variables
-	protected $input = array();
-
+ 	/**
+     * Constructor
+     *
+     * @param   array<string>                $config   An array of configuration options (name, state, dbo, table_path, ignore_request).     
+     *
+     * @since   3.0
+     * @throws  \Exception
+     */
 	public function __construct($config = array())
 	{
-		$this->input = Factory::getApplication()->input;
+		$this->input = Factory::getApplication()->getInput();
 		parent::__construct($config);
 	}
 	public function execute($task)
@@ -41,7 +46,7 @@ class DisplayController extends BaseController
 		$headers = getallheaders();
 		$headers = array_change_key_case($headers);				
 						
-		if ( (!empty($headers)) && (is_array($headers)) && (array_key_exists('user-agent',$headers)) && ($headers['user-agent'] == 'Securitycheck Pro Control Center User agent') ) {
+		if ( !empty($headers) && (array_key_exists('user-agent',$headers)) && ($headers['user-agent'] == 'Securitycheck Pro Control Center User agent') ) {
 			
 			$model = new JsonModel();
 			$base_model = new BaseModel();
@@ -59,7 +64,7 @@ class DisplayController extends BaseController
 				$referrer = null;
 				
 				// String json de la petición
-				$clientJSON = $this->input->get('json', null, 'raw', 2);
+				$clientJSON = $this->input->get('json', null, 'raw');
 										
 				// Decodificamos el string para añadir el referrer, que será usado en caso de fallo (por ejemplo cuando las claves secretas no coinciden)
 				$request = json_decode($clientJSON, true);

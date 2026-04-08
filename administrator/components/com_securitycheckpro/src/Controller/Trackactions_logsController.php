@@ -10,18 +10,22 @@ namespace SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Contr
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\CMS\MVC\Controller\BaseController;
-use Joomla\Plugin\System\Trackactions\helpers\TrackActionsHelper;
+use Joomla\CMS\Factory;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\SecuritycheckproBaseController;
+use Joomla\Plugin\System\Trackactions\Model\TrackActionsHelperModel;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\Trackactions_logsModel;
 
 /**
- * Securitycheckpros  Controller
+ * Tracactions_logs Controller
  */
-class Trackactions_logsController extends BaseController
-{
-    
-    /* Redirecciona las peticiones al Panel de Control */
-    function redireccion_control_panel()
-    {
+class Trackactions_logsController extends SecuritycheckproBaseController
+{    
+	/**
+     * Borrar todos los log(s) de la base de datos
+	 *
+	 * @return void
+     */
+    function redireccion_control_panel():void {
         $this->setRedirect('index.php?option=com_securitycheckpro');
     }
 
@@ -31,34 +35,48 @@ class Trackactions_logsController extends BaseController
      *
      * @return void
      */
-    public function exportLogs()
-    {
+    public function exportLogs():void {
         // Get the logs data
-        $data = $this->getModel('trackactions_logs')->getLogsData();
+		$model = $this->getModel('Trackactions_logs');
+		if (!$model instanceof Trackactions_logsModel) {
+			Factory::getApplication()->enqueueMessage('Trackactions_logs model not found', 'error');
+			return;
+		}
+        $data = $model->getLogsData();		
     
         // Export data to CSV file
-        TrackActionsHelper::dataToCsv($data);
+        TrackActionsHelperModel::dataToCsv($data);
     }
     
 
     /**
      * Borrar log(s) de la base de datos
+	 *
+	 * @return void
      */
-    function delete()
-    {
-        $model = $this->getModel('trackactions_logs');
-        $read = $model->delete();
+    function delete():void {       
+		$model = $this->getModel('Trackactions_logs');
+		if (!$model instanceof Trackactions_logsModel) {
+			Factory::getApplication()->enqueueMessage('Trackactions_logs model not found', 'error');
+			return;
+		}
+        $model->delete();
     
         parent::display();
     }
 
     /**
      * Borrar todos los log(s) de la base de datos
+	 *
+	 * @return void
      */
-    function delete_all()
-    {
-        $model = $this->getModel('trackactions_logs');
-        $read = $model->delete_all();
+    function delete_all():void {
+        $model = $this->getModel('Trackactions_logs');
+		if (!$model instanceof Trackactions_logsModel) {
+			Factory::getApplication()->enqueueMessage('Trackactions_logs model not found', 'error');
+			return;
+		}
+        $model->delete_all();
     
         parent::display();
     }

@@ -22,6 +22,7 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Menus\Administrator\Helper\MenusHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Table\Table;
+use Joomla\Registry\Registry;
 
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -211,9 +212,14 @@ class FalangHelper
 			                    $db->setQuery($query);
 			                    $translatedParams = $db->loadResult();
 
-			                    $registry = new \Joomla\Registry\Registry();
-			                    $registry->loadString($translatedParams);
-			                    $menu_show = (int)$registry->get('menu_show','1');
+                                if (isset($translatedParams)){
+                                    $registry = new Registry();
+                                    $registry->loadString($translatedParams);
+                                    $menu_show = (int)$registry->get('menu_show','1');
+                                } else {
+                                    $menu_show = 1;
+                                }
+
 
 		                    } else {
 			                    $_menu        = $menu->getItem($vars['Itemid']);

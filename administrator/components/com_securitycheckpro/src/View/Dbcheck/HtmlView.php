@@ -19,19 +19,65 @@ use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\DbcheckModel;
 
-
-/**
- * Main Admin View
- */
 class HtmlView extends BaseHtmlView {
 	
-	// Iniciliazamos las variables
-    protected $supported;
-    protected $tables;
-
-    /* Función que devuelve un valor en megas del argumento*/
-    protected function bytes_to_kbytes($bytes)
+	/**
+	 * Indica si la opción está soportada
+	 *
+	 * @var bool
+	 */
+    public $supported;
+	
+	/**
+	 * Contiene las tablas a optimizar
+	 *
+	 * @var array<int, object{
+	 *     Name: string,
+	 *     Engine?: string|null,
+	 *     Version?: int,
+	 *     Row_format?: string|null,
+	 *     Rows?: int,
+	 *     Avg_row_length?: int,
+	 *     Data_length?: int,
+	 *     Max_data_length?: int,
+	 *     Index_length?: int,
+	 *     Auto_increment?: int|null,
+	 *     Create_time?: string|null,
+	 *     Update_time?: string|null,
+	 *     Check_time?: string|null,
+	 *     Collation?: string,
+	 *     Checksum?: int|null,
+	 *     Create_options?: string|null,
+	 *     Comment?: string
+	 * }> 
+	 */
+    public $tables;
+	
+	/**
+	 * Indica qué tablas se van a optimizar
+	 *
+	 * @var string
+	 */
+    public $show_tables;
+	
+	/**
+	 * Indica la fecha de la última actualización de la BBDD
+	 *
+	 * @var string
+	 */
+    public $last_check_database;
+	
+    /**
+     * Función que devuelve un valor en megas del argumento
+     *
+     * @param   int             $bytes    The number to convert
+     *
+     * @return  string
+     *     
+     */
+    public function bytes_to_kbytes($bytes)
     {
         if ($bytes < 1) {
             return '0.00';
@@ -57,22 +103,17 @@ class HtmlView extends BaseHtmlView {
 
         // Extraemos el tipo de tablas que serán mostradas
         $params = ComponentHelper::getParams('com_securitycheckpro');
-        $show_tables = $params->get('tables_to_check', 'All');
+        $this->show_tables = $params->get('tables_to_check', 'All');
 
         // Extraemos la última optimización de la bbdd
-        $model = $this->getModel("dbcheck");
-        $last_check_database = $model->get_campo_filemanager("last_check_database");
-
-        $logs_pending = $model->LogsPending();
-        $trackactions_plugin_exists = $model->PluginStatus(8);
-        $this->logs_pending = $logs_pending;
-        $this->trackactions_plugin_exists = $trackactions_plugin_exists;
+		// Obtenemos el modelo de esta vista (Controlcenter)
+		/** @var DbcheckModel $model */
+        $model = $this->getModel();
+        $this->last_check_database = $model->GetCampoFilemanager("last_check_database");
 
         $this->supported = $this->get('IsSupported');
-        $this->tables      = $this->get('Tables');
-        $this->show_tables = $show_tables;
-        $this->last_check_database = $last_check_database;
-				
+        $this->tables      = $this->get('Tables');        
+        				
 		// Pass parameters to the cpanel.js script using Joomla's script options API
 		$this->document->addScriptOptions('securitycheckpro.Dbcheck.tables', $this->tables);
         

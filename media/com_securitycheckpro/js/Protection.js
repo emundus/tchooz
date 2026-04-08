@@ -1,221 +1,116 @@
- /**
- * @package   securitycheckpro
- * @copyright Copyright (c) 2011 - Jose A. Luque / Securitycheck Extensions
- * @license   GNU General Public License version 3, or later
- */
 "use strict";
-	
-	var size = Joomla.getOptions("securitycheckpro.Protection.blockedaccessText", 20);
-	
-    jQuery(document).ready(function() {    
-        
-		jQuery('#redirect_to_non_www').on('change', function(e) {
-            // triggers when whole value changed
-            var end = jQuery('#redirect_to_non_www option:selected').val();
-            if (end == 1)
-            {
-                jQuery("#redirect_to_www").val("0").trigger('chosen:updated');                        
-            }            
-        });
-        
-        jQuery('#redirect_to_www').on('change', function(e) {
-            // triggers when whole value changed
-            var end = jQuery('#redirect_to_www option:selected').val();
-            if (end == 1)
-            {
-                jQuery("#redirect_to_non_www").val("0").trigger('chosen:updated');                        
-            }            
-        });
-          
-        jQuery( "#li_autoprotection_tab" ).click(function() {
-            SetActiveTabHtaccess('autoprotection');
-        });
-        jQuery( "#li_headers_protection_tab" ).click(function() {
-            SetActiveTabHtaccess('headers_protection');
-        });
-        jQuery( "#li_user_agents_protection_tab" ).click(function() {
-            SetActiveTabHtaccess('user_agents_protection');
-        });
-        jQuery( "#li_fingerprinting_tab" ).click(function() {
-            SetActiveTabHtaccess('fingerprinting');
-        });
-        jQuery( "#li_backend_protection_tab" ).click(function() {
-            SetActiveTabHtaccess('backend_protection');
-        });
-        jQuery( "#li_performance_tab_tab" ).click(function() {
-            SetActiveTabHtaccess('performance_tab');
-        });
-        jQuery( "#save_default_user_agent_button" ).click(function() {
-            Joomla.submitbutton('save_default_user_agent');
-        });
-        jQuery( "#boton_default_user_agent" ).click(function() {
-            muestra_default_user_agent();
-        });
-   
-        jQuery( "#hide_backend_url_button" ).click(function() {
-            document.getElementById("hide_backend_url").value = Password.generate(size);
-        });
-        jQuery( "#add_exception_button" ).click(function() {
-            add_exception();
-        });
-        jQuery( "#delete_exception_button" ).click(function() {
-            delete_exception();
-        });
-        jQuery( "#delete_all_button" ).click(function() {
-            delete_all();
-        });
-        
-        // Chequeamos cuando se pulsa el botón 'close' del modal 'initialize data' para actualizar la página
-        $(function() {
-            $("#buttonclose").click(function() {
-                setTimeout(function () {window.location.reload()},1000);                
-            });
-        });            
-        
-    });        
 
-    var Password = {
-     
-      _pattern : /[a-zA-Z0-9]/, 
-      
-      _getRandomByte : function()
-      {
-        // http://caniuse.com/#feat=getrandomvalues
-        if(window.crypto && window.crypto.getRandomValues) 
-        {
-          var result = new Uint8Array(1);
-          window.crypto.getRandomValues(result);
-          return result[0];
-        }
-        else if(window.msCrypto && window.msCrypto.getRandomValues) 
-        {
-          var result = new Uint8Array(1);
-          window.msCrypto.getRandomValues(result);
-          return result[0];
-        }
-        else
-        {
-          return Math.floor(Math.random() * 256);
-        }
-      },
-      
-      generate : function(length)
-      {
-        return Array.apply(null, {'length': length})
-          .map(function()
-          {
-            var result;
-            while(true) 
-            {
-              result = String.fromCharCode(this._getRandomByte());
-              if(this._pattern.test(result))
-              {
-                return result;
-              }
-            }        
-          }, this)
-          .join('');  
-      }    
-        
-    };
+const size = Joomla.getOptions("securitycheckpro.Protection.blockedaccessText", 20);
+const $ = (s, c=document)=>c.querySelector(s);
+const $$ = (s, c=document)=>Array.from(c.querySelectorAll(s));
+const on = (el, ev, fn, o)=>el&&el.addEventListener(ev, fn, o);
 
-    var ActiveTabHtaccess = "autoprotection";
-	
-    function SetActiveTabHtaccess($value) {
-        ActiveTabHtaccess = $value;
-        storeValue('active_htaccess', ActiveTabHtaccess);
-    }
-        
-    function storeValue(key, value) {
-        if (localStorage) {
-            localStorage.setItem(key, value);
-        } else {
-            $.cookies.set(key, value);
-        }
-    }
-        
-    function getStoredValue(key) {
-        if (localStorage) {
-            return localStorage.getItem(key);
-        } else {
-            return $.cookies.get(key);
-        }
-    }
+const Password = {
+  _pattern:/[a-zA-Z0-9]/,
+  _rand(){
+    if (crypto?.getRandomValues) { const r=new Uint8Array(1); crypto.getRandomValues(r); return r[0]; }
+    if (window.msCrypto?.getRandomValues){ const r=new Uint8Array(1); window.msCrypto.getRandomValues(r); return r[0]; }
+    return Math.floor(Math.random()*256);
+  },
+  generate(n){ const out=[]; while(out.length<n){const ch=String.fromCharCode(this._rand()); if(this._pattern.test(ch)) out.push(ch);} return out.join(''); }
+};
 
-    window.onload = function() {
-        hideIt();
-        ActiveTabHtaccess = getStoredValue('active_htaccess');
-                            
-        if (ActiveTabHtaccess) {
-            $('.nav-tabs a[href="#' + ActiveTabHtaccess + '"]').parent().addClass('active');
-            $('.nav-tabs a[href="#' + ActiveTabHtaccess + '"]').tab('show');
-        } else {
-            $('.nav-tabs a[href="#autoprotection"]').parent().addClass('active');
-        }            
-    };
+function wireTabsetFallback(navSel, key){
+  const nav=$(navSel); if(!nav) return;
+  const links=$$('a[data-bs-toggle="tab"]', nav);
+  const saved=localStorage.getItem(key);
+  if(saved){ const a=links.find(x=>x.getAttribute('href')===`#${saved}`); if(a) new bootstrap.Tab(a).show(); }
+  links.forEach(a=>on(a,'shown.bs.tab',e=>{
+    const id=(e.target.getAttribute('href')||'').replace(/^#/,''); if(id) localStorage.setItem(key,id);
+  }));
+}
 
-    function add_exception() {
-        var exception = document.adminForm.exception.value;
-        
-        var previous_exceptions = (document.adminForm.backend_exceptions.value).length;
-        
-        if (previous_exceptions > 0 ) {
-            document.adminForm.backend_exceptions.value += ',' + exception;
-        } else {
-            document.adminForm.backend_exceptions.value += exception;
-        }
-        document.adminForm.exception.value = "";
-    }
+function wireWwwSelectors(){
+  const nonWww=$('#redirect_to_non_www'), www=$('#redirect_to_www');
+  if(!nonWww || !www) return;
+  on(nonWww,'change',()=>{ if(String(nonWww.value)==='1') www.value='0'; });
+  on(www,'change',()=>{ if(String(www.value)==='1') nonWww.value='0'; });
+}
 
-    function delete_exception() {
-        var exception = document.adminForm.exception.value;
-        
-        var textarea = document.getElementById("backend_exceptions");
-        
-        // Borramos todas las opciones posibles, comas delante y detrás y sin comas
-        textarea.value = textarea.value.replace(',' + exception, "");    
-        textarea.value = textarea.value.replace(exception + ',', "");    
-        textarea.value = textarea.value.replace(exception, "");
-        
-        document.adminForm.exception.value = "";
-    }
+function hideIt(){
+  const chk=$('#backend_protection_applied');
+  const blocks=['#menu_hide_backend_1','#menu_hide_backend_2','#menu_hide_backend_3','#menu_hide_backend_4','#block','#block2','#block3','#block4']
+    .map(sel=>$(sel)).filter(Boolean);
+  if(!chk) return;
+  if(chk.checked){
+    blocks.forEach(el=>el.classList.add('d-none'));
+    const url=$('#hide_backend_url'); const exc=$('#backend_exceptions');
+    if(url) url.value=''; if(exc) exc.value='';
+    chk.value='1';
+  }else{
+    blocks.forEach(el=>el.classList.remove('d-none'));
+    chk.value='0';
+  }
+}
 
-    function delete_all() {
-        var exception = document.adminForm.exception.value;
-        
-        var textarea = document.getElementById("backend_exceptions");
-        
-        textarea.value = "";    
-    }
+function showDefaultUserAgentsModal(){
+  const el=$('#div_default_user_agents'); if(!el) return;
+  bootstrap.Modal.getOrCreateInstance(el).show();
+}
 
-    function muestra_default_user_agent(){
-            jQuery("#div_default_user_agents").modal('show');            
-    }
+/* Expand/Close para TODAS las textareas con .scp-expander */
+function wireExpanders(){
+  $$('#adminForm .scp-expander').forEach(btn=>{
+    on(btn,'click',()=>{
+      const sel=btn.getAttribute('data-expand-target');
+      const ta=sel?$(sel):null; if(!ta) return;
+      const expanded = ta.classList.toggle('is-expanded');
+      btn.classList.toggle('is-expanded', expanded);
+      btn.textContent = expanded ? 'Close' : 'Expand';
+      btn.classList.toggle('btn-danger', expanded);
+      btn.classList.toggle('btn-outline-secondary', !expanded);
+      document.body.style.overflow = expanded ? 'hidden' : '';
+    });
+  });
 
-    function hideIt(){
-        var selected = document.getElementById('backend_protection_applied');
-        if (selected.checked) {        
-            jQuery("#menu_hide_backend_1").hide();
-            jQuery("#menu_hide_backend_2").hide();
-            jQuery("#menu_hide_backend_3").hide();
-            jQuery("#menu_hide_backend_4").hide();
-            jQuery("#block").hide();
-            jQuery("#block2").hide();
-            jQuery("#block3").hide();
-            jQuery("#block4").hide();
-            document.getElementById("hide_backend_url").value = "";
-            document.getElementById("backend_exceptions").value = "";        
-            document.getElementById("backend_protection_applied").value = "1";
-        } else {
-            jQuery("#menu_hide_backend_1").show();
-            jQuery("#menu_hide_backend_2").show();
-            jQuery("#menu_hide_backend_3").show();
-            jQuery("#menu_hide_backend_4").show();
-            jQuery("#block").show();
-            jQuery("#block2").show();
-            jQuery("#block3").show();
-            jQuery("#block4").show();
-            document.getElementById("backend_protection_applied").value = "0";
-        }    
-    }
+  // ESC para cerrar
+  on(document,'keydown',(e)=>{
+    if(e.key!=='Escape') return;
+    const ta=$('#adminForm .scp-textarea.is-expanded');
+    const btn=$('#adminForm .scp-expander.is-expanded');
+    if(ta){ ta.classList.remove('is-expanded'); }
+    if(btn){ btn.classList.remove('is-expanded'); btn.textContent='Expand'; btn.classList.remove('btn-danger'); btn.classList.add('btn-outline-secondary'); }
+    if(ta||btn){ document.body.style.overflow=''; }
+  });
+}
 
+document.addEventListener('DOMContentLoaded', () => {
+  const form = $('#adminForm');
+  if (form) {
+    form.classList.add('scp-compact');
+  }
+  
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(function (el) { new bootstrap.Tooltip(el); });
+  
+  const group = document.getElementById('backend_actions_group');
+  const expander = document.querySelector('#backend_exceptions + .scp-expander');
+  if (!group || !expander) return;
+
+  group.addEventListener('show.bs.dropdown', () => {
+    expander.classList.add('invisible');  // o 'd-none' si prefieres
+  });
+  group.addEventListener('hidden.bs.dropdown', () => {
+    expander.classList.remove('invisible');
+  });
+
+  if (typeof window.wireTabset === 'function') window.wireTabset('#protectionTab','active_htaccess');
+  else wireTabsetFallback('#protectionTab','active_htaccess');
+
+  wireWwwSelectors();
+  wireExpanders();
+
+  on($('#save_default_user_agent_button'),'click',()=>Joomla.submitbutton('save_default_user_agent'));
+  on($('#boton_default_user_agent'),'click',showDefaultUserAgentsModal);
+  on($('#hide_backend_url_button'),'click',()=>{ const t=$('#hide_backend_url'); if(t) t.value=Password.generate(size); });
+  on($('#add_exception_button'),'click',()=>{ const i=$('#exception'), a=$('#backend_exceptions'); if(!i||!a) return; const v=(i.value||'').trim(); if(!v) return; a.value=a.value.trim().length?`${a.value},${v}`:v; i.value=''; });
+  on($('#delete_exception_button'),'click',()=>{ const i=$('#exception'), a=$('#backend_exceptions'); if(!i||!a) return; const v=(i.value||'').trim(); if(!v) return; const rx1=new RegExp(`,\\s*${v.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\$&')}`,'g'); const rx2=new RegExp(`${v.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\$&')}\\s*,`,'g'); const rx3=new RegExp(`${v.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\$&')}`,'g'); let t=a.value; [rx1,rx2,rx3].forEach(rx=>t=t.replace(rx,'')); t=t.replace(/,{2,}/g,',').replace(/^\s*,|,\s*$/g,'').trim(); a.value=t; i.value=''; });
+  on($('#delete_all_button'),'click',()=>{ const a=$('#backend_exceptions'); if(a) a.value=''; });
+  on($('#backend_protection_applied'),'change',hideIt);
+  hideIt();
+});

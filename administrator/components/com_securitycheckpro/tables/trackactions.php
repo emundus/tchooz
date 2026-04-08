@@ -9,19 +9,21 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Table\Table;
+
 /**
  * Userlogs Table class
  *
  * @since __DEPLOY_VERSION__
  */
-class JTableTrackActions extends JTable
+class TableTrackActions extends Table
 {
     /**
      * Constructor
      *
-     * @param JDatabaseDriver &$db A database connector object
+     * @param object $db Database connector object
      *
-     * @since __DEPLOY_VERSION__
+     * @return void
      */
     public function __construct(&$db)
     {

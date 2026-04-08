@@ -2,6 +2,9 @@
 defined('_JEXEC') or die();
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
+
+/** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\View\Firewallconfig\HtmlView $this */
+/** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel $basemodel */
 ?>
 <!-- Url inspector -->
 <?php if ($this->url_inspector_enabled == 0) { ?>
@@ -23,21 +26,21 @@ use Joomla\CMS\HTML\HTMLHelper;
                                             <div class="card-body">                                                                                                    
                                                 <h4 class="card-title"><?php echo Text::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_WRITE_LOG_LABEL'); ?></h4>
                                                 <div class="controls">
-													<?php echo booleanlist('write_log_inspector', array(), $this->write_log_inspector) ?>
+													<?php echo $basemodel->renderSelect('write_log_inspector','boolean',['class' => 'form-select'], $this->write_log_inspector,false); ?>
                                                 </div>
-												<blockquote><p class="text-info"><small><?php echo Text::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_WRITE_LOG_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote><p class="small text-body-secondary"><small><?php echo Text::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_WRITE_LOG_DESCRIPTION') ?></small></p></blockquote>
                                                                                             
                                                 <h4 class="card-title"><?php echo Text::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_ACTIONS_LABEL'); ?></h4>
                                                 <div class="controls">
-													<?php echo action('action_inspector', array(), $this->action_inspector) ?>
+													<?php echo $basemodel->renderSelect('action_inspector',[['value'=>'0','text'=>'COM_SECURITYCHECKPRO_DO_NOTHING'],['value'=>'1','text'=>'COM_SECURITYCHECKPRO_ADD_IP_TO_DYNAMIC_BLACKLIST'],['value'=>'2','text'=>'COM_SECURITYCHECKPRO_ADD_IP_TO_BLACKLIST']],['class' => 'form-select'],$this->action_inspector,false,true); ?>
                                                 </div>
-												<blockquote><p class="text-info"><small><?php echo Text::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_ACTION_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote><p class="small text-body-secondary"><small><?php echo Text::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_ACTION_DESCRIPTION') ?></small></p></blockquote>
                                                                                               
                                                 <h4 class="card-title"><?php echo Text::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_SEND_EMAIL_LABEL'); ?></h4>
                                                 <div class="controls">
-													<?php echo booleanlist('send_email_inspector', array(), $this->send_email_inspector) ?>
+													<?php echo $basemodel->renderSelect('send_email_inspector','boolean',['class' => 'form-select'], $this->send_email_inspector,false); ?>
                                                 </div>
-												<blockquote><p class="text-info"><small><?php echo Text::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_SEND_EMAIL_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote><p class="small text-body-secondary"><small><?php echo Text::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_SEND_EMAIL_DESCRIPTION') ?></small></p></blockquote>
                                             </div>
                                         </div>
                                         
@@ -48,9 +51,9 @@ use Joomla\CMS\HTML\HTMLHelper;
                                             <div class="card-body">                                                                                                    
                                                 <h4 class="card-title"><?php echo Text::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_FORBIDDEN_WORDS_LABEL'); ?></h4>
                                                 <div class="controls">
-                                                    <textarea name="inspector_forbidden_words" class="form-control width_560_height_340"><?php echo $this->inspector_forbidden_words ?></textarea>
+                                                    <textarea name="inspector_forbidden_words" class="form-control width_560_height_340"><?php echo htmlspecialchars((string) $this->inspector_forbidden_words, ENT_QUOTES, 'UTF-8'); ?></textarea>
                                                 </div>
-												<blockquote><p class="text-info"><small><?php echo Text::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_FORBIDDEN_WORDS_DESCRIPTION') ?></small></p></blockquote>
+												<blockquote><p class="small text-body-secondary"><small><?php echo Text::_('COM_SECURITYCHECKPRO_URL_INSPECTOR_FORBIDDEN_WORDS_DESCRIPTION') ?></small></p></blockquote>
                                             </div>
                                         </div>
                                     </div>

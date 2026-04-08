@@ -196,11 +196,15 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 				$profile_font       = $profile_details->published !== 1 ? '--em-coordinator-font' : '--em-applicant-font';
 				$profile_font_title = $profile_details->published !== 1 ? '--em-coordinator-font-title' : '--em-applicant-font-title';
 
-				$style = ':root {
-					--em-profile-color: var(' . $profile_details->class . ');
-					--em-profile-font: var(' . $profile_font . ');
-					--em-profile-font-title: var(' . $profile_font_title . ');
-				}';
+				$style = ':root {';
+				if(!empty($profile_details->class))
+				{
+					$style .= '--em-profile-color: var(' . $profile_details->class . ');';
+				}
+
+				$style .= '--em-profile-font: var(' . $profile_font . ');
+					--em-profile-font-title: var(' . $profile_font_title . '); }';
+				
 
 				$wa->addInlineStyle($style);
 			}

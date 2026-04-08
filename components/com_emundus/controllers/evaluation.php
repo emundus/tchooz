@@ -1389,8 +1389,8 @@ class EmundusControllerEvaluation extends BaseController
 						else if (!$step->getMultiple())
 						{
 							// for non-multiple evaluation steps, ensure the current user's evaluation has the form URL
-							foreach ($stepWithEvaluations['evaluations'] as &$eval) {
-								$eval['url'] = str_replace('details', 'form', $eval['url'] ?? '');
+							foreach ($stepWithEvaluations['evaluations'] as $key => $eval) {
+								$stepWithEvaluations['evaluations'][$key]['url'] = str_replace('details', 'form', $eval['url'] ?? '');
 							}
 						}
 					}

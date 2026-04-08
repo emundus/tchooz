@@ -178,8 +178,10 @@ class JFalangDatabase extends JOverrideDatabase {
 
 	/**
 	* Overwritten Database method to loads the first field of the first row returned by the query.
-	*
-	* @return The value returned in the query or null if the query failed.
+     *
+	* @update 6.5 fix return not set to mixed (The) was return value and brake some ide's
+     *
+	* @return mixed The value returned in the query or null if the query failed.
 	*/
 	function loadResult( $translate=true, $language=null ) {
 		if (!$translate){

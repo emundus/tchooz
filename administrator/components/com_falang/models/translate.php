@@ -49,8 +49,9 @@ class FalangModelTranslate extends JFModel
 
 	/*
 	 * since 4.1.1
+	 * @update 6.2: php 8.4 warning in the constructor signature ?MVCFactoryInterface
 	 * */
-    public function __construct($config = array(), MVCFactoryInterface $factory = null)
+    public function __construct($config = array(), ?MVCFactoryInterface $factory = null)
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(

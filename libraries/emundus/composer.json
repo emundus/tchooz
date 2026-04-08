@@ -44,7 +44,8 @@
         "egulias/email-validator": "^4.0",
         "stripe/stripe-php": "^17.5",
         "kwn/number-to-words": "^2.12",
-        "docusign/esign-client": "^8.5"
+        "docusign/esign-client": "^8.5",
+        "symfony/expression-language": "^7.4"
     },
     "autoload": {
         "psr-4": {"Tchooz\\": "../../components/com_emundus/classes"}

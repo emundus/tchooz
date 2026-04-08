@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * @Securitycheckpro component
  * @copyright Copyright (c) 2011 - Jose A. Luque / Securitycheck Extensions
@@ -7,14 +9,12 @@
  
 namespace SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model;
 
-// Chequeamos si el archivo está incluído en Joomla!
-defined('_JEXEC') or die();
+// @codeCoverageIgnoreStart
+defined('_JEXEC') or die;
+// @codeCoverageIgnoreEnd
 
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FilemanagerModel;
 
-/**
- * Modelo Securitycheck
- */
 class ControlcenterModel extends FilemanagerModel
 {
 

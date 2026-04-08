@@ -713,14 +713,14 @@
           "sysadmin_only": false
         },
         {
-          "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_NUMBERS",
-          "name": "decimal_numbers",
-          "type": "number",
-          "helptext": "",
-          "placeholder": "",
-          "published": true,
-          "sysadmin_only": false
-        }
+					"label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_NUMBERS",
+					"name": "decimal_numbers",
+					"type": "number",
+					"helptext": "",
+					"placeholder": "",
+					"published": true,
+					"sysadmin_only": false
+				}
       ]
     }
   ],
@@ -786,7 +786,8 @@
 					"helptext": "",
 					"placeholder": "",
 					"published": true,
-					"sysadmin_only": false
+					"sysadmin_only": false,
+					"default": 20
 				}
       ]
     }
@@ -843,5 +844,87 @@
       "sysadmin_only": false
     }
   ],
-	"orderlist": []
+	"orderlist": [],
+	"numeric": [
+		{
+			"label": "COM_EMUNDUS_ONBOARD_BUILDER_NUMERIC_MIN",
+			"name": "min",
+			"type": "number",
+			"max": 99999999,
+			"helptext": "",
+			"placeholder": "",
+			"published": true,
+			"sysadmin_only": false
+		},
+		{
+			"label": "COM_EMUNDUS_ONBOARD_BUILDER_NUMERIC_MAX",
+			"name": "max",
+			"type": "number",
+			"max": 99999999,
+			"helptext": "",
+			"placeholder": "",
+			"published": true,
+			"sysadmin_only": false
+		},
+		{
+			"label": "COM_EMUNDUS_ONBOARD_BUILDER_NUMERIC_DECIMAL",
+			"name": "decimal",
+			"type": "number",
+			"helptext": "",
+			"placeholder": "",
+			"published": true,
+			"sysadmin_only": false,
+			"default": 2
+		},
+		{
+			"label": "COM_EMUNDUS_ONBOARD_BUILDER_NUMERIC_DECIMAL_SEPARATOR",
+			"name": "decimal_separator",
+			"type": "dropdown",
+			"options" : [
+				{
+					"value": ",",
+					"label": "COM_EMUNDUS_ONBOARD_BUILDER_NUMERIC_SEPARATOR_VIRGULE_VALUE"
+				},
+				{
+					"value": ".",
+					"label": "COM_EMUNDUS_ONBOARD_BUILDER_NUMERIC_SEPARATOR_POINT_VALUE"
+				}
+			],
+			"helptext": "",
+			"placeholder": "",
+			"published": true,
+			"sysadmin_only": false,
+			"default": ","
+		},
+		{
+			"label": "COM_EMUNDUS_ONBOARD_BUILDER_NUMERIC_THOUSAND_SEPARATOR",
+			"name": "thousand_separator",
+			"type": "dropdown",
+			"options": [
+				{
+					"value": " ",
+					"label": "COM_EMUNDUS_ONBOARD_BUILDER_NUMERIC_SEPARATOR_SPACE_VALUE"
+				},
+				{
+					"value": ",",
+					"label": "COM_EMUNDUS_ONBOARD_BUILDER_NUMERIC_SEPARATOR_VIRGULE_VALUE"
+				},
+				{
+					"value": ".",
+					"label": "COM_EMUNDUS_ONBOARD_BUILDER_NUMERIC_SEPARATOR_POINT_VALUE"
+				},
+				{
+					"value": "",
+					"label": "COM_EMUNDUS_ONBOARD_BUILDER_NUMERIC_SEPARATOR_NONE"
+				}
+			],
+			"helptext": "",
+			"placeholder": "",
+			"published": true,
+			"sysadmin_only": false,
+			"default": " "
+		}
+	],
+	"emundus_calculation": [
+	]
 }

@@ -3,6 +3,10 @@ defined('_JEXEC') or die();
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Editor\Editor;
+use Joomla\CMS\Application\CMSApplication;
+
+/** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\View\Firewallconfig\HtmlView $this */
+/** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel $basemodel */
 ?>
 <!-- Redirection -->
 	<div class="card mb-6">
@@ -15,29 +19,31 @@ use Joomla\CMS\Editor\Editor;
                     <div class="card-body">
                         <h4 class="card-title"><?php echo Text::_('PLG_SECURITYCHECKPRO_REDIRECT_AFTER_ATTACK_LABEL'); ?></h4>
                         <div class="controls">
-							<?php echo booleanlist('redirect_after_attack', array(), $this->redirect_after_attack) ?>
+							<?php echo $basemodel->renderSelect('redirect_after_attack','boolean',['class' => 'form-select'], $this->redirect_after_attack,false); ?>
                         </div>
-						<blockquote><p class="text-info"><small><?php echo Text::_('PLG_SECURITYCHECKPRO_REDIRECT_AFTER_ATTACK_DESCRIPTION') ?></small></p></blockquote>
+						<blockquote><p class="small text-body-secondary"><small><?php echo Text::_('PLG_SECURITYCHECKPRO_REDIRECT_AFTER_ATTACK_DESCRIPTION') ?></small></p></blockquote>
                                                                                                                       
                         <h4 class="card-title"><?php echo Text::_('PLG_SECURITYCHECKPRO_REDIRECT_LABEL'); ?></h4>
                         <div class="controls" id="redirect_options">
-							<?php echo redirectionlist('redirect_options', array(), $this->redirect_options) ?>
+							<?php echo $basemodel->renderSelect('redirect_options',['1'=> 'PLG_SECURITYCHECKPRO_JOOMLA_PATH_LABEL','2'=> 'COM_SECURITYCHECKPRO_REDIRECTION_OWN_PAGE'],['class' => 'form-select','onchange' => 'Disable()'],$this->redirect_options,false,true); ?>
                         </div>
-						<blockquote><p class="text-info"><small><?php echo Text::_('PLG_SECURITYCHECKPRO_REDIRECT_DESCRIPTION') ?></small></p></blockquote>
+						<blockquote><p class="small text-body-secondary"><small><?php echo Text::_('PLG_SECURITYCHECKPRO_REDIRECT_DESCRIPTION') ?></small></p></blockquote>
 						                                                                                                                                                
                         <h4 class="card-title"><?php echo Text::_('COM_SECURITYCHECKPRO_REDIRECTION_URL_TEXT'); ?></h4>
                         <div class="input-group">
                             <span class="input-group-text" class="background-8EBBFF"><?php echo $site_url ?></span>
-                            <input type="text" class="form-control" id="redirect_url" name="redirect_url" value="<?php echo $this->redirect_url?>" placeholder="<?php echo $this->redirect_url ?>">
+                            <input type="text" class="form-control" id="redirect_url" name="redirect_url" value="<?php echo htmlspecialchars((string) $this->redirect_url, ENT_QUOTES, 'UTF-8');?>" placeholder="<?php echo htmlspecialchars((string) $this->redirect_url, ENT_QUOTES, 'UTF-8'); ?>">
                         </div>                                            
-                        <blockquote><p class="text-info"><small><?php echo Text::_('COM_SECURITYCHECKPRO_REDIRECTION_URL_EXPLAIN') ?></small></p></blockquote>
+                        <blockquote><p class="small text-body-secondary"><small><?php echo Text::_('COM_SECURITYCHECKPRO_REDIRECTION_URL_EXPLAIN') ?></small></p></blockquote>
                                                                                                                        
                         <div class="control-group">
                             <h4 class="card-title"><?php echo Text::_('COM_SECURITYCHECKPRO_EDITOR_TEXT'); ?></h4>
-							<blockquote><p class="text-info"><small><?php echo Text::_('COM_SECURITYCHECKPRO_EDITOR_EXPLAIN') ?></small></p></blockquote>                                                                             
+							<blockquote><p class="small text-body-secondary"><small><?php echo Text::_('COM_SECURITYCHECKPRO_EDITOR_EXPLAIN') ?></small></p></blockquote>                                                                             
 								<?php 
 								// GET EDITOR SELECTED IN GLOBAL SETTINGS
-								$config = Factory::getConfig();
+								/** @var \Joomla\CMS\Application\CMSApplication $app */
+								$app = Factory::getApplication();
+								$config = $app->getConfig();
 								$global_editor = $config->get('editor');
 
 								// GET USER'S DEFAULT EDITOR

@@ -218,12 +218,12 @@ class ApplicationFileEntity
 		$this->updated_at = $updated_at;
 	}
 
-	public function getUpdatedBy(): User
+	public function getUpdatedBy(): ?User
 	{
 		return $this->updated_by;
 	}
 
-	public function setUpdatedBy(User $updated_by): void
+	public function setUpdatedBy(?User $updated_by): void
 	{
 		$this->updated_by = $updated_by;
 	}
@@ -263,17 +263,18 @@ class ApplicationFileEntity
 		return [
 			'id'                 => $this->id,
 			'user'               => $this->user->name,
+			'owner_id'           => $this->user->id,
 			'fnum'               => $this->fnum,
-			'status'             => $this->status->__serialize(),
+			'status'             => $this->status instanceof StatusEntity ? $this->status->__serialize() : ['id' => $this->status],
 			'campaign_id'        => $this->campaign_id,
-			'campaign'           => $this->campaign->__serialize(),
-			'date_submitted'     => $this->date_submitted,
+			'campaign'           => $this->campaign?->__serialize(),
+			'date_submitted'     => $this->date_submitted?->format('Y-m-d H:i:s'),
 			'published'          => $this->published,
 			'data'               => $this->data,
 			'formProgress'       => $this->formProgress,
 			'attachmentProgress' => $this->attachmentProgress,
-			'updated_at'         => $this->updated_at,
-			'updated_by'         => $this->updated_by->name,
+			'updated_at'         => $this->updated_at?->format('Y-m-d H:i:s'),
+			'updated_by'         => $this->updated_by?->name,
 			'public'             => $this->isPublic ? 1 : 0,
 		];
 	}

@@ -13,107 +13,109 @@ defined('_JEXEC') or die();
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Pagination\Pagination;
-use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
+use Joomla\CMS\Application\CMSApplication;
 
-/**
- * Modelo Vulninfo
- */
-class VulninfoModel extends BaseModel
+class VulninfoModel extends BaseDatabaseModel
 {
     /**
      Array de datos
      *
-     @var array
+     @var array<string>
      */
     var $_data;
+	
     /**
      Total items
      *
      @var integer
      */
-    var $_total = null;
+	 
+    var $total = null;
+	
     /**
      Objeto Pagination
      *
      @var object
-     */
+     */	 
     var $_pagination = null;
-
-    function __construct()
+	
+	protected function populateState(): void
     {
-        parent::__construct();
-    
-    
-        $mainframe = Factory::getApplication();
- 
-        // Obtenemos las variables de paginación de la petición
-        $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->get('list_limit'), 'uint');
-        $input = Factory::getApplication()->input;		
-		$limitstart = $input->get('limitstart', 0, 'uint');
-       
-        $this->setState('limit', $limit);
-        $this->setState('limitstart', $limitstart);
-    
-    }
-
-
-    /* 
-    * Función para obtener el número de registros de la BBDD 'securitycheck_db'
-    */
-    function getTotal()
-    {
-        // Cargamos el contenido si es que no existe todavía
-        if (empty($this->_total)) {
-            $query = $this->_buildQuery();
-            $this->_total = $this->_getListCount($query);			
-        }
-        return $this->_total;
-    }
-
-    /* 
-    * Función para la paginación 
-    */
-    function getPagination()
-    {
-        // Cargamos el contenido si es que no existe todavía
-        if (empty($this->_pagination)) {           
-            $this->_pagination = new Pagination($this->getTotal(), $this->getState('limitstart'), $this->getState('limit'));
-        }
-        return $this->_pagination;
-    }
-
-    /*
-    * Devuelve todos los componentes almacenados en la BBDD 'securitycheckpro_db'
-    */
-    function _buildQuery()
-    {
-		$local_joomla_branch = explode(".", JVERSION); 
-		$joomla_version_db = $local_joomla_branch[0] . ".0.0";
+        parent::populateState();
 		
-		$db = Factory::getContainer()->get(DatabaseInterface::class);
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+        $app   = Factory::getApplication();
+        $limit = $app->getUserStateFromRequest('global.limit', 'limit', $app->getConfig()->get('list_limit',20), 'int');
+		$limitstart = $app->getInput()->get('limitstart', 0);
 		
-		$query = $db->getQuery(true)
-			->select('*')
-			->from($db->quoteName('#__securitycheckpro_db'))
-			->where($db->quoteName('Joomlaversion') . ' = ' . $db->quote($joomla_version_db))
-			->order('id DESC');
-		$db->setQuery($query);
+		// En el caso de que los límites hayan cambiado, los volvemos a ajustar
+		$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 		
-		return $query->__toString();		
+		$this->setState('limit', $limit);
+		$this->setState('limitstart', $limitstart);         
+
+        // Filtro fijo por rama de Joomla (no hay buscador)
+        $major = (int) explode('.', JVERSION)[0];
+        $this->setState('filter.branch', $major);
     }
 
     /**
-     * Método para cargar todas las vulnerabilidades de los componentes
+     * Obtiene items paginados de la tabla de vulnerabilidades.
+     *
+     * @return array<int, array<string, string|null>>  Lista indexada de filas asociativas.
      */
-    function datos()
+    public function getItems(): array
     {
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = 'SELECT * FROM #__securitycheckpro_db ORDER BY id DESC';
-        $db->setQuery($query, $this->getState('limitstart'), $this->getState('limit'));
-        $data = $db->loadAssocList();
-        
-        return $data;
+        $db   = Factory::getContainer()->get(DatabaseInterface::class);
+        $qry  = $db->getQuery(true);
+
+        $major             = (int) $this->getState('filter.branch');
+		
+        // --- total ---
+        if ($this->total === null) {
+            $count = clone $qry;
+            $count
+                ->select('COUNT(*)')
+                ->from($db->quoteName('#__securitycheckpro_db'))
+                ->where($db->quoteName('Joomlaversion') . ' = ' . $db->quote($major));
+            $db->setQuery($count);
+            $this->total = (int) $db->loadResult();
+        }
+		
+        // Corrige start fuera de rango si cambiaron los límites
+        $limit = (int) $this->getState('limit');
+        $start = (int) $this->getState('limitstart');
+        if ($start >= $this->total && $this->total > 0) {
+            $pages = (int) floor(($this->total - 1) / max($limit, 1));
+            $start = $pages * $limit;
+            $this->setState('limitstart', $start);
+        }
+
+        // --- datos paginados ---
+        $qry = $db->getQuery(true)
+            ->select('*')
+            ->from($db->quoteName('#__securitycheckpro_db'))
+            ->where($db->quoteName('Joomlaversion') . ' = ' . $db->quote($major))
+            ->order($db->quoteName('id') . ' DESC');
+
+        $db->setQuery($qry, $start, $limit);
+        return (array) $db->loadAssocList();
+    }
+
+    public function getTotal(): int
+    {
+        if ($this->total === null) {
+            // Asegura cálculo del total si alguien llama antes a getItems()
+            $this->getItems();
+        }
+        return $this->total;
+    }
+
+    public function getPagination(): Pagination
+    {
+        return new Pagination($this->getTotal(), (int) $this->getState('limitstart'), (int) $this->getState('limit'));
     }
 }

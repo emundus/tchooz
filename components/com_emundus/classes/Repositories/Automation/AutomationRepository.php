@@ -467,17 +467,7 @@ class AutomationRepository extends EmundusRepository implements RepositoryInterf
 			// Clone condition groups and conditions
 			$clonedConditionGroups = [];
 			foreach ($automation->getConditionsGroups() as $conditionGroup) {
-				$clonedGroup = clone $conditionGroup;
-				$clonedGroup->setId(0); // Reset ID for new insertion
-
-				$clonedConditions = [];
-				foreach ($conditionGroup->getConditions() as $condition) {
-					$clonedCondition = clone $condition;
-					$clonedCondition->setId(0); // Reset ID for new insertion
-					$clonedConditions[] = $clonedCondition;
-				}
-				$clonedGroup->setConditions($clonedConditions);
-				$clonedConditionGroups[] = $clonedGroup;
+				$clonedConditionGroups[] = $this->cloneConditionGroupRecursive($conditionGroup);
 			}
 			$clonedAutomation->setConditionsGroups($clonedConditionGroups);
 
@@ -563,5 +553,34 @@ class AutomationRepository extends EmundusRepository implements RepositoryInterf
 		}
 
 		return $errors;
+	}
+
+	/**
+	 * Recursively clone a condition group, resetting IDs for the group, its conditions, and all subgroups.
+	 *
+	 * @param   ConditionGroupEntity  $group
+	 *
+	 * @return ConditionGroupEntity
+	 */
+	private function cloneConditionGroupRecursive(ConditionGroupEntity $group): ConditionGroupEntity
+	{
+		$clonedGroup = clone $group;
+		$clonedGroup->setId(0);
+		$clonedGroup->setSubGroups([]);
+
+		$clonedConditions = [];
+		foreach ($group->getConditions() as $condition) {
+			$clonedCondition = clone $condition;
+			$clonedCondition->setId(0);
+			$clonedCondition->setGroupId(0);
+			$clonedConditions[] = $clonedCondition;
+		}
+		$clonedGroup->setConditions($clonedConditions);
+
+		foreach ($group->getSubGroups() as $subGroup) {
+			$clonedGroup->addSubGroup($this->cloneConditionGroupRecursive($subGroup));
+		}
+
+		return $clonedGroup;
 	}
 }

@@ -13,27 +13,36 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
+use Joomla\Input\Input;
 use Joomla\CMS\MVC\Controller\BaseController;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\RulesModel;
 
 /**
  * Securitycheckpros  Controller
  */
 class RulesController extends BaseController
 {
-   
-    /* Método para aplicar las reglas a un grupo o conjunto de grupos */
-    public function apply_rules()
-    {
+	/**
+	 * Método para aplicar las reglas a un grupo o conjunto de grupos
+	*/
+    public function apply_rules():void {
         // Inicializamos las variables.
-        $jinput = Factory::getApplication()->input;
-        $ids    =$jinput->getVar('cid', '', 'array');
+        $app   = Factory::getApplication();
+		/** @var Input $jinput */
+		$jinput = $app->getInput();
+
+        $ids = $jinput->get('cid', [], 'array');
     
         if (empty($ids)) {
             Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_RULES_NO_GROUPS_SELECTED'), 'warning');
         } else
         {
             // Obtenemos el modelo
-            $model = $this->getModel("rules");
+            $model = $this->getModel('Rules');
+			if (!$model instanceof RulesModel) {
+				Factory::getApplication()->enqueueMessage('Rules model not found', 'error');
+				return;
+			}
 
             // Cambiamos el estado de los registros seleccionados
             if (!$model->apply_rules()) {
@@ -47,19 +56,26 @@ class RulesController extends BaseController
         $this->setRedirect('index.php?option=com_securitycheckpro&controller=securitycheckpro&view=rules&'. Session::getFormToken() .'=1');
     }
 
-    /* Método para NO aplicar las reglas a un grupo o conjunto de grupos */
-    public function not_apply_rules()
-    {
+	/**
+	 * Método para NO aplicar las reglas a un grupo o conjunto de grupos
+	*/    
+    public function not_apply_rules():void {
         // Inicializamos las variables.
-        $jinput = Factory::getApplication()->input;
-        $ids    =$jinput->getVar('cid', '', 'array');
+        $app   = Factory::getApplication();
+		/** @var Input $jinput */
+		$jinput = $app->getInput();
+        $ids = $jinput->get('cid', [], 'array');
     
         if (empty($ids)) {
             Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_RULES_NO_GROUPS_SELECTED'), 'warning');
         } else 
         {
             // Obtenemos el modelo
-            $model = $this->getModel("rules");
+            $model = $this->getModel('Rules');
+			if (!$model instanceof RulesModel) {
+				Factory::getApplication()->enqueueMessage('Rules model not found', 'error');
+				return;
+			}
 
             // Cambiamos el estado de los registros seleccionados
             if (!$model->not_apply_rules()) {
@@ -73,24 +89,29 @@ class RulesController extends BaseController
         $this->setRedirect('index.php?option=com_securitycheckpro&controller=securitycheckpro&view=rules&'. Session::getFormToken() .'=1');
     }
 
-    /* Muestra las entradas de confianza */
-    function rules_logs()
-    {
-        $jinput = Factory::getApplication()->input;
+	/**
+	 * Muestra las entradas de confianza
+	*/
+    function rules_logs():void {
+        $app   = Factory::getApplication();
+		/** @var Input $jinput */
+		$jinput = $app->getInput();
         $jinput->set('view', 'ruleslogs');
     
         parent::display();
     }
 
-    /* Redirecciona las peticiones al componente */
-    function redireccion()
-    {
+    /**
+	 * Redirecciona las peticiones al componente
+	*/
+    function redireccion():void {
         $this->setRedirect('index.php?option=com_securitycheckpro&controller=rules&view=rules');
     }
 
-    /* Redirecciona las peticiones al Panel de Control */
-    function redireccion_control_panel()
-    {
+    /**
+	 * Redirecciona las peticiones al Panel de Control
+	*/
+    function redireccion_control_panel():void {
         $this->setRedirect('index.php?option=com_securitycheckpro');
     }
 

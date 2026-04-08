@@ -4,6 +4,10 @@ require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'classes
 use Tchooz\files\Files;
 use Joomla\CMS\Factory;
 
+/**
+ * @deprecated Use ApplicationFileRepository and WorkflowRepository instead
+ */
+
 class Evaluations extends Files
 {
 	protected array $to_evaluate = [];
@@ -417,7 +421,7 @@ class Evaluations extends Files
 
 	public function getLimit(): int
 	{
-		return !empty($this->{$this->selected_tab}['limit']) ? $this->{$this->selected_tab}['limit'] : 10;
+		return !empty($this->{$this->selected_tab}['limit']) ? $this->{$this->selected_tab}['limit'] : 0;
 	}
 
 	public function setLimit(int $limit): void

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * @Securitycheckpro component
  * @copyright Copyright (c) 2011 - Jose A. Luque / Securitycheck Extensions
@@ -7,163 +9,213 @@
  
 namespace SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model;
 
-// Chequeamos si el archivo está incluído en Joomla!
 defined('_JEXEC') or die();
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\Filesystem\File;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
-use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Registry\Registry;
+use Joomla\CMS\Application\CMSApplication;
 
-/**
- * Modelo Securitycheck
- */
 class UploadModel extends BaseDatabaseModel
-{
+{    
+	/**
+     * Función que sube un fichero de configuración de la extensión Securitycheck Pro (previamente exportado) y establece esa configuración sobreescribiendo la actual
+     *
+     * @return  bool
+     *     
+     */
+    public function read_file(): bool
+	{
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app = Factory::getApplication();
+		
+		// CSRF en acciones POST de admin
+		if (!\Joomla\CMS\Session\Session::checkToken('post')) {
+		    $app->enqueueMessage(Text::_('JINVALID_TOKEN'), 'error');
+		    return false;
+		}
 
-    /* Función que sube un fichero de configuración de la extensión Securitycheck Pro (previamente exportado) y establece esa configuración sobreescribiendo la actual */
-    function read_file()
-    {
-        $res = true;
-        $secret_key = "";
-    
-        $jinput = Factory::getApplication()->input;
-    
-        // Get the uploaded file information
-        $userfile = $jinput->files->get('file_to_import');
-    
-    
-        // Make sure that file uploads are enabled in php
-        if (!(bool) ini_get('file_uploads')) {
-            Factory::getApplication()->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_WARNINSTALLFILE'), 'warning');
-            return false;
-        }
+		if (!(bool)ini_get('file_uploads')) {
+			$app->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_WARNINSTALLFILE'), 'warning');
+			return false;
+		}
 
-        // If there is no uploaded file, we have a problem...
-        if (!is_array($userfile)) {
-            Factory::getApplication()->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_NO_FILE_SELECTED'), 'warning');
-            return false;
-        }
-    
-        //First check if the file has the right extension, we need txt only
-        if (!(strtolower(pathinfo($userfile['name'], PATHINFO_EXTENSION)) == 'txt')) {
-            Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_INVALID_FILE_EXTENSION'), 'warning');
-            return false;
-        }
+		$input = $app->input;
+		$userfile = $input->files->get('file_to_import');
 
-        // Check if there was a problem uploading the file.
-        if ($userfile['error'] || $userfile['size'] < 1 || !($userfile['type'] == "text/plain")) {
-            Factory::getApplication()->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_WARNINSTALLUPLOADERROR'), 'warning');
-            return false;
-        }
+		if (!is_array($userfile) || !isset($userfile['name'],$userfile['tmp_name'],$userfile['error'],$userfile['size'])) {
+			$app->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_NO_FILE_SELECTED'), 'warning');
+			return false;
+		}
+		if ((int)$userfile['error'] !== UPLOAD_ERR_OK || (int)$userfile['size'] < 1) {
+			$app->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_WARNINSTALLUPLOADERROR'), 'warning');
+			return false;
+		}
 
-        // Build the appropriate paths
-        $config        = Factory::getConfig();
-        $tmp_dest    = $config->get('tmp_path') . '/' . $userfile['name'];
-        $tmp_src    = $userfile['tmp_name'];
+		$safeName = File::makeSafe((string)$userfile['name']);
+		if (strtolower(pathinfo($safeName, PATHINFO_EXTENSION)) !== 'json') {
+			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_INVALID_FILE_EXTENSION'), 'warning');
+			return false;
+		}
+		if ((int)$userfile['size'] > 5 * 1024 * 1024) {
+			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_FILE_TOO_LARGE'), 'warning');
+			return false;
+		}
 
-        // Move uploaded file
-        $upload_res = File::upload($tmp_src, $tmp_dest);
-    
-        // El fichero se ha subido correctamente
-        if ($upload_res) {
-            // Leemos el contenido del fichero, que ha de estar en formato json
-            $file_content = file_get_contents($tmp_dest);
-            $file_content_json = json_decode($file_content, true);
-        
-            $db = Factory::getContainer()->get(DatabaseInterface::class);
-        
-            // Si hay contenido...
-            if (!empty($file_content_json)) {
-                // ... y lo recorremos y extraemos los pares 'storage_key' y 'storage_value'
-                foreach ($file_content_json as $entry) 
-                {            
-                    // Configuración del firewall web
-                    if (array_key_exists("storage_key", $entry)) {                                        
-                           // Instanciamos un objeto para almacenar los datos que serán sobreescritos
-                           $object = new \StdClass();                    
-                           $object->storage_key = $entry["storage_key"];
-                           $object->storage_value = $entry['storage_value'];
-                    
-                           // Comprobamos si hay algún dato añadido o la tabla es null; dependiendo del resultado haremos un 'update' o un 'insert'
-                           $query = $db->getQuery(true)
-                               ->select(array('storage_key'))
-                               ->from($db->quoteName('#__securitycheckpro_storage'))
-                               ->where($db->quoteName('storage_key').' = '.$db->quote($entry["storage_key"]));
-                           $db->setQuery($query);
-                           $exists = $db->loadResult();
-                                                                    
-                        try
-                           {
-                            // Añadimos los datos a la BBDD    
-                            if (is_null($exists)) {
-                                       $res = $db->insertObject('#__securitycheckpro_storage', $object);
-                            } else 
-                            {
-                                $res = $db->updateObject('#__securitycheckpro_storage', $object, 'storage_key');
-                            }
-                            
-                            if (!$res) {
-                                Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_ERROR_IMPORTING_DATA'), 'warning');
-                                return false;
-                            }
-                        } catch (Exception $e)
-                           {    
-                            Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_ERROR_IMPORTING_DATA'), 'warning');
-                            return false;
-                        }
-                        // Configuración del componente
-                    } else if (array_key_exists("params", $entry)) {
-                    
-                                         // Obtenemos el extension_id de la extensión, necesario para actualizar la información
-                                         $query = 'SELECT extension_id FROM #__extensions WHERE name="Securitycheck Pro" and type="component"';
-                                         $db->setQuery($query);
-                                         $db->execute();
-                                         $id = $db->loadResult();
-                    
-                                         // Instanciamos un objeto para almacenar los datos que serán sobreescritos
-                                         $object = new \StdClass();                    
-                                         $object->extension_id = $id;
-                                         $object->params = $entry['params'];
-                                                                            
-                        try 
-                                         {                    
-                            // Añadimos los datos a la BBDD
-                            $res = $db->updateObject('#__extensions', $object, 'extension_id');        
-                        
-                            if (!$res) {
-                                  Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_ERROR_IMPORTING_DATA'), 'warning');
-                                  return false;
-                            }
-                        } catch (Exception $e) 
-                        {    
-                            Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_ERROR_IMPORTING_DATA'), 'warning');
-                            return false;
-                        }
-                    }
-                }
-                // Borramos el archivo subido...
-				try{		
-					if (file_exists($tmp_dest)) {
-						File::delete($tmp_dest);
-					}					
-				} catch (Exception $e)
-				{
+		$tmpDir = rtrim((string)$app->getConfig()->get('tmp_path'), DIRECTORY_SEPARATOR);
+		$dest   = $tmpDir . DIRECTORY_SEPARATOR . (uniqid('scpro_import_', true) . '_' . $safeName);
+
+		try {
+			if (!File::upload($userfile['tmp_name'], $dest)) {
+				$app->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_WARNINSTALLUPLOADERROR'), 'warning');
+				return false;
+			}
+		} catch (\Throwable) {
+			$app->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_WARNINSTALLUPLOADERROR'), 'warning');
+			return false;
+		}
+
+		$raw = @file_get_contents($dest);
+		if ($raw === false) {
+			File::delete($dest);
+			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_ERROR_IMPORTING_DATA'), 'warning');
+			return false;
+		}
+
+		$json = json_decode($raw, true, 512, JSON_BIGINT_AS_STRING);
+		if (!is_array($json) || json_last_error() !== JSON_ERROR_NONE) {
+			File::delete($dest);
+			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_INVALID_JSON'), 'warning');
+			return false;
+		}
+
+		// Validación básica
+		$storage         = $json['storage']          ?? null;
+		$componentParams = $json['component_params'] ?? null;
+		$meta            = $json['meta']             ?? [];
+
+		if (!is_array($storage)) {
+			File::delete($dest);
+			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_INVALID_JSON_SCHEMA'), 'warning');
+			return false;
+		}
+		if (isset($meta['component']) && $meta['component'] !== 'com_securitycheckpro') {
+			File::delete($dest);
+			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_WRONG_COMPONENT_IN_IMPORT'), 'warning');
+			return false;
+		}
+
+		// Solo estas claves
+		$allowedKeys = ['controlcenter','cparams','easy_config','locked','pro_plugin'];
+
+		// Omite/anonimiza campos sensibles por si vinieran con valor
+		$secretFieldRegex = '/(?i)(password|passwd|secret|token|apikey|api_key|license|private[_-]?key|client[_-]?secret)$/';
+		$stripSecrets = static function (&$value, $key) use ($secretFieldRegex) {
+			if (preg_match($secretFieldRegex, (string)$key)) {
+				if ($value !== null && $value !== '') { $value = null; }
+			}
+		};
+		array_walk_recursive($storage, $stripSecrets);
+		if (is_array($componentParams)) {
+			array_walk_recursive($componentParams, $stripSecrets);
+		}
+
+		/** @var DatabaseInterface $db */
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
+
+		try {
+			$db->transactionStart();
+
+			// 1) Upsert SOLO las claves permitidas
+			foreach ($storage as $key => $value) {
+				if (!in_array($key, $allowedKeys, true)) {
+					continue; // ignorar otras
 				}
-                
-                // ... y mostramos un mensaje de éxito
-                Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_IMPORT_SUCCESSFULLY'));
-        
-            } else 
-            {
-                Factory::getApplication()->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_WARNINSTALLUPLOADERROR'), 'warning');
-                return false;            
-            }        
-        }
-    
-        return $res;
-    }
+
+				// DB guarda JSON; aseguramos string JSON:
+				if (is_string($value)) {
+					// ¿ya viene como JSON válido?
+					$test = json_decode($value, true);
+					if (json_last_error() === JSON_ERROR_NONE) {
+						$jsonValue = $value; // ya es JSON
+					} else {
+						$jsonValue = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+					}
+				} else {
+					$jsonValue = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+				}
+
+				if ($jsonValue === false) {
+					throw new \RuntimeException('Invalid JSON for key ' . $key);
+				}
+
+				// Existe?
+				$query = $db->getQuery(true)
+					->select($db->quoteName('storage_key'))
+					->from($db->quoteName('#__securitycheckpro_storage'))
+					->where($db->quoteName('storage_key') . ' = ' . $db->quote($key));
+				$db->setQuery($query);
+				$exists = $db->loadResult();
+
+				$row = (object)[
+					'storage_key'   => $key,
+					'storage_value' => $jsonValue,
+				];
+
+				if ($exists === null) {
+					$db->insertObject('#__securitycheckpro_storage', $row);
+				} else {
+					$db->updateObject('#__securitycheckpro_storage', $row, 'storage_key');
+				}
+			}
+
+			// 2) (Opcional) fusionar params del componente si existen en el archivo
+			if (is_array($componentParams)) {
+				$query = $db->getQuery(true)
+					->select([$db->quoteName('extension_id'), $db->quoteName('params')])
+					->from($db->quoteName('#__extensions'))
+					->where($db->quoteName('element') . ' = ' . $db->quote('com_securitycheckpro'))
+					->where($db->quoteName('type') . ' = ' . $db->quote('component'))
+					->setLimit(1);
+				$db->setQuery($query);
+				$current = $db->loadAssoc();
+				if ($current) {
+					$regCurrent = new Registry($current['params'] ?? '{}');
+					$regImport  = new Registry($componentParams);
+
+					// merge seguro (sin sobreescribir secretos)
+					foreach ($regImport->toArray() as $k => $v) {
+						if (preg_match($secretFieldRegex, (string)$k) && $v !== null && $v !== '') {
+							continue;
+						}
+						$regCurrent->set($k, $v);
+					}
+
+					$row = (object)[
+						'extension_id' => (int)$current['extension_id'],
+						'params'       => (string)$regCurrent->toString('JSON'),
+					];
+					$db->updateObject('#__extensions', $row, 'extension_id');
+				}
+			}
+
+			$db->transactionCommit();
+
+		} catch (\Throwable $e) {
+			$app->enqueueMessage($e->getMessage(), 'error');			
+			try { $db->transactionRollback(); } catch (\Throwable) {}
+			File::delete($dest);
+			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_ERROR_IMPORTING_DATA'), 'warning');
+			return false;
+		}
+
+		try { File::delete($dest); } catch (\Throwable) {}
+
+		$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_IMPORT_SUCCESSFULLY'), 'message');
+		return true;
+	}
 
 }

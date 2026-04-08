@@ -88,8 +88,8 @@ class PlgFabrik_ElementAverage extends PlgFabrik_Element
 			$fields[] = [
 				'element' => $element,
 				'repeat'  => $repeat,
-				'weight'  => $average_multiple_elements->average_multiple_weight[$key],
-				'max'     => $average_multiple_elements->average_multiple_max[$key]
+				'weight'  => $average_multiple_elements->average_multiple_weight[$key] ?? 1,
+				'max'     => $average_multiple_elements->average_multiple_max[$key] ?? 20
 			];
 		}
 

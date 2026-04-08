@@ -14,14 +14,41 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
-use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use Joomla\CMS\Pagination\Pagination;
+use Joomla\Registry\Registry;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\OnlinechecksModel;
 
-
-/**
- * Main Admin View
- */
 class HtmlView extends BaseHtmlView {
     
+	/**
+	 * The model state
+	 *
+	 * @since  1.6
+	 * @var    Registry
+	 */
+	public $state;
+	
+	/**
+	 * Pagination object
+	 *
+	 * @var Pagination
+	 */
+	public $pagination = null;
+	
+	/**
+	 * Los items a mostrar
+	 *
+	 * @var list<\stdClass>
+	 */
+    public $items = [];
+	
+	/**
+	 * Array de rutas
+	 *
+	 * @var array<it,string>
+	 */
+    public $logPaths = [];
+	
     /**
      * Display the main view
      *
@@ -29,35 +56,48 @@ class HtmlView extends BaseHtmlView {
      * @return  void
      */
     function display($tpl = null) {
+		
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+        $app     = Factory::getApplication();
 		  
-		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_ONLINE_CHECK_LOGS'), 'securitycheckpro');
-		ToolBarHelper::custom('download_log_file', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_DOWNLOAD_LOG', false);
-        ToolBarHelper::custom('delete_files', 'remove', 'remove', 'COM_SECURITYCHECKPRO_DELETE_FILE');
-        ToolBarHelper::custom('view_log', 'eye', 'eye', 'COM_SECURITYCHECKPRO_REPAIR_VIEW_LOG_MESSAGE');
+		ToolbarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_ONLINE_CHECK_LOGS'), 'securitycheckpro');
+		if ($app->getIdentity()->authorise('logs.export', 'com_securitycheckpro')) {
+			ToolbarHelper::custom('download_log_file', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_DOWNLOAD_LOG');
+		}
+		if ($app->getIdentity()->authorise('logs.deleteall', 'com_securitycheckpro')) {
+			ToolbarHelper::custom('delete_files', 'remove', 'remove', 'COM_SECURITYCHECKPRO_DELETE_FILE');
+		}
+        ToolbarHelper::custom('view_log', 'eye', 'eye', 'COM_SECURITYCHECKPRO_REPAIR_VIEW_LOG_MESSAGE');
 		
 		// Load css and js
 		$this->document->getWebAssetManager()
 		  ->usePreset('com_securitycheckpro.common')		 
-		  ->useScript('com_securitycheckpro.Onlinechecks');
+		  ->useScript('com_securitycheckpro.Onlinechecks')
+		  ->useScript('list-view');
                         
-        // Obtenemos los datos del modelo
-        $model = $this->getModel();
-		$this->items = $model->load();
+        // Obtenemos el modelo de esta vista (Onlinechecks)
+		/** @var OnlinechecksModel $model */
+       	$model= $this->getModel();
+		
+		$this->items       = $this->get('Items');
 		$this->pagination    = $model->getPagination();
 		$this->state         = $model->getState();
-		
+				
 		// Filtro
         $managedevices_search = $this->state->get('filter.onlinechecks_search');
 
-        $common_model = new BaseModel();
-        $this->logs_pending = $common_model->LogsPending();
-		$this->trackactions_plugin_exists = $common_model->PluginStatus(8);
+		$this->logPaths = [];
+		foreach ($this->items as $row) {
+			$id = $row->id; // id del escaneo
+			$this->logPaths[$id] = $row->filename; // nombre del fichero de escaneo online
+		}
+		
+		Text::script('JLIB_HTML_PLEASE_MAKE_A_SELECTION');
+		Text::script('JLIB_HTML_PLEASE_SELECT_ONLY_ONE_ITEM');
+		Text::script('JLOADING');
+		Text::script('COM_SECURITYCHECKPRO_SELECT_ONLY_ONE_FILE');
 
-		// Var for the javascript file
-		$mainframe = Factory::getApplication();
-		$contenido = $mainframe->getUserState('contenido', "vacio");
-			
-		$this->document->addScriptOptions('securitycheckpro.Onlinechecks.contenido', $contenido);
+		$this->document->addScriptOptions('securitycheckpro.Onlinechecks.logspath', $this->logPaths); 
         
         parent::display($tpl);  
     }

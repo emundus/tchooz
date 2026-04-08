@@ -140,14 +140,23 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
             display: none;
         }
 
+        .em-filter-intro h4 {
+            cursor: pointer;
+        }
+
+        .em-filter-intro__close {
+            margin-bottom: 0;
+        }
+
         .em-filter-intro.em-filter-intro__close h4::after {
-            transform: rotate(-45deg);
-            -webkit-transform: rotate(-45deg);
+            transform: rotate(45deg);
+            -webkit-transform: rotate(45deg);
+            margin-bottom: 3px;
         }
 
         .em-filter-intro h4::after {
-            transform: rotate(45deg);
-            -webkit-transform: rotate(45deg);
+            transform: rotate(-135deg);
+            -webkit-transform: rotate(-135deg);
             border: solid #3D3D3D;
             border-width: 0 2px 2px 0;
             display: inline-block;
@@ -158,28 +167,44 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
             transition: 0.25s transform ease;
             height: 12px;
             width: 12px;
+            margin-bottom: -3px;
         }
     }
 
 </style>
 
 <script>
-    if(screen.width < 768) {
+    const mq = window.matchMedia('(max-width: 767px)');
 
+    function handleMobileFilter(e) {
         const filterIntro = document.querySelector('.em-filter-intro');
+        const filterIntroTitle = document.querySelector('.em-filter-intro h4');
         const filterBody = document.querySelector('.em-filter-body');
-        filterIntro.classList.add('em-filter-intro__close');
 
-        filterIntro.addEventListener('click', function(){
-            if (filterBody.style.display === "none") {
-                filterBody.style.display = "block";
-                filterIntro.classList.remove('em-filter-intro__close');
-            } else {
+        if (!filterIntro || !filterIntroTitle || !filterBody) return;
 
-                filterBody.style.display = "none";
-                filterIntro.classList.add('em-filter-intro__close');
-            }
-        });
+        if (e.matches) {
+            filterIntro.classList.add('em-filter-intro__close');
+            filterBody.style.display = "none";
 
+            filterIntroTitle.onclick = function() {
+                console.log('Clic détecté !');
+                if (filterBody.style.display === "none") {
+                    filterBody.style.display = "block";
+                    filterIntro.classList.remove('em-filter-intro__close');
+                } else {
+                    filterBody.style.display = "none";
+                    filterIntro.classList.add('em-filter-intro__close');
+                }
+            };
+        } else {
+            filterIntro.classList.remove('em-filter-intro__close');
+            filterBody.style.display = "block";
+            filterIntroTitle.onclick = null;
+        }
     }
+
+    mq.addEventListener('change', handleMobileFilter);
+    handleMobileFilter(mq);
+
 </script>

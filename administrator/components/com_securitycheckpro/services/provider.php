@@ -7,7 +7,6 @@
 
 defined('_JEXEC') || die;
 
-//use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Extension\SecuritycheckProComponent;
 use Joomla\CMS\Component\Router\RouterFactoryInterface;
 use Joomla\CMS\Dispatcher\ComponentDispatcherFactoryInterface;
 use Joomla\CMS\Extension\ComponentInterface;
@@ -28,20 +27,22 @@ use Joomla\DI\ServiceProviderInterface;
  */
 return new class implements ServiceProviderInterface {
 	
+	/**
+     * @@param Container $container
+     */
 	public function register(Container $container): void {
         $container->registerServiceProvider(new MVCFactory('\\SecuritycheckExtensions\\Component\\SecuritycheckPro'));
         $container->registerServiceProvider(new ComponentDispatcherFactory('\\SecuritycheckExtensions\\Component\\SecuritycheckPro'));
-		//$container->registerServiceProvider(new RouterFactory('\\SecuritycheckExtensions\\Component\\SecuritycheckPro'));
+		
         $container->set(
 				ComponentInterface::class,
+				/**
+				 * @param Container $container
+				 */
 				function (Container $container)
 				{
-					//$component = new SecuritycheckProComponent($container->get(ComponentDispatcherFactoryInterface::class));
 					$component = new MVCComponent($container->get(ComponentDispatcherFactoryInterface::class));
-
-					//$component->setRegistry($container->get(Registry::class));
 					$component->setMVCFactory($container->get(MVCFactoryInterface::class));
-					//$component->setRouterFactory($container->get(RouterFactoryInterface::class));
 
 					return $component;
 		}

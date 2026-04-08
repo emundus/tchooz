@@ -12,41 +12,36 @@ defined('_JEXEC') or die();
 
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Factory;
+use Joomla\Input\Input;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\SecuritycheckproBaseController;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\OnlinechecksModel;
 
 class OnlinechecksController extends SecuritycheckproBaseController
 {
     	
     // Borra ficheros de logs
-    function delete_files()
-    {
-        $model = $this->getModel("onlinechecks");
-        $model->delete_files();    
-        $jinput = Factory::getApplication()->input;
-        $jinput->set('view', 'onlinechecks');
-		parent::display();
-       
+    function delete_files():void {
+        $model = $this->getModel("Onlinechecks");
+		if (!$model instanceof OnlinechecksModel) {
+			Factory::getApplication()->enqueueMessage('Onlinechecks model not found', 'error');
+			return;
+		}
+		
+        $model->delete_files();   		
+        
+		parent::display();       
     }
 
     // Download suspicious file log
-    function download_log_file()
-    {
-        $model = $this->getModel("onlinechecks");    
+    function download_log_file():void {
+        $model = $this->getModel("Onlinechecks");
+		if (!$model instanceof OnlinechecksModel) {
+			Factory::getApplication()->enqueueMessage('Onlinechecks model not found', 'error');
+			return;
+		}
         $model->download_log_file();
         
-        $jinput = Factory::getApplication()->input;
-        $jinput->set('view', 'onlinechecks');
-           
-        
-    }
-
-    // View onlinechecks log
-    function view_log()
-    {
-        $model = $this->getModel("onlinechecks");    
-        $model->view_log();  
-
-		parent::display();
-    }
+		parent::display();      
+    }    
             
 }

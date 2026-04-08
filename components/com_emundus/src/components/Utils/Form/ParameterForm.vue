@@ -56,10 +56,19 @@ export default {
 							if (watcher.field === parameter.param && watcher.events.includes('onChange')) {
 								let values = {};
 								let fieldParameter = this.findParameterByName(field.name);
-								group.parameters.forEach(function (param) {
-									// key is the parameter name, value is the parameter value
-									values[param.param] = param.value;
-								});
+
+								if (rowIndex === null) {
+									group.parameters.forEach(function (param) {
+										// key is the parameter name, value is the parameter value
+										values[param.param] = param.value;
+									});
+								} else {
+									// if the parameter is in a repeatable group, we need to get the values of the parameters in the same row
+									group.rows[rowIndex].parameters.forEach(function (param) {
+										// key is the parameter name, value is the parameter value
+										values[param.param] = param.value;
+									});
+								}
 
 								if (fieldParameter.type === 'select') {
 									fieldParameter.options = await this.provideParameterOptions(field, values);
@@ -183,6 +192,7 @@ export default {
 		},
 		addRow(group) {
 			const newRow = {
+				id: Date.now() + Math.random(),
 				parameters: group.parameters.map((param) => ({
 					...param,
 					value: param.defaultValue || null,
@@ -192,8 +202,11 @@ export default {
 
 			this.reloadParametersRules();
 		},
-		removeRow(group, rowIndex) {
-			group.rows.splice(rowIndex, 1);
+		removeRow(group, rowToRemove) {
+			console.log('Removing row', rowToRemove);
+			console.log('group', group);
+
+			group.rows = group.rows.filter((row) => row.id !== rowToRemove.id);
 		},
 		getRowParameterValue(group, rowIndex, parameterName) {
 			const row = group.rows[rowIndex];
@@ -247,7 +260,7 @@ export default {
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="(row, rowIndex) in group.rows" :key="rowIndex" class="tw-border-b tw-border-neutral-300">
+							<tr v-for="(row, rowIndex) in group.rows" :key="row.id" class="tw-border-b tw-border-neutral-300">
 								<td
 									v-for="(field, index) in group.parameters"
 									:key="field.param + '-' + rowIndex + '-' + field.reload"
@@ -257,6 +270,7 @@ export default {
 										:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
 										:parameter-object="row.parameters[index]"
 										:key="row.parameters[index].param + '-' + rowIndex + '-' + index"
+										:asyncAttributes="field.type === 'multiselect' ? field.multiselectOptions.asyncAttributes : null"
 										@valueUpdated="
 											(parameter, oldVal, newVal) =>
 												onParameterValueUpdated(row.parameters[index], group, rowIndex, oldVal, newVal)
@@ -266,7 +280,7 @@ export default {
 								<td class="tw-border tw-border-neutral-300 tw-px-4 tw-py-2 tw-text-center">
 									<span
 										class="material-symbols-outlined not-to-close-modal tw-cursor-pointer tw-text-red-500"
-										@click="removeRow(group, rowIndex)"
+										@click="removeRow(group, row)"
 										>close</span
 									>
 								</td>
@@ -277,14 +291,14 @@ export default {
 				<div v-else>
 					<div
 						v-for="(row, rowIndex) in group.rows"
-						:key="rowIndex"
+						:key="row.id"
 						class="repeatable-row tw-mb-4 tw-mt-4 tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card"
 					>
 						<div class="tw-flex tw-w-full tw-flex-row tw-items-center tw-justify-between">
 							<h3>{{ group.title }} - {{ rowIndex + 1 }}</h3>
 							<span
 								class="material-symbols-outlined not-to-close-modal tw-cursor-pointer tw-text-red-500"
-								@click="removeRow(group, rowIndex)"
+								@click="removeRow(group, row)"
 								>close</span
 							>
 						</div>

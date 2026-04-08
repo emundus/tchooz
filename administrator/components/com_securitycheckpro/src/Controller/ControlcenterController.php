@@ -14,48 +14,58 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Session\Session;
 use Joomla\Filesystem\File;
 use Joomla\CMS\Language\Text;
+use Joomla\Input\Input;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\SecuritycheckproController;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use Joomla\CMS\Application\CMSApplication;
 
-/**
- * Securitycheckpros  Controller
- */
 class ControlcenterController extends SecuritycheckproController
 {
-
+			
     /* Redirecciona las peticiones al componente */
-    function redireccion()
+    function redireccion():void
     {
         $this->setRedirect('index.php?option=com_securitycheckpro');
     }
 
 
     /* Guarda los cambios y redirige al cPanel */
-    public function save()
+    public function save(bool $redirect=true):void
     {
-        $model = $this->getModel('base');
-        $jinput = Factory::getApplication()->input;
-        $data = $jinput->getArray($_POST);
+		$model = $this->getModel('Base');
+		if (!$model instanceof BaseModel) {
+			Factory::getApplication()->enqueueMessage('Base model not found. Error saving data', 'error');
+			return;
+		}
+        
+        $input = Factory::getApplication()->getInput();
+		$data = $input->post->getArray();
 		$model->saveConfig($data, 'controlcenter');
-
-        $this->setRedirect('index.php?option=com_securitycheckpro&view=controlcenter&'. Session::getFormToken() .'=1', Text::_('COM_SECURITYCHECKPRO_CONFIGSAVED'));
+		
+		if ($redirect){
+			$this->setRedirect('index.php?option=com_securitycheckpro&view=cpanel');
+		}
     }
 
     /* Guarda los cambios */
-    public function apply()
+    public function apply():void
     {
-        $this->save('cron_plugin');
-        $this->setRedirect('index.php?option=com_securitycheckpro&controller=controlcenter&view=controlcenter&'. Session::getFormToken() .'=1', Text::_('COM_SECURITYCHECKPRO_CONFIGSAVED'));
+        $this->save(false);
+        $this->setRedirect('index.php?option=com_securitycheckpro&controller=controlcenter&view=controlcenter&'. Session::getFormToken() .'=1');
     }
 	
 	/* Download log file */
-    function download_controlcenter_log($log_name=null)
+    function download_controlcenter_log():void
     {
-				
+		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
 		$mainframe = Factory::getApplication();
+		/** @var Input $jinput */
+		$jinput = $mainframe->getInput();
 		
-		$is_error_log = $mainframe->input->get('error_log', null);
+		/** @var bool $is_error_log */
+		$is_error_log = $jinput->get('error_log', false);
 		
 		if ($is_error_log) {
 			$filename = "error.php";
@@ -80,12 +90,12 @@ class ControlcenterController extends SecuritycheckproController
 				readfile($folder_path.$filename);
 				exit;
 			} else {
-				Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_LOGFILENOTEXISTS'), 'error');
+				Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_LOGFILENOTEXISTS'),'error');				
 			}
             
         }else
         {
-            Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_CONTROLCENTER_ERROR_RETRIEVING_FILE'), 'error');    
+			Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_CONTROLCENTER_ERROR_RETRIEVING_FILE'),'error');
         } 
         
         parent::display();    
@@ -93,13 +103,15 @@ class ControlcenterController extends SecuritycheckproController
     }
 	
 	/* Delete log file */
-    function delete_controlcenter_log()
+    function delete_controlcenter_log():void
     {
+		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
 		$mainframe = Factory::getApplication();
 		$filename = $mainframe->getUserState('download_controlcenter_log', null);
 		// Establecemos la ruta donde se almacenan los escaneos
 		$folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
-											
+		$res = false;
+		
         if (!empty($filename)) {  
 			
 			if (file_exists($folder_path.$filename)) {
@@ -109,7 +121,7 @@ class ControlcenterController extends SecuritycheckproController
 					File::delete($folder_path."error.php");
 				}
 			} else {
-				Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_LOGFILENOTEXISTS'), 'error');
+				Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_LOGFILENOTEXISTS'),'error');
 			}
             
         }else
@@ -118,12 +130,12 @@ class ControlcenterController extends SecuritycheckproController
 			if (file_exists($folder_path."error.php")) {
 				$res = File::delete($folder_path."error.php");
 			} else {
-				Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_CONTROLCENTER_ERROR_RETRIEVING_FILE'), 'error'); 
+				Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_CONTROLCENTER_ERROR_RETRIEVING_FILE'),'error');
 			}
                
         } 
-		if ($res) {
-			Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_FILE_DELETED'));
+		if ($res) {			
+			Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_FILE_DELETED'),'message');
 			$db = Factory::getContainer()->get(DatabaseInterface::class);		
 			$sql = "DELETE FROM #__securitycheckpro_storage WHERE storage_key='controlcenter_log'";
 			$db->setQuery($sql);

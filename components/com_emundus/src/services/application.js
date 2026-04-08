@@ -155,4 +155,24 @@ export default {
 			};
 		}
 	},
+	async getByFnum(fnum) {
+		try {
+			return await client.get('getByFnum', { fnum: fnum });
+		} catch (e) {
+			return {
+				status: false,
+				error: e.message,
+			};
+		}
+	},
+	async getUserAccessRightsUponFnum(fnum) {
+		try {
+			return await client.get('getUserAccessRightsUponFnum', { fnum: fnum });
+		} catch (e) {
+			return {
+				status: false,
+				error: e.message,
+			};
+		}
+	},
 };

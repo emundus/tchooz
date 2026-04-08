@@ -69,7 +69,7 @@ class DocuSignSynchronizer
 		}
 		catch (\Exception $e)
 		{
-			Log::add('Error on Yousign api connection : ' . $e->getMessage(), Log::ERROR, 'com_emundus.yousign');
+			Log::add('Error on Docusign api connection : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
 
 			throw new \Exception(Text::_('DOCUSIGN_SYNCHRONIZER_CONNECTION_ERROR'));
 		}
@@ -111,8 +111,8 @@ class DocuSignSynchronizer
 		$auth['private_key'] = "-----BEGIN RSA PRIVATE KEY-----\n" .
 			$body .
 			"-----END RSA PRIVATE KEY-----\n";
-		$auth['mode']        = !empty($params['authentication']['mode'])
-			? $params['authentication']['mode']
+		$auth['mode']        = !empty($params['configuration']['mode'])
+			? $params['configuration']['mode']
 			: 'TEST';
 
 		$this->setAccountId($auth['account_id']);

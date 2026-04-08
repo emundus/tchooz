@@ -3,6 +3,7 @@
 namespace Unit\Component\Emundus\Class\Repositories\Fabrik;
 
 use Joomla\Tests\Unit\UnitTestCase;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 
@@ -72,5 +73,23 @@ class FabrikRepositoryTest extends UnitTestCase
 
 		$this->assertNotEmpty($elements);
 		$this->assertEquals($group->getId(), $elements[0]->getGroupId());
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Fabrik\FabrikRepository::getElements
+	 * @return void
+	 */
+	public function testGetElements(): void
+	{
+		$elements = $this->repository->getElements([
+			'plugin' => [
+				ElementPluginEnum::DATABASEJOIN->value
+			],
+		], 10);
+
+		$this->assertNotEmpty($elements, 'Elements should not be empty');
+		foreach ($elements as $element) {
+			$this->assertEquals(ElementPluginEnum::DATABASEJOIN, $element->getPlugin(), 'Element plugin should be DATABASEJOIN');
+		}
 	}
 }

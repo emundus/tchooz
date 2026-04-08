@@ -9,12 +9,58 @@
  */
  
 use Joomla\CMS\Factory;
+use Joomla\CMS\Installer\Installer;
 use Joomla\Database\DatabaseDriver;
+use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseInterface;
  
 class Pkg_SecuritycheckproInstallerScript
 {
 	
+	/**
+     * Se ejecuta antes de install/update/uninstall del paquete
+     *
+     * @param  string  $type   install|update|uninstall|discover_install
+     * @param  object  $parent InstallerAdapter
+     */
+    public function preflight(string $type, $parent): bool
+    {
+        if ($type === 'uninstall') {
+            // Bandera de "desinstalación del paquete" para permitir
+            // que los sub-elementos se desinstalen sin bloquearse.
+            if (!\defined('SCP_PKG_UNINSTALLING')) {
+                \define('SCP_PKG_UNINSTALLING', true);
+            }
+        }
+		
+		// Only allow to install on PHP 8.1.0 or later
+        if (!version_compare(PHP_VERSION, '8.1.0', 'ge')) {        
+            Factory::getApplication()->enqueueMessage('Securitycheck Pro requires, at least, PHP 8.1.0', 'error');
+            return false;
+        }  else if (version_compare(JVERSION, '5.0.0', 'lt')) {
+            // Only allow to install on Joomla! 5.0.0 or later
+            Factory::getApplication()->enqueueMessage("This version only works in Joomla! 5 or higher", 'error');
+            return false;
+        }
+
+        return true;
+    }
+
+    public function uninstall($parent): void
+    {
+        // Mensaje amable para el usuario
+        Factory::getApplication()->enqueueMessage('The Securitycheck Pro Package has been uninstalled correctly.');
+    }
+	
+	 /**
+     * Runs after install, update or discover_update
+     *
+     * @param string     $type   install, update or discover_update
+     * @param Installer $parent 
+	 *
+	 * @return  boolean  True on success
+     *
+     */
 	public function postflight($type, $parent)
 	{
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
@@ -83,7 +129,8 @@ class Pkg_SecuritycheckproInstallerScript
         );
 
         $db->execute();   
-	}
-	
+		
+		return true;
+	}	
 		
 }

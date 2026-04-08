@@ -100,6 +100,11 @@ class ConditionGroupEntity
 		$this->subGroups = $subGroups;
 	}
 
+	public function addSubGroup(ConditionGroupEntity $subGroup): void
+	{
+		$this->subGroups[] = $subGroup;
+	}
+
 	/**
 	 * @param   ActionTargetEntity  $context*
 	 * @return bool

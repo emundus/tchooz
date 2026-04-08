@@ -12,6 +12,8 @@ defined('_JEXEC') or die();
 
 use Joomla\Component\Joomlaupdate\Administrator\Model\UpdateModel;
 use Joomla\Component\Users\Administrator\Model\UserModel;
+use Joomla\CMS\Extension\MVCComponent;
+use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\Filesystem\File;
@@ -27,10 +29,12 @@ use Joomla\CMS\Client\FtpClient;
 use Joomla\Filesystem\Path;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Table\Table;
+use Joomla\Registry\Registry;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Helper\AuthenticationHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Event\AbstractEvent;
+use Joomla\CMS\Client\ClientHelper;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\CpanelModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FilemanagerModel;
@@ -40,12 +44,12 @@ use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\Secur
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FirewallconfigModel;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
+use Joomla\CMS\Application\CMSApplication;
 
 if (!defined('SCP_USER_AGENT')) define('SCP_USER_AGENT', 'Securitycheck Pro User agent');
 
 class JsonModel extends BaseModel
 {
-
 	const    STATUS_OK                    = 200;    // Normal reply
 	const    STATUS_NOT_AUTH                = 401;    // Invalid credentials
 	const    STATUS_NOT_ALLOWED            = 403;    // Not enough privileges
@@ -54,45 +58,115 @@ class JsonModel extends BaseModel
 	const    STATUS_ERROR                = 500;    // An error occurred
 	const    STATUS_NOT_IMPLEMENTED        = 501;    // Not implemented feature
 	const    STATUS_NOT_AVAILABLE        = 503;    // Remote service not activated
-
 	const    CIPHER_RAW            = 1;    // Data in plain-text JSON
 	const    CIPHER_AESCBC256        = 2;    // Data in AES-256 standard (CBC) mode encrypted JSON
-
-	private    $json_errors = array(
-	'JSON_ERROR_NONE' => 'No error has occurred (probably emtpy data passed)',
-	'JSON_ERROR_DEPTH' => 'The maximum stack depth has been exceeded',
-	'JSON_ERROR_CTRL_CHAR' => 'Control character error, possibly incorrectly encoded',
-	'JSON_ERROR_SYNTAX' => 'Syntax error'
-	);
-
-		// Inicializamos las variables
-	private    $status = 200;  // Estado de la petición
-	private $cipher = 2;    // Método usado para cifrar los datos
-	private $clear_data = '';        // Datos enviados en la petición del cliente (ya en claro)
-	public $data = '';        // Datos devueltos al cliente
-	private $password = null;
-	private $method_name = null;
-	private $log_buffer = '******* Start of file ******* </br>';    // Buffer para almacenar el continido del fichero de logs
-	private $createfolder = false;    // ¿Se ha creado el directorio para guardar los resultados?
-	private $remote_site = '';
-	private $same_branch = true;    // ¿Pertenecen los dos sitios a la misma versión de Joomla?
-	private $stored_filename = '';    // Fichero remoto descargado
-	private $database_name = '';    // Nombre del fichero .out
-	private $maintain_db_structure = 0;    // Indica si hemos de mantener la estructura (establecida en configuration.php) del sitio local
-	private $database_prefix = null;    // Prefijo de la BBDD local, necesaria si hemos de mantener la estructura de la BBDD local
-	private $remote_database_prefix = null;    // Prefijo de la BBDD remota, necesaria si hemos de mantener la estructura de la BBDD local
-	private $delete_existing_db = 0;    // Indica si hemos de borrar la BBDD local (aplicable sólo si no hemos de mantener la estructura del sitio)
-	private $cipher_file = 0;    // Indica si el fichero remoto está cifrado
-	private $backupinfo = array('product' => '', 'latest' => '', 'latest_status' => '', 'latest_type' => '');
-	private $update_database_plugin_needs_update = 0;   // Indica si el plugin 'Update Database' necesita actualizarse
-	private $info = null;  // Contendrá información sobre el sistema: versión de php, mysql y servidor
-	private $site = null;  // Contendrá la url a la que hemos de devolver el callback
-	private $site_id = null;  // Contendrá la id de la web en Control Center
-	public $log_filename = '';    // Nombre del fichero de logs
-	// Establecemos la ruta donde se almacenarán los escaneos
-    private $folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans';
-	private $array_result = array(); // Contendrá el resultado de las actualizaciones
 	
+	// Inicializamos las variables
+	/**
+     * Estado de la petición
+     *
+     * @var int
+     */
+	private $status = 200;
+	
+	/**
+     * Método usado para cifrar los datos
+     *
+     * @var int
+     */
+	private $cipher = 2; 
+	
+	/**
+     * Datos enviados en la petición del cliente (ya en claro)
+     *
+     * @var string
+     */
+	private $clear_data = '';
+	
+	/**
+     * Datos devueltos al cliente
+     *
+     * @var array<string,mixed>|string
+     */
+	public $data = []; 
+	
+	/**
+     * Password
+     *
+     * @var string
+     */	 
+	private $password = '';
+		
+	/**
+     * Información sobre el backup
+     *
+     * @var array<strig,string>
+     */	
+	private $backupinfo = [
+		'product' => '',
+		'latest' => '', 
+		'latest_status' => '',
+		'latest_type' => ''
+	];
+	
+	/**
+     * Indica si el plugin 'Update Database' necesita actualizarse
+     *
+     * @var int
+     */	
+	private $update_database_plugin_needs_update = 0; 
+	
+	/**
+     * Contendrá información sobre el sistema: versión de php, mysql y servidor
+     *
+     * @var array<string,mixed>
+     */	
+	private $info = [];
+	
+	/**
+     * Contendrá la url a la que hemos de devolver el callback
+     *
+     * @var string
+     */		 
+	private $site = '';
+	
+	/**
+     * Contendrá la id de la web en Control Center
+     *
+     * @var string
+     */
+	private $site_id = '';
+	
+	/**
+     * Nombre del fichero de logs
+     *
+     * @var string|null
+     */
+	public $log_filename = '';    // Nombre del fichero de logs
+	
+	/**
+     * Establecemos la ruta donde se almacenarán los escaneos
+     *
+     * @var string
+     */
+    private $folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans';
+	
+	/**
+     * Contendrá el resultado de las actualizaciones
+     *
+     * @var array<string,mixed>
+     */
+	private $array_result = [];
+	
+	/**
+     * Función que registra una tarea
+     *
+     *
+	 * @param   string             $json    The task in json format	
+	 * 	 
+     * @return  string
+     *     
+     */
 	public function register_task($json)
 	{
 		$task_checker_enabled = $this->PluginStatus(9);
@@ -135,7 +209,15 @@ class JsonModel extends BaseModel
 		}
 	}
 	
-	// Función que realiza una determinada función según los parámetros especificados en la variable pasada como argumento
+	/**
+     * Función que realiza una determinada función según los parámetros especificados en la variable pasada como argumento
+     *
+     *
+	 * @param   string             $json    The task in json format	
+	 * 	 
+     * @return  array<string,mixed>|void|string|null
+	 *     
+     */
 	public function execute($json)
 	{
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
@@ -195,7 +277,7 @@ class JsonModel extends BaseModel
 			$message = "Function Execute. Can't get configuration.";
 			$this->write_log($message,"ERROR");
 
-			return $this->sendResponse();
+			$this->sendResponse();
 		}
 
 		if (!array_key_exists('control_center_enabled', $config))
@@ -223,7 +305,7 @@ class JsonModel extends BaseModel
 			$message = "Function Execute. Remote password not configured.";
 			$this->write_log($message,"ERROR");
 
-			return $this->sendResponse();
+			$this->sendResponse();
 		}
 				
 		// Si el frontend no está habilitado, devolvemos un error 503
@@ -239,7 +321,7 @@ class JsonModel extends BaseModel
 			$message = "Function Execute. Frontend disabled.";
 			$this->write_log($message,"ERROR");
 
-			return $this->sendResponse();
+			$this->sendResponse();
 		}
 		
 		
@@ -267,7 +349,7 @@ class JsonModel extends BaseModel
 					$this->status = self::STATUS_ERROR;
 					$this->cipher = self::CIPHER_RAW;				
 										
-					return $this->sendResponse();
+					$this->sendResponse();
 				}
 			}
 				
@@ -286,7 +368,7 @@ class JsonModel extends BaseModel
 				$this->status = self::STATUS_ERROR;
 				$this->cipher = self::CIPHER_RAW;				
 										
-				return $this->sendResponse();
+				$this->sendResponse();
 			}
 		}			
 		
@@ -306,7 +388,7 @@ class JsonModel extends BaseModel
 						$this->status = self::STATUS_NOT_ALLOWED;
 						$this->cipher = self::CIPHER_RAW;
 
-						return $this->sendResponse();
+						$this->sendResponse();
 					}
 				break;				
 
@@ -330,14 +412,14 @@ class JsonModel extends BaseModel
 				$filemanager_model = new FilemanagerModel();
 				$this->log_filename = $filemanager_model->get_log_filename("controlcenter_log", true);
 				if (empty($this->log_filename)) {
-					$this->log_filename = $filemanager_model->prepareLog("controlcenter",true);					
+					$this->log_filename = $filemanager_model->prepareLog("controlcenter");					
 				} else if ( (file_exists($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename)) && (filesize($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename) > ($max_log_size * 1024)) ) {
 					//Rotate log file
 					File::delete($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename);
-					$this->log_filename = $filemanager_model->prepareLog("controlcenter",true);
+					$this->log_filename = $filemanager_model->prepareLog("controlcenter");
 				}	
 				
-			} catch (Exception $e)
+			} catch (\Exception $e)
 			{
 				$this->log_filename = "error.php";
 				$message = "Function Execute. " . $e->getMessage();
@@ -429,15 +511,21 @@ class JsonModel extends BaseModel
 					$this->data = 'Method not configured';
 					$this->status = self::STATUS_NOT_FOUND;
 					$this->cipher = self::CIPHER_RAW;
-					return $this->sendResponse();
+					$this->sendResponse();
 			}
 
-			return $this->sendResponse();
+			$this->sendResponse();
 		}
 	}
 
-		// Función que empaqueta una respuesta en formato JSON codificado, cifrando los datos si es necesario
-
+	/**
+     * Función que empaqueta una respuesta en formato JSON codificado, cifrando los datos si es necesario
+     *
+	 * @param   string|null         $connect_back_url    The url to connect back to	
+	 * 	 
+     * @return  void
+	 *     
+     */
 	public function sendResponse($connect_back_url=null)
 	{
 		
@@ -465,8 +553,7 @@ class JsonModel extends BaseModel
 		switch ($this->cipher)
 		{
 			case self::CIPHER_RAW:
-			break;		
-
+				break;
 			case self::CIPHER_AESCBC256:
 				$data = $this->encrypt($data, $this->password);
 			break;
@@ -527,7 +614,14 @@ class JsonModel extends BaseModel
 		}
 	}
 
-	// Extraemos los parámetros del componente
+	/**
+     * Extraemos los parámetros del componente
+     *
+	 * @param   string             $key_name    The name of the securitycheckpro_storage key
+	 * 	 
+     * @return  array<string,mixed>
+	 *     
+     */
 	private function Config($key_name)
 	{
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
@@ -543,7 +637,15 @@ class JsonModel extends BaseModel
 		return $res;
 	}
 	
-	// Guardamos los parámetros del componente
+	/**
+     * Guardamos los parámetros del componente
+     *
+	 * @param   array<string, mixed>     $params   		The string to convert to json
+	 * @param   string            		 $key_name   	The name of the securitycheckpro_storage key
+	 * 	 
+     * @return  void
+	 *     
+     */
 	private function SaveStorageParams($params,$key_name)
 	{
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
@@ -556,7 +658,7 @@ class JsonModel extends BaseModel
 		
 		try {
 			$db->updateObject('#__securitycheckpro_storage', $object, 'storage_key');
-		} catch (Exception $e)
+		} catch (\Exception $e)
 		{
 			$this->log_filename = "error.php";
 			$message = "Function SaveStorageParams. " . $e->getMessage();
@@ -564,11 +666,19 @@ class JsonModel extends BaseModel
 		} 		
 	}
 	
-	/* Devuelve una fecha datetime usando el offset establecido en Joomla */
+	/**
+     * Devuelve una fecha datetime usando el offset establecido en Joomla
+     *
+	 *
+     * @return  string
+	 *     
+     */
 	public function get_Joomla_timestamp()
 	{
 		// Obtenemos el timezone de Joomla y sobre esa información calculamos el timestamp
-		$config = Factory::getConfig();
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app       = Factory::getApplication();
+		$config = $app->getConfig();
 		$offset = $config->get('offset');
 						
 		if (empty($offset))
@@ -582,7 +692,15 @@ class JsonModel extends BaseModel
 		return $timestamp_joomla_timezone;
 	}
 	
-	/* Crea un log de una tarea lanzada */
+	/**
+     * Crea un log de una tarea lanzada
+     *
+	 * @param   string             $message   	The message
+	 * @param   string             $level    	The level of the message
+	 * 	 
+     * @return  void
+	 *     
+     */
     function write_log($message,$level="INFO")
     {
 		$fp2 = @fopen($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename, 'ab');		
@@ -599,8 +717,15 @@ class JsonModel extends BaseModel
 		@fclose($fp2);
     }
 	
-
-	// Función que verifica una fecha
+	/**
+     * Función que verifica una fecha
+     *
+	 * @param   string             $date   	The date to check
+	 * @param   bool             $strict  
+	 * 	 
+     * @return  bool
+	 *     
+     */
 	public function verifyDate($date, $strict = true)
 	{
 		$dateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $date);
@@ -618,8 +743,14 @@ class JsonModel extends BaseModel
 		return $dateTime !== false;
 	}
 
-	// Función que devuelve el estado de la extensión remota
-
+	/**
+     * Función que devuelve el estado de la extensión remota
+     *
+	 * @param   bool             $opcion   	The option
+	 * 	 
+     * @return  void
+	 *     
+     */
 	public function getStatus($opcion=true)
 	{
 		
@@ -647,22 +778,15 @@ class JsonModel extends BaseModel
 		
 		$this->write_log("Importing models...");
 				
-		
 		$cpanel_model = new CpanelModel();
 		$filemanager_model = new FileManagerModel();
 		$update_model = new DatabaseupdatesModel();
-				
-		if ((empty($cpanel_model)) || (empty($filemanager_model)) || (empty($update_model)))
-		{
-			$this->write_log("Error retreiving external models","ERROR");
-			return;
-		}
-
+		
 		$this->write_log("Getting update database plugin status...");
 		// Comprobamos el estado del plugin Update Database
 		$update_database_plugin_installed = $update_model->PluginStatus(4);
-		$update_database_plugin_version = $update_model->get_database_version();
-		$update_database_plugin_last_check = $update_model->last_check();
+		$update_database_plugin_version = $update_model->getDatabaseVersion();
+		$update_database_plugin_last_check = $update_model->lastCheck();
 		
 		$this->write_log("Checking vulnerable extensions...");
 		// Vulnerable components
@@ -708,7 +832,7 @@ class JsonModel extends BaseModel
 		$suspicious_files = $filemanager_model->loadStack("malwarescan_resume", "suspicious_files");
 
 		// Última optimización bbdd
-		$last_check_database_optimization = $this->get_campo_filemanager('last_check_database');
+		$last_check_database_optimization = $this->GetCampoFilemanager('last_check_database');
 
 		// If malwarescan has not been launched, we set a '0' value.
 		if (is_null($suspicious_files))
@@ -721,11 +845,30 @@ class JsonModel extends BaseModel
 		$this->getBackupInfo();
 
 		// Verificamos si el core está actualizado (obviando la caché)
-		$updatemodel = new UpdateModel;
-		
-		$updatemodel->refreshUpdates(true);
-		$coreInformation = $updatemodel->getUpdateInformation();
+		// Boot del componente
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app       = Factory::getApplication();
+		$component = $app->bootComponent('com_joomlaupdate');
 
+		if (!$component instanceof MVCComponent) {
+			$this->log_filename = "error.php";
+			$message = "Component com_joomlaupdate no es MVCComponent.";
+			$this->write_log($message,"ERROR");
+			
+			$this->data = "Component com_joomlaupdate no es MVCComponent.";
+			$this->status = self::STATUS_ERROR;
+			$this->cipher = self::CIPHER_RAW;
+						
+			$this->sendResponse();
+		}
+
+		$factory = $component->getMVCFactory();
+		/** @var \Joomla\Component\Joomlaupdate\Administrator\Model\UpdateModel $updateModel */ 
+		$updateModel = $factory->createModel('Update', 'Administrator', ['ignore_request' => true]); 
+		
+		$updateModel->refreshUpdates(true);
+		$coreInformation = $updateModel->getUpdateInformation();
+				
 		// Si el plugin 'Update Batabase' está instalado, comprobamos si está actualizado
 		if ($update_database_plugin_installed)
 		{
@@ -771,8 +914,8 @@ class JsonModel extends BaseModel
 
 		$this->write_log("Getting 2FA status...");
 		// Chequeamos si el segundo factor de autenticación está habilitado
-		$two_factor = $this->get_two_factor_status(true);
-
+		(int) $two_factor = $this->get_two_factor_status();
+				
 		$this->write_log("Getting info about outdated extensions...");
 		// Añadimos la información sobre las extensiones no actualizadas. Esta opción no es necesaria cuando escogemos la opción 'System Info'
 		if ($opcion)
@@ -886,12 +1029,18 @@ class JsonModel extends BaseModel
 		// Obtenemos el porcentaje para 'Overall security status'
 		$overall = $this->getOverall($this->data);
 		$this->data['overall'] = $overall;
-		
+				
 		$this->write_log("GETSTATUS task finished");
 
 	}
 
-	// Chequea si la opción "Lock tables" está habilitada
+	/**
+     * Chequea si la opción "Lock tables" está habilitada
+     *
+	 * 	 
+     * @return  bool
+	 *     
+     */
 	function check_locked_tables()
 	{
 		$locked = false;
@@ -904,18 +1053,24 @@ class JsonModel extends BaseModel
 			$db->execute();
 			$locked = $db->loadResult();
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			$this->log_filename = "error.php";
 			$message = "Function check_locked_tables. " . $e->getMessage();
 			$this->write_log($message,"ERROR");
-			return 0;
+			return false;
 		}
 
 		return $locked;
 	}
 
-	// Chequea si el fichero kickstart.php existe en la raíz del sitio. Esto sucede cuando se restaura un sitio y se olvida (junto con algún backup) eliminarlo.
+	/**
+     * Chequea si el fichero kickstart.php existe en la raíz del sitio. Esto sucede cuando se restaura un sitio y se olvida (junto con algún backup) eliminarlo.
+     *
+	 * 	 
+     * @return  bool
+	 *     
+     */
 	function check_kickstart()
 	{
 		$found = false;
@@ -928,141 +1083,88 @@ class JsonModel extends BaseModel
 				$found = true;
 			}
 		}
-
 		return $found;
-
 	}
 
-	// Obtiene el estado del segundo factor de autenticación de Joomla (Google y Yubikey)
-	function get_two_factor_status($overall=false)
+	/**
+     * Obtiene el estado del segundo factor de autenticación de Joomla (Google y Yubikey)
+     *
+	 * @param   bool     $overall    Si la variable "overall" es false utilizamos el método getTwoFactorMethods para obtener la información de los plugins; si es true no podemos usar ese método ya
+	 * que necesitamos que el usuario esté logado DEPRECATED
+	 * 	 
+     * @return  int
+	 *     
+     */
+	function get_two_factor_status(bool $overall = false): int
 	{
-		$enabled = 0;
-		$mfa = 0;
+		// Ignoramos $overall en J5/J6: con consultas directas no hace falta sesión.
+		try {
+			$db = Factory::getContainer()->get(DatabaseInterface::class);
 
-		// Si la variable "overall" es false utilizamos el método getTwoFactorMethods para obtener la información de los plugins; si es true no podemos usar ese método ya que necesitamos que el usuario esté logado
+			// 1) ¿Hay plugins TOTP/YubiKey habilitados? (carpeta multifactorauth)
+			//    Preferimos PluginHelper::isEnabled por claridad; si falla, caemos a SQL.
+			$totpEnabled    = PluginHelper::isEnabled('multifactorauth', 'totp');
+			$yubiKeyEnabled = PluginHelper::isEnabled('multifactorauth', 'yubikey');
 
-		if (!$overall)
-		{
-			$methods = AuthenticationHelper::getTwoFactorMethods();
-			
-			if (empty($methods)) {
-				// The 'getTwoFactorMethods' will be deprecated since 4.2.0. Let's use the new method
-				$methods = \Joomla\Component\Users\Administrator\Helper\Mfa::getUserMfaRecords(0);	
-				foreach ($methods as $user_method)
-				{
-					if ( ($user_method->method == 'totp') || ($user_method->method == 'yubikey') )
-					{
-						$mfa = 1;
-						break;
-					}						
-				}
-			}
-			
-			if (count($methods) > 1)
-			{
-				if ($mfa == 1) {
-					return 2;
-				}
-				$enabled = 1;
-
-				// Chequeamos que al menos un Super usuario tenga el método habilitado
-				try
-				{
-					$db = Factory::getContainer()->get(DatabaseInterface::class);
-					$query = 'SELECT user_id FROM #__user_usergroup_map WHERE group_id="8"';
-					$db->setQuery($query);
-					$db->execute();
-					$super_users_ids = $db->loadColumn();
-				}
-				catch (Exception $e)
-				{
-					$this->log_filename = "error.php";
-					$message = "Function get_two_factor_status. " . $e->getMessage();
-					$this->write_log($message,"ERROR");
-					return 1;
-				}
-
-				$model = new UserModel(array('ignore_request' => true));
-				
-
-				foreach ($super_users_ids as $user_id)
-				{
-					$otpConfig = $model->getOtpConfig($user_id);
-
-					// Check if the user has enabled two factor authentication
-					if (!empty($otpConfig->method) && !($otpConfig->method === 'none'))
-					{
-						$enabled = 2;
-					}
-				}
-			} 
-		}
-		else
-		{
-			if (version_compare(JVERSION, '4.2.0', 'gt')) {
-				try
-				{
-					$db = Factory::getContainer()->get(DatabaseInterface::class);
-					$query = 'SELECT COUNT(*) FROM #__extensions WHERE type="plugin" and folder="multifactorauth" and enabled="1"';
-					$db->setQuery($query);
-					$db->execute();
-					(int) $mfa_plugins_enabled = $db->loadResult();
-					if ($mfa_plugins_enabled >= 1){
-						return 1;
-					} else {
-						return 0;
-					}
-					
-				}
-				catch (Exception $e)
-				{
-					$this->log_filename = "error.php";
-					$message = "Function get_two_factor_status - J4. " . $e->getMessage();
-					$this->write_log($message,"ERROR");
-				}
-			}		
-			
-			try
-			{
-				$db = Factory::getContainer()->get(DatabaseInterface::class);
-				$query = $db->getQuery(true)
-					->select(array($db->quoteName('enabled')))
+			if (!$totpEnabled && !$yubiKeyEnabled) {
+				// Fallback por si PluginHelper no refleja el estado (instalaciones raras):
+				$q = $db->getQuery(true)
+					->select('COUNT(*)')
 					->from($db->quoteName('#__extensions'))
-					->where($db->quoteName('name') . ' = ' . $db->quote('plg_twofactorauth_totp'));
-				$db->setQuery($query);
-				$enabled = $db->loadResult();
-			}
-			catch (Exception $e)
-			{
-				$this->log_filename = "error.php";
-				$message = "Function get_two_factor_status - second else condition. " . $e->getMessage();
-				$this->write_log($message,"ERROR");
+					->where($db->quoteName('type') . '=' . $db->quote('plugin'))
+					->where($db->quoteName('folder') . '=' . $db->quote('multifactorauth'))
+					->where($db->quoteName('enabled') . '=1')
+					->where($db->quoteName('element') . ' IN (' . $db->quote('totp') . ',' . $db->quote('yubikey') . ')');
+				$db->setQuery($q);
+				$enabledPlugins = (int) $db->loadResult();
+
+				if ($enabledPlugins === 0) {
+					return 0;
+				}
 			}
 
-			if ($enabled == 0)
-			{
-				try
-				{
-					$query = $db->getQuery(true)
-						->select(array($db->quoteName('enabled')))
-						->from($db->quoteName('#__extensions'))
-						->where($db->quoteName('name') . ' = ' . $db->quote('plg_twofactorauth_yubikey'));
-					$db->setQuery($query);
-					$enabled = $db->loadResult();
-				}
-				catch (Exception $e)
-				{
-					$this->log_filename = "error.php";
-					$message = "Function get_two_factor_status - third condition. " . $e->getMessage();
-					$this->write_log($message,"ERROR");
-				}
+			// 2) Obtener IDs de superusuarios
+			$q = $db->getQuery(true)
+				->select('DISTINCT ' . $db->quoteName('user_id'))
+				->from($db->quoteName('#__user_usergroup_map'))
+				->where($db->quoteName('group_id') . '=8');
+			$db->setQuery($q);
+			$superUserIds = array_map('intval', (array) $db->loadColumn());
+
+			if (empty($superUserIds)) {
+				// No hay superusuarios asignados: hay plugins, pero nadie lo puede tener configurado
+				return 1;
 			}
+
+			// 3) ¿Algún superusuario tiene TOTP o YubiKey configurado?
+			//    Consultamos #__user_mfa (tabla nueva de MFA en J4+).
+			//    Hacemos IN de forma segura.
+			$inList = implode(',', $superUserIds);
+
+			$q = $db->getQuery(true)
+				->select('1')
+				->from($db->quoteName('#__user_mfa'))
+				->where($db->quoteName('user_id') . ' IN (' . $inList . ')')
+				->where($db->quoteName('method') . ' IN (' . $db->quote('totp') . ',' . $db->quote('yubikey') . ')')
+				->setLimit(1);
+			$db->setQuery($q);
+			$hasAny = (int) $db->loadResult();
+
+			return $hasAny ? 2 : 1;
+		} catch (\Throwable $e) {			
+			$this->write_log("get_two_factor_status: " . $e->getMessage(), "ERROR");
+			return 0; // Conservador
 		}
-
-		return $enabled;
 	}
 
-		// Obtiene el porcentaje general de cada una de las barras de progreso
+	/**
+     * Obtiene el porcentaje general de cada una de las barras de progreso
+     *
+	 * @param   array<string,mixed>     $info    El array con la información
+	 * 	 
+     * @return  int
+	 *     
+     */
 	function getOverall($info)
 	{
 		// Inicializamos variables
@@ -1121,8 +1223,12 @@ class JsonModel extends BaseModel
 		return $overall;
 	}
 
-		// Función que comprueba si existen extensiones vulnerables
-
+	/**
+     * Función que comprueba si existen extensiones vulnerables
+     * 	 
+     * @return  void
+	 *     
+     */
 	private function checkVuln()
 	{
 		$this->write_log("Launching CHECKVULN task");
@@ -1134,12 +1240,12 @@ class JsonModel extends BaseModel
 				
 		$this->write_log("Looking for updates...");
 		// Comprobamos si existen nuevas actualizaciones
-		$result = $update_model->tarea_comprobacion();
+		$update_model->tarea_comprobacion();
 
 		// Comprobamos el estado del plugin Update Database
 		$update_database_plugin_installed = $update_model->PluginStatus(4);
-		$update_database_plugin_version = $update_model->get_database_version();
-		$update_database_plugin_last_check = $update_model->last_check();
+		$update_database_plugin_version = $update_model->getDatabaseVersion();
+		$update_database_plugin_last_check = $update_model->lastCheck();
 		
 		$this->write_log("Looking for vulnerable extensions...");
 		// Hacemos una nueva comprobación de extensiones vulnerables
@@ -1152,18 +1258,22 @@ class JsonModel extends BaseModel
 		$db->execute();
 		$vuln_extensions = $db->loadResult();
 
-		$this->data = array(
-		'vuln_extensions'        => $vuln_extensions,
-		'update_database_plugin_installed'    => $update_database_plugin_installed,
-		'update_database_plugin_version'    => $update_database_plugin_version,
-		'update_database_plugin_last_check'    => $update_database_plugin_last_check
-		);
+		$this->data = [
+			'vuln_extensions'        => $vuln_extensions,
+			'update_database_plugin_installed'    => $update_database_plugin_installed,
+			'update_database_plugin_version'    => $update_database_plugin_version,
+			'update_database_plugin_last_check'    => $update_database_plugin_last_check
+		];
 		
 		$this->write_log("CHECKVULN task finished");
 	}
 
-		// Función que comprueba si existen logs por leer
-
+	/**
+     * Función que comprueba si existen logs por leer
+     * 	 
+     * @return  void
+	 *     
+     */
 	private function checkLogs()
 	{
 		$this->write_log("Launching CHECKLOGS task");
@@ -1177,15 +1287,19 @@ class JsonModel extends BaseModel
 		// Check for unread logs
 		(int) $logs_pending = $cpanel_model->LogsPending();
 
-		$this->data = array(
-		'logs_pending'    => $logs_pending
-		);
+		$this->data = [
+			'logs_pending'    => $logs_pending
+		];
 		
 		$this->write_log("CHECKLOGS task finished");
-
 	}
 
-	// Función que lanza un chequeo de permisos
+	/**
+     * Función que lanza un chequeo de permisos
+     * 	 
+     * @return  void
+	 *     
+     */
 	private function checkPermissions()
 	{
 		$this->write_log("Launching CHECKPERMISSIONS task");
@@ -1197,10 +1311,10 @@ class JsonModel extends BaseModel
 		
 		$this->write_log("Launching permissions scan...");
 		
-		$filemanager_model->set_campo_filemanager('files_scanned', 0);
+		$filemanager_model->setCampoFilemanager('files_scanned', 0);
 		$timestamp = $this->get_Joomla_timestamp();
-		$filemanager_model->set_campo_filemanager('last_check', $timestamp);
-		$filemanager_model->set_campo_filemanager('estado', 'IN_PROGRESS');
+		$filemanager_model->setCampoFilemanager('last_check', $timestamp);
+		$filemanager_model->setCampoFilemanager('estado', 'IN_PROGRESS');
 		$filemanager_model->scan("permissions");
 		
 		$this->write_log("Retrieving status...");
@@ -1217,17 +1331,20 @@ class JsonModel extends BaseModel
 		// FileManager last check
 		$last_check = $filemanager_model->loadStack("filemanager_resume", "last_check");
 
-		$this->data = array(
-		'files_with_incorrect_permissions'        => $files_with_incorrect_permissions,
-		'last_check' => $last_check
-		);
+		$this->data = [
+			'files_with_incorrect_permissions'        => $files_with_incorrect_permissions,
+			'last_check' => $last_check
+		];
 		
 		$this->write_log("CHECKPERMISSIONS task finished");
-
 	}
 
-		// Función que lanza un chequeo de integridad
-
+	/**
+     * Función que lanza un chequeo de integridad
+     * 	 
+     * @return  void
+	 *     
+     */
 	private function checkIntegrity()
 	{
 		$this->write_log("Launching CHECKINTEGRITY task");
@@ -1239,10 +1356,10 @@ class JsonModel extends BaseModel
 				
 		$this->write_log("Launching integrity scan...");
 
-		$filemanager_model->set_campo_filemanager('files_scanned_integrity', 0);
+		$filemanager_model->setCampoFilemanager('files_scanned_integrity', 0);
 		$timestamp = $this->get_Joomla_timestamp();
-		$filemanager_model->set_campo_filemanager('last_check_integrity', $timestamp);
-		$filemanager_model->set_campo_filemanager('estado_integrity', 'IN_PROGRESS');
+		$filemanager_model->setCampoFilemanager('last_check_integrity', $timestamp);
+		$filemanager_model->setCampoFilemanager('estado_integrity', 'IN_PROGRESS');
 		$filemanager_model->scan("integrity");
 		
 		$this->write_log("Retrieving status...");
@@ -1259,16 +1376,20 @@ class JsonModel extends BaseModel
 		// FileIntegrity last check
 		$last_check_integrity = $filemanager_model->loadStack("fileintegrity_resume", "last_check_integrity");
 
-		$this->data = array(
-		'files_with_bad_integrity'        => $files_with_bad_integrity,
-		'last_check_integrity' => $last_check_integrity
-		);
+		$this->data = [
+			'files_with_bad_integrity'        => $files_with_bad_integrity,
+			'last_check_integrity' => $last_check_integrity
+		];
 		
 		$this->write_log("CHECKINTEGRITY task finished");
-
 	}
 
-	// Borra los logs pertenecientes a intentos de acceso bloqueados
+	/**
+     * Borra los logs pertenecientes a intentos de acceso bloqueados
+     * 	 
+     * @return  void
+	 *     
+     */
 	private function deleteBlocked()
 	{
 		$this->write_log("Launching DELETEBLOCKED task");
@@ -1287,55 +1408,19 @@ class JsonModel extends BaseModel
 		// Check for unread logs
 		(int) $logs_pending = $cpanel_model->LogsPending();
 
-		$this->data = array(
+		$this->data = [
 			'logs_pending'    => $logs_pending
-		);
+		];
 		
 		$this->write_log("DELETEBLOCKED task finished");
 	}
-
-	
-
-	// Obtiene información de los requisitos necesarios para clonar una web
-	private function CheckPrereq()
-	{
-
-		// Inicializamos las variables
-		$server_type = 0;  // Sistema operativo 'Linux'
-		$safe_mode = 0;
-		$mysqldump = null;
-		$tar = null;
-
-		/*
-         Chequeamos los requisitos */
-		// Tipo de servidor
-		$os = php_uname("s");
-
-		if (strstr($os, 'Windows'))
-		{
-			$server_type = 1;
-		}
-		elseif (strstr($os, 'Mac'))
-		{
-			$server_type = 2;
-		}
-
-		// 'Safe_mode'
-		if (ini_get('safe_mode'))
-		{
-			$safe_mode = 1;
-		}
-
-		$this->data = array(
-			'server_type'    => $server_type,
-			'safe_mode'    => $safe_mode,
-			'mysqldump'    => $mysqldump,
-			'tar'    => $tar
-		);
-
-	}
-
-	// Función que actualiza el Core de Joomla a la última versión disponible. Basado en /libraries/src/Console/UpdateCoreCommand.php
+		
+	/**
+     * Función que actualiza el Core de Joomla a la última versión disponible. Basado en /libraries/src/Console/UpdateCoreCommand.php
+     * 	 
+     * @return  array<int,mixed>
+	 *     
+     */
 	private function UpdateCore()
 	{
 		$this->write_log("Updating CORE...");
@@ -1344,14 +1429,25 @@ class JsonModel extends BaseModel
 		$this->write_log("Old core version: " . $old_version);	
 			
 		// Cargamos el lenguaje del componente 'com_installer'
-		$lang = Factory::getApplication()->getLanguage();
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app       = Factory::getApplication();
+		$lang = $app->getLanguage();
 		$lang->load('com_installer', JPATH_ADMINISTRATOR);
 
 		// Inicializamos la variable $result, que será un array con el resultado y el mensaje devuelto en el proceso
 		$result = array();
 
 		// Instanciamos el modelo
-		$model = new UpdateModel;
+		// Boot del componente
+		$component = $app->bootComponent('com_joomlaupdate');
+
+		if (!$component instanceof MVCComponent) {
+			throw new \RuntimeException('Component com_joomlaupdate no es MVCComponent');
+		}
+
+		$factory = $component->getMVCFactory();
+		/** @var \Joomla\Component\Joomlaupdate\Administrator\Model\UpdateModel $model */
+		$model = $factory->createModel('Update', 'Administrator', ['ignore_request' => true]);
 		
 		// Refrescamos la información de las actualizaciones ignorando la caché
 		$model->refreshUpdates(true);
@@ -1367,7 +1463,9 @@ class JsonModel extends BaseModel
 			$file = $this->download_core($coreInformation['object']->downloadurl->_data);				
 			
 			// Extract the downloaded package file
-			$config   = Factory::getConfig();
+			/** @var \Joomla\CMS\Application\CMSApplication $app */
+			$app       = Factory::getApplication();
+			$config   = $app->getConfig();
 			$tmp_dest = $config->get('tmp_path');
 
 			// Basado en /components/com_installer/src/Model/UpdateModel.php
@@ -1397,16 +1495,13 @@ class JsonModel extends BaseModel
 					$this->write_log("CORE UPDATED successfully!");
 					InstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
 					// Trigger event after joomla update.
+					/** @var \Joomla\CMS\Application\CMSApplication $app */
 					$app = Factory::getApplication();
-					$app->triggerEvent('onJoomlaAfterUpdate',[$old_version]);										
-					// Cargamos las librerías necesarias					
-					/*\JLoader::register('JNamespacePsr4Map', PATH_LIBRARIES . '/namespacemap.php');
-					// Re-create namespace map. It is needed when updating to a Joomla! version has new extension added
-					(new \JNamespacePsr4Map)->create();	*/
+					$app->triggerEvent('onJoomlaAfterUpdate',[$old_version]);					
 				}				
 			}			
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			$this->log_filename = "error.php";
 			$message = "Function UpdateCore. " . $e->getMessage();
@@ -1418,32 +1513,33 @@ class JsonModel extends BaseModel
 		// Devolvemos el resultado
 		return $result;
 	}
-	
-	
 
 	/**
 	 * Install an extension from either folder, url or upload.
+	 *
+	 * @param   string             $url    The url
 	 *
 	 * @return boolean result of install
 	 *
 	 * @since 1.5
 	 */
+
 	public function install($url)
 	{
 		$this->setState('action', 'install');
 
 		// Set FTP credentials, if given.
-		JClientHelper::setCredentialsFromRequest('ftp');
+		ClientHelper::setCredentialsFromRequest('ftp');
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
 		$app = Factory::getApplication();
 
 		// Load installer plugins for assistance if required:
 		PluginHelper::importPlugin('installer');
-		$dispatcher = \Factory::getApplication();
-
+		
 		$package = null;
 
 		// This event allows an input pre-treatment, a custom pre-packing or custom installation (e.g. from a JSON description)
-		$results = $dispatcher->triggerEvent('onInstallerBeforeInstallation', array($this, &$package));
+		$results = $app->triggerEvent('onInstallerBeforeInstallation', array($this, &$package));
 
 		if (in_array(true, $results, true))
 		{
@@ -1461,29 +1557,25 @@ class JsonModel extends BaseModel
 			switch ($installType)
 			{
 				case 'folder':
-					// Remember the 'Install from Directory' path.
-					$app->getUserStateFromRequest($this->_context . '.install_directory', 'install_directory');
-					$package = $this->_getPackageFromFolder();
-				break;
-
+					// Not implemented
+					return false;
+				
 				case 'upload':
-					$package = $this->_getPackageFromUpload();
-				break;
-
+					//Not implemented
+					return false;
+				
 				case 'url':
-					$package = $this->_getPackageFromUrl($url);
-				break;
+					$package = $this->getPackageFromUrl($url);
+					break;
 
 				default:
 					$app->setUserState('com_installer.message', Text::_('COM_INSTALLER_NO_INSTALL_TYPE_FOUND'));
-
-				return false;
-					break;
+					return false;				
 			}
 		}
 
 		// This event allows a custom installation of the package or a customization of the package:
-		$results = $dispatcher->triggerEvent('onInstallerBeforeInstaller', array($this, &$package));
+		$results = $app->triggerEvent('onInstallerBeforeInstaller', array($this, &$package));
 
 		if (in_array(true, $results, true))
 		{
@@ -1530,10 +1622,9 @@ class JsonModel extends BaseModel
 		}
 
 		// This event allows a custom a post-flight:
-		$dispatcher->triggerEvent('onInstallerAfterInstaller', array($this, &$package, $installer, &$result, &$msg));
+		$app->triggerEvent('onInstallerAfterInstaller', array($this, &$package, $installer, &$result, &$msg));
 
 		// Set some model state values
-		$app    = Factory::getApplication();
 		$app->enqueueMessage($msg);
 		$this->setState('name', $installer->get('name'));
 		$this->setState('result', $result);
@@ -1541,78 +1632,15 @@ class JsonModel extends BaseModel
 		$app->setUserState('com_installer.extension_message', $installer->get('extension_message'));
 		$app->setUserState('com_installer.redirect_url', $installer->get('redirect_url'));
 
-		// Cleanup the install files
-		/*if (!is_file($package['packagefile']))
-		{
-			$config = Factory::getConfig();
-			$package['packagefile'] = $config->get('tmp_path') . '/' . $package['packagefile'];
-		}
-
-		InstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);*/
-
 		return $result;
-	}
+	}	
 
-
-		/**
-		 * Install an extension from a URL
-		 *
-		 * @return Package details or false on failure
-		 *
-		 * @since 1.5
-		 */
-	protected function _getPackageFromUrl($url)
-	{
-		$input = Factory::getApplication()->input;
-
-		// Get the URL of the package to install
-		// $url = $input->getString('install_url');
-
-		// Did you give us a URL?
-		if (!$url)
-		{
-			Factory::getApplication()->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_ENTER_A_URL'), 'warning');
-
-			return false;
-		}
-
-		// Handle updater XML file case:
-		if (preg_match('/\.xml\s*$/', $url))
-		{
-			$update = new Update;
-			$update->loadFromXML($url);
-			$package_url = trim($update->get('downloadurl', false)->_data);
-
-			if ($package_url)
-			{
-				$url = $package_url;
-			}
-
-			unset($update);
-		}
-
-		// Download the package at the URL given
-		$p_file = InstallerHelper::downloadPackage($url);
-
-		// Was the package downloaded?
-		if (!$p_file)
-		{
-			Factory::getApplication()->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_ENTER_A_URL'), 'warning');
-
-			return false;
-		}
-
-		$config   = Factory::getConfig();
-		$tmp_dest = $config->get('tmp_path');
-
-		// Unpack the downloaded package file
-		$package = InstallerHelper::unpack($tmp_dest . '/' . $p_file, true);
-
-		return $package;
-	}
-
-		// Función que lanza un chequeo en busca de malware
-
+	/**
+     * Función que lanza un chequeo en busca de malware
+     *
+     * @return  void
+     *     
+     */
 	private function checkMalware()
 	{
 		$this->write_log("Launching CHECKMALWARE task");
@@ -1624,10 +1652,10 @@ class JsonModel extends BaseModel
 		
 		$this->write_log("Launching malware scan...");
 		
-		$filemanager_model->set_campo_filemanager('files_scanned_malwarescan', 0);
+		$filemanager_model->setCampoFilemanager('files_scanned_malwarescan', 0);
 		$timestamp = $this->get_Joomla_timestamp();
-		$filemanager_model->set_campo_filemanager('last_check_malwarescan', $timestamp);
-		$filemanager_model->set_campo_filemanager('estado_malwarescan', 'IN_PROGRESS');
+		$filemanager_model->setCampoFilemanager('last_check_malwarescan', $timestamp);
+		$filemanager_model->setCampoFilemanager('estado_malwarescan', 'IN_PROGRESS');
 		$filemanager_model->scan("malwarescan");
 		
 		$this->write_log("Retrieving info...");
@@ -1650,11 +1678,14 @@ class JsonModel extends BaseModel
 		);
 		
 		$this->write_log("CHECKMALWARE task finished");
-
 	}
 
-		// Función que obtiene información del estado del backup
-
+	/**
+     * Función que obtiene información del estado del backup
+     *
+     * @return  void
+     *     
+     */
 	private function getBackupInfo()
 	{
 
@@ -1674,7 +1705,7 @@ class JsonModel extends BaseModel
 			$db->setQuery($query);
 			$db->execute();
 			$akeeba_installed = $db->loadResult();			
-		} catch (Exception $e)
+		} catch (\Exception $e)
         {    			
             $akeeba_installed = 0;
         }     
@@ -1693,7 +1724,7 @@ class JsonModel extends BaseModel
 				$db->setQuery($query);
 				$db->execute();
 				$xcloner_installed = $db->loadResult();
-			} catch (Exception $e)
+			} catch (\Exception $e)
 			{    			
 				$xcloner_installed = 0;
 			} 			
@@ -1718,10 +1749,16 @@ class JsonModel extends BaseModel
 				}
 			}
 		}
-
 	}
 
-	// Función que obtiene información del estado del último backup creado por Akeeba Backup
+	/**
+     * Función que obtiene información del estado del último backup creado por Akeeba Backup
+     *
+	 * @param   string             $joomla_version    The joomla version
+	 *
+     * @return  void
+     *     
+     */
 	private function AkeebaBackupInfo($joomla_version)
 	{
 		if ($joomla_version == "3") {
@@ -1739,12 +1776,12 @@ class JsonModel extends BaseModel
 				->where($db->qn('origin') . ' != ' . $db->q('restorepoint'));
 			$db->setQuery($query);
 			$id = $db->loadResult();
-		} catch (Exception $e)
+		} catch (\Exception $e)
 		{
 			$this->write_log("Error trying to get Akeeba database id: " . $e->getMessage(),"ERROR");
 		}
-			
-
+		
+		$backup_statistics = [];
 		// Hay al menos un backup creado
 		if (!empty($id))
 		{
@@ -1755,7 +1792,7 @@ class JsonModel extends BaseModel
 					->where('id = ' . $id);
 				$db->setQuery($query);
 				$backup_statistics = $db->loadAssocList();
-			} catch (Exception $e)
+			} catch (\Exception $e)
 			{
 				$this->write_log("Error trying to get Akeeba backup statistics: " . $e->getMessage(),"ERROR");
 			}
@@ -1764,23 +1801,28 @@ class JsonModel extends BaseModel
 			$this->backupinfo['latest'] = $backup_statistics[0]['backupend'];
 			$this->backupinfo['latest_status'] = $backup_statistics[0]['status'];
 			$this->backupinfo['latest_type'] = $backup_statistics[0]['type'];
-		}
-		
-		
+		}		
 	}
 
-	// Función que obtiene información del estado del último backup creado por Xcloner - Backup and Restore
+	/**
+     * Función que obtiene información del estado del último backup creado por Xcloner - Backup and Restore
+     *
+	 *
+     * @return  void
+     *     
+     */
 	private function XclonerbackupInfo()
 	{
-
-		// Incluimos el fichero de configuración de la extensión
-		include JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . "components" . DIRECTORY_SEPARATOR . "com_xcloner-backupandrestore" . DIRECTORY_SEPARATOR . "cloner.config.php";
-
+		if (file_exists(JPATH_ADMINISTRATOR . "/components/com_xcloner-backupandrestore/cloner.config.php")) {
+			// Incluimos el fichero de configuración de la extensión
+			include JPATH_ADMINISTRATOR . "/components/com_xcloner-backupandrestore/cloner.config.php";
+		}
+		
 		// Extraemos el directorio donde se encuentran almacenados los backups...
 		$backup_dir = $_CONFIG['clonerPath'];
 
-				// ... y buscamos dentro los ficheros existentes, ordenándolos por fecha
-		$files_name = JFolder::files($backup_dir, '.', true, true);
+		// ... y buscamos dentro los ficheros existentes, ordenándolos por fecha
+		$files_name = Folder::files($backup_dir, '.', true, true);
 		$files_name = array_combine($files_name, array_map("filemtime", $files_name));
 		arsort($files_name);
 
@@ -1793,11 +1835,15 @@ class JsonModel extends BaseModel
 
 	}
 
-		// Función que obtiene información del estado del último backup creado por Easy Joomla Backup
-
+	/**
+     * Función que obtiene información del estado del último backup creado por Easy Joomla Backup
+     *
+	 *
+     * @return  void
+     *     
+     */
 	private function EjbInfo()
 	{
-
 		// Instanciamos la consulta
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true)
@@ -1821,11 +1867,14 @@ class JsonModel extends BaseModel
 			$this->backupinfo['latest_status'] = 'complete';
 			$this->backupinfo['latest_type'] = $backup_statistics[0]['type'];
 		}
-
 	}
 
-		// Función que indica si el plugin 'Update Database' está actualizado
-
+	/**
+     * Función que indica si el plugin 'Update Database' está actualizado
+	 *
+     * @return  int
+     *     
+     */
 	private function checkforUpdate()
 	{
 
@@ -1856,10 +1905,14 @@ class JsonModel extends BaseModel
 
 		// Devolvemos el resultado
 		return $needs_update;
-
 	}
 
-	// Función que actualiza el plugin 'Update Database'
+	/**
+     * Función que actualiza el plugin 'Update Database'
+	 *
+     * @return  void
+     *     
+     */
 	private function UpdateComponent()
 	{
 		
@@ -1899,26 +1952,36 @@ class JsonModel extends BaseModel
 		}
 
 		// Devolvemos el resultado
-		$this->data = array(
+		$this->data = [
 			'update_plugin_needs_update' => $needs_update
-		);
+		];
 	}
 
-	// Función para actualizar los componentes. Extraída del core de Joomla (administrator/components/com_installer/models/update.php | administrator\components\com_installer\src\Model\UpdateModel.php)
+	/**
+     * Función para actualizar los componentes. Extraída del core de Joomla (administrator/components/com_installer/models/update.php |
+	 * administrator\components\com_installer\src\Model\UpdateModel.php)
+	 *
+	 * @param   \Joomla\CMS\Updater\Update             $update    The update info
+	 * @param   string|bool|array<string,mixed>             $dlid    The downoload id
+	 *
+     * @return  int|array<mixed,mixed>
+     *     
+     */
 	private function install_update($update,$dlid=false)
 	{
 		$this->write_log("Installing update...");
-		
 								
 		/* Cargamos el lenguaje del componente 'com_installer' */
-		$lang = Factory::getApplication()->getLanguage();
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app       = Factory::getApplication();
+		$lang = $app->getLanguage();
 		$lang->load('com_installer',JPATH_ADMINISTRATOR);
-				
-					
+									
 		// Inicializamos la variable $update_result, que será un array con el resultado y el mensaje devuelto en el proceso
 		$update_result = array();
 		$extension_name = '';
-		$app = Factory::getApplication();
+		$p_file = false;
+		$install_result = false;
 						
 		if (isset($update->get('downloadurl')->_data)) {			
 			$url = trim($update->downloadurl->_data);
@@ -1951,7 +2014,7 @@ class JsonModel extends BaseModel
 		
 		try{			
 			$p_file = InstallerHelper::downloadPackage($url);
-		} catch (Exception $e)
+		} catch (\Exception $e)
 		{
 			$this->write_log("Error downloading package: " . $e->getMessage(),"ERROR");
 		}
@@ -1966,7 +2029,7 @@ class JsonModel extends BaseModel
 			return $update_result;
 		} 
 						
-		$config        = Factory::getConfig();
+		$config        = $app->getConfig();
 		$tmp_dest    = $config->get('tmp_path');
 		
 		// Unpack the downloaded package file
@@ -1981,7 +2044,7 @@ class JsonModel extends BaseModel
 		try {
 			$install_result = $installer->update($package['dir']);
 			
-		} catch (Exception $e)
+		} catch (\Exception $e)
 		{
 			$this->write_log("Error installing package: " . $e->getMessage(),"ERROR");
 		}
@@ -2017,14 +2080,12 @@ class JsonModel extends BaseModel
 		}
 		
 		// Quick change
-		$this->type = $package['type'];
-		
 		if (array_key_exists('packagefile', $package))
 		{
 			// Cleanup the install files
 			if (!is_file($package['packagefile']))
 			{
-				$config = Factory::getConfig();
+				$config = $app->getConfig();
 				$package['packagefile'] = $config->get('tmp_path') . '/' . $package['packagefile'];
 			}
 
@@ -2034,10 +2095,15 @@ class JsonModel extends BaseModel
 		return $update_result;
 	}
 
-	// Función que obtiene información del sistema (extraída del core)
+	/**
+     * Función que obtiene información del sistema (extraída del core)
+	 *
+     * @return  void
+     *     
+     */
 	private function getInfo()
 	{
-		if (is_null($this->info))
+		if (empty($this->info))
 		{
 			$this->info = array();
 			$version = new \Joomla\CMS\Version();
@@ -2059,14 +2125,17 @@ class JsonModel extends BaseModel
 			$this->info['server']        = $sf;
 			$this->info['sapi_name']    = php_sapi_name();
 			$this->info['version']        = $version->getLongVersion();
-
-			// $this->info['platform']        = $platform->getLongVersion();
 			$this->info['platform']        = "Not defined";
 			$this->info['useragent']    = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : "";
 		}
 	}
 
-	// Función que devuelve información sobre las extensiones no actualizadas
+	/**
+     * Función que devuelve información sobre las extensiones no actualizadas
+	 *
+     * @return  string
+     *     
+     */
 	private function getNotUpdatedExtensions()
 	{
 
@@ -2118,29 +2187,25 @@ class JsonModel extends BaseModel
      * @param   int  $minimumStability  Minimum stability for updates {@see Updater} (0=dev, 1=alpha, 2=beta, 3=rc, 4=stable)
      *
      * @return  boolean Result
-     *
-     * @since   1.6
-	 * original en /components/com_installer/src/Model/UpdateModel.php
+     * original en /components/com_installer/src/Model/UpdateModel.php
      */
     public function findUpdates($eid = 0, $cacheTimeout = 0, $minimumStability = Updater::STABILITY_STABLE)
     {
 		try{
-			 Updater::getInstance()->findUpdates($eid, $cacheTimeout, $minimumStability);
+			Updater::getInstance()->findUpdates($eid, $cacheTimeout, $minimumStability);
 		} catch (\Throwable $e) {  			            
         }
        
         return true;
     }
 
-		/**
-		 * Removes all of the updates from the table.
-		 *
-		 * @return boolean result of operation
-		 *
-		 * @since 1.6
-		 *
-		 * Original en /administrator/components/com_installer/models/update.php
-		 */
+	/**
+	* Truncates de updates tablef
+	*
+	* @return void
+	*
+	* Original en /administrator/components/com_installer/models/update.php
+	*/
 	public function purge()
 	{
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
@@ -2160,15 +2225,13 @@ class JsonModel extends BaseModel
 		}
 	}
 
-		/**
-		 * Enables any disabled rows in #__update_sites table
-		 *
-		 * @return boolean result of operation
-		 *
-		 * @since 1.6
-		 *
-		 * Original en /administrator/components/com_installer/models/update.php
-		 */
+	/**
+	* Enables any disabled rows in #__update_sites table
+	*
+	* @return void
+	*
+	* Original en /administrator/components/com_installer/models/update.php
+	*/
 	public function enableSites()
 	{
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
@@ -2180,7 +2243,16 @@ class JsonModel extends BaseModel
 		$db->execute();
 	}
 
-	// Función que busca si una extensión pasada como argumento utiliza el mecanismo de actualización de Akeeba LiveUpdate
+	/**
+     * Función que busca si una extensión pasada como argumento utiliza una versión de pago
+	 *
+	 * @param   string|int             			$extension_id    	The id ot the extension
+	 * @param   string             				$extension_name    	The name of the extension
+	 * @param   \Joomla\CMS\Updater\Update       $update    			The update object
+	 *
+     * @return  void
+     *     
+     */
 	private function LookForPro($extension_id,$extension_name,$update) {
 				
 		// Inicializamos las variables
@@ -2191,47 +2263,37 @@ class JsonModel extends BaseModel
 		{
 			case "pkg_akeeba":
 				$params = ComponentHelper::getParams('com_akeeba');
-				if (!empty($params)) {
-					$dlid = $params->get('update_dlid','');		
-				}
+				$dlid   = $params->get('update_dlid', '');
 				break;
 			case "pkg_admintools":
 				$params = ComponentHelper::getParams('com_admintools');
-				if (!empty($params)) {
-					$dlid = $params->get('downloadid','');
-				}
+				$dlid = $params->get('downloadid','');				
 				break;
 			case "com_rstbox":
 				$plugin = PluginHelper::getPlugin('system', 'nrframework');
-				if (!empty($plugin)) {
-					$params = new JRegistry($plugin->params);
+				if (!$plugin->isEmpty()) {
+					$params = new Registry($plugin->params);
 					$dlid = $params->get('key','');
 				}
 				break;
 			case "com_jch_optimize":
 				$plugin = PluginHelper::getPlugin('system', 'jch_optimize');
 							
-				if (!empty($plugin)) {					
-					$params = new JRegistry($plugin->params);
+				if (!$plugin->isEmpty()) {				
+					$params = new Registry($plugin->params);
 					$dlid = $params->get('pro_downloadid','');
 				}
 				break;
 			// Version 7 of Jch optimize
 			case "pkg_jchoptimize":
-				$params = ComponentHelper::getParams('com_jchoptimize');
-							
-				if (!empty($params)) {
-					$dlid = $params->get('pro_downloadid','');
-				}
+				$params = ComponentHelper::getParams('com_jchoptimize');							
+				$dlid = $params->get('pro_downloadid','');				
 				break;			
 			case "com_sppagebuilder":
-				$params = ComponentHelper::getParams('com_sppagebuilder');
-							
-				if (!empty($params)) {
-					$dlid = array();
-					$dlid['joomshaper_email'] = $params->get('joomshaper_email','');
-					$dlid['joomshaper_license_key'] = $params->get('joomshaper_license_key','');
-				}
+				$params = ComponentHelper::getParams('com_sppagebuilder');							
+				$dlid = array();
+				$dlid['joomshaper_email'] = $params->get('joomshaper_email','');
+				$dlid['joomshaper_license_key'] = $params->get('joomshaper_license_key','');
 				break;
 		}		
 				
@@ -2250,19 +2312,24 @@ class JsonModel extends BaseModel
 			$update_result[0][0] = 2;
 			// Guardamos el id de la extensión junto con el resultado
 			array_push($this->array_result, array($extension_id,$extension_name,$update_result));			
-		}
-		
-	
+		}	
 	}	
 
-	// Función que actualiza un array de extensiones (en formato json) pasado como argumento
+	/**
+     * Función que actualiza un array de extensiones (en formato json) pasado como argumento
+	 *
+	 * @param   array<int>             $extension_id_array    The array with the ids of the extensions to update
+	 *
+     * @return  void
+     *     
+     */
 	private function UpdateExtension($extension_id_array)
 	{
 		$this->write_log("Launching UPDATEEXTENSIONS task");
 				
-		// Inicializamos las variables
-		
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
+		
+		$extension_data = '';
 		
 		// Si las tablas están bloqueadas abortamos la instalación
 		$locked_tables = $this->check_locked_tables();
@@ -2274,9 +2341,9 @@ class JsonModel extends BaseModel
 			array_push($this->array_result, array($msg,$msg));
 
 			// Devolvemos el resultado
-			$this->data = array(
+			$this->data = [
 				'update_result'        => $this->array_result
-			);
+			];
 		}
 		else
 		{
@@ -2289,7 +2356,7 @@ class JsonModel extends BaseModel
 					$db->setQuery($query);
 					$db->execute();
 					$extension_data = $db->loadAssoc();					
-				} catch (Exception $e)
+				} catch (\Exception $e)
 				{
 					
 				}			
@@ -2298,12 +2365,10 @@ class JsonModel extends BaseModel
 					$extension_name = $extension_data['name'];
 					$detailsurl = $extension_data['detailsurl'];
 					$extension_element = $extension_data['element'];
-					$extra_query = $extension_data['extra_query'];
-					
+					$extra_query = $extension_data['extra_query'];					
 									
 					if (strtolower($extension_element) == "joomla")
-					{
-						
+					{						
 						// Core de Joomla. Lo tratamos de forma diferente.
 						$result_core = $this->UpdateCore();
 						array_push($this->array_result, array($extension_id,'Core',$result_core));
@@ -2345,15 +2410,21 @@ class JsonModel extends BaseModel
 			}
 			
 			// Devolvemos el resultado
-			$this->data = array(
+			$this->data = [
 				'update_result'        => $this->array_result
-			);
+			];
 		}
 
 	}
 
-		// Función que realiza una copia de seguridad usando Akeeba y su función de copias de seguridad vía frontend. La clave usada se pasa como argumento
-
+	/**
+     * Función que realiza una copia de seguridad usando Akeeba y su función de copias de seguridad vía frontend. La clave usada se pasa como argumento
+	 *
+	 * @param   string             $data    The key of Akeeba
+	 *
+     * @return  void
+     *     
+     */
 	private function Backup($data)
 	{
 		$this->write_log("Launching BACKUP task");
@@ -2374,12 +2445,7 @@ class JsonModel extends BaseModel
 		$akeeba_profile = $response['akeeba_profile'];
 		
 		// Componente (com_akeeba para J3 y com_akeebackup para J4)
-		$akeeba_component = "com_akeeba";
-		
-		if (version_compare(JVERSION, '4.0', 'gt'))
-		{
-			$akeeba_component = "com_akeebabackup";
-		}
+		$akeeba_component = "com_akeebabackup";
 		
 		$this->write_log("Launching curl: " . $uri . "?option=" . $akeeba_component . "&view=backup&key=removed_for_security&profile=" . $akeeba_profile);
 		
@@ -2390,20 +2456,26 @@ class JsonModel extends BaseModel
 		curl_setopt($ch, CURLOPT_HEADER, false);  // Este valor es false para que no incluya en la respuesta la cabecera HTTP
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_MAXREDIRS, 10000); // Fix by Nicholas
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 		$response = curl_exec($ch);
-		curl_close($ch);
 		
 		$this->write_log("Akeeba response: " . $response);
 
 		// Devolvemos el resultado
-		$this->data = array(
-		'backup'        => $response
-		);
+		$this->data = [
+			'backup'        => $response
+		];
 	}
 
-	// Función que instala una extensión desde una url. La url se pasa como argumento
+	/**
+     * Función que instala una extensión desde una url. La url se pasa como argumento
+	 *
+	 * @param   string             $data    The path to the file
+	 *
+     * @return  void
+     *     
+     */
 	private function Upload_install($data)
 	{
 		$this->write_log("Launching UPLOADINSTALL task");
@@ -2413,8 +2485,9 @@ class JsonModel extends BaseModel
 		$enqueued_messages = "";
 
 		// Cargamos el lenguaje del componente 'com_installer'
-
-		$lang = Factory::getApplication()->getLanguage();
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app       = Factory::getApplication();
+		$lang = $app->getLanguage();
 		$lang->load('com_installer', JPATH_ADMINISTRATOR);
 		
 		$this->write_log("Decrypting data...");
@@ -2447,15 +2520,8 @@ class JsonModel extends BaseModel
 			// Was the package unpacked?
 			if (!$package || !$package['type'])
 			{				
-				if (in_array($installType, array('upload', 'url')))
-				{
-					//InstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
-				}
-				
 				$msg = Text::_('COM_INSTALLER_UNABLE_TO_FIND_INSTALL_PACKAGE');
 				$this->write_log($msg);
-
-				return false;
 			}
 
 			// Get an installer instance
@@ -2476,60 +2542,35 @@ class JsonModel extends BaseModel
 				$this->write_log($msg);
 			}
 
-			// Cleanup the install files
-			/*if (!is_file($package['packagefile']))
-			{
-				$config = Factory::getConfig();
-				$package['packagefile'] = $config->get('tmp_path') . '/' . $package['packagefile'];
-			}
-
-			$cleanup_resume = InstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
-
-			// Si el borrado de los ficheros de instalación falla, lo hacemos 'artesanalmente'
-			if (!$cleanup_resume)
-			{
-				$config = Factory::getConfig();
-				$root = $config->get('tmp_path');
-				$files_name = JFolder::files($root, '.', true, true);
-
-				foreach ($files_name as $file)
-				{
-					try{		
-					File::delete($root . DIRECTORY_SEPARATOR . $file);
-					} catch (Exception $e)
-					{
-					}					
-				}
-			}*/
-
 			// Recogemos los mensajes encolados para mostrar más información
-			$enqueued_messages = Factory::getApplication()->getMessageQueue();
+			$enqueued_messages = $app->getMessageQueue();
 		}
 		
 		
 		// Devolvemos el resultado
-		$this->data = array(
+		$this->data = [
 			'upload_install'        => $result,
 			'message'    => $msg,
 			'enqueued_messages'    => $enqueued_messages
-		);
+		];
 	}
 
-		/**
-		 * Install an extension from a URL
-		 *
-		 * @return Package details or false on failure
-		 *
-		 * @since 1.5
-		 */
+	/**
+	* Install an extension from a URL
+	*
+	* @param   string             $url    The url of the package
+	*
+	* @return array<string,mixed>|bool
+	*/
 	protected function getPackageFromUrl($url)
 	{
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app       = Factory::getApplication();
 
 		// Did you give us a URL?
 		if (!$url)
 		{
-			Factory::getApplication()->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_ENTER_A_URL'), 'warning');
-
+			$app->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_ENTER_A_URL'), 'warning');
 			return false;
 		}
 
@@ -2554,12 +2595,11 @@ class JsonModel extends BaseModel
 		// Was the package downloaded?
 		if (!$p_file)
 		{
-			Factory::getApplication()->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_ENTER_A_URL'), 'warning');
-
+			$app->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_ENTER_A_URL'), 'warning');
 			return false;
 		}
 
-		$config   = Factory::getConfig();
+		$config   = $app->getConfig();
 		$tmp_dest = $config->get('tmp_path');
 
 		// Unpack the downloaded package file
@@ -2568,20 +2608,22 @@ class JsonModel extends BaseModel
 		return $package;
 	}
 
-		/**
-		 * Downloads the update package to the site.
-		 *
-		 * @return boolean|string False on failure, basename of the file in any other case.
-		 *
-		 * @since 2.5.4
-		 */
+	/**
+	* Downloads the update package to the site.
+	*
+	* @param   string             $packageURL    The url of the package
+	*
+	* @return boolean|string False on failure, basename of the file in any other case.
+	*
+	*/
 	public function download_core($packageURL)
 	{
 		$basename = basename($packageURL);
-						
-
+		
 		// Find the path to the temp directory and the local package.
-		$config = Factory::getConfig();
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app       = Factory::getApplication();
+		$config = $app->getConfig();
 		$tempdir = $config->get('tmp_path');
 		$target = $tempdir . '/' . $basename;
 
@@ -2614,9 +2656,8 @@ class JsonModel extends BaseModel
 	 * @param   string $url    The URL to download from
 	 * @param   string $target The directory to store the file
 	 *
-	 * @return boolean True on success
+	 * @return string|bool
 	 *
-	 * @since 2.5.4
 	 */
 	protected function downloadPackage($url, $target)
 	{	
@@ -2650,7 +2691,14 @@ class JsonModel extends BaseModel
 		return basename($target);
 	}		
 
-	// Función que devuelve información sobre ips a añadir y ataques detenidos para el plugin "Connect"
+	/**
+     * Función que devuelve información sobre ips a añadir y ataques detenidos para el plugin "Connect"
+     *
+     * @param   string             $url    The url to send the reply
+     *
+     * @return  void
+     *     
+     */
 	public function Connect($url=null)
 	{
 		$cpanel_model = new CpanelModel;
@@ -2663,7 +2711,7 @@ class JsonModel extends BaseModel
 		$attacks_last_year = $cpanel_model->LogsByDate('last_year');
 		$attacks_this_year = $cpanel_model->LogsByDate('this_year');
 
-		$attacks = array(
+		$attacks = [
 			'today'    => $attacks_today,
 			'yesterday'        => $attacks_yesterday,
 			'last_7_days'        => $attacks_last_7_days,
@@ -2671,7 +2719,7 @@ class JsonModel extends BaseModel
 			'last_month'        => $attacks_last_month,
 			'this_year'        => $attacks_this_year,
 			'last_year'        => $attacks_last_year
-			);
+		];
 
 		// Ruta al fichero de información
 		$file_path = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'scans' . DIRECTORY_SEPARATOR . 'cc_info.php';
@@ -2692,10 +2740,10 @@ class JsonModel extends BaseModel
 			$ips = null;
 		}
 
-		$this->data = array(
+		$this->data = [
 			'ips'        => $ips,
 			'attacks'    => $attacks
-			);
+		];
 		
 		if (!empty($url)) {
 			$this->sendResponse($url);
@@ -2703,8 +2751,14 @@ class JsonModel extends BaseModel
 		
 	}
 	
-
-	// Función que añade una IP a la lista negra dinámica
+	/**
+     * Función que añade una IP a la lista negra dinámica
+     *
+     * @param   string             $attack_ip    The IP address to add to the list
+     *
+     * @return  void|string
+     *     
+     */
 	function actualizar_lista_dinamica($attack_ip)
 	{
 
@@ -2728,7 +2782,7 @@ class JsonModel extends BaseModel
 				$db->setQuery($query);
 				$result = $db->execute();
 			}
-			catch (Exception $e)
+			catch (\Exception $e)
 			{
 			}
 		}
@@ -2738,7 +2792,14 @@ class JsonModel extends BaseModel
 		}
 	}
 
-	// Función que añade ips a la lista negra pasados por el plugin "Connect"
+	/**
+     * Función que añade ips a la listas pasados por el plugin "Connect"
+     *
+     * @param   string             $data    The data to add
+     *
+     * @return  void
+     *     
+     */
 	private function UpdateConnect($data)
 	{
 		// Desencriptamos los datos recibidos, que vendrán en formato json
@@ -2817,50 +2878,70 @@ class JsonModel extends BaseModel
 				}
 			}
 			
-		} catch (Exception $e) {					
+		} catch (\Exception $e) {					
 			$message = $e->getMessage();
 		} 
 		
 		// Devolvemos el resultado
-		$this->data = array(
+		$this->data = [
 			'UpdateConnect'        => $message
-			);
+		];
 	}		
 
-	// Función para desbloquear las tablas (Lock tables feature)
+	/**
+     * Función para desbloquear las tablas (Lock tables feature)
+     *
+     *
+     * @return  void
+     *     
+     */
 	private function unlocktables()
 	{		
 		$this->write_log("Launching UNLOCKTABLES task");
 		
 		$cpanel_model = new CpanelModel();
 
-		$cpanel_model->unlock_tables();
+		$cpanel_model->unlockAll();
 
-		$this->data = array(
+		$this->data = [
 			'tables_blocked'        => 0
-		);
+		];
 		$this->write_log("UNLOCKTABLES task finished");
 
 	}
 
-	// Función para desbloquear las tablas (Lock tables feature)
+	/**
+     * Función para bloquear las tablas (Lock tables feature)
+     *
+     *
+     * @return  void
+     *     
+     */
 	private function locktables()
 	{
 		$this->write_log("Launching LOCKTABLES task");
 		
 		$cpanel_model = new CpanelModel();
 
-		$cpanel_model->lock_tables();
+		$cpanel_model->lockSelectedTables();
 
-		$this->data = array(
+		$this->data = [
 			'tables_blocked'        => 1
-		);
+		];
 		
 		$this->write_log("LOCKTABLES task finished");
 
 	}
 	
-	/* Función para formatear un entero en unidades de almacenamiento */
+	/**
+     * Función para formatear un entero en unidades de almacenamiento
+     *
+	 * @param   int             $size    	The size
+	 * @param   int             $precision  The precision
+     *
+     * @return  int|string
+     *     
+     */
 	function formatBytes($size, $precision = 2)
 	{
 		$base = log($size, 1024);
@@ -2869,6 +2950,14 @@ class JsonModel extends BaseModel
 		return round(pow(1024, $base - floor($base)), $precision) .' '. $suffixes[floor($base)];
 	}
 	
+	/**
+     * Función para devolver un color según el número pasado como argumento
+     *
+	 * @param   float             $p    	The percentage
+     *
+     * @return  string
+     *     
+     */
 	function percent_to_color($p){
 		if($p < 30) return 'success';
 		if($p < 45) return 'info';
@@ -2877,7 +2966,13 @@ class JsonModel extends BaseModel
 		return 'danger';
 	}
 	
-	/* Get memory usage - https://www.php.net/manual/es/function.memory-get-usage.php */
+	/**
+     * Get memory usage - https://www.php.net/manual/es/function.memory-get-usage.php
+     *
+     *
+     * @return  void
+     *     
+     */
 	private function server_statistics()
     {
         $memoryTotal = null;
@@ -3003,7 +3098,7 @@ class JsonModel extends BaseModel
 					$result['server_load'] = $load_average . "," . $uptime_array[3] . "," . $uptime_array[4];
 				}
 				
-			}catch (Exception $e)	
+			}catch (\Exception $e)	
 			{
 				$result['uptime'] = null;
 				$result['server_load'] = null;			
@@ -3018,7 +3113,14 @@ class JsonModel extends BaseModel
 		$this->data = $result;
     }
 	
-	// Función para habilitar las estadísticas
+	/**
+     * Función para habilitar las estadísticas
+     *
+     * @param   string             $data    The data of analytics
+     *
+     * @return void
+     *     
+     */
 	private function enable_analytics($data)
 	{		
 		$this->write_log("Launching ENABLE_ANALYTICS task");
@@ -3040,14 +3142,21 @@ class JsonModel extends BaseModel
 
 			$success = $cpanel_model->enable_analytics($website_code,$this->site);
 
-			$this->data = array(
+			$this->data = [
 				'analytics_enabled'        => $success
-			);
+			];
 			$this->write_log("ENABLE_ANALYTICS task finished");
 		}
 	}
 	
-	// Función para deshabilitar las estadísticas
+	/**
+     * Función para deshabilitar las estadísticas
+     *
+     * @param   string             $data    The data of analytics
+     *
+     * @return  void
+     *     
+     */
 	private function disable_analytics($data)
 	{		
 		$this->write_log("Launching DISABLE_ANALYTICS task");
@@ -3062,11 +3171,10 @@ class JsonModel extends BaseModel
 
 		$success = $cpanel_model->disable_analytics($website_code,$this->site);
 
-		$this->data = array(
+		$this->data = [
 			'analytics_disabled'        => $success
-		);
+		];
 		$this->write_log("ENABLE_ANALYTICS task finished");
 
 	}
-
 }

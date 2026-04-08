@@ -30,7 +30,7 @@ config/default/particles/logo.yaml	805f7f490fb0c576adda2ec484566dc3
 config/default/particles/social.yaml	32d8c08af78ba6d4bed939619b973443
 config/default/particles/totop.yaml	a38dbe0584c37eadda1f0c82bba68070
 error.php	896e47102319f0aebea99713b8002b11
-fields/warning.php	66d8d73203c26e2ac488064eecf622fb
+fields/warning.php	7225ca38f15ec32ac18bf9b4a40db881
 fonts/lato/lato-black/lato-black-webfont.eot	e43203b277294e9d0befb32e5c6f6b22
 fonts/lato/lato-black/lato-black-webfont.svg	46dd77bfc2edd71e8a903b0686205a64
 fonts/lato/lato-black/lato-black-webfont.ttf	95b09be83ceac7912bee39914527a2c0
@@ -137,9 +137,9 @@ fonts/rockettheme-apps/rockettheme-apps.ttf	2185692f8168ab2fa54c0923be97f190
 fonts/rockettheme-apps/rockettheme-apps.woff	f1258374fedaa30401743337048a64bb
 fonts/rockettheme-apps/rockettheme-apps.woff2	0b76f0674592d3d4653e6524045e890e
 gantry/presets.yaml	4edfd8f32f98ba3020831b1ed61db43f
-gantry/theme.yaml	d971f4df856bf87bbe7716926d86f9e8
+gantry/theme.yaml	c9e94ebef1630bdbc90586e079ab31e9
 html/layouts/chromes/gantry.php	a090d20a4c9e1d0f4a32cba6bd3d79d9
-html/layouts/joomla/system/message.php	b58c70538c279a4dccf509a59e3dede1
+html/layouts/joomla/system/message.php	cab953d9c507eceb27b1aa9fe63e8c4c
 html/modules.php	3385dcf51856d166be9ef44e0dd34ebe
 images/above/img01.jpeg	45d1bc6fa1ac764f15b937a1e1e9a377
 images/above/img02.jpeg	c08f1ce863d7c69e1b73ce49f8b48416
@@ -244,6 +244,6 @@ scss/helium/styles/_tables.scss	6e98ce2eec18fb2877cdf0e309e88ae2
 scss/helium/styles/_typography.scss	3ceef80704646c220c50c9f2e9ec5ada
 scss/helium/styles/_utilities.scss	5d8aacbecee8059c244371deac2d938e
 scss/helium/styles/_variations.scss	d0cfbd7f75d8cca38131eeeab0e52de8
-templateDetails.xml	002b00543eef0fb37698a4b44e336d4a
+templateDetails.xml	3087cefef0d3b73cd71e0213ab4da1f8
 template_preview.png	ab4cfffd01e4869e58539c047dd9b084
 template_thumbnail.png	927912da2d23c09c87d8613905b38b74

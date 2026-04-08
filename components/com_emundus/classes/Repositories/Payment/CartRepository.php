@@ -399,7 +399,7 @@ class CartRepository
 			$productRepository = new ProductRepository();
 			foreach ($data['products'] as $product)
 			{
-				$product_entity = $productRepository->getProductById($product->getId());
+				$product_entity = $productRepository->getProductById($product['id']);
 				$product_entity->setMandatory(1);
 				$cart_entity->addAvailableProduct($product_entity);
 				$cart_entity->addProduct($product_entity);

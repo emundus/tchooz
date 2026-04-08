@@ -49,6 +49,7 @@ export default {
 		try {
 			return await client.get('checkaccess', {
 				fnum: fnum,
+				refresh: true,
 			});
 		} catch (e) {
 			return false;

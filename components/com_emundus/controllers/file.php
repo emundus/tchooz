@@ -9,6 +9,9 @@ use Tchooz\files\files;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 
+/**
+ * @deprecated since 2.17.1 please use application or evaluation controllers, in pair with ApplicationFileRepository methods
+ */
 class EmundusControllerFile extends BaseController
 {
 	protected $app;

@@ -170,6 +170,8 @@
       <directory suffix=".php">../plugins/fabrik_element/emundus_phonenumber</directory>
       <directory suffix=".php">../plugins/fabrik_element/emundus_geolocalisation</directory>
       <directory suffix=".php">../plugins/fabrik_element/emundus_colorpicker</directory>
+      <directory suffix=".php">../plugins/fabrik_element/numeric</directory>
+      <directory suffix=".php">../plugins/fabrik_element/emundus_calculation</directory>
       <directory suffix=".php">../plugins/fabrik_list/su_copy_fiche_emplois</directory>
       <directory suffix=".php">../plugins/fabrik_list/zoommeeting</directory>
       <directory suffix=".php">../plugins/fabrik_validationrule/isiban</directory>

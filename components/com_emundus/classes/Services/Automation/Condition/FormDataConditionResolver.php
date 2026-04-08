@@ -54,6 +54,16 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 
 		$this->initializeFormIds();
 
+		if (!empty($contextFilters['formId']))
+		{
+			if (!is_array($contextFilters['formId']))
+			{
+				$contextFilters['formId'] = [$contextFilters['formId']];
+			}
+
+			$this->formIds = array_intersect($contextFilters['formId'], $this->formIds);
+		}
+
 		if (empty($contextFilters['search']))
 		{
 			// todo: replace this to use "storedValues" only and remove automationId usage, to make it generic

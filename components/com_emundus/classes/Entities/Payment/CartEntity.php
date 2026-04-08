@@ -450,7 +450,7 @@ class CartEntity {
 		$added = false;
 
 		// alteration must at least have description, amount and type
-		if (empty($alteration->getDescription()) || empty($alteration->getAmount()) || empty($alteration->getType())) {
+		if (empty($alteration->getDescription()) || empty($alteration->getType())) {
 			throw new \InvalidArgumentException('Alteration must have description, amount and type');
 		}
 

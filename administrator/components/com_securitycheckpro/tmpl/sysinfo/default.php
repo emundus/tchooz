@@ -1,1545 +1,661 @@
-﻿<?php 
+<?php
 /**
- * @Securitycheckpro component
- * @copyright Copyright (c) 2011 - Jose A. Luque / Securitycheck Extensions
- * @license   GNU General Public License version 3, or later
+ * @package     com_securitycheckpro
+ * @subpackage  Administrator\View\Systeminfo\tmpl
  */
 
-// Protect from unauthorized access
-defined('_JEXEC') or die('Restricted access');
+defined('_JEXEC') || die;
+
 use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Uri\Uri;
-use Joomla\CMS\Router\Route;
-use Joomla\Input\Input;
 use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Session\Session;
-use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Application\CMSApplication;
 
-Session::checkToken('get') or die('Invalid Token');
+/** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\View\Sysinfo\HtmlView $this */
+/** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\SysinfoModel $model */
 
-// Load plugin language
-$lang2 = Factory::getApplication()->getLanguage();
-$lang2->load('plg_system_securitycheckpro');
+// Behaviors
+HTMLHelper::_('behavior.keepalive');
+HTMLHelper::_('bootstrap.tooltip');
+HTMLHelper::_('behavior.formvalidator');
+
+// Carga del plugin principal de sistema del firewall
+/** @var \Joomla\CMS\Application\CMSApplication $app */
+$app       = Factory::getApplication();
+$lang = $app->getLanguage();
+$lang->load('plg_system_securitycheckpro', JPATH_ADMINISTRATOR) || $lang->load('plg_system_securitycheckpro', JPATH_ADMINISTRATOR, 'en-GB');
+
+$tabSetId  = 'scp-systeminfo-tabs';
+$activeTab = (string) $app->getUserStateFromRequest('com_securitycheckpro.' . $tabSetId . '.active', 'active_tab', 'overall');
+
+// Porcentaje de la barra de estado overall
+$value = (int) ($this->model->getOverall($this->system_info,1));
+
+// Porcentaje de la barra de estado de la extensión
+$wf = (int) ($this->system_info['overall_web_firewall'] ?? 0);
+$wfClass = ($wf <= 50) ? 'bg-danger' : (($wf <= 70) ? 'bg-warning' : 'bg-success');
+
+switch (true) {
+    case $value <= 50:
+        $barClass = 'bg-danger';
+        break;
+    case $value <= 70:
+        $barClass = 'bg-warning';
+        break;
+    default:
+        $barClass = 'bg-success';
+        break;
+}
 ?>
 
 
-<form action="index.php" class="margin-left-10 margin-right-10" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo Route::_('index.php?option=com_securitycheckpro&view=' . $this->getName()); ?>"
+      method="post"
+      name="adminForm"
+      id="adminForm"
+      class="form-validate">
+	  
+	  <?php
+    // Navegación superior del componente
+    require JPATH_ADMINISTRATOR . '/components/com_securitycheckpro/helpers/navigation.php';
+    ?>
 
-<?php 
-        // Cargamos la navegación
-        require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/navigation.php';
-?>    
-        
-         <!-- Contenido principal -->
-            
-            <div class="card mb-3">
-                <div class="card-header">
-                  <i class="fa fa-table"></i>
-        <?php echo Text::_('COM_SECURITYCHECKPRO_SYSTEM_INFORMATION'); ?>
-                </div>
-                <div class="card-body">
-                                    
-                    <ul class="nav nav-tabs" role="tablist" id="sysinfoTab">
-                      <li class="nav-item">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#overall_status" role="tab"><?php echo Text::_('COM_SECURITYCHECKPRO_SECURITY_OVERALL_STATUS'); ?></a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#extension_status" role="tab"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS'); ?></a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#global_configuration" role="tab"><?php echo Text::_('COM_SECURITYCHECKPRO_GLOBAL_CONFIGURATION'); ?></a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#mysql_configuration" role="tab"><?php echo Text::_('COM_SECURITYCHECKPRO_MYSQL_CONFIGURATION'); ?></a>
-                      </li>
-                      <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#php_configuration" role="tab"><?php echo Text::_('COM_SECURITYCHECKPRO_PHP_CONFIGURATION'); ?></a>
-                      </li>
-                    </ul>
-                    
-                    <div class="tab-content">
-                        <div class="tab-pane show active" id="overall_status" role="tabpanel">
-                            <!-- Overall status -->
-                            <div class="card mb-3">
-                                    <div class="card-header">
-            <?php echo Text::_('COM_SECURITYCHECKPRO_SECURITY_OVERALL_STATUS'); ?>
-                                    </div>
-                                <div class="card-body">
-                                    <div class="progress">
-										<?php 
-										if ($this->system_info['overall_joomla_configuration'] <=50 ) {
-											$div = '<div class="progress-bar bg-danger"';
-										} else if (($this->system_info['overall_joomla_configuration'] >50) && ($this->system_info['overall_joomla_configuration'] <=70) ) {
-											$div = "<div class=\"progress-bar bg-warning\"";
-										} else {
-											$div = "<div class=\"progress-bar bg-success\"";
-										}
-										?>                    
-										<?php echo $div . " role=\"progressbar\" aria-label=\"" . Text::_('COM_SECURITYCHECKPRO_SECURITY_OVERALL_STATUS') . "\" style=\"width: " . $this->system_info['overall_joomla_configuration'] ."%\">" . $this->system_info['overall_joomla_configuration']; ?>
-                                    </div>                        
-                                </div>
-                                    <br/>
-                                    
-                                     <div class="row">
-                                    
-                                        <!-- Akeeba files -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-primary"><?php echo Text::_('COM_SECURITYCHECKPRO_AKEEBA_RESTORATION_FILES_FOUND'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['kickstart_exists'] ) {
-                                                    $span = "<span class=\"badge bg-danger\">" . Text::_("COM_SECURITYCHECKPRO_YES");
-                                                } else {                                
-                                                    $span = "<span class=\"badge bg-success\">" . Text::_("COM_SECURITYCHECKPRO_NO");
-                                                }
-                                                ?>                        
-                                                </span>
-                                                <div>                            
-                <?php 
-                if (!$this->system_info['kickstart_exists'] ) {
-                    echo "<span class=\"badge bg-success\">OK</span>";
-                } else {
-                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                    ?>
-                                                        
-                                                    <!-- Modal Akeeba restoration -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_akeeba_restoration" tabindex="-1" role="dialog" aria-labelledby="modal_akeeba_restorationLabel" aria-hidden="true">
-                                                          <div class="modal-dialog modal-lg">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>     
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_AKEEBA_RESTORATION_FILES_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-																	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                          </div>
-                                                        </div>
-														<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_akeeba_restoration"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>
-                <?php }    ?>                                                        
-                                                </div>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Up to date -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-primary"><?php echo Text::_('COM_SECURITYCHECKPRO_SECURITY_UP_TO_DATE'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if (version_compare($this->system_info['coreinstalled'], $this->system_info['corelatest'], '==') ) {
-                                                    $span = "<span class=\"badge bg-success\">";
-                                                } else {
-                                                    $span = "<span class=\"badge bg-danger\">";
-                                                }
-                                                ?>
-                                                <?php echo $span . $this->system_info['coreinstalled']; ?>
-                                                </span>
-                                                <div>                            
-                <?php 
-                if (version_compare($this->system_info['coreinstalled'], $this->system_info['corelatest'], '==') ) {
-                    echo "<span class=\"badge bg-success\">OK</span>";
-                } else {
-                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                    ?>
-                                                        <button class="btn btn-info btn-sm" id="GoToJoomlaUpdate_button" type="button"><i class="icon-wrench icon-white"></i></button>
-                <?php }    ?>                                                        
-                                                </div>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Vulnerable extensions -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-primary"><?php echo Text::_('COM_SECURITYCHECKPRO_SECURITY_VULNERABLE_EXTENSIONS'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['vuln_extensions'] == 0 ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', $this->system_info['vuln_extensions']) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" id="GoToVuln_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal vuln extensions -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_vuln_extensions" tabindex="-1" role="dialog" aria-labelledby="modal_vuln_extensionsLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_VULN_EXTENSIONS_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_vuln_extensions"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-										
-										<!-- Unread logs -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-primary"><?php echo Text::_('COM_SECURITYCHECKPRO_UNREAD_LOGS'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->logs_pending <= 10 ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', '1') . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" id="GoToLogs_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal vuln extensions -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_unread_logs" tabindex="-1" role="dialog" aria-labelledby="modal_vuln_extensionsLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_UNREAD_LOGS_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_unread_logs"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Malware -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-primary"><?php echo Text::_('COM_SECURITYCHECKPRO_SECURITY_MALWARE_FOUND'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['suspicious_files'] == 0 ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', $this->system_info['suspicious_files']) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" id="GoToMalware_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal malware found -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_malware_found" tabindex="-1" role="dialog" aria-labelledby="modal_malware_foundLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>                
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_MALWARE_FOUND_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div> 
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_malware_found"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- File integrity -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-primary"><?php echo Text::_('COM_SECURITYCHECKPRO_SECURITY_NO_FILES_MODIFIED'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['files_with_bad_integrity'] == 0 ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', $this->system_info['files_with_bad_integrity']) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" id="GoToIntegrity_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal file integrity -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_files_with_bad_integrity" tabindex="-1" role="dialog" aria-labelledby="modal_files_with_bad_integrityLabel" aria-hidden="true">
-                                                          <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>              
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_FILES_BAD_INTEGRITY_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_files_with_bad_integrity"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- File permissions -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-primary"><?php echo Text::_('COM_SECURITYCHECKPRO_SECURITY_PERMISSIONS'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['files_with_incorrect_permissions'] == 0 ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', $this->system_info['files_with_incorrect_permissions']) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" id="GoToPermissions_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal file permissions -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_file_permissions" tabindex="-1" role="dialog" aria-labelledby="modal_file_permissionsLabel" aria-hidden="true">
-                                                          <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_FILE_PERMISSIONS_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>     
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_file_permissions"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Hide backend -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-primary"><?php echo Text::_('COM_SECURITYCHECKPRO_SECURITY_HIDE_BACKEND'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['backend_protection'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" id="GoToHtaccessProtection_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal Hide backend -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_hide_backend" tabindex="-1" role="dialog" aria-labelledby="modal_hide_backendLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>     
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_hide_backend"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- New admins -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-primary"><?php echo Text::_('COM_SECURITYCHECKPRO_FORBID_NEW_ADMINS_LABEL'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['firewall_options']['forbid_new_admins'] == 1 ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_session_protection_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal forbid new admins -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_forbid_new_admins" tabindex="-1" role="dialog" aria-labelledby="modal_forbid_new_adminsLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>                
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_FORBID_NEW_ADMINS_LABEL_INFO'); ?></p>    
-																</div>
-																<div class="modal-footer">
-																	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-																 </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div> 
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_forbid_new_admins"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Two factor -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-primary"><?php echo Text::_('COM_SECURITYCHECKPRO_TWO_FACTOR_ENABLED_LABEL'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['twofactor_enabled'] >= 1 ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_joomla_plugins_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal two factor -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_two_factor_enabled" tabindex="-1" role="dialog" aria-labelledby="modal_two_factor_enabledLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>                
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_TWO_FACTOR_ENABLED_LABEL_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div> 
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_two_factor_enabled"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Http headers -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-primary"><?php echo Text::_('COM_SECURITYCHECKPRO_HTTP_HEADERS_LABEL'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if (($this->system_info['htaccess_protection']['xframe_options'] > 0) && ($this->system_info['htaccess_protection']['sts_options'] > 0) && ($this->system_info['htaccess_protection']['xss_options'] > 0) && ($this->system_info['htaccess_protection']['csp_policy'] > 0) && ($this->system_info['htaccess_protection']['referrer_policy'] > 0) && ($this->system_info['htaccess_protection']['prevent_mime_attacks'] > 0) ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_headers_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal http headers -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_http_headers" tabindex="-1" role="dialog" aria-labelledby="modal_http_headersLabel" aria-hidden="true">
-                                                          <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>             
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_HTTP_HEADERS_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>  
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_http_headers"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                    <!-- row -->
-                                    </div>                            
-                                </div> 
-                            </div>                                                
-                        </div>    
+	
+	<h3 class="mb-3">
+		<span class="icon-grid" aria-hidden="true"></span>
+		<?php echo Text::_('COM_SECURITYCHECKPRO_SYSTEM_INFORMATION'); ?>
+	</h3>
 
-                        <div class="tab-pane" id="extension_status" role="tabpanel">
-                            <!-- Extension status -->
-                            <div class="card mb-3">
-                                    <div class="card-header">
-            <?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS'); ?>
-                                    </div>
-                                <div class="card-body">
-                                    <div class="progress">
-            <?php 
-            if ($this->system_info['overall_web_firewall'] <=50 ) {
-                $div = "<div class=\"progress-bar bg-danger\"";
-            } else if (($this->system_info['overall_web_firewall'] >50) && ($this->system_info['overall_web_firewall'] <=70) ) {
-                $div = "<div class=\"progress-bar bg-warning\"";
-            } else {
-                $div = "<div class=\"progress-bar bg-success\"";
-            }
-            ?>    
-            <?php echo $div . " role=\"progressbar\" style=\"width: " . $this->system_info['overall_web_firewall'] ."%\">" . $this->system_info['overall_web_firewall']; ?>
-                                        </div>                        
-                                    </div>
-                                    <br/>
-                                    
-                                    <div class="row">
-                                    
-                                        <!-- Firewall enabled -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_FIREWALL_ENABLED'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['firewall_plugin_enabled'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_twofactor_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal firewall enabled -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_firewall_plugin_enabled" tabindex="-1" role="dialog" aria-labelledby="modal_firewall_plugin_enabledLabel" aria-hidden="true">
-                                                          <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>               
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_FIREWALL_ENABLED_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div> 
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_firewall_plugin_enabled"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Dynamic blacklist -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_DYNAMIC_BLACKLIST'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
-                                                } else if ($this->system_info['firewall_options']['dynamic_blacklist'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                    
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_security_status_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal firewall enabled -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_dynamic_blacklist" tabindex="-1" role="dialog" aria-labelledby="modal_dynamic_blacklistLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>               
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>    
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_dynamic_blacklist"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Dynamic blacklist -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_LOGS'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
-                                                } else     if ($this->system_info['firewall_options']['logs_attacks'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_security_status_logs_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal firewall enabled -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_logs_attacks" tabindex="-1" role="dialog" aria-labelledby="modal_logs_attacksLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>                
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_LOG_ATTACKS_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>    
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_logs_attacks"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Second level -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SECOND_LEVEL'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
-                                                } else     if ($this->system_info['firewall_options']['second_level'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                    
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_second_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal firewall enabled -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_second_level" tabindex="-1" role="dialog" aria-labelledby="modal_second_levelLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>          
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_SECOND_LEVEL_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div> 
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_second_level"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Exceptions -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_EXCLUDE_EXCEPTIONS'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
-                                                } else if ($this->system_info['firewall_options']['exclude_exceptions_if_vulnerable'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";                                        
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_exclude_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal exceptions -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_exclude_exceptions_if_vulnerable" tabindex="-1" role="dialog" aria-labelledby="modal_second_levelLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>             
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_EXCLUDE_EXCEPTIONS_IF_VULNERABLE_DESCRIPTION'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>    
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_exclude_exceptions_if_vulnerable"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                   
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Xss filter -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_XSS_FILTER'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
-                                                } else     if (!(strstr($this->system_info['firewall_options']['strip_tags_exceptions'], '*')) ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_xss_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal xss filter -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_strip_tags_exceptions" tabindex="-1" role="dialog" aria-labelledby="modal_strip_tags_exceptionsLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-                                                              <div class="modal-header alert alert-info">
-                                                                <h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>              
-                                                              </div>
-                                                              <div class="modal-body">    
-                                                                <p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_XSS_FILTER_INFO'); ?></p>    
-                                                              </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>     
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_strip_tags_exceptions"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- SQL filter -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SQL_FILTER'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
-                                                } else if (!(strstr($this->system_info['firewall_options']['sql_pattern_exceptions'], '*')) ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_sql_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal SQL filter -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_sql_pattern_exceptions" tabindex="-1" role="dialog" aria-labelledby="modal_sql_pattern_exceptionsLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>                
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_SQL_FILTER_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>     
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_sql_pattern_exceptions"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- LFI filter -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_LFI_FILTER'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
-                                                } else if (!(strstr($this->system_info['firewall_options']['lfi_exceptions'], '*')) ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_lfi_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal LFI filter -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_lfi_exceptions" tabindex="-1" role="dialog" aria-labelledby="modal_lfi_exceptionsLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>              
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_SQL_FILTER_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>  
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_lfi_exceptions"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Session protection -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SESSION_PROTECTION'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                    // Chequeamos si la opción de compartir sesiones está activa; en este caso no aplicaremos esta opción para evitar una denegación de entrada
-                                                    $params          = Factory::getConfig();        
-                                                    $shared_session_enabled = $params->get('shared_session');
-                    
-                                                if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
-                                                } else if (($this->system_info['firewall_options']['session_protection_active']) && (!$shared_session_enabled) ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_session_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal Session protection -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_session_protection_active" tabindex="-1" role="dialog" aria-labelledby="modal_session_protection_activeLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>                
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_SESSION_PROTECTION_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div> 
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_session_protection_active"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Session hijack -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SESSION_HIJACK_PROTECTION'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                    // Chequeamos si la opción de compartir sesiones está activa; en este caso no aplicaremos esta opción para evitar una denegación de entrada
-                                                    $params          = Factory::getConfig();        
-                                                    $shared_session_enabled = $params->get('shared_session');
-                                                    
-                                                if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
-                                                } else if (($this->system_info['firewall_options']['session_hijack_protection']) && (!$shared_session_enabled) ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_session_hijack_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal Session hijack -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_session_hijack_protection" tabindex="-1" role="dialog" aria-labelledby="modal_session_hijack_protectionLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>               
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_SESSION_HIJACK_PROTECTION_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>  
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_session_hijack_protection"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Upload scanner -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_UPLOAD_SCANNER'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
-                                                } else if ($this->system_info['firewall_options']['upload_scanner_enabled'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                    
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_upload_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal upload scanner -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_upload_scanner_enabled" tabindex="-1" role="dialog" aria-labelledby="modal_upload_scanner_enabledLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>          
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_DESCRIPTION'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>   
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_upload_scanner_enabled"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Cron enabled -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_CRON_ENABLED'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
-                                                } else if ($this->system_info['firewall_options']['upload_scanner_enabled'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                    
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_cron_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal cron enabled -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_cron_enabled" tabindex="-1" role="dialog" aria-labelledby="modal_cron_enabledLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>       
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_CRON_ENABLED_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>   
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_cron_enabled"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Last filemanager -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_CRON_LAST_FILEMANAGER_CHECK'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                    $last_check = $this->system_info['last_check'];													
-													$global_model = new BaseModel();
-                                                    $now = $global_model->get_Joomla_timestamp();
-													
-													if ( empty($now) || empty($last_check) ){
-														$interval = 100;
-													} else {														
-														$seconds = strtotime($now) - strtotime($last_check);
-														// Extraemos los días que han pasado desde el último chequeo
-														$interval = intval($seconds/86400);	 
-													}
-                                                                                        
-                                                if ($interval < 2 ) {
-                                                    $span = "<span class=\"badge bg-success\">";
-                                                } else {
-                                                    $span = "<span class=\"badge bg-warning\">";
-                                                }
-                                                ?>
-												<?php echo $span . $this->system_info['last_check']; ?>
-                                                    </span>
-                <?php 
-                if ($interval < 2 ) {
-                    echo "<span class=\"badge bg-success\">OK</span>";
-                } else {
-                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                    ?>                                            
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_filemanager_check_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal last filemanager -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_last_check" tabindex="-1" role="dialog" aria-labelledby="modal_last_checkLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>               
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_LAST_CHECK_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>   
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_last_check"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>	                                                   
-                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Last fileintegrity -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_CRON_LAST_FILEINTEGRITY_CHECK'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                    $last_check_integrity = $this->system_info['last_check_integrity'];
-                                                    $global_model = new BaseModel();
-                                                    $now = $global_model->get_Joomla_timestamp();
-													
-													if ( empty($now) || empty($last_check_integrity) ){
-														$interval = 100;
-													} else {
-														$seconds = strtotime($now) - strtotime($last_check_integrity);
-														// Extraemos los días que han pasado desde el último chequeo
-														$interval = intval($seconds/86400);	            
-													}
-                                                                                        
-                                                if ($interval < 2 ) {
-                                                    $span = "<span class=\"badge bg-success\">";
-                                                } else {
-                                                    $span = "<span class=\"badge bg-warning\">";
-                                                }
-                                                ?>
-                <?php echo $span . $this->system_info['last_check_integrity']; ?>
-                                                    </span>
-                <?php 
-                if ($interval < 2 ) {
-                    echo "<span class=\"badge bg-success\">OK</span>";
-                } else {
-                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                    ?>                                            
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_fileintegrity_check_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal last fileintegrity -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_last_check_integrity" tabindex="-1" role="dialog" aria-labelledby="modal_last_check_integrityLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>             
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_LAST_CHECK_INTEGRITY_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_last_check_integrity"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                   
-                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Spam protection -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SPAM_PROTECTION_ENABLED'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['spam_protection_plugin_enabled'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_spam_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal spam protection -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_spam_protection_enabled" tabindex="-1" role="dialog" aria-labelledby="modal_spam_protection_enabledLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>                
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_SPAM_PROTECTION_ENABLED_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div> 
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_spam_protection_enabled"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                    </div>
+	<?php
+	echo HTMLHelper::_(
+		'uitab.startTabSet',
+		$tabSetId,
+		[
+			'active'     => $activeTab,
+			'recall'     => true,
+			'breakpoint' => 768,
+		]
+	);
 
-                                    <div class="row">
-                                        <!-- htaccess protection -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-danger"><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['htaccess_protection']['prevent_access'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_htaccess_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal htaccess protection -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_prevent_access" tabindex="-1" role="dialog" aria-labelledby="modal_prevent_accessLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>              
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_PREVENT_ACCESS_EXPLAIN'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div> 
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_prevent_access"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- unauthorized browsing -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-danger"><?php echo Text::_('COM_SECURITYCHECKPRO_PREVENT_UNAUTHORIZED_BROWSING_TEXT'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['htaccess_protection']['prevent_unauthorized_browsing'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_browsing_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal unauthorized browsing -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_prevent_unauthorized_browsing" tabindex="-1" role="dialog" aria-labelledby="modal_prevent_unauthorized_browsingLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>             
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_PREVENT_UNAUTHORIZED_BROWSING_EXPLAIN'); ?></p>  
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                          </div>
-                                                    </div>  
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_prevent_unauthorized_browsing"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- File injection -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-danger"><?php echo Text::_('COM_SECURITYCHECKPRO_FILE_INJECTION_PROTECTION_TEXT'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['htaccess_protection']['file_injection_protection'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_file_injection_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal file injection -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_file_injection_protection" tabindex="-1" role="dialog" aria-labelledby="modal_file_injection_protectionLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>              
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_FILE_INJECTION_PROTECTION_EXPLAIN'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div> 
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_file_injection_protection"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Self environ -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-danger"><?php echo Text::_('COM_SECURITYCHECKPRO_SELF_ENVIRON_EXPLAIN'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['htaccess_protection']['self_environ'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_self_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal self environ -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_self_environ" tabindex="-1" role="dialog" aria-labelledby="modal_self_environLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>              
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_SELF_ENVIRON_EXPLAIN'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>  
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_self_environ"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                   
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Xframe options -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-danger"><?php echo Text::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_TEXT'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['htaccess_protection']['xframe_options'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_xframe_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal xframe options -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_xframe_options" tabindex="-1" role="dialog" aria-labelledby="modal_xframe_optionsLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>               
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_EXPLAIN'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div> 
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_xframe_options"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                   
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Mime attacks -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-danger"><?php echo Text::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_TEXT'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['htaccess_protection']['prevent_mime_attacks'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_mime_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal mime attacks -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_prevent_mime_attacks" tabindex="-1" role="dialog" aria-labelledby="modal_prevent_mime_attacksLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>               
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_EXPLAIN'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>     
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_prevent_mime_attacks"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                   
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Default banned list -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-danger"><?php echo Text::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_TEXT'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['htaccess_protection']['default_banned_list'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_default_banned_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal default banned list -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_default_banned_list" tabindex="-1" role="dialog" aria-labelledby="modal_default_banned_listLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>              
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div> 
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_default_banned_list"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>	                                                   
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Disable server signature -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-danger"><?php echo Text::_('COM_SECURITYCHECKPRO_DISABLE_SERVER_SIGNATURE_TEXT'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['htaccess_protection']['disable_server_signature'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_signature_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal disable server signature -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_disable_server_signature" tabindex="-1" role="dialog" aria-labelledby="modal_disable_server_signatureLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>             
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_DISABLE_SERVER_SIGNATURE_EXPLAIN'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div> 
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_disable_server_signature"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                   
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Disallow php eggs -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-danger"><?php echo Text::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_TEXT'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['htaccess_protection']['disallow_php_eggs'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_eggs_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal disallow php eggs -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_disallow_php_eggs" tabindex="-1" role="dialog" aria-labelledby="modal_disallow_php_eggsLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>            
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_EXPLAIN'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>    
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_disallow_php_eggs"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                   
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>
-                                        
-                                        <!-- Disallow sensible files -->
-                                        <div class="col-xl-3 mb-3">
-                                        <ul class="list-group">
-                                            <li class="list-group-item list-group-item-danger"><?php echo Text::_('COM_SECURITYCHECKPRO_DISALLOW_SENSIBLE_FILES_ACCESS_TEXT'); ?></li>
-                                            <li class="list-group-item">
-                                                <?php 
-                                                if ($this->system_info['htaccess_protection']['disallow_php_eggs'] ) {
-                                                    echo "<span class=\"badge bg-success\">OK</span>";
-                                                } else {
-                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
-                                                    ?>
-                                                    <button class="btn btn-info btn-sm" type="button" id="li_extension_status_sensible_button" href="#"><i class="icon-wrench icon-white"></i></button>
-                                                    <!-- Modal disallow sensible files -->
-                                                    <div class="modal hide bd-example-modal-lg" id="modal_disallow_sensible_files_access" tabindex="-1" role="dialog" aria-labelledby="modal_disallow_sensible_files_accessLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-																<div class="modal-header alert alert-info">
-																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>            
-																</div>
-																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_DISALLOW_ACCESS_SENSIBLE_FILES_INFO'); ?></p>    
-																</div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
-                                                                </div>              
-                                                            </div>
-                                                        </div>
-                                                    </div>   
-													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_disallow_sensible_files_access"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
-                                                <?php }    ?>                            
-                                            </li>
-                                        </ul>
-                                        </div>                                
-                                    </div>
-                                </div>
-                            </div>                        
-                        </div>
-                        
-                        <div class="tab-pane" id="global_configuration" role="tabpanel">
-                            <!-- Global configuration -->
-                            <div class="card mb-3">
-                                    <div class="card-header">
-            <?php echo Text::_('COM_SECURITYCHECKPRO_GLOBAL_CONFIGURATION'); ?>
-                                    </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <!-- Joomla version -->
-                                        <div class="col-xl-3 mb-3">
-                                            <ul class="list-group">                                
-                                                <li class="list-group-item list-group-item-success"><?php echo Text::_('COM_SECURITYCHECKPRO_SYSINFO_JOOMLAVERSION'); ?></li>
-                                                <li class="list-group-item"><?php echo $this->system_info['version']; ?></li>
-                                            </ul>
-                                        </div>
-                                        
-                                        <!-- Joomla platform -->
-                                        <div class="col-xl-3 mb-3">
-                                            <ul class="list-group">                                
-                                                <li class="list-group-item list-group-item-success"><?php echo Text::_('COM_SECURITYCHECKPRO_SYSINFO_JOOMLAPLATFORM'); ?></li>
-                                                <li class="list-group-item"><?php echo $this->system_info['platform']; ?></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div> 
-                            </div>
-                        </div>
-                        
-                        <div class="tab-pane" id="mysql_configuration" role="tabpanel">
-                            <!-- Mysql configuration -->
-                            <div class="card mb-3">
-                                    <div class="card-header">
-            <?php echo Text::_('COM_SECURITYCHECKPRO_MYSQL_CONFIGURATION'); ?>
-                                    </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <ul class="list-group">                                
-                                            <li class="list-group-item list-group-item-warning"><?php echo Text::_('COM_SECURITYCHECKPRO_SYSINFO_MAX_ALLOWED_PACKET'); ?></li>
-                                            <li class="list-group-item"><?php echo $this->system_info['max_allowed_packet']; ?>M</li>
-                                        </ul>                                                
-                                    </div>
-                                </div> 
-                            </div>                        
-                        </div>
-                        
-                        <div class="tab-pane" id="php_configuration" role="tabpanel">
-                            <!-- PHP configuration -->
-                            <div class="card mb-3">
-                                    <div class="card-header">
-            <?php echo Text::_('COM_SECURITYCHECKPRO_PHP_CONFIGURATION'); ?>
-                                    </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <!-- Phpversion -->
-                                        <div class="col-xl-3 mb-3">
-                                            <ul class="list-group">                                
-                                                <li class="list-group-item list-group-item-secondary"><?php echo Text::_('COM_SECURITYCHECKPRO_SYSINFO_PHPVERSION'); ?></li>
-                                                <li class="list-group-item"><?php echo $this->system_info['phpversion']; ?></li>
-                                            </ul>
-                                        </div>
-                                        
-                                        <!-- Memory limit -->
-                                        <div class="col-xl-3 mb-3">
-                                            <ul class="list-group">                                
-                                                <li class="list-group-item list-group-item-secondary"><?php echo Text::_('COM_SECURITYCHECKPRO_SYSINFO_MEMORY_LIMIT'); ?></li>
-                                                <li class="list-group-item"><?php echo $this->system_info['memory_limit']; ?></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div> 
-                            </div>
-                        </div>
-                        
-                    <!-- Tab content -->
-                    </div>                    
-                </div>        
-            </div>    
-        </div>    
+	// ------------- TAB: OVERALL STATUS -------------
+	echo HTMLHelper::_('uitab.addTab', $tabSetId, 'overall', Text::_('COM_SECURITYCHECKPRO_SECURITY_OVERALL_STATUS'));
+	?>
+		<div class="scp-overall-bar mb-3">
+			<div class="progress">
+				<div class="progress-bar <?php echo $barClass; ?>"
+					role="progressbar"
+						 aria-label="<?php echo Text::_('COM_SECURITYCHECKPRO_SECURITY_OVERALL_STATUS'); ?>"
+						 style="width: <?php echo $value; ?>%;"
+						 aria-valuenow="<?php echo $value; ?>"
+						 aria-valuemin="0"
+						 aria-valuemax="100">
+						<?php echo $value; ?>%
+				</div>				
+			</div>
+		</div>
+		<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+		<?php
+		$kickstartExists = !empty($this->system_info['kickstart_exists']);
+
+		echo $this->model->renderStatusItem([
+			'title'      => Text::_('COM_SECURITYCHECKPRO_AKEEBA_RESTORATION_FILES_FOUND'),
+			'ok'         => !$kickstartExists,
+			'problems'   => 1,
+			'fixButtonId'=> '',
+			'modalId'    => 'modal_akeeba_restoration',
+			'modalText'  => Text::_('COM_SECURITYCHECKPRO_AKEEBA_RESTORATION_FILES_INFO'),
+		]);
+
+		$installed = (string) ($this->system_info['coreinstalled'] ?? '');
+		$latest    = (string) ($this->system_info['corelatest'] ?? '');
+
+		echo $this->model->renderStatusItem([
+			'title'      => Text::_('COM_SECURITYCHECKPRO_SECURITY_UP_TO_DATE'),
+			'ok'         => ($installed !== '' && $latest !== '' && version_compare($installed, $latest, '==')),
+			'problems'   => 1,
+			'valueBadge' => $installed ?: '',
+			'fixButtonId'=> 'GoToJoomlaUpdate_button',
+			// sin modal aquí
+		]);
+
+		$vuln = intval($this->system_info['vuln_extensions'] ?? 0);
+		echo $this->model->renderStatusItem([
+			'title'      => Text::_('COM_SECURITYCHECKPRO_SECURITY_VULNERABLE_EXTENSIONS'),
+			'ok'         => ($vuln === 0),
+			'problems'   => $vuln,
+			'fixButtonId'=> 'GoToVuln_button',
+			'modalId'    => 'modal_vuln_extensions',
+			'modalText'  => Text::_('COM_SECURITYCHECKPRO_VULN_EXTENSIONS_INFO'),
+		]);
+
+		$logs_pending = isset($logs_pending) && is_numeric($logs_pending) ? (int) $logs_pending : 0;
+		echo $this->model->renderStatusItem([
+			'title'      => Text::_('COM_SECURITYCHECKPRO_UNREAD_LOGS'),
+			'ok'         => ($logs_pending <= 10),
+			'problems'   => 1,
+			'fixButtonId'=> 'GoToLogs_button',
+			'modalId'    => 'modal_unread_logs',
+			'modalText'  => Text::_('COM_SECURITYCHECKPRO_UNREAD_LOGS_INFO'),
+		]);
+
+		$suspicious = intval($this->system_info['suspicious_files'] ?? 0);
+		echo $this->model->renderStatusItem([
+			'title'      => Text::_('COM_SECURITYCHECKPRO_SECURITY_MALWARE_FOUND'),
+			'ok'         => ($suspicious === 0),
+			'problems'   => $suspicious,
+			'fixButtonId'=> 'GoToMalware_button',
+			'modalId'    => 'modal_malware_found',
+			'modalText'  => Text::_('COM_SECURITYCHECKPRO_MALWARE_FOUND_INFO'),
+		]);
+
+		$badIntegrity = intval($this->system_info['files_with_bad_integrity'] ?? 0);
+		echo $this->model->renderStatusItem([
+			'title'      => Text::_('COM_SECURITYCHECKPRO_SECURITY_NO_FILES_MODIFIED'),
+			'ok'         => ($badIntegrity === 0),
+			'problems'   => $badIntegrity,
+			'fixButtonId'=> 'GoToIntegrity_button',
+			'modalId'    => 'modal_files_with_bad_integrity',
+			'modalText'  => Text::_('COM_SECURITYCHECKPRO_FILES_BAD_INTEGRITY_INFO'),
+		]);
+
+		$badPerms = intval($this->system_info['files_with_incorrect_permissions'] ?? 0);
+		echo $this->model->renderStatusItem([
+			'title'      => Text::_('COM_SECURITYCHECKPRO_SECURITY_PERMISSIONS'),
+			'ok'         => ($badPerms === 0),
+			'problems'   => $badPerms,
+			'fixButtonId'=> 'GoToPermissions_button',
+			'modalId'    => 'modal_file_permissions',
+			'modalText'  => Text::_('COM_SECURITYCHECKPRO_FILE_PERMISSIONS_INFO'),
+		]);
+
+		$backendProtection = !empty($this->system_info['backend_protection']);
+		echo $this->model->renderStatusItem([
+			'title'      => Text::_('COM_SECURITYCHECKPRO_SECURITY_HIDE_BACKEND'),
+			'ok'         => $backendProtection,
+			'problems'   => 1,
+			'fixButtonId'=> 'GoToHtaccessProtection_button',
+			'modalId'    => 'modal_hide_backend',
+			'modalText'  => Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_INFO'),
+		]);
+
+		$forbidNewAdmins = intval($this->system_info['firewall_options']['forbid_new_admins'] ?? 0) === 1;
+		echo $this->model->renderStatusItem([
+			'title'      => Text::_('COM_SECURITYCHECKPRO_FORBID_NEW_ADMINS_LABEL'),
+			'ok'         => $forbidNewAdmins,
+			'problems'   => 1,
+			'fixButtonId'=> 'li_session_protection_button',
+			'modalId'    => 'modal_forbid_new_admins',
+			'modalText'  => Text::_('COM_SECURITYCHECKPRO_FORBID_NEW_ADMINS_LABEL_INFO'),
+		]);
+
+		$twoFactorEnabled = intval($this->system_info['twofactor_enabled'] ?? 0) > 1;
+		echo $this->model->renderStatusItem([
+			'title'      => Text::_('COM_SECURITYCHECKPRO_TWO_FACTOR_ENABLED_LABEL'),
+			'ok'         => $twoFactorEnabled,
+			'problems'   => 1,
+			'fixButtonId'=> 'li_joomla_plugins_button',
+			'modalId'    => 'modal_two_factor_enabled',
+			'modalText'  => Text::_('COM_SECURITYCHECKPRO_TWO_FACTOR_ENABLED_LABEL_INFO'),
+		]);
+
+		$headers = $this->system_info['htaccess_protection'] ?? [];
+		$headersOk = (
+			intval($headers['xframe_options']        ?? 0) > 0 &&
+			intval($headers['sts_options']           ?? 0) > 0 &&
+			intval($headers['xss_options']           ?? 0) > 0 &&
+			intval($headers['csp_policy']            ?? 0) > 0 &&
+			intval($headers['referrer_policy']       ?? 0) > 0 &&
+			intval($headers['prevent_mime_attacks']  ?? 0) > 0
+		);
+		echo $this->model->renderStatusItem([
+			'title'      => Text::_('COM_SECURITYCHECKPRO_HTTP_HEADERS_LABEL'),
+			'ok'         => $headersOk,
+			'problems'   => 1,
+			'fixButtonId'=> 'li_headers_button',
+			'modalId'    => 'modal_http_headers',
+			'modalText'  => Text::_('COM_SECURITYCHECKPRO_HTTP_HEADERS_INFO'),
+		]);			?>
+		</div>
+	<?php
+	echo HTMLHelper::_('uitab.endTab');
+
+	// ------------- TAB: EXTENSION STATUS -------------
+	echo HTMLHelper::_('uitab.addTab', $tabSetId, 'extensions', Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS'));
+	?>
+		<div class="progress mb-3">
+		  <div class="progress-bar <?php echo $wfClass; ?>"
+			   role="progressbar"
+			   aria-label="<?php echo Text::_('COM_SECURITYCHECKPRO_SECURITY_OVERALL_STATUS'); ?>"
+			   style="width: <?php echo $wf; ?>%;"
+			   aria-valuenow="<?php echo $wf; ?>"
+			   aria-valuemin="0"
+			   aria-valuemax="100">
+			<?php echo $wf; ?>%
+		  </div>
+		</div>
+	
+		<?php
+		// Helpers para condiciones recurrentes
+		$fwEnabled = !empty($this->system_info['firewall_plugin_enabled']);
+		$opts      = $this->system_info['firewall_options'] ?? [];
+		$ht        = $this->system_info['htaccess_protection'] ?? [];
+
+		// Grid: 1 col en móvil, 2 en md, 3 en xl
+		echo '<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">';
+
+		// -------------------- Grupo: Firewall (header "dark") --------------------
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-dark',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_FIREWALL_ENABLED'),
+		  'ok'             => $fwEnabled,
+		  'problems'       => 1,
+		  'fixButtonId'    => 'li_twofactor_button',
+		  'modalId'        => 'modal_firewall_plugin_enabled',
+		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_FIREWALL_ENABLED_INFO'),
+		]);
+
+		// Dynamic blacklist
+		if (!$fwEnabled) {
+		  echo $this->model->renderStatusItem([
+			'headerItemClass'=> 'list-group-item-dark',
+			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_DYNAMIC_BLACKLIST'),
+			'ok'             => true, // no problema: mostramos aviso
+			'valueBadge'     => Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY'),
+			'valueBadgeClass'=> 'bg-warning',
+		  ]);
+		} else {
+		  echo $this->model->renderStatusItem([
+			'headerItemClass'=> 'list-group-item-dark',
+			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_DYNAMIC_BLACKLIST'),
+			'ok'             => !empty($opts['dynamic_blacklist']),
+			'problems'       => 1,
+			'fixButtonId'    => 'li_security_status_button',
+			'modalId'        => 'modal_dynamic_blacklist',
+			'modalText'      => Text::_('COM_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_INFO'),
+		  ]);
+		}
+
+		// Logs attacks
+		if (!$fwEnabled) {
+		  echo $this->model->renderStatusItem([
+			'headerItemClass'=> 'list-group-item-dark',
+			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_LOGS'),
+			'ok'             => true,
+			'valueBadge'     => Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY'),
+			'valueBadgeClass'=> 'bg-warning',
+		  ]);
+		} else {
+		  echo $this->model->renderStatusItem([
+			'headerItemClass'=> 'list-group-item-dark',
+			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_LOGS'),
+			'ok'             => !empty($opts['logs_attacks']),
+			'problems'       => 1,
+			'fixButtonId'    => 'li_security_status_logs_button',
+			'modalId'        => 'modal_logs_attacks',
+			'modalText'      => Text::_('COM_SECURITYCHECKPRO_LOG_ATTACKS_INFO'),
+		  ]);
+		}
+
+		// Second level
+		if (!$fwEnabled) {
+		  echo $this->model->renderStatusItem([
+			'headerItemClass'=> 'list-group-item-dark',
+			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SECOND_LEVEL'),
+			'ok'             => true,
+			'valueBadge'     => Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY'),
+			'valueBadgeClass'=> 'bg-warning',
+		  ]);
+		} else {
+		  echo $this->model->renderStatusItem([
+			'headerItemClass'=> 'list-group-item-dark',
+			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SECOND_LEVEL'),
+			'ok'             => !empty($opts['second_level']),
+			'problems'       => 1,
+			'fixButtonId'    => 'li_extension_status_second_button',
+			'modalId'        => 'modal_second_level',
+			'modalText'      => Text::_('COM_SECURITYCHECKPRO_SECOND_LEVEL_INFO'),
+		  ]);
+		}
+
+		// Exclude exceptions if vulnerable
+		if (!$fwEnabled) {
+		  echo $this->model->renderStatusItem([
+			'headerItemClass'=> 'list-group-item-dark',
+			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_EXCLUDE_EXCEPTIONS'),
+			'ok'             => true,
+			'valueBadge'     => Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY'),
+			'valueBadgeClass'=> 'bg-warning',
+		  ]);
+		} else {
+		  echo $this->model->renderStatusItem([
+			'headerItemClass'=> 'list-group-item-dark',
+			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_EXCLUDE_EXCEPTIONS'),
+			'ok'             => !empty($opts['exclude_exceptions_if_vulnerable']),
+			'problems'       => 1,
+			'fixButtonId'    => 'li_extension_status_exclude_button',
+			'modalId'        => 'modal_exclude_exceptions_if_vulnerable',
+			'modalText'      => Text::_('COM_SECURITYCHECKPRO_EXCLUDE_EXCEPTIONS_IF_VULNERABLE_DESCRIPTION'),
+		  ]);
+		}
+
+		// XSS filter
+		$xssOk = $fwEnabled && (strpos((string)($opts['strip_tags_exceptions'] ?? ''), '*') === false);
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-dark',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_XSS_FILTER'),
+		  'ok'             => $xssOk ?: (!$fwEnabled),
+		  'problems'       => $xssOk || !$fwEnabled ? 0 : 1,
+		  'fixButtonId'    => !$xssOk ? 'li_extension_status_xss_button' : null,
+		  'modalId'        => !$xssOk ? 'modal_strip_tags_exceptions' : null,
+		  'modalText'      => !$xssOk ? Text::_('COM_SECURITYCHECKPRO_XSS_FILTER_INFO') : null,
+		  'valueBadge'     => !$fwEnabled ? Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') : null,
+		  'valueBadgeClass'=> !$fwEnabled ? 'bg-warning' : null,
+		]);
+
+		// SQL filter
+		$sqlOk = $fwEnabled && (strpos((string)($opts['sql_pattern_exceptions'] ?? ''), '*') === false);
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-dark',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SQL_FILTER'),
+		  'ok'             => $sqlOk ?: (!$fwEnabled),
+		  'problems'       => $sqlOk || !$fwEnabled ? 0 : 1,
+		  'fixButtonId'    => !$sqlOk ? 'li_extension_status_sql_button' : null,
+		  'modalId'        => !$sqlOk ? 'modal_sql_pattern_exceptions' : null,
+		  'modalText'      => !$sqlOk ? Text::_('COM_SECURITYCHECKPRO_SQL_FILTER_INFO') : null,
+		  'valueBadge'     => !$fwEnabled ? Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') : null,
+		  'valueBadgeClass'=> !$fwEnabled ? 'bg-warning' : null,
+		]);
+
+		// LFI filter
+		$lfiOk = $fwEnabled && (strpos((string)($opts['lfi_exceptions'] ?? ''), '*') === false);
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-dark',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_LFI_FILTER'),
+		  'ok'             => $lfiOk ?: (!$fwEnabled),
+		  'problems'       => $lfiOk || !$fwEnabled ? 0 : 1,
+		  'fixButtonId'    => !$lfiOk ? 'li_extension_status_lfi_button' : null,
+		  'modalId'        => !$lfiOk ? 'modal_lfi_exceptions' : null,
+		  'modalText'      => !$lfiOk ? Text::_('COM_SECURITYCHECKPRO_SQL_FILTER_INFO') : null,
+		  'valueBadge'     => !$fwEnabled ? Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') : null,
+		  'valueBadgeClass'=> !$fwEnabled ? 'bg-warning' : null,
+		]);
+
+		// Session protection
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app       = Factory::getApplication();
+		$params = $app->getConfig();
+		$shared = (bool) $params->get('shared_session');
+		$sessOk = $fwEnabled && !empty($opts['session_protection_active']) && !$shared;
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-dark',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SESSION_PROTECTION'),
+		  'ok'             => $sessOk ?: (!$fwEnabled),
+		  'problems'       => $sessOk || !$fwEnabled ? 0 : 1,
+		  'fixButtonId'    => !$sessOk ? 'li_extension_status_session_button' : null,
+		  'modalId'        => !$sessOk ? 'modal_session_protection_active' : null,
+		  'modalText'      => !$sessOk ? Text::_('COM_SECURITYCHECKPRO_SESSION_PROTECTION_INFO') : null,
+		  'valueBadge'     => !$fwEnabled ? Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') : null,
+		  'valueBadgeClass'=> !$fwEnabled ? 'bg-warning' : null,
+		]);
+
+		// Session hijack
+		$hijackOk = $fwEnabled && !empty($opts['session_hijack_protection']) && !$shared;
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-dark',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SESSION_HIJACK_PROTECTION'),
+		  'ok'             => $hijackOk ?: (!$fwEnabled),
+		  'problems'       => $hijackOk || !$fwEnabled ? 0 : 1,
+		  'fixButtonId'    => !$hijackOk ? 'li_extension_status_session_hijack_button' : null,
+		  'modalId'        => !$hijackOk ? 'modal_session_hijack_protection' : null,
+		  'modalText'      => !$hijackOk ? Text::_('COM_SECURITYCHECKPRO_SESSION_HIJACK_PROTECTION_INFO') : null,
+		  'valueBadge'     => !$fwEnabled ? Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') : null,
+		  'valueBadgeClass'=> !$fwEnabled ? 'bg-warning' : null,
+		]);
+
+		// Upload scanner
+		$uploadOk = $fwEnabled && !empty($opts['upload_scanner_enabled']);
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-dark',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_UPLOAD_SCANNER'),
+		  'ok'             => $uploadOk ?: (!$fwEnabled),
+		  'problems'       => $uploadOk || !$fwEnabled ? 0 : 1,
+		  'fixButtonId'    => !$uploadOk ? 'li_extension_status_upload_button' : null,
+		  'modalId'        => !$uploadOk ? 'modal_upload_scanner_enabled' : null,
+		  'modalText'      => !$uploadOk ? Text::_('COM_SECURITYCHECKPRO_UPLOADSCANNER_DESCRIPTION') : null,
+		  'valueBadge'     => !$fwEnabled ? Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') : null,
+		  'valueBadgeClass'=> !$fwEnabled ? 'bg-warning' : null,
+		]);
+
+		// Cron enabled (ajusta la condición real si tienes flag específico)
+		$cronOk = $fwEnabled && !empty($this->system_info['cron_enabled']); // <-- ajusta a tu key real
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-dark',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_CRON_ENABLED'),
+		  'ok'             => $cronOk ?: (!$fwEnabled),
+		  'problems'       => $cronOk || !$fwEnabled ? 0 : 1,
+		  'fixButtonId'    => !$cronOk ? 'li_extension_status_cron_button' : null,
+		  'modalId'        => !$cronOk ? 'modal_cron_enabled' : null,
+		  'modalText'      => !$cronOk ? Text::_('COM_SECURITYCHECKPRO_CRON_ENABLED_INFO') : null,
+		  'valueBadge'     => !$fwEnabled ? Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') : null,
+		  'valueBadgeClass'=> !$fwEnabled ? 'bg-warning' : null,
+		]);
+
+		// Last filemanager check
+		$last = (string) ($this->system_info['last_check'] ?? '');
+		$now  = (new \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel())->get_Joomla_timestamp();
+		$interval = ($now && $last) ? (int) ((strtotime($now) - strtotime($last)) / 86400) : 100;
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-dark',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_CRON_LAST_FILEMANAGER_CHECK'),
+		  'ok'             => ($interval < 2),
+		  'problems'       => 1,
+		  'valueBadge'     => $last,
+		  'valueBadgeClass'=> ($interval < 2) ? 'bg-success' : 'bg-warning',
+		  'fixButtonId'    => ($interval < 2) ? null : 'li_extension_status_filemanager_check_button',
+		  'modalId'        => ($interval < 2) ? null : 'modal_last_check',
+		  'modalText'      => ($interval < 2) ? null : Text::_('COM_SECURITYCHECKPRO_LAST_CHECK_INFO'),
+		]);
+
+		// Last fileintegrity check
+		$lastI = (string) ($this->system_info['last_check_integrity'] ?? '');
+		$intervalI = ($now && $lastI) ? (int) ((strtotime($now) - strtotime($lastI)) / 86400) : 100;
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-dark',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_CRON_LAST_FILEINTEGRITY_CHECK'),
+		  'ok'             => ($intervalI < 2),
+		  'problems'       => 1,
+		  'valueBadge'     => $lastI,
+		  'valueBadgeClass'=> ($intervalI < 2) ? 'bg-success' : 'bg-warning',
+		  'fixButtonId'    => ($intervalI < 2) ? null : 'li_extension_status_fileintegrity_check_button',
+		  'modalId'        => ($intervalI < 2) ? null : 'modal_last_check_integrity',
+		  'modalText'      => ($intervalI < 2) ? null : Text::_('COM_SECURITYCHECKPRO_LAST_CHECK_INTEGRITY_INFO'),
+		]);
+
+		// Spam protection plugin
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-dark',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SPAM_PROTECTION_ENABLED'),
+		  'ok'             => !empty($this->system_info['spam_protection_plugin_enabled']),
+		  'problems'       => 1,
+		  'fixButtonId'    => 'li_extension_status_spam_button',
+		  'modalId'        => 'modal_spam_protection_enabled',
+		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_SPAM_PROTECTION_ENABLED_INFO'),
+		]);
+
+		// -------------------- Grupo: .htaccess (header "danger") --------------------
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-danger',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT'),
+		  'ok'             => !empty($ht['prevent_access']),
+		  'problems'       => 1,
+		  'fixButtonId'    => 'li_extension_status_htaccess_button',
+		  'modalId'        => 'modal_prevent_access',
+		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_PREVENT_ACCESS_EXPLAIN'),
+		]);
+
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-danger',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_PREVENT_UNAUTHORIZED_BROWSING_TEXT'),
+		  'ok'             => !empty($ht['prevent_unauthorized_browsing']),
+		  'problems'       => 1,
+		  'fixButtonId'    => 'li_extension_status_browsing_button',
+		  'modalId'        => 'modal_prevent_unauthorized_browsing',
+		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_PREVENT_UNAUTHORIZED_BROWSING_EXPLAIN'),
+		]);
+
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-danger',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_FILE_INJECTION_PROTECTION_TEXT'),
+		  'ok'             => !empty($ht['file_injection_protection']),
+		  'problems'       => 1,
+		  'fixButtonId'    => 'li_extension_status_file_injection_button',
+		  'modalId'        => 'modal_file_injection_protection',
+		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_FILE_INJECTION_PROTECTION_EXPLAIN'),
+		]);
+
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-danger',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_SELF_ENVIRON_EXPLAIN'),
+		  'ok'             => !empty($ht['self_environ']),
+		  'problems'       => 1,
+		  'fixButtonId'    => 'li_extension_status_self_button',
+		  'modalId'        => 'modal_self_environ',
+		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_SELF_ENVIRON_EXPLAIN'),
+		]);
+
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-danger',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_TEXT'),
+		  'ok'             => !empty($ht['xframe_options']),
+		  'problems'       => 1,
+		  'fixButtonId'    => 'li_extension_status_xframe_button',
+		  'modalId'        => 'modal_xframe_options',
+		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_EXPLAIN'),
+		]);
+
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-danger',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_TEXT'),
+		  'ok'             => !empty($ht['prevent_mime_attacks']),
+		  'problems'       => 1,
+		  'fixButtonId'    => 'li_extension_status_mime_button',
+		  'modalId'        => 'modal_prevent_mime_attacks',
+		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_EXPLAIN'),
+		]);
+
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-danger',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_TEXT'),
+		  'ok'             => !empty($ht['default_banned_list']),
+		  'problems'       => 1,
+		  'fixButtonId'    => 'li_extension_status_default_banned_button',
+		  'modalId'        => 'modal_default_banned_list',
+		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_INFO'),
+		]);
+
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-danger',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_DISABLE_SERVER_SIGNATURE_TEXT'),
+		  'ok'             => !empty($ht['disable_server_signature']),
+		  'problems'       => 1,
+		  'fixButtonId'    => 'li_extension_status_signature_button',
+		  'modalId'        => 'modal_disable_server_signature',
+		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_DISABLE_SERVER_SIGNATURE_EXPLAIN'),
+		]);
+
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-danger',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_TEXT'),
+		  'ok'             => !empty($ht['disallow_php_eggs']),
+		  'problems'       => 1,
+		  'fixButtonId'    => 'li_extension_status_eggs_button',
+		  'modalId'        => 'modal_disallow_php_eggs',
+		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_EXPLAIN'),
+		]);
+
+		echo $this->model->renderStatusItem([
+		  'headerItemClass'=> 'list-group-item-danger',
+		  'title'          => Text::_('COM_SECURITYCHECKPRO_DISALLOW_SENSIBLE_FILES_ACCESS_TEXT'),
+		  'ok'             => !empty($ht['disallow_php_eggs']), // ajusta si tienes key específica
+		  'problems'       => 1,
+		  'fixButtonId'    => 'li_extension_status_sensible_button',
+		  'modalId'        => 'modal_disallow_sensible_files_access',
+		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_DISALLOW_ACCESS_SENSIBLE_FILES_INFO'),
+		]);
+
+		echo '</div>'; // /row ?>		
+	<?php
+	echo HTMLHelper::_('uitab.endTab');
+
+	// ------------- TAB: GLOBAL CONFIGURATION -------------
+	echo HTMLHelper::_('uitab.addTab', $tabSetId, 'global', Text::_('COM_SECURITYCHECKPRO_GLOBAL_CONFIGURATION'));
+	?>
+		<div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
+		<?php
+		echo $this->model->renderInfoItem([
+			'title' => Text::_('COM_SECURITYCHECKPRO_SYSINFO_JOOMLAVERSION'),
+			'value' => $this->system_info['version'] ?? '',
+		]);
+
+		echo $this->model->renderInfoItem([
+			'title' => Text::_('COM_SECURITYCHECKPRO_SYSINFO_JOOMLAPLATFORM'),
+			'value' => $this->system_info['platform'] ?? '',
+		]);
+    ?>
 </div>
+	<?php
+	echo HTMLHelper::_('uitab.endTab');
 
+	// ------------- TAB: MYSQL CONFIGURATION -------------
+	echo HTMLHelper::_('uitab.addTab', $tabSetId, 'mysql', Text::_('COM_SECURITYCHECKPRO_MYSQL_CONFIGURATION'));
+	?>
+		 <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
+			<?php
+			echo $this->model->renderInfoItem([
+			  'headerItemClass' => 'list-group-item-warning',
+			  'title'           => Text::_('COM_SECURITYCHECKPRO_SYSINFO_MAX_ALLOWED_PACKET'),
+			  'value'           => $this->system_info['max_allowed_packet'] ?? '',
+			  'suffix'          => 'M',                  // añade la unidad
+			  'valueClass'      => '',     // opcional
+			  'colClass'        => 'col-12 col-md-6 col-xl-3', // opcional
+			]);
+			?>		
+		</div>
+	<?php
+	echo HTMLHelper::_('uitab.endTab');
 
-<input type="hidden" name="option" value="com_securitycheckpro" />
-<input type="hidden" name="task" value="" />
-<input type="hidden" name="boxchecked" value="1" />
-<input type="hidden" name="controller" value="filemanager" />
+	// ------------- TAB: PHP CONFIGURATION -------------
+	echo HTMLHelper::_('uitab.addTab', $tabSetId, 'php', Text::_('COM_SECURITYCHECKPRO_PHP_CONFIGURATION'));
+	?>
+		<div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
+		  <?php
+		  echo $this->model->renderInfoItem([
+			'headerItemClass' => 'list-group-item-secondary',
+			'title'           => Text::_('COM_SECURITYCHECKPRO_SYSINFO_PHPVERSION'),
+			'value'           => $this->system_info['phpversion'] ?? '',
+			'valueClass'      => '',
+		  ]);
+
+		  echo $this->model->renderInfoItem([
+			'headerItemClass' => 'list-group-item-secondary',
+			'title'           => Text::_('COM_SECURITYCHECKPRO_SYSINFO_MEMORY_LIMIT'),
+			'value'           => $this->system_info['memory_limit'] ?? '', // p.ej. "256M"
+			'valueClass'      => '',
+			'isHtml'      => true,
+		  ]);
+		  ?>
+		</div>
+
+	<?php
+	echo HTMLHelper::_('uitab.endTab');
+
+	echo HTMLHelper::_('uitab.endTabSet');
+	?>
+
+	<input type="hidden" name="task" value="">
+	<input type="hidden" name="active_tab" id="active_tab" value="<?php echo htmlspecialchars($activeTab, ENT_QUOTES, 'UTF-8'); ?>">
+	<input type="hidden" name="option" value="com_securitycheckpro" />
+	<input type="hidden" name="controller" value="filemanager" />
+	<?php echo HTMLHelper::_('form.token'); ?>
 </form>

@@ -23,7 +23,7 @@ final class Securitycheckpro_task_checker extends CMSPlugin implements Subscribe
     /**
      * Returns an array of events this subscriber will listen to.
      *
-     * @return  array
+     * @return  array<string,string>
      *
      * @since   4.0.0
      */
@@ -34,7 +34,13 @@ final class Securitycheckpro_task_checker extends CMSPlugin implements Subscribe
         ];
     }
 	
-	// Lanzamos la tarea pendiente 
+	/**
+	 * Lanzamos la tarea pendiente
+	 *
+	 * @param   string             $task_pending    Task name
+	 *
+	 * @return void
+	 */
     private function launch_task($task_pending)
     {
 		// Load library
@@ -65,6 +71,7 @@ final class Securitycheckpro_task_checker extends CMSPlugin implements Subscribe
 			$this->launch_task($task_pending);
 		}		
 
+		return true;
         
     }
 

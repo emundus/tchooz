@@ -26,4 +26,18 @@ class XMLTransformer
 		}
 		return $object;
 	}
+
+	public function appendXml(\SimpleXMLElement $to, \SimpleXMLElement $from, string $toChildName = null): void
+	{
+		$toChildName = $toChildName ?? $from->getName();
+		$toChild = $to->addChild($toChildName);
+
+		foreach ($from->attributes() as $attrKey => $attrValue) {
+			$toChild->addAttribute($attrKey, $attrValue);
+		}
+
+		foreach ($from->children() as $child) {
+			$this->appendXml($toChild, $child);
+		}
+	}
 }

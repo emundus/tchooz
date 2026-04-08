@@ -151,6 +151,7 @@ export default {
 		},
 		updateTab(evaluation) {
 			this.selectedTab = evaluation.id;
+			this.reloadEvaluationsKey++;
 
 			let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
 			sessionStorage.setItem('com_emundus_last_tab_evaluation_' + menu, JSON.stringify(evaluation));

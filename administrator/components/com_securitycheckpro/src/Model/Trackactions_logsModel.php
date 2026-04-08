@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * @Securitycheckpro component
  * @copyright Copyright (c) 2011 - Jose A. Luque / Securitycheck Extensions
@@ -7,7 +9,6 @@
 
 namespace SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model;
 
-// Chequeamos si el archivo está incluído en Joomla!
 defined('_JEXEC') or die();
 
 use Joomla\CMS\Factory;
@@ -15,27 +16,36 @@ use Joomla\CMS\Date\Date;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
+use Joomla\Utilities\ArrayHelper;
+use Joomla\CMS\Session\Session;
+use Joomla\Database\ParameterType;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 
-/**
- * Modelo Vulninfo
- */
+
 class Trackactions_logsModel extends ListModel
 {
-
-    public function __construct($config = array())
+	/**
+     * Constructor
+     *
+     * @param   array<string>                $config   An array of configuration options (name, state, dbo, table_path, ignore_request).     
+     *
+     * @since   3.0
+     * @throws  \Exception
+     */
+    public function __construct($config = [])
     {
         if (empty($config['filter_fields'])) {
-            $config['filter_fields'] = array(
-            'a.id', 'id',
-            'a.extension', 'extension',
-            'a.user_id', 'user',
-            'a.message', 'message',
-            'a.log_date', 'log_date',
-            'a.ip_address', 'ip_address'
-            );
+            $config['filter_fields'] = [
+				'a.id', 'id',
+				'a.extension', 'extension',
+				'a.user_id', 'user',
+				'a.message', 'message',
+				'a.log_date', 'log_date',
+				'a.ip_address', 'ip_address'
+            ];
         }
     
         parent::__construct($config);
@@ -47,20 +57,29 @@ class Trackactions_logsModel extends ListModel
         // Inicializamos las variables
         $app        = Factory::getApplication();
     
-        $search = $app->getUserStateFromRequest('filter.search', 'filter_search');
-        $this->setState('filter.search', $search);
-        $user = $app->getUserStateFromRequest('filter.user', 'filter_user');
-        $this->setState('filter.user', $user);
-        $extension = $app->getUserStateFromRequest('filter.extension', 'filter_extension');
-        $this->setState('filter.extension', $extension);
-        $ip_address = $app->getUserStateFromRequest('filter.ip_address', 'filter_ip_address');
-        $this->setState('filter.ip_address', $ip_address);
-        $daterange = $app->getUserStateFromRequest('daterange', 'daterange');
-        $this->setState('daterange', $daterange);
-    
-        parent::populateState('id', 'DESC');
+		if ( $app instanceof \Joomla\CMS\Application\CMSWebApplicationInterface ) {		
+			$search = $app->getUserStateFromRequest('filter.search', 'filter_search');
+			$this->setState('filter.search', $search);
+			$user = $app->getUserStateFromRequest('filter.user', 'filter_user');
+			$this->setState('filter.user', $user);
+			$extension = $app->getUserStateFromRequest('filter.extension', 'filter_extension');
+			$this->setState('filter.extension', $extension);
+			$ip_address = $app->getUserStateFromRequest('filter.ip_address', 'filter_ip_address');
+			$this->setState('filter.ip_address', $ip_address);
+			$daterange = $app->getUserStateFromRequest('daterange', 'daterange');
+			$this->setState('filter.dateRange', $daterange);
+		
+			parent::populateState('id', 'DESC');
+		}
     }
 
+	/**
+     * Función para cargar los datos
+     *
+     *
+     * @return  string
+     *     
+     */
     public function getListQuery()
     {
         
@@ -102,7 +121,7 @@ class Trackactions_logsModel extends ListModel
         // Apply filter by date range
         if (!empty($dateRange)) {
             $date = $this->buildDateRange($dateRange);
-
+			
             // If the chosen range is not more than a year ago
             if ($date['dNow'] != false) {
                 $query->where(
@@ -116,7 +135,7 @@ class Trackactions_logsModel extends ListModel
         $search = $this->getState('filter.search');
 
         if (!empty($search)) {
-            $search = $db->quote('%' . str_replace(' ', '%', $db->escape(trim($search), true) . '%'));
+            $search = $db->quote('%' . str_replace(' ', '%', $db->escape(trim($search), true)) . '%');
             $query->where('(a.message LIKE ' . $search . ')');
         }
 
@@ -127,8 +146,7 @@ class Trackactions_logsModel extends ListModel
      * Check for old logs that needs to be deleted_comment
      *
      * @return void
-     *
-     * @since __DEPLOY_VERSION__
+     *    
      */
     protected function checkIn()
     {
@@ -150,119 +168,179 @@ class Trackactions_logsModel extends ListModel
             {
                 $db->execute();
             }
-            catch (RuntimeException $e)
+            catch (\RuntimeException $e)
             {
                 Factory::getApplication()->enqueueMessage($db->getMessage(), 'warning');
-                return false;
+                return;
             }
         }
         
     }        
     
     /**
-     * Construct the date range to filter on.
-     *
-     * @param string $range The textual range to construct the filter for.
-     *
-     * @return string  The date range to filter on.
-     *
-     * @since __DEPLOY_VERSION__
-     */
-    private function buildDateRange($range)
-    {
-        // Get UTC for now.
-        $dNow   = new Date;
-        $dStart = clone $dNow;
+	 * @return array{dNow: Date|false, dStart: Date|string}
+	 */
+	private function buildDateRange(string $range): array
+	{
+		// Siempre empezamos en UTC
+		$dNow   = new Date('now', new \DateTimeZone('UTC'));
+		$dStart = clone $dNow;
 
-        switch ($range)
-        {
-        case 'past_week':
-            $dStart->modify('-7 day');
-            break;
+		switch ($range) {
+			case 'past_week':
+				$dStart->modify('-7 day');
+				break;
 
-        case 'past_1month':
-            $dStart->modify('-1 month');
-            break;
+			case 'past_1month':
+				$dStart->modify('-1 month');
+				break;
 
-        case 'past_3month':
-            $dStart->modify('-3 month');
-            break;
+			case 'past_3month':
+				$dStart->modify('-3 month');
+				break;
 
-        case 'past_6month':
-            $dStart->modify('-6 month');
-            break;
+			case 'past_6month':
+				$dStart->modify('-6 month');
+				break;			
+			case 'past_year':
+				$dStart->modify('-1 year');
+				break;
 
-        case 'post_year':
-            $dNow = false;
-        case 'past_year':
-            $dStart->modify('-1 year');
-            break;
+			case 'today':
+				// Alinear a medianoche local y volver a UTC
+				/** @var \Joomla\CMS\Application\CMSApplication $app */
+				$app = Factory::getApplication();
+				$tz  = new \DateTimeZone((string) $app->getConfig()->get('offset', 'UTC'));
 
-        case 'today':
-            // Ranges that need to align with local 'days' need special treatment.
-            $offset = Factory::getApplication()->get('offset');
+				$dStart = new Date('now', $tz);
+				$dStart->setTime(0, 0, 0);
+				$dStart->setTimezone(new \DateTimeZone('UTC'));
+				break;
 
-            // Reset the start time to be the beginning of today, local time.
-            $dStart = new Date('now', $offset);
-            $dStart->setTime(0, 0, 0);
+			case 'never':
+				$dNow = false;
 
-            // Now change the timezone back to UTC.
-            $tz = new \DateTimeZone('GMT');
-            $dStart->setTimezone($tz);
-            break;
+				/** @var DatabaseInterface $db */
+				$db = $this->getDatabase(); // o Factory::getContainer()->get(DatabaseInterface::class)
+				$dStart = $db->getNullDate(); // string tipo '0000-00-00 00:00:00'
+				break;
 
-        case 'never':
-            $dNow = false;
-            $dStart = $this->_db->getNullDate();
-            break;
+			default:
+				// Mantén los valores por defecto (rango “ahora ? ahora”)
+				break;
+		}
 
-        default:
-            return $range;
-            break;
-        }
-
-        return array('dNow' => $dNow, 'dStart' => $dStart);
-    }
-
-    /* Función para borrar un array de logs */
-    function delete()
-    {
-       	$input = Factory::getApplication()->input;
-		$uids = $input->get('cid', null, 'array');
+		return ['dNow' => $dNow, 'dStart' => $dStart];
+	}
     
-        Joomla\Utilities\ArrayHelper::toInteger($uids, array());
-    
-        // Chequeamos si se ha seleccionado algún elemento
-        if (empty($uids)) {
-            Factory::getApplication()->enqueueMessage(Text::_("COM_SECURITYCHECKPRO_NO_ELEMENTS_SELECTED"), 'warning');
-            return false;
-        }
-    
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-        foreach($uids as $uid)
-        {
-            $sql = "DELETE FROM #__securitycheckpro_trackactions WHERE id='{$uid}'";
-            $db->setQuery($sql);
-            $db->execute();    
-        }
-    }
+	/**
+	 * Borra logs seleccionados por id (backend).
+	 */
+	function delete(): void
+	{
+		// CSRF
+		if (!Session::checkToken('request')) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
 
-    /* Función para runcar una tabla */
-    function delete_all()
-    {
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-    
-        $sql = "TRUNCATE table #__securitycheckpro_trackactions";
-        $db->setQuery($sql);
-        $db->execute();        
-    }
+		$app  = Factory::getApplication();
+		$user = $app->getIdentity();
+
+		// ACL
+		if (!$user->authorise('core.delete', 'com_securitycheckpro')) {
+			throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
+		$uids = $app->getInput()->get('cid', [], 'array');
+		ArrayHelper::toInteger($uids);
+		
+		if ($uids === []){
+			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_NO_ELEMENTS_SELECTED'), 'warning');
+			return;
+		}
+
+		/** @var DatabaseInterface $db */
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
+
+		// Por seguridad/control de tamaño
+		$uids = array_values(
+			array_unique(
+				array_filter(
+					array_map(
+						static fn($v): int => (int) $v,
+						$uids
+					),
+					static fn(int $v): bool => $v > 0
+				)
+			)
+		);
+
+		if ($uids === []) {
+			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_NO_VALID_IDS'), 'warning');
+			return;
+		}
+
+		// Borrado por lotes con transacción
+		$db->transactionStart();
+
+		try {
+			$chunks = array_chunk($uids, 500);
+			foreach ($chunks as $batch) {
+				$query = $db->getQuery(true)
+					->delete($db->quoteName('#__securitycheckpro_trackactions'))
+					->whereIn($db->quoteName('id'), $batch, ParameterType::INTEGER);
+
+				$db->setQuery($query);
+				$db->execute();
+			}
+
+			$db->transactionCommit();
+			$app->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_N_ITEMS_DELETED', count($uids)), 'message');
+		} catch (\Throwable $e) {
+			$db->transactionRollback();
+			Log::add('Trackactions_logsModel. delete function error: ' . $e->getMessage(), Log::ERROR, 'com_securitycheckpro');			
+			throw new \RuntimeException(Text::_('COM_SECURITYCHECKPRO_DELETE_FAILED') . ': ' . $e->getMessage(), 500, $e);
+		}
+	}
+
+	/**
+	 * Vacía toda la tabla de logs (backend).
+	 * Requiere permiso fuerte específico.
+	 */
+	function delete_all(): void
+	{
+		if (!Session::checkToken('request')) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
+		$app  = Factory::getApplication();
+		$user = $app->getIdentity();
+
+		if (!$user->authorise('logs.deleteall', 'com_securitycheckpro')) {
+			throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
+		/** @var DatabaseInterface $db */
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
+
+		try {
+			$query = $db->getQuery(true)
+				->delete($db->quoteName('#__securitycheckpro_trackactions'));
+			$db->setQuery($query);
+			$db->execute();
+
+			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_TABLE_CLEARED'), 'message');
+		} catch (\Throwable $e) {
+			throw new \RuntimeException(Text::_('COM_SECURITYCHECKPRO_TRUNCATE_FAILED') . ': ' . $e->getMessage(), 500, $e);
+		}
+	}
 
     /**
      * Get logs data into Table object
      *
-     * @return Array  All logs in the table
-     *
-     * @since __DEPLOY_VERSION__
+	 * @param   array<string>|null          $pks    Array with the packages
+     * @return list<object{id: mixed, message: mixed, log_date: mixed, extension: mixed, user_id: mixed, ip_address: mixed}>
+	 *     
      */
     public function getLogsData($pks = null)
     {
@@ -277,7 +355,7 @@ class Trackactions_logsModel extends ListModel
         }
         else
         {
-            $items = array();
+            $items = [];
             Table::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_securitycheckpro/tables');
             $table = $this->getTable('TrackActions', 'Table');
 
@@ -297,6 +375,4 @@ class Trackactions_logsModel extends ListModel
             return $items;
         }
     }
-
-
 }

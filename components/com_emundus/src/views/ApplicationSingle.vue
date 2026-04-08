@@ -142,6 +142,7 @@ import Modal from '@/components/Modal.vue';
 import fileService from '@/services/file.js';
 import Messages from './Messenger/Messages.vue';
 import Synthesis from '@/components/Files/Synthesis.vue';
+import applicationService from '@/services/application.js';
 
 export default {
 	name: 'ApplicationSingle',
@@ -305,33 +306,54 @@ export default {
 			this.getSynthesis(fnum);
 
 			if (typeof this.selectedFile == 'string') {
-				filesService.getFile(fnum, this.$props.type).then((result) => {
-					if (result.status == 1) {
-						this.selectedFile = result.data;
-						this.access = result.rights;
+				applicationService.getByFnum(fnum).then((result) => {
+					if (result.status) {
+						this.selectedFile = {
+							fnum: result.data.fnum,
+							applicant_id: result.data.owner_id,
+							applicant_name: result.data.user,
+							campaign: result.campaign_id,
+							is_anonym: 0,
+							status: result.status.label,
+							status_color: result.status.color,
+						};
 
-						let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
-						let lastTab = sessionStorage.getItem('com_emundus_last_tab_' + menu);
+						applicationService.getUserAccessRightsUponFnum(result.data.fnum).then((response) => {
+							if (response.status) {
+								this.access = response.data;
 
-						// if the last tab is in the default tabs, then select it
-						let tabFind = this.tabs.find((tab) => tab.name === lastTab);
+								let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
+								let lastTab = sessionStorage.getItem('com_emundus_last_tab_' + menu);
 
-						if (lastTab && tabFind && (this.access[tabFind.access].r || this.access[tabFind.access].c)) {
-							this.updateTab(lastTab);
-						} else {
-							if (this.defaultTabs.length > 0) {
-								this.updateTab(this.defaultTabs[0].name);
+								// if the last tab is in the default tabs, then select it
+								let tabFind = this.tabs.find((tab) => tab.name === lastTab);
+
+								if (lastTab && tabFind && (this.access[tabFind.access].r || this.access[tabFind.access].c)) {
+									this.updateTab(lastTab);
+								} else {
+									if (this.defaultTabs.length > 0) {
+										this.updateTab(this.defaultTabs[0].name);
+									} else {
+										this.updateTab('application');
+									}
+								}
+
+								this.updateURL(this.selectedFile.fnum);
+								this.getApplicationForm();
+
+								this.showModal = true;
+								this.hidden = false;
+								this.loading = false;
 							} else {
-								this.updateTab('application');
+								this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', result.msg).then((confirm) => {
+									if (confirm === true) {
+										this.showModal = false;
+										this.hidden = true;
+									}
+								});
+								this.loading = false;
 							}
-						}
-
-						this.updateURL(this.selectedFile.fnum);
-						this.getApplicationForm();
-
-						this.showModal = true;
-						this.hidden = false;
-						this.loading = false;
+						});
 					} else {
 						this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', result.msg).then((confirm) => {
 							if (confirm === true) {

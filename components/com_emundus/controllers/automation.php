@@ -547,38 +547,39 @@ class EmundusControllerAutomation extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
+	#[\Tchooz\Attributes\AccessAttribute(\Tchooz\Enums\AccessLevelEnum::PARTNER)]
 	public function getConditionsFields(): void
 	{
-		$response = ['code' => 403, 'status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
-
-		if (EmundusHelperAccess::asAccessAction($this->automationActionId, 'c', $this->app->getIdentity()->id))
+		$eventType = $this->input->getString('type', '');
+		try
 		{
-			$eventType = $this->input->getString('type', '');
+			$targetType           = ConditionTargetTypeEnum::from($eventType);
+			$parameters           = $this->input->getString('parameters', '');
+			$parameters           = json_decode($parameters, true) ?? [];
+			$parameters['search'] = $this->input->getString('search_query', '');
 
-			try {
-				$targetType = ConditionTargetTypeEnum::from($eventType);
-				$parameters = $this->input->getString('parameters', '');
-				$parameters = json_decode($parameters, true) ?? [];
-				$parameters['search'] = $this->input->getString('search_query', '');
-
-				$conditionsRegistry = new ConditionRegistry();
-				$resolver = $conditionsRegistry->getResolver($targetType->value);
-				if ($resolver) {
-					$fields = $resolver->getAvailableFields($parameters);
-					$response['data'] = array_map(function ($field) {
-						return $field->toSchema();
-					}, $fields);
-					$response['status'] = true;
-					$response['code'] = 200;
-					$response['msg'] = Text::_('COM_EMUNDUS_AUTOMATION_CONDITION_FIELDS_RETRIEVED_SUCCESS');
-				} else {
-					$response['msg'] = Text::_('COM_EMUNDUS_AUTOMATION_INVALID_CONDITION_TARGET_TYPE');
-					$response['code'] = 400;
-				}
-			} catch (\Exception $e) {
-				$response['msg'] = Text::_('COM_EMUNDUS_AUTOMATION_INVALID_CONDITION_TARGET_TYPE');
+			$conditionsRegistry = new ConditionRegistry();
+			$resolver           = $conditionsRegistry->getResolver($targetType->value);
+			if ($resolver)
+			{
+				$fields             = $resolver->getAvailableFields($parameters);
+				$response['data']   = array_map(function ($field) {
+					return $field->toSchema();
+				}, $fields);
+				$response['status'] = true;
+				$response['code']   = 200;
+				$response['msg']    = Text::_('COM_EMUNDUS_AUTOMATION_CONDITION_FIELDS_RETRIEVED_SUCCESS');
+			}
+			else
+			{
+				$response['msg']  = Text::_('COM_EMUNDUS_AUTOMATION_INVALID_CONDITION_TARGET_TYPE');
 				$response['code'] = 400;
 			}
+		}
+		catch (\Exception $e)
+		{
+			$response['msg']  = Text::_('COM_EMUNDUS_AUTOMATION_INVALID_CONDITION_TARGET_TYPE');
+			$response['code'] = 400;
 		}
 
 		$this->sendJsonResponse($response);

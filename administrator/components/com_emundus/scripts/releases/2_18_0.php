@@ -91,6 +91,20 @@ WHERE kcu.TABLE_SCHEMA = DATABASE()
 				$this->tasks[] = $this->db->execute();
 			}
 
+			$installed = \EmundusHelperUpdate::installExtension('plg_fabrik_element_numeric', 'numeric', null, 'plugin', 1, 'fabrik_element');
+			$this->tasks[] = $installed;
+			if (!$installed)
+			{
+				$result['message'] .= 'Failed to install numeric plugin. ';
+			}
+
+			$installed = \EmundusHelperUpdate::installExtension('plg_fabrik_element_emundus_calculation', 'emundus_calculation', null, 'plugin', 1, 'fabrik_element');
+			$this->tasks[] = $installed;
+			if (!$installed)
+			{
+				$result['message'] .= 'Failed to install emundus_calculation plugin. ';
+			}
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)

@@ -36,23 +36,23 @@ class LogsdaterangeField extends PredefinedlistField
     /**
      * Available options
      *
-     * @var   array
+     * @var  string[]
      * @since __DEPLOY_VERSION__
      */
-    protected $predefinedOptions = array(
-    'today'       => 'COM_SECURITYCHECKPRO_OPTION_RANGE_TODAY',
-    'past_week'   => 'COM_SECURITYCHECKPRO_OPTION_RANGE_PAST_WEEK',
-    'past_1month' => 'COM_SECURITYCHECKPRO_OPTION_RANGE_PAST_1MONTH',
-    'past_3month' => 'COM_SECURITYCHECKPRO_OPTION_RANGE_PAST_3MONTH',
-    'past_6month' => 'COM_SECURITYCHECKPRO_OPTION_RANGE_PAST_6MONTH',
-    'past_year'   => 'COM_SECURITYCHECKPRO_OPTION_RANGE_PAST_YEAR',
-    'post_year'   => 'COM_SECURITYCHECKPRO_OPTION_RANGE_POST_YEAR',
-    );
+    protected $predefinedOptions = [
+		'today'       => 'COM_SECURITYCHECKPRO_OPTION_RANGE_TODAY',
+		'past_week'   => 'COM_SECURITYCHECKPRO_OPTION_RANGE_PAST_WEEK',
+		'past_1month' => 'COM_SECURITYCHECKPRO_OPTION_RANGE_PAST_1MONTH',
+		'past_3month' => 'COM_SECURITYCHECKPRO_OPTION_RANGE_PAST_3MONTH',
+		'past_6month' => 'COM_SECURITYCHECKPRO_OPTION_RANGE_PAST_6MONTH',
+		'past_year'   => 'COM_SECURITYCHECKPRO_OPTION_RANGE_PAST_YEAR',
+		'post_year'   => 'COM_SECURITYCHECKPRO_OPTION_RANGE_POST_YEAR',
+	];
 
     /**
      * Method to instantiate the form field object.
      *
-     * @param JForm $form The form to attach to the form field object.
+     * @param Form $form The form to attach to the form field object.
      *
      * @since __DEPLOY_VERSION__
      */

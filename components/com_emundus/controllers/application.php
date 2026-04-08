@@ -29,6 +29,7 @@ use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnTag;
 use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Enums\CrudEnum;
@@ -45,6 +46,8 @@ use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Controller\EmundusController;
+use Tchooz\Repositories\Workflow\StepRepository;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
 
 class EmundusControllerApplication extends EmundusController
@@ -3170,6 +3173,112 @@ class EmundusControllerApplication extends EmundusController
 		}
 
 		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(AccessLevelEnum::PARTNER, [
+		['id' => 1, 'mode' => CrudEnum::READ]
+	])]
+	public function getByFnum(): EmundusResponse
+	{
+		$this->checkToken('get');
+		$response = new EmundusResponse(false, Text::_('ACCESS_DENIED'), 403);
+
+		$fnum = $this->app->getInput()->getString('fnum', '');
+
+		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(1, CrudEnum::READ->value, $this->user->id, $fnum))
+		{
+			$applicationFileRepository = new ApplicationFileRepository();
+			$applicationFile = $applicationFileRepository->getByFnum($fnum);
+
+			if (!empty($applicationFile))
+			{
+				$response = new EmundusResponse(true, Text::_('APPLICATION_FILE_RETRIEVED'), 200, $applicationFile->__serialize());
+			}
+			else
+			{
+				$response = new EmundusResponse(false, Text::_('APPLICATION_FILE_NOT_FOUND'), 404);
+			}
+		}
+
+		return $response;
+	}
+
+	#[AccessAttribute(AccessLevelEnum::PARTNER, [
+		['id' => 1, 'mode' => CrudEnum::READ]
+	])]
+	public function getUserAccessRightsUponFnum(): EmundusResponse
+	{
+		$this->checkToken('get');
+
+		$response = new EmundusResponse(false, Text::_('ACCESS_DENIED'), 403);
+		$fnum = $this->app->getInput()->getString('fnum', '');
+
+		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(1, CrudEnum::READ->value, $this->user->id, $fnum))
+		{
+			// TODO: maybe use action enum
+			$evaluationActionIds = [5];
+
+			$workflowRepository = new WorkflowRepository();
+			$workflow = $workflowRepository->getWorkflowByFnum($fnum, true);
+
+			if (!empty($workflow))
+			{
+				foreach ($workflow->getSteps() as $step)
+				{
+					if ($step->isEvaluationStep())
+					{
+						if (!in_array($step->getType()->getId(), $evaluationActionIds))
+						{
+							$evaluationActionIds[] = $step->getType()->getId();
+						}
+					}
+				}
+			}
+
+			$evalAccesses = [
+				'r' => false,
+				'u' => false,
+				'c' => false
+			];
+			foreach ($evaluationActionIds as $actionId)
+			{
+				foreach ($evalAccesses as $mode => $value)
+				{
+					if (EmundusHelperAccess::asAccessAction($actionId, $mode, $this->user->id, $fnum))
+					{
+						$evalAccesses[$mode] = true;
+					}
+				}
+			}
+
+			$accessByActions = [
+				1  => [
+					'r' => \EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id, $fnum)
+				],
+				4 => [
+					'r' => \EmundusHelperAccess::asAccessAction(4, 'r', $this->user->id, $fnum),
+					'u' => \EmundusHelperAccess::asAccessAction(4, 'u', $this->user->id, $fnum),
+					'c' => \EmundusHelperAccess::asAccessAction(4, 'c', $this->user->id, $fnum),
+				],
+				5 => $evalAccesses,
+				10 => [
+					'r' => \EmundusHelperAccess::asAccessAction(10, 'r', $this->user->id, $fnum),
+					'c' => \EmundusHelperAccess::asAccessAction(10, 'c', $this->user->id, $fnum),
+					'u' => \EmundusHelperAccess::asAccessAction(10, 'u', $this->user->id, $fnum),
+					'd' => \EmundusHelperAccess::asAccessAction(10, 'd', $this->user->id, $fnum),
+				],
+				36 => [
+					'r' => \EmundusHelperAccess::asAccessAction(36, 'r', $this->user->id, $fnum),
+					'c' => \EmundusHelperAccess::asAccessAction(36, 'c', $this->user->id, $fnum),
+					'u' => \EmundusHelperAccess::asAccessAction(36, 'u', $this->user->id, $fnum),
+					'd' => \EmundusHelperAccess::asAccessAction(36, 'd', $this->user->id, $fnum),
+				]
+			];
+
+			$response = EmundusResponse::ok($accessByActions);
+		}
+
+		return $response;
 	}
 
 	/**

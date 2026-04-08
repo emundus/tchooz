@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'gantry/joomla',
-        'pretty_version' => '5.5.25',
-        'version' => '5.5.25.0',
-        'reference' => '49979d4c9415728c16fd70b40dc41abbe44e898c',
+        'pretty_version' => '5.6.0',
+        'version' => '5.6.0.0',
+        'reference' => '549d970d31828ac5909d8790f00974e813579f59',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -38,9 +38,9 @@
             'dev_requirement' => false,
         ),
         'gantry/joomla' => array(
-            'pretty_version' => '5.5.25',
-            'version' => '5.5.25.0',
-            'reference' => '49979d4c9415728c16fd70b40dc41abbe44e898c',
+            'pretty_version' => '5.6.0',
+            'version' => '5.6.0.0',
+            'reference' => '549d970d31828ac5909d8790f00974e813579f59',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

@@ -341,7 +341,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	static function prepareElementParameters(string $plugin, ?bool $notempty = true, ?int $attachementId = 0): array
 	{
 
-		$plugin_no_required = ['display', 'panel'];
+		$plugin_no_required = ['display', 'panel', ElementPluginEnum::EMUNDUS_CALCULATION->value];
 		$plugin_to_setup    = '';
 		if ($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email')
 		{
@@ -753,8 +753,29 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			$params['average_multiple_elements'] = json_encode([
 				'average_multiple_element' => [''],
 				'average_multiple_weight'  => ['1'],
+				'average_multiple_max' => ['20'],
 			]);
 			$params['used_as_total']             = 0;
+		}
+
+		if ($plugin === ElementPluginEnum::NUMERIC->value)
+		{
+			$params['min'] = '';
+			$params['max'] = '';
+			$params['decimal'] = 2;
+			$params['decimal_separator'] = ',';
+			$params['thousand_separator'] = ' ';
+			$params['step'] = 1;
+		}
+
+		if ($plugin === ElementPluginEnum::EMUNDUS_CALCULATION->value)
+		{
+			$params['type'] = 'custom';
+			$params['operation'] = '';
+			$params['average_form'] = ["result_out_of" => "", "elements" => ""];
+			$params["percentile_form"] = ['percentile'=>'','elements'=>""];
+			//$params["dates_diff_form"] = '{"unit":"","start_date_element":"", "end_date_element": ""}';
+			$params["dates_diff_form"] = ['unit' => \Tchooz\Enums\Time\TimeUnitEnum::YEARS->value, 'start_date_element' => '', 'end_date_element' => ''];
 		}
 
 		return $params;
@@ -1927,7 +1948,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 		if (!empty($formIds))
 		{
-			$query->andWhere('jffg.form_id IN (' . implode(',', $formIds) . ')');
+			$query->andWhere('jff.id IN (' . implode(',', $formIds) . ')');
 		}
 
 		if (!empty($excludedPlugins))

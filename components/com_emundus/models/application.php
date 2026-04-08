@@ -30,6 +30,7 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagRemoveDefinition;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 
@@ -2608,6 +2609,16 @@ class EmundusModelApplication extends ListModel
 
 														$elt = chunk_split($elt, 4, ' ');
 													}
+													elseif ($elements[$j]->plugin == 'numeric')
+													{
+														$params = json_decode($elements[$j]->params);
+
+														$numberDecimal = $params->decimal ?? 2;
+														$decimalSeparator = $params->decimal_separator ?? ',';
+														$thousandSeparator = $params->thousand_separator ?? '';
+
+														$elt = number_format((float)$r_elt, $numberDecimal, $decimalSeparator, $thousandSeparator);
+													}
 													else {
 														$elt = $r_elt;
 													}
@@ -2965,6 +2976,14 @@ class EmundusModelApplication extends ListModel
 												else {
 													$elt = '';
 												}
+											}
+											elseif ($element->plugin == 'numeric')
+											{
+												$params = json_decode($element->params);
+												$numberDecimal = $params->decimal ?? 2;
+												$decimalSeparator = $params->decimal_separator ?? ',';
+												$thousandSeparator = $params->thousand_separator ?? '';
+												$elt = number_format((float)$element->content, $numberDecimal, $decimalSeparator, $thousandSeparator);
 											}
 											else {
 												$elt = $element->content;
@@ -3453,6 +3472,13 @@ class EmundusModelApplication extends ListModel
 
 													$elt = chunk_split($elt, 4, ' ');
 												}
+												else if ($elements[$j]->plugin == ElementPluginEnum::NUMERIC->value)
+												{
+													$numberDecimal = $params->decimal ?? 2;
+													$decimalSeparator = $params->decimal_separator ?? ',';
+													$thousandSeparator = $params->thousand_separator ?? '';
+													$elt = number_format((float)$r_elt, $numberDecimal, $decimalSeparator, $thousandSeparator);
+												}
 												else {
 													$elt = Text::_($r_elt);
 												}
@@ -3740,6 +3766,13 @@ class EmundusModelApplication extends ListModel
 												}
 												elseif ($elements[$j]->plugin == 'emundus_phonenumber') {
 													$elt = substr($r_elt, 2, strlen($r_elt));
+												}
+												elseif ($elements[$j]->plugin == ElementPluginEnum::NUMERIC->value)
+												{
+													$numberDecimal = $params->decimal ?? 2;
+													$decimalSeparator = $params->decimal_separator ?? ',';
+													$thousandSeparator = $params->thousand_separator ?? '';
+													$elt = number_format((float)$r_elt, $numberDecimal, $decimalSeparator, $thousandSeparator);
 												}
 												else {
 													$elt = Text::_($r_elt);
@@ -4072,6 +4105,12 @@ class EmundusModelApplication extends ListModel
 													Log::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 													$elt = '';
 												}
+											} else if ($element->plugin == ElementPluginEnum::NUMERIC->value) {
+												$params = json_decode($element->params);
+												$numberDecimal = $params->decimal ?? 2;
+												$decimalSeparator = $params->decimal_separator ?? ',';
+												$thousandSeparator = $params->thousand_separator ?? '';
+												$elt = number_format((float)$element->content, $numberDecimal, $decimalSeparator, $thousandSeparator);
 											}
 											else {
 												$elt = Text::_($element->content);

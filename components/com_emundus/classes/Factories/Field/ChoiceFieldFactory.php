@@ -83,4 +83,30 @@ class ChoiceFieldFactory
 
 		return $options;
 	}
+
+	/**
+	 * @param   array  $enumCases
+	 *
+	 * @return array<ChoiceFieldValue>
+	 */
+	public static function makeOptionsFromEnum(array $enumCases): array
+	{
+		$options = [];
+
+		foreach ($enumCases as $case)
+		{
+			if (method_exists($case, 'getLabel'))
+			{
+				$label = $case->getLabel();
+			}
+			else
+			{
+				$label = $case->name;
+			}
+
+			$options[] = new ChoiceFieldValue($case->value, $label);
+		}
+
+		return $options;
+	}
 }
