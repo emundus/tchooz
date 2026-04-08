@@ -3616,11 +3616,11 @@ class EmundusControllersettings extends EmundusController
 		if (!empty($type))
 		{
 			$addonValue = new AddonValue(true, true, []);
-			$publicSessionAddon = new AddonEntity('public_session', $addonValue);
+			$publicSessionAddon = new AddonEntity($type, $addonValue);
 			$resolver = new AddonHandlerResolver();
 			try
 			{
-				$handler = $resolver->resolve('public_session', $publicSessionAddon);
+				$handler = $resolver->resolve($type, $publicSessionAddon);
 
 				$data = array_map(function ($param) {
 					return $param->toSchema();
