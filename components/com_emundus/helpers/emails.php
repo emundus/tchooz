@@ -26,6 +26,7 @@ use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Symfony\Component\Yaml\Yaml;
+use Tchooz\Services\PublicAccess\PublicAccessValidation;
 
 /**
  * Content Component Query Helper
@@ -967,7 +968,8 @@ class EmundusHelperEmails
 			$validator = new EmailValidator();
 			$multipleValidations = new MultipleValidationWithAnd([
 				new RFCValidation(),
-				new DNSCheckValidation()
+				new DNSCheckValidation(),
+				new PublicAccessValidation()
 			]);
 			return $validator->isValid($email, $multipleValidations);
 		}
