@@ -495,16 +495,17 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 
 		if (!empty($campaign))
 		{
+			$fnumSession               = new \stdClass();
+			$fnumSession->fnum         = $applicationFile->getFnum();
+			$fnumSession->applicant_id = $applicationFile->getUser()->id;
+			$fnumSession->applicant    = 1;
+			$fnumSession->status       = $applicationFile->getStatus()->getStep();
+			$fnumSession->start_date   = $campaign->getStartDate()->format('Y-m-d H:i:s');
+			$emundusSession->end_date  = $campaign->getEndDate()->format('Y-m-d H:i:s');
+
 			$emundusSession->fnum                   = $applicationFile->getFnum();
 			$emundusSession->fnums                  = [
-				$applicationFile->getFnum() => [
-					'fnum'         => $applicationFile->getFnum(),
-					'applicant_id' => $applicationFile->getUser()->id,
-					'status'       => $applicationFile->getStatus()->getStep(),
-					'campaign_id'  => $applicationFile->getCampaignId(),
-					'start_date'   => $applicationFile->getCampaign()->getStartDate()->format('Y-m-d H:i:s'),
-					'end_date'     => $applicationFile->getCampaign()->getEndDate()->format('Y-m-d H:i:s'),
-				]
+				$applicationFile->getFnum() => $fnumSession
 			];
 			$emundusSession->campaign_id            = $campaign->getId();
 			$emundusSession->status                 = $applicationFile->getStatus()->getStep();
