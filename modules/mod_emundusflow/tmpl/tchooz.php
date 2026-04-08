@@ -203,7 +203,8 @@ $now      = $dateTime->format('Y-m-d H:i:s');
                     $document->addScriptOptions('mod_emundusflow.actions', array_map(function ($action) {
                         return $action->__serialize();
                     }, $actions));
-                    $wa->registerAndUseScript('mod_emundusflow.actions', 'modules/mod_emundusflow/script/actions.js');
+                    $wa->registerAndUseScript('mod_emundusflow.fieldtohtmlfactory', 'modules/mod_emundusflow/script/FieldToHtmlFactory.js');
+                    $wa->registerAndUseScript('mod_emundusflow.actions', 'modules/mod_emundusflow/script/actions.js', [], ['defer' => true], ['mod_emundusflow.fieldtohtmlfactory']);
                     Text::script('CANCEL');
                     Text::script('CONFIRM');
                     Text::script('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_DELETE_CONFIRM');

@@ -52,12 +52,11 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 }
                 else if (foundAction.parameters && foundAction.parameters.length > 0)
                 {
-                    // todo, handle multiple parameters, for now, only one
+                    const formHtml = FieldToHtmlFactory.buildForm(foundAction.parameters);
+
                     Swal.fire({
                         title: foundAction.label,
-                        input: 'text',
-                        inputLabel: foundAction.parameters[0].label,
-                        inputValue: '',
+                        html: formHtml,
                         showCancelButton: true,
                         reverseButtons: true,
                         confirmButtonText: Joomla.Text._('CONFIRM'),
@@ -67,21 +66,21 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             cancelButton: 'em-swal-cancel-button',
                             confirmButton: 'em-swal-confirm-button',
                         },
-                        inputValidator: (value) => {
-                            if (!value) {
-                                return 'Please enter a value';
-                            } else if (value.length < 3)
+                        preConfirm: () => {
+                            const popup = Swal.getPopup();
+                            const error = FieldToHtmlFactory.validate(foundAction.parameters, popup);
+                            if (error)
                             {
-                                return 'Value must be at least 3 characters long';
+                                Swal.showValidationMessage(error);
+                                return false;
                             }
+
+                            return FieldToHtmlFactory.extractValues(foundAction.parameters, popup);
                         }
                     }).then((result) => {
                         if (result.isConfirmed)
                         {
-                            let params = {};
-                            params[foundAction.parameters[0].name] = result.value;
-
-                            executeAction(foundAction, params);
+                            executeAction(foundAction, result.value);
                         }
                     });
                 }

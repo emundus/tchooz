@@ -3,7 +3,10 @@
 namespace Tchooz\Enums\ApplicationFile;
 
 use Joomla\CMS\Language\Text;
+use Tchooz\Entities\Fields\ChoiceField;
+use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Fields\StringField;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 
 enum ApplicationFileActionsEnum: string
 {
@@ -46,13 +49,30 @@ enum ApplicationFileActionsEnum: string
 
 	public function getParameters(): array
 	{
-		return match($this)
+		$parameters = [];
+
+		switch ($this)
 		{
-			self::RENAME => [
-				new StringField('name', Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_RENAME_PARAM'), true),
-			],
-			default => []
-		};
+			case self::RENAME:
+				$parameters[] = new StringField('name', Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_RENAME_PARAM'), true);
+				break;
+
+			case self::COPY:
+				$campaignRepository = new CampaignRepository(false);
+				$ongoingCampaigns = $campaignRepository->getOngoingCampaigns();
+
+				$choices = array_map(function ($campaign) {
+					return new ChoiceFieldValue((string) $campaign->getId(), $campaign->getLabel());
+				}, $ongoingCampaigns);
+
+				$parameters[] = new ChoiceField('campaign_id', Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_COPY_CAMPAIGN_PARAM'), $choices, true);
+				break;
+
+			default:
+				break;
+		}
+
+		return $parameters;
 	}
 
 	public function getOrdering(): int
