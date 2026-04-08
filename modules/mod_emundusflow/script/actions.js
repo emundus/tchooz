@@ -27,9 +27,32 @@ window.addEventListener('DOMContentLoaded', (event) => {
         if (foundAction)
         {
             action.addEventListener('click', (e) => {
-                if (foundAction.parameters && foundAction.parameters.length > 0)
+                const actionId = action.getAttribute('id');
+                if (actionId === 'delete')
                 {
-                    // todo, handle multiple parameters, for new, only one
+                    Swal.fire({
+                        title: foundAction.label,
+                        text: Joomla.Text._('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_DELETE_CONFIRM'),
+                        icon: 'warning',
+                        showCancelButton: true,
+                        reverseButtons: true,
+                        confirmButtonText: Joomla.Text._('CONFIRM'),
+                        cancelButtonText: Joomla.Text._('CANCEL'),
+                        customClass: {
+                            title: 'em-swal-title',
+                            cancelButton: 'em-swal-cancel-button',
+                            confirmButton: 'em-swal-confirm-button',
+                        },
+                    }).then((result) => {
+                        if (result.isConfirmed)
+                        {
+                            executeAction(foundAction);
+                        }
+                    });
+                }
+                else if (foundAction.parameters && foundAction.parameters.length > 0)
+                {
+                    // todo, handle multiple parameters, for now, only one
                     Swal.fire({
                         title: foundAction.label,
                         input: 'text',
@@ -107,6 +130,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 if (data.data.redirect)
                 {
                     window.location.href = data.data.redirect;
+                }
+                else
+                {
+                    window.location.reload();
                 }
             }
         }).catch(error => {

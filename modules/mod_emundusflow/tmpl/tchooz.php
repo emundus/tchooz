@@ -1,9 +1,8 @@
 <?php // no direct access
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\Plugin\Emundus\Mergeapplications\Repository\ApplicationRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
-use Tchooz\Services\ApplicationFile\ApplicationFileService;
+use Tchooz\Services\ApplicationFile\ApplicationFileRegistry;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -191,10 +190,10 @@ $now      = $dateTime->format('Y-m-d H:i:s');
             </a>
             <?php
 
-            $service = new ApplicationFileService();
+            $registry = new ApplicationFileRegistry();
             $applicationRepository = new ApplicationFileRepository();
             $application = $applicationRepository->getByFnum($current_application->fnum);
-            $actions = $service->getApplicationFileActions($application);
+            $actions = $registry->getAvailableActions($application);
 
             if (!empty($actions))
             {
@@ -206,6 +205,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
                     $wa->registerAndUseScript('mod_emundusflow.actions', 'modules/mod_emundusflow/script/actions.js');
                     Text::script('CANCEL');
                     Text::script('CONFIRM');
+                    Text::script('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_DELETE_CONFIRM');
                 }
 
                 ?>
@@ -213,7 +213,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
                     <span class="material-symbols-outlined tw-cursor-pointer !tw-flex tw-justify-self-center" id="emundus-application-file-actions">
                         more_vert
                     </span>
-                    <div id="emundus-application-file-actions-container" class="tw-absolute tw-bg-white tw-shadow-lg tw-rounded tw-p-2 tw-hidden tw-transition-all tw-right-0 tw-flex tw-flex-col tw-gap-2">
+                    <div id="emundus-application-file-actions-container" class="tw-absolute tw-bg-white tw-shadow-lg tw-rounded tw-p-2 tw-hidden tw-transition-all tw-right-0 tw-flex tw-flex-col tw-gap-2 tw-z-10">
                         <?php
 
                         foreach ($actions as $action)

@@ -45,6 +45,7 @@ use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Controller\EmundusController;
 use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
+use Tchooz\Services\ApplicationFile\ApplicationFileRegistry;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
 
 class EmundusControllerApplication extends EmundusController
@@ -3295,15 +3296,15 @@ class EmundusControllerApplication extends EmundusController
 			{
 				$action = $this->app->input->getString('action');
 
-				$service = new ApplicationFileService();
-				$actions = $service->getApplicationFileActions($applicationFile);
+				$registry = new ApplicationFileRegistry();
+				$actions = $registry->getAvailableActions($applicationFile);
 
 				$foundAction = null;
-				foreach ($actions as $possibleAction)
+				foreach ($actions as $availableAction)
 				{
-					if ($possibleAction->getActionType()->value === $action)
+					if ($availableAction->getActionType()->value === $action)
 					{
-						$foundAction = $possibleAction;
+						$foundAction = $availableAction;
 						break;
 					}
 				}
@@ -3328,7 +3329,14 @@ class EmundusControllerApplication extends EmundusController
 					}
 					else if ($foundAction->execute($applicationFile, $parameters, $this->app->getIdentity()))
 					{
-						$response = EmundusResponse::ok();
+						$data = [];
+
+						if (method_exists($foundAction, 'getRedirectUrl'))
+						{
+							$data['redirect'] = $foundAction->getRedirectUrl($applicationFile, $parameters, $this->app->getIdentity());
+						}
+
+						$response = EmundusResponse::ok($data);
 					}
 					else
 					{
