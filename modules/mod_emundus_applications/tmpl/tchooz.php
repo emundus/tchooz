@@ -511,6 +511,18 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                                                    style="color: <?php echo $color ?>;margin-bottom: 0">
 																	<?php echo $application->programme; ?>
                                                                 </p>
+
+                                                                <?php
+
+                                                                    if ($application->anonymous == 1)
+                                                                    {
+                                                                        ?>
+                                                                            <span class="material-symbols-outlined">domino_mask</span>
+                                                                        <?php
+                                                                    }
+
+                                                                ?>
+
                                                                 <div
                                                                     class="mod_emundus_applications__container text-xl!"
                                                                     id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>">
@@ -561,6 +573,18 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                                                             style="color: <?= $application->order_color; ?>"><?= Text::_(strtoupper($application->order_status)); ?></span>
                                                                     </p>
 																<?php endif; ?>
+                                                                <?php
+
+                                                                if ($application->anonymous == 1)
+                                                                {
+                                                                    ?>
+                                                                    <div class="tw-rounded-[50%] tw-bg-profile-full tw-text-white tw-p-1 tw-leading-[none] tw-flex tw-items-center tw-justify-center">
+                                                                        <span class="material-symbols-outlined">domino_mask</span>
+                                                                    </div>
+                                                                    <?php
+                                                                }
+
+                                                                ?>
 
 																<?php if ($show_nb_comments)
 																{
@@ -592,13 +616,15 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 																<?php endif; ?>
                                                             </div>
 															<?php if ($mod_emundus_applications_show_programme != 1) : ?>
-                                                                <div class="mod_emundus_applications__container"
-                                                                     id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>">
-                                                                <span
-                                                                    class="material-symbols-outlined em-text-neutral-600"
-                                                                    style="font-size: 24px;"
-                                                                    id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
-                                                                >more_vert</span>
+                                                                <div class="tw-flex tw-flex-row tw-gap-4 tw-items-center tw-justify-center">
+                                                                    <div class="mod_emundus_applications__container"
+                                                                         id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>">
+                                                                    <span
+                                                                        class="material-symbols-outlined em-text-neutral-600"
+                                                                        style="font-size: 24px;"
+                                                                        id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
+                                                                    >more_vert</span>
+                                                                    </div>
                                                                 </div>
 															<?php endif; ?>
                                                         </div>
