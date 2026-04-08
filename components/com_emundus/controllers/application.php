@@ -23,6 +23,7 @@ use Joomla\Utilities\ArrayHelper;
 use Tchooz\Attributes\AccessAttribute;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\Actions\ActionEntity;
+use Tchooz\Entities\ApplicationFile\Actions\RedirectApplicationFileAction;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnTag;
@@ -44,6 +45,7 @@ use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Controller\EmundusController;
 use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
+use Tchooz\Services\ApplicationFile\ApplicationFileService;
 
 class EmundusControllerApplication extends EmundusController
 {
@@ -3271,6 +3273,69 @@ class EmundusControllerApplication extends EmundusController
 			];
 
 			$response = EmundusResponse::ok($accessByActions);
+		}
+
+		return $response;
+	}
+
+	#[AccessAttribute(AccessLevelEnum::REGISTERED)]
+	public function executeApplicationAction(): EmundusResponse
+	{
+		$this->checkToken();
+		$response = new EmundusResponse(false, Text::_('ACCESS_DENIED'), 403);
+
+		$session = $this->app->getSession();
+		$emundusSession = $session->get('emundusUser');
+		if (!empty($emundusSession->fnum))
+		{
+			$repository = new ApplicationFileRepository();
+			$applicationFile = $repository->getByFnum($emundusSession->fnum);
+
+			if (!empty($applicationFile))
+			{
+				$action = $this->app->input->getString('action');
+
+				$service = new ApplicationFileService();
+				$actions = $service->getApplicationFileActions($applicationFile);
+
+				$foundAction = null;
+				foreach ($actions as $possibleAction)
+				{
+					if ($possibleAction->getActionType()->value === $action)
+					{
+						$foundAction = $possibleAction;
+						break;
+					}
+				}
+
+				if (!empty($foundAction))
+				{
+					$parameters = [];
+					if (!empty($foundAction->getActionType()->getParameters()))
+					{
+						foreach ($foundAction->getActionType()->getParameters() as $parameter) {
+							$parameters[$parameter->getName()] = $this->app->input->getString($parameter->getName(), '');
+						}
+
+						// todo: sanitize all sent parameters and verify requirements
+					}
+
+					if ($foundAction instanceof RedirectApplicationFileAction)
+					{
+						$response = EmundusResponse::ok([
+							'redirect' => $foundAction->getRedirectUrl($applicationFile, $parameters, $this->app->getIdentity()),
+						]);
+					}
+					else if ($foundAction->execute($applicationFile, $parameters, $this->app->getIdentity()))
+					{
+						$response = EmundusResponse::ok();
+					}
+					else
+					{
+						$response = EmundusResponse::fail(Text::_('APPLICATION_ACTION_EXECUTION_FAILED'));
+					}
+				}
+			}
 		}
 
 		return $response;

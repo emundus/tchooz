@@ -14,6 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileAction;
+use Tchooz\Entities\ApplicationFile\Actions\GoToHistory;
 use Tchooz\Entities\ApplicationFile\Actions\RenameApplication;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\Actions\ActionEnum;
@@ -152,6 +153,7 @@ class ApplicationFileService
 
 		// todo: get component parameters, check availability
 		$actions[] = new RenameApplication();
+		$actions[] = new GoToHistory();
 
 		return $actions;
 	}

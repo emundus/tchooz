@@ -6774,10 +6774,10 @@ class EmundusHelperFiles
 
 		if (!empty($aid))
 		{
-			$db    = JFactory::getDBO();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
-			$query->select('ecc.*, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id')
+			$query->select('ecc.*, ecc.id as application_id, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id')
 				->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id = ecc.campaign_id')
 				->where('ecc.applicant_id = ' . $aid);

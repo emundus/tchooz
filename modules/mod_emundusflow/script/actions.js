@@ -16,18 +16,54 @@ window.addEventListener('DOMContentLoaded', (event) => {
     });
 
     document.querySelectorAll('#emundus-application-file-actions-container .file-action').forEach((action) => {
-        const actionId = action.id;
+        const actionId = action.getAttribute('id');
 
         // make sure action exists in Joomla.getOptions('mod_emundusflow.actions');
         const registeredActions = Joomla.getOptions('mod_emundusflow.actions');
         let foundAction = registeredActions.find((registeredAction) => {
-            return registeredAction.id === actionId;
+            return registeredAction.name === actionId;
         });
 
         if (foundAction)
         {
             action.addEventListener('click', (e) => {
-                console.log('click', actionId);
+                if (foundAction.parameters && foundAction.parameters.length > 0)
+                {
+                    // todo, handle multiple parameters, for new, only one
+                    Swal.fire({
+                        title: foundAction.label,
+                        input: 'text',
+                        inputLabel: foundAction.parameters[0].label,
+                        inputValue: '',
+                        showCancelButton: true,
+                        reverseButtons: true,
+                        customClass: {
+                            title: 'em-swal-title',
+                            cancelButton: 'em-swal-cancel-button',
+                            confirmButton: 'em-swal-confirm-button',
+                        },
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return 'Please enter a value';
+                            } else if (value.length < 3)
+                            {
+                                return 'Value must be at least 3 characters long';
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed)
+                        {
+                            let params = {};
+                            params[foundAction.parameters[0].name] = result.value;
+
+                            executeAction(foundAction, params);
+                        }
+                    });
+                }
+                else
+                {
+                    executeAction(foundAction);
+                }
             });
         }
         else
@@ -46,4 +82,33 @@ window.addEventListener('DOMContentLoaded', (event) => {
             actionsContainer.classList.add('tw-hidden');
         }
     });
+
+    function executeAction(action, params = {})
+    {
+        let formData = new FormData();
+        formData.append('action', action.name);
+
+        Object.keys(params).forEach((key) => {
+           formData.append(key, params[key]);
+        });
+
+        fetch('/index.php?option=com_emundus&controller=application&task=executeApplicationAction', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-Token': Joomla.getOptions('csrf.token', '')
+            }
+        }).then(response => response.json())
+        .then(data => {
+            if (data.status)
+            {
+                if (data.data.redirect)
+                {
+                    window.location.href = data.data.redirect;
+                }
+            }
+        }).catch(error => {
+
+        });
+    }
 });
