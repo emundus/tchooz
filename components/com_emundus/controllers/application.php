@@ -3179,11 +3179,23 @@ class EmundusControllerApplication extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
 	public function updateOwnerPublicAccessFile(): EmundusResponse
 	{
-		//$this->checkToken();
+		$this->checkToken();
 		$response = EmundusResponse::denied();
 
-		$fnum = $this->app->getInput()->getString('fnum', '');
-		$token = $this->app->getInput()->getString('token', '');
+		// token is a composite key
+		$compositeKey = $this->app->getInput()->getString('token', '');
+		$token        = '';
+		$fnum         = '';
+		if (!empty($compositeKey) && str_contains($compositeKey, EmundusPublicAccess::COMPOSITE_KEY_SEPARATOR))
+		{
+			$parts = explode(EmundusPublicAccess::COMPOSITE_KEY_SEPARATOR, $compositeKey, 2);
+			if (count($parts) === 2)
+			{
+				$token = trim($parts[0]);
+				$fnum  = trim($parts[1]);
+			}
+		}
+
 		$newOwnerId = $this->app->getInput()->getInt('owner', 0);
 
 		if (!empty($fnum) && !empty($token))

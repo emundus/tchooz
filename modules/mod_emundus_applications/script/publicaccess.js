@@ -14,10 +14,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     html:
                         '<p>'+ Joomla.Text._('IMPORT_FILE_FROM_PUBLIC_ACCESS_DESC') + '</p>' +
                         '<div class="tw-flex tw-flex-col tw-gap-4">' +
-                        '<div><label for="swal-input-fnum">' +
-                        (Joomla.Text._('COM_EMUNDUS_FNUM_LABEL')) +
-                        '</label>' +
-                        '<input id="swal-input-fnum" class="swal2-input" placeholder="' + Joomla.Text._('COM_EMUNDUS_FNUM_LABEL_PLACEHOLDER') + '" ></div>' +
                         '<div><label for="swal-input-token">' +
                         (Joomla.Text._('COM_EMUNDUS_ACCESS_KEY_LABEL')) +
                         '</label>' +
@@ -31,22 +27,20 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     },
                     reverseButtons: true,
                     preConfirm: () => {
-                        const fnum = document.getElementById('swal-input-fnum').value.trim();
                         const token = document.getElementById('swal-input-token').value.trim();
 
-                        if (!fnum || !token) {
+                        if (!token) {
                             Swal.showValidationMessage(
-                                Joomla.Text._('COM_EMUNDUS_IMPORT_FILE_FIELDS_REQUIRED') || 'Veuillez remplir les deux champs'
+                                Joomla.Text._('COM_EMUNDUS_IMPORT_FILE_FIELDS_REQUIRED') || 'Veuillez remplir les champs'
                             );
                             return false;
                         }
 
-                        return { fnum: fnum, access_token: token };
+                        return { access_token: token };
                     }
                 }).then((result) => {
                     if (result.isConfirmed && result.value) {
                         const body = new FormData();
-                        body.append('fnum', result.value.fnum);
                         body.append('token', result.value.access_token);
 
                         fetch('/index.php?option=com_emundus&controller=application&task=updateOwnerPublicAccessFile', {
