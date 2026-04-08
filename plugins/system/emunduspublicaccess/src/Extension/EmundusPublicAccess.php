@@ -503,6 +503,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			$fnumSession->start_date   = $campaign->getStartDate()->format('Y-m-d H:i:s');
 			$fnumSession->end_date     = $campaign->getEndDate()->format('Y-m-d H:i:s');
 			$fnumSession->published    = $applicationFile->getPublished();
+			$fnumSession->campaign_id  = $applicationFile->getCampaignId();
 
 			$emundusSession->fnum                   = $applicationFile->getFnum();
 			$emundusSession->fnums                  = [
