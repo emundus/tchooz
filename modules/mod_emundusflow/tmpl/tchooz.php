@@ -1,6 +1,7 @@
 <?php // no direct access
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileRegistry;
 
@@ -215,15 +216,14 @@ $now      = $dateTime->format('Y-m-d H:i:s');
                     </span>
                     <div id="emundus-application-file-actions-container" class="tw-absolute tw-bg-white tw-shadow-lg tw-rounded tw-p-2 tw-hidden tw-transition-all tw-right-0 tw-flex tw-flex-col tw-gap-2 tw-z-10">
                         <?php
-
                         foreach ($actions as $action)
                         {
                             ?>
                             <div id="<?= $action->getActionType()->value ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded">
-                                <span class="material-symbols-outlined">
+                                <span class="material-symbols-outlined <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>">
                                     <?= $action->getActionType()->getIcon() ?>
                                 </span>
-                                <p class="tw-whitespace-nowrap"><?= $action->getActionType()->getLabel() ?></p>
+                                <p class="tw-whitespace-nowrap <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>"><?= $action->getActionType()->getLabel() ?></p>
                             </div>
                             <?php
                         }

@@ -91,6 +91,10 @@ class ApplicationFileRegistry
 			}
 		}
 
+		usort($availableActions, function (ApplicationFileAction $a, ApplicationFileAction $b) {
+			return $a->getActionType()->getOrdering() <=> $b->getActionType()->getOrdering();
+		});
+
 		return $availableActions;
 	}
 }

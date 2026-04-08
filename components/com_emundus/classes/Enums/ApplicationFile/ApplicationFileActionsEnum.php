@@ -54,4 +54,19 @@ enum ApplicationFileActionsEnum: string
 			default => []
 		};
 	}
+
+	public function getOrdering(): int
+	{
+		return match($this)
+		{
+			self::RENAME => 0,
+			self::COPY => 1,
+			self::DOCUMENTS => 2,
+			self::HISTORY => 3,
+			self::COLLABORATE => 4,
+			self::ANONYMOUS => 5,
+			self::DELETE => 6,
+			self::CUSTOM => 7,
+		};
+	}
 }

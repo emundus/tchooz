@@ -17,6 +17,7 @@ abstract class ApplicationFileAction
 		return [
 			'name' => $this->getActionType()->value,
 			'label' => $this->getActionType()->getLabel(),
+			'order' => $this->getActionType()->getOrdering(),
 			'parameters' => array_map(function ($param) {
 				return $param->toSchema();
 			}, $this->getActionType()->getParameters())
