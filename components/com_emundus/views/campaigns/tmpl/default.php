@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted Access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Factories\LayoutFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
 
@@ -228,6 +229,14 @@ $data['crud'] = [
         'd' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($programAction->getId(), 'd', $user->id),
     ]
 ];
+$data['anonymizationPolicies'] = array_map(
+    fn(AnonymizationPolicyEnum $policy) => [
+        'value' => $policy->value,
+        'label' => $policy->getLabel(),
+        'description' => Text::_('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_' . strtoupper($policy->name) . '_DESC'),
+    ],
+    AnonymizationPolicyEnum::cases()
+);
 ?>
 
 <div id="em-component-vue"

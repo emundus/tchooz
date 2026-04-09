@@ -263,6 +263,25 @@
 						</span>
 					</div>
 
+					<div class="tw-flex tw-flex-col tw-gap-2" v-if="anonymizationPolicies.length > 0">
+						<div class="tw-flex tw-flex-row tw-items-center">
+							<label for="anonymization_policy" class="tw-m-0 tw-font-medium">
+								{{ translate('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_LABEL') }}
+							</label>
+							<span
+								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
+								@click="displayTip('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_LABEL', this.anonymizationPoliciesTip, true)"
+							>
+								help_outline
+							</span>
+						</div>
+						<select id="anonymization_policy" name="anonymization_policy" v-model="form.anonymization_policy">
+							<option v-for="policy in anonymizationPolicies" :key="policy.value" :value="policy.value">
+								{{ policy.label }}
+							</option>
+						</select>
+					</div>
+
 					<div v-if="userCategoryEnabled == 1">
 						<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_USER_CATEGORY') }}</label>
 
@@ -300,7 +319,7 @@
 					</div>
 				</div>
 
-				<hr class="tw-mb-4 tw-mt-1.5" />
+				<hr class="tw-mb-4 tw-mt-4" />
 
 				<div class="tw-flex tw-flex-col tw-gap-4">
 					<h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</h2>
@@ -587,6 +606,10 @@ export default {
 	props: {
 		campaign: Number,
 		crud: Object,
+		anonymizationPolicies: {
+			type: Array,
+			default: () => [],
+		},
 	},
 
 	data: () => ({
@@ -649,6 +672,8 @@ export default {
 			visible: 1,
 			alias: '',
 			parent_id: null,
+			public: 0,
+			anonymization_policy: 'forbidden',
 		},
 		programForm: {
 			code: '',
@@ -737,10 +762,9 @@ export default {
 			throw new Error("It's not an Error, please ignore.");
 		},
 
-		displayTip(title, text) {
-			Swal.fire({
+		displayTip(title, text, isHtml = false) {
+			let options = {
 				title: this.translate(title),
-				text: this.translate(text),
 				showCancelButton: false,
 				confirmButtonText: this.translate('COM_EMUNDUS_SWAL_OK_BUTTON'),
 				reverseButtons: true,
@@ -749,7 +773,15 @@ export default {
 					confirmButton: 'em-swal-confirm-button',
 					actions: 'em-swal-single-action',
 				},
-			});
+			};
+
+			if (isHtml) {
+				options.html = this.translate(text);
+			} else {
+				options.text = this.translate(text);
+			}
+
+			Swal.fire(options);
 		},
 
 		getCampaignById() {
@@ -1225,6 +1257,16 @@ export default {
 			}
 
 			return languages;
+		},
+		anonymizationPoliciesTip() {
+			let htmlTip = this.translate('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_DESC') + '<ul>';
+
+			this.anonymizationPolicies.forEach((policy) => {
+				htmlTip += '<li>' + policy.label + ' : ' + policy.description + '</li>';
+			});
+
+			htmlTip += '</ul>';
+			return htmlTip;
 		},
 	},
 

@@ -10,8 +10,10 @@
 
 namespace scripts;
 
+use EmundusHelperUpdate;
 use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\Addons\AddonValue;
+use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Services\Addons\AddonHandlerResolver;
 
@@ -74,20 +76,31 @@ class Release2_19_0Installer extends ReleaseInstaller
 
 			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_system_emunduspublicaccess', 'emunduspublicaccess', null, 'plugin', 0, 'system');
 
-			$addonValue = new AddonValue(false, true, []);
-			$publicSessionAddon = new AddonEntity('public_session', $addonValue);
-			$resolver = new AddonHandlerResolver();
-			$handler            = $resolver->resolve('public_session', $publicSessionAddon);
-			$params = [];
-			foreach ($handler->getParameters() as $parameter)
-			{
-				$params[$parameter->getName()] = null;
-			}
-			$addonValue->setParams($params);
-			$publicSessionAddon->setValue($addonValue);
-
 			$addonRepository = new AddonRepository();
-			$this->tasks[] = $addonRepository->flush($publicSessionAddon);
+			$publicSessionAddon = $addonRepository->getByName('public_session');
+			if (empty($publicSessionAddon))
+			{
+				$addonValue = new AddonValue(false, true, []);
+				$publicSessionAddon = new AddonEntity('public_session', $addonValue);
+				$resolver = new AddonHandlerResolver();
+				$handler            = $resolver->resolve('public_session', $publicSessionAddon);
+				$params = [];
+				foreach ($handler->getParameters() as $parameter)
+				{
+					$params[$parameter->getName()] = null;
+				}
+				$addonValue->setParams($params);
+				$publicSessionAddon->setValue($addonValue);
+
+				$this->tasks[] = $addonRepository->flush($publicSessionAddon);
+			}
+
+			$addAnonymizationPolicy = EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'anonymization_policy', 'VARCHAR', 20, 1, AnonymizationPolicyEnum::FORBIDDEN->value);
+			$this->tasks[] = $addAnonymizationPolicy['status'];
+			if (!$addAnonymizationPolicy['status'])
+			{
+				$result['message'] .= $addAnonymizationPolicy['message'];
+			}
 
 			$result['status'] = !in_array(false, $this->tasks);
 		}

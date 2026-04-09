@@ -12,6 +12,7 @@ use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\ApplicationFile\ApplicationFileAccessEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Fabrik\FabrikElementEntity;
+use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Factories\ApplicationFile\ApplicationFileFactory;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\EmundusRepository;
@@ -310,6 +311,17 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 		if (empty($ccid))
 		{
+			$campaignRepository = new CampaignRepository(false);
+			$campaign = $campaignRepository->getById($applicationFileEntity->getCampaignId());
+			$policy = $campaign->getAnonymizationPolicy();
+
+			$anonymous = match($policy) {
+				AnonymizationPolicyEnum::FORCED    => true,
+				AnonymizationPolicyEnum::FORBIDDEN => false,
+				AnonymizationPolicyEnum::OPTIONAL  => $applicationFileEntity->isAnonymous(),
+			};
+			$applicationFileEntity->setIsAnonymous($anonymous);
+
 			$campaign_candidature = [
 				'date_time'           => date('Y-m-d H:i:s'),
 				'applicant_id'        => $applicationFileEntity->getUser()->id,

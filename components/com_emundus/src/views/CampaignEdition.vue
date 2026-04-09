@@ -56,6 +56,7 @@
 							:actualLanguage="actualLanguage"
 							:manyLanguages="manyLanguages"
 							:crud="crud"
+							:anonymizationPolicies="anonymizationPolicies"
 							@nextSection="next"
 							@getInformations="initInformations"
 							@updateHeader="updateHeader"
@@ -142,6 +143,10 @@ export default {
 	props: {
 		index: Number,
 		crud: Object,
+		anonymizationPolicies: {
+			type: Array,
+			default: () => [],
+		},
 	},
 	mixins: [mixin],
 

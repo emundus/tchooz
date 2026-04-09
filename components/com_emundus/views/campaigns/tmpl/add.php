@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted Access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Factories\LayoutFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
 
@@ -90,6 +91,14 @@ Text::script('COM_EMUNDUS_ONBOARD_CHOOSE_FORM');
 Text::script('COM_EMUNDUS_ONBOARD_CHOOSE_LANGUAGE');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM_LANGUAGES');
 Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGN_PUBLISH');
+Text::script('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_LABEL');
+Text::script('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_DESC');
+Text::script('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_FORBIDDEN');
+Text::script('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_FORBIDDEN_DESC');
+Text::script('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_FORCED');
+Text::script('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_FORCED_DESC');
+Text::script('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_OPTIONAL');
+Text::script('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_OPTIONAL_DESC');
 
 ## TUTORIAL ##
 Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
@@ -126,6 +135,15 @@ $data['crud']     = [
 ];
 $data['campaign'] = $this->id;
 $data['campaignId'] = $this->id;
+
+$data['anonymizationPolicies'] = array_map(
+	fn(AnonymizationPolicyEnum $policy) => [
+		'value' => $policy->value,
+		'label' => $policy->getLabel(),
+		'description' => Text::_('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_' . strtoupper($policy->name) . '_DESC'),
+	],
+	AnonymizationPolicyEnum::cases()
+);
 ?>
 
 

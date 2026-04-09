@@ -12,6 +12,7 @@ namespace Tchooz\Factories\Campaigns;
 use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Campaigns\CampaignEntity;
+use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Factories\DBFactory;
 use DateTime;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
@@ -126,6 +127,8 @@ class CampaignFactory implements DBFactory
 			files_count: isset($dbObject->files_count) ? (int) $dbObject->files_count : 0,
 			createdBy: isset($dbObject->user) ? (int) $dbObject->user : 0,
 			isPublic: isset($dbObject->public) && $dbObject->public == 1,
+			anonymizationPolicy: AnonymizationPolicyEnum::tryFrom($dbObject->anonymization_policy ?? AnonymizationPolicyEnum::FORBIDDEN)
+			?? AnonymizationPolicyEnum::FORBIDDEN,
 		);
 	}
 }

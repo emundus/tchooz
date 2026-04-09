@@ -410,6 +410,18 @@ class Dataset
 		return $campaign_id;
 	}
 
+	public function updateCampaignAnonymizationPolicy(int $campaign_id, string $policy): bool
+	{
+		$query = $this->db->getQuery(true);
+
+		$query->update('#__emundus_setup_campaigns')
+			->set($this->db->quoteName('anonymization_policy') . ' = ' . $this->db->quote($policy))
+			->where('id = ' . $campaign_id);
+
+		$this->db->setQuery($query);
+		return $this->db->execute();
+	}
+
 	public function deleteSampleCampaign($campaign_id) {
 		$deleted = false;
 		if (!empty($campaign_id)) {

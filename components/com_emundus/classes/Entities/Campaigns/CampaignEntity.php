@@ -12,6 +12,7 @@ namespace Tchooz\Entities\Campaigns;
 use DateTime;
 use Joomla\CMS\Factory;
 use Tchooz\Entities\Programs\ProgramEntity;
+use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Enums\Campaigns\StatusEnum;
 
 class CampaignEntity
@@ -60,26 +61,32 @@ class CampaignEntity
 	 */
 	private bool $isPublic;
 
-	public function __construct(string $label, DateTime $start_date, DateTime $end_date, ?ProgramEntity $program, string $year, ?string $description = '', ?string $short_description = '', int $profile_id = 0, bool $published = true, bool $pinned = false, ?string $alias = '', bool $visible = true, ?CampaignEntity $parent = null, int $id = 0, array $moreProperties = [], int $files_count = 0, int $createdBy = 0, bool $isPublic = false)
+	/**
+	 * @var ?AnonymizationPolicyEnum Indicates if anonymization is optional, forced or forbidden for the campaign. By default, it is forbidden
+	 */
+	private ?AnonymizationPolicyEnum $anonymizationPolicy;
+
+	public function __construct(string $label, DateTime $start_date, DateTime $end_date, ?ProgramEntity $program, string $year, ?string $description = '', ?string $short_description = '', int $profile_id = 0, bool $published = true, bool $pinned = false, ?string $alias = '', bool $visible = true, ?CampaignEntity $parent = null, int $id = 0, array $moreProperties = [], int $files_count = 0, int $createdBy = 0, bool $isPublic = false, AnonymizationPolicyEnum $anonymizationPolicy = AnonymizationPolicyEnum::FORBIDDEN)
 	{
-		$this->id                = $id;
-		$this->label             = $label;
-		$this->description       = $description;
-		$this->short_description = $short_description;
-		$this->start_date        = $start_date;
-		$this->end_date          = $end_date;
-		$this->profile_id        = $profile_id;
-		$this->program           = $program;
-		$this->year              = $year;
-		$this->published         = $published;
-		$this->pinned            = $pinned;
-		$this->alias             = $alias;
-		$this->visible           = $visible;
-		$this->parent            = $parent;
-		$this->moreProperties    = $moreProperties;
-		$this->files_count       = $files_count;
-		$this->createdBy         = $createdBy;
-		$this->isPublic          = $isPublic;
+		$this->id                  = $id;
+		$this->label               = $label;
+		$this->description         = $description;
+		$this->short_description   = $short_description;
+		$this->start_date          = $start_date;
+		$this->end_date            = $end_date;
+		$this->profile_id          = $profile_id;
+		$this->program             = $program;
+		$this->year                = $year;
+		$this->published           = $published;
+		$this->pinned              = $pinned;
+		$this->alias               = $alias;
+		$this->visible             = $visible;
+		$this->parent              = $parent;
+		$this->moreProperties      = $moreProperties;
+		$this->files_count         = $files_count;
+		$this->createdBy           = $createdBy;
+		$this->isPublic            = $isPublic;
+		$this->anonymizationPolicy = $anonymizationPolicy;
 
 		// Determine status based on dates
 		$this->timezone = Factory::getApplication()->get('offset', 'Europe/Paris');
@@ -295,9 +302,30 @@ class CampaignEntity
 		return $this->isPublic;
 	}
 
-	public function setIsPublic(bool $isPublic): void
+	public function setIsPublic(bool $isPublic): self
 	{
 		$this->isPublic = $isPublic;
+
+		return $this;
+	}
+
+	public function getAnonymizationPolicy(): AnonymizationPolicyEnum
+	{
+		$policy = AnonymizationPolicyEnum::FORBIDDEN;
+
+		if (!empty($this->anonymizationPolicy))
+		{
+			$policy = $this->anonymizationPolicy;
+		}
+
+		return $policy;
+	}
+
+	public function setAnonymizationPolicy(AnonymizationPolicyEnum $policy): self
+	{
+		$this->anonymizationPolicy = $policy;
+
+		return $this;
 	}
 
 	public function __serialize(): array
