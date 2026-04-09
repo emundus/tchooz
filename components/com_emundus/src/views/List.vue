@@ -285,7 +285,7 @@
 												style="padding: 0.5rem"
 												:title="translate(showAction.label)"
 											>
-												<span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">search</span>
+												<span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">visibility</span>
 											</button>
 
 											<button
