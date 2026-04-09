@@ -76,15 +76,15 @@ class Release2_19_0Installer extends ReleaseInstaller
 
 			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_system_emunduspublicaccess', 'emunduspublicaccess', null, 'plugin', 0, 'system');
 
+			$resolver           = new AddonHandlerResolver();
 			$addonRepository = new AddonRepository();
 			$publicSessionAddon = $addonRepository->getByName('public_session');
 			if (empty($publicSessionAddon))
 			{
-				$addonValue = new AddonValue(false, true, []);
+				$addonValue         = new AddonValue(false, true, []);
 				$publicSessionAddon = new AddonEntity('public_session', $addonValue);
-				$resolver = new AddonHandlerResolver();
 				$handler            = $resolver->resolve('public_session', $publicSessionAddon);
-				$params = [];
+				$params             = [];
 				foreach ($handler->getParameters() as $parameter)
 				{
 					$params[$parameter->getName()] = null;
@@ -95,7 +95,30 @@ class Release2_19_0Installer extends ReleaseInstaller
 				$this->tasks[] = $addonRepository->flush($publicSessionAddon);
 			}
 
-			$addAnonymizationPolicy = EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'anonymization_policy', 'VARCHAR', 20, 1, AnonymizationPolicyEnum::FORBIDDEN->value);
+			$addonRepository = new AddonRepository();
+			$anonymAddon = $addonRepository->getByName('anonymous');
+			if (!empty($anonymAddon))
+			{
+				if (!isset($anonymAddon->getValue()->getParams()['policy']))
+				{
+					$handler            = $resolver->resolve('anonymous', $publicSessionAddon);
+					$params             = [];
+					foreach ($handler->getParameters() as $parameter)
+					{
+						$value = null;
+						if ($parameter->getName() === 'policy')
+						{
+							$value = AnonymizationPolicyEnum::OPTIONAL;
+						}
+						$params[$parameter->getName()] = $value;
+					}
+					$anonymAddon->getValue()->setParams($params);
+
+					$this->tasks[] = $addonRepository->flush($anonymAddon);
+				}
+			}
+
+			$addAnonymizationPolicy = EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'anonymization_policy', 'VARCHAR', 20, 1, AnonymizationPolicyEnum::GLOBAL->value);
 			$this->tasks[] = $addAnonymizationPolicy['status'];
 			if (!$addAnonymizationPolicy['status'])
 			{

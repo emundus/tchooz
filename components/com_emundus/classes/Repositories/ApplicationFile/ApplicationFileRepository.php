@@ -14,6 +14,7 @@ use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Fabrik\FabrikElementEntity;
 use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Factories\ApplicationFile\ApplicationFileFactory;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
@@ -315,12 +316,42 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 			$campaign = $campaignRepository->getById($applicationFileEntity->getCampaignId());
 			$policy = $campaign->getAnonymizationPolicy();
 
-			$anonymous = match($policy) {
-				AnonymizationPolicyEnum::FORCED    => true,
-				AnonymizationPolicyEnum::FORBIDDEN => false,
-				AnonymizationPolicyEnum::OPTIONAL  => $applicationFileEntity->isAnonymous(),
-			};
-			$applicationFileEntity->setIsAnonymous($anonymous);
+			switch($policy)
+			{
+				case AnonymizationPolicyEnum::FORCED:
+					$applicationFileEntity->setIsAnonymous(true);
+					break;
+				case AnonymizationPolicyEnum::FORBIDDEN:
+					$applicationFileEntity->setIsAnonymous(false);
+					break;
+				case AnonymizationPolicyEnum::OPTIONAL:
+					// Keep the user's choice
+					break;
+				case AnonymizationPolicyEnum::GLOBAL:
+				default:
+					$addonRepository = new AddonRepository();
+					$addon = $addonRepository->getByName('anonymous');
+
+					if ($addon->getValue()->isEnabled())
+					{
+						$policy = $addon->getValue()->getParams()['policy'] ?? 'forbidden';
+						$policy = AnonymizationPolicyEnum::tryFrom($policy) ?? AnonymizationPolicyEnum::FORBIDDEN;
+
+						if ($policy === AnonymizationPolicyEnum::FORCED)
+						{
+							$applicationFileEntity->setIsAnonymous(true);
+						}
+						elseif ($policy === AnonymizationPolicyEnum::FORBIDDEN || $policy === AnonymizationPolicyEnum::GLOBAL)
+						{
+							$applicationFileEntity->setIsAnonymous(false);
+						}
+					}
+					else
+					{
+						$applicationFileEntity->setIsAnonymous(false);
+					}
+					break;
+			}
 
 			$campaign_candidature = [
 				'date_time'           => date('Y-m-d H:i:s'),
