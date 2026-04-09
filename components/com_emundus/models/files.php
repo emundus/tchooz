@@ -2266,7 +2266,7 @@ class EmundusModelFiles extends JModelLegacy
                         left join #__emundus_users as eu on eu.user_id = cc.applicant_id
                         left join #__emundus_setup_campaigns as sc on sc.id = cc.campaign_id
                         left join #__emundus_setup_status as ss on ss.step = cc.status
-                        where cc.fnum in ("' . implode('","', $this->_db->quote($fnums)) . '")';
+                        where cc.fnum in ("' . implode('","', $fnums) . '")';
 			$this->_db->setQuery($query);
 
 			if ($format == 'array') {
