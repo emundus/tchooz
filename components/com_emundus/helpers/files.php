@@ -19,6 +19,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Router\Route;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 
 if(!class_exists('EmundusHelperCache'))
@@ -2776,14 +2777,7 @@ class EmundusHelperFiles
 		$m_users = new EmundusModelUsers();
 
 		$app = Factory::getApplication();
-		if (version_compare(JVERSION, '4.0', '>'))
-		{
-			$config = $app->getConfig();
-		}
-		else
-		{
-			$config = Factory::getConfig();
-		}
+		$config = $app->getConfig();
 
 		$menu = $app->getMenu();
 		// If no active menu, use default
@@ -2802,7 +2796,7 @@ class EmundusHelperFiles
 		asort($levels);
 
 		$key   = 'menu_items' . $params . implode(',', $levels) . '.' . $active->id;
-		$cache = JFactory::getCache('mod_menu', '');
+		$cache = Factory::getCache('mod_menu', '');
 
 		if (!($items = $cache->get($key)))
 		{
@@ -2910,11 +2904,11 @@ class EmundusHelperFiles
 
 					if (strcasecmp(substr($item->flink, 0, 4), 'http') && (strpos($item->flink, 'index.php?') !== false))
 					{
-						$item->flink = JRoute::_($item->flink, true, $item->getParams()->get('secure'));
+						$item->flink = Route::_($item->flink, true, $item->getParams()->get('secure'));
 					}
 					else
 					{
-						$item->flink = JRoute::_($item->flink);
+						$item->flink = Route::_($item->flink);
 					}
 
 					$item->title        = htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8', false);

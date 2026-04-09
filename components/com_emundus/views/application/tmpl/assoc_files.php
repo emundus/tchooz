@@ -1,8 +1,14 @@
 <?php
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 Factory::getApplication()->getSession()->set('application_layout', 'assoc_files');
+
+if ($this->applicationFile->isAnonymous())
+{
+    $this->assoc_files = [];
+}
 
 if (!empty((array) $this->assoc_files)) :
 	foreach ($this->assoc_files->published_campaigns as $camp) : ?>
@@ -149,6 +155,8 @@ if (!empty((array) $this->assoc_files)) :
         </div>
 	<?php endforeach; ?>
 <?php endif; ?>
+
+<p><?= Text::_('COM_EMUNDUS_NO_ASSOC_FILES_FOUND'); ?></p>
 
 <script>
 

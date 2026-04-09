@@ -32,6 +32,7 @@ use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagRemoveDefinition;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 
 /**
@@ -264,6 +265,7 @@ class EmundusModelApplication extends ListModel
 				$this->_db->quoteName('eu.user_id'),
 				$this->_db->quoteName('ecc.applicant_id'),
 				$this->_db->quoteName('ecc.id','ccid'),
+				$this->_db->quoteName('ecc.anonymous','anonymous'),
 				'esa.*',
 				$this->_db->quoteName('eu.attachment_id'),
 				$this->_db->quoteName('eu.filename'),
@@ -339,6 +341,22 @@ class EmundusModelApplication extends ListModel
 				}
 
 				foreach ($attachments as $attachment) {
+					// application file anonymous property
+					if ($attachment->anonymous)
+					{
+						if ($attachment->modified_by === $attachment->applicant_id)
+						{
+							$attachment->modified_user_name = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+						}
+
+
+						if ($attachment->user_id === $attachment->applicant_id)
+						{
+							$attachment->user_name = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+						}
+					}
+
+
 					if (!file_exists(EMUNDUS_PATH_ABS . $attachment->applicant_id . '/' . $attachment->filename)) {
 						$attachment->existsOnServer = false;
 					}
@@ -4538,7 +4556,7 @@ class EmundusModelApplication extends ListModel
 	public function getApplicationMenu($user_id = 0, $fnum = '')
 	{
 		$user_id = $user_id ?: Factory::getApplication()->getIdentity()->id;
-		$juser   = JFactory::getUser($user_id);
+		$juser   = Factory::getUser($user_id);
 
 		$menus = [];
 		try {
@@ -4550,25 +4568,17 @@ class EmundusModelApplication extends ListModel
 				->from($this->_db->quoteName('#__menu'))
 				->where($this->_db->quoteName('published') . ' = 1')
 				->where($this->_db->quoteName('menutype') . ' = ' . $this->_db->quote('application'))
-				->where($this->_db->quoteName('access') . ' IN (' . implode(',', $grUser) . ')')
-				->order($this->_db->quoteName('lft'));
+				->where($this->_db->quoteName('access') . ' IN (' . implode(',', $grUser) . ')');
+
+			$query->order($this->_db->quoteName('lft'));
 			$this->_db->setQuery($query);
 			$menus = $this->_db->loadAssocList();
 
 			if (!empty($fnum)) {
-				// get menu related to workflow steps of type evaluator
-				$query->clear()
-					->select('esp.id, esc.id as campaign_id')
-					->from($this->_db->quoteName('#__emundus_setup_programmes', 'esp'))
-					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
-					->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
-					->where('ecc.fnum LIKE ' . $this->_db->quote($fnum));
-
-				$this->_db->setQuery($query);
-				$file_infos = $this->_db->loadObject();
-
-				$program_id = $file_infos->id ?? 0;
-				$campaign_id = $file_infos->campaign_id ?? 0;
+				$applicationFileRepository = new ApplicationFileRepository();
+				$applicationFile = $applicationFileRepository->getByFnum($fnum);
+				$program_id = $applicationFile->getCampaign()->getProgram()->getId();
+				$campaign_id = $applicationFile->getCampaign()->getId();
 
 				if (!empty($program_id)) {
 					require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');

@@ -252,9 +252,8 @@ class EmundusViewFiles extends JViewLegacy
 
 				$Itemid = $this->app->input->getInt('Itemid', $current_menu->id);
 
-				if (isset($current_menu) && !empty($current_menu))
+				if (!empty($current_menu))
 				{
-
 					$params = $menu->getParams($Itemid);
 
 					if ($fnum === "0")

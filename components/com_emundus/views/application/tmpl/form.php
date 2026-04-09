@@ -81,7 +81,7 @@ $emundus_config = ComponentHelper::getParams('com_emundus');
         <div id="application-form-container" class="tw-relative tw-flex tw-flex-row tw-bg-neutral-100">
             <div id="application-form-container-content" class="tw-w-full">
 
-                <?php if (!EmundusHelperAccess::isDataAnonymized($this->_user->id) && $this->header == 1 && !$this->applicant->is_anonym) : ?>
+                <?php if (!EmundusHelperAccess::isDataAnonymized($this->_user->id) && $this->header == 1 && !$this->applicant->is_anonym && !$this->applicationFile->isAnonymous()) : ?>
                     <div class="em-flex-row em-mt-16">
                         <div class="em-flex-row em-small-flex-column em-small-align-items-start">
                             <div class="em-profile-picture-big no-hover"

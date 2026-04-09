@@ -69,7 +69,6 @@ class EmundusViewApplication extends HtmlView
 	protected $sid;
 	protected $collaborators;
 	protected $is_applicant;
-
 	protected ApplicationFileEntity $applicationFile;
 
 	function __construct($config = array())

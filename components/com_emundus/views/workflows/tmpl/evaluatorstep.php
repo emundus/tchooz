@@ -65,7 +65,7 @@ $datas = [
         </div>
 
         <div class="tw-px-4" style="height: calc(100% - 52px);">
-			<?php if (!EmundusHelperAccess::isDataAnonymized($this->user->id) && $this->applicant->is_anonym != 1) : ?>
+			<?php if (!EmundusHelperAccess::isDataAnonymized($this->user->id) && $this->applicant->is_anonym != 1 && !$this->applicationFile->isAnonymous()) : ?>
                 <div class="tw-flex tw-flex-row tw-items-center em-mt-16">
                     <div class="tw-flex tw-flex-row em-small-flex-column em-small-align-items-start">
                         <div class="em-profile-picture-big no-hover"
