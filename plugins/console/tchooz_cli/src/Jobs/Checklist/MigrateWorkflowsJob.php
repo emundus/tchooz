@@ -257,6 +257,14 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 							}
 							Log::add('Program ' . $new_program['code'] . ' associated to groups: ' . implode(',', array_map(fn($g) => $g->getId(), $groups)), Log::INFO, self::getJobName());
 
+							// Associate the new program to letters associated to the old program
+							$lettersDuplicated = $this->duplicateLettersAssociation($program['code'], $new_program['code']);
+							Log::add('Program ' . $new_program['code'] . ' associated to ' . $lettersDuplicated . ' letters', Log::INFO, self::getJobName());
+
+							// Associate the new program to email triggers associated to the old programs
+							$triggersDuplicated = $this->duplicateEmailTriggers($program['id'], $new_program['id']);
+							Log::add('Program ' . $new_program['code'] . ' associated to ' . $triggersDuplicated . ' email triggers', Log::INFO, self::getJobName());
+
 							$campaign = $this->m_campaign->getCampaignByID($campaign_id);
 							$updated = $this->m_campaign->updateCampaign(
 								[
@@ -349,6 +357,50 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 		}
 
 		return $succeeded;
+	}
+
+	private function duplicateLettersAssociation($oldProgramCode, $newProgramCode): int
+	{
+		$db = $this->databaseService->getDatabase();
+		$query = $db->createQuery();
+
+		$query->select('parent_id')
+			->from($db->quoteName('jos_emundus_setup_letters_repeat_training'))
+			->where($db->quoteName('training') . ' = ' . $db->quote($oldProgramCode));
+		$db->setQuery($query);
+		$letters = $db->loadColumn();
+
+		foreach ($letters as $letter) {
+			$newAssociation = (object) [
+				'parent_id' => $letter,
+				'training' => $newProgramCode,
+			];
+			$db->insertObject('jos_emundus_setup_letters_repeat_training', $newAssociation);
+		}
+
+		return count($letters);
+	}
+
+	private function duplicateEmailTriggers($oldProgramId, $newProgramId): int
+	{
+		$db = $this->databaseService->getDatabase();
+		$query = $db->createQuery();
+
+		$query->select('parent_id')
+			->from($db->quoteName('jos_emundus_setup_emails_trigger_repeat_programme_id'))
+			->where($db->quoteName('programme_id') . ' = ' . $db->quote($oldProgramId));
+		$db->setQuery($query);
+		$triggers = $db->loadColumn();
+
+		foreach ($triggers as $trigger) {
+			$newAssociation = (object) [
+				'parent_id' => $trigger,
+				'programme_id' => $newProgramId,
+			];
+			$db->insertObject('jos_emundus_setup_emails_trigger_repeat_programme_id', $newAssociation);
+		}
+
+		return count($triggers);
 	}
 
 	private function duplicateProgram($program): array
