@@ -687,7 +687,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		$select = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, ' .
-			'CASE WHEN eu.is_anonym = 1 OR jecc.anonymous THEN "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" ELSE concat(upper(trim(eu.lastname)), " ", eu.firstname) END AS name, ' .
+			'CASE WHEN eu.is_anonym = 1 OR jecc.anonymous = 1 THEN "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" ELSE concat(upper(trim(eu.lastname)), " ", eu.firstname) END AS name, ' .
 			'jecc.applicant_id, jecc.campaign_id, eu.is_anonym, jecc.anonymous ';
 
 		// prevent double left join on query

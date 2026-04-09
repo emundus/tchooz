@@ -873,21 +873,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 //    if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
     if (isset($form_post)) {
 	    try {
-		    // Check file-level anonymization
-		    $query_anon = $db->getQuery(true);
-		    $query_anon->select('anonymous')
-			    ->from($db->quoteName('#__emundus_campaign_candidature'))
-			    ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
-		    $db->setQuery($query_anon);
-		    $file_anonymous = (int) $db->loadResult() === 1;
-
-		    $anonymize_data = EmundusHelperAccess::isDataAnonymized($current_user_id) || $user->is_anonym || $file_anonymous;
+		    $anonymize_data = EmundusHelperAccess::isDataAnonymized($current_user_id) || $user->is_anonym || $infos['anonymous'] == 1;
 
 		    $photo_attachment_id = $eMConfig->get('photo_attachment', 10);
 
 		    // Users informations
-		    $query = $db->getQuery(true);
-			$query->select('u.id as user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted')
+		    $query = $db->createQuery();
+		    $query->clear()
+				->select('u.id as user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted')
 				->from('#__emundus_campaign_candidature AS ecc')
 				->leftJoin('#__users AS u ON u.id=ecc.applicant_id')
 				->leftJoin('#__emundus_users AS c ON u.id = c.user_id')

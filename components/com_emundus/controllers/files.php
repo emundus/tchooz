@@ -2706,11 +2706,8 @@ class EmundusControllerFiles extends EmundusController
 	 *
 	 * @since version 1.0.0
 	 */
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function generate_pdf() {
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
-		}
-
 		$m_files = new EmundusModelFiles();
 
 		$session = $this->app->getSession();
