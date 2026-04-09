@@ -513,7 +513,8 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 			->leftJoin(
 				$this->db->quoteName($this->getTableName(ApplicationFileRepository::class), 'af') .
 				' ON ' .
-				$this->db->quoteName('af.fnum') . ' = ' . $this->db->quoteName($this->alias . '.fnum'));
+				$this->db->quoteName('af.fnum') . ' = ' . $this->db->quoteName($this->alias . '.fnum'))
+			->where($this->db->quoteName('af.published') . ' = 1');
 
 		if(empty($order_by) || !in_array($order_by, ['eccc.id', 'eccc.order', 'c.label', 'u.name', 'af.fnum']))
 		{
