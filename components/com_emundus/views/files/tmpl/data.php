@@ -210,8 +210,10 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                                         <?php endif; ?>
                                                     </span>
                                                     <div class="em_list_email"><?= $value->user->email; ?></div>
-                                                    <div class="em_list_user_id"><?= $value->user->id; ?></div>
-												<?php endif; ?>
+                                                    <?php if ($line['is_anonym']->val != 1 && $line['anonymous']->val != 1): ?>
+                                                        <div class="em_list_user_id"><?= $value->user->id; ?></div>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
                                             </div>
                                         </a>
 									<?php elseif ($k == "access"): ?>

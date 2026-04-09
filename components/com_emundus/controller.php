@@ -2466,13 +2466,12 @@ class EmundusController extends JControllerLegacy
 					$systemUser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($systemUserId);
 					$applicationRepository = new ApplicationFileRepository();
 					$applicationEntity = new ApplicationFileEntity($systemUser, '', 0, $campaignId);
-					$applicationEntity->generateFnum($campaignId, $systemUserId);
-					$applicationEntity->setIsPublic(true);
-
 					if ($applyAnonymously)
 					{
 						$applicationEntity->setIsAnonymous(true);
 					}
+					$applicationEntity->setIsPublic(true);
+					$applicationEntity->generateFnum($campaignId, $systemUserId);
 
 					if (!$applicationRepository->flush($applicationEntity, $systemUserId))
 					{
