@@ -401,8 +401,9 @@ class Files
 			'DISTINCT ecc.fnum',
 			'ecc.applicant_id',
 			'ecc.campaign_id as campaign',
-			'CASE WHEN eu.is_anonym != 1 THEN u.name ELSE "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" END as applicant_name',
-			'eu.is_anonym'
+			'CASE WHEN eu.is_anonym != 1 AND ecc.anonymous != 1 THEN u.name ELSE "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" END as applicant_name',
+			'eu.is_anonym',
+			'ecc.anonymous'
 		];
 
 		if ($status_access) {

@@ -392,9 +392,23 @@ class EmundusViewEvaluation extends JViewLegacy
 									$userObj->photo = "";
 								}
 								$userObj->user       = JFactory::getUser((int) substr($value, -7));
-								$userObj->user->name = $user['is_anonym'] == 1 ? $value : $user['name'];
 								$userObj->unread_messages = !empty($unread_messages) ? $unread_messages[$value] : '';
-								$userObj->user->email = $user['is_anonym'] == 1 ? Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') : $userObj->user->email;
+
+								if ($user['is_anonym'] == 1 || !empty($user['anonymous']))
+								{
+									$userObj->user->name  = $value;
+									$userObj->user->email = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+								}
+								elseif (EmundusHelperAccess::isDataAnonymized(Factory::getApplication()->getIdentity()->id))
+								{
+									$userObj->user->name  = $value;
+									$userObj->user->email = '';
+									$userObj->user->id    = '';
+								}
+								else
+								{
+									$userObj->user->name  = $user['name'];
+								}
 
 								$line['fnum']        = $userObj;
 

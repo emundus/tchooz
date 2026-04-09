@@ -1464,6 +1464,11 @@ class ExcelService extends Export implements ExportInterface
 					// On traite les données du fnum
 					foreach ($fnum as $k => $v)
 					{
+						if ($k === 'anonymous')
+						{
+							continue;
+						}
+
 						if ($k != 'code' && strpos($k, 'campaign_id') === false)
 						{
 
@@ -1476,7 +1481,7 @@ class ExcelService extends Export implements ExportInterface
 								{
 									$userProfil = $this->m_users->getUserById($uid)[0];
 
-									if ($userProfil->is_anonym != 1)
+									if ($userProfil->is_anonym != 1 && !$fnum['anonymous'])
 									{
 										$line .= $userProfil->lastname . "\t";
 										$line .= $userProfil->firstname . "\t";

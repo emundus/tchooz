@@ -4714,7 +4714,7 @@ class EmundusHelperFiles
 
 								if($scope_index === count($scopes) && $anonymScopeFound)
 								{
-									$quick_search_where .= ') AND eu.is_anonym <> 1)';
+									$quick_search_where .= ') AND eu.is_anonym <> 1 AND jecc.anonymous <> 1)';
 								}
 							}
 							// if filter value is a concat of firstname and lastname
@@ -4727,8 +4727,8 @@ class EmundusHelperFiles
 								$quick_search_where .= ' OR ';
 								$quick_search_where .= $this->writeQueryWithOperator('CONCAT(eu.lastname, " ", eu.firstname)', $filter['value'], 'LIKE');
 
-								$quick_search_where .= ') AND eu.is_anonym <> 1)';
-							}
+							$quick_search_where .= ') AND eu.is_anonym <> 1 AND jecc.anonymous <> 1)';
+						}
 						}
 						else if (in_array($filter['scope'], $scopes))
 						{
@@ -4750,7 +4750,7 @@ class EmundusHelperFiles
 
 							if($anonymScopeFound)
 							{
-								$quick_search_where .= ' AND eu.is_anonym <> 1)';
+								$quick_search_where .= ' AND eu.is_anonym <> 1 AND jecc.anonymous <> 1)';
 							}
 						}
 					}

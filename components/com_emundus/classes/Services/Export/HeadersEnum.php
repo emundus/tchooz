@@ -251,4 +251,16 @@ enum HeadersEnum: string
 			$text
 		);
 	}
+
+	public function isSensitiveData(): bool
+	{
+		return match ($this)
+		{
+			self::EMAIL,
+			self::LASTNAME,
+			self::FIRSTNAME,
+			self::FULLNAME => true,
+			default => false,
+		};
+	}
 }

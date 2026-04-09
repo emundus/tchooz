@@ -134,11 +134,12 @@ class Export
 	 * @param   int|string                    $elementId
 	 * @param   array<ApplicationFileEntity>  $files
 	 * @param   ValueFormatEnum               $format
+	 * @param   bool                          $anonymize_data
 	 *
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function getData(int|string $elementId, array $files, ValueFormatEnum $format = ValueFormatEnum::RAW): array
+	public function getData(int|string $elementId, array $files, ValueFormatEnum $format = ValueFormatEnum::RAW, bool $anonymize_data = false): array
 	{
 		$result = [
 			'label' => '',
@@ -155,7 +156,6 @@ class Export
 			$header = HeadersEnum::tryFrom($elementId);
 			if (!empty($header))
 			{
-				// todo: change this, it looks rough to handle header specificity here
 				if ($header === HeadersEnum::AVERAGE_SCORE_BY_STEPS)
 				{
 					$fnums = array_map(function ($file) {
@@ -187,9 +187,20 @@ class Export
 				else
 				{
 					$result['label'] = Text::_($header->getLabel());
-					foreach ($files as $file)
+
+					if ($header->isSensitiveData() && $anonymize_data)
 					{
-						$result['data'][$file->getFnum()] = $header->transform($file, $this->labelRepository, null, $format);
+						foreach ($files as $file)
+						{
+							$result['data'][$file->getFnum()] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+						}
+					}
+					else
+					{
+						foreach ($files as $file)
+						{
+							$result['data'][$file->getFnum()] = $header->transform($file, $this->labelRepository, null, $format);
+						}
 					}
 				}
 

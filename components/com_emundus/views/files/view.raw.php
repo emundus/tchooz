@@ -527,7 +527,7 @@ class EmundusViewFiles extends JViewLegacy
 								$userObj->user->name      = $user['name'];
 								$userObj->unread_messages = !empty($unread_messages) ? $unread_messages[$value] : '';
 
-								if ($user['is_anonym'])
+								if ($user['is_anonym'] || $user['anonymous'])
 								{
 									$userObj->user->name  = $value;
 									$userObj->user->email = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');

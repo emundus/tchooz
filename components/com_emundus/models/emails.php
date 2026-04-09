@@ -1646,7 +1646,7 @@ class EmundusModelEmails extends JModelList
 				$fnums_infos = $m_files->getFnumsInfos($fnums);
 				$fnums_html  = '<ul>';
 				foreach ($fnums_infos as $fnum) {
-					$fnums_html .= '<li>' . ($fnum['is_anonym'] == 1 ? Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') : $fnum['name']) . ' (' . $fnum['fnum'] . ')</li>';
+					$fnums_html .= '<li>' . (($fnum['is_anonym'] == 1 || !empty($fnum['anonymous'])) ? Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') : $fnum['name']) . ' (' . $fnum['fnum'] . ')</li>';
 				}
 				$fnums_html .= '</ul>';
 
@@ -2001,13 +2001,25 @@ class EmundusModelEmails extends JModelList
 					foreach ($messages as $key => $message)
 					{
 						$message->fnum_to = '';
+						$file_anonymous = false;
 						if (in_array($message->message_id, array_keys($messages_fnums_by_id)))
 						{
 							$message->fnum_to = $messages_fnums_by_id[$message->message_id]->fnum_to;
+
+							// Check file-level anonymization
+							if (!empty($message->fnum_to))
+							{
+								$query->clear()
+									->select('anonymous')
+									->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+									->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($message->fnum_to));
+								$this->_db->setQuery($query);
+								$file_anonymous = (int) $this->_db->loadResult() === 1;
+							}
 						}
 
-						// if the user is anonym, we hide the email_to field and the content, cause it could contains personal data
-						if ($is_anonym == 1)
+						// if the user is anonym or the file is anonymous, we hide the email_to field and the content, cause it could contains personal data
+						if ($is_anonym == 1 || $file_anonymous)
 						{
 							$message->email_to = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
 							$message->message  = Text::_('COM_EMUNDUS_ANONYM_EMAIL_MESSAGE');

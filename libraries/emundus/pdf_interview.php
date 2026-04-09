@@ -1,5 +1,7 @@
 <?php
 
+use Joomla\CMS\Factory;
+
 function pdf_interview($user_id, $fnum = null, $output = true, $name = null, $options = null) {
     jimport( 'joomla.html.parameter' );
     set_time_limit(0);
@@ -143,8 +145,17 @@ function pdf_interview($user_id, $fnum = null, $output = true, $name = null, $op
     }
 
     if (!empty($options) && $options[0] != "" && $options[0] != "0") {
-        $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-        $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+        $anonymize_data = EmundusHelperAccess::isDataAnonymized(Factory::getApplication()->getIdentity()->id);
+
+        // Check file-level anonymization
+        $query_anon = $db->getQuery(true);
+        $query_anon->select('anonymous')
+            ->from($db->quoteName('#__emundus_campaign_candidature'))
+            ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+        $db->setQuery($query_anon);
+        $anonymize_data = $anonymize_data || (int) $db->loadResult() === 1;
+
+        $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(Factory::getApplication()->getIdentity()->id);
         if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
 
             $htmldata .= '<div class="card">
@@ -195,6 +206,15 @@ function pdf_interview($user_id, $fnum = null, $output = true, $name = null, $op
         $htmldata .= '';
     } else {
         $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+
+        // Check file-level anonymization
+        $query_anon2 = $db->getQuery(true);
+        $query_anon2->select('anonymous')
+            ->from($db->quoteName('#__emundus_campaign_candidature'))
+            ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+        $db->setQuery($query_anon2);
+        $anonymize_data = $anonymize_data || (int) $db->loadResult() === 1;
+
         $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
         if (!$anonymize_data && ($allowed_attachments === true || in_array('10', $allowed_attachments))) {
             $htmldata .= '<div class="card">

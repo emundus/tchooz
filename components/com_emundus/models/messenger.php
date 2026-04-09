@@ -23,6 +23,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
 
@@ -356,6 +357,14 @@ class EmundusModelMessenger extends ListModel
 
 		if (!empty($fnum))
 		{
+			$applicationFileRepository = new ApplicationFileRepository(false);
+			$applicationFile = $applicationFileRepository->getByFnum($fnum);
+
+			if (empty($applicationFile))
+			{
+				throw new \Exception('File not found');
+			}
+
 			if (empty($user_id))
 			{
 				$user_id = Factory::getApplication()->getIdentity()->id;
@@ -398,6 +407,11 @@ class EmundusModelMessenger extends ListModel
 					$hour               = EmundusHelperDate::displayDate($message->date_time, 'H:i', 0);
 					$message->date_hour = $hour;
 					$message->me        = $message->user_id_from == $user_id;
+
+					if ($applicationFile->isAnonymous())
+					{
+						$message->name = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+					}
 				}
 
 				$datas            = new stdClass;
@@ -686,7 +700,7 @@ class EmundusModelMessenger extends ListModel
 					if($notifications === false)
 					{
 						// Get count of messages since last reply from an other user that applicant
-						$query->select('ecc.fnum, m.page, COUNT(m.message_id) as notifications, CASE WHEN eu.is_anonym != 1 THEN concat(eu.lastname, " ", eu.firstname) ELSE '.$this->db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')).' END as fullname, group_concat(m.message_id) as messages')
+						$query->select('ecc.fnum, m.page, COUNT(m.message_id) as notifications, CASE WHEN eu.is_anonym != 1 AND ecc.anonymous != 1 THEN concat(eu.lastname, " ", eu.firstname) ELSE '.$this->db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')).' END as fullname, group_concat(m.message_id) as messages')
 							->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 							->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' LIKE ' . $this->_db->quoteName('ecc.applicant_id'))
 							->leftJoin($this->_db->quoteName('#__emundus_chatroom', 'ec') . ' ON ' . $this->_db->quoteName('ec.fnum') . ' LIKE ' . $this->_db->quoteName('ecc.fnum'))

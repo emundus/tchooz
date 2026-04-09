@@ -873,7 +873,15 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 //    if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
     if (isset($form_post)) {
 	    try {
-		    $anonymize_data = EmundusHelperAccess::isDataAnonymized($current_user_id) || $user->is_anonym;
+		    // Check file-level anonymization
+		    $query_anon = $db->getQuery(true);
+		    $query_anon->select('anonymous')
+			    ->from($db->quoteName('#__emundus_campaign_candidature'))
+			    ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+		    $db->setQuery($query_anon);
+		    $file_anonymous = (int) $db->loadResult() === 1;
+
+		    $anonymize_data = EmundusHelperAccess::isDataAnonymized($current_user_id) || $user->is_anonym || $file_anonymous;
 
 		    $photo_attachment_id = $eMConfig->get('photo_attachment', 10);
 
