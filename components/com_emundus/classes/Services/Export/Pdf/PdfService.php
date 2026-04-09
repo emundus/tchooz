@@ -326,7 +326,7 @@ class PdfService extends Export implements ExportInterface
 
 			foreach ($custom_headers as $custom_header)
 			{
-				$customHeaderData = $this->getData($custom_header, [$applicationFile], ValueFormatEnum::FORMATTED);
+				$customHeaderData = $this->getData($custom_header, [$applicationFile], ValueFormatEnum::FORMATTED, $anonymize_data);
 
 				if ($custom_header === 'stickers')
 				{
