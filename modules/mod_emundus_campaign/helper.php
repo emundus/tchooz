@@ -94,7 +94,7 @@ class modEmundusCampaignHelper
 				->from($this->db->qn('#__emundus_setup_campaigns', 'ca'))
 				->leftJoin($this->db->qn('#__emundus_setup_campaigns_user_category', 'esc_uc') . ' ON ' . $this->db->qn('esc_uc.campaign_id') . ' = ' . $this->db->qn('ca.id'))
 				->leftJoin($this->db->qn('#__emundus_setup_campaigns', 'esc_parent') . ' ON ' . $this->db->qn('esc_parent.id') . ' = ' . $this->db->qn('ca.parent_id'))
-				->leftJoin($this->db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $this->db->qn('pr.code') . ' = ' . $this->db->qn('ca.training'))
+				->leftJoin($this->db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $this->db->qn('pr.id') . ' = ' . $this->db->qn('ca.program_id'))
 				->leftJoin($this->db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $this->db->qn('tu.code') . ' = ' . $this->db->qn('ca.training') . ' AND ' . $this->db->quoteName('ca.year') . ' = ' . $this->db->quoteName('tu.schoolyear'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns_repeat_limit_status', 'escrls') . ' ON ' . $this->db->quoteName('escrls.parent_id') . ' = ' . $this->db->quoteName('ca.id'))
 				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.campaign_id') . ' = ' . $this->db->quoteName('ca.id') . ' AND ' . $this->db->quoteName('ecc.status') . ' IN (escrls.limit_status)');
@@ -105,7 +105,7 @@ class modEmundusCampaignHelper
 			$query->from($this->db->qn('#__emundus_setup_campaigns', 'ca'))
 				->leftJoin($this->db->qn('#__emundus_setup_campaigns_user_category', 'esc_uc') . ' ON ' . $this->db->qn('esc_uc.campaign_id') . ' = ' . $this->db->qn('ca.id'))
 				->leftJoin($this->db->qn('#__emundus_setup_campaigns', 'esc_parent') . ' ON ' . $this->db->qn('esc_parent.id') . ' = ' . $this->db->qn('ca.parent_id'))
-				->leftJoin($this->db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $this->db->qn('pr.code') . ' = ' . $this->db->qn('ca.training'))
+				->leftJoin($this->db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $this->db->qn('pr.id') . ' = ' . $this->db->qn('ca.program_id'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns_repeat_limit_status', 'escrls') . ' ON ' . $this->db->quoteName('escrls.parent_id') . ' = ' . $this->db->quoteName('ca.id'))
 				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.campaign_id') . ' = ' . $this->db->quoteName('ca.id') . ' AND ' . $this->db->quoteName('ecc.status') . ' IN (escrls.limit_status)');
 		}

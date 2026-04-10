@@ -1010,7 +1010,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 														break;
 													case 'jos_emundus_setup_programmes':
 														$query->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
-															->leftJoin($db->quoteName('jos_emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'));
+															->leftJoin($db->quoteName('jos_emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.id') . ' = ' . $db->quoteName('esc.program_id'));
 														$table_alias = 'esp';
 														break;
 													case 'jos_emundus_users':
