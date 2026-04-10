@@ -67,7 +67,7 @@ class WorkflowRepository
 				->from($this->db->quoteName($this->getTableName(self::class), 'w'))
 				->leftJoin($this->db->quoteName('jos_emundus_setup_workflows_programs', 'p') . ' ON ' . $this->db->quoteName('w.id') . ' = ' . $this->db->quoteName('p.workflow_id'))
 				->leftJoin($this->db->quoteName('jos_emundus_setup_programmes', 'pr') . ' ON ' . $this->db->quoteName('p.program_id') . ' = ' . $this->db->quoteName('pr.id'))
-				->leftJoin($this->db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.training') . ' = ' . $this->db->quoteName('pr.code'))
+				->leftJoin($this->db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.program_id') . ' = ' . $this->db->quoteName('pr.id'))
 				->leftJoin($this->db->quoteName('jos_emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.campaign_id') . ' = ' . $this->db->quoteName('esc.id'))
 				->where($this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quote($fnum))
 				->group('w.id');

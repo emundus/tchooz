@@ -44,6 +44,7 @@ use Tchooz\Traits\TraitTable;
 		'end_date',
 		'profile_id',
 		'training',
+		'program_id',
 		'year',
 		'published',
 		'pinned',
