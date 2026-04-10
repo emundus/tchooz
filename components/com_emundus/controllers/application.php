@@ -3446,7 +3446,7 @@ class EmundusControllerApplication extends EmundusController
 			$applicationFileRepository = new ApplicationFileRepository();
 			$applicationFile = $applicationFileRepository->getByFnum($fnum);
 
-			if (!empty($applicationFile) && $applicationFile->isAnonymous())
+			if (!empty($applicationFile) && ($applicationFile->isAnonymous() or $applicationFile->isPublic()))
 			{
 				$this->dispatchJoomlaEvent('onAskForAnonymousReveal', [
 					'context' => new EventContextEntity($this->user, [$fnum])
