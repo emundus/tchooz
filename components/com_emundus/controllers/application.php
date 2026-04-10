@@ -3441,14 +3441,19 @@ class EmundusControllerApplication extends EmundusController
 		$response = EmundusResponse::denied();
 
 		$fnum = $this->app->getInput()->getString('fnum', '');
-
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction('anonymous_reveal', CrudEnum::CREATE->value, $this->user->id, $fnum))
 		{
-			$this->dispatchJoomlaEvent('onAskForAnonymousReveal', [
-				'context' => new EventContextEntity($this->user, [$fnum])
-			]);
+			$applicationFileRepository = new ApplicationFileRepository();
+			$applicationFile = $applicationFileRepository->getByFnum($fnum);
 
-			$response = EmundusResponse::ok();
+			if (!empty($applicationFile) && $applicationFile->isAnonymous())
+			{
+				$this->dispatchJoomlaEvent('onAskForAnonymousReveal', [
+					'context' => new EventContextEntity($this->user, [$fnum])
+				]);
+
+				$response = EmundusResponse::ok();
+			}
 		}
 
 		return $response;

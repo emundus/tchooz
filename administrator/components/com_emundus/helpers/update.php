@@ -1020,6 +1020,8 @@ class EmundusHelperUpdate
 
 			return false;
 		}
+
+		return false;
 	}
 
 	public static function languageBaseToFile()

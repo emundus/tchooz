@@ -193,6 +193,29 @@ class Release2_19_0Installer extends ReleaseInstaller
 				$result['message'] .= $eventsAdded['message'];
 			}
 
+			$query->clear()
+				->select('parent_id')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('link') . ' = ' . $this->db->quote('index.php?option=com_emundus&controller=files&task=getstate'))
+				->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote('actions'));
+			$this->db->setQuery($query);
+			$parent_id = $this->db->loadResult();
+
+			$datas        = [
+				'menutype'     => 'actions',
+				'title'        => 'Demander la désanonymisation du dossier',
+				'alias'        => 'ask-for-reveal',
+				'link'         => 'index.php?option=com_emundus&view=application',
+				'type'         => 'url',
+				'component_id' => 0,
+				'note'         => 'anonymous_reveal|c|1'
+			];
+			$reveal_menu = \EmundusHelperUpdate::addJoomlaMenu($datas, $parent_id, 0);
+			if ($this->tasks[] = $reveal_menu['status'])
+			{
+				$this->tasks[] = \EmundusHelperUpdate::insertFalangTranslation(1, $reveal_menu['id'], 'menu', 'title', 'Demander la désanonymisation du dossier', true);
+			}
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
