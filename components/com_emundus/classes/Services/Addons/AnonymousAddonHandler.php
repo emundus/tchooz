@@ -36,6 +36,17 @@ class AnonymousAddonHandler implements AddonHandlerInterface
 		$db->setQuery($query);
 		$updates[] = $db->execute();
 
+		// Publish/unpublish the anonymization event subscriber plugin
+		$query->clear()
+			->update($db->quoteName('#__extensions'))
+			->set($db->quoteName('enabled') . ' = ' . ($state ? 1 : 0))
+			->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+			->where($db->quoteName('folder') . ' = ' . $db->quote('emundus'))
+			->where($db->quoteName('element') . ' = ' . $db->quote('anonymization'));
+
+		$db->setQuery($query);
+		$updates[] = $db->execute();
+
 		return !in_array(false, $updates, true);
 	}
 

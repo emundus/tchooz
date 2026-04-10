@@ -75,6 +75,7 @@ class Release2_19_0Installer extends ReleaseInstaller
 			}
 
 			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_system_emunduspublicaccess', 'emunduspublicaccess', null, 'plugin', 0, 'system');
+			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_emundus_anonymization', 'anonymization', null, 'plugin', 0, 'emundus');
 
 			$resolver           = new AddonHandlerResolver();
 			$addonRepository = new AddonRepository();

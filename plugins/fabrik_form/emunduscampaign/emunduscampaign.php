@@ -21,6 +21,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Traits\TraitDispatcher;
 
 defined('_JEXEC') or die('Restricted access');
@@ -236,7 +237,23 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 			$this->_db->setQuery($query);
 			$this->_db->execute();
 
-			$this->dispatchJoomlaEvent('onCreateNewFile', ['user_id' => $user->id, 'fnum' => $fnum, 'cid' => $campaign_id, 'application_choice' => $application_choice]);
+			$this->dispatchJoomlaEvent('onCreateNewFile',
+				[
+					'user_id' => $user->id,
+				    'fnum' => $fnum,
+				    'cid' => $campaign_id,
+				    'application_choice' => $application_choice,
+					'context' => new EventContextEntity(
+						Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user->id),
+						[$fnum],
+						[$user->id],
+						[
+							'cid' => $campaign_id,
+							'campaign_id' => $campaign_id,
+							'application_choice' => $application_choice,
+						]
+					)
+				]);
 		}
 		catch (Exception $e)
 		{

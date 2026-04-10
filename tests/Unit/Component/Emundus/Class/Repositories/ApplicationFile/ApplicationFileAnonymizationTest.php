@@ -84,12 +84,8 @@ class ApplicationFileAnonymizationTest extends UnitTestCase
 
 		// Assert
 		$this->assertTrue($flushed, 'Le flush doit réussir');
-		$this->assertTrue(
-			$applicationFile->isAnonymous(),
-			'Avec la politique FORCED, le dossier doit être anonyme même si le candidat ne l\'a pas demandé'
-		);
 
-		// Vérifier en base de données
+		// Vérifier en base de données (la politique est appliquée par le subscriber onCreateNewFile)
 		$retrieved = $this->repository->getByFnum($applicationFile->getFnum());
 		$this->assertNotNull($retrieved, 'Le dossier doit exister en base');
 		$this->assertTrue(
@@ -118,8 +114,12 @@ class ApplicationFileAnonymizationTest extends UnitTestCase
 		$this->createdFnums[] = $applicationFile->getFnum();
 
 		$this->assertTrue($flushed, 'Le flush doit réussir');
+
+		// Vérifier en base de données
+		$retrieved = $this->repository->getByFnum($applicationFile->getFnum());
+		$this->assertNotNull($retrieved, 'Le dossier doit exister en base');
 		$this->assertTrue(
-			$applicationFile->isAnonymous(),
+			$retrieved->isAnonymous(),
 			'Avec la politique FORCED et le choix du candidat, le dossier doit être anonyme'
 		);
 	}
@@ -144,12 +144,8 @@ class ApplicationFileAnonymizationTest extends UnitTestCase
 		$this->createdFnums[] = $applicationFile->getFnum();
 
 		$this->assertTrue($flushed, 'Le flush doit réussir');
-		$this->assertFalse(
-			$applicationFile->isAnonymous(),
-			'Avec la politique FORBIDDEN, le dossier ne doit pas être anonyme même si le candidat le demande'
-		);
 
-		// Vérifier en base de données
+		// Vérifier en base de données (la politique est appliquée par le subscriber onCreateNewFile)
 		$retrieved = $this->repository->getByFnum($applicationFile->getFnum());
 		$this->assertNotNull($retrieved, 'Le dossier doit exister en base');
 		$this->assertFalse(
@@ -177,8 +173,12 @@ class ApplicationFileAnonymizationTest extends UnitTestCase
 		$this->createdFnums[] = $applicationFile->getFnum();
 
 		$this->assertTrue($flushed, 'Le flush doit réussir');
+
+		// Vérifier en base de données
+		$retrieved = $this->repository->getByFnum($applicationFile->getFnum());
+		$this->assertNotNull($retrieved, 'Le dossier doit exister en base');
 		$this->assertFalse(
-			$applicationFile->isAnonymous(),
+			$retrieved->isAnonymous(),
 			'Avec la politique FORBIDDEN et sans demande d\'anonymat, le dossier ne doit pas être anonyme'
 		);
 	}
@@ -266,8 +266,12 @@ class ApplicationFileAnonymizationTest extends UnitTestCase
 		$this->createdFnums[] = $applicationFile->getFnum();
 
 		$this->assertTrue($flushed, 'Le flush doit réussir');
+
+		// Vérifier en base de données (la politique est appliquée par le subscriber onCreateNewFile)
+		$retrieved = $this->repository->getByFnum($applicationFile->getFnum());
+		$this->assertNotNull($retrieved, 'Le dossier doit exister en base');
 		$this->assertFalse(
-			$applicationFile->isAnonymous(),
+			$retrieved->isAnonymous(),
 			'Avec la politique par défaut (FORBIDDEN), le dossier ne doit pas être anonyme même si le candidat le demande'
 		);
 	}

@@ -11,13 +11,12 @@ use Joomla\Database\QueryInterface;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\ApplicationFile\ApplicationFileAccessEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Fabrik\FabrikElementEntity;
-use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Factories\ApplicationFile\ApplicationFileFactory;
-use Tchooz\Repositories\Addons\AddonRepository;
-use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
+use Tchooz\Traits\TraitDispatcher;
 
 #[TableAttribute(
 	table: '#__emundus_campaign_candidature',
@@ -40,6 +39,8 @@ use Tchooz\Repositories\RepositoryInterface;
 )]
 class ApplicationFileRepository extends EmundusRepository implements RepositoryInterface
 {
+	use TraitDispatcher;
+
 	private QueryInterface $query;
 
 	private ApplicationFileFactory $factory;
@@ -228,6 +229,23 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 				$applicationFileEntity->setId($ccid);
 				$flushed = true;
+
+				$this->dispatchJoomlaEvent('onCreateNewFile',
+					[
+						'user_id' => $applicationFileEntity->getUser()->id,
+						'fnum' => $applicationFileEntity->getFnum(),
+						'cid' => $applicationFileEntity->getCampaignId(),
+						'context' => new EventContextEntity(
+							$applicationFileEntity->getUser(),
+							[$applicationFileEntity->getFnum()],
+							[$applicationFileEntity->getUser()->id],
+							[
+								'application_file' => $applicationFileEntity,
+								'cid' => $applicationFileEntity->getCampaignId(),
+								'campaign_id' => $applicationFileEntity->getCampaignId(),
+							]
+						)
+					]);
 			}
 			else
 			{
@@ -312,47 +330,6 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 		if (empty($ccid))
 		{
-			$campaignRepository = new CampaignRepository(false);
-			$campaign = $campaignRepository->getById($applicationFileEntity->getCampaignId());
-			$policy = $campaign->getAnonymizationPolicy();
-
-			switch($policy)
-			{
-				case AnonymizationPolicyEnum::FORCED:
-					$applicationFileEntity->setIsAnonymous(true);
-					break;
-				case AnonymizationPolicyEnum::FORBIDDEN:
-					$applicationFileEntity->setIsAnonymous(false);
-					break;
-				case AnonymizationPolicyEnum::OPTIONAL:
-					// Keep the user's choice
-					break;
-				case AnonymizationPolicyEnum::GLOBAL:
-				default:
-					$addonRepository = new AddonRepository();
-					$addon = $addonRepository->getByName('anonymous');
-
-					if ($addon->getValue()->isEnabled())
-					{
-						$policy = $addon->getValue()->getParams()['policy'] ?? 'forbidden';
-						$policy = AnonymizationPolicyEnum::tryFrom($policy) ?? AnonymizationPolicyEnum::FORBIDDEN;
-
-						if ($policy === AnonymizationPolicyEnum::FORCED)
-						{
-							$applicationFileEntity->setIsAnonymous(true);
-						}
-						elseif ($policy === AnonymizationPolicyEnum::FORBIDDEN || $policy === AnonymizationPolicyEnum::GLOBAL)
-						{
-							$applicationFileEntity->setIsAnonymous(false);
-						}
-					}
-					else
-					{
-						$applicationFileEntity->setIsAnonymous(false);
-					}
-					break;
-			}
-
 			$campaign_candidature = [
 				'date_time'           => date('Y-m-d H:i:s'),
 				'applicant_id'        => $applicationFileEntity->getUser()->id,
