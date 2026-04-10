@@ -17,6 +17,7 @@ use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Campaigns\CampaignEntity;
 use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
@@ -73,7 +74,7 @@ final class Anonymization extends CMSPlugin implements SubscriberInterface
 				return true;
 			}
 
-			$policy = $campaign->getAnonymizationPolicy();
+			$policy = self::getCampaignAnonymizationPolicy($campaign);
 			$anonymous = null;
 
 			switch ($policy)
@@ -89,31 +90,8 @@ final class Anonymization extends CMSPlugin implements SubscriberInterface
 				case AnonymizationPolicyEnum::OPTIONAL:
 					// Keep the user's choice, do nothing
 					break;
-
-				case AnonymizationPolicyEnum::GLOBAL:
 				default:
-					$addonRepository = new AddonRepository();
-					$addon = $addonRepository->getByName('anonymous');
-
-					if ($addon !== null && $addon->getValue()->isEnabled())
-					{
-						$addonPolicy = $addon->getValue()->getParams()['policy'] ?? 'forbidden';
-						$addonPolicy = AnonymizationPolicyEnum::tryFrom($addonPolicy) ?? AnonymizationPolicyEnum::FORBIDDEN;
-
-						if ($addonPolicy === AnonymizationPolicyEnum::FORCED)
-						{
-							$anonymous = 1;
-						}
-						elseif ($addonPolicy === AnonymizationPolicyEnum::FORBIDDEN || $addonPolicy === AnonymizationPolicyEnum::GLOBAL)
-						{
-							$anonymous = 0;
-						}
-					}
-					else
-					{
-						$anonymous = 0;
-					}
-					break;
+					throw new \Exception('Unsupported policy: ' . $policy->getLabel());
 			}
 
 			if ($anonymous !== null)
@@ -138,6 +116,33 @@ final class Anonymization extends CMSPlugin implements SubscriberInterface
 		}
 
 		return true;
+	}
+
+	/**
+	 * @param   CampaignEntity  $campaign
+	 *
+	 * @return AnonymizationPolicyEnum
+	 */
+	public static function getCampaignAnonymizationPolicy(CampaignEntity $campaign): AnonymizationPolicyEnum
+	{
+		$policy = AnonymizationPolicyEnum::FORBIDDEN;
+
+		$addonRepository = new AddonRepository();
+		$addon = $addonRepository->getByName('anonymous');
+		if ($addon !== null && $addon->getValue()->isEnabled())
+		{
+			if ($campaign->getAnonymizationPolicy() === AnonymizationPolicyEnum::GLOBAL)
+			{
+				$addonPolicy = $addon->getValue()->getParams()['policy'] ?? 'forbidden';
+				$policy = AnonymizationPolicyEnum::tryFrom($addonPolicy) ?? AnonymizationPolicyEnum::FORBIDDEN;
+			}
+			else
+			{
+				$policy = $campaign->getAnonymizationPolicy();
+			}
+		}
+
+		return $policy;
 	}
 }
 
