@@ -71,6 +71,16 @@ class AnonymousAddonHandler implements AddonHandlerInterface
 		$db->setQuery($query);
 		$updates[] = $db->execute();
 
+		// toggle action menu
+		$query->clear()
+			->update($db->quoteName('#__menu'))
+			->set($db->quoteName('published') . ' = ' . ($state ? 1 : 0))
+			->where($db->quoteName('note') . ' = ' . $db->quote('anonymous_reveal|c|1'))
+			->andWhere($db->quoteName('menutype') . ' = ' . $db->quote('actions'));
+
+		$db->setQuery($query);
+		$updates[] = $db->execute();
+
 		return !in_array(false, $updates, true);
 	}
 
