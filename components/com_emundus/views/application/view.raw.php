@@ -597,7 +597,7 @@ class EmundusViewApplication extends HtmlView
 					$m_sms = new EmundusModelSms();
 
 					if (EmundusHelperAccess::asAccessAction($m_sms->getSmsActionId(), 'r', $this->user->id, $fnum)) {
-						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, $m_sms->getSmsActionId(), 'r', 'COM_EMUNDUS_ACCESS_SMS_APPLICANT_READ');
+						EmundusModelLogs::log($this->user->id, (int) $fnumInfos['applicant_id'], $fnum, $m_sms->getSmsActionId(), 'r', 'COM_EMUNDUS_ACCESS_SMS_APPLICANT_READ');
 					}
 					else {
 						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
@@ -609,7 +609,7 @@ class EmundusViewApplication extends HtmlView
 					$payment_repository = new PaymentRepository();
 
 					if (EmundusHelperAccess::asAccessAction($payment_repository->getActionId(), 'r', $this->user->id, $fnum)) {
-						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, $payment_repository->getActionId(), 'r', 'COM_EMUNDUS_ACCESS_CART_APPLICANT_READ');
+						EmundusModelLogs::log($this->user->id, (int) $fnumInfos['applicant_id'], $fnum, $payment_repository->getActionId(), 'r', 'COM_EMUNDUS_ACCESS_CART_APPLICANT_READ');
 					}
 					else {
 						echo Text::_("ACCESS_DENIED");

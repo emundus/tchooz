@@ -1538,7 +1538,7 @@ class FileMaker
 	{
 		$result = false;
 
-        $new_fnum = substr($fnum, 0, 21) . str_pad($user_id, 7, '0', STR_PAD_LEFT);
+        $new_fnum = substr($fnum, 0, 21) . str_pad(random_int(0, 9999999), 7, '0', STR_PAD_LEFT);
 
 		$query = $this->db->getQuery(true);
 		$query->clear()

@@ -1091,97 +1091,21 @@ class EmundusControllerEvaluation extends BaseController
 		$c_files->download();
 	}
 
-	/*
-	*   Create a zip file containing all documents attached to application fil number
-	*/
+	/**
+	 * @deprecated since version 2.19.0, use controller files instead
+	 * @param $fnums
+	 *
+	 * @return void
+	 */
 	function export_zip($fnums)
 	{
-		$view = $this->input->get('view');
-		if ((!@EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) &&
-			$view != 'renew_application'
-		)
+		if (!class_exists('EmundusControllerFiles'))
 		{
-			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+			require_once(JPATH_ROOT . '/components/com_emundus/controllers/files.php');
 		}
 
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
-		require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'pdf.php');
-
-		$zip = new ZipArchive();
-
-		$nom     = date("Y-m-d") . '_' . rand(1000, 9999) . '_x' . (count($fnums) - 1) . '.zip';
-		$path    = JPATH_SITE . DS . 'tmp' . DS . $nom;
-		$m_files = $this->getModel('Files');
-		$files   = $m_files->getFilesByFnums($fnums);
-
-		if (file_exists($path))
-		{
-			unlink($path);
-		}
-
-		$users = array();
-		foreach ($fnums as $fnum)
-		{
-			$sid          = intval(substr($fnum, -7));
-			$users[$fnum] = JFactory::getUser($sid);
-
-			if (!is_numeric($sid) || empty($sid))
-			{
-				continue;
-			}
-
-			if ($zip->open($path, ZipArchive::CREATE) == true)
-			{
-				$dossier = EMUNDUS_PATH_ABS . $users[$fnum]->id . DS;
-
-				application_form_pdf($users[$fnum]->id, $fnum, false);
-				$application_pdf = 'application.pdf';
-
-				$filename = $fnum . '_' . $users[$fnum]->name . DS . $application_pdf;
-
-				if (!$zip->addFile($dossier . DS . $application_pdf, $filename))
-				{
-					echo "-" . $dossier . $filename;
-					continue;
-
-				}
-
-				$zip->close();
-			}
-			else
-			{
-				die ("ERROR");
-			}
-		}
-
-		if ($zip->open($path, ZipArchive::CREATE) == true)
-		{
-			$todel = array();
-			$i     = 0;
-			$error = 0;
-			foreach ($files as $key => $file)
-			{
-				$filename = $file['fnum'] . '_' . $users[$file['fnum']]->name . DS . $file['filename'];
-
-				$dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
-
-				if (!$zip->addFile($dossier . $file['filename'], $filename))
-				{
-					echo "-" . $dossier . $file['filename'];
-					continue;
-
-				}
-			}
-
-			$zip->close();
-
-		}
-		else
-		{
-			die ("ERROR");
-		}
-
-		return $nom;
+		$c_files = new EmundusControllerFiles();
+		$c_files->export_zip($fnums);
 	}
 
 	// controller of get all letters

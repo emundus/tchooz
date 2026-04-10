@@ -1593,6 +1593,7 @@ class EmundusModelEmails extends JModelList
 		if (!empty($fnums) && !empty($mail_to) && !empty($mail_subject) && !empty($mail_body)) {
 			require_once(JPATH_SITE . DS . 'components/com_emundus/helpers/filters.php');
 			require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
 			require_once(JPATH_SITE . DS . 'components/com_emundus/models/messages.php');
 			PluginHelper::importPlugin('emundus');
 
@@ -1617,7 +1618,7 @@ class EmundusModelEmails extends JModelList
 			$example_fnum    = $fnums[0];
 			$campaign_id     = (int) substr($example_fnum, 14, 7);
 			$campaign        = $h_filters->getCampaignByID($campaign_id);
-			$example_user_id = (int) substr($example_fnum, -7);
+			$example_user_id = EmundusHelperFiles::getApplicantIdFromFnum($example_fnum);
 			$example_user    = $app->getIdentity($example_user_id);
 
 			if (!empty($sender_id)) {

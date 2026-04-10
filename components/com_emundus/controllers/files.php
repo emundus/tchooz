@@ -821,9 +821,14 @@ class EmundusControllerFiles extends EmundusController
 				}
 				$m_comments = new EmundusModelComments();
 
+				if (!class_exists('EmundusHelperFiles'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/controllers/files.php');
+				}
+
 				foreach ($fnums as $fnum) {
 					if (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum)) {
-						$aid = intval(substr($fnum, 21, 7));
+						$aid = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
 						$comment_content = array(
 							'applicant_id' => $aid,
 							'user_id' => $this->_user->id,
@@ -3449,8 +3454,7 @@ class EmundusControllerFiles extends EmundusController
 	}
 
 	/**
-	 *  Create a zip file containing all documents attached to application fil number
-	 *
+	 *  Create a zip file containing all documents attached to application file number
 	 * @param   array  $fnums
 	 *
 	 * @return string
@@ -3477,9 +3481,9 @@ class EmundusControllerFiles extends EmundusController
 	function export_zip_pcl($fnums)
 	{
 		$view         = $this->input->get('view');
-		$current_user = JFactory::getUser();
+		$current_user = $this->app->getIdentity();
 
-		if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application')
+		if ((!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application')
 			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
@@ -3499,24 +3503,27 @@ class EmundusControllerFiles extends EmundusController
 			unlink($path);
 
 		$users = array();
-		foreach ($fnums as $fnum) {
-			$sid          = intval(substr($fnum, -7));
-			$users[$fnum] = JFactory::getUser($sid);
+		if (!class_exists('EmundusHelperFiles'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+		}
 
+		foreach ($fnums as $fnum) {
+			$sid          = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
 			if (!is_numeric($sid) || empty($sid))
 				continue;
 
+			$users[$fnum] = JFactory::getUser($sid);
 			$dossier = EMUNDUS_PATH_ABS . $users[$fnum]->id;
 			$dir     = $fnum . '_' . $users[$fnum]->name;
 			application_form_pdf($users[$fnum]->id, $fnum, false);
 			$application_pdf = $fnum . '_application.pdf';
 
 			$zip->add($dossier . DS . $application_pdf, PCLZIP_OPT_REMOVE_ALL_PATH, PCLZIP_OPT_ADD_PATH, $dir);
-
 		}
 
 
-		foreach ($files as $key => $file) {
+		foreach ($files as $file) {
 			$dir     = $file['fnum'] . '_' . $users[$file['fnum']]->name;
 			$dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
 			$zip->add($dossier . $file['filename'], PCLZIP_OPT_REMOVE_ALL_PATH, PCLZIP_OPT_ADD_PATH, $dir);

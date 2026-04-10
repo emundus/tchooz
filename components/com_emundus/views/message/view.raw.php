@@ -130,12 +130,20 @@ class EmundusViewMessage extends JViewLegacy
 					}
 
 					$formatted_fnums = [];
-					foreach ($fnums as $fnum) {
-						$tmp               = new stdClass();
-						$tmp->fnum         = $fnum;
-						$tmp->cid          = substr($fnum, 14, 7);
-						$tmp->sid          = substr($fnum, 21, 7);
-						$formatted_fnums[] = $tmp;
+					if (!empty($fnums))
+					{
+						if (!class_exists('EmundusHelperFiles'))
+						{
+							require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+						}
+
+						foreach ($fnums as $fnum) {
+							$tmp               = new stdClass();
+							$tmp->fnum         = $fnum;
+							$tmp->cid          = substr($fnum, 14, 7);
+							$tmp->sid          = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
+							$formatted_fnums[] = $tmp;
+						}
 					}
 					$fnums = $formatted_fnums;
 				}

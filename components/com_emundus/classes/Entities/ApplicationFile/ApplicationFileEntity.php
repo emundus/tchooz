@@ -119,11 +119,7 @@ class ApplicationFileEntity
 		{
 			$campaign_id = $this->getCampaignId();
 		}
-		if (empty($user_id))
-		{
-			$user_id = $this->user->id;
-		}
-		$this->fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad($user_id, 7, '0', STR_PAD_LEFT);
+		$this->fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad(random_int(0, 9999999), 7, '0', STR_PAD_LEFT);
 
 		return $this->fnum;
 	}

@@ -8,6 +8,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Factory;
 
 /**
  * @package        Joomla.Site
@@ -99,12 +100,13 @@ class modEmundusCustomHelper
 		jimport('joomla.log.log');
 		JLog::addLogger(['text_file' => 'com_emundus.nantesFG.php'], JLog::ALL, ['com_emundus']);
 
-		$user  = JFactory::getUser();
-		$db    = JFactory::getDbo();
+		$user  = Factory::getApplication->getIdentity();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
-		$jinput    = JFactory::getApplication()->input;
+		$jinput    = Factory::getApplication()->input;
 		$fnum      = $jinput->post->get('fnum');
+
 		$decision  = (int) $jinput->post->getInt('decision');
 		$wait_rank = (int) $jinput->post->getInt('waitlistRank', 0);
 		$comment   = $jinput->post->getString('comment', '');
@@ -191,7 +193,7 @@ class modEmundusCustomHelper
 		}
 		else {
 
-			$offset = JFactory::getApplication()->get('offset', 'UTC');
+			$offset = Factory::getApplication()->get('offset', 'UTC');
 			try {
 				$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 				$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
@@ -202,13 +204,19 @@ class modEmundusCustomHelper
 				$now = $now->toSql();
 			}
 
+			if (!class_exists('EmundusHelperFiles'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+			}
+			$applicantId = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
+
 			$query->clear()
 				->insert($db->quoteName('#__emundus_final_grade'))
 				->columns($db->quoteName(['time_date', 'fnum', 'student_id', 'user', 'final_grade', 'va_accepted', 'waiting_list_rank', 'info1', 'campaign_id', 'eval_dispence']))
-				->values($db->quote($now) . ', ' . $db->quote($fnum) . ', ' . (int) substr($fnum, -7) . ', ' . $user->id . ', ' . $db->quote($decision) . ', ' . $db->quote($va_accepted) . ', ' . $db->quote($wait_rank) . ', ' . $db->quote($comment) . ', ' . (int) substr($fnum, 14, 7) . ', ' . $db->quote($eval_dispence));
-			$db->setQuery($query);
+				->values($db->quote($now) . ', ' . $db->quote($fnum) . ', ' . $applicantId . ', ' . $user->id . ', ' . $db->quote($decision) . ', ' . $db->quote($va_accepted) . ', ' . $db->quote($wait_rank) . ', ' . $db->quote($comment) . ', ' . (int) substr($fnum, 14, 7) . ', ' . $db->quote($eval_dispence));
 
 			try {
+				$db->setQuery($query);
 				$db->execute();
 				die(json_encode((object) ['status' => true, 'msg' => 'Commission ajoutée.']));
 			}

@@ -3471,9 +3471,9 @@ class EmundusHelperFiles
 	/**
 	 * Function to create a new FNUM
 	 *
-	 * @param   integer     The id of the campaign.
-	 * @param   integer     The id of the user.
-	 *
+	 * @param   integer  $campaign_id   The id of the campaign.
+	 * @param   integer  $user_id       The id of the user.
+	 * @param   bool     $redirect
 	 * @return  string      FNUM for application.
 	 * @since   1.6
 	 */
@@ -3493,7 +3493,7 @@ class EmundusHelperFiles
 		{
 			if (!empty($campaign_id))
 			{
-				$fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad($user_id, 7, '0', STR_PAD_LEFT);
+				$fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad(random_int(0, 9999999), 7, '0', STR_PAD_LEFT);
 
 				if (!empty($fnum))
 				{
