@@ -1610,7 +1610,7 @@ class EmundusHelperFiles
 			$profiles = array_filter($profiles, function ($profile) {
 				return $profile->published == 0;
 			});
-			$profiles[] = (object)array('id' => 'applicant', 'label' => Text::_('APPLICANT'));
+			$profiles[] = (object)array('id' => 'applicant', 'label' => Text::_('COM_EMUNDUS_APPLICANT'));
 
 			foreach ($profiles as $prof)
 			{
