@@ -42,7 +42,7 @@ $token = $this->compositeKey;
 			</label>
 			<div class="tw-flex tw-items-center tw-gap-2">
 				<input
-					type="password"
+					type="text"
 					id="storetoken-token"
 					value="<?php echo $this->escape($token); ?>"
 					readonly
