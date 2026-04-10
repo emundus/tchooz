@@ -760,7 +760,7 @@ class EmundusModelWorkflow extends JModelList
 				->from($this->db->quoteName('#__emundus_setup_workflows', 'esw'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_programs', 'eswp') . ' ON eswp.workflow_id = esw.id')
 				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON esp.id = eswp.program_id')
-				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.program_id = esp.id')
 				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
 				->where('ecc.fnum LIKE ' . $this->db->quote($fnum));
 
@@ -1248,7 +1248,7 @@ class EmundusModelWorkflow extends JModelList
 			$query->select('ecc.fnum, ecc.status, esp.id as program_id, ecc.published, ecc.campaign_id')
 				->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.id') . ' = ' . $this->db->quoteName('esc.program_id'))
 				->where('ecc.' . $column . ' LIKE ' . $this->db->quote($identifier));
 
 			try {
@@ -1716,7 +1716,7 @@ class EmundusModelWorkflow extends JModelList
 			$query = $this->db->createQuery();
 			$query->select('esp.id')
 				->from($this->db->quoteName('#__emundus_setup_programmes', 'esp'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esp.code = esc.training')
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esp.id = esc.program_id')
 				->where('esc.id = ' . $campaign_id);
 
 			$this->db->setQuery($query);

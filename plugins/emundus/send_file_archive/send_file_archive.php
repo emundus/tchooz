@@ -112,7 +112,7 @@ class plgEmundusSend_file_archive extends CMSPlugin {
 
 			$query->select('esp.id')
 				->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
-				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc').' ON esc.training = esp.code')
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc').' ON esc.program_id = esp.id')
 				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc').' ON ecc.campaign_id = esc.id')
 				->where('ecc.fnum = '. $db->quote($fnum));
 

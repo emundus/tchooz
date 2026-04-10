@@ -6277,7 +6277,7 @@ class EmundusHelperFiles
                             FROM #__emundus_campaign_candidature as jecc
                             LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                             LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
-                            LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
+                            LEFT JOIN #__emundus_setup_programmes as sp on sp.id = esc.program_id
                             LEFT JOIN #__users as u on u.id = jecc.applicant_id
                             LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                             LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
@@ -6332,7 +6332,7 @@ class EmundusHelperFiles
                             FROM #__emundus_campaign_candidature as jecc
                             LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                             LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
-                            LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
+                            LEFT JOIN #__emundus_setup_programmes as sp on sp.id = esc.program_id
                             LEFT JOIN #__users as u on u.id = jecc.applicant_id
                             LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                             LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum
@@ -6956,7 +6956,7 @@ class EmundusHelperFiles
 				{
 					$query->select('sp.id')
 						->from('#__emundus_setup_programmes as sp')
-						->leftJoin('#__emundus_setup_campaigns as esc ON esc.training = sp.code')
+						->leftJoin('#__emundus_setup_campaigns as esc ON esc.program_id = sp.id')
 						->where('esc.id = ' . $campaign_id);
 					$db->setQuery($query);
 					$program_id = $db->loadResult();
@@ -6984,7 +6984,7 @@ class EmundusHelperFiles
 							$query->select('COUNT(DISTINCT ecc.fnum)')
 								->from('#__emundus_campaign_candidature as ecc')
 								->leftJoin('#__emundus_setup_campaigns as esc ON esc.id = ecc.campaign_id')
-								->leftJoin('#__emundus_setup_programmes as sp ON sp.code = esc.training')
+								->leftJoin('#__emundus_setup_programmes as sp ON sp.id = esc.program_id')
 								->where('sp.id = ' . $program_id)
 								->andWhere('ecc.applicant_id = ' . $user_id)
 								->andWhere('ecc.published = 1');

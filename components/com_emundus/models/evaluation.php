@@ -1442,7 +1442,7 @@ class EmundusModelEvaluation extends JModelList
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
 					LEFT JOIN #__emundus_setup_campaigns as esc on (esc.id = jecc.campaign_id OR esc.id = eccc.campaign_id)
 					LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
-					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
+					LEFT JOIN #__emundus_setup_programmes as sp on sp.id = esc.program_id
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum ';
@@ -4659,7 +4659,7 @@ class EmundusModelEvaluation extends JModelList
 			$query->clear()
 				->select('esp.fabrik_group_id')
 				->from($this->db->quoteName('#__emundus_setup_programmes', 'esp'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esp.id') . ' = ' . $this->db->quoteName('esc.program_id'))
 				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
 				->where($this->db->quoteName('ecc.fnum') . ' IN (' . implode(',', $this->db->quote($fnums)) . ')');
 			$this->db->setQuery($query);

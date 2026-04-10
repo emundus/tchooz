@@ -38,6 +38,7 @@ class Release2_18_0Installer extends ReleaseInstaller
 			);
 			$this->tasks[]     = !empty($updateOwnerAction);
 
+			// set program id for existing campaigns
 			$query->clear()
 				->select('id')
 				->from($this->db->quoteName('#__menu'))
