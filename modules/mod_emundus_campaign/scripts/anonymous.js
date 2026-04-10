@@ -10,13 +10,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
             {
                 if (!href.includes('anonymous'))
                 {
-                    href += (href.includes('?') ? '&' : '?') + 'anonymous';
+                    href += (href.includes('?') ? '&' : '?') + 'anonymous=1';
                     registerUrlElt.setAttribute('href', href);
                 }
             }
             else
             {
-                href = href.replace(/[?&]anonymous/, '');
+                href = href.replace(/[?&]anonymous=1/, '');
                 registerUrlElt.setAttribute('href', href);
             }
         };
