@@ -10,6 +10,8 @@ use Tchooz\Entities\Fields\Field;
 use Tchooz\Entities\Fields\YesnoField;
 use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Factories\Field\ChoiceFieldFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
 
 class AnonymousAddonHandler implements AddonHandlerInterface
 {
@@ -24,17 +26,12 @@ class AnonymousAddonHandler implements AddonHandlerInterface
 	{
 		$updates = [];
 
-		$config['enabled'] = $state;
+		$this->addon->getValue()->setEnabled($state);
+		$addonRepository = new AddonRepository();
+		$updates[] = $addonRepository->flush($this->addon);
 
 		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->createQuery();
-		$query->clear()
-			->update($db->quoteName('#__emundus_setup_config'))
-			->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($config)))
-			->where($db->quoteName('namekey') . ' = ' . $db->quote($this->addon->getNamekey()));
-
-		$db->setQuery($query);
-		$updates[] = $db->execute();
 
 		// Publish/unpublish the anonymization event subscriber plugin
 		$query->clear()
@@ -43,6 +40,33 @@ class AnonymousAddonHandler implements AddonHandlerInterface
 			->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
 			->where($db->quoteName('folder') . ' = ' . $db->quote('emundus'))
 			->where($db->quoteName('element') . ' = ' . $db->quote('anonymization'));
+
+		$db->setQuery($query);
+		$updates[] = $db->execute();
+
+		$actionRepository = new ActionRepository(false);
+		$anonymousAcl = $actionRepository->getByName('anonymous_reveal');
+		if (!empty($anonymousAcl))
+		{
+			if (!$state)
+			{
+				$anonymousAcl->setStatus(false);
+			}
+			else
+			{
+				$anonymousAcl->setStatus(true);
+			}
+			$updates[] = $actionRepository->flush($anonymousAcl);
+		}
+		else
+		{
+			$updates[] = false;
+		}
+
+		$query->clear()
+			->update($db->quoteName('#__emundus_plugin_events'))
+			->set($db->quoteName('available') . ' = ' . ($state ? 1 : 0))
+			->where($db->quoteName('label') . ' = ' . $db->quote('onAskForAnonymousReveal'));
 
 		$db->setQuery($query);
 		$updates[] = $db->execute();

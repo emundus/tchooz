@@ -1576,7 +1576,36 @@ function runAction(action, url = '', option = '') {
                 }
             });
             break;
-
+        case 'anonymous_reveal':
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-Token': Joomla.getOptions('csrf.token')
+                }
+            }).then((response) => {
+                return response.json();
+            }).then((result) => {
+                if (result.status)
+                {
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: Joomla.Text._('COM_EMUNDUS_ONBOARD_SUCCESS'),
+                        text: result.msg,
+                        showConfirmButton: true,
+                        reverseButtons: true,
+                        customClass: {
+                            title: 'em-swal-title',
+                            confirmButton: 'em-swal-confirm-button',
+                            actions: 'em-swal-single-action'
+                        },
+                        timer: 3000
+                    }).then(() => {
+                        window.location.reload();
+                    })
+                }
+            });
+            break;
 
         default:
             break;
@@ -4322,6 +4351,18 @@ $(document).ready(function() {
                     $('#data').removeClass('em-loader');
                 });
                 break;
+
+            case 'anonymous_reveal':
+                swal_popup_class = 'em-w-auto';
+                swal_show_confirm_button = true;
+                swal_show_cancel_button = true;
+                title = 'COM_EMUNDUS_ACL_ANONYMIZATION_REVEAL';
+                html = '';
+                url = '/index.php?option=com_emundus&controller=application&task=askForAnonymousReveal&fnum=' + fnum;
+                multipleSteps = false;
+                id = 'anonymous_reveal';
+
+                break;
             default:
                 break;
         }
@@ -4352,6 +4393,7 @@ $(document).ready(function() {
                     }
                 },
             }).then((result) => {
+                console.log(result);
                 window.removeEventListener('click', shareModalClick);
                 if (result.value) {
                     runAction(id, url, preconfirm_value);

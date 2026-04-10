@@ -43,8 +43,8 @@ class AddonRepository extends EmundusRepository implements RepositoryInterface
 		$data = (object) [
 			'namekey' => $entity->getNamekey(),
 			'value' => json_encode([
-				'enabled' => $entity->getValue()->isEnabled(),
-				'displayed' => $entity->getValue()->isDisplayed(),
+				'enabled' => $entity->getValue()->isEnabled() ? 1 : 0,
+				'displayed' => $entity->getValue()->isDisplayed() ? 1 : 0,
 				'params' => $entity->getValue()->getParams(),
 			]),
 		];

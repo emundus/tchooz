@@ -11,9 +11,13 @@
 namespace scripts;
 
 use EmundusHelperUpdate;
+use Joomla\CMS\Language\Text;
+use Tchooz\Entities\Actions\ActionEntity;
+use Tchooz\Entities\Actions\CrudEntity;
 use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\Addons\AddonValue;
 use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Services\Addons\AddonHandlerResolver;
 use Joomla\CMS\Component\ComponentHelper;
@@ -166,6 +170,27 @@ class Release2_19_0Installer extends ReleaseInstaller
 			if (!$addAnonymizationPolicy['status'])
 			{
 				$result['message'] .= $addAnonymizationPolicy['message'];
+			}
+
+			$actionRepository = new ActionRepository(false);
+			$anonymousRevealAction = $actionRepository->getByName('anonymous_reveal');
+			if (empty($anonymousRevealAction))
+			{
+				$anonymousRevealAction = new ActionEntity(0, 'anonymous_reveal', Text::_('COM_EMUNDUS_ACL_ANONYMIZATION_REVEAL'), new CrudEntity(0, 1, 0, 0, 0), 30, false, 'COM_EMUNDUS_ACL_ANONYMIZATION_REVEAL_DESC');
+				if (!$actionRepository->flush($anonymousRevealAction))
+				{
+					$this->tasks[] = false;
+					$result['message'] .= 'Failed to create new action ' . $anonymousRevealAction->getName() . '. ';
+				}
+			}
+
+			$eventsAdded = EmundusHelperUpdate::addCustomEvents([
+				['label' => 'onAskForAnonymousReveal', 'published' => 1, 'category' => 'File', 'available' => 0]
+			]);
+			$this->tasks[] = $eventsAdded['status'];
+			if (!$eventsAdded['status'])
+			{
+				$result['message'] .= $eventsAdded['message'];
 			}
 
 			$result['status'] = !in_array(false, $this->tasks);

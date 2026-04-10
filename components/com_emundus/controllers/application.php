@@ -26,6 +26,7 @@ use Tchooz\Attributes\AccessAttribute;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnTag;
 use Tchooz\Enums\AccessLevelEnum;
@@ -49,9 +50,12 @@ use Tchooz\Controller\EmundusController;
 use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
+use Tchooz\Traits\TraitDispatcher;
 
 class EmundusControllerApplication extends EmundusController
 {
+	use TraitDispatcher;
+
 	/**
 	 * @var User|mixed|null
 	 */
@@ -3423,6 +3427,28 @@ class EmundusControllerApplication extends EmundusController
 		else
 		{
 			$response = EmundusResponse::fail();
+		}
+
+		return $response;
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => 'anonymous_reveal', 'mode' => CrudEnum::CREATE]
+	])]
+	public function askForAnonymousReveal(): EmundusResponse
+	{
+		$this->checkToken();
+		$response = EmundusResponse::denied();
+
+		$fnum = $this->app->getInput()->getString('fnum', '');
+
+		if (!empty($fnum) && EmundusHelperAccess::asAccessAction('anonymous_reveal', CrudEnum::CREATE->value, $this->user->id, $fnum))
+		{
+			$this->dispatchJoomlaEvent('onAskForAnonymousReveal', [
+				'context' => new EventContextEntity($this->user, [$fnum])
+			]);
+
+			$response = EmundusResponse::ok();
 		}
 
 		return $response;
