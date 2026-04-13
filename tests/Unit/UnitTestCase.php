@@ -128,18 +128,18 @@ abstract class UnitTestCase extends TestCase
 
 	protected function setUp(): void
 	{
-		$this->dataset['applicant_email'] = 'applicant_' . rand(0, 99999) . '@emundus.fr';
-		$this->dataset['applicant']   = $this->h_dataset->createSampleUser(1000, $this->dataset['applicant_email']);
+		$this->dataset['applicant_email']   = 'applicant_' . rand(0, 99999) . '@emundus.fr';
+		$this->dataset['applicant']         = $this->h_dataset->createSampleUser(1000, $this->dataset['applicant_email']);
 		$this->dataset['coordinator_email'] = 'coordinator_' . rand(0, 99999) . '@emundus.fr';
-		$this->dataset['coordinator'] = $this->h_dataset->createSampleUser(2, $this->dataset['coordinator_email'], 'test1234', [2, 7], 'Test', 'COORD', [1]);
-		$this->dataset['program']     = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $this->dataset['coordinator']);
-		$this->dataset['campaign']    = $this->h_dataset->createSampleCampaign($this->dataset['program'], $this->dataset['coordinator']);
-		$this->dataset['fnum']        = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
-		if(!class_exists('EmundusHelperFiles'))
+		$this->dataset['coordinator']       = $this->h_dataset->createSampleUser(2, $this->dataset['coordinator_email'], 'test1234', [2, 7], 'Test', 'COORD', [1]);
+		$this->dataset['program']           = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $this->dataset['coordinator']);
+		$this->dataset['campaign']          = $this->h_dataset->createSampleCampaign($this->dataset['program'], $this->dataset['coordinator']);
+		$this->dataset['fnum']              = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		if (!class_exists('EmundusHelperFiles'))
 		{
 			require_once JPATH_BASE . '/components/com_emundus/helpers/files.php';
 		}
-		$this->dataset['ccid']        = \EmundusHelperFiles::getIdFromFnum($this->dataset['fnum']);
+		$this->dataset['ccid'] = \EmundusHelperFiles::getIdFromFnum($this->dataset['fnum']);
 	}
 
 	protected function tearDown(): void

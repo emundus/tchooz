@@ -32,7 +32,13 @@ use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagRemoveDefinition;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
+use Tchooz\Providers\DateProvider;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\Reference\InternalReferenceRepository;
+use Tchooz\Repositories\Settings\ConfigurationRepository;
+use Tchooz\Services\Reference\InternalReferenceFormat;
+use Tchooz\Services\Reference\InternalReferenceService;
 
 /**
  * Emundus Component Application Model
@@ -4538,7 +4544,7 @@ class EmundusModelApplication extends ListModel
 	public function getApplicationMenu($user_id = 0, $fnum = '')
 	{
 		$user_id = $user_id ?: Factory::getApplication()->getIdentity()->id;
-		$juser   = JFactory::getUser($user_id);
+		$juser   = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
 
 		$menus = [];
 		try {
@@ -4558,7 +4564,7 @@ class EmundusModelApplication extends ListModel
 			if (!empty($fnum)) {
 				// get menu related to workflow steps of type evaluator
 				$query->clear()
-					->select('esp.id, esc.id as campaign_id')
+					->select('esp.id, esc.id as campaign_id, ecc.id as ccid')
 					->from($this->_db->quoteName('#__emundus_setup_programmes', 'esp'))
 					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
 					->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
@@ -4571,18 +4577,18 @@ class EmundusModelApplication extends ListModel
 				$campaign_id = $file_infos->campaign_id ?? 0;
 
 				if (!empty($program_id)) {
-					require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+					if(!class_exists('EmundusModelWorkflow'))
+					{
+						require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+					}
+					$m_workflow = new EmundusModelWorkflow();
 					if(!class_exists('EmundusHelperMenu')) {
 						require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
 					}
-					$m_workflow = new EmundusModelWorkflow();
 
 					$programs_ids = [$program_id];
 					if(!empty($campaign_id))
 					{
-						if(!class_exists('CampaignRepository')) {
-							require_once(JPATH_ROOT . '/components/com_emundus/classes/Repositories/Campaigns/CampaignRepository.php');
-						}
 						$campaignRepository = new CampaignRepository();
 						$linked_programs_ids = $campaignRepository->getLinkedProgramsIds($campaign_id, $fnum);
 						if(!empty($linked_programs_ids))
@@ -5185,11 +5191,12 @@ class EmundusModelApplication extends ListModel
 		$query  = $this->_db->getQuery(true);
 
 		try {
-			$query->select('ecc.*, esc.*, ess.step, ess.value, ess.class, esp.id as prog_id, esp.color as tag_color, esp.label as prog_label')
+			$query->select('ecc.*, esc.*, ess.step, ess.value, ess.class, esp.id as prog_id, esp.color as tag_color, esp.label as prog_label, eir.reference')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id=ecc.campaign_id')
 				->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ess') . ' ON ess.step=ecc.status')
 				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON esc.training = esp.code')
+				->leftJoin($this->_db->quoteName('#__emundus_internal_reference', 'eir') . ' ON eir.ccid = ecc.id and eir.active = 1')
 				->where($this->_db->quoteName('ecc.fnum') . ' like ' . $this->_db->quote($fnum))
 				->order($this->_db->quoteName('esc.end_date') . ' DESC');
 			$this->_db->setQuery($query);

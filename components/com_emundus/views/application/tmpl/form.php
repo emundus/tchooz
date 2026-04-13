@@ -98,6 +98,17 @@ $emundus_config = ComponentHelper::getParams('com_emundus');
                                 <?php echo $this->applicant->lastname . ' ' . $this->applicant->firstname; ?>
                             </p>
                             <p><?php echo $this->fnum ?></p>
+                            <?php if ($this->showReference) : ?>
+                                <div class="tw-flex tw-items-end tw-gap-1">
+                                    <?php if (!empty($this->reference)) : ?>
+                                        <label class="tw-mb-0"><?= $this->reference->getReference(); ?></label>
+                                    <?php endif; ?>
+                                    <?php if (!empty($this->shortReference)) : ?>
+                                        <span class="tw-text-sm tw-text-neutral-500">#<?= $this->shortReference; ?></span>
+                                    <?php endif; ?>
+                                    <span class="material-symbols-outlined !tw-text-base tw-cursor-pointer" onclick="copyReference()">content_copy</span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -228,6 +239,23 @@ $emundus_config = ComponentHelper::getParams('com_emundus');
 
             e.preventDefault();
             container.scrollLeft = scrollLeft - (e.clientX - startX);
+        });
+    }
+
+    function copyReference() {
+        let reference = '<?php echo !empty($this->reference) ? ($this->reference->getReference() . '#' . $this->shortReference) : $this->shortReference ; ?>';
+
+        // Copy to clipboard
+        navigator.clipboard.writeText(reference);
+        Swal.fire({
+            title: '<?php echo Text::_('COM_EMUNDUS_REFERENCE_COPIED_TO_CLIPBOARD'); ?>',
+            icon: 'success',
+            showConfirmButton: false,
+            customClass: {
+                title: 'em-swal-title',
+                actions: 'em-swal-single-action',
+            },
+            timer: 1500,
         });
     }
 </script>

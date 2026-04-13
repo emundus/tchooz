@@ -11,13 +11,13 @@ namespace Tchooz\Repositories\NumericSign;
 
 use Joomla\CMS\Factory;
 use Tchooz\Attributes\TableAttribute;
-use Tchooz\Entities\ExternalReference\ExternalReferenceEntity;
+use Tchooz\Entities\Reference\ExternalReferenceEntity;
 use Tchooz\Entities\NumericSign\Request;
 use Tchooz\Enums\NumericSign\SignConnectorsEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Attachments\AttachmentTypeRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
-use Tchooz\Repositories\ExternalReference\ExternalReferenceRepository;
+use Tchooz\Repositories\Reference\ExternalReferenceRepository;
 use Tchooz\Traits\TraitTable;
 use Joomla\CMS\User\User;
 use Joomla\Database\DatabaseInterface;

@@ -12,7 +12,7 @@ use Joomla\CMS\Filter\InputFilter;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
-use Tchooz\Repositories\ExternalReference\ExternalReferenceRepository;
+use Tchooz\Repositories\Reference\ExternalReferenceRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 
 class FileModel extends AdminModel

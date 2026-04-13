@@ -20,7 +20,7 @@ use Joomla\Registry\Registry;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
-use Tchooz\Repositories\ExternalReference\ExternalReferenceRepository;
+use Tchooz\Repositories\Reference\ExternalReferenceRepository;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;

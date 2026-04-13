@@ -1332,7 +1332,7 @@ class EmundusModelEvaluation extends JModelList
 			$user_id = $this->app->getIdentity()->id;
 		}
 
-		$query = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) as name, ss.class as status_class, sp.code, eu.is_anonym';
+		$query = 'select jecc.fnum, jecc.short_reference, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) as name, ss.class as status_class, sp.code, eu.is_anonym, eir.reference ';
 		$group_by = 'GROUP BY jecc.fnum ';
 
 		$already_joined_tables = [
@@ -1344,6 +1344,7 @@ class EmundusModelEvaluation extends JModelList
 			'u'    => 'jos_users',
 			'eu'   => 'jos_emundus_users',
 			'eta'  => 'jos_emundus_tag_assoc',
+			'eir'  => 'jos_emundus_internal_reference',
 		];
 
 		if (!empty($step_id))
@@ -1445,7 +1446,8 @@ class EmundusModelEvaluation extends JModelList
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.id = esc.program_id
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
-                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum ';
+                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum
+                    LEFT JOIN #__emundus_internal_reference as eir on eir.ccid=jecc.id and eir.active = 1';
 
 		if (!empty($step_id))
 		{
