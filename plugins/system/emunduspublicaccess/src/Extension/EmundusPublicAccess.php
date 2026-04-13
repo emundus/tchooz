@@ -67,6 +67,11 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	public const SESSION_PUBLIC_FNUM_KEY = 'emundus_public_fnum';
 
 	/**
+	 * Session key used to store the file short reference of the public file being accessed.
+	 */
+	public const SESSION_PUBLIC_SHORT_REF_KEY = 'emundus_public_short_ref';
+
+	/**
 	 * Session key used to store the plain token for the current public session.
 	 */
 	public const SESSION_PUBLIC_TOKEN_KEY = 'emundus_public_token';
@@ -95,14 +100,14 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	/**
 	 * Build a composite access key from a token and a fnum.
 	 *
-	 * @param   string  $token  The plain-text access token
-	 * @param   string  $fnum   The file number
+	 * @param   string  $token            The plain-text access token
+	 * @param   string  $short_reference  The file short reference
 	 *
-	 * @return  string  The composite key in the format <token>::<fnum>
+	 * @return  string  The composite key in the format <token>::<short_reference>
 	 */
-	public static function buildCompositeKey(string $token, string $fnum): string
+	public static function buildCompositeKey(string $token, string $short_reference): string
 	{
-		return $token . self::COMPOSITE_KEY_SEPARATOR . $fnum;
+		return $token . self::COMPOSITE_KEY_SEPARATOR . $short_reference;
 	}
 
 	/**
@@ -161,10 +166,10 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 					return;
 				}
 
-				// Parse composite key: <token>::<fnum>
-				$compositeKey = trim($input->post->getString('access_token', ''));
-				$accessToken  = '';
-				$fnum         = '';
+				// Parse composite key: <token>::<short_reference>
+				$compositeKey   = trim($input->post->getString('access_token', ''));
+				$accessToken    = '';
+				$shortReference = '';
 
 				if (!empty($compositeKey) && str_contains($compositeKey, self::COMPOSITE_KEY_SEPARATOR))
 				{
@@ -172,13 +177,13 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 					if (count($parts) === 2)
 					{
 						$accessToken = trim($parts[0]);
-						$fnum        = trim($parts[1]);
+						$shortReference        = trim($parts[1]);
 					}
 				}
 
-				if (!empty($accessToken) && !empty($fnum))
+				if (!empty($accessToken) && !empty($shortReference))
 				{
-					$this->authenticatePublicAccess($accessToken, $fnum);
+					$this->authenticatePublicAccess($accessToken, $shortReference);
 				}
 				else
 				{
@@ -204,7 +209,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 				else if ($uri->getVar('layout') !== 'storetoken' && $app->getMenu()->getActive()->link !== $storeTokenLink)
 				{
 					$items = $app->getMenu()->getItems(['link'], [$storeTokenLink]);
-					$redirectUrl = !empty($items) ? $items[0]->route : Route::_($storeTokenLink, false);
+					$redirectUrl = !empty($items) ? '/' . $items[0]->route : Route::_('/' . $storeTokenLink, false);
 					$app->redirect($redirectUrl);
 				}
 			}
@@ -223,6 +228,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 * @param   GenericEvent  $event
 	 *
 	 * @return void
+	 * @throws \Exception
 	 */
 	public function onAfterSubmitFile(GenericEvent $event): void
 	{
@@ -310,40 +316,40 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	/**
 	 * Validate a token + fnum pair and set up the public access session.
 	 *
-	 * @param   string  $accessToken  The plain-text access token from the URL
-	 * @param   string  $fnum         The fnum of the application file
+	 * @param   string  $accessToken    The plain-text access token from the URL
+	 * @param   string  $shortReference
 	 *
 	 * @return  void
 	 *
 	 * @since   1.0.0
 	 */
-	private function authenticatePublicAccess(string $accessToken, string $fnum): void
+	private function authenticatePublicAccess(string $accessToken, string $shortReference): void
 	{
 		try
 		{
 			$applicationFileRepository = new ApplicationFileRepository();
-			$applicationFile           = $applicationFileRepository->getByFnum($fnum);
+			$applicationFile           = $applicationFileRepository->getItemByField('short_reference', $shortReference, true);
 
 			if (empty($applicationFile))
 			{
 				Log::add(
-					'Public access attempt with unknown fnum: ' . $fnum,
+					'Public access attempt with unknown reference: ' . $shortReference,
 					Log::WARNING,
 					'plg_system_emunduspublicaccess'
 				);
 
-				return;
+				$this->destroyPublicSession();
 			}
 
 			if (!$applicationFile->isPublic())
 			{
 				Log::add(
-					'Public access attempt on non-public file: ' . $fnum,
+					'Public access attempt on non-public file: ' . $shortReference,
 					Log::WARNING,
 					'plg_system_emunduspublicaccess'
 				);
 
-				return;
+				$this->destroyPublicSession();
 			}
 
 			$accessRepository = new ApplicationFileAccessRepository();
@@ -352,12 +358,12 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			if (!$isValid)
 			{
 				Log::add(
-					'Public access attempt with invalid or expired token for fnum: ' . $fnum,
+					'Public access attempt with invalid or expired token for fnum: ' . $shortReference,
 					Log::WARNING,
 					'plg_system_emunduspublicaccess'
 				);
 
-				return;
+				$this->destroyPublicSession();
 			}
 
 			// Token is valid — set up the public access session
@@ -372,6 +378,8 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 				Log::ERROR,
 				'plg_system_emunduspublicaccess'
 			);
+
+			$this->destroyPublicSession();
 		}
 	}
 
@@ -435,6 +443,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 		// Mark the session as a public access session, scoped to this specific fnum
 		$session->set(self::SESSION_PUBLIC_ACCESS_KEY, true);
 		$session->set(self::SESSION_PUBLIC_FNUM_KEY, $applicationFile->getFnum());
+		$session->set(self::SESSION_PUBLIC_SHORT_REF_KEY, $applicationFile->getShortReference());
 		$session->set(self::SESSION_PUBLIC_TOKEN_KEY, $accessToken);
 		$session->set(self::SESSION_PUBLIC_CREATED_AT_KEY, time());
 
@@ -552,9 +561,10 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 		$input   = $app->getInput();
 
 		$sessionFnum = $session->get(self::SESSION_PUBLIC_FNUM_KEY, '');
+		$sessionShortRef = $session->get(self::SESSION_PUBLIC_SHORT_REF_KEY, '');
 		$savedToken  = $session->get(self::SESSION_PUBLIC_TOKEN_KEY, '');
 
-		if (empty($sessionFnum) || empty($savedToken))
+		if (empty($sessionFnum) || empty($savedToken) || empty($sessionShortRef))
 		{
 			$this->destroyPublicSession();
 
@@ -652,8 +662,10 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 
 		$session->clear(self::SESSION_PUBLIC_ACCESS_KEY);
 		$session->clear(self::SESSION_PUBLIC_FNUM_KEY);
+		$session->clear(self::SESSION_PUBLIC_SHORT_REF_KEY);
 		$session->clear(self::SESSION_PUBLIC_TOKEN_KEY);
 		$session->clear(self::SESSION_PUBLIC_CREATED_AT_KEY);
+		$session->clear(self::SESSION_PUBLIC_STORED_ACCESS_KEY);
 		$session->clear('emundusUser');
 		$session->destroy();
 
@@ -725,6 +737,18 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 		}
 
 		return $session->get(self::SESSION_PUBLIC_FNUM_KEY, null);
+	}
+
+	public static function getPublicAccessShortRef(): ?string
+	{
+		$session = Factory::getApplication()->getSession();
+
+		if (!$session->get(self::SESSION_PUBLIC_SHORT_REF_KEY, false))
+		{
+			return null;
+		}
+
+		return $session->get(self::SESSION_PUBLIC_SHORT_REF_KEY, null);
 	}
 }
 

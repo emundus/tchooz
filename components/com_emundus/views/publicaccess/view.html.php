@@ -29,11 +29,16 @@ class EmundusViewPublicaccess extends HtmlView
 	protected string $errorMessage = '';
 	protected bool $isAlreadyAuthenticated = false;
 
-	/** @var string Token d'accès pour le layout storetoken */
+	/**
+	 * @var string Token d'accès pour le layout storetoken
+	 */
 	protected string $accessToken = '';
 
-	/** @var string Fnum pour le layout storetoken */
-	protected string $storetokenFnum = '';
+	/**
+	 * @var string Référence courte du dossier
+	 */
+	protected string $shortReference = '';
+
 
 	/** @var string Clé composite <token>::<fnum> pour le layout storetoken */
 	protected string $compositeKey = '';
@@ -52,12 +57,24 @@ class EmundusViewPublicaccess extends HtmlView
 		$layout = $input->getString('layout', '');
 		$session = $app->getSession();
 
-		if ($layout === 'storetoken' && $session->get(EmundusPublicAccess::SESSION_PUBLIC_STORED_ACCESS_KEY, true))
+		if ($layout === 'storetoken')
 		{
-			// already stored token, redirect to default view
-			$this->setLayout('');
-			$layout = '';
-			$tpl = null;
+			if (!EmundusPublicAccess::isPublicAccessSession())
+			{
+				throw new Exception(Text::_('ACCESS_DENIED'));
+			}
+
+			if ($session->get(EmundusPublicAccess::SESSION_PUBLIC_STORED_ACCESS_KEY, true) === true)
+			{
+				// redirect with a message
+				$app->enqueueMessage(Text::_('COM_EMUNDUS_STORE_TOKEN_VIEW_NO_LONGER_AVAILABLE'), 'warning');
+				$app->redirect('/index.php?option=com_emundus&task=openfile&fnum=' . EmundusPublicAccess::getPublicAccessFnum());
+
+				// fallback if redirect fails
+				$this->setLayout('');
+				$layout = '';
+				$tpl = null;
+			}
 		}
 
 		if ($layout === 'storetoken')
@@ -94,18 +111,19 @@ class EmundusViewPublicaccess extends HtmlView
 		$session = $app->getSession();
 
 		$this->accessToken    = $session->get(EmundusPublicAccess::SESSION_PUBLIC_TOKEN_KEY, '');
-		$this->storetokenFnum = $session->get(EmundusPublicAccess::SESSION_PUBLIC_FNUM_KEY, '');
+		$this->shortReference = $session->get(EmundusPublicAccess::SESSION_PUBLIC_SHORT_REF_KEY, '');
+		$fnum                 = $session->get(EmundusPublicAccess::SESSION_PUBLIC_FNUM_KEY, '');
 		$this->renew          = $session->get(EmundusPublicAccess::RENEW_TOKEN_SESSION_KEY, false);
 
-		if (empty($this->accessToken) || empty($this->storetokenFnum))
+		if (empty($this->accessToken) || empty($this->shortReference) || empty($fnum))
 		{
 			// No token data in session, redirect to default view
 			$app->redirect(Route::_('index.php?option=com_emundus&view=publicaccess', false));
 		}
 
-		$this->compositeKey = EmundusPublicAccess::buildCompositeKey($this->accessToken, $this->storetokenFnum);
+		$this->compositeKey = EmundusPublicAccess::buildCompositeKey($this->accessToken, $this->shortReference);
 		$document = $app->getDocument();
-		$document->addScriptOptions('com_emundus.fnum', $this->storetokenFnum);
+		$document->addScriptOptions('storetoken.fnum', $fnum);
 		$wa = $document->getWebAssetManager();
 		$wa->registerAndUseScript(
 			'com_emundus.storetoken',

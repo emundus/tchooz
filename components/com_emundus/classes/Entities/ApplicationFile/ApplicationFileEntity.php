@@ -290,8 +290,8 @@ class ApplicationFileEntity
 			'updated_at'         => $this->updated_at?->format('Y-m-d H:i:s'),
 			'updated_by'         => $this->updated_by?->name,
 			'short_reference'    => $this->shortReference,
-			'anonymous'          => $this->isAnonymous() ? 1 : 0,
-			'public'             => $this->isPublic() ? 1 : 0,
+			'anonymous'          => $this->isAnonymous ? 1 : 0,
+			'public'             => $this->isPublic ? 1 : 0,
 		];
 	}
 }

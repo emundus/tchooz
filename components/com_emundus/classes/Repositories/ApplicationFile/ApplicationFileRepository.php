@@ -52,6 +52,11 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 		$this->factory = new ApplicationFileFactory();
 	}
 
+	public function getFactory(): ?object
+	{
+		return $this->factory;
+	}
+
 	/**
 	 * @param   array  $filters
 	 *

@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('continue-btn').addEventListener('click', function() {
 		if (copiedItems.token)
 		{
-			window.location.href = '/index.php?option=com_emundus&task=openfile&fnum=' + Joomla.getOptions('com_emundus.fnum');
+			window.location.href = '/index.php?option=com_emundus&task=openfile&fnum=' + Joomla.getOptions('storetoken.fnum');
 		}
 		else
 		{

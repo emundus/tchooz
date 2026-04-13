@@ -25,11 +25,13 @@ use \setasign\Fpdi\Fpdi;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\ApplicationFile\StatusEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Export\ExportRepository;
 use Tchooz\Services\FileSecurityService;
@@ -2465,7 +2467,9 @@ class EmundusController extends JControllerLegacy
 				{
 					$systemUser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($systemUserId);
 					$applicationRepository = new ApplicationFileRepository();
-					$applicationEntity = new ApplicationFileEntity($systemUser, '', 0, $campaignId);
+					$statusRepository = new StatusRepository();
+					$status = $statusRepository->getByStep(0);
+					$applicationEntity = new ApplicationFileEntity($systemUser, '', $status, $campaignId);
 					if ($applyAnonymously)
 					{
 						$applicationEntity->setIsAnonymous(true);
@@ -2478,6 +2482,11 @@ class EmundusController extends JControllerLegacy
 						throw new \RuntimeException(Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_FAILED'));
 					}
 
+					if (empty($applicationEntity->getFnum()) || empty($applicationEntity->getShortReference()))
+					{
+						throw new \Exception();
+					}
+
 					$fileAccessRepository = new ApplicationFileAccessRepository();
 					$token = $fileAccessRepository->generateAccessFileToken($applicationEntity);
 
@@ -2486,6 +2495,7 @@ class EmundusController extends JControllerLegacy
 						$session = $this->app->getSession();
 						$session->set(EmundusPublicAccess::SESSION_PUBLIC_ACCESS_KEY, true);
 						$session->set(EmundusPublicAccess::SESSION_PUBLIC_FNUM_KEY, $applicationEntity->getFnum());
+						$session->set(EmundusPublicAccess::SESSION_PUBLIC_SHORT_REF_KEY, $applicationEntity->getShortReference());
 						$session->set(EmundusPublicAccess::SESSION_PUBLIC_TOKEN_KEY, $token);
 						$session->set(EmundusPublicAccess::SESSION_PUBLIC_STORED_ACCESS_KEY, false);
 

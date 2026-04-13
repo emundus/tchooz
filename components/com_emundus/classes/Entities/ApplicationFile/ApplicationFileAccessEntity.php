@@ -4,8 +4,7 @@ namespace Tchooz\Entities\ApplicationFile;
 
 class ApplicationFileAccessEntity
 {
-	public const TOKEN_LENGTH = 32;
-
+	public const TOKEN_LENGTH = 24;
 	public function __construct(
 		private int $id,
 		private int $applicationId,
