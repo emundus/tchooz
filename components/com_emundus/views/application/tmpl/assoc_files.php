@@ -7,7 +7,7 @@ Factory::getApplication()->getSession()->set('application_layout', 'assoc_files'
 
 if ($this->applicationFile->isAnonymous())
 {
-    $this->assoc_files = [];
+    $this->assoc_files = null;
 }
 
 if (!empty((array) $this->assoc_files)) :
