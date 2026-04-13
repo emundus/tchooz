@@ -52,7 +52,7 @@ class EmundusViewApplication extends HtmlView
 	protected int $campaign_id;
 
 	protected object $synthesis;
-	protected object $assoc_files;
+	protected ?object $assoc_files;
 
 	protected array $columns;
 	protected array $userAttachments;
