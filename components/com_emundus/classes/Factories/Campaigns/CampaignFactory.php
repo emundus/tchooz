@@ -127,7 +127,7 @@ class CampaignFactory implements DBFactory
 			files_count: isset($dbObject->files_count) ? (int) $dbObject->files_count : 0,
 			createdBy: isset($dbObject->user) ? (int) $dbObject->user : 0,
 			isPublic: isset($dbObject->public) && $dbObject->public == 1,
-			anonymizationPolicy: AnonymizationPolicyEnum::tryFrom($dbObject->anonymization_policy ?? AnonymizationPolicyEnum::FORBIDDEN)
+			anonymizationPolicy: AnonymizationPolicyEnum::tryFrom($dbObject->anonymization_policy ?? AnonymizationPolicyEnum::FORBIDDEN->value)
 			?? AnonymizationPolicyEnum::FORBIDDEN,
 		);
 	}
