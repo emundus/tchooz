@@ -62,7 +62,7 @@ assert($applicationFile instanceof ApplicationFileEntity);
         max-width: 75%;
     }
 
-    .mod_emundus_flow___infos * {
+    .mod_emundus_flow___infos *:not(.material-symbols-outlined) {
         font-family: var(--em-profile-font);
     }
 
@@ -209,6 +209,23 @@ assert($applicationFile instanceof ApplicationFileEntity);
     </div>
 	<?php if ($show_deadline == 1 || $show_status == 1) : ?>
         <div class="tw-flex tw-flex-col tw-mt-2 mod_emundus_flow___infos">
+            <?php if ($isShowToApplicant) : ?>
+                <div class="tw-flex tw-items-center em-flex-wrap">
+                    <p class="em-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_REFERENCE'); ?> : </p>
+                    <div class="tw-flex tw-items-end tw-gap-1"
+                         title="<?= (!empty($current_application->reference) ? $current_application->reference : '') . '#' . (!empty($current_application->short_reference) ? $current_application->short_reference : ''); ?>"
+                    >
+                        <?php if (!empty($current_application->reference)) : ?>
+                            <label class="tw-mb-0"><?= $current_application->reference; ?></label>
+                        <?php endif; ?>
+                        <?php if (!empty($current_application->short_reference)) : ?>
+                            <span class="<?= !empty($current_application->reference) ? 'tw-text-sm tw-text-neutral-500' : ''; ?>">#<?= $current_application->short_reference; ?></span>
+                        <?php endif; ?>
+                        <span id="copy_reference_<?php echo $current_application->id; ?>" class="material-symbols-outlined !tw-text-base tw-cursor-pointer" onclick="copyReference('<?= $current_application->reference . '#' . $current_application->short_reference; ?>')">content_copy</span>
+                    </div>
+                </div>
+            <?php endif; ?>
+
 			<?php if ($show_deadline == 1) : ?>
                 <div class="tw-flex tw-items-center">
                     <p class="em-text-neutral-600 em-font-size-16"> <?php echo Text::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
@@ -314,5 +331,20 @@ if (!empty($campaign_languages) && !in_array($current_lang_id, $campaign_languag
 <script>
     function saveAndExit() {
         document.getElementsByClassName('fabrikForm')[0].submit();
+    }
+
+    function copyReference(reference) {
+        // Copy to clipboard
+        navigator.clipboard.writeText(reference);
+        Swal.fire({
+            title: '<?php echo Text::_('MOD_EMUNDUS_FLOW_REFERENCE_CLIPBOARD'); ?>',
+            icon: 'success',
+            showConfirmButton: false,
+            customClass: {
+                title: 'em-swal-title',
+                actions: 'em-swal-single-action',
+            },
+            timer: 1500,
+        });
     }
 </script>

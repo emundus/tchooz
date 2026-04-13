@@ -642,10 +642,29 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                                             </a>
 														<?php endif; ?>
 														<?php if ($show_fnum) : ?>
-                                                            <div class="em-mb-8">
-                                                                <span
-                                                                    class="em-applicant-default-font em-text-neutral-600">N°<?php echo $application->fnum ?></span>
-                                                            </div>
+                                                            <?php if($isShowToApplicant) : ?>
+                                                                <div class="tw-flex tw-items-center tw-gap-1">
+                                                                    <span class="tw-font-semibold"><?php echo Text::_('MOD_EMUNDUS_APPLICATION_REFERENCE'); ?></span>
+                                                                    <div class="tw-flex tw-items-end tw-gap-1"
+                                                                         title="<?= (!empty($application->reference) ? $application->reference : '') . '#' . (!empty($application->short_reference) ? $application->short_reference : ''); ?>"
+                                                                    >
+                                                                        <?php if (!empty($application->reference)) : ?>
+                                                                            <label class="tw-mb-0"><?= $application->reference; ?></label>
+                                                                        <?php endif; ?>
+                                                                        <?php if (!empty($application->short_reference)) : ?>
+                                                                            <span class="<?= !empty($application->reference) ? 'tw-text-sm tw-text-neutral-500' : ''; ?>">#<?= $application->short_reference; ?></span>
+                                                                        <?php endif; ?>
+                                                                        <span id="copy_reference_<?php echo $application->id; ?>" class="material-symbols-outlined !tw-text-base tw-cursor-pointer" onclick="copyReference('<?= $application->reference . '#' . $application->short_reference; ?>')">content_copy</span>
+                                                                    </div>
+                                                                </div>
+                                                            <?php else: ?>
+                                                                <div class="em-mb-8">
+                                                                    <span
+                                                                        class="em-applicant-default-font em-text-neutral-600">
+                                                                        N°<?php echo $application->fnum ?>
+                                                                    </span>
+                                                                </div>
+                                                            <?php endif; ?>
 														<?php endif; ?>
                                                         <?php if ($show_application_choices == 1) 
                                                         {
@@ -1369,7 +1388,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
     function openFile(e, url) {
         let target = e.target.id
 
-        if (target.indexOf('actions_button_') !== -1 || target.indexOf('actions_block_delete_') !== -1) {
+        if (target.indexOf('actions_button_') !== -1 || target.indexOf('actions_block_delete_') !== -1 || target.indexOf('copy_reference_') !== -1) {
             //do nothing
         } else {
             window.location.href = '/' + url
@@ -2139,6 +2158,21 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                 })
             }
         })
+    }
+
+    function copyReference(reference) {
+        // Copy to clipboard
+        navigator.clipboard.writeText(reference);
+        Swal.fire({
+            title: '<?php echo Text::_('MOD_EMUNDUS_APPLICATION_REFERENCE_COPIED_TO_CLIPBOARD'); ?>',
+            icon: 'success',
+            showConfirmButton: false,
+            customClass: {
+                title: 'em-swal-title',
+                actions: 'em-swal-single-action',
+            },
+            timer: 1500,
+        });
     }
 </script>
 

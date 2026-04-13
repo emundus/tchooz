@@ -1,16 +1,16 @@
 <?php
 
-namespace Unit\Component\Emundus\Class\Repositories\ExternalReference;
+namespace Unit\Component\Emundus\Class\Repositories\Reference;
 
 use Joomla\Tests\Unit\UnitTestCase;
-use Tchooz\Repositories\ExternalReference\ExternalReferenceRepository;
-use Tchooz\Entities\ExternalReference\ExternalReferenceEntity;
+use Tchooz\Repositories\Reference\ExternalReferenceRepository;
+use Tchooz\Entities\Reference\ExternalReferenceEntity;
 
 /**
  * @package     Unit\Component\Emundus\Class\Repositories\ExternalReference
  *
  * @since       version 1.0.0
- * @covers      \Tchooz\Repositories\ExternalReference\ExternalReferenceRepository
+ * @covers      \Tchooz\Repositories\Reference\ExternalReferenceRepository
  */
 class ExternalReferenceRepositoryTest extends UnitTestCase
 {
@@ -20,12 +20,11 @@ class ExternalReferenceRepositoryTest extends UnitTestCase
 	{
 		parent::setUp();
 
-
 		$this->repository = new ExternalReferenceRepository();
 	}
 
 	/**
-	 * @covers Tchooz\Repositories\ExternalReference\ExternalReferenceRepository::flush
+	 * @covers \Tchooz\Repositories\Reference\ExternalReferenceRepository::flush
 	 * @return void
 	 */
 	public function testFlush(): void
@@ -40,7 +39,7 @@ class ExternalReferenceRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers Tchooz\Repositories\ExternalReference\ExternalReferenceRepository::getById
+	 * @covers \Tchooz\Repositories\Reference\ExternalReferenceRepository::getById
 	 * @return void
 	 */
 	public function testGetById(): void
@@ -61,7 +60,7 @@ class ExternalReferenceRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers Tchooz\Repositories\ExternalReference\ExternalReferenceRepository::get
+	 * @covers \Tchooz\Repositories\Reference\ExternalReferenceRepository::get
 	 * @return void
 	 */
 	public function testGet(): void

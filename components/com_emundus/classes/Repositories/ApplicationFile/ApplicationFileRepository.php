@@ -5,14 +5,12 @@ namespace Tchooz\Repositories\ApplicationFile;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 use Tchooz\Attributes\TableAttribute;
-use Tchooz\Entities\ApplicationFile\ApplicationFileAccessEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
-use Tchooz\Entities\Fabrik\FabrikElementEntity;
+use Tchooz\Entities\ApplicationFile\StatusEntity;
 use Tchooz\Factories\ApplicationFile\ApplicationFileFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
@@ -33,6 +31,7 @@ use Tchooz\Traits\TraitDispatcher;
 		'user_id',
 		'form_progress',
 		'attachment_progress',
+		'short_reference',
 		'public',
 		'anonymous',
 	]
@@ -156,6 +155,30 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 		return $applicationFileEntity;
 	}
 
+	public function checkShortReferenceExists(string $short_reference): bool
+	{
+		$this->query->clear()
+			->select('COUNT(*)')
+			->from($this->db->quoteName($this->tableName))
+			->where($this->db->quoteName('short_reference') . ' = :short_reference')
+			->bind(':short_reference', $short_reference);
+		$this->db->setQuery($this->query);
+
+		return (int) $this->db->loadResult() > 0;
+	}
+
+	public function getIdByFnum(string $fnum): ?int
+	{
+		$this->query->clear()
+			->select('id')
+			->from('#__emundus_campaign_candidature')
+			->where('fnum = :fnum')
+			->bind(':fnum', $fnum);
+		$this->db->setQuery($this->query);
+
+		return (int) $this->db->loadResult() ?: null;
+	}
+
 	public function getByFnum(string $fnum): ?ApplicationFileEntity
 	{
 		$applicationFileEntity = null;
@@ -249,19 +272,25 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 			}
 			else
 			{
-				// Update application file
-				$campaign_candidature = (object) [
+				$status = $applicationFileEntity->getStatus() instanceof StatusEntity ? $applicationFileEntity->getStatus()->getStep() : $applicationFileEntity->getStatus();
+				$data = (object) [
 					'id'                  => $applicationFileEntity->getId(),
 					'applicant_id'        => $applicationFileEntity->getUser()->id,
-					'published'           => $applicationFileEntity->getPublished(),
-					'campaign_id'         => $applicationFileEntity->getCampaign()->getId(),
+					'status'              => $status,
+					'campaign_id'         => $applicationFileEntity->getCampaignId(),
 					'date_submitted'      => $applicationFileEntity->getDateSubmitted()?->format('Y-m-d H:i:s'),
+					'published'           => $applicationFileEntity->getPublished(),
 					'form_progress'       => $applicationFileEntity->getFormProgress(),
 					'attachment_progress' => $applicationFileEntity->getAttachmentProgress(),
+					'short_reference'     => $applicationFileEntity->getShortReference(),
 					'anonymous'           => $applicationFileEntity->isAnonymous() ? 1 : 0,
 					'public'              => $applicationFileEntity->isPublic() ? 1 : 0,
 				];
-				$flushed              = $this->db->updateObject('#__emundus_campaign_candidature', $campaign_candidature, 'id');
+
+				if (!$this->db->updateObject('#__emundus_campaign_candidature', $data, 'id'))
+				{
+					throw new \Exception('Failed to update campaign candidature');
+				}
 			}
 
 			if (!empty($applicationFileEntity->getData()))
@@ -274,6 +303,8 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 					}
 				}
 			}
+
+			$flushed = true;
 		}
 		catch (\Exception $e)
 		{
@@ -330,13 +361,14 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 		if (empty($ccid))
 		{
+			$status = $applicationFileEntity->getStatus() instanceof StatusEntity ? $applicationFileEntity->getStatus()->getStep() : $applicationFileEntity->getStatus();
 			$campaign_candidature = [
 				'date_time'           => date('Y-m-d H:i:s'),
 				'applicant_id'        => $applicationFileEntity->getUser()->id,
 				'user_id'             => $user_id,
 				'campaign_id'         => $applicationFileEntity->getCampaignId(),
 				'fnum'                => $applicationFileEntity->getFnum(),
-				'status'              => $applicationFileEntity->getStatus(),
+				'status'              => $status,
 				'published'           => $applicationFileEntity->getPublished(),
 				'form_progress'       => 0,
 				'attachment_progress' => 0,

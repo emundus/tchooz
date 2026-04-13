@@ -1,8 +1,8 @@
 <?php
 
-namespace Tchooz\Factories\ExternalReference;
+namespace Tchooz\Factories\Reference;
 
-use Tchooz\Entities\ExternalReference\ExternalReferenceEntity;
+use Tchooz\Entities\Reference\ExternalReferenceEntity;
 
 class ExternalReferenceFactory
 {

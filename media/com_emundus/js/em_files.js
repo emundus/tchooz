@@ -4326,6 +4326,31 @@ $(document).ready(function() {
                 });
                 break;
 
+            case 'custom_reference':
+                fnums = getUserCheckArray();
+
+                swal_popup_class = 'em-w-auto';
+                swal_show_confirm_button = false;
+                swal_show_cancel_button = false;
+                title = 'COM_EMUNDUS_ACCESS_GENERATE_REFERENCE';
+                html = '<div id="data" class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-min-w-[20vw] tw-min-h-[20vh]"><div id="generate-reference-loader" class="em-loader"></div><span id="generate-reference-loader-message" class="tw-mt-1">' + Joomla.Text._('COM_EMUNDUS_CUSTOM_REFERENCE_ACCESS_LOADER') + '</span></div>';
+
+                // Replace by fetch
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({fnums: fnums}),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    cache: "no-cache"
+                }).then(response => response.text()).then(data => {
+                    document.getElementById("generate-reference-loader").remove();
+                    document.getElementById("generate-reference-loader-message").remove();
+                    document.getElementById("data").classList.remove('tw-justify-center');
+                    $('#data').append(data);
+                });
+                break;
+
             case 'crm':
                 multipleSteps = true;
                 break;

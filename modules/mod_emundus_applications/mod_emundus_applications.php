@@ -16,7 +16,10 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Providers\DateProvider;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
+use Tchooz\Services\Reference\InternalReferenceService;
 
 if (EmundusPublicAccess::isPublicAccessSession())
 {
@@ -35,7 +38,10 @@ else
 	Text::script('CANCEL');
 }
 
-include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+if(!class_exists('EmundusModelProfile'))
+{
+	include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+}
 $m_profile = new EmundusModelProfile();
 
 $app = Factory::getApplication();
@@ -69,13 +75,30 @@ else
 if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!empty($specific_profiles) && in_array($user->profile, $specific_profiles)))
 {
 	require_once dirname(__FILE__) . '/helper.php';
-	include_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
-	include_once(JPATH_ROOT . '/components/com_emundus/helpers/list.php');
-	require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
-	include_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
-	include_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
-	include_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
-	include_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+	if (!class_exists('EmundusModelApplication'))
+	{
+		require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
+	}
+	if (!class_exists('EmundusHelperList'))
+	{
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/list.php');
+	}
+	if (!class_exists('EmundusHelperAccess'))
+	{
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+	}
+	if (!class_exists('EmundusModelEmails'))
+	{
+		include_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+	}
+	if (!class_exists('EmundusModelFiles'))
+	{
+		include_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+	}
+	if (!class_exists('EmundusModelWorkflow'))
+	{
+		include_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+	}
 	$m_application = new EmundusModelApplication();
 
 	$displayImportPublicFilesAction = false;
@@ -98,19 +121,20 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
 	$eMConfig = ComponentHelper::getParams('com_emundus');
 
-	// Vérifier si il s'agit d'une session  anonyme et ci celles ci sont autorisés
 	$is_anonym_user = $user->anonym;
-	if (!class_exists('EmundusModelSettings'))
-	{
-		require_once JPATH_ROOT . '/components/com_emundus/models/settings.php';
-	}
-	$m_settings         = new EmundusModelSettings();
-	$addon_status       = $m_settings->getAddonStatus('anonymous');
-	$allow_anonym_files = $addon_status['enabled'];
-	if ($is_anonym_user && !$allow_anonym_files)
+	$addonRepository = new AddonRepository();
+	$anonymousAddon = $addonRepository->getByName('anonymous');
+	if ($is_anonym_user && !$anonymousAddon->getValue()->isEnabled())
 	{
 		return;
 	}
+
+	$internalReferenceService    = new InternalReferenceService(
+		new DateProvider(),
+		new ApplicationFileRepository()
+	);
+	$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity();
+	$isShowToApplicant = $customReferenceFormatEntity->isShowToApplicant();
 
 	$status_for_send   = explode(',', $eMConfig->get('status_for_send', 0));
 	$status_for_delete = $eMConfig->get('status_for_delete', 0);

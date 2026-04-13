@@ -1342,6 +1342,13 @@ Text::script('COM_EMUNDUS_UPDATE_OWNER_ERROR');
 Text::script('COM_EMUNDUS_UPDATE_OWNER_FILES_WILL_BE_TRANSFERED');
 Text::script('COM_EMUNDUS_UPDATE_OWNER_FILES_WILL_BE_TRANSFERED_SUBTEXT');
 
+Text::script('COM_EMUNDUS_ACCESS_GENERATE_REFERENCE');
+Text::script('COM_EMUNDUS_CUSTOM_REFERENCE_CONFIRM_SAVE');
+Text::script('COM_EMUNDUS_ACTUAL_REFERENCE');
+Text::script('COM_EMUNDUS_NEW_REFERENCE');
+Text::script('COM_EMUNDUS_CUSTOM_REFERENCE_ACCESS_LOADER');
+Text::script('COM_EMUNDUS_CUSTOM_REFERENCE_GENERATE_DESC');
+
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
 foreach ($actionlog_translation_tags as $tag => $translation)

@@ -289,7 +289,7 @@
 				style="box-shadow: none"
 				:class="errors[parameter.param] ? 'tw-rounded-lg !tw-border-red-500' : ''"
 				:max="parameter.type === 'number' ? parameter.max : null"
-				:min="undefined"
+				:min="parameter.type === 'number' ? parameter.min : undefined"
 				:step="parameter.type === 'number' ? parameter.step : null"
 				:pattern="parameter.pattern && parameter.pattern.length > 0 ? parameter.pattern : null"
 				v-maska="parameter.mask ? parameter.mask : null"

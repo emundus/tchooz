@@ -266,7 +266,7 @@ class EmundusControllerTest extends TestCase
 			'method' => [$mockAttribute],
 			'class'  => []
 		]);
-		$refMethod                                = new \ReflectionMethod($this->controller, 'enforceAccess');
+		$refMethod = new \ReflectionMethod($this->controller, 'enforceAccess');
 		$refMethod->setAccessible(true);
 		$this->expectException('Symfony\\Component\\OptionsResolver\\Exception\\AccessException');
 		$refMethod->invoke($this->controller, $this->controller, 'dummyMethod');

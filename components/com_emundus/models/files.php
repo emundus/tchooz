@@ -374,6 +374,7 @@ class EmundusModelFiles extends JModelLegacy
 		if (in_array('tags', $em_other_columns)) {
 			$this->_elements_default[] = ' GROUP_CONCAT(DISTINCT eta.id_tag) as id_tag ';
 		}
+
 		if (empty($col_elt)) {
 			$col_elt = array();
 		}
@@ -686,9 +687,9 @@ class EmundusModelFiles extends JModelLegacy
 			$em_other_columns = array();
 		}
 
-		$select = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, ' .
+		$select = 'select jecc.fnum, jecc.short_reference, ss.step, ss.value as status, ss.class as status_class, ' .
 			'CASE WHEN eu.is_anonym = 1 OR jecc.anonymous = 1 THEN "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" ELSE concat(upper(trim(eu.lastname)), " ", eu.firstname) END AS name, ' .
-			'jecc.applicant_id, jecc.campaign_id, eu.is_anonym, jecc.anonymous ';
+			'jecc.applicant_id, jecc.campaign_id, eu.is_anonym, jecc.anonymous,  eir.reference ';
 
 		// prevent double left join on query
 		$already_joined_tables = [
@@ -700,7 +701,8 @@ class EmundusModelFiles extends JModelLegacy
 			'sp'   => 'jos_emundus_setup_programmes',
 			'u'    => 'jos_users',
 			'eu'   => 'jos_emundus_users',
-			'eta'  => 'jos_emundus_tag_assoc'
+			'eta'  => 'jos_emundus_tag_assoc',
+			'eir'  => 'jos_emundus_internal_reference',
 		];
 
 		if (in_array('unread_messages', $em_other_columns)) {
@@ -790,7 +792,8 @@ class EmundusModelFiles extends JModelLegacy
                     LEFT JOIN #__emundus_setup_programmes as sp on sp.id = esc.program_id
                     LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
-                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
+                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum
+                    LEFT JOIN #__emundus_internal_reference as eir on eir.ccid=jecc.id and eir.active = 1';
 
 		if (in_array('unread_messages', $em_other_columns)) {
 			$query .= ' LEFT JOIN #__emundus_chatroom as ec on ec.fnum = jecc.fnum
@@ -1966,7 +1969,20 @@ class EmundusModelFiles extends JModelLegacy
 							$onAfterStatusChange = new GenericEvent(
 								'onAfterStatusChange',
 								// Datas to pass to the event
-								['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]
+								[
+									'fnum'      => $fnum,
+									'state'     => $state,
+									'old_state' => $old_status_step,
+									'context'   => new EventContextEntity(
+										Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id),
+										[$fnum],
+										[$fnumInfos['applicant_id']],
+										[
+											onAfterStatusChangeDefinition::STATUS_PARAMETER     => $state,
+											onAfterStatusChangeDefinition::OLD_STATUS_PARAMETER => $old_status_step
+										]
+									),
+								]
 							);
 
 							// Dispatch the event
@@ -2228,7 +2244,7 @@ class EmundusModelFiles extends JModelLegacy
 
 		try {
 			$query = $this->_db->getQuery(true);
-			$query->select('cc.id as ccid, u.name, u.email, u.username, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id, eu.is_anonym, cc.anonymous')
+			$query->select('cc.id as ccid, u.name, u.email, u.username, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id, eu.is_anonym, cc.anonymous,  cc.short_reference')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->_db->quoteName('c.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
 				->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('cc.applicant_id'))

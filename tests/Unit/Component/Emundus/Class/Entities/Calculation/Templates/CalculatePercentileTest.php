@@ -38,7 +38,8 @@ class CalculatePercentileTest extends UnitTestCase
 
 	/**
 	 * Test the calculation of the 25th percentile for a set of values.
-	 * @covers Tchooz\Services\Calculation\CalculationEngine::execute, Tchooz\Entities\Calculation\Templates\CalculatePercentile::getExpressionFunction
+	 * @covers Tchooz\Services\Calculation\CalculationEngine::execute
+	 * @covers Tchooz\Entities\Calculation\Templates\CalculatePercentile::getExpressionFunction
 	 */
 	public function test25thPercentileSalary(): void
 	{
@@ -64,7 +65,8 @@ class CalculatePercentileTest extends UnitTestCase
 
 	/**
 	 * Test the calculation of the 75th percentile for a set of values.
-	 * @covers Tchooz\Services\Calculation\CalculationEngine::execute, Tchooz\Entities\Calculation\Templates\CalculatePercentile::getExpressionFunction
+	 * @covers Tchooz\Services\Calculation\CalculationEngine::execute
+	 * @covers Tchooz\Entities\Calculation\Templates\CalculatePercentile::getExpressionFunction
 	 */
 	public function test75thPercentileSalary(): void
 	{
