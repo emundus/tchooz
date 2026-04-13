@@ -12,4 +12,5 @@ enum EmundusColumnTypeEnum: string
 	case JSON = 'JSON';
 	case TINYINT = 'TINYINT';
 	case BLOB = 'BLOB';
+	case DECIMAL = 'DECIMAL';
 }

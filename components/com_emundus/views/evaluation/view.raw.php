@@ -15,6 +15,11 @@ jimport('joomla.application.component.view');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Providers\DateProvider;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Settings\ConfigurationRepository;
+use Tchooz\Services\Reference\InternalReferenceFormat;
+use Tchooz\Services\Reference\InternalReferenceService;
 
 /**
  * HTML View class for the Emundus Component
@@ -110,6 +115,11 @@ class EmundusViewEvaluation extends JViewLegacy
 		$layout                  = $jinput->getString('layout', 0);
 
 		$m_files = new EmundusModelFiles();
+		$internalReferenceService = new InternalReferenceService(
+			new DateProvider(),
+			new ApplicationFileRepository()
+		);
+		$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity();
 
 		switch ($layout)
 		{
@@ -395,6 +405,10 @@ class EmundusViewEvaluation extends JViewLegacy
 								$userObj->user->name = $user['is_anonym'] == 1 ? $value : $user['name'];
 								$userObj->unread_messages = !empty($unread_messages) ? $unread_messages[$value] : '';
 								$userObj->user->email = $user['is_anonym'] == 1 ? Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') : $userObj->user->email;
+
+								$userObj->showReference = $customReferenceFormatEntity->isShowInFiles();
+								$userObj->shortReference = $user['short_reference'];
+								$userObj->reference = $user['reference'];
 
 								$line['fnum']        = $userObj;
 

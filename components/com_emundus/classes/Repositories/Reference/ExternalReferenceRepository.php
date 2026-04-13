@@ -1,10 +1,10 @@
 <?php
 
-namespace Tchooz\Repositories\ExternalReference;
+namespace Tchooz\Repositories\Reference;
 
 use Tchooz\Attributes\TableAttribute;
-use Tchooz\Entities\ExternalReference\ExternalReferenceEntity;
-use Tchooz\Factories\ExternalReference\ExternalReferenceFactory;
+use Tchooz\Entities\Reference\ExternalReferenceEntity;
+use Tchooz\Factories\Reference\ExternalReferenceFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
 

@@ -719,4 +719,61 @@ export default {
 			};
 		}
 	},
+	async getCustomReferenceFormat() {
+		try {
+			return await fetchClient.get('getcustomreferenceformat');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+				data: null,
+			};
+		}
+	},
+	async saveCustomReference(mappingData, form) {
+		if (typeof mappingData.target_object === 'object' && mappingData.target_object !== null) {
+			mappingData.target_object = mappingData.target_object.value;
+		}
+
+		if (mappingData.params) {
+			// foreach param entries, if param is an object, get its value
+			Object.entries(mappingData.params).forEach(([key, param]) => {
+				if (typeof param === 'object' && param !== null) {
+					mappingData.params[key] = param.value;
+				}
+			});
+		}
+
+		if (!mappingData.blocks) {
+			return {
+				status: false,
+				msg: 'NO_BLOCKS_PROVIDED',
+				data: null,
+			};
+		}
+
+		mappingData.blocks.map((block) => {
+			// if source_field is an object, get its value
+			if (typeof block.source_field === 'object' && block.source_field !== null) {
+				block.source_field = block.source_field.value;
+			}
+
+			return block;
+		});
+
+		// Rename blocks key to rows for backward compatibility with mapping format
+		mappingData.rows = mappingData.blocks;
+
+		try {
+			return await fetchClient.post('savecustomreference', {
+				mapping: JSON.stringify(mappingData),
+				...form,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
 };

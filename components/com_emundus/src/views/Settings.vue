@@ -71,6 +71,7 @@ import Swal from 'sweetalert2';
 import { useSettingsStore } from '@/stores/settings.js';
 import menus from '@/assets/data/settings/menus.js';
 import settingsService from '@/services/settings.js';
+import { useMappingStore } from '@/stores/mapping.js';
 
 export default {
 	name: 'globalSettings',

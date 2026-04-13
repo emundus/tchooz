@@ -181,7 +181,19 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                                                     <?php endif; ?>
                                                                 </span>
                                                                 <div class="em_list_email"><?= $value->user->email; ?></div>
-                                                                <div class="em_list_email"><?= $value->user->id; ?></div>
+                                                                <div class="em_list_user_id"><?= $value->user->id; ?></div>
+                                                                <?php if ($value->showReference) : ?>
+                                                                    <div class="tw-flex tw-items-end tw-gap-1 tw-whitespace-nowrap"
+                                                                         title="<?= (!empty($value->reference) ? $value->reference : '') . '#' . (!empty($value->shortReference) ? $value->shortReference : ''); ?>"
+                                                                    >
+                                                                        <?php if (!empty($value->reference)) : ?>
+                                                                            <label class="tw-mb-0"><?= $value->reference; ?></label>
+                                                                        <?php endif; ?>
+                                                                        <?php if (!empty($value->shortReference)) : ?>
+                                                                            <span class="tw-text-sm tw-text-neutral-500">#<?= $value->shortReference; ?></span>
+                                                                        <?php endif; ?>
+                                                                    </div>
+                                                                <?php endif; ?>
 															<?php endif; ?>
                                                         </div>
                                                     </div>

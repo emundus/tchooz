@@ -29,9 +29,17 @@ use Symfony\Component\OptionsResolver\Exception\AccessException;
 use Tchooz\Attributes\AccessAttribute;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
+use Tchooz\Entities\Settings\ConfigurationEntity;
 use Tchooz\Entities\User\UserCategoryEntity;
 use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Enums\CrudEnum;
+use Tchooz\Enums\Reference\PositionEnum;
+use Tchooz\Enums\Reference\ResetTypeEnum;
+use Tchooz\Enums\Reference\SeparatorEnum;
+use Tchooz\Factories\Mapping\MappingFactory;
+use Tchooz\Providers\DateProvider;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
@@ -41,12 +49,20 @@ use Tchooz\Repositories\Emails\TagRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
+use Tchooz\Repositories\Settings\ConfigurationRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
 use Tchooz\Repositories\CountryRepository;
 use Tchooz\EmundusResponse;
 use Tchooz\Services\Addons\AddonHandlerResolver;
 use Tchooz\Services\Addons\EmundusAnalyticsAddonHandler;
+use Tchooz\Services\Reference\InternalReferenceFormatSequence;
+use Tchooz\Services\Reference\InternalReferenceService;
+use Tchooz\Services\Transformation\TransformationsRegistry;
 use Tchooz\Services\UploadService;
+use Tchooz\Services\Automation\ConditionRegistry;
+use Tchooz\Services\Mapping\MappingTransformationsRegistry;
+use Tchooz\Services\Reference\InternalReferenceFormat;
+use Tchooz\Services\Reference\InternalReferenceFormatBlock;
 use Tchooz\Synchronizers\NumericSign\DocaposteSynchronizer;
 use Tchooz\Synchronizers\NumericSign\DocuSignSynchronizer;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
@@ -79,13 +95,15 @@ class EmundusControllersettings extends EmundusController
 	public function getstatus(): EmundusResponse
 	{
 		$status = $this->m_settings->getStatus();
+
 		return EmundusResponse::ok($status);
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
 	public function gettags(): EmundusResponse
 	{
-		$tags     = $this->m_settings->getTags();
+		$tags = $this->m_settings->getTags();
+
 		return EmundusResponse::ok($tags);
 	}
 
@@ -109,7 +127,7 @@ class EmundusControllersettings extends EmundusController
 	public function deletetag(): void
 	{
 		$id = $this->input->getInt('id');
-		if(empty($id))
+		if (empty($id))
 		{
 			throw new InvalidArgumentException('Tag ID is required');
 		}
@@ -122,7 +140,7 @@ class EmundusControllersettings extends EmundusController
 	{
 		$id   = $this->input->getInt('id');
 		$step = $this->input->getInt('step');
-		if(empty($id) || empty($step))
+		if (empty($id) || empty($step))
 		{
 			throw new InvalidArgumentException('Status ID and step are required');
 		}
@@ -136,13 +154,13 @@ class EmundusControllersettings extends EmundusController
 		$status = $this->input->getInt('status');
 		$label  = $this->input->getString('label');
 		$color  = $this->input->getString('color');
-		if(empty($status))
+		if (empty($status))
 		{
 			throw new InvalidArgumentException('Status ID is required');
 		}
 
 		$results = $this->m_settings->updateStatus($status, $label, $color);
-		if(in_array(false, $results))
+		if (in_array(false, $results))
 		{
 			throw new RuntimeException('Failed to update status');
 		}
@@ -154,7 +172,7 @@ class EmundusControllersettings extends EmundusController
 	public function updatestatusorder(): void
 	{
 		$status = $this->input->getString('status');
-		if(empty($status))
+		if (empty($status))
 		{
 			throw new InvalidArgumentException('Status order is required');
 		}
@@ -596,16 +614,16 @@ class EmundusControllersettings extends EmundusController
 
 		$tchoozy = $yaml['tchoozy'];
 		// If all values of tchoozy is none return true
-		$tchoozy = array_filter($tchoozy, function ($value) {
+		$tchoozy     = array_filter($tchoozy, function ($value) {
 			return $value !== 'none';
 		});
 		$hideTchoozy = empty($tchoozy);
 
 		$this->sendJsonResponse([
-			'code' => 200,
-			'status' => true,
-			'primary' => $primary,
-			'secondary' => $secondary,
+			'code'        => 200,
+			'status'      => true,
+			'primary'     => $primary,
+			'secondary'   => $secondary,
 			'hideTchoozy' => $hideTchoozy ? 1 : 0,
 		]);
 	}
@@ -623,7 +641,7 @@ class EmundusControllersettings extends EmundusController
 			$preset = array('primary' => '#000000', 'secondary' => '#000000', 'hideTchoozy' => 0);
 		}
 
-		$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
+		$yaml          = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
 		$tchoozyConfig = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/blueprints/styles/tchoozy.yaml'));
 
 		$yaml['base']['primary-color']   = $preset['primary'];
@@ -637,7 +655,7 @@ class EmundusControllersettings extends EmundusController
 
 		foreach($yaml['tchoozy'] as $key => $value)
 		{
-			$newValue = $hideTchoozy == 'none' ? 'none' : ($tchoozyConfig['form']['fields'][$key]['default'] ?? 'block');
+			$newValue              = $hideTchoozy == 'none' ? 'none' : ($tchoozyConfig['form']['fields'][$key]['default'] ?? 'block');
 			$yaml['tchoozy'][$key] = $newValue;
 		}
 
@@ -1003,7 +1021,7 @@ class EmundusControllersettings extends EmundusController
 			$target_file = $target_dir . rand(1000, 90000) . '.' . $ext;
 		} while (file_exists($target_file));
 
-		if(!move_uploaded_file($file['tmp_name'], $target_file))
+		if (!move_uploaded_file($file['tmp_name'], $target_file))
 		{
 			throw new RuntimeException('Error while trying to move the file to the dropbox folder. File ' . $file['name'] . ' not uploaded to ' . $target_file . '.', 500);
 		}
@@ -1126,9 +1144,9 @@ class EmundusControllersettings extends EmundusController
 		{
 			$emConfig = ComponentHelper::getParams('com_emundus');
 
-			$config              = [];
-			$mail_to             = $this->input->getString('testing_email', '');
-			$custom_email_config = $this->input->getInt('custom_email_conf', 0);
+			$config                = [];
+			$mail_to               = $this->input->getString('testing_email', '');
+			$custom_email_config   = $this->input->getInt('custom_email_conf', 0);
 			$config['server_type'] = $this->input->getString('custom_server_type', 'smtp');
 
 			if ($custom_email_config != 1)
@@ -1143,7 +1161,7 @@ class EmundusControllersettings extends EmundusController
 				$config['mailfrom']   = $this->input->getString('default_email_mailfrom', $emConfig->get('default_email_smtpport', $this->app->get('mailfrom', '')));
 				$config['fromname']   = $this->input->getString('fromname', $emConfig->get('default_email_fromname', $this->app->get('fromname', '')));
 			}
-			elseif($config['server_type'] === 'smtp')
+			elseif ($config['server_type'] === 'smtp')
 			{
 				// We get custom email configuration
 				$config['smtpauth']   = $this->input->getString('custom_email_smtpauth', 0);
@@ -1181,7 +1199,7 @@ class EmundusControllersettings extends EmundusController
 			$config['replytoname'] = $this->input->getString('replytoname', $this->app->get('replytoname', ''));
 			$config['mailer']      = $this->app->get('mailer', 'smtp');
 
-			$model = $this->getModel('settings', 'EmundusModel');
+			$model    = $this->getModel('settings', 'EmundusModel');
 			$response = $model->sendTestMailSettings($config, $this->user, $mail_to);
 		}
 
@@ -1226,8 +1244,8 @@ class EmundusControllersettings extends EmundusController
 			else
 			{
 				$config['custom_server_type'] = $this->input->getString('custom_server_type', 'smtp');
-				$config['mailfrom']   = $this->input->getString('custom_email_mailfrom', '');
-				if($config['custom_server_type'] === 'smtp')
+				$config['mailfrom']           = $this->input->getString('custom_email_mailfrom', '');
+				if ($config['custom_server_type'] === 'smtp')
 				{
 					// We get custom email configuration
 					$config['smtpauth']   = $this->input->getString('custom_email_smtpauth', 0);
@@ -1256,8 +1274,8 @@ class EmundusControllersettings extends EmundusController
 				}
 				elseif ($config['custom_server_type'] === 'microsoftoutlook365mailconnect')
 				{
-					$config['oauth_application_id']   = $this->input->getString('microsoft365_applicationid', '');
-					$config['oauth_client_secret']   = $this->input->getString('microsoft365_clientsecret', '');
+					$config['oauth_application_id'] = $this->input->getString('microsoft365_applicationid', '');
+					$config['oauth_client_secret']  = $this->input->getString('microsoft365_clientsecret', '');
 				}
 			}
 
@@ -1582,9 +1600,9 @@ class EmundusControllersettings extends EmundusController
 
 			try
 			{
-				$uploader = new UploadService('images/emundus/custom/media/'. $this->user->id);
+				$uploader = new UploadService('images/emundus/custom/media/' . $this->user->id);
 				$uploaded = $uploader->upload($file);
-				if(empty($uploaded))
+				if (empty($uploaded))
 				{
 					throw new Exception(Text::_('UPLOAD_FAILED'));
 				}
@@ -1908,12 +1926,12 @@ class EmundusControllersettings extends EmundusController
 	{
 		$action_log_id     = $this->input->getInt('id', 0);
 		$action_log_status = $this->input->getString('status', 'done');
-		if(empty($action_log_id))
+		if (empty($action_log_id))
 		{
 			throw new InvalidArgumentException('Action log ID is required');
 		}
 
-		if(!$this->m_settings->updateHistoryStatus($action_log_id, $action_log_status))
+		if (!$this->m_settings->updateHistoryStatus($action_log_id, $action_log_status))
 		{
 			throw new RuntimeException('Failed to update history status');
 		}
@@ -1936,6 +1954,7 @@ class EmundusControllersettings extends EmundusController
 		$applicantsExceptions = isset($properties[1]) ? [$properties[1]] : [];
 
 		$applicants = $this->m_settings->getApplicants($search_query, $limit, $event_id, $applicantsExceptions);
+
 		return EmundusResponse::ok($applicants, Text::_('APPLICANTS_FOUND'));
 	}
 
@@ -1946,6 +1965,7 @@ class EmundusControllersettings extends EmundusController
 		$limit        = $this->input->getInt('limit', 100);
 
 		$managers = $this->m_settings->getAvailableManagers($search_query, $limit);
+
 		return EmundusResponse::ok($managers, Text::_('MANAGERS_FOUND'));
 	}
 
@@ -1958,6 +1978,7 @@ class EmundusControllersettings extends EmundusController
 		$limit        = $this->input->getInt('limit', 100);
 
 		$profiles = $this->m_settings->getAvailableGroups($search_query, $limit);
+
 		return EmundusResponse::ok($profiles, Text::_('GROUPS_FOUND'));
 	}
 
@@ -1969,13 +1990,14 @@ class EmundusControllersettings extends EmundusController
 
 		$emundusUserRepository = new EmundusUserRepository();
 
-		$userPrograms  = $emundusUserRepository->getUserProgramsIds($this->user->id);
-		if(empty($userPrograms))
+		$userPrograms = $emundusUserRepository->getUserProgramsIds($this->user->id);
+		if (empty($userPrograms))
 		{
 			throw new RuntimeException('User has no program assigned');
 		}
 
 		$campaigns = $this->m_settings->getAvailableCampaigns($search_query, $limit, $userPrograms);
+
 		return EmundusResponse::ok($campaigns, Text::_('CAMPAIGNS_FOUND'));
 	}
 
@@ -1987,13 +2009,14 @@ class EmundusControllersettings extends EmundusController
 
 		$emundusUserRepository = new EmundusUserRepository();
 
-		$userPrograms  = $emundusUserRepository->getUserProgramsIds($this->user->id);
-		if(empty($userPrograms))
+		$userPrograms = $emundusUserRepository->getUserProgramsIds($this->user->id);
+		if (empty($userPrograms))
 		{
 			throw new RuntimeException('User has no program assigned');
 		}
 
 		$programs = $this->m_settings->getAvailablePrograms($search_query, $limit, $userPrograms);
+
 		return EmundusResponse::ok($programs, Text::_('PROGRAMS_FOUND'));
 	}
 
@@ -2004,6 +2027,7 @@ class EmundusControllersettings extends EmundusController
 		$limit        = $this->input->getInt('limit', 100);
 
 		$profiles = $this->m_settings->getAvailableProfiles($search_query, $limit);
+
 		return EmundusResponse::ok($profiles, Text::_('PROFILES_FOUND'));
 	}
 
@@ -2014,6 +2038,7 @@ class EmundusControllersettings extends EmundusController
 		$limit        = $this->input->getInt('limit', 100);
 
 		$events = $this->m_settings->getEvents($search_query, $limit);
+
 		return EmundusResponse::ok($events, Text::_('EVENTS_FOUND'));
 	}
 
@@ -2021,6 +2046,7 @@ class EmundusControllersettings extends EmundusController
 	public function getapps(): EmundusResponse
 	{
 		$apps = $this->m_settings->getApps();
+
 		return EmundusResponse::ok($apps, Text::_('APPLICATIONS_FOUND'));
 	}
 
@@ -2029,12 +2055,13 @@ class EmundusControllersettings extends EmundusController
 	{
 		$app_id   = $this->input->getInt('app_id', 0);
 		$app_type = $this->input->getString('app_type', '');
-		if(empty($app_id) && empty($app_type))
+		if (empty($app_id) && empty($app_type))
 		{
 			throw new InvalidArgumentException('App ID or App Type is required');
 		}
 
 		$app = $this->m_settings->getApp($app_id, $app_type);
+
 		return EmundusResponse::ok($app, Text::_('APP_FOUND'));
 	}
 
@@ -2209,12 +2236,12 @@ class EmundusControllersettings extends EmundusController
 	{
 		$app_id  = $this->input->getInt('app_id', 0);
 		$enabled = $this->input->getInt('enabled', 1);
-		if(empty($app_id))
+		if (empty($app_id))
 		{
 			throw new InvalidArgumentException('App ID is required');
 		}
 
-		if(!$this->m_settings->toggleEnable($app_id, $enabled))
+		if (!$this->m_settings->toggleEnable($app_id, $enabled))
 		{
 			throw new RuntimeException('Failed to update app status');
 		}
@@ -2226,12 +2253,12 @@ class EmundusControllersettings extends EmundusController
 	public function historyretryevent(): EmundusResponse
 	{
 		$action_log_row_id = $this->input->getInt('action_log_row_id', 0);
-		if(empty($action_log_row_id))
+		if (empty($action_log_row_id))
 		{
 			throw new InvalidArgumentException('Action log row ID is required');
 		}
 
-		if(!$this->m_settings->historyRetryEvent($action_log_row_id))
+		if (!$this->m_settings->historyRetryEvent($action_log_row_id))
 		{
 			throw new RuntimeException('Failed to retry event');
 		}
@@ -2245,6 +2272,7 @@ class EmundusControllersettings extends EmundusController
 		$this->checkToken('get');
 
 		$addons = $this->m_settings->getAddons();
+
 		return EmundusResponse::ok($addons, Text::_('ADDONS_FOUND'));
 	}
 
@@ -2488,14 +2516,14 @@ class EmundusControllersettings extends EmundusController
 			$response['message'] = Text::_('MISSING_PARAMS');
 
 			$upload_id = $this->input->getInt('upload_id', 0);
-			$page = $this->input->getInt('page', 1);
+			$page      = $this->input->getInt('page', 1);
 
 			if (!empty($upload_id))
 			{
 				try
 				{
 					$uploadRepository = new UploadRepository();
-					$upload = $uploadRepository->getById($upload_id);
+					$upload           = $uploadRepository->getById($upload_id);
 					$response['data'] = $this->m_settings->getFileThumbnail($upload, $page);
 
 					if (!empty($response['data']))
@@ -3603,6 +3631,164 @@ class EmundusControllersettings extends EmundusController
 		}
 
 		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function getcustomreferenceformat(): EmundusResponse
+	{
+		$internalReferenceService = new InternalReferenceService(
+			new DateProvider(),
+			new ApplicationFileRepository()
+		);
+		$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity();
+
+
+		$mappingTransformationsRegistry = new TransformationsRegistry();
+		$conditionsRegistry             = new ConditionRegistry();
+
+		$storedValuesByType = [];
+		foreach ($customReferenceFormatEntity->getBlocks() as $block)
+		{
+			if (!isset($storedValuesByType[$block->getType()->value]))
+			{
+				$storedValuesByType[$block->getType()->value] = [];
+			}
+			$storedValuesByType[$block->getType()->value][] = $block->getValue();
+		}
+
+		$dataResolvers = array_filter($conditionsRegistry->getAvailableConditionSchemas([
+			'storedValues' => $storedValuesByType,
+		]), function ($resolver) {
+			return $resolver['targetType'] !== 'context_data' && $resolver['targetType'] !== 'group_data' && $resolver['targetType'] !== 'file_attachment_data';
+		});
+		$dataResolvers = array_values($dataResolvers);
+		foreach ($dataResolvers as &$resolver)
+		{
+			if($resolver['targetType'] == 'campaign_data')
+			{
+				$resolver['fields'] = array_filter($resolver['fields'], function($field) {
+					return !in_array($field['name'], ['description', 'label', 'short_description', 'published']);
+				});
+				$resolver['fields'] = array_values($resolver['fields']);
+			}
+
+			if($resolver['targetType'] == 'program_data')
+			{
+				$resolver['fields'] = array_filter($resolver['fields'], function($field) {
+					return !in_array($field['name'], ['label']);
+				});
+				$resolver['fields'] = array_values($resolver['fields']);
+			}
+		}
+		
+		$transformers = $mappingTransformationsRegistry->getTransformersSchemas();
+		$transformers = array_filter($transformers, function($transformer) {
+			return $transformer['type'] !== 'sequential' && $transformer['type'] !== 'boolean';
+		});
+		$transformers = array_values($transformers);
+
+		$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_FETCHED');
+		$response['data']    = [
+			'referenceFormat' => $customReferenceFormatEntity->__toMappingFormat(),
+			'fields'          => [],
+			'dataResolvers'   => $dataResolvers,
+			'transformers'    => $transformers
+		];
+
+		return EmundusResponse::ok($response['data'], $response['message']);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function savecustomreference(): EmundusResponse
+	{
+		$show_to_applicant  = $this->input->getInt('show_to_applicant', 0);
+		$show_in_files = $this->input->getInt('show_in_files', 0);
+		$json            = $this->app->input->getString('mapping');
+		if (empty($json))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_SAVE_NO_DATA'), EmundusResponse::HTTP_BAD_REQUEST);
+		}
+
+		$triggering_status  = $this->input->getString('triggering_status');
+		$triggering_status = filter_var($triggering_status, FILTER_VALIDATE_INT);
+		if($triggering_status !== false)
+		{
+			$statusRepository = new StatusRepository();
+			$triggering_status           = $statusRepository->getByStep($triggering_status);
+			if (empty($triggering_status))
+			{
+				throw new InvalidArgumentException(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_SAVE_INVALID_STATUS'), EmundusResponse::HTTP_BAD_REQUEST);
+			}
+		}
+		else {
+			$triggering_status = null;
+		}
+
+		$separator       = $this->input->getString('separator', '-');
+		$separator = SeparatorEnum::tryFrom($separator);
+		if(empty($separator))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_SAVE_INVALID_SEPARATOR'), EmundusResponse::HTTP_BAD_REQUEST);
+		}
+
+		$sequenceFormat = null;
+		$sequence = $this->input->getInt('sequence', 0);
+		if($sequence === 1)
+		{
+			$sequencePosition = $this->input->getString('sequence_position', 'end');
+			$sequencePosition = PositionEnum::tryFrom($sequencePosition);
+			if(empty($sequencePosition))
+			{
+				throw new InvalidArgumentException(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_SAVE_INVALID_SEQUENCE_POSITION'), EmundusResponse::HTTP_BAD_REQUEST);
+			}
+
+			$sequenceResetType = $this->input->getString('sequence_reset_type', 'never');
+			$sequenceResetType = ResetTypeEnum::tryFrom($sequenceResetType);
+			if(empty($sequenceResetType))
+			{
+				throw new InvalidArgumentException(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_SAVE_INVALID_SEQUENCE_RESET_TYPE'), EmundusResponse::HTTP_BAD_REQUEST);
+			}
+
+			$sequenceLength = $this->input->getInt('sequence_length', 0);
+			if($sequenceLength < 0)
+			{
+				$sequenceLength = 4;
+			}
+			$sequenceLength = min($sequenceLength, 8);
+
+			$sequenceFormat = new InternalReferenceFormatSequence($sequencePosition, $sequenceResetType, $sequenceLength);
+		}
+
+		$mappingEntity = MappingFactory::fromJson($json);
+
+		$format = new InternalReferenceFormat([], $separator, $triggering_status, $show_to_applicant === 1, $show_in_files === 1, $sequenceFormat);
+		foreach ($mappingEntity->getRows() as $row)
+		{
+			$block = new InternalReferenceFormatBlock(
+				$row->getSourceType(),
+				$row->getSourceField(),
+				$row->getTransformations()
+			);
+			$format->addBlock($block);
+		}
+
+		$configurationRepository = new ConfigurationRepository();
+		$customFormatReference   = $configurationRepository->getByName('custom_reference_format');
+		if (empty($customFormatReference))
+		{
+			$customFormatReference = new ConfigurationEntity(
+				'custom_reference_format',
+				$format->__serialize()
+			);
+		}
+		else
+		{
+			$customFormatReference->setValue($format->__serialize());
+		}
+
+		$configurationRepository->flush($customFormatReference);
+
+		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_SAVED'));
 	}
 }
 

@@ -9,19 +9,11 @@
 
 namespace Tchooz\Repositories\Actions;
 
-use Joomla\CMS\Cache\CacheControllerFactoryInterface;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Log\Log;
-use Joomla\Database\DatabaseDriver;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Actions\ActionEntity;
-use Tchooz\Entities\Actions\CrudEntity;
-use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Factories\Actions\ActionFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
-use Tchooz\Traits\TraitTable;
-use function Symfony\Component\Translation\t;
 
 #[TableAttribute(
 	table: '#__emundus_setup_actions',
@@ -93,6 +85,14 @@ class ActionRepository extends EmundusRepository implements RepositoryInterface
 			}
 		}
 
+		// Clear cache
+		$cache_key = 'action_' . md5($entity->getId());
+		$this->cache->store(null, $cache_key);
+
+		$cache_key = 'action_' . md5($entity->getName());
+		$this->cache->store(null, $cache_key);
+		//
+
 		return true;
 	}
 
@@ -128,12 +128,34 @@ class ActionRepository extends EmundusRepository implements RepositoryInterface
 
 	public function delete(int $id): bool
 	{
-		$query = $this->db->getQuery(true)
+		$query = $this->db->getQuery(true);
+
+		$query->select('name')
+			->from($this->db->quoteName($this->tableName))
+			->where($this->db->quoteName('id') . ' = ' . (int) $id);
+		$this->db->setQuery($query);
+		$actionName = $this->db->loadResult();
+
+		$query->clear()
 			->delete($this->db->quoteName($this->tableName))
 			->where($this->db->quoteName('id') . ' = ' . $this->db->quote($id));
 		$this->db->setQuery($query);
 
-		return $this->db->execute();
+		if($deleted = $this->db->execute())
+		{
+			// Clear cache
+			$cache_key = 'action_' . md5($id);
+			$this->cache->store(null, $cache_key);
+
+			if(!empty($actionName))
+			{
+				$cache_key = 'action_' . md5($actionName);
+				$this->cache->store(null, $cache_key);
+			}
+			//
+		}
+
+		return $deleted;
 	}
 
 	public function getById(int $id): ?ActionEntity
@@ -159,7 +181,7 @@ class ActionRepository extends EmundusRepository implements RepositoryInterface
 
 		if (!empty($action))
 		{
-			$this->cache->store($action_entity, $cache_key);
+			$this->cache->store($action, $cache_key);
 
 			$action_entity = $this->factory->fromDbObject($action);
 		}

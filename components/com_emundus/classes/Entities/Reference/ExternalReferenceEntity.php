@@ -1,6 +1,6 @@
 <?php
 
-namespace Tchooz\Entities\ExternalReference;
+namespace Tchooz\Entities\Reference;
 
 class ExternalReferenceEntity
 {

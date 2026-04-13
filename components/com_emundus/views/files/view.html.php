@@ -16,7 +16,13 @@ use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView;
 use Joomla\CMS\User\UserFactoryInterface;
+use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Reference\InternalReferenceRepository;
+use Tchooz\Repositories\Settings\ConfigurationRepository;
+use Tchooz\Services\Reference\InternalReferenceFormat;
+use Tchooz\Services\Reference\InternalReferenceService;
 
 defined('_JEXEC') or die('Restricted access');
 //error_reporting(E_ALL);
@@ -91,6 +97,12 @@ class EmundusViewFiles extends HtmlView
 		$this->cfnum  = $this->app->input->getString('cfnum', null);
 
 		$h_files              = new EmundusHelperFiles;
+		$internalReferenceService = new InternalReferenceService(
+			new DateProvider(),
+			new ApplicationFileRepository()
+		);
+		$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity();
+
 		$params               = ComponentHelper::getParams('com_emundus');
 		$default_actions      = $params->get('default_actions', '[]');
 		$hide_default_actions = $params->get('hide_default_actions', 0);
@@ -333,6 +345,10 @@ class EmundusViewFiles extends HtmlView
 							$userObj->user->email = '';
 							$userObj->user->id = '';
 						}
+
+						$userObj->showReference = $customReferenceFormatEntity->isShowInFiles();
+						$userObj->shortReference = $user['short_reference'];
+						$userObj->reference = $user['reference'];
 
 						$line['fnum'] = $userObj;
 					}
