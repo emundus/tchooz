@@ -125,7 +125,7 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 				switch ($mappingObjectDefinition->getName())
 				{
 					case 'contact':
-						$internalId = $context->getUserId();
+						$internalId = $context->getUserIdFromFile();
 
 						if (!empty($mappingObjectDefinition->getExternalReference()))
 						{
@@ -144,7 +144,7 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 							else
 							{
 								$emundusUserRepository = new \Tchooz\Repositories\User\EmundusUserRepository();
-								$emundusUser = $emundusUserRepository->getByUserId($context->getUserId());
+								$emundusUser = $emundusUserRepository->getByUserId($context->getUserIdFromFile());
 
 								if (!empty($emundusUser))
 								{
@@ -168,8 +168,8 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 
 										if (!$externalReferenceRepository->flush($externalReference))
 										{
-											Log::add('Error saving external reference for contact with user ID : ' . $context->getUserId() . ' Hubspot Id : ' . $objectId, Log::ERROR, 'com_emundus.hubspot');
-											throw new \Exception('Failed to save external reference for contact with user ID ' . $context->getUserId());
+											Log::add('Error saving external reference for contact with user ID : ' . $context->getUserIdFromFile() . ' Hubspot Id : ' . $objectId, Log::ERROR, 'com_emundus.hubspot');
+											throw new \Exception('Failed to save external reference for contact with user ID ' . $context->getUserIdFromFile());
 										}
 									}
 								}
@@ -228,7 +228,7 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 							}
 							else
 							{
-								throw new \Exception('No transaction found for user ID ' . $context->getUserId() . ' to create deal in Hubspot.');
+								throw new \Exception('No transaction found for user ID ' . $context->getUserIdFromFile() . ' to create deal in Hubspot.');
 							}
 						}
 						else
@@ -514,7 +514,7 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 
 				if (empty($foundReferences) && $association->targetObject === 'contact') {
 					$emundusUserRepository = new \Tchooz\Repositories\User\EmundusUserRepository();
-					$emundusUser = $emundusUserRepository->getByUserId($context->getUserId());
+					$emundusUser = $emundusUserRepository->getByUserId($context->getUserIdFromFile());
 
 					if (!empty($emundusUser))
 					{
@@ -537,7 +537,7 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 							}
 							else
 							{
-								Log::add('Error saving external reference for contact association with user ID : ' . $context->getUserId() . ' Hubspot Id : ' . $hsContacts[0]->id, Log::ERROR, 'com_emundus.hubspot');
+								Log::add('Error saving external reference for contact association with user ID : ' . $context->getUserIdFromFile() . ' Hubspot Id : ' . $hsContacts[0]->id, Log::ERROR, 'com_emundus.hubspot');
 							}
 						}
 					}
