@@ -116,16 +116,6 @@ class ActionRegistry
 					break;
 			}
 
-			switch ($type) {
-				case 'print_application':
-					$eMConfig              = ComponentHelper::getParams('com_emundus');
-					$export_pdf              = $eMConfig->get('export_application_pdf', 0);
-					if($export_pdf == 0)
-					{
-						continue 2; // skip this action
-					}
-			}
-
 			$schema[] = [
 				'type' => $type,
 				'label' => $class::getLabel(),
