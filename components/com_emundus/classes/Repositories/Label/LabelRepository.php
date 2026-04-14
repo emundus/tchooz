@@ -140,9 +140,10 @@ class LabelRepository extends EmundusRepository implements RepositoryInterface
 			$query = $this->db->getQuery(true);
 
 			$query->select($this->columns)
-				->from($this->db->qn('#__emundus_tag_assoc', 'eta'))
-				->leftJoin($this->db->qn($this->tableName, $this->alias) . ' ON ' . $this->db->qn('eta.id_tag') . ' = ' . $this->db->qn($this->alias . '.id'))
-				->where($this->db->qn('eta.fnum') . ' = :fnum')
+				->from($this->db->quoteName('#__emundus_tag_assoc', 'eta'))
+				->leftJoin($this->db->quoteName($this->tableName, $this->alias) . ' ON ' . $this->db->quoteName('eta.id_tag') . ' = ' . $this->db->quoteName($this->alias . '.id'))
+				->where($this->db->quoteName('esat.id') . ' IS NOT NULL')
+				->where($this->db->quoteName('eta.fnum') . ' = :fnum')
 				->bind(':fnum', $fnum, ParameterType::STRING);
 			$this->db->setQuery($query);
 			$dbObjects = $this->db->loadObjectList();

@@ -24,10 +24,10 @@ class LabelFactory implements DBFactory
 		}
 
 		return new LabelEntity(
-			label: $dbObject->label,
-			class: $dbObject->class,
-			ordering: $dbObject->ordering,
-			id: $dbObject->id
+			label: $dbObject->label ?? '',
+			class: $dbObject->class ?? '',
+			ordering: $dbObject->ordering ?? 0,
+			id: $dbObject->id ?? 0
 		);
 	}
 
