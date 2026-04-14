@@ -18,7 +18,9 @@
 
     <languages>
         <language tag="en-GB">language/en-GB/plg_system_emunduspublicaccess.ini</language>
+        <language tag="en-GB">language/en-GB/plg_system_emunduspublicaccess.sys.ini</language>
         <language tag="fr-FR">language/fr-FR/plg_system_emunduspublicaccess.ini</language>
+        <language tag="fr-FR">language/fr-FR/plg_system_emunduspublicaccess.sys.ini</language>
     </languages>
 
     <config>

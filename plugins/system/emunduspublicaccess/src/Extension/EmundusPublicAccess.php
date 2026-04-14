@@ -23,7 +23,9 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryAwareTrait;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\SubscriberInterface;
+use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 
@@ -97,6 +99,8 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 */
 	public const COMPOSITE_KEY_SEPARATOR = '::';
 
+	private ?AddonEntity $publicSessionAddon = null;
+
 	/**
 	 * Build a composite access key from a token and a fnum.
 	 *
@@ -140,6 +144,17 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 */
 	public function onAfterRoute(AfterRouteEvent $event): void
 	{
+		$addonRepository = new AddonRepository();
+		$this->publicSessionAddon = $addonRepository->getByName('public_session');
+		if (empty($this->publicSessionAddon) || $this->publicSessionAddon->getValue()->isEnabled() === false)
+		{
+			if (self::isPublicAccessSession())
+			{
+				$this->destroyPublicSession();
+			}
+			return;
+		}
+
 		$app     = $this->getApplication();
 		$input   = $app->getInput();
 		$session = $app->getSession();
@@ -187,7 +202,15 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 				}
 				else
 				{
-					$app->redirect(Route::_('index.php?option=com_emundus&view=publicaccess&error=1&error_msg=' . urlencode(Text::_('COM_EMUNDUS_PUBLIC_ACCESS_INVALID_TOKEN')), false));
+					$app->enqueueMessage(Text::_('COM_EMUNDUS_PUBLIC_ACCESS_INVALID_TOKEN'), 'error');
+					if ($this->publicSessionAddon->getValue()->getParams()['display_retrieve_public_access_file_login_page'] == 1)
+					{
+						$app->redirect(Route::_('index.php?option=com_users&view=login', false));
+					}
+					else
+					{
+						$app->redirect(Route::_('/index.php?option=com_emundus&view=publicaccess', false));
+					}
 				}
 			}
 		}

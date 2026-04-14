@@ -2,8 +2,10 @@
 
 namespace Tchooz\Services\Addons;
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\User\UserHelper;
 use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\Fields\Field;
 use Tchooz\Entities\Fields\NumericField;
@@ -51,20 +53,14 @@ class PublicSessionAddonHandler implements AddonHandlerInterface
 		$db->setQuery($query);
 		$updates[] = $db->execute();
 
-		// toggle plugin state
-		$query->clear()
-			->update($db->quoteName('#__extensions'))
-			->from($db->quoteName('#__extensions'))
-			->set($db->quoteName('enabled') . ' = ' . (int) $state)
-			->where($db->quoteName('element') . ' = ' . $db->quote('emunduspublicaccess'))
-			->andWhere($db->quoteName('type') . ' = ' . $db->quote('plugin'))
-			->andWhere($db->quoteName('folder') . ' = ' . $db->quote('system'));
-		$db->setQuery($query);
-		$updates[] = $db->execute();
-
 		if (!$state)
 		{
-			// TODO: destroy current public sessions
+			$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
+
+			if ($systemUserId > 0)
+			{
+				UserHelper::destroyUserSessions($systemUserId);
+			}
 		}
 
 		return !in_array(false, $updates, true);
