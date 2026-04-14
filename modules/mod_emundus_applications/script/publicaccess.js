@@ -50,11 +50,24 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             },
                             body: body
                         }).then(response => {
-                            // todo
-
-                        }).finally(() => {
-                            // reload current page
-                            location.reload();
+                            if (response.ok) {
+                                location.reload();
+                            }
+                            else
+                            {
+                                throw new Error('Import file failed');
+                            }
+                        }).catch((error) => {
+                            Swal.fire({
+                                title: Joomla.Text._('IMPORT_FILE_FAILURE'),
+                                icon: 'error',
+                                showCancelButton: false,
+                                customClass: {
+                                    title: 'em-swal-title',
+                                    confirmButton: 'em-swal-confirm-button',
+                                    actions: 'em-swal-single-action',
+                                },
+                            });
                         });
                     }
                 });

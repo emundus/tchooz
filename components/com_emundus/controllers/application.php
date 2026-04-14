@@ -3290,25 +3290,25 @@ class EmundusControllerApplication extends EmundusController
 		$response = EmundusResponse::denied();
 
 		// token is a composite key
-		$compositeKey = $this->app->getInput()->getString('token', '');
-		$token        = '';
-		$fnum         = '';
+		$compositeKey   = $this->app->getInput()->getString('token', '');
+		$token          = '';
+		$shortReference = '';
 		if (!empty($compositeKey) && str_contains($compositeKey, EmundusPublicAccess::COMPOSITE_KEY_SEPARATOR))
 		{
 			$parts = explode(EmundusPublicAccess::COMPOSITE_KEY_SEPARATOR, $compositeKey, 2);
 			if (count($parts) === 2)
 			{
 				$token = trim($parts[0]);
-				$fnum  = trim($parts[1]);
+				$shortReference  = trim($parts[1]);
 			}
 		}
 
 		$newOwnerId = $this->app->getInput()->getInt('owner', 0);
 
-		if (!empty($fnum) && !empty($token))
+		if (!empty($shortReference) && !empty($token))
 		{
 			$applicationFileRepository = new ApplicationFileRepository();
-			$applicationFile = $applicationFileRepository->getByFnum($fnum);
+			$applicationFile = $applicationFileRepository->getItemByField('short_reference', $shortReference, true);
 
 			if (empty($applicationFile))
 			{
