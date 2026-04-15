@@ -21,6 +21,7 @@ use Joomla\Component\Emundus\Administrator\Attributes\PostflightAttribute;
 use Joomla\Database\DatabaseInterface;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\Actions\CrudEntity;
+use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -1864,6 +1865,8 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage($result['message'], 'error');
 		}
 
+		$updates[] = \EmundusHelperUpdate::makeFromEntity(AddonEntity::class);
+
 		return !in_array(false, $updates);
 	}
 
@@ -2048,7 +2051,7 @@ class Com_EmundusInstallerScript
 				$applicationFileEntity           = $applicationFileRepository->getById($applicationFile->id);
 				$shortReference = $internalReferenceService->generateShortReference($applicationFileEntity);
 				$applicationFileEntity->setShortReference($shortReference);
-				if (!$applicationFileRepository->flush($applicationFileEntity))
+				if(!$applicationFileRepository->flush($applicationFileEntity))
 				{
 					EmundusHelperUpdate::displayMessage(
 						'Failed to generate short reference for application file with id ' . $applicationFile->id,

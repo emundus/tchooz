@@ -58,7 +58,7 @@ class EmundusUserFactory implements DBFactory
 			$userCategoryRepository = new UserCategoryRepository();
 			$userCategory           = $userCategoryRepository->getCategoryById((int) $dbObject->user_category);
 		}
-		
+
 		// Create a date from dd/mm/yyyy format
 		$birthDate = null;
 		if(!empty($dbObject->birth_date) && strpos($dbObject->birth_date, '/') !== false)
@@ -87,7 +87,8 @@ class EmundusUserFactory implements DBFactory
 			profile_picture: $dbObject->profile_picture ?? null,
 			user_category: $userCategory,
 			is_anonym: isset($dbObject->is_anonym) && $dbObject->is_anonym == 1,
-			birthDate: $birthDate
+			birthDate: $birthDate,
+			emailCc: $dbObject->email_cc ?? null
 		);
 	}
 }

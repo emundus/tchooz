@@ -1,22 +1,25 @@
 <?php
 
-namespace Tchooz\Services\Addons;
+namespace Tchooz\Services\Addons\Handlers;
 
 use Joomla\CMS\Factory;
 use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Repositories\Payment\PaymentRepository;
+use Tchooz\Services\Addons\AbstractAddonHandler;
 
-class PaymentAddonHandler implements AddonHandlerInterface
+class PaymentAddonHandler extends AbstractAddonHandler
 {
-
-	private AddonEntity $addon;
-
-	public function __construct(AddonEntity $addon)
+	public function onActivate(): bool
 	{
-		$this->addon = $addon;
+		return $this->applyState(true);
 	}
 
-	public function toggle(bool $state): bool
+	public function onDeactivate(): bool
+	{
+		return $this->applyState(false);
+	}
+
+	private function applyState(bool $state): bool
 	{
 		$updates = [];
 
@@ -28,42 +31,33 @@ class PaymentAddonHandler implements AddonHandlerInterface
 			$payment_repository = new PaymentRepository();
 			$payment_action_id  = $payment_repository->getActionId();
 
-			$query->clear()
-				->update($db->quoteName('#__emundus_setup_step_types'));
-			if ($state)
-			{
-				$query->set($db->quoteName('published') . ' = ' . $db->quote(1));
-			}
-			else
-			{
-				$query->set($db->quoteName('published') . ' = ' . $db->quote(0));
-			}
-			$query->where($db->quoteName('action_id') . ' = ' . $db->quote($payment_action_id));
+			$intState = $state ? 1 : 0;
 
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_step_types'))
+				->set($db->quoteName('published') . ' = ' . $db->quote($intState))
+				->where($db->quoteName('action_id') . ' = ' . $db->quote($payment_action_id));
 			$db->setQuery($query);
 			$updates[] = $db->execute();
 
 			$query->clear()
 				->update($db->quoteName('#__emundus_setup_actions'))
-				->set($db->quoteName('status') . ' = ' . (int) $state)
+				->set($db->quoteName('status') . ' = ' . $intState)
 				->where($db->quoteName('id') . ' = ' . $db->quote($payment_action_id));
-
 			$db->setQuery($query);
 			$updates[] = $db->execute();
 
 			$query->clear()
 				->update($db->quoteName('jos_emundus_plugin_events'))
-				->set($db->quoteName('available') . ' = ' . (int) $state)
+				->set($db->quoteName('available') . ' = ' . $intState)
 				->where($db->quoteName('label') . ' IN (' . implode(',', $db->quote(['onAfterEmundusCartUpdate', 'onBeforeEmundusCartRender', 'onAfterEmundusTransactionUpdate', 'onAfterLoadEmundusPaymentStep'])) . ')');
-
 			$db->setQuery($query);
 			$updates[] = $db->execute();
 
 			$query->clear()
 				->update($db->quoteName('#__menu'))
-				->set($db->quoteName('published') . ' = ' . (int) $state)
+				->set($db->quoteName('published') . ' = ' . $intState)
 				->where($db->quoteName('alias') . ' IN (' . implode(',', $db->quote(['cart', 'transactions', 'products', 'modify-cart-products'])) . ')');
-
 			$db->setQuery($query);
 			$updates[] = $db->execute();
 
@@ -71,12 +65,10 @@ class PaymentAddonHandler implements AddonHandlerInterface
 				->select('value')
 				->from($db->quoteName('#__emundus_setup_config'))
 				->where($db->quoteName('namekey') . ' = ' . $db->quote('payment'));
-
 			$db->setQuery($query);
-			$payment_config = $db->loadResult();
+			$payment_config = json_decode($db->loadResult(), true);
 
-			$payment_config = json_decode($payment_config, true);
-			$payment_config['enabled'] = $state ? 1 : 0;
+			$payment_config['enabled'] = $intState;
 
 			$query->clear()
 				->update($db->quoteName('#__emundus_setup_config'))

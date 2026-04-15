@@ -20,6 +20,7 @@ use Tchooz\Enums\Reference\PositionEnum;
 use Tchooz\Enums\Reference\ResetTypeEnum;
 use Tchooz\Factories\Reference\InternalReferenceFactory;
 use Tchooz\Providers\DateProvider;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Reference\InternalReferenceRepository;
 use Tchooz\Repositories\Settings\ConfigurationRepository;
@@ -313,16 +314,16 @@ class InternalReferenceService
 		$this->dateProvider = $dateProvider;
 	}
 
-	public function getCustomReferenceFormatEntity(): InternalReferenceFormat
+	public function getCustomReferenceFormatEntity(bool $checkActivated = true): InternalReferenceFormat
 	{
 		$customReferenceFactory = new InternalReferenceFactory();
 		$customReferenceFormatEntity = new InternalReferenceFormat([]);
 
-		$addonRepository = new ConfigurationRepository();
+		$addonRepository = new AddonRepository();
 		$customReferenceFormat = $addonRepository->getByName('custom_reference_format');
-		if (!empty($customReferenceFormat))
+		if (!empty($customReferenceFormat) && (!$checkActivated || $customReferenceFormat->isActivated()))
 		{
-			$customReferenceFormatEntity = $customReferenceFactory->unserialize($customReferenceFormat->getValue());
+			$customReferenceFormatEntity = $customReferenceFactory->unserialize($customReferenceFormat->getParams());
 		}
 
 		return $customReferenceFormatEntity;

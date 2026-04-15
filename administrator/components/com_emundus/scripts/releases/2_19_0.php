@@ -14,8 +14,10 @@ use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Factories\Language\LanguageFactory;
 use scripts\ReleaseInstaller;
 use Tchooz\Repositories\Language\LanguageRepository;
+use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Reference\InternalReferenceEntity;
+use Tchooz\Repositories\Addons\AddonRepository;
 
 class Release2_19_0Installer extends ReleaseInstaller
 {
@@ -82,7 +84,8 @@ class Release2_19_0Installer extends ReleaseInstaller
 			$this->tasks[] = \EmundusHelperUpdate::addColumnIndex('jos_emundus_internal_reference', 'sequence_int')['status'];
 
 			$query = $this->db->createQuery();
-			$query->select('id')
+			$query->clear()
+				->select('id')
 				->from($this->db->quoteName('#__menu'))
 				->where($this->db->quoteName('link') . ' = ' . $this->db->quote('index.php?option=com_emundus&view=files&layout=generatereference&format=raw'));
 			$this->db->setQuery($query);
@@ -141,32 +144,64 @@ class Release2_19_0Installer extends ReleaseInstaller
 				\EmundusHelperUpdate::insertFalangTranslation(1, $generateReferenceMenu['id'], 'menu', 'title', 'Reference\'s history');
 			}
 
-			$query->clear()
-				->select('value')
-				->from($this->db->quoteName('#__emundus_setup_config'))
-				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('custom_reference_format'));
-			$this->db->setQuery($query);
-			$customReferenceModule = $this->db->loadResult();
-			if(empty($customReferenceModule))
+			$this->rebuildConfigTable();
+
+			// Add custom reference addon in setup_config
+			$addonRepository = new AddonRepository();
+			$customReferenceAddon = $addonRepository->getByName('custom_reference_format');
+			if (!$customReferenceAddon)
 			{
-				$defaultParameters = [
+				$params = [
 					'blocks' => [],
-					'separator' => '-',
 					'triggering_status' => null,
 					'show_to_applicant' => false,
 					'show_in_files' => false,
+					'separator' => '-',
 					'sequence' => [
 						'position' => 'end',
-						'reset_type' => 'never',
+						'reset_type' => 'yearly',
 						'length' => 4
-					]
+					],
 				];
-				$customReferenceModule = (object) [
-					'namekey' => 'custom_reference_format',
-					'value' => json_encode($defaultParameters),
-					'default' => '[]'
+				$customReferenceAddon = new AddonEntity('custom_reference_format', false, false, false, $params);
+				$this->tasks[] = $addonRepository->flush($customReferenceAddon);
+			}
+
+			// Add booking addon in setup_config
+			$bookingAddon = $addonRepository->getByName('booking');
+			if (!$bookingAddon)
+			{
+				$params = [];
+				$bookingAddon = new AddonEntity('booking', false, false, false, $params);
+				$this->tasks[] = $addonRepository->flush($bookingAddon);
+			}
+
+			$installed = \EmundusHelperUpdate::installExtension('plg_task_booking_recall', 'bookingrecall', null, 'plugin', 0, 'task');
+			$this->tasks[] = $installed;
+			if (!$installed)
+			{
+				$result['message'] .= 'Failed to install booking_recall plugin. ';
+			}
+
+			// Update sogecommerce params to have a configuration key
+			$query->clear()
+				->select('id, config')
+				->from($this->db->quoteName('#__emundus_setup_sync'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('sogecommerce'));
+			$this->db->setQuery($query);
+			$sogecommerce = $this->db->loadObject();
+
+			if (!empty($sogecommerce))
+			{
+				$configuration = json_decode($sogecommerce->config);
+				$configuration->configuration = [
+					'endpoint' => $configuration->endpoint ?? '',
+					'mode' => $configuration->mode ?? '',
+					'return_url' => $configuration->return_url ?? '',
 				];
-				$this->tasks[] = $this->db->insertObject('#__emundus_setup_config', $customReferenceModule);
+
+				$sogecommerce->config = json_encode($configuration);
+				$this->tasks[] = $this->db->updateObject('#__emundus_setup_sync', $sogecommerce, 'id');
 			}
 
 			$result['status'] = !in_array(false, $this->tasks);
@@ -178,5 +213,69 @@ class Release2_19_0Installer extends ReleaseInstaller
 		}
 
 		return $result;
+	}
+
+	private function rebuildConfigTable(): void
+	{
+		$query = $this->db->getQuery(true);
+
+		$tableUpdated = \EmundusHelperUpdate::makeFromEntity(AddonEntity::class);
+
+		if (!$tableUpdated)
+		{
+			throw new \Exception("Failed to update AddonEntity #_emundus_setup_config table.");
+		}
+
+		// Set activated and displayed columns based on value json property for backward compatibility
+		$query->clear()
+			->select('namekey, value, params, activated, displayed')
+			->from($this->db->quoteName('#__emundus_setup_config'))
+			->where($this->db->quoteName('params') . ' IS NULL OR ' . $this->db->quoteName('params') . ' = \'\'');
+		$this->db->setQuery($query);
+		$configs = $this->db->loadObjectList();
+
+		foreach ($configs as $config)
+		{
+			if (empty($config->value))
+			{
+				$config->value = '{}';
+			}
+
+			$params = json_decode($config->value);
+			if (isset($params->enabled))
+			{
+				if ($params->enabled || $params->enabled == 1)
+				{
+					$config->activated = 1;
+				}
+				else
+				{
+					$config->activated = 0;
+				}
+				unset($params->enabled);
+			}
+
+			if (isset($params->displayed))
+			{
+				if ($params->displayed || $params->displayed == 1)
+				{
+					$config->displayed = 1;
+				}
+				else
+				{
+					$config->displayed = 0;
+				}
+				unset($params->displayed);
+			}
+
+			$config->params = $params;
+			if (isset($params->params))
+			{
+				$config->params = $params->params;
+			}
+			$config->params = json_encode($config->params);
+
+			$this->tasks[] = $this->db->updateObject('#__emundus_setup_config', $config, 'namekey');
+		}
 	}
 }

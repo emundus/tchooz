@@ -26,8 +26,6 @@ use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Actions\ActionRepository as AccessActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
-use Tchooz\Repositories\Settings\ConfigurationRepository;
-use Tchooz\Services\Reference\InternalReferenceFormat;
 use Tchooz\Services\Reference\InternalReferenceService;
 
 /**
@@ -117,7 +115,6 @@ class EmundusViewFiles extends JViewLegacy
 		);
 		$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity();
 
-
 		$params               = ComponentHelper::getParams('com_emundus');
 		$default_actions      = $params->get('default_actions', '[]');
 		$hide_default_actions = $params->get('hide_default_actions', 0);
@@ -141,7 +138,7 @@ class EmundusViewFiles extends JViewLegacy
 				$post = file_get_contents("php://input");
 				$post = json_decode($post, true);
 				$fnums = $post['fnums'];
-				
+
 				if ($fnums == 'all')
 				{
 					$m_files     = new EmundusModelFiles;
@@ -600,7 +597,7 @@ class EmundusViewFiles extends JViewLegacy
 								$userObj->showReference = $customReferenceFormatEntity->isShowInFiles();
 								$userObj->shortReference = $user['short_reference'];
 								$userObj->reference = $user['reference'];
-								
+
 
 								$line['fnum'] = $userObj;
 							}

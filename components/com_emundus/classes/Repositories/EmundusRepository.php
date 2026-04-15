@@ -140,7 +140,7 @@ class EmundusRepository
 	 *
 	 * @return array
 	 */
-	public function getItemsByFields(array $fields, bool $returnEntity = false): array
+	public function getItemsByFields(array $fields, bool $returnEntity = false, string $operator = 'AND'): array
 	{
 		$items = [];
 
@@ -155,9 +155,9 @@ class EmundusRepository
 			}
 
 			if (is_array($value)) {
-				$query->where($this->db->quoteName($this->alias . '.' . $field) . ' IN (' . implode(',', array_map([$this->db, 'quote'], $value)) . ')');
+				$query->where($this->db->quoteName($this->alias . '.' . $field) . ' IN (' . implode(',', array_map([$this->db, 'quote'], $value)) . ')', $operator);
 			} else {
-				$query->where($this->db->quoteName($this->alias . '.' . $field) . ' = ' . $this->db->quote($value));
+				$query->where($this->db->quoteName($this->alias . '.' . $field) . ' = ' . $this->db->quote($value), $operator);
 			}
 		}
 
@@ -260,7 +260,7 @@ class EmundusRepository
 		{
 			$query->order($order);
 		} else {
-			$query->order($this->alias . '.id ASC');
+			$query->order($this->alias . '.' . $this->primaryKey . ' ASC');
 		}
 
 		if (!empty($filters))

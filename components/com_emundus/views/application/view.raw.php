@@ -27,8 +27,6 @@ use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Reference\InternalReferenceRepository;
-use Tchooz\Repositories\Settings\ConfigurationRepository;
-use Tchooz\Services\Reference\InternalReferenceFormat;
 use Tchooz\Services\Reference\InternalReferenceService;
 
 /**

@@ -1,22 +1,24 @@
 <?php
 
-namespace Tchooz\Services\Addons;
+namespace Tchooz\Services\Addons\Handlers;
 
 use Joomla\CMS\Factory;
 use Tchooz\Entities\Addons\AddonEntity;
-use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Services\Addons\AbstractAddonHandler;
 
-class CrcAddonHandler implements AddonHandlerInterface
+class CrcAddonHandler extends AbstractAddonHandler
 {
-	private AddonEntity $addon;
-
-	public function __construct(AddonEntity $addon)
+	public function onActivate(): bool
 	{
-		$this->addon = $addon;
+		return $this->applyState(true);
 	}
 
+	public function onDeactivate(): bool
+	{
+		return $this->applyState(false);
+	}
 
-	public function toggle(bool $state): bool
+	private function applyState(bool $state): bool
 	{
 		$tasks = [];
 
@@ -41,13 +43,6 @@ class CrcAddonHandler implements AddonHandlerInterface
 				->where('label IN (' . $db->quote('COM_EMUNDUS_ACL_CONTACT') . ', ' . $db->quote('COM_EMUNDUS_ACL_ORGANIZATION') .')');
 			$db->setQuery($query);
 			$tasks[] = $db->execute();
-
-			$addonValue = $this->addon->getValue();
-			$addonValue->setEnabled($state);
-			$this->addon->setValue($addonValue);
-
-			$addonRepository = new AddonRepository();
-			$tasks[] = $addonRepository->flush($this->addon);
 		} catch (\Exception $e) {
 			$tasks[] = false;
 		}

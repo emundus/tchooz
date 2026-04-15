@@ -19,9 +19,6 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
-use Tchooz\Repositories\Reference\InternalReferenceRepository;
-use Tchooz\Repositories\Settings\ConfigurationRepository;
-use Tchooz\Services\Reference\InternalReferenceFormat;
 use Tchooz\Services\Reference\InternalReferenceService;
 
 defined('_JEXEC') or die('Restricted access');

@@ -1,12 +1,24 @@
 <?php
 
-namespace Tchooz\Services\Addons;
+namespace Tchooz\Services\Addons\Handlers;
 
 use Joomla\CMS\Factory;
+use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Services\Addons\AbstractAddonHandler;
 
-class EmundusAnalyticsAddonHandler implements AddonHandlerInterface
+class EmundusAnalyticsAddonHandler extends AbstractAddonHandler
 {
-	public function toggle(bool $state): bool
+	public function onActivate(): bool
+	{
+		return $this->toggleExtension(true);
+	}
+
+	public function onDeactivate(): bool
+	{
+		return $this->toggleExtension(false);
+	}
+
+	private function toggleExtension(bool $state): bool
 	{
 		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->createQuery()
