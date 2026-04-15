@@ -3275,4 +3275,110 @@ class EmundusControllerApplication extends EmundusController
 
 		return $response;
 	}
+
+	/**
+	 * @depecated Need to move this to a real feature of application files group
+	 */
+    #[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+    public function updatelotstatus(): void
+    {
+        $response = array('status' => false, 'message' => '');
+
+        $datas  = $this->input->getArray();
+        $ids    = $datas['lots_ids'];
+        $status = $datas['status'];
+        $user = $this->app->getIdentity()->id;
+
+        if (!empty($ids) && !empty($status))
+        {
+            if (!class_exists('EmundusModelApplication'))
+            {
+                require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+            }
+            $m_application = new EmundusModelApplication();
+
+            $fnums = $m_application->getFilesLot($ids[0]);
+
+            if ($status == 2)
+            {
+                $files_to_send = $m_application->exportLotPdf($ids[0]);
+                foreach ($files_to_send as $file)
+                {
+                    PluginHelper::importPlugin('emundus', 'eparapheur');
+                    $this->app->triggerEvent('onSyncEparapheur', [
+                        [
+                            'fnums'         => $fnums,
+                            'signer_email'  => 'murielle.pineau@sorbonne-universite.fr',
+                            'attachment_id' => 71,
+                            'file'          => basename($file['filename']),
+                            'filepath'      => $file['filename'],
+                            'name'          => $file['name'],
+                            'nature'        => 'BA759DA06F21237DC9AF16E0CFBD6203'
+                        ]
+                    ]);
+                }
+            }
+
+            $response['status'] = $m_application->updateLotStatus($ids[0], $status, $user);
+        }
+
+        echo json_encode($response);
+        exit;
+    }
+
+	/**
+	 * @depecated Need to move this to a real feature of application files group
+	 */
+    #[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+    public function getunsignedfile(): void
+    {
+        $datas = $this->input->getArray();
+        $ids   = $datas['lots_ids'];
+
+        if (!class_exists('EmundusModelApplication'))
+        {
+            require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+        }
+        $m_application = new EmundusModelApplication();
+
+        $files_to_send = $m_application->exportLotPdf($ids[0]);
+
+        $response['status'] = true;
+        $response['code'] = 200;
+        $response['data'] = $files_to_send;
+
+        echo json_encode($response);
+        exit;
+    }
+
+	/**
+	 * @depecated Need to move this to a real feature of application files group
+	 */
+    #[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+    public function getsignedfile(): void
+    {
+        $response = array('status' => false, 'message' => '', 'data' => array());
+
+        $datas = $this->input->getArray();
+        $ids   = $datas['lots_ids'];
+
+        if (!empty($ids))
+        {
+            if (!class_exists('EmundusModelApplication'))
+            {
+                require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+            }
+            $m_application = new EmundusModelApplication();
+
+            $file = $m_application->getSignedFile($ids[0]);
+            if (!empty($file))
+            {
+                $response['data']   = $file;
+                $response['status'] = true;
+            }
+        }
+
+        echo json_encode($response);
+        exit;
+    }
 }

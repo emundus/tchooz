@@ -8211,4 +8211,503 @@ class EmundusModelApplication extends ListModel
 
         return $result;
     }
+
+	/**
+	 * @depecated Need to move this to a real feature of application files group
+	 */
+    public function getPrestationLabel(string $fnum): string
+    {
+        $label = '';
+
+        if (!empty($fnum)) {
+            $prestation_id = $this->getPrestationId($fnum);
+
+            if (!empty($prestation_id)) {
+                $query = $this->_db->createQuery();
+
+                $query->select('label')
+                    ->from('data_type_prestations')
+                    ->where('id = ' . $this->_db->quote($prestation_id));
+                $this->_db->setQuery($query);
+                $label = $this->_db->loadResult();
+            }
+        }
+
+        return $label;
+    }
+
+	/**
+	 * @depecated Need to move this to a real feature of application files group
+	 */
+    public function getPrestationId(string $fnum)
+    {
+        $prestation_id = 0;
+
+        if (!empty($fnum)) {
+            $query = $this->_db->createQuery();
+
+            $query->select('prestation_id')
+                ->from('#__emundus_campaign_candidature')
+                ->where('fnum LIKE ' . $this->_db->quote($fnum));
+            $this->_db->setQuery($query);
+            $prestation_id = $this->_db->loadResult();
+
+
+            if (empty($prestation_id)) {
+                $query->clear()
+                    ->select('esc.profile_id, esc.label')
+                    ->from($this->_db->quoteName('#__emundus_setup_campaigns', 'esc'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('ecc.campaign_id'))
+                    ->where($this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quote($fnum));
+
+                $this->_db->setQuery($query);
+                $datas = $this->_db->loadObject();
+                $profile_id = (int)$datas->profile_id;
+
+                switch ($profile_id) {
+                    case 1006:
+                        $query->clear()
+                            ->select('e_806_8034')
+                            ->from($this->_db->quoteName('#__emundus_1006_00'))
+                            ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+                        try {
+                            $this->_db->setQuery($query);
+                            $prestation_id = $this->_db->loadResult();
+                        } catch (Exception $e) {
+                            Log::add('Error logging at the following query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
+                        }
+
+                        break;
+                    case 1007:
+                        $query->clear()
+                            ->select('e_810_8038')
+                            ->from($this->_db->quoteName('#__emundus_1007_00'))
+                            ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+                        try {
+                            $this->_db->setQuery($query);
+                            $prestation_id = $this->_db->loadResult();
+                        } catch (Exception $e) {
+                            Log::add('Error logging at the following query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
+                        }
+
+
+                        break;
+                    case 1008:
+                        $query->clear()
+                            ->select('e_814_8039')
+                            ->from($this->_db->quoteName('#__emundus_1008_00'))
+                            ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+                        try {
+                            $this->_db->setQuery($query);
+                            $prestation_id = $this->_db->loadResult();
+                        } catch (Exception $e) {
+                            Log::add('Error logging at the following query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
+                        }
+                        break;
+                }
+
+                if (!empty($prestation_id)) {
+                    $query->clear()
+                        ->update('#__emundus_campaign_candidature')
+                        ->set('prestation_id = ' . $prestation_id)
+                        ->where('fnum like ' . $this->_db->quote($fnum));
+
+                    $this->_db->setQuery($query);
+                    $this->_db->execute();
+                }
+            }
+        }
+
+        return $prestation_id;
+    }
+
+    public function updatePrestationId($fnum)
+    {
+        $updated = false;
+
+        if (!empty($fnum)) {
+            $query = $this->_db->createQuery();
+
+            $query->clear()
+                ->select('esc.profile_id, esc.label')
+                ->from($this->_db->quoteName('#__emundus_setup_campaigns', 'esc'))
+                ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('ecc.campaign_id'))
+                ->where($this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quote($fnum));
+
+            $this->_db->setQuery($query);
+            $datas = $this->_db->loadObject();
+            $profile_id = (int)$datas->profile_id;
+
+            switch ($profile_id) {
+                case 1006:
+                    $query->clear()
+                        ->select('e_806_8034')
+                        ->from($this->_db->quoteName('#__emundus_1006_00') . ' AS j1006')
+                        ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+                    try {
+                        $this->_db->setQuery($query);
+                        $prestation_id = $this->_db->loadResult();
+                    } catch (Exception $e) {
+                        Log::add('Error logging at the following query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
+                    }
+
+                    break;
+                case 1007:
+                    $query->clear()
+                        ->select('e_810_8038')
+                        ->from($this->_db->quoteName('#__emundus_1007_00'))
+                        ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+                    try {
+                        $this->_db->setQuery($query);
+                        $prestation_id = $this->_db->loadResult();
+                    } catch (Exception $e) {
+                        Log::add('Error logging at the following query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
+                    }
+
+
+                    break;
+                case 1008:
+                    $query->clear()
+                        ->select('e_814_8039')
+                        ->from($this->_db->quoteName('#__emundus_1008_00'))
+                        ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+                    try {
+                        $this->_db->setQuery($query);
+                        $prestation_id = $this->_db->loadResult();
+                    } catch (Exception $e) {
+                        Log::add('Error logging at the following query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
+                    }
+                    break;
+            }
+
+            if (!empty($prestation_id)) {
+                $query->clear()
+                    ->update('#__emundus_campaign_candidature')
+                    ->set('prestation_id = ' . $this->_db->quote($prestation_id))
+                    ->where('fnum like ' . $this->_db->quote($fnum));
+
+                $this->_db->setQuery($query);
+                $updated = $this->_db->execute();
+            }
+        }
+
+        return $updated;
+    }
+
+    public function getFilesLot($id_lot)
+    {
+        $query = $this->_db->createQuery();
+
+        $query->clear()
+            ->select('fnum')
+            ->from('data_lots_883_repeat')
+            ->where('parent_id = ' . $this->_db->quote($id_lot));
+        $this->_db->setQuery($query);
+
+        return $this->_db->loadColumn();
+    }
+
+    public function updateLotStatus($id, $status, $user_id = 0)
+    {
+        $updated = false;
+
+        if (!empty($id) && !empty($status)) {
+            $query = $this->_db->createQuery();
+
+            $query->clear()
+                ->update('data_lots')
+                ->set('state = ' . $this->_db->quote($status))
+                ->set('modified_by = ' . $this->_db->quote($user_id))
+                ->set('modified = ' . $this->_db->quote(date('Y-m-d H:i:s')))
+                ->where('id = ' . $this->_db->quote($id));
+            
+            $this->_db->setQuery($query);
+            $updated = $this->_db->execute();
+        }
+
+        return $updated;
+    }
+
+    public function exportLotPdf($id_lot, $output = false)
+    {
+        $files = [];
+
+        if (!class_exists('EmundusHelperEmails'))
+        {
+            require_once JPATH_SITE . '/components/com_emundus/helpers/emails.php';
+        }
+
+        /* GET LOGO */
+        $logo = EmundusHelperEmails::getLogo(false);
+
+        $type = pathinfo($logo, PATHINFO_EXTENSION);
+        $data = file_get_contents($logo);
+        $logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        /* END LOGO */
+        
+        $query = $this->_db->createQuery();
+
+        $query->clear()
+            ->select('name')
+            ->from('data_lots')
+            ->where('id = ' . $this->_db->quote($id_lot));
+        $this->_db->setQuery($query);
+        $name = $this->_db->loadResult();
+
+        /* We join only on evaluations_00 because the criteria_854_9071 field is only in this form */
+        $query->clear()
+            ->select('esc.label as campaign_label,ecc.fnum,ess.value as status,dtp.label as prestation,eu.firstname,eu.lastname,eu.birth_date,eu.insee,GROUP_CONCAT(esat.label) as tags,ee.criteria_854_9071 as montant, eu.affectation')
+            ->from($this->_db->quoteName('data_lots_883_repeat', 'dlr'))
+            ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quoteName('dlr.fnum'))
+            ->leftJoin($this->_db->quoteName('#__emundus_evaluations_00', 'ee') . ' ON ' . $this->_db->quoteName('ee.fnum') . ' = ' . $this->_db->quoteName('ecc.fnum'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('ecc.campaign_id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('ecc.applicant_id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_tag_assoc', 'eta') . ' ON ' . $this->_db->quoteName('eta.fnum') . ' = ' . $this->_db->quoteName('ecc.fnum'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_action_tag', 'esat') . ' ON ' . $this->_db->quoteName('esat.id') . ' = ' . $this->_db->quoteName('eta.id_tag'))
+            ->leftJoin($this->_db->quoteName('data_type_prestations', 'dtp') . ' ON ' . $this->_db->quoteName('dtp.id') . ' = ' . $this->_db->quoteName('ecc.prestation_id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $this->_db->quoteName('ess.step') . ' = ' . $this->_db->quoteName('ecc.status'))
+            ->where($this->_db->quoteName('dlr.parent_id') . ' = ' . $this->_db->quote($id_lot))
+            ->group('ecc.fnum')
+            ->order('esc.id ASC, dtp.label ASC, eu.lastname ASC');
+        $this->_db->setQuery($query);
+        $datas = $this->_db->loadObjectList();
+
+        $htmldata = '<html>
+                <head>
+                  <title>Dossiers du lot ' . $name . '</title>
+                  <meta name="author" content="eMundus">
+                </head>
+                <body>';
+        $htmldata .= '<header><table style="width: 100%"><tr><td><img src="' . $logo_base64 . '" width="auto" height="60"/></td><td style="text-align: right">';
+        $htmldata .= '<h1>Dossiers du lot ' . $name . '</h1></td></tr></table></header>';
+
+        $htmldata .= "
+            <style>
+                    @page { margin: 130px 25px; }
+                    header { position: fixed; top: -120px; left: 0px; right: 0px; }
+                    header hr {
+                        border: none;
+                        height: 1px;
+                        background-color: #A4A4A4;
+                    }
+                    /*.page-break { page-break-before: always; }*/
+                    hr {
+                        border: solid 1px black;
+                    }
+                    td{
+                        font-size: 12px;
+                    }
+                    .pdf-forms{
+                          border-spacing: 0;
+                    }
+                    .pdf-repeat-count{
+                       margin-top: 12px;
+                       margin-bottom: 6px;
+                       padding-left: 16px; 
+                    }
+                    .pdf-forms th{
+                       font-size: 12px;
+                       font-weight: 400;
+                    }
+                    .pdf-forms th.background{
+                       background-color: #EDEDED;
+                       border-top: solid 1px #A4A4A4;
+                       border-left: solid 1px #A4A4A4;
+                       border-right: solid 1px #A4A4A4;
+                    }
+                   table {
+                      width: 100%;
+                      border-collapse: collapse;
+                    }
+                    
+                    thead {
+                      display: table-header-group; /* Répète l'en-tête sur chaque page */
+                    }
+                    
+                    tfoot {
+                      display: table-footer-group; /* (optionnel) Répète le footer */
+                    }
+                    
+                    tbody {
+                      display: table-row-group; /* Important : permet la pagination */
+                    }
+                    
+                    tr {
+                      page-break-inside: avoid; /* Empêche de couper une ligne en deux */
+                    }
+                    
+                    td, th {
+                      page-break-inside: avoid;
+                    }
+                    table.pdf-forms{
+                       width: 100%;
+                       /*page-break-inside:auto;*/
+                       padding: 0 16px;
+                       table-layout: fixed;
+                    }
+                    /*.pdf-forms tr{
+                       page-break-inside:avoid; 
+                       page-break-after:avoid
+                    }*/
+                    .pdf-forms td{
+                       border-collapse: collapse;
+                       padding: 8px;
+                       border-left: solid 1px #A4A4A4;
+                         border-top: solid 1px #A4A4A4;
+                         white-space: break-spaces;
+                         word-break: break-word;
+                    }
+                  
+                    .pdf-forms tr td:nth-child(2){
+                       border-right: solid 1px #A4A4A4;
+                    }
+                    .pdf-forms tr td:last-child{
+                       border-right: solid 1px #A4A4A4;
+                    }
+                    .pdf-forms td.background-light{
+                       width: auto;
+                    }
+                    .pdf-forms tr td[colspan='2']{
+                       border-right: solid 1px #A4A4A4;
+                    }
+                    .pdf-forms tr:last-child td{
+                       border-bottom: solid 1px #A4A4A4;
+                    }
+                    .pdf-attachments{
+                       font-size: 14px;
+                    }
+                    .pdf-attachments li {
+                       margin-bottom: 6px;
+                    }
+                    /*@media print {
+                        .breaker{
+                            page-break-before: always;
+                        }
+                    }*/
+            </style>";
+
+        $htmldata .= '<table class="pdf-forms">';
+        $htmldata .= '<thead><tr>';
+        $htmldata .= '<th class="background">Campagne</th>';
+        $htmldata .= '<th class="background">Statut</th>';
+        $htmldata .= '<th class="background">Prestation</th>';
+        $htmldata .= '<th class="background">Prénom</th>';
+        $htmldata .= '<th class="background">Nom</th>';
+        $htmldata .= '<th class="background">Date de naissance</th>';
+        $htmldata .= '<th class="background">Numéro de sécurité sociale</th>';
+        $htmldata .= '<th class="background">Affectation</th>';
+        $htmldata .= '<th class="background">Montant</th>';
+        $htmldata .= '<th class="background">N°Bdc / N°SIFAC</th>';
+        $htmldata .= '</tr></thead>';
+        $htmldata .= '<tbody>';
+        foreach ($datas as $data) {
+            $htmldata .= '<tr>';
+            $htmldata .= '<td>' . $data->campaign_label . '</td>';
+            $htmldata .= '<td>' . $data->status . '</td>';
+            $htmldata .= '<td>' . $data->prestation . '</td>';
+            $htmldata .= '<td>' . $data->firstname . '</td>';
+            $htmldata .= '<td>' . $data->lastname . '</td>';
+            $htmldata .= '<td>' . date('d/m/Y', strtotime($data->birth_date)) . '</td>';
+            $htmldata .= '<td style="width: 13%">' . $data->insee . '</td>';
+            $htmldata .= '<td>' . $data->affectation . '</td>';
+            $htmldata .= '<td>' . $data->montant . '</td>';
+            $htmldata .= '<td></td>';
+            $htmldata .= '</tr>';
+        }
+        $htmldata .= '</tbody>';
+        $htmldata .= '</table>';
+
+
+        $htmldata .= '</body></html>';
+        $rand = bin2hex(random_bytes(5));
+        $public_url = JURI::Base() . 'images/emundus/letters/dossiers_lot_' . $id_lot . '_'.$rand.'.pdf';
+        $filename = JPATH_SITE . '/images/emundus/letters/dossiers_lot_' . $id_lot . '_'.$rand.'.pdf';
+
+        /** DOMPDF */
+        $options = new Options();
+        $options->set('defaultFont', 'helvetica');
+        $options->set('isPhpEnabled', true);
+        $dompdf = new Dompdf($options);
+
+        try {
+            $dompdf->loadHtml($htmldata);
+            $dompdf->setPaper('A4', 'landscape');//set page size and orientation
+            $dompdf->render();
+
+            if (file_put_contents($filename, $dompdf->output())) {
+                $files[] = array(
+                    'public_url' => $public_url,
+                    'filename' => $filename,
+                    'name' => $name
+                );
+            }
+
+            if ($output) {
+                header('Content-type: application/pdf');
+                header('Content-Disposition: inline; filename=' . basename($filename));
+                header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+                header('Cache-Control: no-store, no-cache, must-revalidate');
+                header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+                header('Pragma: anytextexeptno-cache', true);
+                header('Cache-control: private');
+                header('Expires: 0');
+
+                ob_clean();
+                ob_end_flush();
+                readfile($filename);
+                exit;
+            }
+        } catch (Exception $e) {
+            Log::add('Error when export lots : ' . $id_lot . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
+            return false;
+        }
+
+        /** END */
+
+        return $files;
+    }
+
+    public function getSignedFile($id)
+    {
+        $file = '';
+        
+        $query = $this->_db->createQuery();
+
+        $query->clear()
+            ->select('fnum')
+            ->from('data_lots_883_repeat')
+            ->where('parent_id = ' . $this->_db->quote($id));
+        $this->_db->setQuery($query);
+        $fnums = $this->_db->loadColumn();
+
+        if (!empty($fnums)) {
+            foreach ($fnums as $fnum) {
+                $query->clear()
+                    ->select('eu.filename,ecc.applicant_id')
+                    ->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quoteName('eu.fnum'))
+                    ->where('eu.attachment_id = 71')
+                    ->where('eu.fnum = ' . $this->_db->quote($fnum));
+                $this->_db->setQuery($query);
+                $file = $this->_db->loadObject();
+
+                if (!empty($file)) {
+                    $file = '/images/emundus/files/' . $file->applicant_id . '/' . $file->filename;
+                    break;
+                }
+                else{
+                    $file='';
+                }
+            }
+        }
+
+        return $file;
+    }
 }
