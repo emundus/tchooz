@@ -6,6 +6,8 @@ use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Fields\StringField;
+use Tchooz\Enums\Addons\AddonEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 
 enum ApplicationFileActionsEnum: string
@@ -18,10 +20,13 @@ enum ApplicationFileActionsEnum: string
 	case ANONYMOUS = 'anonymous';
 	case CUSTOM = 'custom';
 	case DELETE = 'delete';
+	case TRANSACTION = 'transaction';
+	case OPENFILE = 'openfile';
 
 	public function getLabel(): string
 	{
 		return match($this) {
+			self::OPENFILE => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_OPENFILE'),
 			self::RENAME => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_RENAME'),
 			self::COPY => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_COPY'),
 			self::DOCUMENTS => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_DOCUMENTS'),
@@ -30,12 +35,14 @@ enum ApplicationFileActionsEnum: string
 			self::ANONYMOUS => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_ANONYMOUS'),
 			self::DELETE => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_DELETE'),
 			self::CUSTOM => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_CUSTOM'),
+			self::TRANSACTION => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_TRANSACTION'),
 		};
 	}
 
 	public function getIcon(): string
 	{
 		return match($this) {
+			self::OPENFILE => 'open_in_new',
 			self::RENAME => 'drive_file_rename_outline',
 			self::COPY => 'file_copy',
 			self::DOCUMENTS => 'description',
@@ -43,7 +50,8 @@ enum ApplicationFileActionsEnum: string
 			self::COLLABORATE => 'collaborate',
 			self::ANONYMOUS => 'domino_mask',
 			self::DELETE => 'delete',
-			self::CUSTOM => 'rule_settings'
+			self::CUSTOM => 'rule_settings',
+			self::TRANSACTION => 'universal_currency',
 		};
 	}
 
@@ -79,14 +87,38 @@ enum ApplicationFileActionsEnum: string
 	{
 		return match($this)
 		{
-			self::RENAME => 0,
-			self::COPY => 1,
-			self::DOCUMENTS => 2,
-			self::HISTORY => 3,
-			self::COLLABORATE => 4,
-			self::ANONYMOUS => 5,
-			self::DELETE => 6,
-			self::CUSTOM => 7,
+			self::OPENFILE => 0,
+			self::RENAME => 1,
+			self::COPY => 2,
+			self::DOCUMENTS => 3,
+			self::HISTORY => 4,
+			self::COLLABORATE => 5,
+			self::ANONYMOUS => 6,
+			self::TRANSACTION => 7,
+			self::CUSTOM => 8,
+			self::DELETE => 99,
 		};
+	}
+
+	public function isAvailable(): bool
+	{
+		$available = true;
+
+		switch ($this)
+		{
+			case self::TRANSACTION:
+				$addonRepository = new AddonRepository();
+				$addon = $addonRepository->getByName(AddonEnum::PAYMENT->value);
+
+				if (!$addon->isActivated())
+				{
+					$available = false;
+				}
+				break;
+			default:
+				$available = true;
+		}
+
+		return $available;
 	}
 }

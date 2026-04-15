@@ -83,11 +83,15 @@ class ApplicationFileRegistry
 		foreach ($this->getActions() as $action)
 		{
 			$config  = ComponentHelper::getParams('com_emundus');
-			$actionEnabled = (bool) $config->get('action_' . $action->getActionType()->value, false);
 
-			if ($actionEnabled)
+			if ($action->getActionType()->isAvailable())
 			{
-				$availableActions[] = $action;
+				$actionEnabled = (bool) $config->get('action_' . $action->getActionType()->value, false);
+
+				if ($actionEnabled)
+				{
+					$availableActions[] = $action;
+				}
 			}
 		}
 
