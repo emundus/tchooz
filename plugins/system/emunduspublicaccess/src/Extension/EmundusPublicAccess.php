@@ -25,6 +25,7 @@ use Joomla\CMS\User\UserFactoryAwareTrait;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\SubscriberInterface;
 use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Enums\User\AuthenticationModeEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
@@ -446,7 +447,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 * Joomla, mais la session eMundus est scopée au fnum validé. Cela garantit que deux invités
 	 * simultanés ne peuvent pas interférer entre eux.
 	 *
-	 * @param   \Tchooz\Entities\ApplicationFile\ApplicationFileEntity  $applicationFile
+	 * @param   ApplicationFileEntity  $applicationFile
 	 * @param   string                                                  $accessToken
 	 *
 	 * @return  void
@@ -454,7 +455,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 * @since   1.0.0
 	 */
 	private function initPublicSession(
-		\Tchooz\Entities\ApplicationFile\ApplicationFileEntity $applicationFile,
+		ApplicationFileEntity $applicationFile,
 		string $accessToken
 	): void
 	{
@@ -531,7 +532,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 * C'est la clé de l'isolation : même si 100 dossiers publics partagent le même
 	 * system_public_user_id, chaque session PHP ne voit que SON dossier.
 	 *
-	 * @param   \Tchooz\Entities\ApplicationFile\ApplicationFileEntity  $applicationFile
+	 * @param   ApplicationFileEntity  $applicationFile
 	 * @param   \Joomla\CMS\User\User                                  $systemUser
 	 *
 	 * @return  void
@@ -539,7 +540,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 * @since   1.0.0
 	 */
 	private function initScopedEmundusSession(
-		\Tchooz\Entities\ApplicationFile\ApplicationFileEntity $applicationFile,
+		ApplicationFileEntity $applicationFile,
 		\Joomla\CMS\User\User $systemUser
 	): void
 	{
@@ -653,8 +654,6 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			throw new \Exception(Text::_('COM_EMUNDUS_PUBLIC_ACCESS_SESSION_EXPIRED'), 403);
 		}
 
-
-
 		// Security: if a fnum is in the URL, it MUST match the session fnum.
 		// This prevents a public user from navigating to another user's file
 		// by simply changing the fnum parameter.
@@ -694,7 +693,14 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 				return;
 			}
 
-			$this->initScopedEmundusSession($applicationFile, $app->getIdentity());
+			if ($app->getIdentity()->guest === 1)
+			{
+				$this->initPublicSession($applicationFile, $savedToken);
+			}
+			else
+			{
+				$this->initScopedEmundusSession($applicationFile, $app->getIdentity());
+			}
 		}
 		catch (\Exception $e)
 		{
