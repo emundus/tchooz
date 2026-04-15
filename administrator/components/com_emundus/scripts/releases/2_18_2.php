@@ -13,7 +13,7 @@ namespace scripts;
 use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Factories\Language\LanguageFactory;
 
-class Release2_19_1Installer extends ReleaseInstaller
+class Release2_18_2Installer extends ReleaseInstaller
 {
 	private array $tasks = [];
 
