@@ -97,8 +97,7 @@ class ParcoursupRepository
 						->select('cc.fnum, cc.applicant_id')
 						->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
 						->leftJoin($this->db->quoteName($table, 'd') . ' ON d.fnum = cc.fnum')
-						->where('d.' . $field . ' = ' . $this->db->quote($datas->getParcoursupId()))
-						->where('cc.campaign_id = ' . $datas->getCampaignId());
+						->where('d.' . $field . ' = ' . $this->db->quote($datas->getParcoursupId()));
 					$this->db->setQuery($this->query);
 					$application = $this->db->loadObject();
 
@@ -170,7 +169,7 @@ class ParcoursupRepository
 			{
 				$flushed = $fnum;
 			}
-			
+
 			// Check if we have choice_cid in applicationFile, if yes add application choices to application file via ApplicationChoicesRepository
 			if(!empty($datas->getApplicationFileKey('choice_cid')))
 			{
@@ -391,6 +390,11 @@ class ParcoursupRepository
 
 			foreach ($datas->getApplicationFile() as $field => $data)
 			{
+				if(str_contains($field, 'jos_emundus_campaign_candidature_choices_more'))
+				{
+					continue;
+				}
+
 				if (str_contains($field, '___'))
 				{
 					$table = explode('___', $field)[0];
