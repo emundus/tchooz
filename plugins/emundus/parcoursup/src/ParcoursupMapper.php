@@ -93,7 +93,7 @@ class ParcoursupMapper
 
 							if (!empty($field['condition']))
 							{
-								$value = $this->checkCondition($field, $value, $applicant);
+								$value = $this->checkCondition($field, $value, $applicant, $formationCode);
 							}
 
 							$application[$field['elementId']] = $this->setFieldValue($field, $value);
@@ -188,28 +188,59 @@ class ParcoursupMapper
 		return $value;
 	}
 
-	private function checkCondition(array $field, mixed $value, array $datas): mixed
+	private function checkCondition(array $field, mixed $value, array $datas, string $formationCode): mixed
 	{
 		$condition          = $field['condition'];
-		$conditionAttribute = $field['condition']['attribute'];
+		if(empty($condition))
+		{
+			return $value;
+		}
 
-		if (!empty($conditionAttribute))
+		$conditionAttribute = $field['condition']['attribute'];
+		$operator = $field['condition']['operator'] ?? '=';
+		if(empty($conditionAttribute))
+		{
+			return $value;
+		}
+
+		if($conditionAttribute === 'formationCode')
+		{
+			$conditionValue = $formationCode;
+		}
+		else
 		{
 			$conditionValue = $this->arrayHelper->getNestedValue($datas, $conditionAttribute);
+		}
 
-			if (!empty($conditionValue))
+		if (!empty($conditionValue))
+		{
+			if (is_array($value))
 			{
-				if (is_array($value))
+				foreach ($value as $key => $val)
 				{
-					foreach ($value as $key => $val)
+					if ($conditionValue[$key] != $condition['value'])
 					{
-						if ($conditionValue[$key] != $condition['value'])
-						{
-							unset($value[$key]);
-						}
+						unset($value[$key]);
 					}
+				}
 
-					$value = array_values($value);
+				$value = array_values($value);
+			}
+			else {
+				switch($operator)
+				{
+					case '==':
+						if($conditionValue != $condition['value'])
+						{
+							$value = null;
+						}
+						break;
+					case '!=':
+						if($conditionValue == $condition['value'])
+						{
+							$value = null;
+						}
+						break;
 				}
 			}
 		}
