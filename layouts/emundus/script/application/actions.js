@@ -1,6 +1,6 @@
 window.addEventListener('DOMContentLoaded', (event) => {
     document.querySelectorAll('.emundus-application-file-actions').forEach((element) => {
-        document.addEventListener('click', (event) => {
+        element.addEventListener('click', (event) => {
             if (element.classList.contains('emundus-application-file-actions'))
             {
                 let actionsContainer = element.parentElement.querySelector('.emundus-application-file-actions-container');
@@ -109,13 +109,16 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
     // if actions container is open and user clicks outside of it, close it
     document.addEventListener('click', (e) => {
-        let actionsContainer = document.getElementById('emundus-application-file-actions-container');
-        let actionsButton = document.getElementById('emundus-application-file-actions');
+        let actionsContainers = document.querySelectorAll('.emundus-application-file-actions-container');
 
-        if (actionsContainer && !actionsContainer.classList.contains('tw-hidden') && !actionsContainer.contains(e.target) && !actionsButton.contains(e.target))
-        {
-            actionsContainer.classList.add('tw-hidden');
-        }
+        actionsContainers.forEach((actionsContainer) => {
+            let actionsButton = actionsContainer.parentElement.querySelector('.emundus-application-file-actions');
+
+            if (actionsContainer && !actionsContainer.classList.contains('tw-hidden') && !actionsContainer.contains(e.target) && !actionsButton.contains(e.target))
+            {
+                actionsContainer.classList.add('tw-hidden');
+            }
+        });
     });
 
     function executeAction(action, fnum, params = {})
