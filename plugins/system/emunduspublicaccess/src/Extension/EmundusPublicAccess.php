@@ -13,6 +13,7 @@ namespace Joomla\Plugin\System\EmundusPublicAccess\Extension;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Application\AfterRouteEvent;
 use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Event\User\LoginEvent;
 use Joomla\CMS\Event\User\LogoutEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -25,6 +26,7 @@ use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\SubscriberInterface;
 use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Enums\User\AuthenticationModeEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
@@ -102,6 +104,14 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	private ?AddonEntity $publicSessionAddon = null;
 
 	/**
+	 * True while this plugin is dispatching the login() call that establishes a
+	 * public access session. Used by onUserLogin to override the authentication
+	 * response type, so we do not rely on the session flag (which is set only
+	 * after login() has returned).
+	 */
+	private bool $authenticatingPublicAccess = false;
+
+	/**
 	 * Build a composite access key from a token and a fnum.
 	 *
 	 * @param   string  $token            The plain-text access token
@@ -127,6 +137,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 
 		return [
 			'onAfterRoute'       => 'onAfterRoute',
+			'onUserLogin'        => 'onUserLogin',
 			'onUserLogout'       => 'onUserLogout',
 			'onAfterSubmitFile'  => 'onAfterSubmitFile',
 			'onAfterUpdateOwner' => 'onAfterUpdateOwner',
@@ -320,6 +331,28 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	}
 
 	/**
+	 * Override the authentication response type when the plugin is the one
+	 * driving the login (public access token flow). Downstream listeners and
+	 * services (e.g. AuthenticationModeEnum::tryFromJoomlaType) can then branch
+	 * on this type without having to ask the plugin about the session state.
+	 *
+	 * @param   LoginEvent  $event
+	 *
+	 * @return void
+	 */
+	public function onUserLogin(LoginEvent $event): void
+	{
+		if (!$this->authenticatingPublicAccess)
+		{
+			return;
+		}
+
+		$response         = $event->getAuthenticationResponse();
+		$response['type'] = AuthenticationModeEnum::ACCESS_KEY->value;
+		$event->setArgument('subject', $response);
+	}
+
+	/**
 	 * Before logout, destroy scoped session and revert to guest identity.
 	 * Do not let Joomla perform total logout, because other users could be using system user, but with another session
 	 *
@@ -460,8 +493,15 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 		{
 			require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 		}
-		$usersModel = new \EmundusModelUsers();
-		$usersModel->login($systemUser->id);
+		$usersModel                       = new \EmundusModelUsers();
+		$this->authenticatingPublicAccess = true;
+		try
+		{
+			$usersModel->login($systemUser->id);
+		} finally
+		{
+			$this->authenticatingPublicAccess = false;
+		}
 
 		// Mark the session as a public access session, scoped to this specific fnum
 		$session->set(self::SESSION_PUBLIC_ACCESS_KEY, true);
@@ -654,7 +694,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 				return;
 			}
 
-			$this->initPublicSession($applicationFile, $savedToken);
+			$this->initScopedEmundusSession($applicationFile, $app->getIdentity());
 		}
 		catch (\Exception $e)
 		{

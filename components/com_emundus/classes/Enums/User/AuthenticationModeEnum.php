@@ -3,13 +3,12 @@
 namespace Tchooz\Enums\User;
 
 use Joomla\CMS\Language\Text;
-use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 
-enum AuthenticationModeEnum: string
+enum AuthenticatioAuthenticationModeEnumnModeEnum: string
 {
 	case DEFAULT = 'default';
 	case SSO = 'sso';
-	case ACCESS_KEY = 'token';
+	case ACCESS_KEY = 'access_key';
 
 	public function getLabel(): string
 	{
@@ -20,28 +19,20 @@ enum AuthenticationModeEnum: string
 		};
 	}
 
+	/**
+	 * Map a Joomla authentication response "type" to our internal mode.
+	 *
+	 * The public access flow is detected via the dedicated type string
+	 * injected by plg_system_emunduspublicaccess on onUserLogin, so this
+	 * enum does not depend on any plugin class.
+	 */
 	public static function tryFromJoomlaType(string $type): ?AuthenticationModeEnum
 	{
-		$mode = null;
-
-		switch($type)
+		return match ($type)
 		{
-			case 'Oauth2':
-				$mode = self::SSO;
-				break;
-			case 'Joomla':
-			default:
-				if (EmundusPublicAccess::isPublicAccessSession())
-				{
-					$mode = self::ACCESS_KEY;
-				}
-				else
-				{
-					$mode = self::DEFAULT;
-				}
-				break;
-		}
-
-		return $mode;
+			'Oauth2' => self::SSO,
+			'access_key' => self::ACCESS_KEY,
+			'Joomla' => self::DEFAULT,
+		};
 	}
 }
