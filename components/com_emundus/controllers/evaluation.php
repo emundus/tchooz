@@ -1276,7 +1276,7 @@ class EmundusControllerEvaluation extends BaseController
 				$applicationChoicesProgram = [];
 				$addonRepository           = new AddonRepository();
 				$choicesAddon              = $addonRepository->getByName('choices');
-				if ($choicesAddon->getValue()->isEnabled())
+				if ($choicesAddon->isActivated())
 				{
 					$applicationChoicesRepository = new ApplicationChoicesRepository();
 					$applicationChoices           = $applicationChoicesRepository->getChoicesByFnum($fnum);

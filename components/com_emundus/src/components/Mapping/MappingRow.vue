@@ -2,10 +2,11 @@
 import Parameter from '@/components/Utils/Parameter.vue';
 import Modal from '@/components/Modal.vue';
 import MappingTransformation from '@/components/Mapping/MappingTransformation.vue';
+import Button from '@/components/Atoms/Button.vue';
 
 export default {
 	name: 'MappingRow',
-	components: { MappingTransformation, Parameter, Modal },
+	components: { Button, MappingTransformation, Parameter, Modal },
 	props: {
 		row: {
 			type: Object,
@@ -14,6 +15,14 @@ export default {
 		dataResolvers: {
 			type: Array,
 			required: true,
+		},
+		displayTarget: {
+			type: Boolean,
+			default: true,
+		},
+		canReorder: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	data() {
@@ -260,6 +269,11 @@ export default {
 
 <template>
 	<tr :key="row.id">
+		<td v-if="canReorder">
+			<span class="handle tw-cursor-grab">
+				<span class="material-symbols-outlined">drag_indicator</span>
+			</span>
+		</td>
 		<td class="tw-flex tw-w-full tw-flex-row tw-gap-2">
 			<Parameter
 				class="tw-w-full"
@@ -278,27 +292,29 @@ export default {
 			>
 			</Parameter>
 		</td>
-		<td>
+		<td v-if="displayTarget">
 			<input type="text" v-model="row.target_field" />
 		</td>
-		<td class="row-actions tw-flex tw-gap-4">
-			<div class="tw-relative">
-				<span
-					class="material-symbols-outlined not-to-close-modal tw-cursor-pointer"
-					@click="openRowTransformation"
-					:title="translate('COM_EMUNDUS_MAPPING_ROW_EDIT_TRANSFORMATIONS_TOOLTIP')"
-				>
-					transform
-				</span>
-				<div
-					v-if="row.transformations.length > 0"
-					@click="openRowTransformation"
-					class="tw-absolute tw-right-[-8px] tw-top-[-8px] tw-flex tw-h-[16px] tw-w-[16px] tw-cursor-pointer tw-items-center tw-justify-center tw-rounded-full tw-bg-green-500 tw-text-xs tw-font-bold tw-text-white"
-				>
-					{{ row.transformations.length }}
+		<td class="row-actions">
+			<div class="tw-flex tw--items-center tw-gap-4">
+				<div class="tw-relative">
+					<span
+						class="material-symbols-outlined not-to-close-modal tw-cursor-pointer"
+						@click="openRowTransformation"
+						:title="translate('COM_EMUNDUS_MAPPING_ROW_EDIT_TRANSFORMATIONS_TOOLTIP')"
+					>
+						transform
+					</span>
+					<div
+						v-if="row.transformations.length > 0"
+						@click="openRowTransformation"
+						class="tw-absolute tw-right-[-8px] tw-top-[-8px] tw-flex tw-h-[16px] tw-w-[16px] tw-cursor-pointer tw-items-center tw-justify-center tw-rounded-full tw-bg-green-500 tw-text-xs tw-font-bold tw-text-white"
+					>
+						{{ row.transformations.length }}
+					</div>
 				</div>
+				<span class="material-symbols-outlined tw-cursor-pointer tw-text-red-500" @click="remove"> delete </span>
 			</div>
-			<span class="material-symbols-outlined tw-cursor-pointer tw-text-red-500" @click="remove"> delete </span>
 		</td>
 
 		<Modal
@@ -328,13 +344,19 @@ export default {
 				{{ translate('COM_EMUNDUS_MAPPING_ROW_NO_TRANSFORMATIONS_DEFINED') }}
 			</p>
 
-			<div class="tw-mt-4 tw-flex tw-w-full tw-justify-end">
-				<button class="tw-btn-primary" @click="addTransformation(row.id)">
-					{{ translate('COM_EMUNDUS_BTN_ADD_TRANSFORMATION') }}
-				</button>
-				<button class="tw-btn-secondary tw-ml-2" @click="onCloseTransformations">
-					{{ translate('COM_EMUNDUS_CLOSE') }}
-				</button>
+			<div class="tw-flex tw-justify-end">
+				<Button variant="link" @click="addTransformation(row.id)">
+					+ {{ translate('COM_EMUNDUS_BTN_ADD_TRANSFORMATION') }}
+				</Button>
+			</div>
+
+			<div class="tw-mt-4 tw-flex tw-w-full tw-justify-between">
+				<Button variant="secondary" @click="$refs['mappingRowTransformationsModal' + row.id].close()">
+					{{ translate('BACK') }}
+				</Button>
+				<Button variant="primary" @click="onCloseTransformations">
+					{{ translate('COM_EMUNDUS_OK') }}
+				</Button>
 			</div>
 		</Modal>
 	</tr>

@@ -3,7 +3,7 @@
 namespace Tchooz\Entities\Mapping;
 
 use Joomla\CMS\Language\Text;
-use Tchooz\Entities\ExternalReference\ExternalReferenceEntity;
+use Tchooz\Entities\Reference\ExternalReferenceEntity;
 use Tchooz\Entities\Fields\Field;
 use Tchooz\Enums\Api\ApiMethodEnum;
 

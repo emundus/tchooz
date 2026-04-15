@@ -400,6 +400,35 @@ module.exports = {
                         cursor: 'not-allowed',
                     }
                 },
+                '.btn-dashed': {
+                    backgroundColor: 'hsl(from var(--em-profile-color) h s l / 15%)',
+                    color: 'var(--em-profile-color) !important',
+                    border: '2px dashed var(--em-profile-color)',
+                    textShadow: 'none',
+                    textTransform: 'math-auto',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
+                    fontSize: '16px',
+                    fontFamily: 'var(--em-profile-font)',
+                    lineHeight: '1.25',
+                    borderRadius: 'var(--em-applicant-br)',
+                    transition: 'all 0.2s ease-out',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+
+                    '&:hover': {
+                        backgroundColor: 'hsl(from var(--em-profile-color) h s l / 30%)',
+                        color: 'var(--em-profile-color) !important',
+                        border: '2px dashed var(--em-profile-color)',
+                        textDecoration: 'none',
+                    },
+
+                    '&:disabled': {
+                        opacity: '0.6',
+                        cursor: 'not-allowed',
+                    }
+                },
                 '.target-blank-links': {
                     textDecoration: 'underline',
 

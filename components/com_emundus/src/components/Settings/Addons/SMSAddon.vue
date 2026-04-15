@@ -34,7 +34,7 @@ export default {
 		};
 	},
 	created() {
-		this.addon.configuration = JSON.parse(this.addon.configuration);
+		this.addon.params = typeof this.addon.params === 'string' ? JSON.parse(this.addon.params) : this.addon.params;
 		settingsService
 			.redirectJRoute('index.php?option=com_emundus&view=emails', useGlobalStore().getCurrentLang, false)
 			.then((response) => {
@@ -81,7 +81,7 @@ export default {
 
 		<div id="service" class="tw-flex tw-flex-col">
 			<label for="service">{{ translate('COM_EMUNDUS_SMS_SERVICE') }}</label>
-			<select v-model="addon.configuration.service">
+			<select v-model="addon.params.service">
 				<option v-for="service in services" :key="service.value" :value="service.value" name="service">
 					{{ service.label }}
 				</option>
@@ -90,7 +90,7 @@ export default {
 
 		<div id="encoding" class="tw-flex tw-flex-col">
 			<label for="encoding">{{ translate('COM_EMUNDUS_SMS_ENCODING') }}</label>
-			<select v-model="addon.configuration.encoding">
+			<select v-model="addon.params.encoding">
 				<option value="">{{ translate('COM_EMUNDUS_SMS_SELECT_ENCODING') }}</option>
 				<option v-for="encoding in encodings" :key="encoding.value" :value="encoding.value" name="encoding">
 					{{ encoding.label }}

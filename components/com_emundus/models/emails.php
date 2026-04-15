@@ -29,6 +29,7 @@ use Tchooz\Entities\Emails\TagEntity;
 use Tchooz\Entities\Messages\TriggerEntity;
 use Tchooz\Enums\Emails\TagTypeEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Reference\InternalReferenceRepository;
 
 class EmundusModelEmails extends JModelList
 {
@@ -704,7 +705,6 @@ class EmundusModelEmails extends JModelList
 				$replacements[$applicant_email_key] = $fnumInfos['email'];
 				$applicant_username_key = array_search('/\[APPLICANT_USERNAME\]/', $patterns);
 				$replacements[$applicant_username_key] = $fnumInfos['username'];
-
 				$status  = $m_files->getStatusByFnums([$fnum]);
 
 				$patterns[]     = '/\[APPLICATION_STATUS\]/';
@@ -780,6 +780,16 @@ class EmundusModelEmails extends JModelList
 				{
 					Log::add('Error when try to set constants for bookin module',Log::ERROR,'com_emundus.email');
 				}
+				
+				// Add reference tags
+				$patterns[]     = '/\[SHORT_REFERENCE\]/';
+				$replacements[] = $fnumInfos['short_reference'];
+				$internalReferenceRepository = new InternalReferenceRepository();
+				$reference = $internalReferenceRepository->getActiveReference($fnumInfos['ccid']);
+				$patterns[]     = '/\[REFERENCE\]/';
+				$replacements[] = !empty($reference) ? $reference->getReference() : '';
+				$patterns[]     = '/\[FULL_REFERENCE\]/';
+				$replacements[] = !empty($reference) ? $reference->getFullReference() : '';
 
 				if (!empty($content) && (str_contains($content, '[LAST_COMMENT]') || str_contains($content, '[LAST_COMMENT_DATE]') || str_contains($content, '[LAST_COMMENT_AUTHOR]') || str_contains($content, '[LAST_COMMENT_TARGET]')))
 				{

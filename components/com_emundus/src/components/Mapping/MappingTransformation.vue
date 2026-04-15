@@ -129,6 +129,7 @@ export default {
 			const resolver = mappingStore.getDataResolverByType(this.row.source_type);
 			let displayMapValuesOption = false;
 			let displayMapDatabaseJoinOption = false;
+			let displayStaticValueOption = false;
 
 			if (resolver && resolver.fields) {
 				const field = resolver.fields.find((field) => {
@@ -142,6 +143,10 @@ export default {
 				if (field && typeof field.originalType !== 'undefined' && field.originalType === 'databasejoin') {
 					displayMapDatabaseJoinOption = true;
 				}
+
+				if (resolver.targetType === 'static_value') {
+					displayStaticValueOption = true;
+				}
 			}
 
 			return useMappingStore()
@@ -153,7 +158,8 @@ export default {
 					if (transformer.type === 'map_databasejoin_element_values' && !displayMapDatabaseJoinOption) {
 						return false;
 					}
-					return true;
+					// TODO: For moment we don't want multiple sequences possible for references
+					return transformer.type !== 'sequential';
 				})
 				.map((transformer) => {
 					return {

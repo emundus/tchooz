@@ -374,6 +374,7 @@ class EmundusModelFiles extends JModelLegacy
 		if (in_array('tags', $em_other_columns)) {
 			$this->_elements_default[] = ' GROUP_CONCAT(DISTINCT eta.id_tag) as id_tag ';
 		}
+
 		if (empty($col_elt)) {
 			$col_elt = array();
 		}
@@ -686,9 +687,9 @@ class EmundusModelFiles extends JModelLegacy
 			$em_other_columns = array();
 		}
 
-		$select = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, ' .
+		$select = 'select jecc.fnum, jecc.short_reference, ss.step, ss.value as status, ss.class as status_class, ' .
 			'CASE WHEN eu.is_anonym = 1 THEN "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" ELSE concat(upper(trim(eu.lastname)), " ", eu.firstname) END AS name, ' .
-			'jecc.applicant_id, jecc.campaign_id, eu.is_anonym ';
+			'jecc.applicant_id, jecc.campaign_id, eu.is_anonym, eir.reference ';
 
 		// prevent double left join on query
 		$already_joined_tables = [
@@ -700,7 +701,8 @@ class EmundusModelFiles extends JModelLegacy
 			'sp'   => 'jos_emundus_setup_programmes',
 			'u'    => 'jos_users',
 			'eu'   => 'jos_emundus_users',
-			'eta'  => 'jos_emundus_tag_assoc'
+			'eta'  => 'jos_emundus_tag_assoc',
+			'eir'  => 'jos_emundus_internal_reference',
 		];
 
 		if (in_array('unread_messages', $em_other_columns)) {
@@ -787,10 +789,11 @@ class EmundusModelFiles extends JModelLegacy
                     LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                     LEFT JOIN #__emundus_setup_campaigns as esc on (esc.id = jecc.campaign_id OR esc.id = eccc.campaign_id)
                     LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
-                    LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
+                    LEFT JOIN #__emundus_setup_programmes as sp on sp.id = esc.program_id
                     LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
-                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
+                    LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum
+                    LEFT JOIN #__emundus_internal_reference as eir on eir.ccid=jecc.id and eir.active = 1';
 
 		if (in_array('unread_messages', $em_other_columns)) {
 			$query .= ' LEFT JOIN #__emundus_chatroom as ec on ec.fnum = jecc.fnum
@@ -1966,7 +1969,20 @@ class EmundusModelFiles extends JModelLegacy
 							$onAfterStatusChange = new GenericEvent(
 								'onAfterStatusChange',
 								// Datas to pass to the event
-								['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]
+								[
+									'fnum'      => $fnum,
+									'state'     => $state,
+									'old_state' => $old_status_step,
+									'context'   => new EventContextEntity(
+										Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id),
+										[$fnum],
+										[$fnumInfos['applicant_id']],
+										[
+											onAfterStatusChangeDefinition::STATUS_PARAMETER     => $state,
+											onAfterStatusChangeDefinition::OLD_STATUS_PARAMETER => $old_status_step
+										]
+									),
+								]
 							);
 
 							// Dispatch the event
@@ -2226,7 +2242,7 @@ class EmundusModelFiles extends JModelLegacy
 
 		try {
 			$query = $this->_db->getQuery(true);
-			$query->select('cc.id as ccid, u.name, u.email, u.username, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id, eu.is_anonym')
+			$query->select('cc.id as ccid, u.name, u.email, u.username, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id, eu.is_anonym, cc.short_reference')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->_db->quoteName('c.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
 				->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('cc.applicant_id'))
@@ -2295,7 +2311,7 @@ class EmundusModelFiles extends JModelLegacy
                         from jos_emundus_campaign_candidature as cc
                         left join jos_users as u on u.id = cc.applicant_id
                         left join jos_emundus_setup_campaigns as sc on sc.id = cc.campaign_id
-                        left join jos_emundus_setup_programmes as jesp on jesp.code = sc.training
+                        left join jos_emundus_setup_programmes as jesp on jesp.id = sc.program_id
                         left join jos_emundus_setup_status as jess on jess.step = cc.status
                         left join jos_emundus_tag_assoc as jeta on jeta.fnum = cc.fnum
                         left join jos_emundus_setup_action_tag as jesat on jesat.id = jeta.id_tag
@@ -2324,7 +2340,7 @@ class EmundusModelFiles extends JModelLegacy
                         from jos_emundus_campaign_candidature as cc
                         left join jos_users as u on u.id = cc.applicant_id
                         left join jos_emundus_setup_campaigns as sc on sc.id = cc.campaign_id
-                        left join jos_emundus_setup_programmes as jesp on jesp.code = sc.training
+                        left join jos_emundus_setup_programmes as jesp on jesp.id = sc.program_id
                         left join jos_emundus_setup_status as jess on jess.step = cc.status
                         left join jos_emundus_tag_assoc as jeta on jeta.fnum = cc.fnum
                         left join jos_emundus_setup_action_tag as jesat on jesat.id = jeta.id_tag
@@ -2907,7 +2923,7 @@ class EmundusModelFiles extends JModelLegacy
                         left join #__users as u on u.id = jos_emundus_campaign_candidature.applicant_id
                         left join #__emundus_users as eu on u.id = eu.user_id
                         left join #__emundus_setup_campaigns as esc on esc.id = jos_emundus_campaign_candidature.campaign_id
-                        left join #__emundus_setup_programmes as sp on sp.code = esc.training';
+                        left join #__emundus_setup_programmes as sp on sp.id = esc.program_id';
 
 		if (!empty($defaultElement)) {
 			$query .= ' LEFT JOIN #__emundus_tag_assoc as eta ON  eta.fnum = jos_emundus_campaign_candidature.fnum
@@ -3021,7 +3037,7 @@ class EmundusModelFiles extends JModelLegacy
 			$from     = ' FROM #__emundus_campaign_candidature as jecc ';
 			$leftJoin = ' LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id = jecc.campaign_id ';
 			$leftJoin .= ' LEFT JOIN #__emundus_setup_campaigns_more as escm ON escm.campaign_id = jecc.campaign_id ';
-			$leftJoin .= ' LEFT JOIN #__emundus_setup_programmes as sp ON sp.code = esc.training ';
+			$leftJoin .= ' LEFT JOIN #__emundus_setup_programmes as sp ON sp.id = esc.program_id ';
 			$leftJoin .= ' LEFT JOIN #__emundus_setup_teaching_unity as estu ON estu.code = esc.training and estu.schoolyear = esc.year ';
 			$leftJoin .= ' LEFT JOIN #__users as u ON u.id = jecc.applicant_id ';
 			$leftJoin .= ' LEFT JOIN #__emundus_users as eu ON eu.user_id = u.id ';
@@ -3835,7 +3851,7 @@ class EmundusModelFiles extends JModelLegacy
                             SELECT esp.fabrik_group_id
                             FROM  `#__emundus_campaign_candidature` AS ecc
                             LEFT JOIN `#__emundus_setup_campaigns` AS esc ON esc.id = ecc.campaign_id
-                            LEFT JOIN `#__emundus_setup_programmes` AS esp ON esp.code = esc.training
+                            LEFT JOIN `#__emundus_setup_programmes` AS esp ON esp.id = esc.program_id
                             WHERE ecc.fnum LIKE  " . $this->_db->quote($fnum) . ")";
 			$this->_db->setQuery($query);
 			$res = $this->_db->loadResult();
@@ -3867,7 +3883,7 @@ class EmundusModelFiles extends JModelLegacy
                             SELECT esp.fabrik_decision_group_id
                             FROM  `#__emundus_campaign_candidature` AS ecc
                             LEFT JOIN `#__emundus_setup_campaigns` AS esc ON esc.id = ecc.campaign_id
-                            LEFT JOIN `#__emundus_setup_programmes` AS esp ON esp.code = esc.training
+                            LEFT JOIN `#__emundus_setup_programmes` AS esp ON esp.id = esc.program_id
                             WHERE ecc.fnum LIKE  " . $this->_db->quote($fnum) . ")";
 			$this->_db->setQuery($query);
 			$res = $this->_db->loadResult();
@@ -3900,7 +3916,7 @@ class EmundusModelFiles extends JModelLegacy
 				->select($this->_db->qn('esp.fabrik_applicant_admission_group_id'))
 				->from($this->_db->qn('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($this->_db->qn('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->qn('esc.id') . ' = ' . $this->_db->qn('ecc.campaign_id'))
-				->leftJoin($this->_db->qn('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->_db->qn('esp.code') . ' = ' . $this->_db->qn('esc.training'))
+				->leftJoin($this->_db->qn('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->_db->qn('esp.id') . ' = ' . $this->_db->qn('esc.program_id'))
 				->where($this->_db->qn('ecc.fnum') . ' LIKE ' . $this->_db->quote($fnum));
 
 			$this->_db->setQuery($query);
@@ -3940,7 +3956,7 @@ class EmundusModelFiles extends JModelLegacy
                             SELECT esp.fabrik_group_id
                             FROM  `#__emundus_campaign_candidature` AS ecc
                             LEFT JOIN `#__emundus_setup_campaigns` AS esc ON esc.id = ecc.campaign_id
-                            LEFT JOIN `#__emundus_setup_programmes` AS esp ON esp.code = esc.training
+                            LEFT JOIN `#__emundus_setup_programmes` AS esp ON esp.id = esc.program_id
                             WHERE ecc.fnum LIKE  " . $this->_db->quote($fnum) . ")";
 			$this->_db->setQuery($query);
 			$res = $this->_db->loadResult();
@@ -4013,7 +4029,7 @@ class EmundusModelFiles extends JModelLegacy
 				->select(array($this->_db->quoteName('jecc.fnum'), $this->_db->quoteName('jesg.id'), 'GROUP_CONCAT(' . $this->_db->quoteName('jesg.label') . ' ORDER BY ' . $this->_db->quoteName('jesg.id') . ' DESC SEPARATOR "|") as label', 'GROUP_CONCAT(' . $this->_db->quoteName('jesg.class') . ' ORDER BY ' . $this->_db->quoteName('jesg.id') . ' DESC SEPARATOR "|") as class'))
 				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'jecc'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'jesc') . ' ON ' . $this->_db->quoteName('jesc.id') . ' = ' . $this->_db->quoteName('jecc.campaign_id'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'jesp') . ' ON ' . $this->_db->quoteName('jesp.code') . ' = ' . $this->_db->quoteName('jesc.training'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'jesp') . ' ON ' . $this->_db->quoteName('jesp.id') . ' = ' . $this->_db->quoteName('jesc.program_id'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_groups_repeat_course', 'jesgrc') . ' ON ' . $this->_db->quoteName('jesgrc.course') . ' = ' . $this->_db->quoteName('jesp.code'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_groups', 'jesg') . ' ON ' . $this->_db->quoteName('jesg.id') . ' = ' . $this->_db->quoteName('jesgrc.parent_id'))
 				->leftJoin($this->_db->quoteName('#__emundus_acl', 'jea') . ' ON ' . $this->_db->quoteName('jea.group_id') . ' = ' . $this->_db->quoteName('jesg.id'))
@@ -4064,7 +4080,7 @@ class EmundusModelFiles extends JModelLegacy
 			$query = "SELECT jecc.fnum, group_concat(jesg.label) AS label
 					  FROM #__emundus_campaign_candidature as jecc
 	                  LEFT JOIN #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
-	                  LEFT JOIN #__emundus_setup_programmes as jesp on jesp.code = jesc.training
+	                  LEFT JOIN #__emundus_setup_programmes as jesp on jesp.id = jesc.program_id
 	                  LEFT JOIN #__emundus_setup_groups_repeat_course as jesgrc on jesgrc.course = jesp.code
 	                  LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jesgrc.parent_id
 	                  LEFT JOIN #__emundus_acl as jea on jea.group_id = jesg.id
@@ -4205,7 +4221,7 @@ class EmundusModelFiles extends JModelLegacy
 				$query->select('jesp.code, jesp.label')
 					->from($this->_db->quoteName('#__emundus_campaign_candidature', 'jecc'))
 					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'jesc') . ' ON ' . $this->_db->quoteName('jesc.id') . ' = ' . $this->_db->quoteName('jecc.campaign_id'))
-					->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'jesp') . ' ON ' . $this->_db->quoteName('jesp.code') . ' = ' . $this->_db->quoteName('jesc.training'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'jesp') . ' ON ' . $this->_db->quoteName('jesp.id') . ' = ' . $this->_db->quoteName('jesc.program_id'))
 					->where($this->_db->quoteName('jecc.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
 
 				$this->_db->setQuery($query);
@@ -4623,7 +4639,7 @@ class EmundusModelFiles extends JModelLegacy
 			$query = $this->_db->getQuery(true);
 			$query->select('DISTINCT(t.session_code) AS sc, t.*')
 				->from($this->_db->quoteName('#__emundus_setup_programmes', 'p'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->_db->quoteName('c.training') . ' = ' . $this->_db->quoteName('p.code'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->_db->quoteName('c.program_id') . ' = ' . $this->_db->quoteName('p.id'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON ' . $this->_db->quoteName('t.session_code') . ' = ' . $this->_db->quoteName('c.session_code'))
 				->where($this->_db->quoteName('p.id') . ' = ' . $program .
 					' AND ' . $this->_db->quoteName('t.published') . ' = ' . 1 .
@@ -6676,7 +6692,7 @@ class EmundusModelFiles extends JModelLegacy
 			$query->select('ecc.applicant_id, esp.synthesis')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc'), 'ecc.campaign_id = esc.id')
-				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'esp'), 'esc.training = esp.code')
+				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'esp'), 'esc.program_id = esp.id')
 				->where($this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quote($fnum));
 
 			$this->_db->setQuery($query);

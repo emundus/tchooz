@@ -45,6 +45,7 @@ class StatusRepository extends EmundusRepository implements RepositoryInterface
 	 */
 	public function getAll(): array
 	{
+		// TODO: Add caching for this method as the status list is not likely to change often and is used in multiple places
 		$statuses = [];
 
 		$cacheKey = 'all_statuses';
@@ -76,60 +77,12 @@ class StatusRepository extends EmundusRepository implements RepositoryInterface
 
 	public function getById(int $id): ?StatusEntity
 	{
-		$status_entity = null;
-
-		$cacheKey = 'status_id_' . $id;
-		if ($this->cache->contains($cacheKey)) {
-			$status = $this->cache->get($cacheKey);
-		}
-
-		if(empty($status))
-		{
-			$query = $this->db->createQuery()
-				->select($this->columns)
-				->from($this->db->quoteName($this->tableName, $this->alias))
-				->where($this->db->quoteName($this->alias. '.id') . ' = ' . $id);
-			$this->db->setQuery($query);
-			$status = $this->db->loadObject();
-		}
-
-		if (!empty($status)) {
-			$this->cache->store($status, $cacheKey);
-
-			$status_entity = $this->factory->fromDbObject($status, $this->withRelations);
-		}
-
-		return $status_entity;
+		return $this->getItemByField('id', $id, true);
 	}
 
 	public function getByStep(int $step): ?StatusEntity
 	{
-		$status_entity = null;
-
-		$cacheKey = 'status_step_' . $step;
-		if ($this->cache->contains($cacheKey))
-		{
-			$status = $this->cache->get($cacheKey);
-		}
-
-		if (empty($status))
-		{
-			$query = $this->db->getQuery(true)
-				->select($this->columns)
-				->from($this->db->quoteName($this->tableName, $this->alias))
-				->where($this->db->quoteName($this->alias . '.step') . ' = ' . $step);
-			$this->db->setQuery($query);
-			$status = $this->db->loadObject();
-		}
-
-		if (!empty($status))
-		{
-			$this->cache->store($status, $cacheKey);
-
-			$status_entity = $this->factory->fromDbObject($status, $this->withRelations);
-		}
-
-		return $status_entity;
+		return $this->getItemByField('step', $step, true);
 	}
 
 	public function getFactory(): StatusFactory

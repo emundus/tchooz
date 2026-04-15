@@ -745,6 +745,10 @@ class EmundusModelSync extends JModelList
 
 		$config = json_decode($api->config, true);
 
+        if (!class_exists('EmundusHelperFabrik')) {
+            require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
+        }
+
 		switch ($config['authentication']['token_storage'])
 		{
 			case 'database':
@@ -823,7 +827,7 @@ class EmundusModelSync extends JModelList
 				{
 					$auth_route = $config['authentication']['route'];
 				}
-
+				
 				$response = $api_class->post($auth_route, $body);
 			}
 			// GET request to get token

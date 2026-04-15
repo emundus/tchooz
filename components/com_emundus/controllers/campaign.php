@@ -333,7 +333,7 @@ class EmundusControllerCampaign extends EmundusController
 					]
 				];
 
-				if ($choices_addon->getValue()->isEnabled())
+				if ($choices_addon->isActivated())
 				{
 					$campaign_parent_label = Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_NO_PARENT');
 					if (!empty($campaign->getParent()))
@@ -1141,7 +1141,7 @@ class EmundusControllerCampaign extends EmundusController
 
 		$allowed        = EmundusHelperAccess::asAccessAction($importAction->getId(), 'c', $this->user->id);
 		$addon          = $addonRepository->getByName('import');
-		$addonActivated = $allowed && !empty($addon) && $addon->getValue()->isEnabled();
+		$addonActivated = $allowed && !empty($addon) && $addon->isActivated();
 
 		return EmundusResponse::ok($addonActivated, Text::_('IMPORT_ACTIVATED'));
 	}

@@ -18,11 +18,13 @@ use EmundusTableForeignKey;
 use EmundusTableForeignKeyOnEnum;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Table\Table;
+use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Enums\Automation\ConditionOperatorEnum;
 use Tchooz\Enums\Automation\ConditionsAndorEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 
 
@@ -96,25 +98,13 @@ class Release2_11_0Installer extends ReleaseInstaller
 	{
 		$query = $this->db->createQuery();
 
-		// Add automation module to setup_config
-		$query->clear()
-			->select('*')
-			->from($this->db->quoteName('#__emundus_setup_config'))
-			->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('automation'));
-		$this->db->setQuery($query);
-		$config = $this->db->loadObject();
-
-		if (empty($config->namekey))
+		$addonRepository = new AddonRepository();
+		$automationAddon = $addonRepository->getByName('automation');
+		if (empty($automationAddon))
 		{
-			$insert        = (object) [
-				'namekey' => 'automation',
-				'value'   => json_encode([
-					'enabled'   => 0,
-					'displayed' => 1,
-					'params'    => new \stdClass()
-				])
-			];
-			$this->tasks[] = $this->db->insertObject('#__emundus_setup_config', $insert);
+			$automationAddon = new AddonEntity('automation');
+
+			$this->tasks[] = $addonRepository->flush($automationAddon);
 		}
 
 		$automationResult = EmundusHelperUpdate::createTable('jos_emundus_automation',
@@ -615,25 +605,13 @@ class Release2_11_0Installer extends ReleaseInstaller
 		];
 		$this->tasks[] = EmundusHelperUpdate::createTable('jos_emundus_contacts_countries', $columns, $foreign_keys, 'Associations between contacts and countries')['status'];
 
-		// Add CRC module to setup_config
-		$query->clear()
-			->select('*')
-			->from($this->db->quoteName('#__emundus_setup_config'))
-			->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('crc'));
-		$this->db->setQuery($query);
-		$config = $this->db->loadObject();
-
-		if (empty($config->namekey))
+		// Add CRC module
+		$addonRepository = new AddonRepository();
+		$crcAddon = $addonRepository->getByName('crc');
+		if (empty($crcAddon))
 		{
-			$insert        = (object) [
-				'namekey' => 'crc',
-				'value'   => json_encode([
-					'enabled'   => 0,
-					'displayed' => 0,
-					'params'    => new \stdClass()
-				])
-			];
-			$this->tasks[] = $this->db->insertObject('#__emundus_setup_config', $insert);
+			$crcAddon = new AddonEntity('crc');
+			$this->tasks[] = $addonRepository->flush($crcAddon);
 		}
 
 		// Add CRC acl(s) (contacts and organizations management)
@@ -758,27 +736,14 @@ class Release2_11_0Installer extends ReleaseInstaller
 	private function initChoicesFeature($query): void
 	{
 		// Check if choices config exists
-		$query->clear()
-			->select('*')
-			->from($this->db->quoteName('#__emundus_setup_config'))
-			->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('choices'));
+		$addonRepository = new AddonRepository();
+		$choicesAddon = $addonRepository->getByName('choices');
 
-		$this->db->setQuery($query);
-		$config = $this->db->loadObject();
-
-		if (empty($config->namekey))
+		if (empty($choicesAddon))
 		{
-			$params = [
-				'enabled'   => 0,
-				'displayed' => 0
-			];
+			$choicesAddon = new AddonEntity('choices');
 
-			$insert        = [
-				'namekey' => 'choices',
-				'value'   => json_encode($params)
-			];
-			$insert        = (object) $insert;
-			$this->tasks[] = $this->db->insertObject('#__emundus_setup_config', $insert);
+			$this->tasks[] = $addonRepository->flush($choicesAddon);
 		}
 		//
 

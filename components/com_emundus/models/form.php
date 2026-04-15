@@ -2421,7 +2421,7 @@ class EmundusModelForm extends ListModel
 
 			$query->select(['sc.id as id', 'sc.label as label'])
 				->from($this->db->quoteName('#__emundus_setup_campaigns', 'sc'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->db->quoteName('sp.code') . ' LIKE ' . $this->db->quoteName('sc.training'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->db->quoteName('sp.id') . ' LIKE ' . $this->db->quoteName('sc.program_id'))
 				->where($this->db->quoteName('sc.training') . ' IN (' . implode(',', $this->db->quote($programs)) . ')')
 				->andWhere('sc.profile_id = ' . $profile_id);
 
@@ -2439,7 +2439,7 @@ class EmundusModelForm extends ListModel
 			$query->clear()
 				->select('DISTINCT esc.id, esc.label')
 				->from($this->db->quoteName('#__emundus_setup_campaigns', 'esc'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_programmes','esp') . ' ON esp.code = esc.training')
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes','esp') . ' ON esp.id = esc.program_id')
 				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_programs','eswp') . ' ON eswp.program_id = esp.id')
 				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps','esws') . ' ON esws.workflow_id = eswp.workflow_id')
 				->where($this->db->quoteName('esws.profile_id') . ' = ' . $this->db->quote($profile_id))

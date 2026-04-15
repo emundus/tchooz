@@ -78,6 +78,7 @@ class ApplicationFileFactory implements DBFactory
 			name: $dbObject->name ?? '',
 			updated_at: !empty($dbObject->updated_at) ? new \DateTime($dbObject->updated_at) : null,
 			updated_by: !empty($dbObject->updated_by) ? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $dbObject->updated_by) : null,
+			shortReference: $dbObject->short_reference ?? null
 		);
 	}
 

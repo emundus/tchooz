@@ -17,11 +17,10 @@ defined('_JEXEC') or die;
 
 class modemundusApplicationsHelper
 {
-
-	static function getApplications($layout, $order_by, $params = null, $collaborate = false)
+	static function getApplications(string $layout, string $order_by, mixed $params = null, bool $collaborate = false): array
 	{
 		$applications = [];
-		$app = Factory::getApplication();
+		$app          = Factory::getApplication();
 		$user         = $app->getIdentity();
 		$db           = Factory::getContainer()->get('DatabaseDriver');
 		$query        = $db->getQuery(true);
@@ -29,17 +28,20 @@ class modemundusApplicationsHelper
 		// Test if the table used for showing the title exists.
 		// If it doesn't then we just continue without a title.
 		$has_table = false;
-		if ($layout == '_:hesam') {
+		if ($layout == '_:hesam')
+		{
 			$query->select($db->quoteName('id'))
 				->from($db->quoteName('#__emundus_projet'))
 				->setLimit('1');
 
-			try {
+			try
+			{
 				$db->setQuery($query);
 				$has_table = $db->loadResult();
 			}
-			catch (Exception $e) {
-				$has_table = false;
+			catch (Exception $e)
+			{
+				Log::add('Module emundus applications failed to check the existence of the table for layout hesam : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -59,27 +61,30 @@ class modemundusApplicationsHelper
 			'ecct.name as tab_name',
 			'ecct.ordering as tab_ordering',
 			'group_concat(eccc.campaign_id) as choices',
+			'eir.reference'
 		];
 
 		// CCI-RS layout needs to get the start and end date of each application
-		if ($layout == '_:ccirs') {
+		if ($layout == '_:ccirs')
+		{
 			$select_ccirs = [
 				't.date_start as date_start',
 				't.date_end as date_end',
 				'p.id as pid',
 				'p.url as url'
 			];
-			$select = array_merge($select,$select_ccirs);
+			$select       = array_merge($select, $select_ccirs);
 		}
 
 		// Hesam layout needs to get the title from the information about the project.
-		if ($has_table) {
+		if ($has_table)
+		{
 			$select_hesam = [
 				'pro.titre',
 				'pro.id AS search_engine_page',
 				'pro.question'
 			];
-			$select = array_merge($select,$select_hesam);
+			$select       = array_merge($select, $select_hesam);
 		}
 
 		$query->clear()
@@ -88,57 +93,67 @@ class modemundusApplicationsHelper
 			->leftJoin($db->quoteName('#__emundus_campaign_candidature_choices', 'eccc') . ' ON eccc.fnum=ecc.fnum')
 			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id=ecc.campaign_id')
 			->leftJoin($db->quoteName('#__emundus_setup_status', 'ess') . ' ON ess.step=ecc.status')
-			->leftJoin($db->quoteName('#__emundus_setup_programmes', 'p') . ' ON p.code = esc.training');
+			->leftJoin($db->quoteName('#__emundus_setup_programmes', 'p') . ' ON p.code = esc.training')
+			->leftJoin($db->quoteName('#__emundus_internal_reference', 'eir') . ' ON eir.ccid = ecc.id and eir.active = 1');
 
-		if ($layout == '_:ccirs') {
+		if ($layout == '_:ccirs')
+		{
 			$query->leftJoin($db->quoteName('#__emundus_setup_teaching_unity', 't') . ' ON t.session_code = esc.session_code');
 		}
 
-		if ($has_table) {
+		if ($has_table)
+		{
 			$query->leftJoin($db->quoteName('#__emundus_projet', 'pro') . ' ON pro.fnum=ecc.fnum');
 		}
 
 		$query->where('ecc.applicant_id =' . $user->id);
 
 		// Files request
-		if ($collaborate) {
+		if ($collaborate)
+		{
 			$select_collab = [
 				'efr.r',
 				'efr.u',
 				'efr.show_history',
 				'efr.show_shared_users',
 			];
-			$select = array_merge($select,$select_collab);
+			$select        = array_merge($select, $select_collab);
 
 			$query->leftJoin($db->quoteName('#__emundus_files_request', 'efr') . ' ON efr.ccid = ecc.id');
 			$query->orWhere($db->quoteName('efr.user_id') . ' = ' . $user->id . ' AND ' . $db->quoteName('efr.uploaded') . ' = 1');
 		}
 
-		$query->select(implode(',',$select));
+		$query->select(implode(',', $select));
 
-		if (!empty($params)) {
+		if (!empty($params))
+		{
 			$selected_campaigns = $params->get('selected_campaigns', []);
 
-			if (!empty($selected_campaigns)) {
+			if (!empty($selected_campaigns))
+			{
 				$exclusion = $params->get('selected_campaigns_exclusion', false);
 
-				if ($exclusion) {
+				if ($exclusion)
+				{
 					$query->andWhere('ecc.campaign_id NOT IN (' . implode(', ', $selected_campaigns) . ')');
 				}
-				else {
+				else
+				{
 					$query->andWhere('ecc.campaign_id IN (' . implode(', ', $selected_campaigns) . ')');
 				}
 			}
 
 			$show_status = $params->get('show_status', '') !== '' ? explode(',', $params->get('show_status', '')) : null;
-			if(!empty($show_status)) {
+			if (!empty($show_status))
+			{
 				$query->andWhere('ecc.status IN (' . implode(', ', $show_status) . ')');
 			}
 		}
 
 		$query->group('ecc.id');
 		$order_by_session = $app->getSession()->get('applications_order_by');
-		switch ($order_by_session) {
+		switch ($order_by_session)
+		{
 			case 'status':
 				$query->order('ess.ordering ASC,ecc.date_time DESC');
 				break;
@@ -159,21 +174,24 @@ class modemundusApplicationsHelper
 				break;
 		}
 
-		try {
+		try
+		{
 			$db->setQuery($query);
 			$applications = $db->loadObjectList('fnum');
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('Module emundus applications failed to get applications for user ' . $user->id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
-		
+
 		return $applications;
 	}
 
 	static function getCollaborators(&$applications)
 	{
-		foreach ($applications as $fnum => $application) {
-			$db = Factory::getContainer()->get('DatabaseDriver');
+		foreach ($applications as $fnum => $application)
+		{
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->select('efr.email, efr.user_id')
@@ -181,10 +199,13 @@ class modemundusApplicationsHelper
 				->where($db->quoteName('efr.ccid') . ' = ' . $application->application_id)
 				->andWhere($db->quoteName('efr.show_shared_users') . ' = 1');
 
-			try {
+			try
+			{
 				$db->setQuery($query);
 				$application->collaborators = $db->loadObjectList();
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				Log::add('Module emundus applications failed to get collaborators for application ' . $application->application_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -193,10 +214,11 @@ class modemundusApplicationsHelper
 	static function getStatusFiles()
 	{
 		$states = [];
-		$app = Factory::getApplication();
+		$app    = Factory::getApplication();
 		$user   = $app->getIdentity();
 
-		if (!empty($user->id)) {
+		if (!empty($user->id))
+		{
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
@@ -204,11 +226,13 @@ class modemundusApplicationsHelper
 				->from($db->quoteName('#__emundus_campaign_candidature'))
 				->where($db->quoteName('applicant_id') . '=' . $user->id);
 
-			try {
+			try
+			{
 				$db->setQuery($query);
 				$states = $db->loadAssocList('fnum');
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('Module emundus applications failed to get state of files for user ' . $user->id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -218,7 +242,7 @@ class modemundusApplicationsHelper
 
 	static function getPoll()
 	{
-		$app = Factory::getApplication();
+		$app  = Factory::getApplication();
 		$user = $app->getIdentity();
 		$db   = Factory::getContainer()->get('DatabaseDriver');
 
@@ -235,7 +259,7 @@ class modemundusApplicationsHelper
 
 	static function getOtherCampaigns($uid)
 	{
-		$db = Factory::getContainer()->get('DatabaseDriver');
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$query->select(['c.id', 'c.label'])
@@ -249,12 +273,14 @@ class modemundusApplicationsHelper
 				SELECT ' . $db->quoteName('campaign_id') . '
 				FROM ' . $db->quoteName('#__emundus_campaign_candidature') . '
 				WHERE ' . $db->quoteName('applicant_id') . ' = ' . $uid . ' AND ' . $db->quoteName('published') . ' IN (0,1))');
-		try {
+		try
+		{
 			$db->setQuery($query);
 
 			return $db->loadAssocList();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add("Error at query : " . $query->__toString(), Log::ERROR, 'com_emundus');
 
 			return false;
@@ -263,7 +289,7 @@ class modemundusApplicationsHelper
 
 	static function getFutureYearCampaigns($uid)
 	{
-		$db = Factory::getContainer()->get('DatabaseDriver');
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$query->select(['c.id', 'c.label'])
@@ -279,12 +305,14 @@ class modemundusApplicationsHelper
 				WHERE ' . $db->quoteName('applicant_id') . ' = ' . $uid . '
 				AND ' . $db->quoteName('published') . ' IN (0,1))');
 
-		try {
+		try
+		{
 			$db->setQuery($query);
 
 			return $db->loadAssocList();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add("Error at query : " . $query, Log::ERROR, 'com_emundus');
 
 			return false;
@@ -293,7 +321,7 @@ class modemundusApplicationsHelper
 
 	static function getAvailableCampaigns()
 	{
-		$db = Factory::getContainer()->get('DatabaseDriver');
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$query->select(['c.id', 'c.label'])
@@ -304,12 +332,14 @@ class modemundusApplicationsHelper
 			->where($db->quoteName('c.end_date') . ' >= NOW()')
 			->where($db->quoteName('c.start_date') . ' <= NOW()');
 
-		try {
+		try
+		{
 			$db->setQuery($query);
 
 			return $db->loadAssocList();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add("Error at query : " . $query, Log::ERROR, 'com_emundus');
 
 			return false;
@@ -318,9 +348,9 @@ class modemundusApplicationsHelper
 
 	static function getDrhApplications()
 	{
-		$app = Factory::getApplication();
-		$user = $app->getIdentity();
-		$db   = Factory::getContainer()->get('DatabaseDriver');
+		$app   = Factory::getApplication();
+		$user  = $app->getIdentity();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$query->select(['ecc.*', 'esc.*', $db->quoteName('ess.step'), $db->quoteName('ess.value'), $db->quoteName('ess.class'), $db->quoteName('t.date_start', 'date_start'), $db->quoteName('t.date_end', 'date_end'), $db->quoteName('p.id', 'pid'), $db->quoteName('p.url', 'url')])
@@ -340,12 +370,14 @@ class modemundusApplicationsHelper
 			->group([$db->quoteName('esc.id')])
 			->order($db->quoteName('ecc.date_submitted') . ' DESC');
 
-		try {
+		try
+		{
 			$db->setQuery($query);
 
 			return $db->loadAssocList('fnum');
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add("Error at query : " . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
@@ -372,17 +404,21 @@ class modemundusApplicationsHelper
 
 		// Here we organize fnums by profile in order to have the split contact cards in HESAM.
 		$return = [];
-		foreach ($fnums as $fnum => $offers) {
+		foreach ($fnums as $fnum => $offers)
+		{
 
-			foreach ($offers as $key => $data) {
+			foreach ($offers as $key => $data)
+			{
 				$data['unread'] = $m_messages->getUnread($data['applicant_id']);
 
-				if ($data['favorite'] === '1') {
+				if ($data['favorite'] === '1')
+				{
 					// Place favorite at the front of the array.
 					$return[$fnum][$data['profile_id']][0] = $data;
 					ksort($return[$fnum][$data['profile_id']]);
 				}
-				else {
+				else
+				{
 					// We use $key+1 to avoid the case where $key is 0, we need to ensure the favorite is first.
 					$return[$fnum][$data['profile_id']][$key + 1] = $data;
 				}
@@ -408,7 +444,8 @@ class modemundusApplicationsHelper
 
 		$return = $m_cifre->getChatRequestsByUser($user);
 
-		foreach ($return as $key => $data) {
+		foreach ($return as $key => $data)
+		{
 			$return[$key]['unread'] = $m_messages->getUnread($data['applicant_id']);
 		}
 
@@ -431,12 +468,14 @@ class modemundusApplicationsHelper
 			->from($db->quoteName('#__emundus_admission'))
 			->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 
-		try {
+		try
+		{
 			$db->setQuery($query);
 
 			return $db->loadObject();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add("Error at query : " . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return null;
@@ -452,12 +491,15 @@ class modemundusApplicationsHelper
 
 		$em_application_payment = $eMConfig->get('application_payment', 'user');
 
-		if ($cancelled) {
+		if ($cancelled)
+		{
 			$order_status = array('cancelled');
 		}
-		else {
+		else
+		{
 			$order_status = array('confirmed');
-			switch ($eMConfig->get('accept_other_payments', 0)) {
+			switch ($eMConfig->get('accept_other_payments', 0))
+			{
 				case 1:
 					$order_status[] = 'created';
 					break;
@@ -481,7 +523,8 @@ class modemundusApplicationsHelper
 			->where($db->quoteName('ho.order_status') . ' IN (' . implode(", ", $db->quote($order_status)) . ')')
 			->order($db->quoteName('order_created') . ' DESC');
 
-		switch ($em_application_payment) {
+		switch ($em_application_payment)
+		{
 
 			default :
 			case 'fnum' :
@@ -501,21 +544,25 @@ class modemundusApplicationsHelper
 				$em_application_payment_status = $eMConfig->get('application_payment_status', '0');
 				$payment_status                = explode(',', $em_application_payment_status);
 
-				if (in_array($fnumInfos->status, $payment_status)) {
+				if (in_array($fnumInfos->status, $payment_status))
+				{
 					$query->where($db->quoteName('eh.status') . ' = ' . $fnumInfos->status)
 						->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos->fnum);
 				}
-				else {
+				else
+				{
 					$query->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos->fnum);
 				}
 				break;
 		}
-		try {
+		try
+		{
 			$db->setQuery($query);
 
 			return $db->loadObject();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			echo $e->getMessage();
 			Log::add(Uri::getInstance() . ' :: USER ID : ' . Factory::getApplication()->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
@@ -534,28 +581,37 @@ class modemundusApplicationsHelper
 	{
 		$html = '';
 
-		if (!empty($custom_actions) && !empty($application)) {
-			foreach ($custom_actions as $custom_action_key => $custom_action) {
+		if (!empty($custom_actions) && !empty($application))
+		{
+			foreach ($custom_actions as $custom_action_key => $custom_action)
+			{
 
-				if (!empty($custom_action->display_condition)) {
+				if (!empty($custom_action->display_condition))
+				{
 					$condition = str_replace('{fnum}', $application->fnum, $custom_action->display_condition);
 
 					// eval is evil, but we have no choice here
-					try {
-						if (!eval($condition)) {
+					try
+					{
+						if (!eval($condition))
+						{
 							continue;
 						}
 					}
-					catch (Exception $e) {
+					catch (Exception $e)
+					{
 						Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 						continue;
 					}
 				}
 
-				if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
-					if ($custom_action->mod_em_application_custom_action_type == 2) {
+				if (in_array($application->status, $custom_action->mod_em_application_custom_action_status))
+				{
+					if ($custom_action->mod_em_application_custom_action_type == 2)
+					{
 						$html .= '<a class="tw-text-neutral-900 tw-cursor-pointer tw-flex">';
-						if ($custom_action->mod_em_application_custom_action_icon) {
+						if ($custom_action->mod_em_application_custom_action_icon)
+						{
 							$html .= '<span class="material-symbols-outlined tw-mr-2">' . $custom_action->mod_em_application_custom_action_icon . '</span>';
 						}
 
@@ -566,8 +622,10 @@ class modemundusApplicationsHelper
                                   >' . Text::_($custom_action->mod_em_application_custom_action_label) . '</span>';
 						$html .= '</a>';
 					}
-					else {
-						if (!empty($custom_action->mod_em_application_custom_action_link)) {
+					else
+					{
+						if (!empty($custom_action->mod_em_application_custom_action_link))
+						{
 							$link   = str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link);
 							$target = $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '';
 
@@ -575,7 +633,8 @@ class modemundusApplicationsHelper
                                     class="em-text-neutral-900 em-pointer em-flex-row"
                                     href="' . $link . '" ' . $target . '>';
 
-							if ($custom_action->mod_em_application_custom_action_icon) {
+							if ($custom_action->mod_em_application_custom_action_icon)
+							{
 								$html .= '<span class="material-symbols-outlined em-font-size-16 em-mr-8">' . $custom_action->mod_em_application_custom_action_icon . '</span>';
 							}
 
@@ -589,15 +648,18 @@ class modemundusApplicationsHelper
 		echo $html;
 	}
 
-	static function getNbComments($ccid, $current_user) {
+	static function getNbComments($ccid, $current_user)
+	{
 		$nb_comments = 0;
 
-		if (!empty($ccid)) {
-			if (!class_exists('EmundusModelComments')) {
+		if (!empty($ccid))
+		{
+			if (!class_exists('EmundusModelComments'))
+			{
 				require_once(JPATH_ROOT . '/components/com_emundus/models/comments.php');
 			}
 			$m_comments = new EmundusModelComments();
-			$comments = $m_comments->getComments($ccid, $current_user, true, [], 0, 1);
+			$comments   = $m_comments->getComments($ccid, $current_user, true, [], 0, 1);
 
 			$nb_comments = count($comments);
 		}
@@ -607,7 +669,7 @@ class modemundusApplicationsHelper
 
 	static function getCommentsPageBaseUrl()
 	{
-		$db = Factory::getContainer()->get('DatabaseDriver');
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$query->select('alias')
