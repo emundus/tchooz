@@ -13,12 +13,13 @@ use Tchooz\Entities\Payment\ProductEntity;
 use Tchooz\Entities\Payment\PaymentMethodEntity;
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseDriver;
-use Tchooz\Entities\Settings\AddonEntity;
+use Tchooz\Entities\Addons\AddonEntity;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Factories\Payment\PaymentStepFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Workflow\StepTypeRepository;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
@@ -60,7 +61,7 @@ class PaymentRepository
 		$this->setPaymentStepTypeId();
 		$this->getPaymentStepTypes();
 
-		if (!empty($this->action_id) && $this->addon->enabled == 1) {
+		if (!empty($this->action_id) && $this->addon->isActivated()) {
 			$this->activated = true;
 		}
 	}
@@ -72,56 +73,8 @@ class PaymentRepository
 
 	public function loadAddon(): void
 	{
-		$cache_addon = $this->h_cache->get('payment_addon');
-
-		if (empty($cache_addon)) {
-			$query = $this->db->createQuery();
-
-			$query->select('*')
-				->from($this->db->quoteName('#__emundus_setup_config'))
-				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('payment'));
-
-			try {
-				$this->db->setQuery($query);
-				$addon = $this->db->loadObject();
-
-				if ($addon)
-				{
-					$config = json_decode($addon->value, true);
-
-					if(!class_exists('AddonEntity'))
-					{
-						require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/Settings/AddonEntity.php');
-					}
-
-					$this->addon = new AddonEntity(
-						Text::_('COM_EMUNDUS_ADDONS_PAYMENT'),
-						'payment',
-						'shopping_cart',
-						Text::_('COM_EMUNDUS_ADDONS_PAYMENT_DESC'),
-						json_encode($config['params']),
-						$config['enabled'] ? 1 : 0,
-						$config['displayed'] ? 1 : 0
-					);
-				} else {
-					$this->addon = new AddonEntity(
-						Text::_('COM_EMUNDUS_ADDONS_PAYMENT'),
-						'payment',
-						'shopping_cart',
-						Text::_('COM_EMUNDUS_ADDONS_PAYMENT_DESC'),
-						json_encode([]),
-						0,
-						0
-					);
-				}
-
-				$this->h_cache->set('payment_addon', $this->addon);
-			} catch (\Exception $e) {
-				Log::add('Error loading addon: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.payment');
-			}
-		} else {
-			$this->addon = $cache_addon;
-		}
+		$addonRepository = new AddonRepository();
+		$this->addon = $addonRepository->getByName('payment');
 	}
 
 	public function getActionId(): int

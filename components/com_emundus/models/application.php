@@ -23,7 +23,6 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\User\UserFactoryInterface;
@@ -32,14 +31,7 @@ use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagRemoveDefinition;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
-use Tchooz\Providers\DateProvider;
-use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
-use Tchooz\Repositories\Reference\InternalReferenceRepository;
-use Tchooz\Repositories\Settings\ConfigurationRepository;
-use Tchooz\Services\Reference\InternalReferenceFormat;
-use Tchooz\Services\Reference\InternalReferenceService;
-
 /**
  * Emundus Component Application Model
  *

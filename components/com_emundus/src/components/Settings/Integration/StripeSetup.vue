@@ -53,7 +53,7 @@ export default {
 		};
 	},
 	created() {
-		let config = JSON.parse(this.app.config);
+		let config = this.app.config;
 
 		this.authFields.forEach((field) => {
 			if (field.configEntry && field.configEntry !== '') {

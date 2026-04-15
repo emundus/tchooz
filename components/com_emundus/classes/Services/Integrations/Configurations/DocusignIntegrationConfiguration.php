@@ -8,6 +8,7 @@ use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Fields\FieldGroup;
 use Tchooz\Entities\Fields\PasswordField;
 use Tchooz\Entities\Fields\StringField;
+use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Services\Integrations\EmundusIntegrationConfiguration;
 
 class DocusignIntegrationConfiguration extends EmundusIntegrationConfiguration
@@ -28,5 +29,10 @@ class DocusignIntegrationConfiguration extends EmundusIntegrationConfiguration
 				new ChoiceFieldValue('PRODUCTION', 'PRODUCTION')
 			], true, false, $configGroup)
 		];
+	}
+
+	public function getDefaultParameters(): array
+	{
+		return [];
 	}
 }

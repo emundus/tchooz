@@ -20,6 +20,7 @@ use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Factories\TransformerFactory;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
@@ -544,9 +545,9 @@ class Export
 			$element['plugin_name'] = Text::_('COM_EMUNDUS_EXPORT_DIVERS');
 		}
 
-		$configurationRepository = new ConfigurationRepository();
-		$customReferenceFormat = $configurationRepository->getByName('custom_reference_format');
-		if (!empty($customReferenceFormat))
+		$addonRepository = new AddonRepository();
+		$customReferenceFormat = $addonRepository->getByName('custom_reference_format');
+		if (!empty($customReferenceFormat) && $customReferenceFormat->isActivated())
 		{
 			$miscellaneousElements[] = [
 				'id'          => 'custom_reference',

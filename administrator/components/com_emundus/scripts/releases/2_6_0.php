@@ -10,11 +10,14 @@
 
 namespace scripts;
 
+use DocuSign\eSign\Model\AddOn;
 use EmundusHelperUpdate;
 use Joomla\CMS\Component\ComponentHelper;
+use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\Payment\CartProductStatus;
 use Tchooz\Entities\Payment\TransactionStatus;
 use Joomla\CMS\Language\Text;
+use Tchooz\Repositories\Addons\AddonRepository;
 
 class Release2_6_0Installer extends ReleaseInstaller
 {
@@ -444,23 +447,16 @@ class Release2_6_0Installer extends ReleaseInstaller
 			$tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_uploads', 'signed_file', 'TINYINT', 3)['status'];
 			$tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_uploads', 'thumbnail', 'TEXT')['status'];
 
-			$query->clear()
-				->select('*')
-				->from($this->db->quoteName('#__emundus_setup_config'))
-				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('numeric_sign'));
-			$this->db->setQuery($query);
-			$config = $this->db->loadObject();
-
-			if (empty($config->namekey))
+			$addonRepository = new AddonRepository();
+			$numericSignAddon = $addonRepository->getByName('numeric_sign');
+			if (empty($numericSignAddon))
 			{
-				$params = '{"enabled":0,"displayed":0,"params":{}}';
-				$query->clear()
-					->insert($this->db->quoteName('#__emundus_setup_config'))
-					->columns($this->db->quoteName('namekey') . ', ' . $this->db->quoteName('value'))
-					->values($this->db->quote('numeric_sign') . ', ' . $this->db->quote($params));
+				$numericSignAddon = new AddonEntity('numeric_sign');
 
-				$this->db->setQuery($query);
-				$this->db->execute();
+				if (!$addonRepository->flush($numericSignAddon))
+				{
+					$tasks[] = false;
+				}
 			}
 
 			$query->clear()
@@ -1781,22 +1777,16 @@ class Release2_6_0Installer extends ReleaseInstaller
 		], 1, 0, 'last-child', $module_ids);
 		$tasks[] = $result['status'];
 
-		$query->clear()
-			->select('value')
-			->from($this->db->quoteName('#__emundus_setup_config'))
-			->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('payment'));
+		$addonRepository = new AddonRepository();
+		$paymentAddon = $addonRepository->getByName('payment');
 
-		$this->db->setQuery($query);
-		$payment_config = $this->db->loadResult();
+		if (empty($paymentAddon))
+		{
+			$paymentAddon = new AddonEntity('payment', false, false, false, [
+				'currency_id' => 1
+			]);
 
-		if (empty($payment_config)) {
-			$query->clear()
-				->insert($this->db->quoteName('#__emundus_setup_config'))
-				->columns($this->db->quoteName(['namekey', 'value']))
-				->values($this->db->quote('payment') . ', ' . $this->db->quote(json_encode(['enabled' => 0, 'displayed' => 0, 'params' => ['currency_id' => 1]])));
-
-			$this->db->setQuery($query);
-			$tasks[] = $this->db->execute();
+			$tasks[] = $addonRepository->flush($paymentAddon);
 		}
 
 		$inserted_column = EmundusHelperUpdate::addColumn('data_currency', 'iso4217', 'VARCHAR', 3, 1);

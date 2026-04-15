@@ -1005,7 +1005,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 				$addonRepository = new AddonRepository();
 				$choicesAddon = $addonRepository->getByName('choices');
-				if(!empty($choicesAddon) && $choicesAddon->getValue()->isEnabled()){
+				if(!empty($choicesAddon) && $choicesAddon->isActivated()){
 					$applicationChoicesRepository = new ApplicationChoicesRepository();
 					$applicationChoices = $applicationChoicesRepository->getChoicesByFnum($fnum);
 

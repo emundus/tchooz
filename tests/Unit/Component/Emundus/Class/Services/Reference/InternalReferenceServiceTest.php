@@ -17,6 +17,7 @@ use Tchooz\Enums\Reference\PositionEnum;
 use Tchooz\Enums\Reference\ResetTypeEnum;
 use Tchooz\Enums\Reference\SeparatorEnum;
 use Tchooz\Providers\DateProvider;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
@@ -646,21 +647,10 @@ class InternalReferenceServiceTest extends UnitTestCase
 		$fnum2 = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
 		$fnums = [$fnum, $fnum2];
 
-		// Set up a custom reference format in the database so generatePreviewReferences has a format to use
-		$format = new InternalReferenceFormat([]);
-		$format->addBlock(new InternalReferenceFormatBlock(ConditionTargetTypeEnum::STATICVALUE, 'REF'));
-		$format->setSequence(new InternalReferenceFormatSequence(
-			position: PositionEnum::END,
-			resetType: ResetTypeEnum::YEARLY,
-			length: 4
-		));
-
-		$configurationRepository = new \Tchooz\Repositories\Settings\ConfigurationRepository();
-		$configurationEntity = new \Tchooz\Entities\Settings\ConfigurationEntity(
-			'custom_reference_format',
-			$format->__serialize()
-		);
-		$configurationRepository->flush($configurationEntity);
+		$addonRepository = new AddonRepository();
+		$customFormatReference   = $addonRepository->getByName('custom_reference_format');
+		$customFormatReference->setActivated(true);
+		$addonRepository->flush($customFormatReference);
 
 		$coordinator = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
 

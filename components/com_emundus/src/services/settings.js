@@ -406,9 +406,23 @@ export default {
 
 	async toggleAppEnabled(app_id, enabled) {
 		try {
-			return await fetchClient.post('disableapp', {
+			return await fetchClient.post('toggleapp', {
 				app_id: app_id,
 				enabled: enabled,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async toggleAppPublished(app_id, published) {
+		try {
+			return await fetchClient.post('toggleappdisplay', {
+				app_id: app_id,
+				published: published,
 			});
 		} catch (e) {
 			return {
@@ -447,6 +461,34 @@ export default {
 			return await fetchClient.post('toggleaddon', {
 				addon_type: addon_type,
 				enabled: enabled,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async toggleAddonDisplay(addon_type, displayed) {
+		try {
+			return await fetchClient.post('toggleaddondisplay', {
+				addon_type: addon_type,
+				displayed: displayed,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async toggleAddonSuggest(addon_type, suggested) {
+		try {
+			return await fetchClient.post('toggleaddonsuggest', {
+				addon_type: addon_type,
+				suggested: suggested,
 			});
 		} catch (e) {
 			return {
@@ -773,6 +815,20 @@ export default {
 			return {
 				status: false,
 				msg: e.message,
+			};
+		}
+	},
+
+	async sendCommercialInterest(addonNamekey) {
+		try {
+			return await fetchClient.post('sendcommercialinterest', {
+				addon_type: addonNamekey,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+				data: null,
 			};
 		}
 	},

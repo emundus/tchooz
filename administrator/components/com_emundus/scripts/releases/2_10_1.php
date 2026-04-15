@@ -11,6 +11,7 @@
 namespace scripts;
 
 use EmundusHelperUpdate;
+use Tchooz\Repositories\Addons\AddonRepository;
 
 class Release2_10_1Installer extends ReleaseInstaller
 {
@@ -35,28 +36,18 @@ class Release2_10_1Installer extends ReleaseInstaller
 			$this->db->setQuery($query);
 			$anonym_email = $this->db->loadObject();
 
-			if(!empty($anonym_email) && !empty($anonym_email->id))
+			if (!empty($anonym_email) && !empty($anonym_email->id))
 			{
 				$update = [
 					'id' => (int) $anonym_email->id,
 					'type' => 1
 				];
 
-				$query->clear()
-					->select('value')
-					->from($this->db->quoteName('#__emundus_setup_config'))
-					->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('anonymous'));
-				$this->db->setQuery($query);
-				$anonymous_module = $this->db->loadResult();
-
-				if (!empty($anonymous_module))
+				$addonRepository = new AddonRepository();
+				$anonymModule = $addonRepository->getByName('anonymous');
+				if (empty($anonymModule) || !$anonymModule->isActivated())
 				{
-					$params = json_decode($anonymous_module, true);
-
-					if($params['enabled'] == 0)
-					{
-						$update['published'] = 0;
-					}
+					$update['published'] = 0;
 				}
 
 				$update = (object) $update;

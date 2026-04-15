@@ -105,6 +105,10 @@ export default {
 				case 'password':
 					parameter.type = 'password';
 					break;
+				case 'boolean':
+					parameter.type = 'toggle';
+					parameter.hideLabel = true;
+					break;
 				default:
 					parameter.type = 'text';
 					break;

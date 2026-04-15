@@ -33,6 +33,8 @@ class EmundusUserEntity
 
 	private ?\DateTimeImmutable $birthDate;
 
+	private ?string $emailCc;
+
 	public function __construct(
 		int                $id,
 		User               $user,
@@ -41,7 +43,8 @@ class EmundusUserEntity
 		string             $profile_picture = null,
 		UserCategoryEntity $user_category = null,
 		bool               $is_anonym = false,
-		?\DateTimeImmutable $birthDate = null
+		?\DateTimeImmutable $birthDate = null,
+		?string             $emailCc = null
 	)
 	{
 		$this->id              = $id;
@@ -52,6 +55,7 @@ class EmundusUserEntity
 		$this->user_category   = $user_category;
 		$this->anonym          = $is_anonym;
 		$this->birthDate       = $birthDate;
+		$this->emailCc         = $emailCc;
 	}
 
 	/**
@@ -136,6 +140,18 @@ class EmundusUserEntity
 	public function setBirthDate(?\DateTimeImmutable $birthDate): EmundusUserEntity
 	{
 		$this->birthDate = $birthDate;
+
+		return $this;
+	}
+
+	public function getEmailCc(): ?string
+	{
+		return $this->emailCc;
+	}
+
+	public function setEmailCc(?string $emailCc): EmundusUserEntity
+	{
+		$this->emailCc = $emailCc;
 
 		return $this;
 	}

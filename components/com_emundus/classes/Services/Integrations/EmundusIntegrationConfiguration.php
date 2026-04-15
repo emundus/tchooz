@@ -3,13 +3,21 @@
 namespace Tchooz\Services\Integrations;
 
 use Tchooz\Entities\Fields\Field;
+use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 
 abstract class EmundusIntegrationConfiguration
 {
 	/**
+	 * Get parameters that can be edited by the user
 	 * @return array<Field>
 	 */
 	abstract public function getParameters(): array;
+
+	/**
+	 * Get static parameters
+	 * @return array
+	 */
+	abstract public function getDefaultParameters(): array;
 
 	/**
 	 * @param   object  $data
