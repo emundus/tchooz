@@ -22,10 +22,4 @@ export default [
 			json_source: 'settings/sections/file-settings.js',
 		},
 	},
-	{
-		label: 'COM_EMUNDUS_CUSTOM_REFERENCE',
-		intro: '',
-		name: 'custom_reference',
-		component: 'CustomReference',
-	},
 ];

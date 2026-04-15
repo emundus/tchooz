@@ -93,7 +93,6 @@ import SubSection from '@/components/Settings/SubSection.vue';
 import Swal from 'sweetalert2';
 import Tile from '@/components/Settings/Tile.vue';
 import settingsService from '@/services/settings.js';
-import CustomReference from '@/components/Settings/Files/CustomReference.vue';
 
 const assetsPath = '/components/com_emundus/src/assets/data/';
 const getPath = (path) => `${assetsPath}${path}`;
@@ -118,7 +117,6 @@ export default {
 		MultifactorAuthentication,
 		SecurityRules,
 		Categories,
-		CustomReference,
 	},
 
 	props: {

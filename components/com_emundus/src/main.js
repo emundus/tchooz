@@ -95,6 +95,10 @@ if (document) {
 	if (updateOwnerElement) {
 		elements.push(updateOwnerElement);
 	}
+	const generateReferenceElement = document.getElementById('em-generete-reference');
+	if (generateReferenceElement) {
+		elements.push(generateReferenceElement);
+	}
 
 	const fabrikVueElements = document.querySelectorAll('.fabrik-vue-element');
 	fabrikVueElements.forEach((fabrikElement) => {
