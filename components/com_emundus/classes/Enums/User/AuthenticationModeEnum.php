@@ -26,6 +26,9 @@ enum AuthenticationModeEnum: string
 
 		switch($type)
 		{
+			case 'Oauth2':
+				$mode = self::SSO;
+				break;
 			case 'Joomla':
 			default:
 				if (EmundusPublicAccess::isPublicAccessSession())
