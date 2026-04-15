@@ -179,7 +179,14 @@ class EmundusViewFiles extends HtmlView
 		$elements = $this->m_files->getElementsVar();
 		foreach ($elements as $elt)
 		{
-			$elt_name          = $elt->tab_name . "___" . $elt->element_name;
+			$groupParams = json_decode($elt->group_attribs);
+			$tableName = $elt->tab_name;
+			if($groupParams->repeat_group_button == 1)
+			{
+				$tableName = $elt->table_join;
+			}
+
+			$elt_name          = $tableName . "___" . $elt->element_name;
 			$eltarr[$elt_name] = [
 				"plugin"    => $elt->element_plugin,
 				"tab_name"  => $elt->tab_name,
@@ -203,7 +210,14 @@ class EmundusViewFiles extends HtmlView
 		{
 			foreach ($defaultElements as $elt)
 			{
-				$fl[$elt->tab_name . '___' . $elt->element_name] = $elt->element_label;
+				$groupParams = json_decode($elt->group_attribs);
+				$tableName = $elt->tab_name;
+				if($groupParams->repeat_group_button == 1)
+				{
+					$tableName = $elt->table_join;
+				}
+
+				$fl[$tableName . '___' . $elt->element_name] = $elt->element_label;
 			}
 		}
 
