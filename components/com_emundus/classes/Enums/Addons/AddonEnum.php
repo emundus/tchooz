@@ -24,6 +24,7 @@ enum AddonEnum: string
 	case PAYMENT = 'payment';
 	case SMS = 'sms';
 	case BOOKING = 'booking';
+	case PUBLIC_SESSION = 'public_session';
 
 	public function getLabel(): string
 	{
@@ -40,6 +41,7 @@ enum AddonEnum: string
 			self::PAYMENT => Text::_('COM_EMUNDUS_ADDON_PAYMENT'),
 			self::SMS => Text::_('COM_EMUNDUS_ADDON_SMS'),
 			self::BOOKING => Text::_('COM_EMUNDUS_ADDON_BOOKING'),
+			self::PUBLIC_SESSION => Text::_('COM_EMUNDUS_ADDONS_PUBLIC_SESSION'),
 		};
 	}
 
@@ -58,6 +60,7 @@ enum AddonEnum: string
 			self::PAYMENT => Text::_('COM_EMUNDUS_ADDON_PAYMENT_DESC'),
 			self::SMS => Text::_('COM_EMUNDUS_ADDON_SMS_DESC'),
 			self::BOOKING => Text::_('COM_EMUNDUS_ADDON_BOOKING_DESC'),
+			self::PUBLIC_SESSION => Text::_('COM_EMUNDUS_ADDONS_PUBLIC_SESSION_DESC'),
 		};
 	}
 
@@ -77,6 +80,7 @@ enum AddonEnum: string
 			self::PAYMENT => 'payment',
 			self::SMS => 'sms',
 			self::BOOKING => 'event',
+			self::PUBLIC_SESSION => 'no_accounts',
 		};
 	}
 }

@@ -162,7 +162,7 @@ class ApplicationFileAccessRepository extends EmundusRepository
 
 				$addonRepository = new AddonRepository();
 				$publicAccessAddon = $addonRepository->getByName('public_session');
-				$params = $publicAccessAddon->getValue()->getParams();
+				$params = $publicAccessAddon->getParams();
 				$days = !empty($params['token_validity_duration']) ? intval($params['token_validity_duration']) : 30;
 
 				if ($days > 365) {
@@ -239,7 +239,7 @@ class ApplicationFileAccessRepository extends EmundusRepository
 
 			$addonRepository = new AddonRepository();
 			$publicAccessAddon = $addonRepository->getByName('public_session');
-			$params = $publicAccessAddon->getValue()->getParams();
+			$params = $publicAccessAddon->getParams();
 			$days = !empty($params['token_validity_duration']) ? intval($params['token_validity_duration']) : 30;
 
 			if ($days > 365) {

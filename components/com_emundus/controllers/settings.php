@@ -56,6 +56,7 @@ use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Repositories\Settings\ConfigurationRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
+use Tchooz\Services\Addons\AddonHandlerResolver;
 use Tchooz\Services\Addons\AddonService;
 use Tchooz\Services\Addons\Handlers\EmundusAnalyticsAddonHandler;
 use Tchooz\Services\Automation\ConditionRegistry;
@@ -3794,16 +3795,17 @@ class EmundusControllersettings extends EmundusController
 		$type = $this->app->getInput()->getString('addon_type');
 		if (!empty($type))
 		{
-			$addonValue = new AddonValue(true, true, []);
-			$publicSessionAddon = new AddonEntity($type, $addonValue);
-			$resolver = new AddonHandlerResolver();
 			try
 			{
+				$addonRepository = new AddonRepository();
+				$publicSessionAddon = $addonRepository->getByName($type);
+				$resolver = new AddonHandlerResolver();
 				$handler = $resolver->resolve($type, $publicSessionAddon);
 
 				$data = array_map(function ($param) {
 					return $param->toSchema();
 				}, $handler->getParameters());
+
 				$response = EmundusResponse::ok($data, Text::_('COM_EMUNDUS_ADDON_PARAMETERS_FETCHED'));
 			} catch (Exception $e) {
 				return EmundusResponse::fail(Text::_('COM_EMUNDUS_ADDON_HANDLER_NOT_FOUND'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
@@ -3813,4 +3815,3 @@ class EmundusControllersettings extends EmundusController
 		return $response;
 	}
 }
-

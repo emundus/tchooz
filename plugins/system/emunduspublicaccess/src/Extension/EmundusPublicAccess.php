@@ -146,7 +146,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	{
 		$addonRepository = new AddonRepository();
 		$this->publicSessionAddon = $addonRepository->getByName('public_session');
-		if (empty($this->publicSessionAddon) || $this->publicSessionAddon->getValue()->isEnabled() === false)
+		if (empty($this->publicSessionAddon) || $this->publicSessionAddon->isActivated() === false)
 		{
 			if (self::isPublicAccessSession())
 			{
@@ -203,7 +203,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 				else
 				{
 					$app->enqueueMessage(Text::_('COM_EMUNDUS_PUBLIC_ACCESS_INVALID_TOKEN'), 'error');
-					if ($this->publicSessionAddon->getValue()->getParams()['display_retrieve_public_access_file_login_page'] == 1)
+					if ($this->publicSessionAddon->getParams()['display_retrieve_public_access_file_login_page'] == 1)
 					{
 						$app->redirect(Route::_('index.php?option=com_users&view=login', false));
 					}

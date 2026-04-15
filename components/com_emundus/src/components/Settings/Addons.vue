@@ -31,7 +31,7 @@ export default {
 		RankingTool,
 		PaymentAddon,
 		Popover,
-		Addon
+		Addon,
 	},
 	mixins: [alerts],
 	data() {
@@ -587,9 +587,9 @@ export default {
 					v-else
 					:addon="currentAddon"
 					@addonSaved="
-					currentAddon = null;
-					getAddons();
-				"
+						currentAddon = null;
+						getAddons();
+					"
 				></Addon>
 			</div>
 

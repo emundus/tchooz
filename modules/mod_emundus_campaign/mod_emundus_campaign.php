@@ -403,9 +403,9 @@ if ($user->guest || in_array($e_user->profile, $app_prof) || $tmpl === 'tchooz_s
 			$addonRepository = new AddonRepository();
 			$addon = $addonRepository->getByName('public_session');
 
-			if (!empty($addon) && $addon->getValue()->isEnabled())
+			if (!empty($addon) && $addon->isActivated())
 			{
-				$addonParams = $addon->getValue()->getParams();
+				$addonParams = $addon->getParams();
 
 				if (!empty($addonParams['confirm_public_application_creation']) && $addonParams['confirm_public_application_creation'] == 1)
 				{

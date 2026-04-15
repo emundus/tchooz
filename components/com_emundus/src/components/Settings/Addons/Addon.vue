@@ -24,8 +24,6 @@ export default {
 		};
 	},
 	created() {
-		this.addon.configuration =
-			typeof this.addon.configuration === 'string' ? JSON.parse(this.addon.configuration) : this.addon.configuration;
 		this.getAddonParameters();
 	},
 	methods: {
@@ -34,11 +32,11 @@ export default {
 		},
 		getAddonParameters() {
 			settingsService
-				.getAddonParameters(this.addon.type)
+				.getAddonParameters(this.addon.namekey)
 				.then((response) => {
 					if (response.status) {
 						this.fields = response.data;
-						const values = this.addon.configuration;
+						const values = this.addon.params;
 						this.mountGroups(this.fields, values).then(() => {
 							this.loading = false;
 						});
@@ -51,7 +49,7 @@ export default {
 				});
 		},
 		onValueUpdated(param) {
-			this.addon.configuration[param.param] = param.value;
+			this.addon.params[param.param] = param.value;
 		},
 		saveAddon() {
 			settingsService.saveAddon(this.addon).then((response) => {

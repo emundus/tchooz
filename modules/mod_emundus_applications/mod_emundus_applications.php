@@ -103,9 +103,9 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$displayImportPublicFilesAction = false;
 	$addonRepository = new AddonRepository();
 	$publicSessionAddon = $addonRepository->getByName('public_session');
-	if ($publicSessionAddon->getValue()->isEnabled())
+	if ($publicSessionAddon->isActivated())
 	{
-		if ($publicSessionAddon->getValue()->getParams()['display_import_public_file_action'] == 1)
+		if ($publicSessionAddon->getParams()['display_import_public_file_action'] == 1)
 		{
 			$wa->registerAndUseScript('mod_emundus_applications.publicaccess', 'modules/mod_emundus_applications/script/publicaccess.js');
 			$displayImportPublicFilesAction = true;
@@ -381,7 +381,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 		}
 	}
 
-	$override_default_content = JText::_($params->get('override_default_content', ''));
+	$override_default_content = Text::_($params->get('override_default_content', ''));
 	if (!empty($override_default_content))
 	{
 		try
@@ -392,7 +392,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 		}
 		catch (Exception $e)
 		{
-			$override_default_content = JText::_($params->get('override_default_content', ''));
+			$override_default_content = Text::_($params->get('override_default_content', ''));
 		}
 	}
 

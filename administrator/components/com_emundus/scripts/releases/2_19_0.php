@@ -15,19 +15,13 @@ use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\Actions\CrudEntity;
 use Tchooz\Entities\Addons\AddonEntity;
-use Tchooz\Entities\Addons\AddonValue;
 use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Services\Addons\AddonHandlerResolver;
 use Joomla\CMS\Component\ComponentHelper;
-use Tchooz\Factories\Language\LanguageFactory;
-use scripts\ReleaseInstaller;
-use Tchooz\Repositories\Language\LanguageRepository;
-use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Reference\InternalReferenceEntity;
-use Tchooz\Repositories\Addons\AddonRepository;
 
 class Release2_19_0Installer extends ReleaseInstaller
 {
@@ -262,16 +256,14 @@ class Release2_19_0Installer extends ReleaseInstaller
 			$publicSessionAddon = $addonRepository->getByName('public_session');
 			if (empty($publicSessionAddon))
 			{
-				$addonValue         = new AddonValue(false, true, []);
-				$publicSessionAddon = new AddonEntity('public_session', $addonValue);
+				$publicSessionAddon = new AddonEntity('public_session', false, false, false);
 				$handler            = $resolver->resolve('public_session', $publicSessionAddon);
 				$params             = [];
 				foreach ($handler->getParameters() as $parameter)
 				{
 					$params[$parameter->getName()] = null;
 				}
-				$addonValue->setParams($params);
-				$publicSessionAddon->setValue($addonValue);
+				$publicSessionAddon->setParams($params);
 
 				$this->tasks[] = $addonRepository->flush($publicSessionAddon);
 			}
@@ -280,7 +272,7 @@ class Release2_19_0Installer extends ReleaseInstaller
 			$anonymAddon = $addonRepository->getByName('anonymous');
 			if (!empty($anonymAddon))
 			{
-				if (!isset($anonymAddon->getValue()->getParams()['policy']))
+				if (!isset($anonymAddon->getParams()['policy']))
 				{
 					$handler            = $resolver->resolve('anonymous', $publicSessionAddon);
 					$params             = [];
@@ -293,7 +285,7 @@ class Release2_19_0Installer extends ReleaseInstaller
 						}
 						$params[$parameter->getName()] = $value;
 					}
-					$anonymAddon->getValue()->setParams($params);
+					$anonymAddon->setParams($params);
 
 					$this->tasks[] = $addonRepository->flush($anonymAddon);
 				}

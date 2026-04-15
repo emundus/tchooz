@@ -59,13 +59,13 @@ class FileDataConditionResolver implements ConditionTargetResolverInterface
 
 		$addonRepository = new AddonRepository();
 		$publicAddon = $addonRepository->getByName('public_session');
-		if ($publicAddon->getValue()->isEnabled())
+		if ($publicAddon->isActivated())
 		{
 			$parameters[] = new YesnoField('public', Text::_('COM_EMUNDUS_IS_PUBLIC'));
 		}
 
 		$anonymousAddon = $addonRepository->getByName('anonymous');
-		if ($anonymousAddon->getValue()->isEnabled())
+		if ($anonymousAddon->isActivated())
 		{
 			$parameters[] = new YesnoField('anonymous', Text::_('COM_EMUNDUS_IS_ANONYMOUS'));
 		}

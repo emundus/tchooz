@@ -129,11 +129,11 @@ final class Anonymization extends CMSPlugin implements SubscriberInterface
 
 		$addonRepository = new AddonRepository();
 		$addon = $addonRepository->getByName('anonymous');
-		if ($addon !== null && $addon->getValue()->isEnabled())
+		if ($addon !== null && $addon->isActivated())
 		{
 			if ($campaign->getAnonymizationPolicy() === AnonymizationPolicyEnum::GLOBAL)
 			{
-				$addonPolicy = $addon->getValue()->getParams()['policy'] ?? 'forbidden';
+				$addonPolicy = $addon->getParams()['policy'] ?? 'forbidden';
 				$policy = AnonymizationPolicyEnum::tryFrom($addonPolicy) ?? AnonymizationPolicyEnum::FORBIDDEN;
 			}
 			else

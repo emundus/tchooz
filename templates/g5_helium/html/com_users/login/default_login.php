@@ -302,9 +302,9 @@ else
     $addonRepository = new AddonRepository();
     $addon = $addonRepository->getByName('public_session');
 
-    if (!empty($addon) && $addon->getValue()->isEnabled())
+    if (!empty($addon) && $addon->isActivated())
     {
-        $addonParams = $addon->getValue()->getParams();
+        $addonParams = $addon->getParams();
 
         if (!empty($addonParams) && $addonParams['display_retrieve_public_access_file_login_page'] == 1)
         {

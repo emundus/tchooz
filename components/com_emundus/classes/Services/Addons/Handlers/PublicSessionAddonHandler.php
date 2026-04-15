@@ -1,6 +1,6 @@
 <?php
 
-namespace Tchooz\Services\Addons;
+namespace Tchooz\Services\Addons\Handlers;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
@@ -10,22 +10,16 @@ use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\Fields\Field;
 use Tchooz\Entities\Fields\NumericField;
 use Tchooz\Entities\Fields\YesnoField;
+use Tchooz\Services\Addons\AbstractAddonHandler;
+use Tchooz\Services\Addons\AddonHandlerInterface;
 
-class PublicSessionAddonHandler implements AddonHandlerInterface
+class PublicSessionAddonHandler extends AbstractAddonHandler
 {
-	private AddonEntity $addon;
-
-	public function __construct(AddonEntity $addon)
-	{
-		$this->addon = $addon;
-	}
-
 	public function toggle(bool $state): bool
 	{
 		$updates = [];
 		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->createQuery();
-
 
 		$query->clear()
 			->select('value')
@@ -53,16 +47,6 @@ class PublicSessionAddonHandler implements AddonHandlerInterface
 		$db->setQuery($query);
 		$updates[] = $db->execute();
 
-		if (!$state)
-		{
-			$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
-
-			if ($systemUserId > 0)
-			{
-				UserHelper::destroyUserSessions($systemUserId);
-			}
-		}
-
 		return !in_array(false, $updates, true);
 	}
 
@@ -77,5 +61,25 @@ class PublicSessionAddonHandler implements AddonHandlerInterface
 			new YesnoField('confirm_public_application_creation', Text::_('COM_EMUNDUS_ADDON_PUBLIC_SESSION_CONFIRM_APPLICATION_CREATION_LABEL'), true),
 			new YesnoField('display_retrieve_public_access_file_login_page', Text::_('COM_EMUNDUS_ADDON_PUBLIC_SESSION_DISPLAY_RETRIEVE_PUBLIC_ACCESS_FILE_LOGIN_PAGE_LABEL'), true),
 		];
+	}
+
+	public function onActivate(): bool
+	{
+		return $this->toggle(true);
+	}
+
+	public function onDeactivate(): bool
+	{
+		$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
+		if ($systemUserId > 0)
+		{
+			$destroyed = UserHelper::destroyUserSessions($systemUserId);
+		}
+		else
+		{
+			$destroyed = true;
+		}
+
+		return $this->toggle(false) && $destroyed;
 	}
 }
