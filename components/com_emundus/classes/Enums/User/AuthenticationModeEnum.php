@@ -4,7 +4,7 @@ namespace Tchooz\Enums\User;
 
 use Joomla\CMS\Language\Text;
 
-enum AuthenticatioAuthenticationModeEnumnModeEnum: string
+enum AuthenticationModeEnum: string
 {
 	case DEFAULT = 'default';
 	case SSO = 'sso';
