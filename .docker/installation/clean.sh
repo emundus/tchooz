@@ -18,6 +18,11 @@ rm -rf ../../templates/g5_helium/custom/config/*
 rm -rf ../../templates/g5_helium/templateDetails.xml
 printf "${SUCCESS}g5_helium files removed\n"
 
+
+printf "${NC}Removing translation files...\n"
+rm -rf ../../language/overrides/*.override.ini
+printf "${SUCCESS}translation files removed\n"
+
 printf "${NC}Clear namespace cache\n"
 rm -rf ../../administrator/cache/*
 printf "${SUCCESS}Cache cleared\n"
