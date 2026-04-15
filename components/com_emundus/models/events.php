@@ -1076,7 +1076,20 @@ class EmundusModelEvents extends BaseDatabaseModel
 			$slot = $this->getEventSlot($id);
 			if($registrants['count'] > 0)
 			{
-				if($slot_capacity < $slot->slot_capacity)
+				// Group registrants[data] by availability
+				$registrants_by_availability = [];
+				foreach ($registrants['datas'] as $registrant)
+				{
+					if(!isset($registrants_by_availability[$registrant->availability]))
+					{
+						$registrants_by_availability[$registrant->availability] = 0;
+					}
+					$registrants_by_availability[$registrant->availability] += 1;
+				}
+				// Get higher value of $registrants_by_availability
+				$max_registrants_by_availability = max($registrants_by_availability);
+
+				if($slot_capacity < $max_registrants_by_availability)
 				{
 					$slots['message'] = Text::_('COM_EMUNDUS_ONBOARD_ADD_EVENT_UPDATE_CAPACITY_ERROR');
 					$conditions_filled = false;
