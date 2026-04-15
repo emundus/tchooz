@@ -3083,9 +3083,24 @@ class EmundusHelperFiles
 								{
 									$str .= '<td width="30%"><b>' . Text::_(trim($element->element_label)) . '</b> </td><td width="70%"><a href="/' . $filepath . '" target="_blank">' . Text::_($eval[$k]) . '</a></td>';
 								}
-							}
-							else
-							{
+                            }
+                            else if ($element->element_plugin == 'textarea')
+                            {
+                                $params = json_decode($element->params);
+
+                                $str .= '</table>';
+                                $str .= '<div style="width: 93.5%;padding: 8px 16px;">';
+                                $str .= '<div style="width: 100%; padding: 4px 8px;background-color: #F3F3F3;color: #000000;border: solid 1px #A4A4A4;border-bottom: unset;font-size: 12px">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</div>';
+                                if (!empty($params) && $params->use_wysiwyg == 1) {
+                                    $str .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . preg_replace('/<br\s*\/?>/','',JText::_($eval[$k])) . '</div>';
+                                } else {
+                                    $str .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px;word-break:break-word; hyphens:auto;">' . JText::_($eval[$k]) . '</div>';
+                                }
+                                $str .= '</div>';
+                                $str .= '<table class="pdf-forms">';
+                            }
+                            else
+                            {
 								$str .= '<td width="30%"><b>' . Text::_(trim($element->element_label)) . '</b> </td><td width="70%">' . Text::_($eval[$k]) . '</td>';
 							}
 						}
