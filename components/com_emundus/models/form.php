@@ -24,6 +24,8 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
+use Tchooz\Enums\User\AuthenticationModeEnum;
+use Tchooz\Factories\Fabrik\FabrikOptionsFactory;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\EmundusResponse;
 use Tchooz\Traits\TraitResponse;
@@ -3382,6 +3384,18 @@ class EmundusModelForm extends ListModel
 					$element->label     = Text::_($element->label);
 					$element->params = $params;
 				}
+
+
+				$authenticationModeElt = new stdClass();
+				$authenticationModeElt->id = 'authentication_mode';
+				$authenticationModeElt->name = $authenticationModeElt->id;
+				$authenticationModeElt->label = Text::_('COM_EMUNDUS_LOGIN_MODE');
+				$authenticationModeElt->plugin = ElementPluginEnum::RADIO->value;
+				$authenticationModeElt->hidden = 0;
+				$authenticationModeElt->params = FabrikOptionsFactory::makeOptionsFromEnum(AuthenticationModeEnum::cases());
+				$authenticationModeElt->default = AuthenticationModeEnum::DEFAULT->value;
+
+				$elements[] = $authenticationModeElt;
 			}
 			else {
 				$elements = $this->db->loadColumn();

@@ -30,6 +30,7 @@ use Joomla\Registry\Registry;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterRenderDefinition;
 use Tchooz\Entities\Emails\TagModifierRegistry;
+use Tchooz\Enums\User\AuthenticationModeEnum;
 use Tchooz\Providers\DbLanguageProvider;
 use Tchooz\Providers\EmundusSubscriberProvider;
 
@@ -205,6 +206,9 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			'currentPath' => $currentLangPath
 		];
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.language', $options);
+
+		$profile_data['authentication_mode'] = $this->getApplication()->getSession()->get('emundus_authentication_mode', AuthenticationModeEnum::DEFAULT)->value;
+
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.user_details', $profile_data);
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.async_export', $allowAsync);
 
