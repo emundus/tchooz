@@ -943,9 +943,13 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			}
 
 			PluginHelper::importPlugin('emundus', 'custom_event_handler');
-			$authenticationMode = AuthenticationModeEnum::tryFromJoomlaType($authenticationResponse['type']);
+			$joomlaType = $authenticationResponse['type'];
+			if ($this->isSamlUser($user->id))
+			{
+				$joomlaType = 'Saml';
+			}
+			$authenticationMode = AuthenticationModeEnum::tryFromJoomlaType($joomlaType);
 			$authenticationMode = !empty($authenticationMode) ? $authenticationMode : AuthenticationModeEnum::DEFAULT;
-
 			$session->set('emundus_authentication_mode', $authenticationMode);
 
 			$event = new GenericEvent('onCallEventHandler',

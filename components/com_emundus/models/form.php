@@ -2833,6 +2833,9 @@ class EmundusModelForm extends ListModel
 		return $associated;
 	}
 
+	/**
+	 * TODO: refactor JS conditions system to manipulate more than just form data, and avoid weird code like for authentication_mode case
+	 */
 	public function getJSConditionsByForm($form_id, $format = 'raw')
 	{
 		$js_conditions = [];
@@ -2874,27 +2877,36 @@ class EmundusModelForm extends ListModel
 					$tmp_conditions = [];
 					foreach ($js_condition->conditions as $condition)
 					{
-						$query->clear()
-							->select('jfe.label,jfe.plugin,jfe.params')
-							->from($this->db->quoteName('#__fabrik_elements', 'jfe'))
-							->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->db->quoteName('jffg.group_id') . ' = ' . $this->db->quoteName('jfe.group_id'))
-							->where($this->db->quoteName('jfe.name') . ' = ' . $this->db->quote($condition->field));
-						if($condition->type == 'user')
+						if ($condition->field === 'authentication_mode')
 						{
-							$query->andWhere($this->db->quoteName('jffg.form_id') . ' = ' . $this->db->quote($profile_form_id));
+							$elt = new stdClass();
+							$elt->label = Text::_('COM_EMUNDUS_LOGIN_MODE');
+							$elt->plugin = ElementPluginEnum::RADIO->value;
+							$elt->params = (object) FabrikOptionsFactory::makeOptionsFromEnum(AuthenticationModeEnum::cases());
 						}
-						else {
-							$query->andWhere($this->db->quoteName('jffg.form_id') . ' = ' . $this->db->quote($form_id));
-						}
+						else
+						{
+							$query->clear()
+								->select('jfe.label,jfe.plugin,jfe.params')
+								->from($this->db->quoteName('#__fabrik_elements', 'jfe'))
+								->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->db->quoteName('jffg.group_id') . ' = ' . $this->db->quoteName('jfe.group_id'))
+								->where($this->db->quoteName('jfe.name') . ' = ' . $this->db->quote($condition->field));
+							if($condition->type == 'user')
+							{
+								$query->andWhere($this->db->quoteName('jffg.form_id') . ' = ' . $this->db->quote($profile_form_id));
+							}
+							else {
+								$query->andWhere($this->db->quoteName('jffg.form_id') . ' = ' . $this->db->quote($form_id));
+							}
 
-						$this->db->setQuery($query);
-						$elt = $this->db->loadObject();
+							$this->db->setQuery($query);
+							$elt = $this->db->loadObject();
+						}
 						$condition->elt_label = Text::_($elt->label);
-
 						$choices_plugin = ['checkbox','dropdown','radiobutton'];
-						$params = json_decode($elt->params);
+						$params = is_string($elt->params) ? json_decode($elt->params) : $elt->params;
 
-						if(in_array($elt->plugin,$choices_plugin)) {
+						if(in_array($elt->plugin, $choices_plugin)) {
 							// Get values
 							foreach ($params->sub_options->sub_labels as $key => $sub_label) {
 								$params->sub_options->sub_labels[$key] = Text::_($sub_label);
@@ -3384,7 +3396,6 @@ class EmundusModelForm extends ListModel
 					$element->label     = Text::_($element->label);
 					$element->params = $params;
 				}
-
 
 				$authenticationModeElt = new stdClass();
 				$authenticationModeElt->id = 'authentication_mode';

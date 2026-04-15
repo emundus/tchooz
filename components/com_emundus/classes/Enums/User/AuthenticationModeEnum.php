@@ -30,7 +30,7 @@ enum AuthenticationModeEnum: string
 	{
 		return match ($type)
 		{
-			'Oauth2' => self::SSO,
+			'Oauth2', 'Saml', 'oauth2', 'saml' => self::SSO,
 			'access_key' => self::ACCESS_KEY,
 			'Joomla' => self::DEFAULT,
 		};
