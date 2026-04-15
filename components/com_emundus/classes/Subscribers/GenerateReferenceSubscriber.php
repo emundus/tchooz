@@ -16,6 +16,7 @@ use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Providers\DateProvider;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Reference\InternalReferenceRepository;
 use Tchooz\Services\Reference\InternalReferenceService;
@@ -80,12 +81,12 @@ class GenerateReferenceSubscriber extends EmundusSubscriber
 		try
 		{
 			$data = $event->getArguments();
-			
+
 			if (empty($data) || empty($data['fnum']) || !isset($data['state']) || !isset($data['old_state']))
 			{
 				return;
 			}
-			
+
 			$applicationFileRepository = new ApplicationFileRepository();
 			$internalReferenceService = new InternalReferenceService(
 				new DateProvider(),

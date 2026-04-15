@@ -14,65 +14,62 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
-use enshrined\svgSanitize\Sanitizer;
 use Http\Discovery\Exception\NotFoundException;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Users\Administrator\Helper\Mfa;
 use Symfony\Component\OptionsResolver\Exception\AccessException;
 use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Controller\EmundusController;
+use Tchooz\EmundusResponse;
 use Tchooz\Entities\Addons\AddonEntity;
-use Tchooz\Entities\Addons\AddonValue;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
-use Tchooz\Entities\Settings\ConfigurationEntity;
+use Tchooz\Entities\Fields\Field;
+use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Entities\User\UserCategoryEntity;
 use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Enums\Analytics\PeriodEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Reference\PositionEnum;
 use Tchooz\Enums\Reference\ResetTypeEnum;
 use Tchooz\Enums\Reference\SeparatorEnum;
 use Tchooz\Factories\Mapping\MappingFactory;
 use Tchooz\Providers\DateProvider;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\Analytics\PageAnalyticsRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
-use Tchooz\Repositories\Addons\AddonRepository;
-use Tchooz\Enums\Analytics\PeriodEnum;
-use Tchooz\Repositories\Analytics\PageAnalyticsRepository;
+use Tchooz\Repositories\CountryRepository;
 use Tchooz\Repositories\Emails\TagRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
+use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Repositories\Settings\ConfigurationRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
-use Tchooz\Repositories\CountryRepository;
-use Tchooz\EmundusResponse;
-use Tchooz\Services\Addons\AddonHandlerResolver;
-use Tchooz\Services\Addons\EmundusAnalyticsAddonHandler;
+use Tchooz\Services\Addons\AddonService;
+use Tchooz\Services\Addons\Handlers\EmundusAnalyticsAddonHandler;
+use Tchooz\Services\Automation\ConditionRegistry;
+use Tchooz\Services\Emails\EmailService;
+use Tchooz\Services\Integrations\IntegrationService;
+use Tchooz\Services\Reference\InternalReferenceFormat;
+use Tchooz\Services\Reference\InternalReferenceFormatBlock;
 use Tchooz\Services\Reference\InternalReferenceFormatSequence;
 use Tchooz\Services\Reference\InternalReferenceService;
 use Tchooz\Services\Transformation\TransformationsRegistry;
 use Tchooz\Services\UploadService;
-use Tchooz\Services\Automation\ConditionRegistry;
-use Tchooz\Services\Mapping\MappingTransformationsRegistry;
-use Tchooz\Services\Reference\InternalReferenceFormat;
-use Tchooz\Services\Reference\InternalReferenceFormatBlock;
-use Tchooz\Synchronizers\NumericSign\DocaposteSynchronizer;
-use Tchooz\Synchronizers\NumericSign\DocuSignSynchronizer;
-use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
-use Tchooz\Synchronizers\SMS\OvhSMS;
-use Tchooz\Controller\EmundusController;
-use Tchooz\Traits\TraitResponse;
 use Web357\Plugin\System\Microsoftoutlook365mailconnect\Extension\Microsoftoutlook365mailconnect;
 
+// TODO: Split into more controllers
 class EmundusControllersettings extends EmundusController
 {
 	private EmundusModelSettings $m_settings;
@@ -91,6 +88,7 @@ class EmundusControllersettings extends EmundusController
 		}
 
 		$this->m_settings = new EmundusModelSettings();
+		Log::addLogger(['text_file' => 'com_emundus.updated_settings.php'], Log::ALL, array('com_emundus.settings'));
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
@@ -2047,9 +2045,45 @@ class EmundusControllersettings extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function getapps(): EmundusResponse
 	{
-		$apps = $this->m_settings->getApps();
+		$this->checkToken('get');
 
-		return EmundusResponse::ok($apps, Text::_('APPLICATIONS_FOUND'));
+		$synchronizerRepository = new SynchronizerRepository();
+		if(EmundusHelperAccess::asAdministratorAccessLevel($this->user->id))
+		{
+			$apps = $synchronizerRepository->getList();
+			$apps = $apps->getItems();
+		}
+		else {
+			$apps = $synchronizerRepository->getItemsByField('published', 1, true);
+		}
+
+		$appsSerialized = [];
+		foreach($apps as $app)
+		{
+			assert($app instanceof SynchronizerEntity);
+			$appSerialized = $app->serialize();
+			$appSerialized['parameters'] = [];
+
+			$integrationService = new IntegrationService();
+
+			try
+			{
+				$parameters = $integrationService->getParameters($app);
+				foreach ($parameters as $parameter)
+				{
+					assert($parameter instanceof Field);
+					$appSerialized['parameters'][] = $parameter->toSchema();
+				}
+
+				$appsSerialized[] = $appSerialized;
+			}
+			catch (Exception $e)
+			{
+				Log::add('Failed to load ' . $app->getName() . ' parameters ' . $e->getMessage(), LOG::ERROR, 'com_emundus.settings');
+			}
+		}
+
+		return EmundusResponse::ok($appsSerialized, Text::_('APPLICATIONS_FOUND'));
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
@@ -2062,179 +2096,45 @@ class EmundusControllersettings extends EmundusController
 			throw new InvalidArgumentException('App ID or App Type is required');
 		}
 
-		$app = $this->m_settings->getApp($app_id, $app_type);
-
-		return EmundusResponse::ok($app, Text::_('APP_FOUND'));
-	}
-
-	public function setupapp()
-	{
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$synchronizerRepository = new SynchronizerRepository();
+		if(!empty($app_id))
 		{
-			$response['code']    = 500;
-			$response['message'] = Text::_('MISSING_PARAMS');
-
-			$app_id = $this->input->getInt('app_id', 0);
-			$setup  = $this->input->getRaw('setup', []);
-
-			if (!empty($app_id) && !empty($setup))
-			{
-				$setup = json_decode($setup);
-
-				$response['status'] = $this->m_settings->setupApp($app_id, $setup, $this->user->id);
-				if ($response['status'])
-				{
-					$app = $this->m_settings->getApp($app_id);
-
-					// Test authentication
-					switch ($app->type)
-					{
-						case 'ovh':
-							if (!class_exists('OvhSMS'))
-							{
-								require_once(JPATH_ROOT . '/components/com_emundus/classes/Synchronizers/SMS/OvhSMS.php');
-							}
-							$synchronizer = new OvhSMS();
-							$sms_services = $synchronizer->getSmsServices();
-
-							if (!empty($sms_services))
-							{
-								$response['status'] = true;
-							}
-							else
-							{
-								$response['status'] = false;
-							}
-
-							break;
-						case 'yousign':
-							$synchronizer = new YousignSynchronizer();
-
-							if ($setup->mode == 1)
-							{
-								$api_consumptions   = $synchronizer->getConsumptionsData();
-								$response['status'] = !empty($api_consumptions['data']);
-								if (!empty($api_consumptions['data']))
-								{
-									$this->m_settings->updateConsumptions('yousign', (array) $api_consumptions['data']);
-								}
-
-								$webhooks = $synchronizer->getWebhookSubscriptions();
-								if ($setup->create_webhook == 1)
-								{
-									$webhook_created = false;
-
-									if (!empty($webhooks['data']))
-									{
-										foreach ($webhooks['data'] as $webhook)
-										{
-											if (strpos($webhook->endpoint, Uri::base()) !== false)
-											{
-												$webhook_created = true;
-
-												if (!$webhook->enabled)
-												{
-													$synchronizer->toggleWebhookSubscription($webhook->id);
-												}
-											}
-										}
-									}
-
-									if (!$webhook_created)
-									{
-										$response = $synchronizer->createWebhookSubscription();
-										if ($response['status'] === 201 && !empty($response['data']))
-										{
-											$this->m_settings->updateWebhook('yousign', $response['data']->secret_key);
-										}
-									}
-								}
-								else
-								{
-									$workspaces         = $synchronizer->getWorkspaces();
-									$response['status'] = !empty($workspaces['data']->data);
-
-									if (!empty($webhooks['data']))
-									{
-										foreach ($webhooks['data'] as $webhook)
-										{
-											if (strpos($webhook->endpoint, Uri::base()) !== false)
-											{
-												$synchronizer->toggleWebhookSubscription($webhook->id, false);
-											}
-										}
-									}
-								}
-							}
-							else
-							{
-								$workspaces         = $synchronizer->getWorkspaces();
-								$response['status'] = !empty($workspaces['data']->data);
-							}
-							break;
-						case 'sogecommerce':
-						case 'stripe':
-						case 'hubspot':
-							break;
-
-						case 'docusign':
-							try
-							{
-								$docusignSynchronizer = new DocuSignSynchronizer();
-							}
-							catch (Exception $e)
-							{
-								$response['status'] = false;
-								break;
-							}
-							break;
-
-						case 'docaposte':
-							try
-							{
-								$docaposteSynchronizer = new DocaposteSynchronizer();
-							}
-							catch (Exception $e)
-							{
-								$response['status'] = false;
-								break;
-							}
-							break;
-						default:
-							require_once JPATH_ROOT . '/components/com_emundus/models/sync.php';
-							$m_sync             = new EmundusModelSync();
-							$response['status'] = $m_sync->testAuthentication($app_id);
-							break;
-					}
-
-					if ($response['status'])
-					{
-						if ($this->m_settings->checkRequirements($app_id))
-						{
-							$response['code']    = 200;
-							$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_SETUP_SUCCESS');
-						}
-						else
-						{
-							$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_SETUP_REQUIREMENTS_FAILED');
-						}
-					}
-					else
-					{
-						$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_SETUP_FAILED');
-					}
-				}
-			}
+			$app = $synchronizerRepository->getById($app_id);
+		}
+		else {
+			$app = $synchronizerRepository->getItemByField('type', $app_type);
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		if(empty($app))
+		{
+			throw new RuntimeException('App not found');
+		}
+		assert($app instanceof SynchronizerEntity);
+
+		return EmundusResponse::ok($app->serialize(), Text::_('APP_FOUND'));
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
-	public function disableapp(): EmundusResponse
+	public function setupapp(): EmundusResponse
+	{
+		$app_id = $this->input->getInt('app_id', 0);
+		$setup  = $this->input->getRaw('setup', []);
+
+		if (empty($app_id) || empty($setup))
+		{
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
+		}
+
+		$setup = json_decode($setup);
+
+		$integrationService = new IntegrationService();
+		$integrationService->setup($app_id, $setup);
+
+		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_SETUP_SUCCESS'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function toggleapp(): EmundusResponse
 	{
 		$app_id  = $this->input->getInt('app_id', 0);
 		$enabled = $this->input->getInt('enabled', 1);
@@ -2243,12 +2143,54 @@ class EmundusControllersettings extends EmundusController
 			throw new InvalidArgumentException('App ID is required');
 		}
 
-		if (!$this->m_settings->toggleEnable($app_id, $enabled))
+		$synchronizerRepository = new SynchronizerRepository();
+		$synchronizer = $synchronizerRepository->getById($app_id);
+		if(empty($synchronizer))
+		{
+			throw new RuntimeException('App ID not found');
+		}
+
+		$integrationService = new IntegrationService();
+		if ($enabled == 1)
+		{
+			$result = $integrationService->activate($app_id);
+		}
+		else {
+			$result = $integrationService->deactivate($app_id);
+		}
+
+		if (!$result)
 		{
 			throw new RuntimeException('Failed to update app status');
 		}
 
 		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_STATUS_UPDATED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function toggleappdisplay(): EmundusResponse
+	{
+		$app_id  = $this->input->getInt('app_id', 0);
+		$published = $this->input->getInt('published', 1);
+		if (empty($app_id))
+		{
+			throw new InvalidArgumentException('App ID is required');
+		}
+
+		$synchronizerRepository = new SynchronizerRepository();
+		$synchronizer = $synchronizerRepository->getById($app_id);
+		if(empty($synchronizer))
+		{
+			throw new RuntimeException('App ID not found');
+		}
+
+		$synchronizer->setPublished($published);
+		if(!$synchronizerRepository->flush($synchronizer))
+		{
+			throw new RuntimeException('Failed to flush');
+		}
+
+		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_PUBLISH_STATUS_UPDATED'));
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
@@ -2273,116 +2215,178 @@ class EmundusControllersettings extends EmundusController
 	{
 		$this->checkToken('get');
 
-		$addons = $this->m_settings->getAddons();
+		$addonService = new AddonService();
 
-		return EmundusResponse::ok($addons, Text::_('ADDONS_FOUND'));
-	}
-
-	public function saveaddon()
-	{
-		$this->checkToken('post');
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		if(EmundusHelperAccess::asAdministratorAccessLevel($this->user->id))
 		{
-			$response['code'] = 200;
-			$addon            = $this->input->getRaw('addon', '{}');
-			$addon            = json_decode($addon, true);
-
-			if (!empty($addon))
-			{
-				$saved = $this->m_settings->saveAddon($addon);
-
-				if ($saved)
-				{
-					$response['status']  = true;
-					$response['code']    = 200;
-					$response['message'] = Text::_('ADDON_SAVED');
-				}
-				else
-				{
-					$response['message'] = Text::_('ADDON_NOT_SAVED');
-				}
-			}
+			$addons = $addonService->getAddons();
+		}
+		else {
+			$addons = $addonService->getVisibleAddons();
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$data = [];
+		foreach ($addons as $addon)
+		{
+			assert($addon instanceof AddonEntity);
+
+			if(empty($addon->getAddon()))
+			{
+				continue;
+			}
+			$data[] = $addon->__serialize();
+		}
+
+		return EmundusResponse::ok($data, Text::_('ADDONS_FOUND'));
 	}
 
-	public function toggleaddon()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function saveaddon()
 	{
 		$this->checkToken();
 
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+		$addon            = $this->input->getRaw('addon', '{}');
+		$addon            = json_decode($addon, true);
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		if (empty($addon) || !is_array($addon) || !isset($addon['namekey']))
 		{
-			$this->sendJsonResponse($response);
-
-			return;
+			throw new InvalidArgumentException('Addon is required');
 		}
 
-		$addon_type = $this->input->getString('addon_type', 0);
-		$enabled    = $this->input->getInt('enabled', 1);
-
-		if (empty($addon_type))
-		{
-			$response['message'] = Text::_('MUST_SELECT_ADDON_TYPE');
-			$response['code']    = 400;
-
-			$this->sendJsonResponse($response);
-
-			return;
-		}
-
-		if (!class_exists('AddonRepository'))
-		{
-			require_once JPATH_ROOT . '/components/com_emundus/classes/Repositories/Addons/AddonRepository.php';
-		}
 		$addonRepository = new AddonRepository();
-		$addon           = $addonRepository->getByName($addon_type);
-
-		if (empty($addon))
+		$addonEntity     = $addonRepository->getByName($addon['namekey']);
+		if (empty($addonEntity))
 		{
-			$response['message'] = Text::_('ADDON_NOT_FOUND');
-			$response['code']    = 404;
-
-			$this->sendJsonResponse($response);
-
-			return;
+			throw new RuntimeException('Addon not found');
 		}
 
-		// Check if we have a handler for this addon (name must be the same as the factory class)
-		try
-		{
-			$resolver = new AddonHandlerResolver();
+		$addonEntity->setActivated($addon['activated'] ?? false);
+		$addonEntity->setDisplayed($addon['displayed'] ?? false);
+		$addonEntity->setSuggested($addon['suggested'] ?? false);
+		$addonEntity->setParams($addon['params'] ?? []);
 
-			$handler            = $resolver->resolve($addon_type, $addon);
-			$response['status'] = $handler->toggle($enabled);
-		}
-		catch (RuntimeException $e)
+		if (!$addonRepository->flush($addonEntity))
 		{
-			$response['status'] = $this->m_settings->toggleAddon($addon_type, $enabled);
+			throw new RuntimeException(Text::_('ADDON_NOT_SAVED'));
 		}
 
-		if ($response['status'])
+		return EmundusResponse::ok([], Text::_('ADDON_SAVED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::ADMINISTRATOR)]
+	public function toggleaddondisplay(): EmundusResponse
+	{
+		$this->checkToken();
+
+		$displayed = $this->input->getInt('displayed', 0);
+		$namekey = $this->input->getString('addon_type', '');
+		if(empty($namekey))
 		{
-			// clear cache
-			$cache = Factory::getCache('com_menus');
-			$cache->clean('com_menus');
-
-			$cache = Factory::getCache('com_emundus');
-			$cache->clean('com_emundus');
-
-			$cache = Factory::getCache('_system');
-			$cache->clean('_system');
-
-			$response['code']    = 200;
-			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ADDON_TOGGLED');
+			throw new InvalidArgumentException('Addon type is required');
 		}
 
-		$this->sendJsonResponse($response);
+		$addonService = new AddonService();
+		$result = $displayed === 1 ? $addonService->show($namekey) : $addonService->hide($namekey);
+		if(!$result)
+		{
+			throw new RuntimeException('Failed to update addon display status');
+		}
+
+		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ADDON_DISPLAY_STATUS_UPDATED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::ADMINISTRATOR)]
+	public function toggleaddonsuggest(): EmundusResponse
+	{
+		$this->checkToken();
+
+		$suggested = $this->input->getInt('suggested', 0);
+		$namekey = $this->input->getString('addon_type', '');
+		if(empty($namekey))
+		{
+			throw new InvalidArgumentException('Addon type is required');
+		}
+
+		$addonService = new AddonService();
+		$result = $suggested === 1 ? $addonService->suggest($namekey) : $addonService->removeSuggest($namekey);
+		if(!$result)
+		{
+			throw new RuntimeException('Failed to update addon suggest status');
+		}
+
+		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ADDON_DISPLAY_STATUS_UPDATED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function toggleaddon(): EmundusResponse
+	{
+		$this->checkToken();
+
+		$enabled    = $this->input->getInt('enabled', 0);
+		$namekey = $this->input->getString('addon_type', '');
+		if(empty($namekey))
+		{
+			throw new InvalidArgumentException('Addon type is required');
+		}
+
+		$addonService = new AddonService();
+		$result = $enabled === 1 ? $addonService->activate($namekey) : $addonService->deactivate($namekey);
+		if(!$result)
+		{
+			throw new RuntimeException('Failed to update addon status');
+		}
+
+		// clear cache
+		$cache = Factory::getCache('com_menus');
+		$cache->clean('com_menus');
+
+		$cache = Factory::getCache('com_emundus');
+		$cache->clean('com_emundus');
+
+		$cache = Factory::getCache('_system');
+		$cache->clean('_system');
+
+		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ADDON_STATUS_UPDATED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function sendcommercialinterest(): EmundusResponse
+	{
+		$namekey = $this->input->getString('addon_type', '');
+		if(empty($namekey))
+		{
+			throw new InvalidArgumentException('Addon type is required');
+		}
+
+		$addonService = new AddonService();
+		$addon = $addonService->getAddon($namekey);
+		if(empty($addon))
+		{
+			throw new NotFoundException('Addon not found');
+		}
+
+		$emundusUserRepository = new EmundusUserRepository();
+		$user = Factory::getApplication()->getIdentity();
+		$emundusUser = $emundusUserRepository->getByUserId($user->id);
+
+		$emailService = new EmailService();
+		$emailService->sendEmailWithoutTemplate(
+			'commercial@emundus.fr',
+			Text::sprintf('COM_EMUNDUS_SETTINGS_ADDONS_COMMERCIAL_EMAIL_SUBJECT', $this->app->get('sitename'), $addon->getAddon()->getLabel()),
+			Text::sprintf(
+				'COM_EMUNDUS_SETTINGS_ADDONS_COMMERCIAL_EMAIL_BODY',
+				$user->name,
+				$addon->getAddon()->getLabel(),
+				$this->app->get('sitename'),
+				$user->name,
+				$user->email,
+				// TODO: Add phone number
+				'-',
+				$addon->getAddon()->getLabel()
+			)
+		);
+
+		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_COMMERCIAL_INTEREST_SENT'));
 	}
 
 	public function setupmessenger()
@@ -2460,9 +2464,9 @@ class EmundusControllersettings extends EmundusController
 			throw new NotFoundException(Text::_('ADDON_NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
 		}
 
-		$addonStatus['enabled']   = $addon->getValue()->isEnabled();
-		$addonStatus['displayed'] = $addon->getValue()->isDisplayed();
-		$addonStatus['params']    = $addon->getValue()->getParams();
+		$addonStatus['enabled']   = $addon->isActivated();
+		$addonStatus['displayed'] = $addon->isDisplayed();
+		$addonStatus['params']    = $addon->getParams();
 
 		return EmundusResponse::ok($addonStatus);
 	}
@@ -3642,8 +3646,7 @@ class EmundusControllersettings extends EmundusController
 			new DateProvider(),
 			new ApplicationFileRepository()
 		);
-		$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity();
-
+		$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity(false);
 
 		$mappingTransformationsRegistry = new TransformationsRegistry();
 		$conditionsRegistry             = new ConditionRegistry();
@@ -3774,21 +3777,11 @@ class EmundusControllersettings extends EmundusController
 			$format->addBlock($block);
 		}
 
-		$configurationRepository = new ConfigurationRepository();
-		$customFormatReference   = $configurationRepository->getByName('custom_reference_format');
-		if (empty($customFormatReference))
-		{
-			$customFormatReference = new ConfigurationEntity(
-				'custom_reference_format',
-				$format->__serialize()
-			);
-		}
-		else
-		{
-			$customFormatReference->setValue($format->__serialize());
-		}
+		$addonRepository = new AddonRepository();
+		$customFormatReference   = $addonRepository->getByName('custom_reference_format');
+		$customFormatReference->setParams($format->__serialize());
 
-		$configurationRepository->flush($customFormatReference);
+		$addonRepository->flush($customFormatReference);
 
 		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_SAVED'));
 	}

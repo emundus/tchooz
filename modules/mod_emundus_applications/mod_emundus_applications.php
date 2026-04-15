@@ -37,7 +37,7 @@ else
 	Text::script('CANCEL');
 }
 
-if(!class_exists('EmundusModelProfile'))
+if (!class_exists('EmundusModelProfile'))
 {
 	include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
 }
@@ -120,13 +120,19 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
 	$eMConfig = ComponentHelper::getParams('com_emundus');
 
-	$is_anonym_user = $user->anonym;
+	$is_anonym_user  = $user->anonym;
 	$addonRepository = new AddonRepository();
-	$anonymousAddon = $addonRepository->getByName('anonymous');
-	if ($is_anonym_user && !$anonymousAddon->getValue()->isEnabled())
+	$anonymousAddon  = $addonRepository->getByName('anonymous');
+	if ($is_anonym_user && !$anonymousAddon->isActivated())
 	{
 		return;
 	}
+	$internalReferenceService    = new InternalReferenceService(
+		new DateProvider(),
+		new ApplicationFileRepository()
+	);
+	$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity();
+	$isShowToApplicant           = $customReferenceFormatEntity->isShowToApplicant();
 
 	$internalReferenceService    = new InternalReferenceService(
 		new DateProvider(),

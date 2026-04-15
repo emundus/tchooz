@@ -29,29 +29,30 @@ class SynchronizerEntity
 	private ?SynchronizerContextEnum $context;
 
 	public function __construct(
-		int $id,
-		string $type,
-		string $name,
-		string $description,
-		array $params = [],
-		array $config = [],
-		bool $published = false,
-		bool $enabled = false,
-		?string $icon = null,
-		?string $consumptions = null,
+		int                      $id,
+		string                   $type,
+		string                   $name,
+		string                   $description,
+		array                    $params = [],
+		array                    $config = [],
+		bool                     $published = false,
+		bool                     $enabled = false,
+		?string                  $icon = null,
+		?string                  $consumptions = null,
 		?SynchronizerContextEnum $context = null
-	) {
-		$this->id = $id;
-		$this->type = $type;
-		$this->params = $params;
-		$this->config = $config;
-		$this->published = $published;
-		$this->name = $name;
-		$this->description = $description;
-		$this->enabled = $enabled;
-		$this->icon = $icon;
+	)
+	{
+		$this->id           = $id;
+		$this->type         = $type;
+		$this->params       = $params;
+		$this->config       = $config;
+		$this->published    = $published;
+		$this->name         = $name;
+		$this->description  = $description;
+		$this->enabled      = $enabled;
+		$this->icon         = $icon;
 		$this->consumptions = $consumptions;
-		$this->context = $context;
+		$this->context      = $context;
 	}
 
 	public function getId(): int
@@ -164,11 +165,38 @@ class SynchronizerEntity
 		$this->context = $context;
 	}
 
+	private function checkSecurityConfig(array $config): array
+	{
+		foreach ($config as $name => $value) {
+			if (str_contains($name, 'client_secret') || $name === 'token' || str_contains($name, 'password')) {
+				$config[$name] = '********';
+			}
+		}
+
+		return $config;
+	}
+
 	public function serialize(): array
 	{
+		$config = $this->getConfig();
+		// Do not return client_secret, token and password keys in the config for security reasons
+		foreach ($config as $name => $value) {
+			if(is_array($value))
+			{
+				$config[$name] = $this->checkSecurityConfig($value);
+				continue;
+			}
+
+			if (str_contains($name, 'client_secret') || str_contains($name, 'token') || str_contains($name, 'password')) {
+				$config[$name] = '********';
+			}
+		}
+
 		return [
 			'id'           => $this->getId(),
 			'type'         => $this->getType(),
+			'params'       => $this->getParams(),
+			'config'       => $config,
 			'name'         => $this->getName(),
 			'description'  => $this->getDescription(),
 			'published'    => $this->isPublished(),

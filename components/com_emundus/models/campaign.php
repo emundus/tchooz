@@ -26,7 +26,6 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
-use Tchooz\Entities\Settings\AddonEntity;
 use Tchooz\Factories\ImportFactory;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;

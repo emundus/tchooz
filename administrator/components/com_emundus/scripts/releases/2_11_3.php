@@ -12,7 +12,6 @@ namespace scripts;
 
 
 use Tchooz\Entities\Addons\AddonEntity;
-use Tchooz\Entities\Addons\AddonValue;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Workflow\StepTypeRepository;
 
@@ -57,7 +56,7 @@ class Release2_11_3Installer extends ReleaseInstaller
 			$messenger_addon = $addonRepository->getByName('messenger');
 			if (!$messenger_addon)
 			{
-				$messenger_addon = new AddonEntity('messenger', new AddonValue(false, true, []));
+				$messenger_addon = new AddonEntity('messenger', false, false, true);
 				$this->tasks[] = $addonRepository->flush($messenger_addon);
 			}
 

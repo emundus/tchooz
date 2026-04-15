@@ -4,7 +4,6 @@ namespace Tchooz\Repositories\Synchronizer;
 
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\Database\QueryInterface;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Factories\Synchronizer\SynchronizerFactory;
@@ -12,7 +11,22 @@ use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
 use Tchooz\Services\Mapping\ApiMapDataInterface;
 
-#[TableAttribute('#__emundus_setup_sync', 'sync')]
+#[TableAttribute(
+	table: '#__emundus_setup_sync',
+	alias: 'sync',
+	columns: [
+		'id',
+		'type',
+		'params',
+		'config',
+		'published',
+		'name',
+		'description',
+		'enabled',
+		'icon',
+		'consumptions',
+		'context'
+	])]
 class SynchronizerRepository extends EmundusRepository implements RepositoryInterface
 {
 	private SynchronizerFactory $factory;
@@ -41,22 +55,23 @@ class SynchronizerRepository extends EmundusRepository implements RepositoryInte
 
 		$this->verifyRequirements($entity);
 
+		$data = (object) [
+			'type'        => $entity->getType(),
+			'name'        => $entity->getName(),
+			'description' => $entity->getDescription(),
+			'params'      => !empty($entity->getParams()) ? json_encode($entity->getParams()) : null,
+			'config'      => !empty($entity->getConfig()) ? json_encode($entity->getConfig()) : null,
+			'published'   => (int) $entity->isPublished(),
+			'enabled'     => (int) $entity->isEnabled(),
+			'icon'        => $entity->getIcon(),
+			'consumptions'=> $entity->getConsumptions(),
+			'context'     => !empty($entity->getContext()) ? $entity->getContext()->value : null,
+		];
+
 		if (!empty($entity->getId()))
 		{
-			$object = (object) [
-				'id'          => $entity->getId(),
-				'type'        => $entity->getType(),
-				'name'        => $entity->getName(),
-				'description' => $entity->getDescription(),
-				'params'      => !empty($entity->getParams()) ? json_encode($entity->getParams()) : null,
-				'config'      => !empty($entity->getConfig()) ? json_encode($entity->getConfig()) : null,
-				'published'   => (int) $entity->isPublished(),
-				'enabled'     => (int) $entity->isEnabled(),
-				'icon'        => $entity->getIcon(),
-				'consumptions'=> $entity->getConsumptions(),
-				'context'     => !empty($entity->getContext()) ? $entity->getContext()->value : null,
-			];
-			$flushed = $this->db->updateObject($this->tableName, $object, 'id');
+			$data->id = $entity->getId();
+			$flushed = $this->db->updateObject($this->tableName, $data, 'id');
 		}
 		else
 		{
@@ -67,21 +82,8 @@ class SynchronizerRepository extends EmundusRepository implements RepositoryInte
 				throw new \Exception(Text::_('COM_EMUNDUS_ERROR_SYNCHRONIZER_TYPE_ALREADY_EXISTS'));
 			}
 
-			$object = (object) [
-				'type'        => $entity->getType(),
-				'name'        => $entity->getName(),
-				'description' => $entity->getDescription(),
-				'params'      => !empty($entity->getParams()) ? json_encode($entity->getParams()) : null,
-				'config'      => !empty($entity->getConfig()) ? json_encode($entity->getConfig()) : null,
-				'published'   => (int) $entity->isPublished(),
-				'enabled'     => (int) $entity->isEnabled(),
-				'icon'        => $entity->getIcon(),
-				'consumptions'=> $entity->getConsumptions(),
-				'context'     => !empty($entity->getContext()) ? $entity->getContext()->value : null,
-			];
-
 			try {
-				$flushed = $this->db->insertObject($this->tableName, $object);
+				$flushed = $this->db->insertObject($this->tableName, $data);
 				if ($flushed)
 				{
 					$entityId = $this->db->insertid();
@@ -147,34 +149,10 @@ class SynchronizerRepository extends EmundusRepository implements RepositoryInte
 
 		if (!empty($id))
 		{
-			$object = $this->getItemByField('id', $id);
-
-			if (!empty($object)) {
-				$entity = $this->factory->fromDbObjects([$object])[0] ?? null;
-			}
+			$entity = $this->getItemByField('id', $id, true);
 		}
 
 		return $entity;
-	}
-
-	public function applyFilters(QueryInterface $query, array $filters): void
-	{
-		if (empty($filters)) {
-			$filters = ['published' => 1];
-		}
-
-		foreach ($filters as $field => $value)
-		{
-			if (str_contains($value, ','))
-			{
-				$values = explode(',', $value);
-				$query->andWhere($this->db->quoteName($field) . ' IN (' . implode(',', array_map([$this->db, 'quote'], $values)) . ')');
-			}
-			else
-			{
-				$query->andWhere($this->db->quoteName($field) . ' = ' . $this->db->quote($value));
-			}
-		}
 	}
 
 	/**
@@ -202,7 +180,7 @@ class SynchronizerRepository extends EmundusRepository implements RepositoryInte
 
 		if (!empty($results))
 		{
-			$entities = $this->factory->fromDbObjects($results);
+			$entities = $this->factory::fromDbObjects($results);
 		}
 
 		return $entities;
@@ -221,7 +199,7 @@ class SynchronizerRepository extends EmundusRepository implements RepositoryInte
 		$objects = $this->getItemsByField($field, $value);
 		if (!empty($objects))
 		{
-			$entities = $this->factory->fromDbObjects($objects);
+			$entities = $this->factory::fromDbObjects($objects);
 		}
 
 		return $entities;
@@ -240,7 +218,7 @@ class SynchronizerRepository extends EmundusRepository implements RepositoryInte
 
 		if (!empty($object))
 		{
-			$entities = $this->factory->fromDbObjects([$object]);
+			$entities = $this->factory::fromDbObjects([$object]);
 			$entity = $entities[0] ?? null;
 		}
 
@@ -264,5 +242,10 @@ class SynchronizerRepository extends EmundusRepository implements RepositoryInte
 		}
 
 		return $objectDefinitions;
+	}
+
+	public function getFactory(): SynchronizerFactory
+	{
+		return $this->factory;
 	}
 }

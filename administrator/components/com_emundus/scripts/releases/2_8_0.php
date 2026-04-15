@@ -12,6 +12,8 @@ namespace scripts;
 
 use EmundusHelperUpdate;
 use Joomla\CMS\Component\ComponentHelper;
+use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Repositories\Addons\AddonRepository;
 
 class Release2_8_0Installer extends ReleaseInstaller
 {
@@ -110,28 +112,17 @@ class Release2_8_0Installer extends ReleaseInstaller
 			$created = EmundusHelperUpdate::createTable('jos_emundus_anonym_registration', $columns);
 			$tasks[] = $created['status'];
 
-			// add anonymous in emundus_setup_config table if not exists
-			$namekey = 'anonymous';
-			$query->select('*')
-				->from($this->db->quoteName('#__emundus_setup_config'))
-				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($namekey));
+			$addonRepository = new AddonRepository();
+			$anonymousAddon = $addonRepository->getByName('anonymous');
 
-			$this->db->setQuery($query);
-			$anonymous = $this->db->loadObject();
-
-			if (empty($anonymous) || empty($anonymous->namekey))
+			if (empty($anonymousAddon))
 			{
-				// add anonymous in emundus_setup_config table
-				$default = ["enabled" => 0, "displayed" => 0, "params" => ['token_duration_validity' => 30, 'token_duration_validity_unit' => 'days']];
-				$default = json_encode($default);
+				$anonymousAddon = new AddonEntity('anonymous', false, false, false, [
+					'token_duration_validity' => 30,
+					'token_duration_validity_unit' => 'days'
+				]);
 
-				$query->clear()
-					->insert($this->db->quoteName('#__emundus_setup_config'))
-					->columns($this->db->quoteName(['namekey', 'value', 'default']))
-					->values($this->db->quote($namekey) . ', ' . $this->db->quote($default) . ', ' . $this->db->quote($default));
-
-				$this->db->setQuery($query);
-				$tasks[] = $this->db->execute();
+				$tasks[] = $addonRepository->flush($anonymousAddon);
 			}
 
 			$manifest = '{"name":"PLG_FABRIK_FORM_CONNECT_FROM_TOKEN","type":"plugin","creationDate":"April 2025","author":"eMundus","copyright":"Copyright (C) 2017-2025 eMundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"2.8.0","description":"","group":"","changelogurl":"","filename":"connectfromtoken"}';

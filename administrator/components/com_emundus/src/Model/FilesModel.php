@@ -258,7 +258,7 @@ class FilesModel extends ListModel
 				// Add application choices
 				/*$addonRepository    = new AddonRepository();
 				$choices_addon      = $addonRepository->getByName('choices');
-				if ($choices_addon->getValue()->isEnabled())
+				if ($choices_addon->isActivated())
 				{
 					$choicesArray = [];
 					$applicationChoicesRepository = new ApplicationChoicesRepository();

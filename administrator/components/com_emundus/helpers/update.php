@@ -4647,6 +4647,7 @@ class EmundusHelperUpdate
 
 				$length     = null;
 				$nullable   = $property->getType()->allowsNull();
+				$default = null;
 
 				foreach ($attributes as $attribute)
 				{
@@ -4664,6 +4665,14 @@ class EmundusHelperUpdate
 						if ($attribute->getArguments()['length'] ?? null)
 						{
 							$length = $attribute->getArguments()['length'];
+						}
+
+						if ($options = $attribute->getArguments()['options'])
+						{
+							if (isset($options['default']))
+							{
+								$default = $options['default'];
+							}
 						}
 						break;
 					}
@@ -4726,11 +4735,12 @@ class EmundusHelperUpdate
 							}
 							$sqlType = \EmundusColumnTypeEnum::VARCHAR;
 					}
-					$columns[] = new \EmundusTableColumn($columnName, $sqlType, $length, $nullable);
+
+					$columns[] = new \EmundusTableColumn($columnName, $sqlType, $length, $nullable, $default);
 				}
 			}
 
-			if(empty($columns))
+			if (empty($columns))
 			{
 				self::displayMessage("No columns found for entity $entityClass", 'error');
 

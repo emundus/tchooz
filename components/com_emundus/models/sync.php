@@ -827,7 +827,7 @@ class EmundusModelSync extends JModelList
 				{
 					$auth_route = $config['authentication']['route'];
 				}
-
+				
 				$response = $api_class->post($auth_route, $body);
 			}
 			// GET request to get token

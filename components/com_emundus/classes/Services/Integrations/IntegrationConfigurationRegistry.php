@@ -44,6 +44,13 @@ class IntegrationConfigurationRegistry
 
 	public function getConfiguration(string $type): ?EmundusIntegrationConfiguration
 	{
+		$type = strtolower($type);
+		$type = str_replace('_', '', $type);
 		return $this->configurations[$type] ?? null;
+	}
+
+	public function getConfigurations(): array
+	{
+		return $this->configurations;
 	}
 }

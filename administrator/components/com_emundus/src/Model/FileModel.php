@@ -109,7 +109,7 @@ class FileModel extends AdminModel
 						// Add application choices
 						$addonRepository = new AddonRepository();
 						$choices_addon   = $addonRepository->getByName('choices');
-						if ($choices_addon->getValue()->isEnabled())
+						if ($choices_addon->isActivated())
 						{
 							$applicationChoicesRepository = new ApplicationChoicesRepository();
 							$moreFormId = $applicationChoicesRepository->getMoreFormId();

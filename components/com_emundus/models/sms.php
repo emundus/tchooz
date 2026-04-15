@@ -18,10 +18,11 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Tchooz\Entities\Settings\AddonEntity;
+use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\SMS\ReceiverEntity;
 use Tchooz\Entities\SMS\SMSEntity;
 use Tchooz\Exception\EmundusSMSException;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Synchronizers\SMS\OvhSMS;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
@@ -45,19 +46,17 @@ class EmundusModelSMS extends JModelList
 	{
 		parent::__construct($config);
 
-		if (!class_exists('AddonEntity')) {
-			require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/Settings/AddonEntity.php');
-		}
 		if (!class_exists('Tchooz\Exception\EmundusSMSException')) {
 			require_once(JPATH_ROOT . '/components/com_emundus/Exception/EmundusSMSException.php');
 		}
 
 		$this->app = Factory::getApplication();
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
+
 		$this->h_cache = new EmundusHelperCache();
 		$this->setSmsActionId();
 		$this->setSMSAddon();
-		$this->activated = $this->smsAddon->enabled && $this->isSMSServiceActivated();
+		$this->activated = $this->smsAddon->isActivated() && $this->isSMSServiceActivated();
 
 		Log::addLogger(['text_file' => 'com_emundus.sms.php'], Log::ALL, array('com_emundus.sms'));
 	}
@@ -67,63 +66,17 @@ class EmundusModelSMS extends JModelList
 	 */
 	private function setSMSAddon(): void
 	{
-		$cache_sms_addon =$this->h_cache->get('sms_addon');
+		$addonRepository = new AddonRepository();
+		$this->smsAddon = $addonRepository->getByName('sms');
 
-		if (!empty($cache_sms_addon)) {
+		if (empty($smsAddon)) {
 			$this->smsAddon = new AddonEntity(
-				$cache_sms_addon->name,
-				$cache_sms_addon->type,
-				$cache_sms_addon->icon,
-				$cache_sms_addon->description,
-				$cache_sms_addon->configuration,
-				$cache_sms_addon->enabled,
-				$cache_sms_addon->displayed
+				'sms',
+				true,
+				true,
+				false,
+				['encoding' => 'GSM-7']
 			);
-		}
-
-		if (empty($this->smsAddon)) {
-			$query = $this->db->createQuery();
-
-			$query->select($this->db->quoteName('value'))
-				->from($this->db->quoteName('#__emundus_setup_config'))
-				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('sms'));
-			try {
-				$this->db->setQuery($query);
-				$config = $this->db->loadResult();
-
-				if (!empty($config)) {
-					$config = json_decode($config, true);
-					$this->smsAddon = new AddonEntity(
-						'COM_EMUNDUS_ADDONS_SMS',
-						'sms',
-						'send_to_mobile',
-						'COM_EMUNDUS_ADDONS_SMS_DESC',
-						'',
-						$config['enabled'] == 1,
-						$config['displayed'] == 1
-					);
-
-					$configuration = [
-						'encoding' => $config['params']['encoding'] ?? 'GSM-7',
-					];
-
-					$this->smsAddon->setConfiguration($configuration);
-
-					$this->h_cache->set('sms_addon', $this->smsAddon);
-				} else {
-					$this->smsAddon = new AddonEntity(
-						'COM_EMUNDUS_ADDONS_SMS',
-						'sms',
-						'send_to_mobile',
-						'COM_EMUNDUS_ADDONS_SMS_DESC',
-						'',
-						false,
-						false
-					);
-				}
-			} catch (\Exception $e) {
-				Log::add('Error on load sms addon : ' . $e->getMessage(), Log::ERROR, 'com_emundus.sms');
-			}
 		}
 	}
 
@@ -309,7 +262,7 @@ class EmundusModelSMS extends JModelList
 		if (!empty($template_id)) {
 			$query = $this->db->getQuery(true);
 
-			$sms_configuration = $this->smsAddon->getConfiguration();
+			$sms_configuration = $this->smsAddon->getParams();
 			$encoding = $sms_configuration['encoding'] ?? 'GSM-7';
 
 			if ($encoding === 'GSM-7' && !$allow_unicode) {

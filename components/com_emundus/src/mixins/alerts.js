@@ -29,7 +29,7 @@ const alerts = {
 				title: this.translate(title),
 				icon: 'error',
 				showCancelButton: false,
-				confirmButtonText: this.translate('COM_EMUNDUS_OK'),
+				confirmButtonText: this.translate('COM_EMUNDUS_CLOSE'),
 				reverseButtons: true,
 				customClass: {
 					title: 'em-swal-title',

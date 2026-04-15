@@ -10,6 +10,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Component\ComponentHelper;
+use phpDocumentor\Reflection\DocBlock\Tags\Reference\Reference;
 use Tchooz\Factories\LayoutFactory;
 
 $data = LayoutFactory::prepareVueData();

@@ -4717,7 +4717,7 @@ class EmundusHelperFiles
 									$anonymScopeFound = true;
 									$quick_search_where .= '((';
 								}
-								
+
 								if (in_array($scope, $reference_scopes))
 								{
 									$referenceValue = explode('#', $filter['value']);
@@ -4729,7 +4729,7 @@ class EmundusHelperFiles
 										};
 									}
 								}
-								
+
 								$quick_search_where .= $this->writeQueryWithOperator($scope, $filterValue, 'LIKE');
 								$scope_index++;
 

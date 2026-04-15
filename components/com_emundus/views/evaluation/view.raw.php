@@ -17,8 +17,6 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
-use Tchooz\Repositories\Settings\ConfigurationRepository;
-use Tchooz\Services\Reference\InternalReferenceFormat;
 use Tchooz\Services\Reference\InternalReferenceService;
 
 /**

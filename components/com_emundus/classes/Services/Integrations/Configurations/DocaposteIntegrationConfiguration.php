@@ -6,11 +6,10 @@ use EmundusModelEmails;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
-use Tchooz\Entities\Fields\DisplayRule;
 use Tchooz\Entities\Fields\FieldGroup;
 use Tchooz\Entities\Fields\PasswordField;
 use Tchooz\Entities\Fields\StringField;
-use Tchooz\Enums\Automation\ConditionOperatorEnum;
+use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Services\Integrations\EmundusIntegrationConfiguration;
 
 class DocaposteIntegrationConfiguration extends EmundusIntegrationConfiguration
@@ -37,6 +36,11 @@ class DocaposteIntegrationConfiguration extends EmundusIntegrationConfiguration
 				new ChoiceFieldValue('PRODUCTION', 'PRODUCTION')
 			], true, false, $configGroup)
 		];
+	}
+
+	public function getDefaultParameters(): array
+	{
+		return [];
 	}
 
 	/**

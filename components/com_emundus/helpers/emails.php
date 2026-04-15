@@ -956,6 +956,7 @@ class EmundusHelperEmails
 	 * Check given email is not empty, has a valid format, and email dns exists
 	 *
 	 * @param $email
+	 * @deprecated use getCustomHeader from EmailService instead
 	 *
 	 * @return bool
 	 */
@@ -975,6 +976,9 @@ class EmundusHelperEmails
 		}
 	}
 
+	/**
+	 * @deprecated use getCustomHeader from EmailService instead
+	 */
 	static function getLogo($only_filename = false, $training = null, $file_path = false): string
 	{
 		$logo = 'images/custom/logo_custom.png';
@@ -1049,6 +1053,9 @@ class EmundusHelperEmails
 		return $base_url . $logo;
 	}
 
+	/**
+	 * @deprecated use getCustomHeader from EmailService instead
+	 */
 	public static function getCustomHeader(): string
 	{
 		$result = '';
