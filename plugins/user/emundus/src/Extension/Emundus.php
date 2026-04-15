@@ -28,6 +28,7 @@ use Joomla\Database\Exception\ExecutionFailureException;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Enums\User\AuthenticationModeEnum;
 use Tchooz\Traits\TraitVersion;
 
 require_once JPATH_SITE . '/components/com_emundus/classes/Traits/TraitVersion.php';
@@ -584,10 +585,10 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		$db = $this->getDatabase();
 
-		$user     = $event->getAuthenticationResponse();
-		$options  = $event->getOptions();
-		$instance = $this->getUserFactory()->loadUserByUsername($user['username']);
-
+		$authenticationResponse = $event->getAuthenticationResponse();
+		$user                   = $authenticationResponse;
+		$options                = $event->getOptions();
+		$instance               = $this->getUserFactory()->loadUserByUsername($user['username']);
 		$input    = $this->getApplication()->input;
 		$session  = $this->getApplication()->getSession();
 		$redirect = $input->get->getBase64('redirect');
@@ -942,7 +943,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			}
 
 			PluginHelper::importPlugin('emundus', 'custom_event_handler');
-
+			$authenticationMode = AuthenticationModeEnum::tryFromJoomlaType($authenticationResponse['type']);
 			$event = new GenericEvent('onCallEventHandler',
 				['onUserLogin',
 					[
@@ -951,7 +952,9 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 							Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user->id),
 							[],
 							[$user->id],
-							[]
+							[
+								'mode' => !empty($authenticationMode) ? $authenticationMode->value : AuthenticationModeEnum::DEFAULT->value,
+							]
 						)
 					]
 				]
