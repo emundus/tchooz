@@ -207,7 +207,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		];
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.language', $options);
 
-		$profile_data['authentication_mode'] = $this->getApplication()->getSession()->get('emundus_authentication_mode', AuthenticationModeEnum::DEFAULT)->value;
+		$profile_data['authentication_mode'] = $this->getApplication()->getSession()->get('emundus_authentication_mode', AuthenticationModeEnum::DEFAULT->value);
 
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.user_details', $profile_data);
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.async_export', $allowAsync);
