@@ -23,7 +23,7 @@ use Joomla\Utilities\ArrayHelper;
 use Tchooz\Attributes\AccessAttribute;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\Actions\ActionEntity;
-use Tchooz\Entities\ApplicationFile\Actions\RedirectApplicationFileAction;
+use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectTo;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnTag;
@@ -3278,13 +3278,12 @@ class EmundusControllerApplication extends EmundusController
 	{
 		$this->checkToken();
 		$response = new EmundusResponse(false, Text::_('ACCESS_DENIED'), 403);
+		$fnum = $this->app->getInput()->getString('fnum', '');
 
-		$session = $this->app->getSession();
-		$emundusSession = $session->get('emundusUser');
-		if (!empty($emundusSession->fnum))
+		if (!empty($fnum) && EmundusHelperAccess::isFnumMine($this->user->id, $fnum))
 		{
 			$repository = new ApplicationFileRepository();
-			$applicationFile = $repository->getByFnum($emundusSession->fnum);
+			$applicationFile = $repository->getByFnum($fnum);
 
 			if (!empty($applicationFile))
 			{
@@ -3315,7 +3314,7 @@ class EmundusControllerApplication extends EmundusController
 						// todo: sanitize all sent parameters and verify requirements
 					}
 
-					if ($foundAction instanceof RedirectApplicationFileAction)
+					if ($foundAction instanceof ApplicationFileActionRedirectTo)
 					{
 						$response = EmundusResponse::ok([
 							'redirect' => $foundAction->getRedirectUrl($applicationFile, $parameters, $this->app->getIdentity()),

@@ -1,6 +1,7 @@
 <?php // no direct access
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
 use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileRegistry;
@@ -191,48 +192,10 @@ $now      = $dateTime->format('Y-m-d H:i:s');
             </a>
             <?php
 
-            $registry = new ApplicationFileRegistry();
-            $applicationRepository = new ApplicationFileRepository();
-            $application = $applicationRepository->getByFnum($current_application->fnum);
-            $actions = $registry->getAvailableActions($application);
-
-            if (!empty($actions))
-            {
-                if (!empty($wa) && assert($wa instanceof \Joomla\CMS\WebAsset\WebAssetManager))
-                {
-                    $document->addScriptOptions('mod_emundusflow.actions', array_map(function ($action) {
-                        return $action->__serialize();
-                    }, $actions));
-                    $wa->registerAndUseScript('mod_emundusflow.fieldtohtmlfactory', 'modules/mod_emundusflow/script/FieldToHtmlFactory.js');
-                    $wa->registerAndUseScript('mod_emundusflow.actions', 'modules/mod_emundusflow/script/actions.js', [], ['defer' => true], ['mod_emundusflow.fieldtohtmlfactory']);
-                    Text::script('CANCEL');
-                    Text::script('CONFIRM');
-                    Text::script('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_DELETE_CONFIRM');
-                }
-
-                ?>
-                <div class="tw-relative">
-                    <span class="material-symbols-outlined tw-cursor-pointer !tw-flex tw-justify-self-center" id="emundus-application-file-actions">
-                        more_vert
-                    </span>
-                    <div id="emundus-application-file-actions-container" class="tw-absolute tw-bg-white tw-shadow-lg tw-rounded tw-p-2 tw-hidden tw-transition-all tw-right-0 tw-flex tw-flex-col tw-gap-2 tw-z-10">
-                        <?php
-                        foreach ($actions as $action)
-                        {
-                            ?>
-                            <div id="<?= $action->getActionType()->value ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded">
-                                <span class="material-symbols-outlined <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>">
-                                    <?= $action->getActionType()->getIcon() ?>
-                                </span>
-                                <p class="tw-whitespace-nowrap <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>"><?= $action->getActionType()->getLabel() ?></p>
-                            </div>
-                            <?php
-                        }
-                        ?>
-                    </div>
-                </div>
-                <?php
-            }
+                $data = [
+                    'fnum' => $current_application->fnum,
+                ];
+                echo LayoutHelper::render('emundus.application.actions', $data, '', $data);
             ?>
         </div>
     </div>
