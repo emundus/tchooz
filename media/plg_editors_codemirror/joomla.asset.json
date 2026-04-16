@@ -181,6 +181,27 @@
       "version": "1.0.6"
     },
     {
+      "name": "webcomponent.editor-codemirror",
+      "type": "script",
+      "uri": "plg_editors_codemirror/joomla-editor-codemirror.min.js",
+      "dependencies": [
+        "core",
+        "codemirror",
+        "editors",
+        "wcpolyfill"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "version": "f7a8a9"
+    },
+    {
+      "name": "plg_editors_codemirror",
+      "type": "style",
+      "uri": "plg_editors_codemirror/codemirror.css",
+      "version": "ace1a2"
+    },
+    {
       "name": "codemirror",
       "type": "script",
       "uri": "plg_editors_codemirror/codemirror.min.js",
@@ -213,27 +234,6 @@
         "@lezer/xml"
       ],
       "version": "32671a"
-    },
-    {
-      "name": "webcomponent.editor-codemirror",
-      "type": "script",
-      "uri": "plg_editors_codemirror/joomla-editor-codemirror.min.js",
-      "dependencies": [
-        "core",
-        "codemirror",
-        "editors",
-        "wcpolyfill"
-      ],
-      "attributes": {
-        "type": "module"
-      },
-      "version": "f7a8a9"
-    },
-    {
-      "name": "plg_editors_codemirror",
-      "type": "style",
-      "uri": "plg_editors_codemirror/codemirror.css",
-      "version": "ace1a2"
     }
   ]
 }

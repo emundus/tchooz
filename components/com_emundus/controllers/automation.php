@@ -83,10 +83,13 @@ class EmundusControllerAutomation extends BaseController
 
 		if (EmundusHelperAccess::asAccessAction($this->automationActionId, 'r', $this->app->getIdentity()->id))
 		{
-			$limit = $this->input->getInt('lim', 10);
+			$limit = $this->input->getString('lim', 10);
 			$page = $this->input->getInt('page', 1);
 
-			if ($limit < 1) {
+			if($limit == 'all') {
+				$limit = 0;
+			}
+			elseif ($limit < 1) {
 				$limit = 10;
 			} elseif ($limit > self::MAX_LIMIT) {
 				$limit = self::MAX_LIMIT;

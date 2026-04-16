@@ -72,8 +72,12 @@ class AutomationRepository extends EmundusRepository implements RepositoryInterf
 
 		$this->applyFilters($query, $filters);
 
-		$query->group($this->alias . '.id')
-			->setLimit($limit, ($page - 1) * $limit);
+		$query->group($this->alias . '.id');
+		
+		if(!empty($limit))
+		{
+			$query->setLimit($limit, ($page - 1) * $limit);
+		}
 
 		$this->db->setQuery($query);
 		$results = $this->db->loadObjectList();

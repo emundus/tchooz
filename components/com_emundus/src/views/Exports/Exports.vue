@@ -324,7 +324,7 @@ export default defineComponent({
 								if (async) {
 									window.open(this.exportLink, '_self');
 								} else {
-									window.open(response.data.filename, '_blank');
+									window.open('/' + response.data.filename, '_blank');
 								}
 							}
 						});

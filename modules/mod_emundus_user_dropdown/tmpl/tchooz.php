@@ -338,7 +338,7 @@ if ($user != null)
 				{
 					if ($profile->published && !$applicant_option)
 					{
-						echo '<option  value="' . $profile->id . "." . $ids_array[$profile->id] . '"' . (in_array($user->profile, $app_prof) ? 'selected="selected"' : "") . '>' . JText::_('APPLICANT') . '</option>';
+						echo '<option  value="' . $profile->id . "." . $ids_array[$profile->id] . '"' . (in_array($user->profile, $app_prof) ? 'selected="selected"' : "") . '>' . Text::_('MOD_EMUNDUS_USERDROPDOWN_APPLICANT') . '</option>';
 						$applicant_option = true;
 					}
                     elseif (!$profile->published)

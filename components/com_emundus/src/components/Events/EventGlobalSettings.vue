@@ -12,10 +12,13 @@ import eventsService from '@/services/events';
 /* Stores */
 import { useGlobalStore } from '@/stores/global.js';
 
+import alerts from '@/mixins/alerts.js';
+
 export default {
 	name: 'EventGlobalSettings',
 	components: { ColorPicker, Info, LocationPopup, Parameter },
 	emits: ['reload-event'],
+	mixins: [alerts],
 	props: {
 		event: Object,
 	},
@@ -209,7 +212,6 @@ export default {
 					displayed: false,
 					displayedOn: 'available_for',
 					displayedOnValue: 1,
-					optional: true,
 				},
 				{
 					param: 'programs',
@@ -241,7 +243,6 @@ export default {
 					displayed: false,
 					displayedOn: 'available_for',
 					displayedOnValue: 2,
-					optional: true,
 				},
 			],
 		};
@@ -402,20 +403,7 @@ export default {
 
 			eventsService.createEvent(event).then((response) => {
 				if (response.status === true) {
-					Swal.fire({
-						position: 'center',
-						icon: 'success',
-						title: Joomla.JText._('COM_EMUNDUS_ONBOARD_ADD_EVENT_CREATED'),
-						showConfirmButton: false,
-						allowOutsideClick: false,
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: 'em-swal-single-action',
-						},
-						timer: 1500,
-					}).then(() => {
+					this.alertSuccess('COM_EMUNDUS_ONBOARD_ADD_EVENT_CREATED').then(() => {
 						this.$emit('reload-event', response.data, 2);
 
 						// Update url to add ?event=ID
@@ -425,11 +413,7 @@ export default {
 					});
 				} else {
 					// Handle error
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: response.message,
-					});
+					this.alertError('COM_EMUNDUS_ERROR', response.error.message);
 				}
 			});
 		},
@@ -471,29 +455,12 @@ export default {
 
 			eventsService.editEvent(event_edited).then((response) => {
 				if (response.status === true) {
-					Swal.fire({
-						position: 'center',
-						icon: 'success',
-						title: Joomla.JText._('COM_EMUNDUS_ONBOARD_ADD_EVENT_SAVED'),
-						showConfirmButton: true,
-						allowOutsideClick: false,
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: 'em-swal-single-action',
-						},
-						timer: 1500,
-					}).then(() => {
+					this.alertSuccess('COM_EMUNDUS_ONBOARD_ADD_EVENT_SAVED').then(() => {
 						this.$emit('reload-event', response.data, 2);
 					});
 				} else {
 					// Handle error
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: response.message,
-					});
+					this.alertError('COM_EMUNDUS_ERROR', response.error.message);
 				}
 			});
 		},
