@@ -150,6 +150,7 @@ class EmundusControllerContacts extends BaseController
 					$options[] = new ChoiceFieldValue($contact->getId(), $contact->getLastname() . ' ' . $contact->getFirstname() . ' (' . $contact->getEmail() . ')');
 				}
 
+				$response['status']  = true;
 				$response['code'] = 200;
 				$response['data'] = array_map(fn($option) => $option->toSchema(), $options);
 				$response['msg'] = Text::_('OPTIONS_RETRIEVED_SUCCESSFULLY');

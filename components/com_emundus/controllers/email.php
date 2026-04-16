@@ -21,6 +21,7 @@ use Tchooz\Attributes\AccessAttribute;
 use Tchooz\Controller\EmundusController;
 use Tchooz\EmundusResponse;
 use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 
@@ -455,7 +456,8 @@ class EmundusControllerEmail extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
-	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'email', 'mode' => CrudEnum::READ]])]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::MAIL_APPLICANT->value, 'mode' => CrudEnum::READ]])]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::EMAIL->value, 'mode' => CrudEnum::READ]])]
 	public function getemailbyid(): EmundusResponse
 	{
 		$id = $this->input->getInt('id');

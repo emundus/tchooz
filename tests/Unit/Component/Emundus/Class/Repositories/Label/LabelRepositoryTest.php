@@ -112,4 +112,26 @@ class LabelRepositoryTest extends UnitTestCase
 		// Clean up association
 		$this->db->setQuery('DELETE FROM #__emundus_tag_assoc WHERE id_tag = ' . $labelEntity->getId());
 	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Label\LabelRepository::getByFnum
+	 */
+	public function testGetByFnumWithTagNonExisting(): void
+	{
+		// Associate to fnum for testing
+		$assocTag = (object)[
+			'fnum' => $this->dataset['fnum'],
+			'id_tag' => 9999,
+			'date_time' => (new \DateTime())->format('Y-m-d H:i:s'),
+			'user_id' => $this->dataset['coordinator']
+		];
+		$this->db->insertObject('#__emundus_tag_assoc', $assocTag);
+
+		$fetchedLabels = $this->repository->getByFnum($this->dataset['fnum']);
+		$this->assertEmpty($fetchedLabels, 'Failed to retrieve LabelEntity by fnum.');
+		$this->assertIsArray($fetchedLabels);
+
+		// Clean up association
+		$this->db->setQuery('DELETE FROM #__emundus_tag_assoc WHERE id_tag = 9999');
+	}
 }

@@ -236,6 +236,7 @@ export default {
 						>
 							<div class="tw-flex tw-items-center">
 								<input
+									v-show="canUpdate"
 									:ref="'check-all-right-' + right.action.id"
 									class="tw-cursor-pointer"
 									type="checkbox"
