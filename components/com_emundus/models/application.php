@@ -30,6 +30,8 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagRemoveDefinition;
+use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
@@ -5099,7 +5101,7 @@ class EmundusModelApplication extends ListModel
                 $fnumInfos = $m_files->getFnumInfos($fnum);
 
 				$logsParams = ['deleted' => ['details' => $label]];
-				EmundusModelLogs::log($current_user, $fnumInfos['applicant_id'], $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+				EmundusModelLogs::log($current_user, $fnumInfos['applicant_id'], $fnum, ActionEnum::ACCESS_FILE->value, CrudEnum::DELETE->value, 'COM_EMUNDUS_ACCESS_ACCESS_FILE_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 			}
 		}
 
@@ -5152,7 +5154,7 @@ class EmundusModelApplication extends ListModel
                 $fnumInfos = $m_files->getFnumInfos($fnum);
 
 				$logsParams = ['deleted' => ['details' => $user_name]];
-				EmundusModelLogs::log($current_user, $fnumInfos['applicant_id'], $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+				EmundusModelLogs::log($current_user, $fnumInfos['applicant_id'], $fnum, ActionEnum::ACCESS_FILE_USERS->value, CrudEnum::DELETE->value, 'COM_EMUNDUS_ACCESS_ACCESS_FILE_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 			}
 		}
 

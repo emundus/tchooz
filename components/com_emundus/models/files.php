@@ -37,6 +37,8 @@ use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterStatusChangeDefinition;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagAddDefinition;
+use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
 
@@ -1378,7 +1380,7 @@ class EmundusModelFiles extends JModelLegacy
 					foreach ($fnums as $fnum) {
                         $fnumInfos = $this->getFnumInfos($fnum);
 						$logsParams = array('created' => array_unique($group_labels, SORT_REGULAR));
-						EmundusModelLogs::log($current_user->id, (int)$fnumInfos['applicant_id'], $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						EmundusModelLogs::log($current_user->id, (int)$fnumInfos['applicant_id'], $fnum, ActionEnum::ACCESS_FILE->value, CrudEnum::CREATE->value, 'COM_EMUNDUS_ACCESS_ACCESS_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 					}
 				}
 			}
@@ -1447,7 +1449,7 @@ class EmundusModelFiles extends JModelLegacy
 					foreach ($fnums as $fnum) {
                         $fnumInfos = $this->getFnumInfos($fnum);
 						$logsParams = array('created' => array_unique($user_names, SORT_REGULAR));
-						EmundusModelLogs::log($current_user->id, $fnumInfos['applicant_id'], $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						EmundusModelLogs::log($current_user->id, $fnumInfos['applicant_id'], $fnum, ActionEnum::ACCESS_FILE_USERS->value, CrudEnum::CREATE->value, 'COM_EMUNDUS_ACCESS_ACCESS_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 					}
 				}
 			}
