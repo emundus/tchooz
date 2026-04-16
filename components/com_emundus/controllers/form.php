@@ -814,9 +814,9 @@ class EmundusControllerForm extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
 	public function publishRule(): EmundusResponse
 	{
-		$rule_id = $this->input->getInt('rule_id');
-		$state   = $this->input->getInt('state');
-		if (empty($rule_id) || empty($state))
+		$rule_id = $this->input->getInt('rule_id', 0);
+		$state   = $this->input->getInt('state', 0);
+		if (empty($rule_id))
 		{
 			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
