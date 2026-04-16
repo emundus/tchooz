@@ -23,7 +23,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
-use Tchooz\Entities\Actions\CrudEntity;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use Tchooz\Entities\Actions\GroupAccessEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterStatusChangeDefinition;
@@ -178,6 +178,11 @@ class EmundusHelperEvents
 	{
 		if (!empty($fnum))
 		{
+			if (EmundusPublicAccess::isPublicAccessSession())
+			{
+				return;
+			}
+
 			$elements = array();
 			$groups   = $formModel->getGroupsHiarachy();
 			foreach ($groups as $group)
@@ -611,7 +616,8 @@ class EmundusHelperEvents
 			}
 
 			$eMConfig                       = ComponentHelper::getParams('com_emundus');
-			$copy_application_form          = $eMConfig->get('copy_application_form', 0);
+			$systemPublicUserId             = (int) $eMConfig->get('system_public_user_id', 0);
+			$copy_application_form          = $eMConfig->get('copy_application_form', 0) && !EmundusPublicAccess::isPublicAccessSession() && !($systemPublicUserId === $user->id);
 			$copy_application_form_type     = $eMConfig->get('copy_application_form_type', 0);
 			$copy_application_form_or_table = $eMConfig->get('copy_application_form_or_table', 'form');
 			$copy_exclude_forms             = $eMConfig->get('copy_exclude_forms', []);
