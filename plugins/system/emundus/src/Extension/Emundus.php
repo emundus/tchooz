@@ -127,6 +127,14 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$query = $this->getDatabase()->createQuery();
 		if (!$this->getApplication()->getIdentity()->guest)
 		{
+			$query->clear()
+				->select('authProvider')
+				->from($this->getDatabase()->quoteName('#__users'))
+				->where($this->getDatabase()->quoteName('id') . ' = ' . (int) $this->getApplication()->getIdentity()->id);
+
+			$this->getDatabase()->setQuery($query);
+			$profile_data['authentication_mode'] = $this->getDatabase()->loadResult() ?? AuthenticationModeEnum::DEFAULT->value;
+
 			$e_session       = $this->getApplication()->getSession()->get('emundusUser');
 			$profile_details = null;
 
@@ -180,16 +188,10 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 					->from($this->getDatabase()->quoteName('#__emundus_users'))
 					->where($this->getDatabase()->quoteName('user_id') . ' = ' . (int) $this->getApplication()->getIdentity()->id);
 				$this->getDatabase()->setQuery($query);
-				$profile_data = $this->getDatabase()->loadAssoc();
+				$profile_elements_data = $this->getDatabase()->loadAssoc();
+
+				$profile_data = array_merge($profile_elements_data, $profile_data);
 			}
-
-			$query->clear()
-				->select('authProvider')
-				->from($this->getDatabase()->quoteName('#__users'))
-				->where($this->getDatabase()->quoteName('id') . ' = ' . (int) $this->getApplication()->getIdentity()->id);
-
-			$this->getDatabase()->setQuery($query);
-			$profile_data['authentication_mode'] = $this->getDatabase()->loadResult();
 		}
 
 		$this->getApplication()->getDocument()->setHeadData($head);
