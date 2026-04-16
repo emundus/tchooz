@@ -150,6 +150,11 @@
 
         <field name="login_links" label="COM_EMUNDUS_LOGIN_LINKS" type="note" default="0" description=""/>
 
+        <field name="allow_default_login" label="COM_EMUNDUS_ALLOW_DEFAULT_LOGIN" type="radio" default="1" description="">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+
         <field name="display_registration_link" type="radio" default="1"
                label="COM_EMUNDUS_LOGIN_DISPLAY_REGISTRATION_LINK">
             <option value="0">JNO</option>

@@ -40,6 +40,9 @@ else
 {
 	$session->clear('login_campaign_id');
 }
+
+$allowDefaultLogin = (bool)$eMConfig->get('allow_default_login', 1);
+
 ?>
 <div class="com-users-login login">
 	<?php if ($this->params->get('show_page_heading')) : ?>
@@ -213,7 +216,8 @@ else
 	<?php endif; ?>
 
 
-    <form action="<?php echo (!empty($this->redirect)) ? 'index.php?option=com_users&task=user.login&redirect=' . $this->redirect : 'index.php?option=com_users&task=user.login'; ?>"
+    <?php if ($allowDefaultLogin): ?>
+        <form action="<?php echo (!empty($this->redirect)) ? 'index.php?option=com_users&task=user.login&redirect=' . $this->redirect : 'index.php?option=com_users&task=user.login'; ?>"
           method="post" class="form-validate form-horizontal well" id="com-users-login__form">
 
 			<?php echo $this->form->renderFieldset('credentials', ['class' => 'com-users-login__input']); ?>
@@ -288,6 +292,7 @@ else
             <input type="hidden" name="return" value="<?php echo base64_encode($return); ?>">
 			<?php echo HTMLHelper::_('form.token'); ?>
     </form>
+    <?php endif; ?>
 
 	<?php if ($usersConfig->get('allowUserRegistration') && $this->displayRegistration) : ?>
         <div>

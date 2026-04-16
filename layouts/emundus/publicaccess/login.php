@@ -1,5 +1,6 @@
 <?php
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
@@ -13,8 +14,10 @@ $lang->load('com_emundus', JPATH_SITE . '/components/com_emundus', 'fr-FR');
 
 $app = Factory::getApplication();
 $session = $app->getSession();
+$config = ComponentHelper::getParams('com_emundus');
 $campaignId = (int) $session->get('cid', 0);
 $showCreateApplicationFile = false;
+$allowDefaultLogin = (bool)$config->get('allow_default_login', 1);
 
 if (!empty($campaignId))
 {
@@ -27,15 +30,16 @@ if (!empty($campaignId))
     }
 }
 
-
 ?>
 
 <div class="tw-mt-4 tw-w-full tw-flex tw-flex-col tw-gap-4 tw-text-center">
+    <?php if ($allowDefaultLogin): ?>
 	<div class="tw-flex tw-flex-row tw-items-center tw-w-full tw-gap-2">
 		<hr class="tw-w-full" />
 		<span class="tw-w-fit tw-text-neutral-500"><?= strtoupper(Text::_('COM_EMUNDUS_OR')); ?></span>
 		<hr class="tw-w-full" />
 	</div>
+    <?php endif; ?>
 
     <h2><?= Text::_('COM_EMUNDUS_NOT_AUTHENTICATED'); ?></h2>
 
