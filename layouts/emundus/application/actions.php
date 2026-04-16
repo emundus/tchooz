@@ -2,6 +2,7 @@
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectToFile;
 use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileRegistry;
@@ -9,6 +10,7 @@ use Tchooz\Services\ApplicationFile\ApplicationFileRegistry;
 defined('_JEXEC') or die;
 
 $fnum = $this->getOptions()->get('fnum', '');
+$context = $this->getOptions()->get('context', 'multiple');
 
 if (empty($fnum))
 {
@@ -22,7 +24,7 @@ $lang->load('com_emundus', JPATH_SITE . '/components/com_emundus', 'fr-FR');
 $registry = new ApplicationFileRegistry();
 $applicationRepository = new ApplicationFileRepository();
 $application = $applicationRepository->getByFnum($fnum);
-$actions = $registry->getAvailableActions($application);
+$actions = $registry->getAvailableActions($application, $context);
 
 if (!empty($actions))
 {
@@ -39,18 +41,18 @@ if (!empty($actions))
 
 	?>
 	<div class="tw-relative emundus-application-file-actions-wrapper" data-fnum="<?= $fnum; ?>">
-                    <span class="emundus-application-file-actions material-symbols-outlined tw-cursor-pointer !tw-flex tw-justify-self-center">
-                        more_vert
-                    </span>
+         <span class="emundus-application-file-actions material-symbols-outlined tw-cursor-pointer !tw-flex tw-justify-self-center" >
+             more_vert
+         </span>
 		<div class="emundus-application-file-actions-container tw-fixed tw-bg-white tw-shadow-md tw-rounded-coordinator tw-p-2 tw-hidden tw-flex tw-flex-col tw-z-50" data-fnum="<?= $fnum; ?>">
 			<?php
 			foreach ($actions as $action)
 			{
 				?>
-				<div id="<?= $action->getActionType()->value ?>" data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
-                            <span class="material-symbols-outlined <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>">
-                                <?= $action->getActionType()->getIcon() ?>
-                            </span>
+				<div id="<?= $action->getActionType()->value ?>" tabindex=0 data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
+                    <span class="material-symbols-outlined <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>">
+                        <?= $action->getActionType()->getIcon() ?>
+                    </span>
 					<p class="tw-whitespace-nowrap <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>"><?= $action->getActionType()->getLabel() ?></p>
 				</div>
 				<?php

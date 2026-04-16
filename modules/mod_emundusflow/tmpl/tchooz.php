@@ -194,6 +194,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 
                 $data = [
                     'fnum' => $current_application->fnum,
+                    'context' => 'single'
                 ];
                 echo LayoutHelper::render('emundus.application.actions', $data, '', $data);
             ?>

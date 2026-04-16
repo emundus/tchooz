@@ -5,6 +5,7 @@ namespace Tchooz\Services\ApplicationFile;
 use EmundusHelperCache;
 use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileAction;
+use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectToFile;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 
 if (!class_exists('EmundusHelperCache'))
@@ -76,9 +77,14 @@ class ApplicationFileRegistry
 		return $this->actions;
 	}
 
-	public function getAvailableActions(?ApplicationFileEntity $applicationFileEntity = null): array
+	public function getAvailableActions(?ApplicationFileEntity $applicationFileEntity = null, string $context = 'multiple'): array
 	{
 		$availableActions = [];
+
+		if ($context === 'multiple')
+		{
+			$availableActions[] = new ApplicationFileActionRedirectToFile();
+		}
 
 		foreach ($this->getActions() as $action)
 		{
