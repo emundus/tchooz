@@ -589,9 +589,9 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$user                   = $authenticationResponse;
 		$options                = $event->getOptions();
 		$instance               = $this->getUserFactory()->loadUserByUsername($user['username']);
-		$input    = $this->getApplication()->input;
-		$session  = $this->getApplication()->getSession();
-		$redirect = $input->get->getBase64('redirect');
+		$input                  = $this->getApplication()->input;
+		$session                = $this->getApplication()->getSession();
+		$redirect               = $input->get->getBase64('redirect');
 
 		jimport('joomla.log.log');
 		Log::addLogger(['text_file' => 'com_emundus.auth.php'], Log::ALL, array('com_emundus.auth'));
@@ -950,8 +950,14 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			}
 			$authenticationMode = AuthenticationModeEnum::tryFromJoomlaType($joomlaType);
 			$authenticationMode = !empty($authenticationMode) ? $authenticationMode : AuthenticationModeEnum::DEFAULT;
-			$session->clear('emundus_authentication_mode');
-			$session->set('emundus_authentication_mode', $authenticationMode->value);
+
+			$query = $db->createQuery();
+			$query->update('#__users')
+				->set($db->quoteName('authProvider') . ' = ' . $db->quote($authenticationMode->value))
+				->where($db->quoteName('id') . ' = ' . $db->quote($user->id));
+			$db->setQuery($query);
+			$db->execute();
+
 			$event = new GenericEvent('onCallEventHandler',
 				['onUserLogin',
 					[

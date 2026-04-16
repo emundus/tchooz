@@ -243,7 +243,7 @@ if ($this->user['is_anonym'] == 1)
 	    <?php if ($this->haveExternalAuth) : ?>
             <div class="form-group em-addUser-detail-info-auth-provider tw-flex tw-items-center tw-mt-4">
                 <input type="checkbox" id="auth_provider" name="auth_provider"
-                       style="margin-bottom: 5px; outline-offset: 1px;" <?= !empty($this->user['authProvider']) ? 'checked' : ''; ?>>
+                       style="margin-bottom: 5px; outline-offset: 1px;" <?= $this->user['authProvider'] === 'sso' ? 'checked' : ''; ?>>
                 <label for="auth_provider"
                        class="mb-0"><?= Text::_('COM_EMUNDUS_USERS_LOGIN_SSO_ACCOUNT'); ?></label>
             </div>

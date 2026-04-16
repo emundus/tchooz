@@ -124,6 +124,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$wa   = $this->getApplication()->getDocument()->getWebAssetManager();
 
 		$profile_data = [];
+		$query = $this->getDatabase()->createQuery();
 		if (!$this->getApplication()->getIdentity()->guest)
 		{
 			$e_session       = $this->getApplication()->getSession()->get('emundusUser');
@@ -174,13 +175,21 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 			if (!empty($profile_elements))
 			{
-				$query = $this->getDatabase()->getQuery(true);
-				$query->select($profile_elements)
+				$query->clear()
+					->select($profile_elements)
 					->from($this->getDatabase()->quoteName('#__emundus_users'))
 					->where($this->getDatabase()->quoteName('user_id') . ' = ' . (int) $this->getApplication()->getIdentity()->id);
 				$this->getDatabase()->setQuery($query);
 				$profile_data = $this->getDatabase()->loadAssoc();
 			}
+
+			$query->clear()
+				->select('authProvider')
+				->from($this->getDatabase()->quoteName('#__users'))
+				->where($this->getDatabase()->quoteName('id') . ' = ' . (int) $this->getApplication()->getIdentity()->id);
+
+			$this->getDatabase()->setQuery($query);
+			$profile_data['authentication_mode'] = $this->getDatabase()->loadResult();
 		}
 
 		$this->getApplication()->getDocument()->setHeadData($head);
@@ -206,9 +215,6 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			'currentPath' => $currentLangPath
 		];
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.language', $options);
-
-		$profile_data['authentication_mode'] = $this->getApplication()->getSession()->get('emundus_authentication_mode', AuthenticationModeEnum::DEFAULT->value);
-
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.user_details', $profile_data);
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.async_export', $allowAsync);
 
