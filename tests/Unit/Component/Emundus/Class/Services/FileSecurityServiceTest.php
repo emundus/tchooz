@@ -135,18 +135,46 @@ class FileSecurityServiceTest extends TestCase
 		);
 	}
 
+	/**
+	 * @covers \Tchooz\Services\FileSecurityService::containsDangerousContent
+	 * @dataProvider beninPdfPatternsProvider
+	 */
+	public function testPdfWithBeninOpenActionPattern(string $pattern): void
+	{
+		$content = "%PDF-1.4\n1 0 obj\n<< /Type /Catalog " . $pattern . " >>\nendobj\n%%EOF";
+		$path = $this->createTempFile($content, 'pdf');
+		$this->assertFalse(
+			$this->service->containsDangerousContent($path, 'pdf'),
+			"PDF pattern '$pattern' should not be detected as dangerous"
+		);
+	}
+
 	public static function dangerousPdfPatternsProvider(): array
 	{
 		return [
 			'JS action'         => ['/JS '],
 			'JavaScript action' => ['/JavaScript '],
-			'OpenAction'        => ['/OpenAction '],
+			'OpenAction'        => ['/OpenAction << /S /JavaScript '],
 			'AA'                => ['/AA '],
 			'Launch'            => ['/Launch '],
 			'SubmitForm'        => ['/SubmitForm '],
 			'ImportData'        => ['/ImportData '],
 			'RichMedia'         => ['/RichMedia '],
 			'XFA'               => ['/XFA '],
+		];
+	}
+
+	public static function beninPdfPatternsProvider(): array
+	{
+		return [
+			'OpenAction'        => ['/OpenAction [7 0 R /FitH null]'],
+			'MediaBox'          => ['/MediaBox [0 0 1000 1000] '],
+			'MetaData'          => ['/Metadata << /Producer (Benin OpenAction) >> '],
+			'MediaOverlay'      => ['/MediaOverlay << /Size 0 >> '],
+			'EmbeddedFile'      => ['/EmbeddedFile << /Size 0 >> '],
+			'PageMode'          => ['/PageMode UseOutlines '],
+			'PageLayout'        => ['/PageLayout OneColumn '],
+			'Directhon'         => ['/D '],
 		];
 	}
 
