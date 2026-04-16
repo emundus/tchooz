@@ -298,6 +298,7 @@ class EmundusModelUsers extends ListModel
 
 		// Exclude sysadmin users
 		$automated_task_user = $eMConfig->get('automated_task_user',0);
+		$public_access_user = $eMConfig->get('system_public_user_id', 0);
 		$display_sysadmin_users = $eMConfig->get('display_sysadmin_users',0);
 
 		if(!$display_sysadmin_users)
@@ -310,10 +311,17 @@ class EmundusModelUsers extends ListModel
 				->orWhere('eu.profile = 1');
 			$this->db->setQuery($exclude_users_query);
 			$exclude_users = $this->db->loadColumn();
+
 			if (!empty($automated_task_user))
 			{
 				$exclude_users[] = $automated_task_user;
 			}
+
+			if (!empty($public_access_user))
+			{
+				$exclude_users[] = $public_access_user;
+			}
+
 			$query .= ' where 1=1 AND u.id NOT IN (' . implode(',', $exclude_users) . ') ';
 		} else {
 			$query .= ' where 1=1 ';

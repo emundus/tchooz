@@ -344,6 +344,8 @@ class Release2_19_0Installer extends ReleaseInstaller
 
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_PUBLIC_ACCESS_INVALID_TOKEN', 'La clé d\'accès est invalide ou a expiré. Veuillez vérifier votre clé et réessayer.');
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_PUBLIC_ACCESS_INVALID_TOKEN', 'The access key is invalid or has expired. Please check your key and try again.', 'override', 0, null, null, 'en-GB');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FILE_SUBMITTED_PUBLIC_ACCESS_MESSAGE', 'Votre candidature a été soumise avec succès.');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FILE_SUBMITTED_PUBLIC_ACCESS_MESSAGE', 'Your application has been successfully submitted.', 'override', 0, null, null, 'en-GB');
 
 			$result['status'] = !in_array(false, $this->tasks);
 		}
