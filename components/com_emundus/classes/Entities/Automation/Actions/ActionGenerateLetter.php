@@ -8,9 +8,9 @@ use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
+use Tchooz\Entities\Fields\BooleanField;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
-use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
@@ -77,6 +77,9 @@ class ActionGenerateLetter extends ActionEntity
 				$letterIds = [$letterIds];
 			}
 
+			$canBeView = $this->getParameterValue('can_be_view') ?? 0;
+			$overwrite = (bool)$this->getParameterValue('overwrite') ?? false;
+
 			try {
 				$db = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->createQuery();
@@ -103,7 +106,7 @@ class ActionGenerateLetter extends ActionEntity
 						require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
 					}
 					$evaluationModel = new \EmundusModelEvaluation();
-					$generatedLetters = $evaluationModel->generateFileLetters($context->getFile(), $letters, $context->getTriggeredBy(), true, 1);
+					$generatedLetters = $evaluationModel->generateFileLetters($context->getFile(), $letters, $context->getTriggeredBy(), $overwrite, $canBeView);
 
 					if (!empty($generatedLetters))
 					{
@@ -127,7 +130,9 @@ class ActionGenerateLetter extends ActionEntity
 		if (empty($this->parameters))
 		{
 			$this->parameters = [
-				new ChoiceField(self::LETTER_PARAMETER, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_GENERATE_LETTER_PARAMETER_LETTER_LABEL'), $this->getLetterChoices(), true, true)
+				new ChoiceField(self::LETTER_PARAMETER, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_GENERATE_LETTER_PARAMETER_LETTER_LABEL'), $this->getLetterChoices(), true, true),
+				new BooleanField('can_be_view', Text::_('COM_EMUNDUS_AUTOMATION_ACTION_GENERATE_LETTER_PARAMETER_CAN_BE_VIEW_LABEL')),
+				new BooleanField('overwrite', Text::_('COM_EMUNDUS_AUTOMATION_ACTION_GENERATE_LETTER_PARAMETER_OVERWRITE_OLD_LABEL'))
 			];
 		}
 

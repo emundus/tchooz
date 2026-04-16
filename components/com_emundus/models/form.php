@@ -878,7 +878,7 @@ class EmundusModelForm extends ListModel
 		return $published;
 	}
 
-	public function duplicateForm($data, $duplicate_condition = true)
+	public function duplicateForm($data)
 	{
 		$duplicated = false;
 		if (!is_array($data)) {
@@ -1042,10 +1042,6 @@ class EmundusModelForm extends ListModel
 										}
 
 										$new_form = $formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile, true);
-
-										if($duplicate_condition) {
-											$formbuilder->duplicateConditions((int)$formid, (int)$new_form['id']);
-										}
 									}
 
 									// Copy attachments

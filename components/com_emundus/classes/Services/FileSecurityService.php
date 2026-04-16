@@ -39,11 +39,17 @@ class FileSecurityService
 	/**
 	 * Dangerous patterns for PDF files.
 	 * These target JavaScript actions, auto-open actions, external launches, etc.
+	 *
+	 * Note on /OpenAction: the pattern only matches when followed by an inline action
+	 * dictionary (<<). Navigation destinations of the form [pageRef /FitH null],
+	 * [pageRef /XYZ ...], etc. are benign and are NOT matched.
+	 * JavaScript referenced indirectly via an object reference (/OpenAction N N R) is
+	 * already covered by the /JS and /JavaScript patterns on the same content.
 	 */
 	private const PDF_PATTERNS = [
 		'/\/JS\s/',
 		'/\/JavaScript\s/',
-		'/\/OpenAction\s/',
+		'/\/OpenAction\s*<</',
 		'/\/AA\s/',
 		'/\/Launch\s/',
 		'/\/SubmitForm\s/',

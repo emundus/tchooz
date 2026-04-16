@@ -285,7 +285,7 @@
 												style="padding: 0.5rem"
 												:title="translate(showAction.label)"
 											>
-												<span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">search</span>
+												<span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">visibility</span>
 											</button>
 
 											<button
@@ -319,7 +319,7 @@
 												<modal
 													:name="'modal-component'"
 													transition="nice-modal-fade"
-													:classes="'!tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-p-8 tw-shadow-modal'"
+													:classes="modalClasses"
 													:height="modalHeight"
 													:width="modalWidth"
 													:delay="100"
@@ -420,7 +420,7 @@
 					<modal
 						:name="'modal-component'"
 						transition="nice-modal-fade"
-						:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-p-8 tw-shadow-modal'"
+						:classes="modalClasses"
 						:width="'600px'"
 						:delay="100"
 						:adaptive="true"
@@ -596,6 +596,7 @@ export default {
 
 			currentComponent: null,
 			currentComponentElementId: null,
+			currentModalClasses: null,
 			lastItemSelected: null,
 			showModal: false,
 			showExportModal: false,
@@ -1540,6 +1541,16 @@ export default {
 	computed: {
 		resolvedComponent() {
 			return this.components[this.currentComponent] || null;
+		},
+		modalClasses() {
+			let classes = ['tw-max-h-[80vh]', 'tw-overflow-y-auto', 'tw-rounded-coordinator', 'tw-shadow-modal'];
+			if (this.currentComponent === 'GroupDetails') {
+				classes.push('tw-px-8 tw-pb-8');
+			} else {
+				classes.push('tw-p-8');
+			}
+
+			return classes.join(' ');
 		},
 		currentTab() {
 			return this.currentList.tabs.find((tab) => {

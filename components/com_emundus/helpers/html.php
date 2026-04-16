@@ -46,7 +46,11 @@ class HtmlSanitizerSingleton
 
 	public function sanitizeNoHtml(?string $input): string
 	{
-		if (empty($input)) {
+		if($input == 0)
+		{
+			return $input;
+		}
+		elseif (empty($input)) {
 			return '';
 		}
 

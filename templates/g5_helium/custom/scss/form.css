@@ -1549,16 +1549,23 @@
             /* État désactivé */
 
             input[type="checkbox"]:disabled {
-                opacity: 0.4;
-                cursor: not-allowed;
+                border: unset;
+                background-color: transparent;
+                cursor: inherit;
             }
 
             /* Checked disabled */
 
             input[type="checkbox"]:checked:disabled {
-                background-color: var(--neutral-400);
-                border-color: var(--neutral-400);
-                opacity: 0.4;
+                background-color: transparent;
+                border-color: transparent;
+                opacity: 1;
+            }
+
+            input[type="checkbox"]:checked:disabled::after {
+                border: 2px solid var(--neutral-900);
+                border-top: none;
+                border-left: none;
             }
 
             input[type="checkbox"]:indeterminate {
@@ -1574,12 +1581,6 @@
                 height: 9px;
                 border-bottom: 2px solid var(--neutral-600);
                 display: block;
-            }
-
-            input[type="checkbox"]:checked:disabled {
-                background-color: var(--main-500);
-                border-color: var(--main-500);
-                opacity: 1;
             }
         }
     }

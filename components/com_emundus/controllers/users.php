@@ -1041,7 +1041,7 @@ class EmundusControllerUsers extends EmundusController
 
 			$return = $m_users->passwordReset($data);
 
-			$message = Text::sprintf('COM_USERS_RESET_REQUEST_FAILED', $return->message);
+			$message = Text::sprintf('COM_EMUNDUS_USERS_RESET_PASSWORD_SENT');
 			$menu    = $this->app->getMenu()->getItems('link', 'index.php?option=com_users&view=reset', true);
 
 			$this->app->enqueueMessage($message, 'notice');

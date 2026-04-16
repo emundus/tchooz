@@ -14,17 +14,17 @@ use EmundusModelForm;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Application\AfterInitialiseEvent;
 use Joomla\CMS\Event\Application\AfterRenderEvent;
-use Joomla\CMS\Event\Application\AfterRouteEvent;
 use Joomla\CMS\Event\GenericEvent;
-use Joomla\CMS\Event\User\LoginEvent;
+use Joomla\CMS\Event\MultiFactor\NotifyActionLog;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Language\LanguageFactoryInterface;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryAwareTrait;
 use Joomla\Component\Users\Administrator\Helper\Mfa as MfaHelper;
+use Joomla\Component\Users\Administrator\Model\CaptiveModel;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
 use Joomla\DI\Container;
@@ -85,12 +85,41 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		if ($app->isClient('site') || $app->isClient('administrator'))
 		{
-			$mapping['onBeforeCompileHead'] = 'injectLazyJS';
-			$mapping['onAfterRender']       = 'onAfterRender';
-			$mapping['onAfterInitialise']   = 'onAfterInitialise';
+			$mapping['onBeforeCompileHead']              = 'injectLazyJS';
+			$mapping['onAfterRender']                    = 'onAfterRender';
+			$mapping['onAfterInitialise']                = 'onAfterInitialise';
+			$mapping['onComUsersCaptiveValidateSuccess'] = 'onComUsersCaptiveValidateSuccess';
 		}
 
 		return $mapping;
+	}
+
+	public function onComUsersCaptiveValidateSuccess(NotifyActionLog $event): void
+	{
+		$session = $this->getApplication()->getSession();
+
+		// Get the return URL stored by the plugin in the session
+		$returnUrl = $session->get('com_users.return_url', '');
+
+		// get mfa record
+		$recordId = $this->getApplication()->getInput()->getInt('record_id', null);
+		$model    = new CaptiveModel();
+		$model->setState('record_id', $recordId);
+		$record = $model->getRecord();
+
+		if(empty($record))
+		{
+			return;
+		}
+
+		// If diff is less than 10 minutes, then return to homepage
+		$diffDates = date_diff(date_create($record->created_on), date_create($record->last_used));
+		if ($diffDates->d === 0 && $diffDates->h === 0 && $diffDates->i < 10 || empty($returnUrl))
+		{
+			$returnUrl = Uri::base();
+		}
+
+		$this->getApplication()->redirect($returnUrl);
 	}
 
 	public function onAfterInitialise(AfterInitialiseEvent $event): void
@@ -118,7 +147,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		TagModifierRegistry::register(new ChoiceStatusModifier());
 		TagModifierRegistry::register(new IndexModifier());
 
-		if($this->getApplication()->isClient('site'))
+		if ($this->getApplication()->isClient('site'))
 		{
 			if (!class_exists('DbLanguageFactory'))
 			{
@@ -197,14 +226,14 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 				$profile_font_title = $profile_details->published !== 1 ? '--em-coordinator-font-title' : '--em-applicant-font-title';
 
 				$style = ':root {';
-				if(!empty($profile_details->class))
+				if (!empty($profile_details->class))
 				{
 					$style .= '--em-profile-color: var(' . $profile_details->class . ');';
 				}
 
 				$style .= '--em-profile-font: var(' . $profile_font . ');
 					--em-profile-font-title: var(' . $profile_font_title . '); }';
-				
+
 
 				$wa->addInlineStyle($style);
 			}
@@ -242,7 +271,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			$currentLangPath = '';
 		}
 
-		$emConfig = ComponentHelper::getParams('com_emundus');
+		$emConfig   = ComponentHelper::getParams('com_emundus');
 		$allowAsync = $emConfig->get('async_export', 0);
 
 		$options = [
@@ -282,10 +311,10 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			$query = $db->getQuery(true);
 
 			// Check if __miniorange_saml_config table exists
-			$tables = $db->getTableList();
+			$tables      = $db->getTableList();
 			$tableExists = in_array($db->getPrefix() . 'miniorange_saml_config', $tables);
 
-			if($tableExists)
+			if ($tableExists)
 			{
 				$query->select('single_signon_service_url')
 					->from($db->quoteName('#__miniorange_saml_config'));

@@ -302,7 +302,7 @@ if (document) {
 
 				let coordinatorAccess = el.getAttribute('coordinatorAccess') || 0;
 				let sysadminAccess = el.getAttribute('sysadminAccess') || 0;
-				let currentLanguage = el.getAttribute('currentLanguage') || 'fr-FR';
+				let currentLanguage = el.getAttribute('currentLanguage') || el.getAttribute('currentLang') || 'fr-FR';
 				let shortLang = el.getAttribute('shortLang') || 'fr';
 				let manyLanguages = el.getAttribute('manyLanguages') || 0;
 				let defaultLang = el.getAttribute('defaultLang') || currentLanguage;
@@ -314,7 +314,7 @@ if (document) {
 
 					coordinatorAccess = datas.coordinatorAccess || 0;
 					sysadminAccess = datas.sysadminAccess || 0;
-					currentLanguage = datas.currentLanguage || 'fr-FR';
+					currentLanguage = datas.currentLanguage || datas.currentLang || 'fr-FR';
 					shortLang = datas.shortLang || 'fr';
 					manyLanguages = datas.manyLanguages || 0;
 					defaultLang = datas.defaultLang || currentLanguage;
