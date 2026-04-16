@@ -388,16 +388,34 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 
 		$query->select('parent_id')
 			->from($db->quoteName('jos_emundus_setup_emails_trigger_repeat_programme_id'))
-			->where($db->quoteName('programme_id') . ' = ' . $db->quote($oldProgramId));
+			->where($db->quoteName('programme_id') . ' = ' . $db->quote($oldProgramId))
+			->group($db->quoteName('parent_id'));
 		$db->setQuery($query);
 		$triggers = $db->loadColumn();
 
 		foreach ($triggers as $trigger) {
-			$newAssociation = (object) [
-				'parent_id' => $trigger,
-				'programme_id' => $newProgramId,
-			];
-			$db->insertObject('jos_emundus_setup_emails_trigger_repeat_programme_id', $newAssociation);
+
+			// We duplicate the trigger
+			$query->clear()
+				->select('*')
+				->from($db->quoteName('jos_emundus_setup_emails_trigger'))
+				->where($db->quoteName('id') . ' = ' . $db->quote($trigger));
+			$db->setQuery($query);
+			$trigger = $db->loadAssoc();
+
+			unset($trigger['id']);
+			$trigger = (object)$trigger;
+
+			if($db->insertObject('jos_emundus_setup_emails_trigger', $trigger))
+			{
+				$newTriggerId = $db->insertid();
+
+				$newAssociation = (object) [
+					'parent_id'    => $newTriggerId,
+					'programme_id' => $newProgramId,
+				];
+				$db->insertObject('jos_emundus_setup_emails_trigger_repeat_programme_id', $newAssociation);
+			}
 		}
 
 		return count($triggers);
