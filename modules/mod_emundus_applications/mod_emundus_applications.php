@@ -132,13 +132,6 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 		new ApplicationFileRepository()
 	);
 	$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity();
-	$isShowToApplicant           = $customReferenceFormatEntity->isShowToApplicant();
-
-	$internalReferenceService    = new InternalReferenceService(
-		new DateProvider(),
-		new ApplicationFileRepository()
-	);
-	$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity();
 	$isShowToApplicant = $customReferenceFormatEntity->isShowToApplicant();
 
 	$status_for_send   = explode(',', $eMConfig->get('status_for_send', 0));
