@@ -38,20 +38,19 @@ if (!empty($actions))
 	Text::script('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_DELETE_CONFIRM');
 
 	?>
-	<div class="tw-relative">
+	<div class="tw-relative emundus-application-file-actions-wrapper" data-fnum="<?= $fnum; ?>">
                     <span class="emundus-application-file-actions material-symbols-outlined tw-cursor-pointer !tw-flex tw-justify-self-center">
                         more_vert
                     </span>
-		<!-- todo: move to js script to create div somewhere else on the dom to make sure it is above everyone -->
-		<div class="emundus-application-file-actions-container tw-absolute tw-bg-white tw-shadow-md tw-rounded-coordinator tw-p-2 tw-hidden tw-transition-all tw-right-0 tw-flex tw-flex-col tw-z-10">
+		<div class="emundus-application-file-actions-container tw-fixed tw-bg-white tw-shadow-md tw-rounded-coordinator tw-p-2 tw-hidden tw-flex tw-flex-col tw-z-50" data-fnum="<?= $fnum; ?>">
 			<?php
 			foreach ($actions as $action)
 			{
 				?>
 				<div id="<?= $action->getActionType()->value ?>" data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
-                                <span class="material-symbols-outlined <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>">
-                                    <?= $action->getActionType()->getIcon() ?>
-                                </span>
+                            <span class="material-symbols-outlined <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>">
+                                <?= $action->getActionType()->getIcon() ?>
+                            </span>
 					<p class="tw-whitespace-nowrap <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>"><?= $action->getActionType()->getLabel() ?></p>
 				</div>
 				<?php
