@@ -793,7 +793,7 @@ class EmundusModelFiles extends JModelLegacy
                     LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum
-                    LEFT JOIN #__emundus_internal_reference as eir on eir.ccid=jecc.id and eir.active = 1';
+                    LEFT JOIN #__emundus_internal_reference as eir on eir.ccid=jecc.id and eir.active = 1 ';
 
 		if (in_array('unread_messages', $em_other_columns)) {
 			$query .= ' LEFT JOIN #__emundus_chatroom as ec on ec.fnum = jecc.fnum
