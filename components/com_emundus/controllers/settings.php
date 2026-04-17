@@ -2419,34 +2419,37 @@ class EmundusControllersettings extends EmundusController
 		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_COMMERCIAL_INTEREST_SENT'));
 	}
 
-	public function setupmessenger()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function setupmessenger(): EmundusResponse
 	{
 		$this->checkToken('post');
 
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$setup = $this->input->getRaw('setup', '{}');
+		if(empty($setup))
 		{
-			$response['code']    = 500;
-			$response['message'] = Text::_('MISSING_PARAMS');
-
-			$setup = $this->input->getRaw('setup', '{}');
-
-			if (!empty($setup))
-			{
-				$setup = json_decode($setup);
-
-				$response['status'] = $this->m_settings->setupMessenger($setup, $this->user->id);
-				if ($response['status'])
-				{
-					$response['code']    = 200;
-					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_MESSENGER_SETUP_SUCCESS');
-				}
-			}
+			throw new InvalidArgumentException('Setup is required');
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$setup = json_decode($setup, true);
+		if (!$this->m_settings->setupMessenger($setup))
+		{
+			throw new RuntimeException('Error setting up messenger');
+		}
+
+		$addonRepository = new AddonRepository();
+		$addonEntity     = $addonRepository->getByName('messenger');
+		if (empty($addonEntity))
+		{
+			throw new RuntimeException('Addon not found');
+		}
+
+		$addonEntity->setParams($setup);
+		if (!$addonRepository->flush($addonEntity))
+		{
+			throw new RuntimeException(Text::_('ADDON_NOT_SAVED'));
+		}
+
+		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_MESSENGER_SETUP_SUCCESS'));
 	}
 
 	public function getfabrikformslist()
