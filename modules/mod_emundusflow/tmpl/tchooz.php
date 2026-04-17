@@ -5,6 +5,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
 use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Reference\InternalReferenceEntity;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -213,15 +214,15 @@ assert($applicationFile instanceof ApplicationFileEntity);
                 <div class="tw-flex tw-items-center em-flex-wrap">
                     <p class="em-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_REFERENCE'); ?> : </p>
                     <div class="tw-flex tw-items-end tw-gap-1"
-                         title="<?= (!empty($current_application->reference) ? $current_application->reference : '') . '#' . (!empty($current_application->short_reference) ? $current_application->short_reference : ''); ?>"
+                         title="<?= (!empty($reference) ? $reference: '') . '#' . (!empty($applicationFile->getShortReference()) ? $applicationFile->getShortReference() : ''); ?>"
                     >
-                        <?php if (!empty($current_application->reference)) : ?>
-                            <label class="tw-mb-0"><?= $current_application->reference; ?></label>
+                        <?php if (!empty($reference)) : ?>
+                            <label class="tw-mb-0"><?= $reference; ?></label>
                         <?php endif; ?>
-                        <?php if (!empty($current_application->short_reference)) : ?>
-                            <span class="<?= !empty($current_application->reference) ? 'tw-text-sm tw-text-neutral-500' : ''; ?>">#<?= $current_application->short_reference; ?></span>
+                        <?php if (!empty($applicationFile->getShortReference())) : ?>
+                            <span class="<?= !empty($reference) ? 'tw-text-sm tw-text-neutral-500' : ''; ?>">#<?= $applicationFile->getShortReference(); ?></span>
                         <?php endif; ?>
-                        <span id="copy_reference_<?php echo $current_application->id; ?>" class="material-symbols-outlined !tw-text-base tw-cursor-pointer" onclick="copyReference('<?= $current_application->reference . '#' . $current_application->short_reference; ?>')">content_copy</span>
+                        <span id="copy_reference_<?php echo $applicationFile->getId(); ?>" class="material-symbols-outlined !tw-text-base tw-cursor-pointer" onclick="copyReference('<?= $reference . '#' . $applicationFile->getShortReference(); ?>')">content_copy</span>
                     </div>
                 </div>
             <?php endif; ?>

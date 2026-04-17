@@ -8,7 +8,10 @@ use Joomla\CMS\Dispatcher\AbstractModuleDispatcher;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
+use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Reference\InternalReferenceRepository;
+use Tchooz\Services\Reference\InternalReferenceService;
 
 \defined('_JEXEC') or die;
 
@@ -57,6 +60,17 @@ class Dispatcher extends AbstractModuleDispatcher
 		$data['title_override']     = Text::_($data['params']->get('title_override', ''));
 		$data['file_tags']          = Text::_($data['params']->get('tags', ''));
 		$data['deadline']           = new Date($session->end_date);
+
+		$internalReferenceService    = new InternalReferenceService(
+			new DateProvider(),
+			new ApplicationFileRepository()
+		);
+		$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity();
+
+		$data['isShowToApplicant'] = $customReferenceFormatEntity->isShowToApplicant();
+		$internalReferenceRepository = new InternalReferenceRepository();
+		$internalReference = $internalReferenceRepository->getActiveReference($applicationFile->getId());
+		$data['reference'] = !empty($internalReference) ? $internalReference->getReference() : '';
 
 		if (!empty($data['title_override']) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($data['title_override']))))) {
 			require_once(JPATH_SITE . '/components/com_emundus/models/emails.php');

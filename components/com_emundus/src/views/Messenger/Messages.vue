@@ -75,7 +75,8 @@ export default {
 
 				if (this.chatrooms && this.chatrooms.length && this.unread_messages && this.unread_messages.length > 0) {
 					this.unread_messages.forEach((unread_message) => {
-						this.chatrooms.find((chatroom) => chatroom.fnum === unread_message.fnum).unread = unread_message.notifications;
+						this.chatrooms.find((chatroom) => chatroom.fnum === unread_message.fnum).unread =
+							unread_message.notifications;
 					});
 				}
 
