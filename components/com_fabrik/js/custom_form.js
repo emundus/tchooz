@@ -6,7 +6,6 @@ requirejs(['fab/fabrik'], function () {
   var elt_to_not_clear = ['panel', 'calc'];
 
   var userDetails = Joomla.getOptions('plg_system_emundus.user_details', {});
-  console.log(userDetails.authentication_mode);
 
   var operators = {
     '=': function (a, b, plugin) {

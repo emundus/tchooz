@@ -203,8 +203,8 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 					$parts = explode(self::COMPOSITE_KEY_SEPARATOR, $compositeKey, 2);
 					if (count($parts) === 2)
 					{
-						$accessToken = trim($parts[0]);
-						$shortReference        = trim($parts[1]);
+						$accessToken    = trim($parts[0]);
+						$shortReference = trim($parts[1]);
 					}
 				}
 

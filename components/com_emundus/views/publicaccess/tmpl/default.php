@@ -51,7 +51,7 @@ $baseUrl = Uri::base();
 				<div class="tw-mb-4 tw-p-3 tw-bg-red-50 tw-border tw-border-red-200 tw-rounded tw-flex tw-items-center tw-gap-2">
 					<span class="material-symbols-outlined tw-text-red-500 tw-text-lg tw-mt-0.5">error</span>
 					<p class="tw-text-red-700 tw-text-sm tw-mb-0">
-						<?php Text::_('COM_EMUNDUS_PUBLIC_ACCESS_INVALID_TOKEN'); ?>
+						<?php !empty($this->errorMessage) ? Text::_($this->errorMessage) : Text::_('COM_EMUNDUS_PUBLIC_ACCESS_INVALID_TOKEN'); ?>
 					</p>
 				</div>
 			<?php endif; ?>
