@@ -56,23 +56,7 @@ class ActionRedirect extends ActionEntity
 		$app = Factory::getApplication();
 		if ($app->isClient('site'))
 		{
-			if (!empty($this->getParameterValue('custom_url')))
-			{
-				if (str_starts_with($this->getParameterValue('custom_url'), 'http://'))
-				{
-					$url = str_replace('http://', 'https://', $this->getParameterValue('url'));
-				}
-				else
-				{
-					$url = $this->getParameterValue('custom_url');
-				}
-			}
-			else if (!empty($this->getParameterValue('url')))
-			{
-
-				$url = Route::_('index.php?Itemid=' . $this->getParameterValue('url'));
-			}
-
+			$url = $this->constructLink();
 			if (!empty($url))
 			{
 				if ($url !== '/' . $app->getMenu()->getActive()->route)
@@ -86,6 +70,30 @@ class ActionRedirect extends ActionEntity
 		}
 
 		return ActionExecutionStatusEnum::FAILED;
+	}
+
+	public function constructLink(): string
+	{
+		$url = '';
+
+		if (!empty($this->getParameterValue('custom_url')))
+		{
+			if (str_starts_with($this->getParameterValue('custom_url'), 'http://'))
+			{
+				$url = str_replace('http://', 'https://', $this->getParameterValue('url'));
+			}
+			else
+			{
+				$url = $this->getParameterValue('custom_url');
+			}
+		}
+		else if (!empty($this->getParameterValue('url')))
+		{
+
+			$url = Route::_('index.php?Itemid=' . $this->getParameterValue('url'));
+		}
+
+		return $url;
 	}
 
 	public function getParameters(): array

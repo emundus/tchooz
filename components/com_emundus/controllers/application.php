@@ -45,7 +45,7 @@ use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Controller\EmundusController;
 use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
-use Tchooz\Services\ApplicationFile\ApplicationFileRegistry;
+use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
 
 class EmundusControllerApplication extends EmundusController
@@ -3289,7 +3289,7 @@ class EmundusControllerApplication extends EmundusController
 			{
 				$action = $this->app->input->getString('action');
 
-				$registry = new ApplicationFileRegistry();
+				$registry = new ApplicationFileActionsRegistry();
 				$actions = $registry->getAvailableActions($applicationFile);
 
 				$foundAction = null;

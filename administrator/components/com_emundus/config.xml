@@ -485,8 +485,8 @@
                 />
                 <field
                         type="text"
-                        name="actions"
-                        label="COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_ACTIONS"
+                        name="action"
+                        label="COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_ACTION"
                         description=""
                 />
             </form>

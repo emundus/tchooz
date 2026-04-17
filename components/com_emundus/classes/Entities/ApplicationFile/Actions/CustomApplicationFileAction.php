@@ -4,27 +4,46 @@ namespace Tchooz\Entities\ApplicationFile\Actions;
 
 
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\User\User;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Entities\Automation\Actions\ActionRedirect;
 use Tchooz\Entities\Automation\Actions\ActionUpdateStatus;
+use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\ConditionGroupEntity;
+use Tchooz\Entities\Automation\TargetEntity;
+use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
+use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 
 class CustomApplicationFileAction
 {
 	private $authorizedActionTypes = [];
 
 	/**
-	 * @param   string                $label
-	 * @param   string                $icon
-	 * @param   ConditionGroupEntity  $conditionGroup
-	 * @param   ActionEntity          $action
+	 * @param   string                 $id
+	 * @param   string                 $label
+	 * @param   string                 $icon
+	 * @param   ?ConditionGroupEntity  $conditionGroup
+	 * @param   ActionEntity           $action
 	 */
-	public function __construct(private string $label, private string $icon, private ConditionGroupEntity $conditionGroup, private ActionEntity $action)
+	public function __construct(private string $id, private string $label, private string $icon, private ?ConditionGroupEntity $conditionGroup, private ActionEntity $action)
 	{
 		$this->authorizedActionTypes = [
 			ActionUpdateStatus::getType(),
 			ActionRedirect::getType(),
 		];
+	}
+
+	public function getId(): string
+	{
+		return $this->id;
+	}
+
+	public function setId(string $id): CustomApplicationFileAction
+	{
+		$this->id = $id;
+
+		return $this;
 	}
 
 	public function getLabel(): string
@@ -78,5 +97,56 @@ class CustomApplicationFileAction
 		$this->action = $action;
 
 		return $this;
+	}
+
+	public function __serialize(): array
+	{
+		return [
+			'name' => $this->id,
+			'label' => $this->label,
+			'order' => 9999,
+			'parameters' => []
+		];
+	}
+
+	public function getActionType(): ApplicationFileActionsEnum
+	{
+		return ApplicationFileActionsEnum::CUSTOM;
+	}
+
+	public function execute(ApplicationFileEntity $applicationFileEntity, array $parameters = [], ?User $currentUser = null): bool
+	{
+		$executed = false;
+
+		$target = new ActionTargetEntity($currentUser, $applicationFileEntity->getFnum(), $applicationFileEntity->getUser()->id);
+		if ($this->getConditionGroup()->isSatisfied($target))
+		{
+			if ($this->getAction() instanceof ActionRedirect)
+			{
+				$executed = true;
+			}
+			else if ($this->getAction()->execute($target) === ActionExecutionStatusEnum::COMPLETED)
+			{
+				$executed = true;
+			}
+		}
+
+		return $executed;
+	}
+
+	public function getRedirectUrl(ApplicationFileEntity $applicationFileEntity, array $parameters = [], ?User $currentUser = null): string
+	{
+		$url = '';
+
+		$target = new ActionTargetEntity($currentUser, $applicationFileEntity->getFnum(), $applicationFileEntity->getUser()->id);
+		if ($this->getConditionGroup()->isSatisfied($target))
+		{
+			if ($this->getAction() instanceof ActionRedirect)
+			{
+				$url = $this->getAction()->constructLink();
+			}
+		}
+
+		return $url;
 	}
 }

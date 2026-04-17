@@ -3,9 +3,10 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectToFile;
+use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
 use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
-use Tchooz\Services\ApplicationFile\ApplicationFileRegistry;
+use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 
 defined('_JEXEC') or die;
 
@@ -21,7 +22,7 @@ $app = Factory::getApplication();
 $lang = $app->getLanguage();
 $lang->setDefault('fr-FR');
 $lang->load('com_emundus', JPATH_SITE . '/components/com_emundus', 'fr-FR');
-$registry = new ApplicationFileRegistry();
+$registry = new ApplicationFileActionsRegistry();
 $applicationRepository = new ApplicationFileRepository();
 $application = $applicationRepository->getByFnum($fnum);
 $actions = $registry->getAvailableActions($application, $context);
@@ -48,14 +49,25 @@ if (!empty($actions))
 			<?php
 			foreach ($actions as $action)
 			{
+                if (!($action instanceof CustomApplicationFileAction)) {
 				?>
-				<div id="<?= $action->getActionType()->value ?>-action" data-actionid="<?= $action->getActionType()->value ?>" tabindex=0 data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
-                    <span class="material-symbols-outlined <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>">
-                        <?= $action->getActionType()->getIcon() ?>
+                    <div id="<?= $action->getActionType()->value ?>-action" data-actionid="<?= $action->getActionType()->value ?>" tabindex=0 data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
+                        <span class="material-symbols-outlined <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>">
+                            <?= $action->getActionType()->getIcon() ?>
+                        </span>
+                        <p class="tw-whitespace-nowrap <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>"><?= $action->getActionType()->getLabel() ?></p>
+                    </div>
+                <?php
+                } else {
+                ?>
+                    <div id="<?= $action->getId() ?>-action" data-actionid="<?= $action->getId() ?>" tabindex=0 data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
+                    <span class="material-symbols-outlined">
+                        <?= $action->getIcon() ?>
                     </span>
-					<p class="tw-whitespace-nowrap <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>"><?= $action->getActionType()->getLabel() ?></p>
-				</div>
-				<?php
+                        <p class="tw-whitespace-nowrap"><?= $action->getLabel() ?></p>
+                    </div>
+                <?php
+                }
 			}
 			?>
 		</div>

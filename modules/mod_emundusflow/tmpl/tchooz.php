@@ -4,7 +4,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
 use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
-use Tchooz\Services\ApplicationFile\ApplicationFileRegistry;
+use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 
 defined('_JEXEC') or die('Restricted access');
 

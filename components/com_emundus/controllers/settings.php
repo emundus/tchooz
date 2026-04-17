@@ -29,9 +29,11 @@ use Tchooz\Attributes\AccessAttribute;
 use Tchooz\Controller\EmundusController;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Entities\Fields\Field;
+use Tchooz\Entities\Fields\StringField;
 use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Entities\User\UserCategoryEntity;
 use Tchooz\Enums\AccessLevelEnum;
@@ -3784,6 +3786,25 @@ class EmundusControllersettings extends EmundusController
 		$addonRepository->flush($customFormatReference);
 
 		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_SAVED'));
+	}
+
+	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
+	public function getAppplicationFileCustomActions(): EmundusResponse
+	{
+		$response = EmundusResponse::fail(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
+
+
+		return $response;
+	}
+
+	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
+	public function saveApplicationFileCustomActions(): EmundusResponse
+	{
+		$response = EmundusResponse::fail(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
+
+		$config = ComponentHelper::getParams('com_emundus');
+
+		return $response;
 	}
 }
 
