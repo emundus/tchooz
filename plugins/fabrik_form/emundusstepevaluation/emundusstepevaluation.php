@@ -72,6 +72,7 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 		}
 
 		$campaign_id = null;
+		$status = null;
 		if (!empty($ccid))
 		{
 			$query->clear()
@@ -80,6 +81,13 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 				->where('id = ' . $ccid);
 			$db->setQuery($query);
 			$campaign_id = $db->loadResult();
+
+			$query->clear()
+				->select('status')
+				->from('#__emundus_campaign_candidature')
+				->where('id = ' . $ccid);
+			$db->setQuery($query);
+			$status = $db->loadResult();
 		}
 
 		$stepRepository = new StepRepository();
@@ -209,6 +217,12 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 						$this->app->enqueueMessage(Text::_('COM_EMUNDUS_EVALUATION_NOT_IN_DATE_RANGE'), 'error');
 						$view = 'details';
 					}
+				}
+
+				if(!empty($step->getEntryStatus()) && !is_null($status) && !in_array($status, $step->getEntryStatus()))
+				{
+					$this->app->enqueueMessage(Text::_('COM_EMUNDUS_EVALUATION_NOT_IN_DATE_RANGE'), 'error');
+					$view = 'details';
 				}
 			}
 		}
