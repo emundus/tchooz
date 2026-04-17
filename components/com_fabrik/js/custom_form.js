@@ -374,7 +374,6 @@ requirejs(['fab/fabrik'], function () {
   function manageRules(form, element = null, clear = true)
   {
     let elt_rules = [];
-    let block_rules = [];
     // If conditions are of type form we check for all elements
     if(element) {
       let elt_name = element.origId ? element.origId.split('___')[1] : element.baseElementId.split('___')[1];
@@ -390,18 +389,16 @@ requirejs(['fab/fabrik'], function () {
     // If we have no element specified we check if there are user type conditions
     else {
       js_rules.forEach((js_rule) => {
-        js_rule.conditions.forEach((condition) => {
-          if (condition.type === 'user' && userDetails && Object.keys(userDetails).includes(condition.field)) {
-            elt_rules.push(js_rule);
-          }
-          else {
-            block_rules.push(js_rule);
-          }
+        const allConditionsAreUser = js_rule.conditions.every((condition) => {
+          return condition.type === 'user' && userDetails && Object.keys(userDetails).includes(condition.field);
         });
+        if (allConditionsAreUser) {
+          elt_rules.push(js_rule);
+        }
       });
     }
 
-    if (elt_rules.length > 0 && block_rules.length === 0) {
+    if (elt_rules.length > 0) {
       elt_rules.forEach((rule) => {
         let condition_state = [];
 
