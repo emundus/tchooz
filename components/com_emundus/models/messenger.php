@@ -23,6 +23,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
@@ -241,6 +242,12 @@ class EmundusModelMessenger extends ListModel
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
 				->where($this->db->quoteName('ecc.applicant_id') . ' = ' . $user_id);
+
+			if (EmundusPublicAccess::isPublicAccessSession())
+			{
+				$query->andWhere($this->db->quoteName('ec.fnum') . ' = ' . $this->db->quote(EmundusPublicAccess::getPublicAccessFnum()));
+			}
+
 			$this->db->setQuery($query);
 			$chatrooms = $this->db->loadObjectList();
 
@@ -331,6 +338,11 @@ class EmundusModelMessenger extends ListModel
 			{
 				$query->where($this->db->quoteName('sc.published') . ' = 1');
 			}
+
+			if (EmundusPublicAccess::isPublicAccessSession())
+			{
+				$query->andWhere($this->db->quoteName('cc.fnum') . ' = ' . $this->db->quote(EmundusPublicAccess::getPublicAccessFnum()));
+ 			}
 
 			try
 			{
@@ -650,19 +662,26 @@ class EmundusModelMessenger extends ListModel
 		}
 		$h_cache = new EmundusHelperCache();
 
-			try
+		try
 			{
 				if ($applicant)
 				{
-					if($h_cache->isEnabled())
+					if ($h_cache->isEnabled())
 					{
-						$notifications = $h_cache->get('notifications_' . $user_id);
+						if (EmundusPublicAccess::isPublicAccessSession())
+						{
+							$notifications = $h_cache->get('notifications_' . EmundusPublicAccess::getPublicAccessFnum());
+						}
+						else
+						{
+							$notifications = $h_cache->get('notifications_' . $user_id);
+						}
 					}
 					else {
 						$notifications = false;
 					}
 
-					if($notifications === false)
+					if ($notifications === false)
 					{
 						$query->select('ec.fnum, ecn.chatroom_id as page, COUNT(ecn.message_id) as notifications, concat(eu.lastname, " ", eu.firstname) as fullname, group_concat(ecn.message_id) as messages')
 							->from($this->db->quoteName('#__emundus_chatroom_notifications', 'ecn'))
@@ -673,12 +692,25 @@ class EmundusModelMessenger extends ListModel
 							->where($this->db->quoteName('ecc.applicant_id') . ' = ' . $this->db->quote($user_id))
 							->andWhere($this->db->quoteName('ec.status') . ' = 1')
 							->group('ecn.chatroom_id');
+
+						if (EmundusPublicAccess::isPublicAccessSession())
+						{
+							$query->andWhere($this->db->quoteName('ec.fnum') . ' = ' . $this->db->quote(EmundusPublicAccess::getPublicAccessFnum()));
+						}
+
 						$this->db->setQuery($query);
 						$notifications = $this->db->loadAssocList();
 
-						if($h_cache->isEnabled())
+						if ($h_cache->isEnabled())
 						{
-							$h_cache->set('notifications_' . $user_id, $notifications);
+							if (EmundusPublicAccess::isPublicAccessSession())
+							{
+								$h_cache->set('notifications_' . EmundusPublicAccess::getPublicAccessFnum(), $notifications);
+							}
+							else
+							{
+								$h_cache->set('notifications_' . $user_id, $notifications);
+							}
 						}
 					}
 				}
