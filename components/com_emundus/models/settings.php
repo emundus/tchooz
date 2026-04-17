@@ -2770,12 +2770,13 @@ class EmundusModelSettings extends ListModel
 					{
 						$applicantIds = array_column($candidatures, 'applicant_id');
 						$query->clear()
-							->select('user_id, firstname, lastname')
-							->from($this->db->quoteName('#__emundus_users'))
-							->where($this->db->quoteName('user_id') . ' IN (' . implode(',', $applicantIds) . ')');
+							->select('eu.user_id, eu.firstname, eu.lastname, u.email')
+							->from($this->db->quoteName('#__emundus_users', 'eu'))
+							->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('eu.user_id'))
+							->where($this->db->quoteName('eu.user_id') . ' IN (' . implode(',', $applicantIds) . ')');
 						if (!empty($search_query))
 						{
-							$query->where('CONCAT(' . $this->db->quoteName('firstname') . ', " ", ' . $this->db->quoteName('lastname') . ') LIKE ' . $this->db->quote('%' . $search_query . '%'));
+							$query->where('CONCAT(' . $this->db->quoteName('eu.firstname') . ', " ", ' . $this->db->quoteName('eu.lastname') . ') LIKE ' . $this->db->quote('%' . $search_query . '%'));
 						}
 						$this->db->setQuery($query);
 						$users = $this->db->loadObjectList('user_id');
@@ -2786,7 +2787,7 @@ class EmundusModelSettings extends ListModel
 							{
 								$applicants[] = (object) [
 									'value' => $candidature->id,
-									'name'  => $users[$candidature->applicant_id]->lastname . ' ' . $users[$candidature->applicant_id]->firstname . ' - ' . $candidature->label
+									'name'  => $users[$candidature->applicant_id]->lastname . ' ' . $users[$candidature->applicant_id]->firstname . ' ('.$users[$candidature->applicant_id]->email.') - ' . $candidature->label
 								];
 							}
 						}

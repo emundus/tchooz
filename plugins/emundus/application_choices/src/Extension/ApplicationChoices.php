@@ -59,6 +59,7 @@ final class ApplicationChoices extends CMSPlugin implements SubscriberInterface
 					fnum: $data['fnum'],
 					user: $this->getUserFactory()->loadUserById($data['user_id']),
 					campaign: $applicationChoiceCampaign,
+					campaign_id: $applicationChoiceCampaign->getId(),
 					order: 0
 				);
 

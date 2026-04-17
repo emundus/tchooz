@@ -27,8 +27,8 @@ enum ExportFormatEnum: string
 	{
 		return match ($this)
 		{
-			ExportFormatEnum::XLSX => 'media/com_emundus/images/icones/filetype/excel.png',
-			ExportFormatEnum::PDF => 'media/com_emundus/images/icones/filetype/pdf.png',
+			ExportFormatEnum::XLSX => '/media/com_emundus/images/icones/filetype/excel.png',
+			ExportFormatEnum::PDF => '/media/com_emundus/images/icones/filetype/pdf.png',
 		};
 	}
 

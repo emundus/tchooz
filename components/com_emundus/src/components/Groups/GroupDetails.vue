@@ -46,7 +46,6 @@ export default {
 		};
 	},
 	created() {
-		console.log(this.$props.item);
 		if (!this.$props.item) {
 			this.closeModal();
 		}
@@ -79,8 +78,8 @@ export default {
 </script>
 
 <template>
-	<div>
-		<div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
+	<div class="tw-relative">
+		<div class="tw-sticky tw-top-0 tw-z-20 tw-flex tw-items-center tw-justify-between tw-bg-white tw-py-8">
 			<Tag :text="publishedText" :bg-color-class="bgPublishedClass" :text-color-class="textPublishedClass" />
 			<button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="closeModal">
 				<span class="material-symbols-outlined">close</span>

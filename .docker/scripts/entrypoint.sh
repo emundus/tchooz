@@ -174,6 +174,9 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     php cli/joomla.php database:import --folder=".docker/installation/vanilla" -n
     php cli/joomla.php tchooz:vanilla --action="import" --folder=".docker/installation/vanilla" -n
     php cli/joomla.php tchooz:vanilla --action="import_foreign_keys" --folder=".docker/installation/vanilla" -n
+
+    echo >&2 "Init translations..."
+    php cli/joomla.php tchooz:language --job=database -n
   fi
 
   echo >&2 "Configuring Joomla to use the database..."

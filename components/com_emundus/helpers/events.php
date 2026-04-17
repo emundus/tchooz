@@ -331,6 +331,14 @@ class EmundusHelperEvents
 
 				if (!empty($form_data[$name]))
 				{
+					if ($elt->getElement()->plugin === 'databasejoin' && $elt->getParams()->get('database_join_display_type') === 'multilist' && is_array($form_data[$name]))
+					{
+						$form_data[$name] = array_filter($form_data[$name], function ($value) {
+							// We want to keep 0 values
+							return $value !== '' && $value !== null && $value !== false;
+						});
+					}
+
 					$sanitize_data = $this->sanitizeValue($form_data[$name], $strong_sanitize, $html_sanitizer);
 					$formModel->updateFormData($name, $sanitize_data, true);
 					$form_data[$name] = $sanitize_data;
@@ -338,6 +346,14 @@ class EmundusHelperEvents
 
 				if (!empty($form_data[$raw_name]))
 				{
+					if ($elt->getElement()->plugin === 'databasejoin' && $elt->getParams()->get('database_join_display_type') === 'multilist' && is_array($form_data[$raw_name]))
+					{
+						$form_data[$raw_name] = array_filter($form_data[$raw_name], function ($value) {
+							// We want to keep 0 values
+							return $value !== '' && $value !== null && $value !== false;
+						});
+					}
+
 					$sanitize_data = $this->sanitizeValue($form_data[$raw_name], $strong_sanitize, $html_sanitizer);
 					$formModel->updateFormData($raw_name, $sanitize_data, true);
 					$form_data[$raw_name] = $sanitize_data;

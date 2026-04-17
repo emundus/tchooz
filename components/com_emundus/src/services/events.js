@@ -154,6 +154,7 @@ export default {
 			return {
 				status: false,
 				error: e,
+				message: e.message,
 			};
 		}
 	},

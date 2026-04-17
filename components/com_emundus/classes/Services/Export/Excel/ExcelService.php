@@ -550,7 +550,7 @@ class ExcelService extends Export implements ExportInterface
 
 				$excelFilename = 'export';
 
-				if (!$exportPath = $this->convertToXlsx($csvFile, $excelFilename, $exportPath, count($json['files']), count($json['headers'])))
+				if (!$exportPath = $this->convertToXlsx($csvFile, $excelFilename, $exportPath, count($json['files']), count($json['headers']), $this->exportEntity->getId()))
 				{
 					throw new \Exception('Excel conversion failed.');
 				}
@@ -676,7 +676,7 @@ class ExcelService extends Export implements ExportInterface
 		return $csvFile;
 	}
 
-	private function convertToXlsx(string $csvPath, string $excelFilename, string $destinationPath, int $nbrow, int $nbcol): bool|string
+	private function convertToXlsx(string $csvPath, string $excelFilename, string $destinationPath, int $nbrow, int $nbcol, int $id = 0): bool|string
 	{
 		$converted = false;
 
@@ -777,7 +777,12 @@ class ExcelService extends Export implements ExportInterface
 			}
 
 			$timestamp      = Factory::getDate()->format('Ymd_His');
-			$excel_filename = $excelFilename . '_' . $nbrow . 'rows_' . $timestamp . '.xlsx';
+			$excel_filename = $excelFilename . '_' . $nbrow . 'rows_' . $timestamp;
+			if(!empty($id))
+			{
+				$excel_filename .= '_'.$id;
+			}
+			$excel_filename .= '.xlsx';
 			// Check if export path directory exists
 			if (!is_dir(JPATH_SITE . '/' . $destinationPath))
 			{

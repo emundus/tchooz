@@ -24,18 +24,6 @@
       "version": "a5c136"
     },
     {
-      "name": "com_finder.filters",
-      "type": "script",
-      "uri": "com_finder/filters.min.js",
-      "dependencies": [
-        "core"
-      ],
-      "attributes": {
-        "type": "module"
-      },
-      "version": "ce7a61"
-    },
-    {
       "name": "com_finder.finder",
       "type": "style",
       "uri": "com_finder/finder.min.css",
@@ -64,6 +52,18 @@
         "type": "module"
       },
       "version": "ad6ab5"
+    },
+    {
+      "name": "com_finder.filters",
+      "type": "script",
+      "uri": "com_finder/filters.min.js",
+      "dependencies": [
+        "core"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "version": "ce7a61"
     },
     {
       "name": "com_finder.indexer",

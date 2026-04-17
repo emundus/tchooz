@@ -13,10 +13,14 @@ import Popover from '@/components/Popover.vue';
 import Info from '@/components/Utils/Info.vue';
 import settingsService from '@/services/settings.js';
 
+import date from '@/mixins/date.js';
+import alerts from '@/mixins/alerts.js';
+
 export default {
 	name: 'CalendarSlotPopup',
 	emits: ['close', 'open', 'slot-saved', 'slot-deleted'],
 	components: { Info, Popover, DatePicker, Parameter, Modal },
+	mixins: [date, alerts],
 	props: {
 		date: {
 			type: String,
@@ -292,95 +296,53 @@ export default {
 			if (slotValidationFailed) return;
 			// Check if the start date is before the end date
 			if (new Date(slot.start_date) >= new Date(slot.end_date)) {
-				Swal.fire({
-					icon: 'error',
-					title: 'Oops...',
-					text: Joomla.JText._('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DATE_ERROR'),
-					reverseButtons: true,
-					customClass: {
-						title: 'em-swal-title',
-						confirmButton: 'em-swal-confirm-button',
-						actions: 'em-swal-single-action',
-					},
-				});
+				this.alertError('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DATE_ERROR');
 				return;
 			}
 
 			// Check if the start date is before the current date
 			if (new Date(slot.start_date) < new Date()) {
-				Swal.fire({
-					icon: 'error',
-					title: 'Oops...',
-					text: Joomla.JText._('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DATE_ERROR_BEFORE_NOW'),
-					reverseButtons: true,
-					customClass: {
-						title: 'em-swal-title',
-						confirmButton: 'em-swal-confirm-button',
-						actions: 'em-swal-single-action',
-					},
-				});
+				this.alertError('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DATE_ERROR_BEFORE_NOW');
 				return;
 			}
 
 			// Check if interval during start_date and end_date is greater than duration
 			if (new Date(slot.end_date) - new Date(slot.start_date) < this.duration * 60 * 1000) {
-				Swal.fire({
-					icon: 'error',
-					title: 'Oops...',
-					text: Joomla.JText._('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_ERROR'),
-					reverseButtons: true,
-					customClass: {
-						title: 'em-swal-title',
-						confirmButton: 'em-swal-confirm-button',
-						actions: 'em-swal-single-action',
-					},
-				});
+				this.alertError('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_ERROR');
 				return;
 			}
 
 			// Check if registrants already exixts on this slot
+			const slotStartDate =
+				this.$props.slot.start instanceof Temporal.ZonedDateTime
+					? this.convertOldDateTimeStringToZonedDateTime(slot['start_date'])
+					: new Date(slot['start_date']);
+			const slotEndDate =
+				this.$props.slot.end instanceof Temporal.ZonedDateTime
+					? this.convertOldDateTimeStringToZonedDateTime(slot['end_date'])
+					: new Date(slot['end_date']);
+
 			if (this.$props.slot && this.$props.slot.booked_count > 0) {
-				if (this.$props.slot.slot_capacity > this.fields.find((field) => field.param === 'slot_capacity').value) {
-					let errorMessage = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_UPDATE_CAPACITY_ERROR');
-					errorMessage = errorMessage.replace('{{booked_count}}', this.$props.slot.slot_capacity);
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: Joomla.JText._(errorMessage),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: 'em-swal-single-action',
-						},
-					});
-					return;
-				} else if (
-					new Date(slot['start_date']).getTime() !== new Date(this.$props.slot.start).getTime() &&
-					new Date(slot['start_date']) > new Date(this.$props.slot.start)
-				) {
+				if (Temporal.ZonedDateTime.compare(slotStartDate, this.$props.slot.start) === 1) {
 					let errorMessage = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_GREATER_ERROR');
-					const date = new Date(this.$props.slot.start);
-					const hours = date.toTimeString().slice(0, 5);
+					const date =
+						this.$props.slot.start instanceof Temporal.ZonedDateTime
+							? this.$props.slot.start
+							: new Date(this.$props.slot.start);
+					const hours =
+						date instanceof Temporal.ZonedDateTime
+							? date.toPlainTime().toString().slice(0, 5)
+							: date.toTimeString().slice(0, 5);
 					errorMessage = errorMessage.replace('{{start_date}}', hours);
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: Joomla.JText._(errorMessage),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: 'em-swal-single-action',
-						},
-					});
+
+					this.alertError(errorMessage);
 					return;
 				} else if (
-					new Date(slot['start_date']).getTime() !== new Date(this.$props.slot.start).getTime() &&
-					!this.canANewAvailabilityBeCreated(slot['start_date'])
+					Temporal.ZonedDateTime.compare(slotStartDate, this.$props.slot.start) !== 0 &&
+					!this.canANewAvailabilityBeCreated(slotStartDate)
 				) {
 					let errorMessage = '';
-					const dates = this.exampleDatesPossible(slot['start_date']);
+					const dates = this.exampleDatesPossible(slotStartDate);
 					if (Array.isArray(dates)) {
 						if (dates.length >= 2) {
 							errorMessage = this.translate(
@@ -400,38 +362,26 @@ export default {
 							);
 						}
 					}
-					const date = new Date(this.$props.slot.start);
-					const hours = date.toTimeString().slice(0, 5);
+					const hours =
+						slotStartDate instanceof Temporal.ZonedDateTime
+							? slotStartDate.toPlainTime().toString().slice(0, 5)
+							: slotStartDate.toTimeString().slice(0, 5);
 					errorMessage = errorMessage.replace('{{start_date}}', hours);
 
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: Joomla.JText._(errorMessage),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: 'em-swal-single-action',
-						},
-					});
+					this.alertError(errorMessage);
 					return;
-				} else if (new Date(slot['end_date']) < new Date(this.$props.slot.end)) {
+				} else if (Temporal.ZonedDateTime.compare(slotEndDate, this.$props.slot.end) === -1) {
 					let errorMessage = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_END_DATE_ERROR');
-					const date = new Date(this.$props.slot.end);
-					const hours = date.toTimeString().slice(0, 5);
+					const date =
+						this.$props.slot.end instanceof Temporal.ZonedDateTime
+							? this.$props.slot.end
+							: new Date(this.$props.slot.end);
+					const hours =
+						date instanceof Temporal.ZonedDateTime
+							? date.toPlainTime().toString().slice(0, 5)
+							: date.toTimeString().slice(0, 5);
 					errorMessage = errorMessage.replace('{{end_date}}', hours);
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: Joomla.JText._(errorMessage),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: 'em-swal-single-action',
-						},
-					});
+					this.alertError(errorMessage);
 					return;
 				}
 			}
@@ -454,27 +404,14 @@ export default {
 				if (response.status === true) {
 					let slots = response.data;
 
-					Swal.fire({
-						position: 'center',
-						icon: 'success',
-						title: Joomla.JText._('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_SAVED'),
-						showConfirmButton: false,
-						allowOutsideClick: false,
-						reverseButtons: true,
-						timer: 1500,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: 'em-swal-single-action',
-						},
-					}).then(() => {
+					this.alertSuccess('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_SAVED').then(() => {
 						this.$emit('slot-saved', slots);
 						this.$emit('close');
 					});
 				} else {
 					// Handle error
 					if (response.message === 'COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_CONDITIONS_ERROR') {
-						const dates = this.exampleDatesPossible(slot['start_date']);
+						const dates = this.exampleDatesPossible(slotStartDate);
 						if (Array.isArray(dates)) {
 							if (dates.length >= 2) {
 								response.message = this.translate(
@@ -495,18 +432,29 @@ export default {
 							}
 						}
 					}
-					const start_date = new Date(this.$props.slot.start);
-					const start_hours = start_date.toTimeString().slice(0, 5);
-					const end_date = new Date(this.$props.slot.end);
-					const end_hours = end_date.toTimeString().slice(0, 5);
+
+					const start_date =
+						this.$props.slot.start instanceof Temporal.ZonedDateTime
+							? this.$props.slot.start
+							: new Date(this.$props.slot.start);
+					const start_hours =
+						start_date instanceof Temporal.ZonedDateTime
+							? start_date.toPlainTime().toString().slice(0, 5)
+							: start_date.toTimeString().slice(0, 5);
+					const end_date =
+						this.$props.slot.end instanceof Temporal.ZonedDateTime
+							? this.$props.slot.end
+							: new Date(this.$props.slot.end);
+					const end_hours =
+						end_date instanceof Temporal.ZonedDateTime
+							? end_date.toPlainTime().toString().slice(0, 5)
+							: end_date.toTimeString().slice(0, 5);
+
 					response.message = response.message.replace('{{start_date}}', start_hours);
 					response.message = response.message.replace('{{end_date}}', end_hours);
 					response.message = response.message.replace('{{booked_count}}', this.$props.slot.slot_capacity);
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: response.message,
-					});
+
+					this.alertError(response.message);
 				}
 			});
 		},
@@ -615,9 +563,10 @@ export default {
 		},
 		canANewAvailabilityBeCreated(date) {
 			if (this.$props.slot && this.$props.slot.start && this.$props.slot.end) {
-				const startDate = new Date(date);
-				const slotStart = new Date(this.$props.slot.start);
-				const slotEnd = new Date(this.$props.slot.end);
+				const startDate = date;
+				const slotStart =
+					date instanceof Temporal.ZonedDateTime ? this.$props.slot.start : new Date(this.$props.slot.start);
+				const slotEnd = date instanceof Temporal.ZonedDateTime ? this.$props.slot.end : new Date(this.$props.slot.end);
 				const duration = parseInt(this.$props.duration, 10);
 
 				let durationInMs = 0;
@@ -629,7 +578,14 @@ export default {
 					return false;
 				}
 
-				let diffBetweenStarts = slotStart.getTime() - startDate.getTime();
+				let diffBetweenStarts =
+					startDate instanceof Temporal.ZonedDateTime
+						? slotStart.since(startDate).total('milliseconds')
+						: slotStart.getTime() - startDate.getTime();
+				let diffBetweenEndAndStart =
+					startDate instanceof Temporal.ZonedDateTime
+						? slotEnd.since(startDate).total('milliseconds')
+						: slotEnd.getTime() - startDate.getTime();
 
 				const breakEvery = this.$props.break_every;
 				const breakTime = this.$props.break_time;
@@ -648,21 +604,37 @@ export default {
 				/// And if the new start date allows to create at least one new availability
 				if (
 					breakTimeInMs > 0 &&
-					slotEnd.getTime() - startDate.getTime() < durationInMs * breakEvery + breakTimeInMs &&
+					diffBetweenEndAndStart < durationInMs * breakEvery + breakTimeInMs &&
 					diffBetweenStarts % durationInMs === 0
 				) {
 					return true;
 				}
 
-				let dateTemporary = new Date(slotStart);
+				let dateTemporary = slotStart;
 
 				/// At this moment, we know that at least one cycle of availabilities and break time will be needed
 				/// So if we want to see if the new date proposed can be accepted, we have to set the started date point at the beginning of one cycle
 				/// The while loop here allow to go at this started date point, allowing us to see if the date can be accepted next.
-				while (slotEnd.getTime() - dateTemporary.getTime() + durationInMs < durationInMs * breakEvery + breakTimeInMs) {
-					dateTemporary = new Date(dateTemporary.getTime() - durationInMs);
+				if (startDate instanceof Temporal.ZonedDateTime) {
+					while (
+						slotEnd.since(dateTemporary).total('milliseconds') + durationInMs <
+						durationInMs * breakEvery + breakTimeInMs
+					) {
+						dateTemporary = dateTemporary.subtract({ milliseconds: durationInMs });
+					}
+				} else {
+					while (
+						slotEnd.getTime() - dateTemporary.getTime() + durationInMs <
+						durationInMs * breakEvery + breakTimeInMs
+					) {
+						dateTemporary = new Date(dateTemporary.getTime() - durationInMs);
+					}
 				}
-				diffBetweenStarts = dateTemporary.getTime() - startDate.getTime();
+
+				diffBetweenStarts =
+					startDate instanceof Temporal.ZonedDateTime
+						? dateTemporary.since(startDate).total('milliseconds')
+						: dateTemporary.getTime() - startDate.getTime();
 
 				for (let slots = 1; ; slots++) {
 					let totalTime = 0;
@@ -680,9 +652,10 @@ export default {
 		exampleDatesPossible(date) {
 			if (!this.$props.slot || !this.$props.slot.start || !this.$props.slot.end) return false;
 
-			const startDate = new Date(date);
-			const slotStart = new Date(this.$props.slot.start);
-			const slotEnd = new Date(this.$props.slot.end);
+			const startDate = date;
+			const slotStart =
+				date instanceof Temporal.ZonedDateTime ? this.$props.slot.start : new Date(this.$props.slot.start);
+			const slotEnd = date instanceof Temporal.ZonedDateTime ? this.$props.slot.end : new Date(this.$props.slot.end);
 			const duration = parseInt(this.$props.duration, 10);
 			if (isNaN(duration)) return false;
 
@@ -695,7 +668,14 @@ export default {
 				return false;
 			}
 
-			const diffBetweenStartDates = slotStart.getTime() - startDate.getTime();
+			let diffBetweenStartDates =
+				startDate instanceof Temporal.ZonedDateTime
+					? slotStart.since(startDate).total('milliseconds')
+					: slotStart.getTime() - startDate.getTime();
+			let diffBetweenEndAndStart =
+				startDate instanceof Temporal.ZonedDateTime
+					? slotEnd.since(startDate).total('milliseconds')
+					: slotEnd.getTime() - startDate.getTime();
 
 			const breakEvery = this.$props.break_every;
 			const breakTime = this.$props.break_time;
@@ -712,43 +692,81 @@ export default {
 
 			const results = [];
 
-			const todayStart = new Date(slotStart);
+			const todayStart = slotStart;
 			todayStart.setHours(0, 0, 0, 0);
 
 			let previousDate = slotStart;
-			if (
-				breakTimeInMs > 0 &&
-				slotEnd.getTime() - slotStart.getTime() < durationInMs * breakEvery + breakTimeInMs &&
-				diffBetweenStartDates % durationInMs !== 0
-			) {
-				for (let i = 0; i < 2 && results.length < 2; i++) {
-					const previous = new Date(previousDate.getTime() - durationInMs);
-					if (
-						previous >= todayStart &&
-						slotEnd.getTime() - previous.getTime() < durationInMs * breakEvery + breakTimeInMs
-					) {
-						previousDate = previous;
-						results.push(previous);
-					}
-				}
-			}
-			if (!breakEvery || !breakTime || !breakType) {
-				for (let i = 0; i < 2 && results.length < 2; i++) {
-					previousDate = new Date(previousDate.getTime() - durationInMs);
-					if (previousDate >= todayStart) {
-						results.push(previousDate);
-					}
-				}
-			} else {
-				for (let i = 0; i < 2 && results.length < 2; i++) {
-					previousDate = new Date(previousDate.getTime() - (durationInMs * breakEvery + breakTimeInMs));
-					if (previousDate >= todayStart) {
-						results.push(previousDate);
-					}
-				}
-			}
 
-			return results.map((d) => d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+			if (startDate instanceof Temporal.ZonedDateTime) {
+				if (
+					breakTimeInMs > 0 &&
+					slotEnd.since(slotStart).total('milliseconds') < durationInMs * breakEvery + breakTimeInMs &&
+					diffBetweenStartDates % durationInMs !== 0
+				) {
+					for (let i = 0; i < 2 && results.length < 2; i++) {
+						const previous = previousDate.subtract({ milliseconds: durationInMs });
+						if (
+							Temporal.ZonedDateTime.compare(previous, todayStart) >= 0 &&
+							slotEnd.since(previous).total('milliseconds') < durationInMs * breakEvery + breakTimeInMs
+						) {
+							previousDate = previous;
+							results.push(previous);
+						}
+					}
+				}
+
+				if (!breakEvery || !breakTime || !breakType) {
+					for (let i = 0; i < 2 && results.length < 2; i++) {
+						previousDate = previousDate.subtract({ milliseconds: durationInMs });
+						if (Temporal.ZonedDateTime.compare(previousDate, todayStart) >= 0) {
+							results.push(previousDate);
+						}
+					}
+				} else {
+					for (let i = 0; i < 2 && results.length < 2; i++) {
+						previousDate = previousDate.subtract({ milliseconds: durationInMs * breakEvery + breakTimeInMs });
+						if (Temporal.ZonedDateTime.compare(previousDate, todayStart) >= 0) {
+							results.push(previousDate);
+						}
+					}
+				}
+
+				return results.map((d) => d.toLocaleString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+			} else {
+				if (
+					breakTimeInMs > 0 &&
+					slotEnd.getTime() - slotStart.getTime() < durationInMs * breakEvery + breakTimeInMs &&
+					diffBetweenStartDates % durationInMs !== 0
+				) {
+					for (let i = 0; i < 2 && results.length < 2; i++) {
+						const previous = new Date(previousDate.getTime() - durationInMs);
+						if (
+							previous >= todayStart &&
+							slotEnd.getTime() - previous.getTime() < durationInMs * breakEvery + breakTimeInMs
+						) {
+							previousDate = previous;
+							results.push(previous);
+						}
+					}
+				}
+				if (!breakEvery || !breakTime || !breakType) {
+					for (let i = 0; i < 2 && results.length < 2; i++) {
+						previousDate = new Date(previousDate.getTime() - durationInMs);
+						if (previousDate >= todayStart) {
+							results.push(previousDate);
+						}
+					}
+				} else {
+					for (let i = 0; i < 2 && results.length < 2; i++) {
+						previousDate = new Date(previousDate.getTime() - (durationInMs * breakEvery + breakTimeInMs));
+						if (previousDate >= todayStart) {
+							results.push(previousDate);
+						}
+					}
+				}
+
+				return results.map((d) => d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+			}
 		},
 	},
 	computed: {

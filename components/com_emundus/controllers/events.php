@@ -173,6 +173,25 @@ class EmundusControllerEvents extends EmundusController
 		$campaigns          = json_decode($campaigns);
 		$programs           = $this->input->getRaw('programs', '[]');
 		$programs           = json_decode($programs);
+		
+		if(empty($name))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_EVENTS_CREATE_NAME_REQUIRED'));
+		}
+		
+		if(empty($location))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_EVENTS_CREATE_LOCATION_REQUIRED'));
+		}
+
+		if($available_for == 1 && empty($campaigns))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_EVENTS_CREATE_CAMPAIGN_REQUIRED'));
+		}
+		elseif ($available_for == 2 && empty($programs))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_EVENTS_CREATE_PROGRAM_REQUIRED'));
+		}
 
 		$event_id = $this->m_events->createEvent($name, $color, $location, $is_conference_link, $conference_engine, $link, $generate_link_by, $manager, $available_for, $campaigns, $programs, $this->user->id);
 		if (empty($event_id))
@@ -203,15 +222,35 @@ class EmundusControllerEvents extends EmundusController
 		$campaigns          = json_decode($campaigns);
 		$programs           = $this->input->getRaw('programs', '[]');
 		$programs           = json_decode($programs);
+
 		if (empty($id))
 		{
-			throw new InvalidArgumentException('Event ID is required');
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_EVENTS_EDIT_ID_REQUIRED'));
+		}
+
+		if(empty($name))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_EVENTS_CREATE_NAME_REQUIRED'));
+		}
+
+		if(empty($location))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_EVENTS_CREATE_LOCATION_REQUIRED'));
+		}
+
+		if($available_for == 1 && empty($campaigns))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_EVENTS_CREATE_CAMPAIGN_REQUIRED'));
+		}
+		elseif ($available_for == 2 && empty($programs))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_EVENTS_CREATE_PROGRAM_REQUIRED'));
 		}
 
 		$id = $this->m_events->editEvent($id, $name, $color, $location, $is_conference_link, $conference_engine, $link, $generate_link_by, $manager, $available_for, $campaigns, $programs, $teams_subject);
 		if (empty($id))
 		{
-			throw new RuntimeException('Error editing event');
+			throw new RuntimeException(Text::_('COM_EMUNDUS_EVENTS_EDIT_ERROR'));
 		}
 
 		return EmundusResponse::ok($id);

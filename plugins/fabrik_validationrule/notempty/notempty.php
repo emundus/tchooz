@@ -9,7 +9,7 @@
  */
 
 // No direct access
-use Joomla\CMS\Factory;
+use Tchooz\Services\Fabrik\ConditionService;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -48,7 +48,8 @@ class PlgFabrik_ValidationruleNotempty extends PlgFabrik_Validationrule
 		$shouldValidate = parent::shouldValidate($data, $repeatCounter);
 
 		if($shouldValidate) {
-			return $this->checkEmundusCondition($elt_name, $formData, $this->formModel->id, $repeatCounter);
+			$conditionService = new ConditionService();
+			return $conditionService->checkNotEmptyRules($elt_name, $formData, $this->formModel->id, $repeatCounter);
 		}
 
 		return false;
@@ -74,103 +75,5 @@ class PlgFabrik_ValidationruleNotempty extends PlgFabrik_Validationrule
 		}
 
 		return !$ok;
-	}
-
-	private function checkEmundusCondition($elt,$formData,$form_id, $repeatCounter = 0)
-	{
-		$db = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->getQuery(true);
-
-		$query->select([$db->quoteName('esfrja.parent_id'),$db->quoteName('esfrja.action')])
-			->from($db->quoteName('#__emundus_setup_form_rules_js_actions','esfrja'))
-			->leftJoin($db->quoteName('#__emundus_setup_form_rules_js_actions_fields','esfrjaf').' ON '.$db->quoteName('esfrjaf.parent_id').' = '.$db->quoteName('esfrja.id'))
-			->where($db->quoteName('esfrjaf.fields') . ' = ' . $db->quote($elt))
-			->where($db->quoteName('esfrja.action') . ' IN (' . implode(',',$db->quote(['set_optional','set_mandatory'])) . ')');
-		$db->setQuery($query);
-		$rules = $db->loadObjectList();
-
-		foreach ($rules as $rule)
-		{
-			if (!empty($rule->parent_id))
-			{
-				$query->clear()
-					->select($db->quoteName(['esfrjc.field', 'esfrjc.state', 'esfrjc.values', 'esfr.group']))
-					->from($db->quoteName('#__emundus_setup_form_rules_js_conditions', 'esfrjc'))
-					->leftJoin($db->quoteName('#__emundus_setup_form_rules', 'esfr') . ' ON ' . $db->quoteName('esfr.id') . ' = ' . $db->quoteName('esfrjc.parent_id'))
-					->where($db->quoteName('esfrjc.parent_id') . ' = ' . $db->quote($rule->parent_id))
-					->where($db->quoteName('esfr.form_id') . ' = ' . $db->quote($form_id));
-				$db->setQuery($query);
-				$conditions = $db->loadObjectList();
-
-				if(!empty($conditions))
-				{
-					$condition_state = [];
-					foreach ($conditions as $condition)
-					{
-						foreach ($formData as $key => $data)
-						{
-							if (strpos($key, $condition->field . '_raw'))
-							{
-								$value = $data;
-								if (strpos($key, 'repeat'))
-								{
-									$value = $data[$repeatCounter];
-								}
-
-								switch ($condition->state)
-								{
-									case '=': // Equal
-										if (is_array($value))
-										{
-											$condition_state[] = in_array($condition->values, $value);
-										}
-										else
-										{
-											$condition_state[] = $value == $condition->values;
-										}
-										break;
-									case '!=': // Not equal
-										if (is_array($value))
-										{
-											$condition_state[] = !in_array($condition->values, $value);
-										}
-										else
-										{
-											$condition_state[] = $value != $condition->values;
-										}
-										break;
-								}
-								break;
-							}
-						}
-					}
-
-					if (in_array(false, $condition_state, true))
-					{
-						if ($rule->action == 'set_optional')
-						{
-							return true;
-						}
-						else
-						{
-							return false;
-						}
-					}
-					else
-					{
-						if ($rule->action == 'set_optional')
-						{
-							return false;
-						}
-						else
-						{
-							return true;
-						}
-					}
-				}
-			}
-		}
-
-		return true;
 	}
 }
