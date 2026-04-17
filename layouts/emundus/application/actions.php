@@ -4,6 +4,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectToFile;
 use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
+use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
@@ -47,7 +48,8 @@ if (!empty($actions))
          </span>
 		<div class="emundus-application-file-actions-container tw-fixed tw-bg-white tw-shadow-md tw-rounded-coordinator tw-p-2 tw-hidden tw-flex tw-flex-col tw-z-50" data-fnum="<?= $fnum; ?>">
 			<?php
-			foreach ($actions as $action)
+            $targetEntity = new ActionTargetEntity(Factory::getApplication()->getIdentity(), $fnum);
+            foreach ($actions as $action)
 			{
                 if (!($action instanceof CustomApplicationFileAction)) {
 				?>
@@ -58,7 +60,7 @@ if (!empty($actions))
                         <p class="tw-whitespace-nowrap <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>"><?= $action->getActionType()->getLabel() ?></p>
                     </div>
                 <?php
-                } else {
+                } else if (empty($action->getConditionGroup()) || $action->getConditionGroup()->isSatisfied($targetEntity)) {
                 ?>
                     <div id="<?= $action->getId() ?>-action" data-actionid="<?= $action->getId() ?>" tabindex=0 data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
                     <span class="material-symbols-outlined">

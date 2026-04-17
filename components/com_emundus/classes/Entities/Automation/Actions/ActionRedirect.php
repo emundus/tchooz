@@ -56,7 +56,8 @@ class ActionRedirect extends ActionEntity
 		$app = Factory::getApplication();
 		if ($app->isClient('site'))
 		{
-			$url = $this->constructLink();
+			$url = $this->getUrl();
+
 			if (!empty($url))
 			{
 				if ($url !== '/' . $app->getMenu()->getActive()->route)
@@ -72,7 +73,7 @@ class ActionRedirect extends ActionEntity
 		return ActionExecutionStatusEnum::FAILED;
 	}
 
-	public function constructLink(): string
+	public function getUrl(): string
 	{
 		$url = '';
 

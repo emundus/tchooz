@@ -24,6 +24,7 @@ use Tchooz\Attributes\AccessAttribute;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectTo;
+use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnTag;
@@ -3295,7 +3296,15 @@ class EmundusControllerApplication extends EmundusController
 				$foundAction = null;
 				foreach ($actions as $availableAction)
 				{
-					if ($availableAction->getActionType()->value === $action)
+					if ($availableAction instanceof CustomApplicationFileAction)
+					{
+						if ($availableAction->getId() === $action)
+						{
+							$foundAction = $availableAction;
+							break;
+						}
+					}
+					else if ($availableAction->getActionType()->value === $action)
 					{
 						$foundAction = $availableAction;
 						break;

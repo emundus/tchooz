@@ -10,10 +10,13 @@ use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Entities\Automation\Actions\ActionRedirect;
 use Tchooz\Entities\Automation\Actions\ActionUpdateStatus;
 use Tchooz\Entities\Automation\ActionTargetEntity;
+use Tchooz\Entities\Automation\ConditionEntity;
 use Tchooz\Entities\Automation\ConditionGroupEntity;
 use Tchooz\Entities\Automation\TargetEntity;
 use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
+use Tchooz\Enums\Automation\ConditionOperatorEnum;
+use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 
 class CustomApplicationFileAction
 {
@@ -70,12 +73,12 @@ class CustomApplicationFileAction
 		return $this;
 	}
 
-	public function getConditionGroup(): ConditionGroupEntity
+	public function getConditionGroup(): ?ConditionGroupEntity
 	{
 		return $this->conditionGroup;
 	}
 
-	public function setConditionGroup(ConditionGroupEntity $conditionGroup): self
+	public function setConditionGroup(?ConditionGroupEntity $conditionGroup): self
 	{
 		$this->conditionGroup = $conditionGroup;
 
@@ -119,7 +122,7 @@ class CustomApplicationFileAction
 		$executed = false;
 
 		$target = new ActionTargetEntity($currentUser, $applicationFileEntity->getFnum(), $applicationFileEntity->getUser()->id);
-		if ($this->getConditionGroup()->isSatisfied($target))
+		if (empty($this->getConditionGroup()) || $this->getConditionGroup()->isSatisfied($target))
 		{
 			if ($this->getAction() instanceof ActionRedirect)
 			{
@@ -138,12 +141,12 @@ class CustomApplicationFileAction
 	{
 		$url = '';
 
-		$target = new ActionTargetEntity($currentUser, $applicationFileEntity->getFnum(), $applicationFileEntity->getUser()->id);
-		if ($this->getConditionGroup()->isSatisfied($target))
+		if ($this->getAction() instanceof ActionRedirect)
 		{
-			if ($this->getAction() instanceof ActionRedirect)
+			$target = new ActionTargetEntity($currentUser, $applicationFileEntity->getFnum(), $applicationFileEntity->getUser()->id);
+			if (empty($this->getConditionGroup()) || $this->getConditionGroup()->isSatisfied($target))
 			{
-				$url = $this->getAction()->constructLink();
+				$url = $this->getAction()->getUrl();
 			}
 		}
 
