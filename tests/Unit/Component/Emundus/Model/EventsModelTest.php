@@ -308,7 +308,7 @@ class EventsModelTest extends UnitTestCase
 			'start_date' => $event_slots['slots'][0]->start,
 			'end_date' => $event_slots['slots'][0]->end,
 			'room' => null,
-			'slot_capacity' => 1,
+			'slot_capacity' => 0,
 			'more_infos' => '',
 			'users' => [],
 			'event_id' => $event_id,
@@ -316,6 +316,7 @@ class EventsModelTest extends UnitTestCase
 		];
 
 		$event_slot_lower_capacity_with_registrant = $this->model->saveEventSlot($event_slot_lower_capacity_with_registrant['start_date'], $event_slot_lower_capacity_with_registrant['end_date'], $event_slot_lower_capacity_with_registrant['room'], $event_slot_lower_capacity_with_registrant['slot_capacity'], $event_slot_lower_capacity_with_registrant['more_infos'], $event_slot_lower_capacity_with_registrant['users'], $event_slot_lower_capacity_with_registrant['event_id'], $event_slot_lower_capacity_with_registrant['repeat_dates'], $event_slots['slots'][0]->id, 0, 1, [], $this->dataset['coordinator']);
+
 		$this->assertIsArray($event_slot_lower_capacity_with_registrant, 'The method saveEventSlot should return an array');
 		$this->assertEmpty($event_slot_lower_capacity_with_registrant['slots'], 'The method saveEventSlot should return an empty array');
 		$this->assertFalse($event_slot_lower_capacity_with_registrant['status'], 'The method saveEventSlot should return a false status');

@@ -309,7 +309,7 @@ class EmundusFilters
 	 * @param $element
 	 * @return array
 	 */
-	protected function getFabrikElementValues($element)
+	protected function getFabrikElementValues($element, bool $applyWhere = true)
 	{
 		$values = [];
 
@@ -360,7 +360,7 @@ class EmundusFilters
 							->select($select)
 							->from($params['join_db_name']);
 
-						if(!empty($params['database_join_where_sql'])) {
+						if($applyWhere && !empty($params['database_join_where_sql'])) {
 							// TODO: I don't know yet how to handle complex database_join_where_sql using calculated fields
 							if (strpos($params['database_join_where_sql'], '_raw}') === false) {
 								$params['database_join_where_sql'] = str_replace('{thistable}', $params['join_db_name'], $params['database_join_where_sql']);
@@ -418,7 +418,7 @@ class EmundusFilters
 		return $values;
 	}
 
-	public function getFabrikElementValuesFromElementId($element_id) {
+	public function getFabrikElementValuesFromElementId($element_id, bool $applyWhere = true) {
 		$values = [];
 
 		if (!empty($element_id)) {
@@ -437,7 +437,7 @@ class EmundusFilters
 			}
 
 			if (!empty($element)) {
-				$values = $this->getFabrikElementValues($element);
+				$values = $this->getFabrikElementValues($element, $applyWhere);
 
 				if (!empty($values)) {
 					$this->saveFiltersAllValues(['id' => $element_id, 'values' => $values]);

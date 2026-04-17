@@ -23,8 +23,6 @@ use Joomla\Utilities\ArrayHelper;
 use Tchooz\Attributes\AccessAttribute;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\Actions\ActionEntity;
-use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectTo;
-use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnTag;
@@ -46,8 +44,6 @@ use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Controller\EmundusController;
 use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
-use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
-use Tchooz\Services\ApplicationFile\ApplicationFileService;
 
 class EmundusControllerApplication extends EmundusController
 {
@@ -3274,80 +3270,109 @@ class EmundusControllerApplication extends EmundusController
 		return $response;
 	}
 
-	#[AccessAttribute(AccessLevelEnum::REGISTERED)]
-	public function executeApplicationAction(): EmundusResponse
-	{
-		$this->checkToken();
-		$response = new EmundusResponse(false, Text::_('ACCESS_DENIED'), 403);
-		$fnum = $this->app->getInput()->getString('fnum', '');
+	/**
+	 * @depecated Need to move this to a real feature of application files group
+	 */
+    #[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+    public function updatelotstatus(): void
+    {
+        $response = array('status' => false, 'message' => '');
 
-		if (!empty($fnum) && EmundusHelperAccess::isFnumMine($this->user->id, $fnum))
-		{
-			$repository = new ApplicationFileRepository();
-			$applicationFile = $repository->getByFnum($fnum);
+        $datas  = $this->input->getArray();
+        $ids    = $datas['lots_ids'];
+        $status = $datas['status'];
+        $user = $this->app->getIdentity()->id;
 
-			if (!empty($applicationFile))
-			{
-				$action = $this->app->input->getString('action');
+        if (!empty($ids) && !empty($status))
+        {
+            if (!class_exists('EmundusModelApplication'))
+            {
+                require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+            }
+            $m_application = new EmundusModelApplication();
 
-				$registry = new ApplicationFileActionsRegistry();
-				$actions = $registry->getAvailableActions($applicationFile);
+            $fnums = $m_application->getFilesLot($ids[0]);
 
-				$foundAction = null;
-				foreach ($actions as $availableAction)
-				{
-					if ($availableAction instanceof CustomApplicationFileAction)
-					{
-						if ($availableAction->getId() === $action)
-						{
-							$foundAction = $availableAction;
-							break;
-						}
-					}
-					else if ($availableAction->getActionType()->value === $action)
-					{
-						$foundAction = $availableAction;
-						break;
-					}
-				}
+            if ($status == 2)
+            {
+                $files_to_send = $m_application->exportLotPdf($ids[0]);
+                foreach ($files_to_send as $file)
+                {
+                    PluginHelper::importPlugin('emundus', 'eparapheur');
+                    $this->app->triggerEvent('onSyncEparapheur', [
+                        [
+                            'fnums'         => $fnums,
+                            'signer_email'  => 'murielle.pineau@sorbonne-universite.fr',
+                            'attachment_id' => 71,
+                            'file'          => basename($file['filename']),
+                            'filepath'      => $file['filename'],
+                            'name'          => $file['name'],
+                            'nature'        => 'BA759DA06F21237DC9AF16E0CFBD6203'
+                        ]
+                    ]);
+                }
+            }
 
-				if (!empty($foundAction))
-				{
-					$parameters = [];
-					if (!empty($foundAction->getActionType()->getParameters()))
-					{
-						foreach ($foundAction->getActionType()->getParameters() as $parameter) {
-							$parameters[$parameter->getName()] = $this->app->input->getString($parameter->getName(), '');
-						}
+            $response['status'] = $m_application->updateLotStatus($ids[0], $status, $user);
+        }
 
-						// todo: sanitize all sent parameters and verify requirements
-					}
+        echo json_encode($response);
+        exit;
+    }
 
-					if ($foundAction instanceof ApplicationFileActionRedirectTo)
-					{
-						$response = EmundusResponse::ok([
-							'redirect' => $foundAction->getRedirectUrl($applicationFile, $parameters, $this->app->getIdentity()),
-						]);
-					}
-					else if ($foundAction->execute($applicationFile, $parameters, $this->app->getIdentity()))
-					{
-						$data = [];
+	/**
+	 * @depecated Need to move this to a real feature of application files group
+	 */
+    #[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+    public function getunsignedfile(): void
+    {
+        $datas = $this->input->getArray();
+        $ids   = $datas['lots_ids'];
 
-						if (method_exists($foundAction, 'getRedirectUrl'))
-						{
-							$data['redirect'] = $foundAction->getRedirectUrl($applicationFile, $parameters, $this->app->getIdentity());
-						}
+        if (!class_exists('EmundusModelApplication'))
+        {
+            require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+        }
+        $m_application = new EmundusModelApplication();
 
-						$response = EmundusResponse::ok($data);
-					}
-					else
-					{
-						$response = EmundusResponse::fail(Text::_('APPLICATION_ACTION_EXECUTION_FAILED'));
-					}
-				}
-			}
-		}
+        $files_to_send = $m_application->exportLotPdf($ids[0]);
 
-		return $response;
-	}
+        $response['status'] = true;
+        $response['code'] = 200;
+        $response['data'] = $files_to_send;
+
+        echo json_encode($response);
+        exit;
+    }
+
+	/**
+	 * @depecated Need to move this to a real feature of application files group
+	 */
+    #[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+    public function getsignedfile(): void
+    {
+        $response = array('status' => false, 'message' => '', 'data' => array());
+
+        $datas = $this->input->getArray();
+        $ids   = $datas['lots_ids'];
+
+        if (!empty($ids))
+        {
+            if (!class_exists('EmundusModelApplication'))
+            {
+                require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+            }
+            $m_application = new EmundusModelApplication();
+
+            $file = $m_application->getSignedFile($ids[0]);
+            if (!empty($file))
+            {
+                $response['data']   = $file;
+                $response['status'] = true;
+            }
+        }
+
+        echo json_encode($response);
+        exit;
+    }
 }

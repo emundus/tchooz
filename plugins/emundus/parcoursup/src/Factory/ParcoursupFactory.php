@@ -34,6 +34,11 @@ class ParcoursupFactory
 			->from($this->database->quoteName('#__emundus_campaign_candidature_parcoursup'))
 			->where($this->database->quoteName('id_parcoursup') . ' = ' . $this->database->quote($application['id_parcoursup']))
 			->where($this->database->quoteName('campaign_id') . ' = ' . $this->database->quote($application['campaign_id']));
+		if(isset($application['choice_cid']))
+		{
+			$query->where($this->database->quoteName('choice_cid') . ' = ' . $this->database->quote($application['choice_cid']));
+			$importDatas['choice_cid'] = $application['choice_cid'];
+		}
 		$this->database->setQuery($query);
 		$import = $this->database->loadObject();
 		

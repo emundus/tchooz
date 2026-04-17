@@ -4624,7 +4624,7 @@ class EmundusControllerFiles extends EmundusController
 				require_once(JPATH_SITE . '/components/com_emundus/classes/filters/EmundusFilters.php');
 				$filters = new EmundusFilters();
 
-				$response['data']   = $filters->getFabrikElementValuesFromElementId($element_id);
+				$response['data']   = $filters->getFabrikElementValuesFromElementId($element_id, false);
 				$session            = $this->app->getSession();
 				$response['all']    = $session->get('em-filters-all-values');
 				$response['status'] = true;

@@ -2967,6 +2967,7 @@ class EmundusModelEvaluation extends JModelList
 
 	public function generateLetters($fnums, $templates, $canSee, $showMode = null, $mergeMode = null, $force_replace_document = false, $user_id = null)
 	{
+		$eMConfig             = ComponentHelper::getParams('com_emundus');
 		$query = $this->db->getQuery(true);
 
         if (empty($user_id)) {
@@ -2974,6 +2975,11 @@ class EmundusModelEvaluation extends JModelList
         } else {
             $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
         }
+
+		if(empty($user)) {
+			$user_id = $eMConfig->get('automated_task_user', 62);
+			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
+		}
 
 		$tmp_path = JPATH_SITE . DS . 'tmp' . DS;
 		require_once(JPATH_SITE . DS . 'components/com_emundus/models/evaluation.php');
@@ -2987,7 +2993,6 @@ class EmundusModelEvaluation extends JModelList
 		$_mFile  = new EmundusModelFiles();
 		$_mUsers = new EmundusModelUsers();
 		$_mEmail = new EmundusModelEmails();
-		$eMConfig             = ComponentHelper::getParams('com_emundus');
 		$replace_document     = $eMConfig->get('export_replace_doc', 0) || $force_replace_document;
 
 		$fnum_array = explode(',', $fnums);

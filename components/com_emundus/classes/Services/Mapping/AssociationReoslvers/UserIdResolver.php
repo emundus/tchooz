@@ -9,6 +9,15 @@ final class UserIdResolver implements AssociationResolverInterface
 {
 	public function resolve(ActionTargetEntity $context, mixed $sourceInternalId): int
 	{
-		return $context->getUserId();
+		if (!empty($context->getFile()))
+		{
+			$userId = $context->getUserIdFromFile();
+		}
+		else
+		{
+			$userId = $context->getUserId();
+		}
+
+		return $userId;
 	}
 }

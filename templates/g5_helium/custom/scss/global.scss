@@ -2933,6 +2933,10 @@ span.btn {
     color: var(--em-profile-color);
     border: 1px solid var(--em-profile-color);
   }
+
+  &:visited {
+    color: var(--neutral-0);
+  }
 }
 
 *.btn,

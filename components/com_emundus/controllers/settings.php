@@ -857,7 +857,37 @@ class EmundusControllersettings extends EmundusController
 
 		$response = array('status' => true, 'msg' => 'SUCCESS', 'data' => $current_link);
 
-		$menu = Factory::getApplication()->getMenu()->getItems('link', $link, true);
+		$attributes = [
+			'link'
+		];
+		$attributesValues = [
+			$link
+		];
+		$emundusSession = Factory::getApplication()->getSession()->get('emundusUser');
+
+		$menu = null;
+		$menus = Factory::getApplication()->getMenu()->getItems($attributes, $attributesValues);
+		if(sizeof($menus) === 1)
+		{
+			$menu = $menus[0];
+		}
+		else if(sizeof($menus) > 1)
+		{
+			// By default we take the first menu link to our current menutype
+			$menu = $menus[0];
+			if(!empty($emundusSession) && !empty($emundusSession->menutype))
+			{
+				// But we check if we have a menu link to our current menutype
+				foreach ($menus as $otherMenu)
+				{
+					if($otherMenu->menutype === $emundusSession->menutype)
+					{
+						$menu = $otherMenu;
+						break;
+					}
+				}
+			}
+		}
 
 		if (!empty($menu))
 		{

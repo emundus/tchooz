@@ -1018,7 +1018,7 @@ class EmundusFiltersFiles extends EmundusFilters
 							if ($new_default_filter['type'] === 'select')
 							{
 								$new_default_filter['operator'] = 'IN';
-								$new_default_filter['values']   = $this->getFabrikElementValuesFromElementId($filter['id']);
+								$new_default_filter['values']   = $this->getFabrikElementValuesFromElementId($filter['id'], false);
 							}
 							$found = true;
 							break;
@@ -1058,7 +1058,7 @@ class EmundusFiltersFiles extends EmundusFilters
 								if ($new_default_filter['type'] === 'select')
 								{
 									$new_default_filter['operator'] = 'IN';
-									$new_default_filter['values']   = $this->getFabrikElementValuesFromElementId($element['id']);
+									$new_default_filter['values']   = $this->getFabrikElementValuesFromElementId($element['id'], false);
 								}
 								else
 								{
@@ -1145,7 +1145,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				foreach ($this->filters as $i_filter => $filter) {
 					if ($filter['id'] == $session_filter['id']) {
 						if ($filter['type'] == 'select' && empty($filter['values'])) {
-							$filter['values'] = $this->getFabrikElementValuesFromElementId($filter['id']);
+							$filter['values'] = $this->getFabrikElementValuesFromElementId($filter['id'], false);
 							$this->filters[$i_filter] = $filter;
 						}
 						$new_filter = $filter;
