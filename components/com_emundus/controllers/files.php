@@ -1705,6 +1705,7 @@ class EmundusControllerFiles extends EmundusController
 		exit();
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getfnums()
 	{
 		$ids = $this->input->getVar('ids', null);
@@ -1742,6 +1743,7 @@ class EmundusControllerFiles extends EmundusController
 		exit();
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getallfnums()
 	{
 		$m_files = $this->getModel('Files');

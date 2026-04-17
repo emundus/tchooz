@@ -616,6 +616,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @return  void
 	 *
+	 * @throws \Exception
 	 * @since   1.0.0
 	 */
 	private function validateExistingPublicSession(): void
@@ -679,7 +680,19 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			if (empty($applicationFile) || !$applicationFile->isPublic())
 			{
 				$this->destroyPublicSession();
+				return;
+			}
 
+			$requestCcid = $input->getInt('ccid', 0);
+			if (!empty($requestCcid) && $requestCcid !== $applicationFile->getId())
+			{
+				Log::add(
+					'Public session application id mismatch. Session: ' . $applicationFile->getId() . ', Request: ' . $requestCcid,
+					Log::WARNING,
+					'plg_system_emunduspublicaccess'
+				);
+
+				$this->destroyPublicSession(true);
 				return;
 			}
 
@@ -786,7 +799,8 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 */
 	public static function isPublicAccessSession(): bool
 	{
-		return (bool) Factory::getApplication()->getSession()->get(self::SESSION_PUBLIC_ACCESS_KEY, false);
+		$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
+		return Factory::getApplication()->getSession()->get(self::SESSION_PUBLIC_ACCESS_KEY, false) || $systemUserId === Factory::getApplication()->getIdentity()->id;
 	}
 
 	/**
