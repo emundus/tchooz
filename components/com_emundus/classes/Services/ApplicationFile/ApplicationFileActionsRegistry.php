@@ -4,9 +4,12 @@ namespace Tchooz\Services\ApplicationFile;
 
 use EmundusHelperCache;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileAction;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectToFile;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Automation\ActionTargetEntity;
+use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
 use Tchooz\Factories\ApplicationFile\ApplicationFileActionFactory;
 
 if (!class_exists('EmundusHelperCache'))
@@ -78,7 +81,7 @@ class ApplicationFileActionsRegistry
 		return $this->actions;
 	}
 
-	public function getAvailableActions(?ApplicationFileEntity $applicationFileEntity = null, string $context = 'multiple'): array
+	public function getAvailableActions(ApplicationFileEntity $applicationFileEntity, string $context = 'multiple'): array
 	{
 		$availableActions = [];
 
@@ -88,6 +91,10 @@ class ApplicationFileActionsRegistry
 		}
 
 		$config  = ComponentHelper::getParams('com_emundus');
+
+		$deletionStatus = $config->get('status_for_delete', 0);
+		$deletionStatus = explode(',', $deletionStatus);
+
 		foreach ($this->getActions() as $action)
 		{
 			if ($action->getActionType()->isAvailable())
@@ -96,6 +103,15 @@ class ApplicationFileActionsRegistry
 
 				if ($actionEnabled)
 				{
+					if (
+						$action->getActionType() === ApplicationFileActionsEnum::DELETE
+						&& (in_array(-1, $deletionStatus)
+						|| !in_array($applicationFileEntity->getStatus()->getStep(), $deletionStatus))
+					)
+					{
+						continue;
+					}
+
 					$availableActions[] = $action;
 				}
 			}
@@ -111,10 +127,14 @@ class ApplicationFileActionsRegistry
 
 			foreach ($customActions as $id => $customAction)
 			{
-				$availableActions[] = ApplicationFileActionFactory::customApplicationActionsFromConfig($customAction, $id);
+				$customAction = ApplicationFileActionFactory::customApplicationActionsFromConfig($customAction, $id);
+				$targetEntity = new ActionTargetEntity(Factory::getApplication()->getIdentity(), $applicationFileEntity->getFnum());
+				if (empty($customAction->getConditionGroup()) || $customAction->getConditionGroup()->isSatisfied($targetEntity))
+				{
+					$availableActions[] = $customAction;
+				}
 			}
 		}
-
 
 		return $availableActions;
 	}
