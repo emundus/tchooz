@@ -277,7 +277,7 @@ export default {
 			if (param.type === 'databasejoin') {
 				param.options = this.databases;
 				if (this.element.params['join_db_name'] !== '') {
-					this.updateDatabasejoinParams();
+					this.updateDatabasejoinParams(true);
 				}
 			}
 
@@ -376,19 +376,22 @@ export default {
 			});
 		},
 
-		updateDatabasejoinParams() {
+		updateDatabasejoinParams(init = false) {
 			if (!this.sysadmin) {
 				const index = this.databases.map((e) => e.database_name).indexOf(this.element.params['join_db_name']);
 
 				if (index !== -1) {
 					let database = this.databases[index];
-					this.element.params['join_key_column'] = database.join_column_id;
-					if (database.translation == 1) {
-						this.element.params['join_val_column'] = database.join_column_val + '_fr';
-						this.element.params['join_val_column_concat'] = '{thistable}.' + database.join_column_val + '_{shortlang}';
-					} else {
-						this.element.params['join_val_column'] = database.join_column_val;
-						this.element.params['join_val_column_concat'] = '';
+					if (!init) {
+						this.element.params['join_key_column'] = database.join_column_id;
+						if (database.translation == 1) {
+							this.element.params['join_val_column'] = database.join_column_val + '_fr';
+							this.element.params['join_val_column_concat'] =
+								'{thistable}.' + database.join_column_val + '_{shortlang}';
+						} else {
+							this.element.params['join_val_column'] = database.join_column_val;
+							this.element.params['join_val_column_concat'] = '';
+						}
 					}
 					this.databasejoin_description = this.databases[index].description;
 				} else {
@@ -412,20 +415,29 @@ export default {
 
 					let index = this.params.map((e) => e.name).indexOf('join_key_column');
 					this.params[index].options = response.data;
-					this.element.params['join_key_column'] = database
-						? database.join_column_id
-						: this.params[index].options[0].COLUMN_NAME;
+
+					if (!init) {
+						this.element.params['join_key_column'] = database
+							? database.join_column_id
+							: this.params[index].options[0].COLUMN_NAME;
+					}
 
 					index = this.params.map((e) => e.name).indexOf('join_val_column');
 					this.params[index].options = response.data;
-					this.element.params['join_val_column'] = database
-						? database.join_column_val
-						: this.params[index].options[0].COLUMN_NAME;
 
-					this.element.params['join_val_column_concat'] = '';
-					if (database && database.translation == 1) {
-						this.element.params['join_val_column'] = database.join_column_val + '_fr';
-						this.element.params['join_val_column_concat'] = '{thistable}.' + database.join_column_val + '_{shortlang}';
+					if (!init) {
+						this.element.params['join_val_column'] = database
+							? database.join_column_val
+							: this.params[index].options[0].COLUMN_NAME;
+					}
+
+					if (!init) {
+						this.element.params['join_val_column_concat'] = '';
+						if (database && database.translation == 1) {
+							this.element.params['join_val_column'] = database.join_column_val + '_fr';
+							this.element.params['join_val_column_concat'] =
+								'{thistable}.' + database.join_column_val + '_{shortlang}';
+						}
 					}
 
 					if (
