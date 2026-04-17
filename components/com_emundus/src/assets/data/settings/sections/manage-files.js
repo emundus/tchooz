@@ -23,16 +23,10 @@ export default [
 		},
 	},
 	{
-		label: 'COM_EMUNDUS_CUSTOM_REFERENCE',
-		intro: '',
-		name: 'custom_reference',
-		component: 'CustomReference',
-	},
-	{
 		label: 'COM_EMUNDUS_SETTINGS_FILES_ACTIONS',
 		intro: 'COM_EMUNDUS_SETTINGS_FILES_ACTIONS_INTRO',
 		name: 'file_actions_settings',
-		component: 'SiteSettings',
+		component: 'ApplicationFileActionsSettings',
 		props: {
 			json_source: 'settings/sections/file-actions-settings.js',
 		},

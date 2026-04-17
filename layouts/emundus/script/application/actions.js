@@ -63,7 +63,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     });
 
     document.querySelectorAll('.emundus-application-file-actions-container .file-action').forEach((action) => {
-        const actionId = action.getAttribute('id');
+        const actionId = action.getAttribute('data-actionid');
         const fnum = action.getAttribute('data-fnum');
 
         if (fnum.length < 1)
@@ -80,7 +80,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         if (foundAction)
         {
             action.addEventListener('click', (e) => {
-                const actionId = action.getAttribute('id');
+                const actionId = action.getAttribute('data-actionid');
                 if (actionId === 'delete')
                 {
                     Swal.fire({

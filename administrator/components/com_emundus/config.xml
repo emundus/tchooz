@@ -457,6 +457,41 @@
             <option value="1">JYES</option>
         </field>
 
+        <field type="subform"
+               name="custom_actions"
+               label="COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTIONS"
+               description=""
+               icon="list"
+               multiple="true"
+        >
+            <form name="custom_action">
+                <field
+                        type="text"
+                        name="label"
+                        label="COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_LABEL"
+                        description=""
+                />
+                <field
+                        type="text"
+                        name="icon"
+                        label="COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_ICON"
+                        description="COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_ICON_DESCRIPTION"
+                />
+                <field
+                        type="text"
+                        name="conditions"
+                        label="COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_CONDITIONS"
+                        description=""
+                />
+                <field
+                        type="text"
+                        name="actions"
+                        label="COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_ACTIONS"
+                        description=""
+                />
+            </form>
+        </field>
+
     </fieldset>
 
     <fieldset label="COM_EMUNDUS_FORM_BUILDER" name="form_builder" description="COM_EMUNDUS_FORM_BUILDER_DESC">

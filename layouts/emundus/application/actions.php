@@ -49,7 +49,7 @@ if (!empty($actions))
 			foreach ($actions as $action)
 			{
 				?>
-				<div id="<?= $action->getActionType()->value ?>" tabindex=0 data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
+				<div id="<?= $action->getActionType()->value ?>-action" data-actionid="<?= $action->getActionType()->value ?>" tabindex=0 data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
                     <span class="material-symbols-outlined <?= $action->getActionType() === ApplicationFileActionsEnum::DELETE ? 'tw-text-red-500' : '' ?>">
                         <?= $action->getActionType()->getIcon() ?>
                     </span>

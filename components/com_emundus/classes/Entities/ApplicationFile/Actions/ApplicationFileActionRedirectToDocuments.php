@@ -19,7 +19,7 @@ class ApplicationFileActionRedirectToDocuments extends ApplicationFileActionRedi
 
 	public function getRedirectUrl(ApplicationFileEntity $applicationFileEntity, array $parameters = [], ?User $currentUser = null): string
 	{
-		$link = '/index.php?option=com_emundus&view=application&layout=history';
+		$link = 'index.php?option=com_emundus&view=application&layout=history';
 
 		$items = Factory::getApplication()->getMenu()->getItems(['link'], [$link]);
 		$redirectUrl = !empty($items) ? $items[0]->route : Route::_($link, false);
