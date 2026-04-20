@@ -3477,7 +3477,6 @@ class EmundusModelFiles extends JModelLegacy
 			}
 
 			try {
-				echo '<pre>'; var_dump($query . $from . $leftJoin . $where); echo '</pre>'; die;
 				$this->_db->setQuery($query . $from . $leftJoin . $where);
 				$rows = $this->_db->loadAssocList();
 			}
