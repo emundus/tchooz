@@ -150,7 +150,7 @@ class EmundusHelperMenu
 	}
 
 
-	public static function getApplicantFormsInMenus(): array
+	public static function getApplicantFormsInMenus(?string $menutype = null): array
 	{
 		$formIds = [];
 
@@ -163,9 +163,16 @@ class EmundusHelperMenu
 			->select('link')
 			->from($db->quoteName('#__menu'))
 			->where($db->quoteName('published') . ' = 1')
-			->andWhere($db->quoteName('menutype') . ' LIKE ' . $db->quote('menu-profile%'))
 			->andWhere($db->quoteName('type') . ' = ' . $db->quote('component'))
-			->andWhere($db->quoteName('component_id') . ' = ' . $db->quote($fabrik_component_id));
+			->andWhere($db->quoteName('component_id') . ' = ' . $db->quote($fabrik_component_id))
+			->order('lft');
+		if(!empty($menutype))
+		{
+			$query->andWhere($db->quoteName('menutype') . ' LIKE ' . $db->quote($menutype));
+		}
+		else {
+			$query->andWhere($db->quoteName('menutype') . ' LIKE ' . $db->quote('menu-profile%'));
+		}
 
 		try
 		{
