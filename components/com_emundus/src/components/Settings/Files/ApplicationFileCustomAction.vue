@@ -59,6 +59,7 @@ export default {
 							value: '',
 							displayed: true,
 							type: 'text',
+							helptext: 'COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_ICON_HELPTEXT',
 						},
 					],
 				},
@@ -66,8 +67,7 @@ export default {
 		};
 	},
 	methods: {
-		onRemove()
-		{
+		onRemove() {
 			this.$emit('remove', this.customAction);
 		},
 		onRemoveAction() {

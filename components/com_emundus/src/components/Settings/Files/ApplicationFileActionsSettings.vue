@@ -5,14 +5,18 @@ import ApplicationFileCustomAction from '@/components/Settings/Files/Application
 import settingsService from '@/services/settings.js';
 import { useAutomationStore } from '@/stores/automation.js';
 import { newConditionGroup } from '@/components/Automation/conditionGroup.js';
+import Info from '@/components/Utils/Info.vue';
+import alerts from '@/mixins/alerts.js';
 
 export default {
 	name: 'ApplicationFileActionsSettings',
 	components: {
+		Info,
 		SiteSettings,
 		ParameterForm,
 		ApplicationFileCustomAction,
 	},
+	mixins: [alerts],
 	data() {
 		return {
 			customActions: [],
@@ -54,8 +58,6 @@ export default {
 			});
 		},
 		onRemove(actionToRemove) {
-			console.log(actionToRemove, this.customActions);return;
-
 			this.customActions = this.customActions.filter((action) => {
 				return action.id != actionToRemove.id;
 			});
@@ -63,9 +65,9 @@ export default {
 		save() {
 			settingsService.saveApplicationFileCustomActions(this.customActions).then((response) => {
 				if (response.status) {
-					// ...
+					this.alertSuccess('COM_EMUNDUS_APPLICATION_FILE_CUSTOM_ACTIONS_SAVED');
 				} else {
-					// ...
+					this.alertError('COM_EMUNDUS_APPLICATION_FILE_CUSTOM_ACTIONS_FAILURE');
 				}
 			});
 		},
@@ -79,6 +81,8 @@ export default {
 
 		<div class="tw-mt-4 tw-flex tw-flex-col tw-gap-4" v-if="automationStore.conditionsList.length > 0">
 			<h3>{{ translate('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTIONS') }}</h3>
+
+			<Info :text="'COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTIONS_INTRO'" />
 
 			<ApplicationFileCustomAction
 				v-for="action in customActions"
