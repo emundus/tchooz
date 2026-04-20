@@ -87,8 +87,9 @@ export default {
 		selectedSynthesisIds,
 		selectedAttachmentIds,
 		async = false,
+		allowAsync = false,
 	) {
-		let timeout = format === 'xlsx' ? 10000 : null;
+		let timeout = format === 'xlsx' && allowAsync ? 10000 : null;
 
 		try {
 			return await client.post(
