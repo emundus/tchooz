@@ -66,11 +66,19 @@ export default {
 		};
 	},
 	methods: {
+		onRemove()
+		{
+			this.$emit('remove', this.customAction);
+		},
 		onRemoveAction() {
 			this.customAction.action = null;
 		},
 		onSelectAction(action) {
-			this.customAction.action = action;
+			this.customAction.action = {
+				id: Math.floor(Math.random() * 1000000000),
+				...action,
+				parameter_values: {},
+			};
 		},
 		closeModal(refName) {
 			if (this.$refs[refName]) {
@@ -92,6 +100,11 @@ export default {
 				});
 			}
 		},
+		onParameterUpdated(param, group, rowIndex) {
+			if (this.customAction.hasOwnProperty(param.param)) {
+				this.customAction[param.param] = param.value;
+			}
+		},
 	},
 };
 </script>
@@ -100,15 +113,23 @@ export default {
 	<div class="custom-action tw-flex tw-flex-col tw-gap-4 tw-rounded-coordinator tw-p-4 tw-shadow">
 		<div class="tw-flex tw-flex-row tw-justify-between">
 			<h4>{{ translate('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION') }}</h4>
-			<span class="material-symbols-outlined tw-cursor-pointer tw-text-red-500">close</span>
+			<span class="material-symbols-outlined tw-cursor-pointer tw-text-red-500" @click="onRemove">close</span>
 		</div>
-		<ParameterForm :groups="formGroups" />
+		<ParameterForm :groups="formGroups" @parameterValueUpdated="onParameterUpdated" />
+
+		<h5>
+			{{ translate('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_CONDITION_GROUP_TITLE') }}
+		</h5>
 		<AutomationConditionGroup
 			:operators-field-mapping="automationStore.operatorsFieldMapping"
 			:operators="automationStore.operators"
 			:conditions-list="automationStore.conditionsList"
 			:condition-group="customAction.conditions"
 		/>
+
+		<h5>
+			{{ translate('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_TITLE') }}
+		</h5>
 		<AutomationAction
 			v-if="customAction.action !== null"
 			:action="customAction.action"
@@ -119,12 +140,14 @@ export default {
 		/>
 
 		<div v-if="customAction.action === null">
-			<button
-				class="not-to-close-modal tw-btn-primary-blue tw-btn-primary tw-text-white"
-				@click="openModal('actionsListModal')"
-			>
-				{{ translate('COM_EMUNDUS_AUTOMATION_ADD_ACTION') }}
-			</button>
+			<div class="tw-flex tw-w-full tw-flex-row tw-justify-end">
+				<button
+					class="not-to-close-modal tw-btn-primary-blue tw-btn-primary tw-text-white"
+					@click="openModal('actionsListModal')"
+				>
+					{{ translate('COM_EMUNDUS_AUTOMATION_ADD_ACTION') }}
+				</button>
+			</div>
 
 			<Modal
 				:name="'actions-list-modal'"

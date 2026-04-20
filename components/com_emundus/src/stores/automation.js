@@ -26,10 +26,9 @@ export const useAutomationStore = defineStore('automation', {
 		setConditionsList(conditions) {
 			this.conditionsList = conditions;
 		},
-		setActionsList(actions)
-		{
+		setActionsList(actions) {
 			this.actionsList = actions;
-		}
+		},
 	},
 	getters: {
 		getEventDefinitionByName(state) {

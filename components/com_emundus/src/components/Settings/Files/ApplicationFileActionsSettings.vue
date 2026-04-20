@@ -4,6 +4,7 @@ import SiteSettings from '@/components/Settings/SiteSettings.vue';
 import ApplicationFileCustomAction from '@/components/Settings/Files/ApplicationFileCustomAction.vue';
 import settingsService from '@/services/settings.js';
 import { useAutomationStore } from '@/stores/automation.js';
+import { newConditionGroup } from '@/components/Automation/conditionGroup.js';
 
 export default {
 	name: 'ApplicationFileActionsSettings',
@@ -15,13 +16,6 @@ export default {
 	data() {
 		return {
 			customActions: [],
-			customActionInstance: {
-				id: 0,
-				label: '',
-				icon: '',
-				conditionGroup: null,
-				action: null,
-			},
 		};
 	},
 	setup() {
@@ -50,6 +44,31 @@ export default {
 				}
 			});
 		},
+		addCustomAction() {
+			this.customActions.push({
+				id: Math.floor(Math.random() * 1000000000),
+				label: '',
+				icon: '',
+				conditions: newConditionGroup(0),
+				action: null,
+			});
+		},
+		onRemove(actionToRemove) {
+			console.log(actionToRemove, this.customActions);return;
+
+			this.customActions = this.customActions.filter((action) => {
+				return action.id != actionToRemove.id;
+			});
+		},
+		save() {
+			settingsService.saveApplicationFileCustomActions(this.customActions).then((response) => {
+				if (response.status) {
+					// ...
+				} else {
+					// ...
+				}
+			});
+		},
 	},
 };
 </script>
@@ -61,16 +80,21 @@ export default {
 		<div class="tw-mt-4 tw-flex tw-flex-col tw-gap-4" v-if="automationStore.conditionsList.length > 0">
 			<h3>{{ translate('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTIONS') }}</h3>
 
-			<ApplicationFileCustomAction v-for="action in customActions" :key="action.id" :customAction="action" />
+			<ApplicationFileCustomAction
+				v-for="action in customActions"
+				:key="action.id"
+				:customAction="action"
+				@remove="onRemove"
+			/>
 
 			<div class="tw-flex tw-w-full tw-flex-row tw-justify-end">
-				<button class="tw-btn-secondary">
+				<button class="tw-btn-secondary" @click="addCustomAction">
 					{{ translate('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_ADD') }}
 				</button>
 			</div>
 
 			<div class="tw-flex tw-w-full tw-flex-row tw-justify-end">
-				<button class="tw-btn-primary">
+				<button class="tw-btn-primary" @click="save">
 					{{ translate('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTIONS_SAVE') }}
 				</button>
 			</div>

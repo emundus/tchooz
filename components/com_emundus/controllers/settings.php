@@ -30,6 +30,7 @@ use Tchooz\Controller\EmundusController;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
+use Tchooz\Entities\Automation\ConditionGroupEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Entities\Fields\Field;
@@ -3827,15 +3828,30 @@ class EmundusControllersettings extends EmundusController
 		$config = ComponentHelper::getParams('com_emundus');
 		$actions = [];
 		$actionRegistry = new ActionRegistry();
+		$index = 1;
 		foreach ($config->get('custom_actions', []) as $action)
 		{
-			$action->conditions = json_decode($action->conditions, true);
-			$action->action = json_decode($action->action, true);
-			$actionInstance = $actionRegistry->getActionInstance($action->action['type']);
-			$actionInstance->setParametersValuesFromArray($action->action['parameter_values']);
-			$action->action = $actionInstance->serialize();
+			if (!empty($action->conditions))
+			{
+				$action->conditions = json_decode($action->conditions, true);
+			}
+			else
+			{
+				$action->conditions = (new ConditionGroupEntity($index))->serialize();
+			}
 
+			if (!empty($action->action)) {
+				$action->action = json_decode($action->action, true);
+				$actionInstance = $actionRegistry->getActionInstance($action->action['type']);
+				$actionInstance->setParametersValuesFromArray($action->action['parameter_values']);
+				$action->action = $actionInstance->serialize();
+			} else {
+				$action->action = null;
+			}
+
+			$action->id = $index;
 			$actions[] = $action;
+			$index++;
 		}
 
 		return EmundusResponse::ok($actions);
@@ -3861,9 +3877,53 @@ class EmundusControllersettings extends EmundusController
 	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
 	public function saveApplicationFileCustomActions(): EmundusResponse
 	{
-		$response = EmundusResponse::fail(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
+		$response = EmundusResponse::fail(Text::_('ERROR'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
+		$json = $this->app->getInput()->getString('actions', '[]');
+		$actions = json_decode($json, true);
 
-		$config = ComponentHelper::getParams('com_emundus');
+		$configCustomActions = [];
+		foreach ($actions as $index => $action)
+		{
+			foreach ($action['conditions']['conditions'] as $key => $condition)
+			{
+				if (is_array($condition['value']))
+				{
+					$values = [];
+
+					foreach ($condition['value'] as $value)
+					{
+						if (is_array($value) && isset($value['value']))
+						{
+							$values[] = $value['value'];
+						}
+						else
+						{
+							$values[] = $value;
+						}
+					}
+
+					$action['conditions']['conditions'][$key]['value'] = $values;
+				}
+			}
+
+			$configCustomActions['custom_actions' . $index] = (object)[
+				'label' => $action['label'],
+				'icon' => $action['icon'],
+				'conditions' => json_encode($action['conditions']),
+				'action' => json_encode([
+					'type' => $action['action']['type'],
+					'parameter_values' => $action['action']['parameter_values'],
+				])
+			];
+		}
+		$configCustomActions = (object)$configCustomActions;
+
+		$modelSettings = new EmundusModelSettings();
+		$updated =  $modelSettings->updateEmundusParam('emundus', 'custom_actions', $configCustomActions, $this->app->getIdentity()->id);
+		if($updated)
+		{
+			$response = EmundusResponse::ok();
+		}
 
 		return $response;
 	}

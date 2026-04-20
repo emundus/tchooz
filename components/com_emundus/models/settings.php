@@ -2016,6 +2016,7 @@ class EmundusModelSettings extends ListModel
 		$params['emundus']['delete_testing_accounts_after_delay']   = $emundus_parameters->get('delete_testing_accounts_after_delay', 12);
 		$params['emundus']['enable_user_categories']                = $emundus_parameters->get('enable_user_categories', 0);
 		$params['emundus']['user_category_mandatory']               = $emundus_parameters->get('user_category_mandatory', 0);
+		$params['emundus']['custom_actions']                        = $emundus_parameters->get('custom_actions', '[]');
 
 		foreach ($settings_applicants as $settings_applicant)
 		{
@@ -2233,19 +2234,21 @@ class EmundusModelSettings extends ListModel
 				$user = Factory::getUser($user_id);
 			}
 
-			$this->userID   = $user->id;
-			$this->userName = $user->name;
+			$userID   = $user->id;
+			$userName = $user->name;
 			if ($value !== "")
 			{
 				if ($param == 'smtppass' || $param == 'custom_email_smtppass')
 				{
 					$value = '************';
 				}
-				Log::add("User, $this->userName  id: $this->userID, change $param to, new value $value", Jlog::INFO, 'com_emundus.settings');
+
+				$newValue = json_encode($value);
+				Log::add("User, $userName  id: $userID, change $param to, new value $newValue", Log::INFO, 'com_emundus.settings');
 			}
 			else
 			{
-				Log::add("User, , $this->userName id: $this->userID, change $param to, to an emphy value", Jlog::INFO, 'com_emundus.settings');
+				Log::add("User, $userName id: $userID, change $param to, to an emphy value", Log::INFO, 'com_emundus.settings');
 			}
 		}
 

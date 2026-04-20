@@ -42,7 +42,7 @@ export default {
 			this.$emit('remove-action', action);
 		},
 		onParameterValueUpdated(parameter, group = null, rowIndex = null) {
-			if (group.isRepeatable) {
+			if (group !== null && group.isRepeatable) {
 				if (!this.action.parameter_values[group.id]) {
 					this.action.parameter_values[group.id] = [];
 				}
