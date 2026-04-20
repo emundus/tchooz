@@ -3503,7 +3503,10 @@ class EmundusModelEvaluation extends JModelList
 		}
 		else
 		{
-			$applicant_url = EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
+			$config = Factory::getApplication()->getConfig();
+            $siteurl = $config->get('live_site', '');
+
+            $applicant_url = $siteurl . EMUNDUS_PATH_REL . $fnumInfo[$fnum]['applicant_id'] . DS;
 		}
 
 		$applicant_tmp_path = EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] . '_' . $fnumInfo[$fnum]['applicant_id'];
