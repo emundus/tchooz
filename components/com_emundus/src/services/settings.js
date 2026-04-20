@@ -860,7 +860,7 @@ export default {
 	async saveApplicationFileCustomActions(customActions) {
 		try {
 			return await fetchClient.post('saveApplicationFileCustomActions', {
-				actions: JSON.stringify(customActions)
+				actions: JSON.stringify(customActions),
 			});
 		} catch (e) {
 			return {
@@ -869,5 +869,5 @@ export default {
 				data: null,
 			};
 		}
-	}
+	},
 };
