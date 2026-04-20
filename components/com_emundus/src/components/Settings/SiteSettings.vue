@@ -63,10 +63,7 @@ export default {
 		};
 	},
 	created() {
-		console.log(this.$props.json_source);
 		import(getPath(this.$props.json_source)).then((result) => {
-			console.log(result);
-
 			if (result) {
 				this.parameters = result.default;
 

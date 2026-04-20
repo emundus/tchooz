@@ -107,10 +107,14 @@ export default {
 					operatorField.displayed = true;
 				}
 
-				if (this.condition['value']) {
+				if (this.condition['value'] || this.condition['value'] == 0) {
 					if (['select', 'multiselect'].includes(valueField.type) && Array.isArray(valueField.options)) {
-						if (valueField.type === 'multiselect' && Array.isArray(this.condition['value'])) {
-							valueField.value = valueField.options.filter((opt) => this.condition['value'].includes(opt.value));
+						if (valueField.type === 'multiselect') {
+							if (Array.isArray(this.condition['value'])) {
+								valueField.value = valueField.options.filter((opt) => this.condition['value'].includes(opt.value));
+							} else {
+								valueField.value = valueField.options.filter((opt) => this.condition['value'] == opt.value);
+							}
 						} else {
 							valueField.value = this.condition['value'];
 						}

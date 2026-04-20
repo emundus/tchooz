@@ -19,6 +19,10 @@ export default {
 			type: Array,
 			required: true,
 		},
+		customTargets: {
+			type: Boolean,
+			default: true,
+		},
 	},
 	mixins: [fromAutomationFieldToParameter],
 	components: { AutomationActionTargets, Parameter, ParameterForm },
@@ -111,7 +115,12 @@ export default {
 		>
 		</ParameterForm>
 
-		<AutomationActionTargets :event="event" :action="action" :target-predefinitions="targetPredefinitions" />
+		<AutomationActionTargets
+			v-if="customTargets"
+			:event="event"
+			:action="action"
+			:target-predefinitions="targetPredefinitions"
+		/>
 	</div>
 </template>
 

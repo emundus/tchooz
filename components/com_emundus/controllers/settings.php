@@ -33,11 +33,13 @@ use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Entities\Fields\Field;
+use Tchooz\Entities\Fields\FieldGroup;
 use Tchooz\Entities\Fields\StringField;
 use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Entities\User\UserCategoryEntity;
 use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Enums\Analytics\PeriodEnum;
+use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Reference\PositionEnum;
 use Tchooz\Enums\Reference\ResetTypeEnum;
@@ -60,6 +62,7 @@ use Tchooz\Repositories\Settings\ConfigurationRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
 use Tchooz\Services\Addons\AddonService;
 use Tchooz\Services\Addons\Handlers\EmundusAnalyticsAddonHandler;
+use Tchooz\Services\Automation\ActionRegistry;
 use Tchooz\Services\Automation\ConditionRegistry;
 use Tchooz\Services\Emails\EmailService;
 use Tchooz\Services\Integrations\IntegrationService;
@@ -3819,12 +3822,40 @@ class EmundusControllersettings extends EmundusController
 	}
 
 	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
-	public function getAppplicationFileCustomActions(): EmundusResponse
+	public function getApplicationFileCustomActions(): EmundusResponse
 	{
-		$response = EmundusResponse::fail(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
+		$config = ComponentHelper::getParams('com_emundus');
+		$actions = [];
+		$actionRegistry = new ActionRegistry();
+		foreach ($config->get('custom_actions', []) as $action)
+		{
+			$action->conditions = json_decode($action->conditions, true);
+			$action->action = json_decode($action->action, true);
+			$actionInstance = $actionRegistry->getActionInstance($action->action['type']);
+			$actionInstance->setParametersValuesFromArray($action->action['parameter_values']);
+			$action->action = $actionInstance->serialize();
+
+			$actions[] = $action;
+		}
+
+		return EmundusResponse::ok($actions);
+	}
 
 
-		return $response;
+	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
+	public function getAvailableConditionsForCustomActions(): EmundusResponse
+	{
+		$conditionsList = [];
+
+		$conditionRegistry = new ConditionRegistry();
+		$conditionsList = $conditionRegistry->getAvailableConditionSchemas([
+			'target_types' => [
+				TargetTypeEnum::FILE->value,
+				TargetTypeEnum::USER->value,
+			]
+		]);
+
+		return EmundusResponse::ok($conditionsList);
 	}
 
 	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
