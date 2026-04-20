@@ -55,7 +55,7 @@ export default {
 						{
 							param: 'icon',
 							label: 'COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_ICON',
-							optional: false,
+							optional: true,
 							value: '',
 							displayed: true,
 							type: 'text',
