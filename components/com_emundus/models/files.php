@@ -3024,7 +3024,7 @@ class EmundusModelFiles extends JModelLegacy
 			$leftJoin = ' LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id = jecc.campaign_id ';
 			$leftJoin .= ' LEFT JOIN #__emundus_setup_campaigns_more as escm ON escm.campaign_id = jecc.campaign_id ';
 			$leftJoin .= ' LEFT JOIN #__emundus_setup_programmes as sp ON sp.code = esc.training ';
-			$leftJoin .= ' LEFT JOIN #__emundus_setup_teaching_unity as estu ON estu.code = esc.training and estu.schoolyear = esc.year ';
+			$leftJoin .= ' LEFT JOIN #__emundus_setup_teaching_unity as estu ON estu.id = (SELECT estu2.id FROM #__emundus_setup_teaching_unity estu2 WHERE estu2.code = esc.training AND estu2.schoolyear = esc.year LIMIT 1) ';
 			$leftJoin .= ' LEFT JOIN #__users as u ON u.id = jecc.applicant_id ';
 			$leftJoin .= ' LEFT JOIN #__emundus_users as eu ON eu.user_id = u.id ';
 
@@ -3477,6 +3477,7 @@ class EmundusModelFiles extends JModelLegacy
 			}
 
 			try {
+				echo '<pre>'; var_dump($query . $from . $leftJoin . $where); echo '</pre>'; die;
 				$this->_db->setQuery($query . $from . $leftJoin . $where);
 				$rows = $this->_db->loadAssocList();
 			}
