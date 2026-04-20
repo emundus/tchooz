@@ -347,19 +347,25 @@ export default {
 			formBuilderService.getSqlDropdownOptions(table, key, value, param.translate).then((response) => {
 				param.options = response.data;
 
-				if (
-					param.multiple == true &&
-					this.element.params[param.name] &&
-					typeof this.element.params[param.name] === 'string' &&
-					this.element.params[param.name].length > 0
-				) {
-					let ids_to_exclude = this.element.params[param.name].split(',');
+				if (param.multiple == true && this.element.params[param.name] && this.element.params[param.name].length > 0) {
+					let ids_to_exclude = [];
+					if (typeof this.element.params[param.name] === 'string') {
+						ids_to_exclude = this.element.params[param.name].split(',');
+					} else if (this.element.params[param.name] instanceof Array) {
+						for (const id of this.element.params[param.name]) {
+							ids_to_exclude.push(id.value);
+						}
+					}
+
 					const regex = /\'|"/gi;
 
 					this.element.params[param.name] = [];
 
 					ids_to_exclude.forEach((id) => {
-						id = id.replace(regex, '');
+						if (typeof id === 'string') {
+							id = id.replace(regex, '');
+						}
+
 						let option = param.options.find((option) => id == option.value);
 
 						if (option) {
@@ -455,7 +461,7 @@ export default {
 							'ORDER BY {thistable}.' + this.element.params['join_key_column'];
 					} else {
 						let orderByColumn = this.element.params['database_join_where_sql']
-							.split('ORDER BY')[1]
+							.split(/ORDER BY/i)[1]
 							.trim()
 							.split(' ')[0]
 							.replace('{thistable}.', '')
@@ -465,10 +471,15 @@ export default {
 
 						if (!columnExists) {
 							// reset order by clause to use the new join_key_column
-							this.element.params['database_join_where_sql'] =
-								this.element.params['database_join_where_sql'].split('ORDER BY')[0] +
-								'ORDER BY {thistable}.' +
-								this.element.params['join_key_column'];
+							if (this.element.params['database_join_where_sql']) {
+								this.element.params['database_join_where_sql'] =
+									this.element.params['database_join_where_sql'].split(/ORDER BY/i)[0] +
+									'ORDER BY {thistable}.' +
+									this.element.params['join_key_column'];
+							} else {
+								this.element.params['database_join_where_sql'] =
+									'ORDER BY {thistable}.' + this.element.params['join_key_column'];
+							}
 						}
 					}
 
