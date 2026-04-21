@@ -2,10 +2,10 @@
 
 namespace Tchooz\Factories\ApplicationFile;
 
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
 use Tchooz\Factories\Automation\ActionFactory;
 use Tchooz\Factories\Automation\ConditionGroupFactory;
-use Tchooz\Services\Automation\ActionRegistry;
 
 class ApplicationFileActionFactory
 {
@@ -59,10 +59,16 @@ class ApplicationFileActionFactory
 				$conditionGroup = $conditionFactory->fromJson($customActionConfig->conditions, []);
 			}
 
+			if (!class_exists('HtmlSanitizerSingleton'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+			}
+			$sanitizer = HtmlSanitizerSingleton::getInstance();
+
 			$action = new CustomApplicationFileAction(
 				$id,
-				$customActionConfig->label,
-				$customActionConfig->icon ?? '',
+				$sanitizer->sanitizeNoHtml($customActionConfig->label),
+				$sanitizer->sanitizeNoHtml($customActionConfig->icon) ?? '',
 				$conditionGroup,
 				$actionInstance
 			);

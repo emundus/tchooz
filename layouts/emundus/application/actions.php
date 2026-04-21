@@ -2,9 +2,7 @@
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectToFile;
 use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
-use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
