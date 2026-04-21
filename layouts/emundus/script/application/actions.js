@@ -72,7 +72,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         }
 
         // make sure action exists in Joomla.getOptions('mod_emundusflow.actions');
-        const registeredActions = Joomla.getOptions('layout.emundus.actions');
+        const registeredActions = Joomla.getOptions('layout.emundus.actions.' + fnum);
         let foundAction = registeredActions.find((registeredAction) => {
             return registeredAction.name === actionId;
         });

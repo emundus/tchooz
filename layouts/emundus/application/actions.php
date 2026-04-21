@@ -32,7 +32,7 @@ if (!empty($actions))
 {
 	$document = $app->getDocument();
 	$wa = $document->getWebAssetManager();
-	$document->addScriptOptions('layout.emundus.actions', array_map(function ($action) {
+	$document->addScriptOptions('layout.emundus.actions.' . $fnum, array_map(function ($action) {
 		return $action->__serialize();
 	}, $actions));
 	$wa->registerAndUseScript('layout.emundus.fieldtohtmlfactory', 'layouts/emundus/script/FieldToHtmlFactory.js');
@@ -62,9 +62,11 @@ if (!empty($actions))
                 } else {
                 ?>
                     <div id="<?= $action->getId() ?>-action" data-actionid="<?= $action->getId() ?>" tabindex=0 data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
-                    <span class="material-symbols-outlined">
-                        <?= $action->getIcon() ?>
-                    </span>
+                        <?php if (!empty($action->getIcon())) : ?>
+                            <span class="material-symbols-outlined">
+                                <?= $action->getIcon() ?>
+                            </span>
+                        <?php endif; ?>
                         <p class="tw-whitespace-nowrap"><?= $action->getLabel() ?></p>
                     </div>
                 <?php
