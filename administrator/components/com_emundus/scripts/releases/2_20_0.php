@@ -44,7 +44,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 				->where('module = ' . $this->db->quote('mod_emundus_applications'))
 				->andWhere('published = 1');
 
-			$eventsAdded   = EmundusHelperUpdate::addCustomEvents([
+			$eventsAdded   = \EmundusHelperUpdate::addCustomEvents([
 				['label' => 'onAskForAnonymousReveal', 'published' => 1, 'category' => 'File', 'available' => 0]
 			]);
 			$this->tasks[] = $eventsAdded['status'];
@@ -179,7 +179,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 				}
 			}
 
-			$addAnonymizationPolicy = EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'anonymization_policy', 'VARCHAR', 20, 1, AnonymizationPolicyEnum::GLOBAL->value);
+			$addAnonymizationPolicy = \EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'anonymization_policy', 'VARCHAR', 20, 1, AnonymizationPolicyEnum::GLOBAL->value);
 			$this->tasks[]          = $addAnonymizationPolicy['status'];
 			if (!$addAnonymizationPolicy['status'])
 			{
@@ -198,7 +198,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 				}
 			}
 
-			$eventsAdded   = EmundusHelperUpdate::addCustomEvents([
+			$eventsAdded   = \EmundusHelperUpdate::addCustomEvents([
 				['label' => 'onAskForAnonymousReveal', 'published' => 1, 'category' => 'File', 'available' => 0]
 			]);
 			$this->tasks[] = $eventsAdded['status'];
@@ -286,6 +286,9 @@ class Release2_20_0Installer extends ReleaseInstaller
 					$result['message'] .= 'Failed to create system public user. ';
 				}
 			}
+
+			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_emundus_anonymization', 'anonymization', null, 'plugin', 1, 'emundus');
+			$this->tasks[] = \EmundusHelperUpdate::enableEmundusPlugins('anonymization', 'plugin');
 
 			$result['status'] = !in_array(false, $this->tasks);
 		}

@@ -10,15 +10,8 @@
 
 namespace scripts;
 
-use EmundusHelperUpdate;
-use Joomla\CMS\Language\Text;
-use Tchooz\Entities\Actions\ActionEntity;
-use Tchooz\Entities\Actions\CrudEntity;
 use Tchooz\Entities\Addons\AddonEntity;
-use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
-use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
-use Tchooz\Services\Addons\AddonHandlerResolver;
 use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Reference\InternalReferenceEntity;
