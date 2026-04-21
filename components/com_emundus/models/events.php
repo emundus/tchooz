@@ -17,7 +17,9 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseInterface;
+use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -1960,6 +1962,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 				'ecc.id',
 				'ecc.applicant_id',
 				'ecc.fnum',
+				'ecc.campaign_id'
 			])
 				->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->where($this->db->quoteName('ecc.id') . ' = ' . $ccid);
@@ -2041,6 +2044,97 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 							$m_files->shareUsers($users_id, $actions, [$candidature->fnum]);
 						}
+
+						// Update fabrik element if found
+						$fabrikRowId = 0;
+						$fabrikDbTableName = '';
+						$fabrikElementName = '';
+						$forms = [];
+
+						if(!class_exists('EmundusModelProfile'))
+						{
+							require_once JPATH_ROOT . '/components/com_emundus/models/profile.php';
+						}
+						$m_profile = new EmundusModelProfile();
+						$profiles = $m_profile->getProfilesIDByCampaign([$candidature->campaign_id]);
+						if (!empty($profiles))
+						{
+							if(!class_exists('EmundusModelForm'))
+							{
+								require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
+							}
+							$m_form = new EmundusModelForm();
+
+							foreach ($profiles as $profile)
+							{
+								$forms_data = $m_form->getFormsByProfileId($profile);
+								if (!empty($forms_data))
+								{
+									$forms_data_ids = array_map(function ($form) {
+										return (int)$form->id;
+									}, $forms_data);
+
+									$forms = array_merge($forms, $forms_data_ids);
+								}
+							}
+						}
+
+						if(!empty($forms))
+						{
+							$forms = array_unique($forms);
+							// Get booking element that can be on forms
+							$query->clear()
+								->select('fe.id')
+								->from($this->db->quoteName('#__fabrik_elements', 'fe'))
+								->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->db->quoteName('fe.group_id') . ' = ' . $this->db->quoteName('ffg.group_id'))
+								->where($this->db->quoteName('fe.plugin') . ' = ' . $this->db->quote('booking'))
+								->where($this->db->quoteName('ffg.form_id') . ' IN (' . implode(',', $forms) . ')');
+							$this->_db->setQuery($query);
+							$fabrikElements = $this->_db->loadColumn();
+
+							if(!empty($fabrikElements))
+							{
+								if (!class_exists('EmundusHelperFabrik'))
+								{
+									require_once JPATH_SITE . '/components/com_emundus/helpers/fabrik.php';
+								}
+
+								$fabrikRepository = new FabrikRepository();
+								$fabrikFactory          = new FabrikFactory($fabrikRepository);
+								$fabrikRepository->setFactory($fabrikFactory);
+								
+								foreach ($fabrikElements as $element)
+								{
+									$element = $fabrikRepository->getElementById($element);
+									if (!empty($element))
+									{
+										$query->clear()
+											->select('id')
+											->from($this->db->quoteName($element->getDbTableName()))
+											->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($candidature->fnum));
+										$this->_db->setQuery($query);
+										$fabrikRowId = $this->_db->loadResult();
+										if(!empty($fabrikRowId))
+										{
+											$fabrikDbTableName = $element->getDbTableName();
+											$fabrikElementName = $element->getName();
+											break;
+										}
+									}
+								}
+							}
+						}
+						
+						if(!empty($fabrikRowId) && !empty($fabrikDbTableName) && !empty($fabrikElementName))
+						{
+							$query->clear()
+								->update($this->db->quoteName($fabrikDbTableName))
+								->set($this->db->quoteName($fabrikElementName) . ' = ' . $this->db->quote($availability))
+								->where($this->db->quoteName('id') . ' = ' . $this->db->quote($fabrikRowId));
+							$this->_db->setQuery($query);
+							$this->_db->execute();
+						}
+						//
 
 						// Declare the event
 						$onAfterBookingRegistrantEventHandler = new GenericEvent(
