@@ -37,4 +37,9 @@ class ApplicationFileActionDelete extends ApplicationFileAction
 	{
 		return '/';
 	}
+
+	public function confirmBeforeExecute(): bool
+	{
+		return true;
+	}
 }

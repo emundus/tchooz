@@ -10,7 +10,7 @@ defined('_JEXEC') or die;
 
 $lang = Factory::getApplication()->getLanguage();
 $lang->setDefault('fr-FR');
-$lang->load('com_emundus', JPATH_SITE . '/components/com_emundus', 'fr-FR');
+$lang->load('com_emundus', JPATH_SITE . '/components/com_emundus', $lang->getLanguage());
 
 $app = Factory::getApplication();
 $session = $app->getSession();

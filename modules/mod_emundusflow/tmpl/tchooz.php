@@ -207,9 +207,8 @@ assert($applicationFile instanceof ApplicationFileEntity);
                 </button>
             </a>
             <?php
-
                 $data = [
-                    'fnum' => $current_application->fnum,
+                    'fnum' => $applicationFile->getFnum(),
                     'context' => 'single'
                 ];
                 echo LayoutHelper::render('emundus.application.actions', $data, '', $data);

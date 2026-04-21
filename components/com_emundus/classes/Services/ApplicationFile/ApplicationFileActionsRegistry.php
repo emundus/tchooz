@@ -5,13 +5,16 @@ namespace Tchooz\Services\ApplicationFile;
 use EmundusHelperCache;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\Plugin\Emundus\Anonymization\Extension\Anonymization;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileAction;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionCreateTab;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionMoveToTab;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectToFile;
+use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionUnanonymize;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
+use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Factories\ApplicationFile\ApplicationFileActionFactory;
 
 if (!class_exists('EmundusHelperCache'))
@@ -98,6 +101,14 @@ class ApplicationFileActionsRegistry
 			else
 			{
 				$availableActions[] = new ApplicationFileActionCreateTab();
+			}
+		}
+
+		if (ApplicationFileActionsEnum::UNANONYMIZE->isAvailable() && $applicationFileEntity->isAnonymous())
+		{
+			if (Anonymization::getCampaignAnonymizationPolicy($applicationFileEntity->getCampaign()) !== AnonymizationPolicyEnum::FORCED)
+			{
+				$availableActions[] = new ApplicationFileActionUnanonymize();
 			}
 		}
 

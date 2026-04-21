@@ -81,11 +81,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
         {
             action.addEventListener('click', (e) => {
                 const actionId = action.getAttribute('data-actionid');
-                if (actionId === 'delete')
+
+                if (foundAction.confirmBeforeExecute)
                 {
                     Swal.fire({
                         title: foundAction.label,
-                        text: Joomla.Text._('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_DELETE_CONFIRM'),
+                        text: Joomla.Text._('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_' + foundAction.name.toUpperCase() + '_CONFIRM'),
                         icon: 'warning',
                         showCancelButton: true,
                         reverseButtons: true,
