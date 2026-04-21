@@ -6,6 +6,7 @@ use EmundusHelperCache;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileAction;
+use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionMoveToTab;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectToFile;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\ActionTargetEntity;
@@ -88,6 +89,7 @@ class ApplicationFileActionsRegistry
 		if ($context === 'multiple')
 		{
 			$availableActions[] = new ApplicationFileActionRedirectToFile();
+			$availableActions[] = new ApplicationFileActionMoveToTab();
 		}
 
 		$config  = ComponentHelper::getParams('com_emundus');

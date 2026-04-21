@@ -7223,7 +7223,7 @@ class EmundusModelApplication extends ListModel
 		return $deleted;
 	}
 
-	public function moveToTab($fnum, $tab)
+	public function moveToTab($fnum, $tab): bool
 	{
 		$moved = false;
 

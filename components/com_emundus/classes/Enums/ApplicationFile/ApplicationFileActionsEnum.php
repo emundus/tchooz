@@ -2,6 +2,7 @@
 
 namespace Tchooz\Enums\ApplicationFile;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
@@ -23,6 +24,8 @@ enum ApplicationFileActionsEnum: string
 	case TRANSACTION = 'transaction';
 	case OPENFILE = 'openfile';
 
+	case MOVE_TO_TAB = 'move_to_tab';
+
 	public function getLabel(): string
 	{
 		return match($this) {
@@ -36,6 +39,7 @@ enum ApplicationFileActionsEnum: string
 			self::DELETE => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_DELETE'),
 			self::CUSTOM => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_CUSTOM'),
 			self::TRANSACTION => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_TRANSACTION'),
+			self::MOVE_TO_TAB =>  Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_MOVE_TO_TAB'),
 		};
 	}
 
@@ -52,6 +56,7 @@ enum ApplicationFileActionsEnum: string
 			self::DELETE => 'delete',
 			self::CUSTOM => 'rule_settings',
 			self::TRANSACTION => 'universal_currency',
+			self::MOVE_TO_TAB => 'tab_move',
 		};
 	}
 
@@ -76,6 +81,20 @@ enum ApplicationFileActionsEnum: string
 				$parameters[] = new ChoiceField('campaign_id', Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_COPY_CAMPAIGN_PARAM'), $choices, true);
 				break;
 
+			case self::MOVE_TO_TAB:
+				if (!class_exists('EmundusModelApplication'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
+				}
+				$applicationModel = new \EmundusModelApplication();
+				$tabs = $applicationModel->getTabs(Factory::getApplication()->getIdentity()->id);
+
+				$choices = array_map(function ($tab) {
+					return new ChoiceFieldValue($tab['id'], $tab['name']);
+				}, $tabs);
+
+				$parameters[] = new ChoiceField('tab', Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_TAB_PARAM'), $choices, true);
+				break;
 			default:
 				break;
 		}
@@ -89,13 +108,14 @@ enum ApplicationFileActionsEnum: string
 		{
 			self::OPENFILE => 0,
 			self::RENAME => 1,
-			self::COPY => 2,
-			self::DOCUMENTS => 3,
-			self::HISTORY => 4,
-			self::COLLABORATE => 5,
-			self::ANONYMOUS => 6,
-			self::TRANSACTION => 7,
-			self::CUSTOM => 8,
+			self::MOVE_TO_TAB => 2,
+			self::COPY => 3,
+			self::DOCUMENTS => 4,
+			self::HISTORY => 5,
+			self::COLLABORATE => 6,
+			self::ANONYMOUS => 7,
+			self::TRANSACTION => 8,
+			self::CUSTOM => 9,
 			self::DELETE => 99,
 		};
 	}
