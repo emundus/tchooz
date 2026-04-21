@@ -3925,9 +3925,14 @@ class EmundusModelSettings extends ListModel
 		return $config;
 	}
 
-	public function setupMessenger($setup)
+	public function setupMessenger(object|array $setup)
 	{
 		$updated = false;
+
+		if(is_array($setup))
+		{
+			$setup = (object) $setup;
+		}
 
 		try
 		{
@@ -3960,6 +3965,7 @@ class EmundusModelSettings extends ListModel
 			}
 
 			$emConfig->set('messenger_anonymous_coordinator', $setup->messenger_anonymous_coordinator);
+			$emConfig->set('messenger_anonymous_applicant', $setup->messenger_anonymous_applicant);
 			$emConfig->set('messenger_notifications_on_send', $setup->messenger_notifications_on_send);
 			$emConfig->set('messenger_notify_users_programs', $setup->messenger_notify_users_programs);
 			$emConfig->set('messenger_notify_groups', $setup->messenger_notify_groups);

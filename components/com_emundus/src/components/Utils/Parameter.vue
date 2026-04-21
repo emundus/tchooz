@@ -216,7 +216,11 @@
 			<!-- RADIOBUTTON -->
 			<div v-else-if="parameter.type === 'radiobutton'">
 				<fieldset data-toggle="radio_buttons" class="tw-flex tw-flex-col tw-gap-1">
-					<div v-for="option in parameter.options" :key="option.value" class="tw-flex tw-items-center tw-gap-2">
+					<div
+						v-for="option in parameter.options"
+						:key="option.value"
+						class="fabrikgrid_radio tw-flex tw-items-center tw-gap-2"
+					>
 						<input
 							v-model="value"
 							type="radio"
