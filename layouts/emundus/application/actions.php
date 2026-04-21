@@ -19,8 +19,7 @@ if (empty($fnum))
 
 $app = Factory::getApplication();
 $lang = $app->getLanguage();
-$lang->setDefault('fr-FR');
-$lang->load('com_emundus', JPATH_SITE . '/components/com_emundus', 'fr-FR');
+$lang->load('com_emundus', JPATH_SITE . '/components/com_emundus', $lang->getLanguage());
 $registry = new ApplicationFileActionsRegistry();
 $applicationRepository = new ApplicationFileRepository();
 $application = $applicationRepository->getByFnum($fnum);

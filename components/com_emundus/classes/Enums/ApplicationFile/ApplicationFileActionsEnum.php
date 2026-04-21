@@ -25,6 +25,7 @@ enum ApplicationFileActionsEnum: string
 	case OPENFILE = 'openfile';
 
 	case MOVE_TO_TAB = 'move_to_tab';
+	case CREATE_TAB = 'create_tab';
 
 	public function getLabel(): string
 	{
@@ -39,7 +40,8 @@ enum ApplicationFileActionsEnum: string
 			self::DELETE => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_DELETE'),
 			self::CUSTOM => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_CUSTOM'),
 			self::TRANSACTION => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_TRANSACTION'),
-			self::MOVE_TO_TAB =>  Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_MOVE_TO_TAB'),
+			self::MOVE_TO_TAB => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_MOVE_TO_TAB'),
+			self::CREATE_TAB => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_CREATE_TAB'),
 		};
 	}
 
@@ -57,6 +59,7 @@ enum ApplicationFileActionsEnum: string
 			self::CUSTOM => 'rule_settings',
 			self::TRANSACTION => 'universal_currency',
 			self::MOVE_TO_TAB => 'tab_move',
+			self::CREATE_TAB => 'tab_new_right',
 		};
 	}
 
@@ -95,6 +98,10 @@ enum ApplicationFileActionsEnum: string
 
 				$parameters[] = new ChoiceField('tab', Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_TAB_PARAM'), $choices, true);
 				break;
+
+			case self::CREATE_TAB:
+				$parameters[] = new StringField('name', Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_TAB_NAME_PARAM'), true);
+				break;
 			default:
 				break;
 		}
@@ -109,6 +116,7 @@ enum ApplicationFileActionsEnum: string
 			self::OPENFILE => 0,
 			self::RENAME => 1,
 			self::MOVE_TO_TAB => 2,
+			self::CREATE_TAB => 2,
 			self::COPY => 3,
 			self::DOCUMENTS => 4,
 			self::HISTORY => 5,
@@ -134,6 +142,24 @@ enum ApplicationFileActionsEnum: string
 				{
 					$available = false;
 				}
+				break;
+			case self::CREATE_TAB:
+				if (!class_exists('EmundusModelApplication'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
+				}
+				$applicationModel = new \EmundusModelApplication();
+				$tabs = $applicationModel->getTabs(Factory::getApplication()->getIdentity()->id);
+				$available = empty($tabs);
+				break;
+			case self::MOVE_TO_TAB:
+				if (!class_exists('EmundusModelApplication'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
+				}
+				$applicationModel = new \EmundusModelApplication();
+				$tabs = $applicationModel->getTabs(Factory::getApplication()->getIdentity()->id);
+				$available = !empty($tabs);
 				break;
 			default:
 				$available = true;
