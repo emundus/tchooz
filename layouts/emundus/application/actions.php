@@ -41,7 +41,7 @@ if (!empty($actions))
 
 	?>
 	<div class="tw-relative emundus-application-file-actions-wrapper" data-fnum="<?= $fnum; ?>">
-         <span class="emundus-application-file-actions material-symbols-outlined tw-cursor-pointer !tw-flex tw-justify-self-center" >
+         <span class="emundus-application-file-actions material-symbols-outlined tw-cursor-pointer !tw-flex tw-justify-self-center !tw-text-[24px]">
              more_vert
          </span>
 		<div class="emundus-application-file-actions-container tw-fixed tw-bg-white tw-shadow-md tw-rounded-coordinator tw-p-2 tw-hidden tw-flex tw-flex-col tw-z-50" data-fnum="<?= $fnum; ?>">

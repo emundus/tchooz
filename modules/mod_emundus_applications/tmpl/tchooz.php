@@ -10,7 +10,6 @@
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
-use Joomla\CMS\Router\Route;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 
 defined('_JEXEC') or die;
