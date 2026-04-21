@@ -35,6 +35,7 @@ use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Transformers\ApplicationChoicesTransformer;
 
 /**
  * Emundus Component Application Model
@@ -3061,6 +3062,7 @@ class EmundusModelApplication extends ListModel
 
 		if (isset($tableuser)) {
 			$allowed_groups = EmundusHelperAccess::getUserFabrikGroups($current_user_id);
+			$applicationChoicesTransformer = new ApplicationChoicesTransformer();
 
 			foreach ($tableuser as $key => $itemt) {
 				$query = $this->_db->getQuery(true);
@@ -3481,6 +3483,10 @@ class EmundusModelApplication extends ListModel
 													$thousandSeparator = $params->thousand_separator ?? '';
 													$elt = number_format((float)$r_elt, $numberDecimal, $decimalSeparator, $thousandSeparator);
 												}
+												elseif ($elements[$j]->plugin === ElementPluginEnum::APPLICATION_CHOICES->value)
+												{
+													$elt = $applicationChoicesTransformer->transform($r_elt);
+												}
 												else {
 													$elt = Text::_($r_elt);
 												}
@@ -3775,6 +3781,10 @@ class EmundusModelApplication extends ListModel
 													$decimalSeparator = $params->decimal_separator ?? ',';
 													$thousandSeparator = $params->thousand_separator ?? '';
 													$elt = number_format((float)$r_elt, $numberDecimal, $decimalSeparator, $thousandSeparator);
+												}
+												elseif ($elements[$j]->plugin === ElementPluginEnum::APPLICATION_CHOICES->value)
+												{
+													$elt = $applicationChoicesTransformer->transform($r_elt);
 												}
 												else {
 													$elt = Text::_($r_elt);
@@ -4113,6 +4123,8 @@ class EmundusModelApplication extends ListModel
 												$decimalSeparator = $params->decimal_separator ?? ',';
 												$thousandSeparator = $params->thousand_separator ?? '';
 												$elt = number_format((float)$element->content, $numberDecimal, $decimalSeparator, $thousandSeparator);
+											} elseif ($element->plugin === ElementPluginEnum::APPLICATION_CHOICES->value) {
+												$elt = $applicationChoicesTransformer->transform($element->content);
 											}
 											else {
 												$elt = Text::_($element->content);
