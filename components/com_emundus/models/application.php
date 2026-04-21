@@ -2430,9 +2430,22 @@ class EmundusModelApplication extends ListModel
 
 															$this->_db->setQuery($query);
 															$ret = $this->_db->loadResult();
+
 															if (empty($ret)) {
-																$ret = $r_elt;
+																if (!$show_empty_fields)
+																{
+																	continue;
+																}
+																elseif (empty($r_elt))
+																{
+																	$ret = '';
+																}
+																else
+																{
+																	$ret = $r_elt;
+																}
 															}
+
 															$elt = Text::_($ret);
 														}
 													}
@@ -2711,7 +2724,7 @@ class EmundusModelApplication extends ListModel
 												$element->content    = '';
 												$element->content_id = -1;
 											}
-
+											
 											// Do not display elements with no value inside them.
 											if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1 || ($element->plugin == 'checkbox' && $element->content == '[""]')) && $element->plugin != 'emundus_fileupload') {
 												continue;
@@ -2787,9 +2800,23 @@ class EmundusModelApplication extends ListModel
 
 													$this->_db->setQuery($query);
 													$ret = $this->_db->loadResult();
-													if (empty($ret)) {
-														$ret = $element->content;
+
+													if(empty($ret))
+													{
+														if (!$show_empty_fields)
+														{
+															continue;
+														}
+														elseif (empty($element->content))
+														{
+															$ret = '';
+														}
+														else
+														{
+															$ret = $element->content;
+														}
 													}
+
 													$elt = Text::_($ret);
 												}
 											}
@@ -3328,7 +3355,25 @@ class EmundusModelApplication extends ListModel
 														$query = preg_replace('#{shortlang}#', $this->locales, $query);
 
 														$this->_db->setQuery($query);
-														$elt = $this->_db->loadResult();
+														$ret = $this->_db->loadResult();
+
+														if(empty($ret))
+														{
+															if (!$show_empty_fields)
+															{
+																continue;
+															}
+															elseif (empty($r_elt))
+															{
+																$ret = '';
+															}
+															else
+															{
+																$ret = $r_elt;
+															}
+														}
+
+														$elt = Text::_($ret);
 													}
 												}
 												elseif ($elements[$j]->plugin == 'cascadingdropdown') {
@@ -3608,7 +3653,25 @@ class EmundusModelApplication extends ListModel
 														$query = preg_replace('#{shortlang}#', $this->locales, $query);
 
 														$this->_db->setQuery($query);
-														$elt = Text::_($this->_db->loadResult());
+														$ret = $this->_db->loadResult();
+
+														if(empty($ret))
+														{
+															if (!$show_empty_fields)
+															{
+																continue;
+															}
+															elseif (empty($r_elt))
+															{
+																$ret = '';
+															}
+															else
+															{
+																$ret = $r_elt;
+															}
+														}
+
+														$elt = Text::_($ret);
 													}
 												}
 												elseif ($elements[$j]->plugin == 'cascadingdropdown') {
@@ -3945,7 +4008,25 @@ class EmundusModelApplication extends ListModel
 													$query = preg_replace('#{shortlang}#', $this->locales, $query);
 
 													$this->_db->setQuery($query);
-													$elt = Text::_($this->_db->loadResult());
+													$ret = $this->_db->loadResult();
+
+													if(empty($ret))
+													{
+														if (!$show_empty_fields)
+														{
+															continue;
+														}
+														elseif (empty($element->content))
+														{
+															$ret = '';
+														}
+														else
+														{
+															$ret = $element->content;
+														}
+													}
+
+													$elt = Text::_($ret);
 												}
 											}
 											elseif ($element->plugin == 'cascadingdropdown') {
@@ -4151,6 +4232,11 @@ class EmundusModelApplication extends ListModel
 										}
 									}
 									elseif (empty($element->content) && $show_empty_fields == 1) {
+										if($element->plugin === 'databasejoin')
+										{
+											$element->content = '';
+										}
+
 										if (!empty($element->label) && $element->label != ' ') {
 											$forms .= '<tr><td><span style="color: #000000;">' . Text::_($element->label) . ' ' . '</span></td> <td>' . $element->content . '</td></tr>';
 										}
