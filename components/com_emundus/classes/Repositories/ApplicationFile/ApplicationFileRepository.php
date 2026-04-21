@@ -32,6 +32,7 @@ use Tchooz\Traits\TraitDispatcher;
 		'form_progress',
 		'attachment_progress',
 		'short_reference',
+		'name',
 		'public',
 		'anonymous',
 	]
@@ -288,6 +289,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 					'form_progress'       => $applicationFileEntity->getFormProgress(),
 					'attachment_progress' => $applicationFileEntity->getAttachmentProgress(),
 					'short_reference'     => $applicationFileEntity->getShortReference(),
+					'name'                => $applicationFileEntity->getName(),
 					'anonymous'           => $applicationFileEntity->isAnonymous() ? 1 : 0,
 					'public'              => $applicationFileEntity->isPublic() ? 1 : 0,
 				];
@@ -377,6 +379,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 				'published'           => $applicationFileEntity->getPublished(),
 				'form_progress'       => 0,
 				'attachment_progress' => 0,
+				'name'                => $applicationFileEntity->getName(),
 				'public'              => $applicationFileEntity->isPublic() ? 1 : 0,
 				'anonymous'           => $applicationFileEntity->isAnonymous() ? 1 : 0,
 			];

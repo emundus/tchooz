@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * @package     scripts
+ * @subpackage
+ *
+ * @copyright   A copyright
+ * @license     A "Slug" license name e.g. GPL2
+ */
+
 namespace scripts;
 
 use Joomla\CMS\Component\ComponentHelper;
@@ -31,6 +39,84 @@ class Release2_20_0Installer extends ReleaseInstaller
 
 		try
 		{
+			$query->select('params')
+				->from('#__modules')
+				->where('module = ' . $this->db->quote('mod_emundus_applications'))
+				->andWhere('published = 1');
+
+			$eventsAdded   = EmundusHelperUpdate::addCustomEvents([
+				['label' => 'onAskForAnonymousReveal', 'published' => 1, 'category' => 'File', 'available' => 0]
+			]);
+			$this->tasks[] = $eventsAdded['status'];
+			if (!$eventsAdded['status'])
+			{
+				$result['message'] .= $eventsAdded['message'];
+			}
+
+			$query->clear()
+				->select('parent_id')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('link') . ' = ' . $this->db->quote('index.php?option=com_emundus&controller=files&task=getstate'))
+				->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote('actions'));
+			$this->db->setQuery($query);
+			$params = $this->db->loadResult();
+
+			if (!empty($params))
+			{
+				$params = json_decode($params, true);
+
+				if (!empty($params['mod_emundus_applications_actions']))
+				{
+					$config = ComponentHelper::getComponent('com_emundus')->getParams();
+
+					if (in_array('rename', $params['mod_emundus_applications_actions']))
+					{
+						$config->set('action_rename', 1);
+					}
+					else
+					{
+						$config->set('action_rename', 0);
+					}
+
+					if (in_array('copy', $params['mod_emundus_applications_actions']))
+					{
+						$config->set('action_copy', 1);
+					}
+					else
+					{
+						$config->set('action_copy', 0);
+					}
+
+					if (in_array('documents', $params['mod_emundus_applications_actions']))
+					{
+						$config->set('action_documents', 1);
+					}
+					else
+					{
+						$config->set('action_documents', 0);
+					}
+
+					if (in_array('history', $params['mod_emundus_applications_actions']))
+					{
+						$config->set('action_history', 1);
+					}
+					else
+					{
+						$config->set('action_history', 0);
+					}
+
+					$componentId = ComponentHelper::getComponent('com_emundus')->id;
+
+					$query->clear()
+						->update($this->db->quoteName('#__extensions'))
+						->set($this->db->quoteName('params') . ' = ' . $this->db->quote($config->toString()))
+						->where($this->db->quoteName('extension_id') . ' = ' . $this->db->quote($componentId));
+
+					$this->db->setQuery($query);
+					$this->tasks[] = $this->db->execute();
+				}
+			}
+
 			$tableCreated  = \EmundusHelperUpdate::createTable('jos_emundus_file_access', [
 				new \EmundusTableColumn('ccid', \EmundusColumnTypeEnum::INT, 11, false, null),
 				new \EmundusTableColumn('token', \EmundusColumnTypeEnum::VARCHAR, 100, false, null),
@@ -200,6 +286,8 @@ class Release2_20_0Installer extends ReleaseInstaller
 					$result['message'] .= 'Failed to create system public user. ';
 				}
 			}
+
+			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
 		{

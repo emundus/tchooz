@@ -337,6 +337,147 @@ class CampaignRepositoryTest extends UnitTestCase
 	}
 
 	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::getOngoingCampaigns
+	 * @return void
+	 */
+	public function testGetOngoingCampaignsReturnsOnlyOpenAndPublishedCampaigns(): void
+	{
+		// 1. Ongoing campaign: published, start_date in the past, end_date in the future
+		$ongoingCampaign = $this->repository->getById($this->dataset['campaign']);
+		$ongoingCampaign->setStartDate((new \DateTime())->modify('-5 days'));
+		$ongoingCampaign->setEndDate((new \DateTime())->modify('+5 days'));
+		$ongoingCampaign->setPublished(true);
+		$this->repository->flush($ongoingCampaign);
+
+		// 2. Future campaign: published, start_date in the future
+		$futureCampaign = $this->repository->getById($this->h_dataset->createSampleCampaign($this->dataset['program']));
+		$futureCampaign->setStartDate((new \DateTime())->modify('+10 days'));
+		$futureCampaign->setEndDate((new \DateTime())->modify('+20 days'));
+		$futureCampaign->setPublished(true);
+		$this->repository->flush($futureCampaign);
+
+		// 3. Past campaign: published, end_date in the past
+		$pastCampaign = $this->repository->getById($this->h_dataset->createSampleCampaign($this->dataset['program']));
+		$pastCampaign->setStartDate((new \DateTime())->modify('-20 days'));
+		$pastCampaign->setEndDate((new \DateTime())->modify('-10 days'));
+		$pastCampaign->setPublished(true);
+		$this->repository->flush($pastCampaign);
+
+		// 4. Unpublished ongoing campaign
+		$unpublishedCampaign = $this->repository->getById($this->h_dataset->createSampleCampaign($this->dataset['program']));
+		$unpublishedCampaign->setStartDate((new \DateTime())->modify('-5 days'));
+		$unpublishedCampaign->setEndDate((new \DateTime())->modify('+5 days'));
+		$unpublishedCampaign->setPublished(false);
+		$this->repository->flush($unpublishedCampaign);
+
+		$this->repository->cleanCache();
+		$campaigns    = $this->repository->getOngoingCampaigns();
+		$campaignIds  = array_map(fn($c) => $c->getId(), $campaigns);
+
+		$this->assertContains($ongoingCampaign->getId(), $campaignIds, 'Ongoing published campaign should be returned');
+		$this->assertNotContains($futureCampaign->getId(), $campaignIds, 'Future campaign should not be returned');
+		$this->assertNotContains($pastCampaign->getId(), $campaignIds, 'Past campaign should not be returned');
+		$this->assertNotContains($unpublishedCampaign->getId(), $campaignIds, 'Unpublished campaign should not be returned');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::getOngoingCampaigns
+	 * @return void
+	 */
+	public function testGetOngoingCampaignsIncludesCampaignsWithNoEndDate(): void
+	{
+		$db = \Joomla\CMS\Factory::getContainer()->get('DatabaseDriver');
+
+		// Create a campaign with end_date = '0000-00-00 00:00:00' (no end date)
+		$noEndDateCampaign = $this->repository->getById($this->h_dataset->createSampleCampaign($this->dataset['program']));
+		$noEndDateCampaign->setStartDate((new \DateTime())->modify('-5 days'));
+		$noEndDateCampaign->setPublished(true);
+		$this->repository->flush($noEndDateCampaign);
+
+		// Force end_date to '0000-00-00 00:00:00' directly in DB since entity won't allow it
+		$query = $db->getQuery(true);
+		$query->update($db->quoteName('#__emundus_setup_campaigns'))
+			->set($db->quoteName('end_date') . ' = ' . $db->quote('0000-00-00 00:00:00'))
+			->where($db->quoteName('id') . ' = ' . $noEndDateCampaign->getId());
+		$db->setQuery($query);
+		$db->execute();
+
+		$this->repository->cleanCache();
+		$campaigns   = $this->repository->getOngoingCampaigns();
+		$campaignIds = array_map(fn($c) => $c->getId(), $campaigns);
+
+		$this->assertContains($noEndDateCampaign->getId(), $campaignIds, 'Campaign with no end date (0000-00-00 00:00:00) should be returned as ongoing');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::getOngoingCampaigns
+	 * @return void
+	 */
+	public function testGetOngoingCampaignsOrderedByEndDateAsc(): void
+	{
+		// Create two ongoing campaigns with different end dates
+		$campaignEndingSoon = $this->repository->getById($this->h_dataset->createSampleCampaign($this->dataset['program']));
+		$campaignEndingSoon->setStartDate((new \DateTime())->modify('-5 days'));
+		$campaignEndingSoon->setEndDate((new \DateTime())->modify('+2 days'));
+		$campaignEndingSoon->setPublished(true);
+		$this->repository->flush($campaignEndingSoon);
+
+		$campaignEndingLater = $this->repository->getById($this->h_dataset->createSampleCampaign($this->dataset['program']));
+		$campaignEndingLater->setStartDate((new \DateTime())->modify('-5 days'));
+		$campaignEndingLater->setEndDate((new \DateTime())->modify('+30 days'));
+		$campaignEndingLater->setPublished(true);
+		$this->repository->flush($campaignEndingLater);
+
+		$this->repository->cleanCache();
+		$campaigns   = $this->repository->getOngoingCampaigns();
+		$campaignIds = array_map(fn($c) => $c->getId(), $campaigns);
+
+		$this->assertContains($campaignEndingSoon->getId(), $campaignIds, 'Campaign ending soon should be in results');
+		$this->assertContains($campaignEndingLater->getId(), $campaignIds, 'Campaign ending later should be in results');
+
+		// Verify ordering: campaign ending sooner should appear before campaign ending later
+		$indexSoon  = array_search($campaignEndingSoon->getId(), $campaignIds);
+		$indexLater = array_search($campaignEndingLater->getId(), $campaignIds);
+		$this->assertLessThan($indexLater, $indexSoon, 'Campaign ending sooner should appear before campaign ending later (ordered by end_date ASC)');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::getOngoingCampaigns
+	 * @return void
+	 */
+	public function testGetOngoingCampaignsReturnsEmptyWhenNoneMatch(): void
+	{
+		// Set the dataset campaign to the past so nothing matches
+		$campaign = $this->repository->getById($this->dataset['campaign']);
+		$campaign->setStartDate((new \DateTime())->modify('-20 days'));
+		$campaign->setEndDate((new \DateTime())->modify('-10 days'));
+		$this->repository->flush($campaign);
+
+		$this->repository->cleanCache();
+		$campaigns = $this->repository->getOngoingCampaigns();
+
+		// Filter only our test campaigns to avoid false positives from other data
+		$ourCampaignIds = array_map(fn($c) => $c->getId(), $campaigns);
+		$this->assertNotContains($campaign->getId(), $ourCampaignIds, 'Past campaign should not appear in ongoing campaigns');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::getOngoingCampaigns
+	 * @return void
+	 */
+	public function testGetOngoingCampaignsReturnsCampaignEntities(): void
+	{
+		$this->repository->cleanCache();
+		$campaigns = $this->repository->getOngoingCampaigns();
+
+		$this->assertIsArray($campaigns, 'getOngoingCampaigns should return an array');
+		foreach ($campaigns as $campaign)
+		{
+			$this->assertInstanceOf(CampaignEntity::class, $campaign, 'Each item returned should be a CampaignEntity');
+		}
+	}
+
+	/**
 	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::getDbTablesByCampaignId
 	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::getTablesByProfileId
 	 * @return void

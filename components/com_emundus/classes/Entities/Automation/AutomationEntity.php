@@ -25,12 +25,12 @@ class AutomationEntity
 	private bool $published = true;
 
 	/**
-	 * @var array <ConditionGroupEntity>
+	 * @var array<ConditionGroupEntity>
 	 */
 	private array $conditionsGroups = [];
 
 	/**
-	 * @var array <ActionEntity>
+	 * @var array<ActionEntity>
 	 */
 	private array $actions = [];
 

@@ -5,7 +5,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
 use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
-use Tchooz\Entities\Reference\InternalReferenceEntity;
+use Joomla\CMS\Layout\LayoutHelper;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -206,6 +206,14 @@ assert($applicationFile instanceof ApplicationFileEntity);
                     <p><?php echo Text::_('PRINT') ?></p>
                 </button>
             </a>
+            <?php
+
+                $data = [
+                    'fnum' => $current_application->fnum,
+                    'context' => 'single'
+                ];
+                echo LayoutHelper::render('emundus.application.actions', $data, '', $data);
+            ?>
         </div>
     </div>
 	<?php if ($show_deadline == 1 || $show_status == 1) : ?>

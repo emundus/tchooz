@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Http\Discovery\Exception\NotFoundException;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
@@ -29,6 +30,9 @@ use Tchooz\Attributes\AccessAttribute;
 use Tchooz\Controller\EmundusController;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Entities\Automation\Actions\ActionRedirect;
+use Tchooz\Entities\Automation\Actions\ActionUpdateStatus;
+use Tchooz\Entities\Automation\ConditionGroupEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Entities\Fields\Field;
@@ -36,6 +40,7 @@ use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Entities\User\UserCategoryEntity;
 use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Enums\Analytics\PeriodEnum;
+use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Reference\PositionEnum;
 use Tchooz\Enums\Reference\ResetTypeEnum;
@@ -54,11 +59,11 @@ use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
-use Tchooz\Repositories\Settings\ConfigurationRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
 use Tchooz\Services\Addons\AddonHandlerResolver;
 use Tchooz\Services\Addons\AddonService;
 use Tchooz\Services\Addons\Handlers\EmundusAnalyticsAddonHandler;
+use Tchooz\Services\Automation\ActionRegistry;
 use Tchooz\Services\Automation\ConditionRegistry;
 use Tchooz\Services\Emails\EmailService;
 use Tchooz\Services\Integrations\IntegrationService;
@@ -86,6 +91,10 @@ class EmundusControllersettings extends EmundusController
 		if (!class_exists('EmundusModelSettings'))
 		{
 			require_once(JPATH_BASE . '/components/com_emundus/models/settings.php');
+		}
+		if (!class_exists('HtmlSanitizerSingleton'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
 		}
 
 		$this->m_settings = new EmundusModelSettings();
@@ -3818,6 +3827,121 @@ class EmundusControllersettings extends EmundusController
 		$addonRepository->flush($customFormatReference);
 
 		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_SAVED'));
+	}
+
+	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
+	public function getApplicationFileCustomActions(): EmundusResponse
+	{
+		$config = ComponentHelper::getParams('com_emundus');
+		$actions = [];
+		$actionRegistry = new ActionRegistry();
+		$index = 1;
+		foreach ($config->get('custom_actions', []) as $action)
+		{
+			if (!empty($action->conditions))
+			{
+				$action->conditions = json_decode($action->conditions, true);
+			}
+			else
+			{
+				$action->conditions = (new ConditionGroupEntity($index))->serialize();
+			}
+
+			if (!empty($action->action)) {
+				$action->action = json_decode($action->action, true);
+				$actionInstance = $actionRegistry->getActionInstance($action->action['type']);
+				$actionInstance->setParametersValuesFromArray($action->action['parameter_values']);
+				$action->action = $actionInstance->serialize();
+			} else {
+				$action->action = null;
+			}
+
+			$action->id = $index;
+			$actions[] = $action;
+			$index++;
+		}
+
+		return EmundusResponse::ok($actions);
+	}
+
+
+	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
+	public function getAvailableConditionsForCustomActions(): EmundusResponse
+	{
+		$conditionsList = [];
+
+		$conditionRegistry = new ConditionRegistry();
+		$conditionsList = $conditionRegistry->getAvailableConditionSchemas([
+			'target_types' => [
+				TargetTypeEnum::FILE->value,
+				TargetTypeEnum::USER->value,
+			]
+		]);
+
+		return EmundusResponse::ok($conditionsList);
+	}
+
+	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
+	public function saveApplicationFileCustomActions(): EmundusResponse
+	{
+		$response = EmundusResponse::fail(Text::_('ERROR'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
+		$json = $this->app->getInput()->getString('actions', '[]');
+		$actions = json_decode($json, true);
+
+		$configCustomActions = [];
+		$sanitizer = HtmlSanitizerSingleton::getInstance();
+		foreach ($actions as $index => $action)
+		{
+			foreach ($action['conditions']['conditions'] as $key => $condition)
+			{
+				if (is_array($condition['value']))
+				{
+					$values = [];
+
+					foreach ($condition['value'] as $value)
+					{
+						if (is_array($value) && isset($value['value']))
+						{
+							$values[] = $value['value'];
+						}
+						else
+						{
+							$values[] = $value;
+						}
+					}
+
+					$action['conditions']['conditions'][$key]['value'] = $values;
+				}
+			}
+
+			if (empty($action['action']['type'])
+				|| !in_array($action['action']['type'], [
+					ActionUpdateStatus::getType(),
+					ActionRedirect::getType()
+				])
+			)
+			{
+				throw new \Exception('Invalid action type');
+			}
+
+			$configCustomActions['custom_actions' . $index] = (object)[
+				'label' => $sanitizer->sanitizeNoHtml($action['label']),
+				'icon' => $sanitizer->sanitizeNoHtml($action['icon']),
+				'conditions' => json_encode($action['conditions']),
+				'action' => json_encode([
+					'type' => $action['action']['type'],
+					'parameter_values' => $action['action']['parameter_values'],
+				])
+			];
+		}
+		$configCustomActions = (object)$configCustomActions;
+
+		if ($this->m_settings->updateEmundusParam('emundus', 'custom_actions', $configCustomActions, $this->app->getIdentity()->id))
+		{
+			$response = EmundusResponse::ok();
+		}
+
+		return $response;
 	}
 
 	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]

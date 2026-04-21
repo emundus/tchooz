@@ -845,4 +845,42 @@ export default {
 			};
 		}
 	},
+
+	async getApplicationFileCustomActions() {
+		try {
+			return await fetchClient.get('getApplicationFileCustomActions');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+				data: null,
+			};
+		}
+	},
+
+	async getAvailableConditionsForCustomActions() {
+		try {
+			return await fetchClient.get('getAvailableConditionsForCustomActions');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+				data: null,
+			};
+		}
+	},
+
+	async saveApplicationFileCustomActions(customActions) {
+		try {
+			return await fetchClient.post('saveApplicationFileCustomActions', {
+				actions: JSON.stringify(customActions),
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+				data: null,
+			};
+		}
+	},
 };

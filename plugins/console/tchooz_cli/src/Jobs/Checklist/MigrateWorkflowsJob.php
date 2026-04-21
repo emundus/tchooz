@@ -23,7 +23,6 @@ use Tchooz\Factories\Workflow\StepFactory;
 use Tchooz\Repositories\Groups\GroupRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
-
 class MigrateWorkflowsJob extends TchoozChecklistJob
 {
 	private ?\EmundusModelWorkflow $m_workflow = null;

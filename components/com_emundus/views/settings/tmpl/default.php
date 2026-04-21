@@ -11,6 +11,9 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Entities\Automation\Actions\ActionRedirect;
+use Tchooz\Entities\Automation\Actions\ActionUpdateStatus;
+use Tchooz\Enums\Automation\ConditionOperatorEnum;
 use Tchooz\Factories\LayoutFactory;
 
 defined('_JEXEC') or die('Restricted Access');
@@ -853,7 +856,59 @@ Text::script('COM_EMUNDUS_APP_CONFIRM_ACTIVATION_TEXT');
 Text::script('COM_EMUNDUS_APP_CONFIRM_DEACTIVATION_TEXT');
 Text::script('COM_EMUNDUS_SETTINGS_APP_ACTIVATION_TOGGLE_SUCCESS');
 
+Text::script('COM_EMUNDUS_SETTINGS_FILES_ACTIONS');
+Text::script('COM_EMUNDUS_SETTINGS_FILES_ACTIONS_INTRO');
+Text::script('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_RENAME_SHOW');
+Text::script('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_COPY_SHOW');
+Text::script('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_DELETE_SHOW');
+Text::script('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_HISTORY_SHOW');
+Text::script('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_DOCUMENTS_SHOW');
+Text::script('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_TRANSACTIONS_SHOW');
+
+Text::script('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTIONS');
+Text::script('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTIONS_INTRO');
+Text::script('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION');
+Text::script('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_ADD');
+Text::script('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_LABEL');
+Text::script('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_ICON');
+Text::script('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_ICON_HELPTEXT');
+Text::script('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTIONS_SAVE');
+Text::script('COM_EMUNDUS_APPLICATION_FILE_CUSTOM_ACTIONS_SAVED');
+Text::script('COM_EMUNDUS_APPLICATION_FILE_CUSTOM_ACTIONS_FAILURE');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITIONS_GROUP');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITION');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITION_TYPE');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITION_TARGET');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITION_OPERATOR');
+Text::script('COM_EMUNDUS_AUTOMATION_ADD_CONDITION');
+Text::script('COM_EMUNDUS_AUTOMATION_ADD_CONDITION_GROUP');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITION_VALUE');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITION_VALUE_PLACEHOLDER');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITION_TARGET_PLACEHOLDER');
+Text::script('COM_EMUNDUS_AUTOMATION_ADD_ACTION');
+Text::script('COM_EMUNDUS_AUTOMATION_NO_ACTIONS');
+Text::script('COM_EMUNDUS_AUTOMATION_SEARCH_ACTIONS');
+Text::script('COM_EMUNDUS_AUTOMATION_SEARCH_ACTIONS_PLACEHOLDER');
+Text::script('COM_EMUNDUS_AUTOMATION_NO_CONDITIONS_IN_GROUP');
+Text::script('COM_EMUNDUS_CONDITIONS_GROUP_OPERATOR_OR_RELATION');
+Text::script('COM_EMUNDUS_CONDITIONS_GROUP_OPERATOR_AND_RELATION');
+Text::script('COM_EMUNDUS_CONDITIONS_GROUP_OPERATOR_AND');
+Text::script('COM_EMUNDUS_CONDITIONS_GROUP_OPERATOR_OR');
+Text::script('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_CONDITION_GROUP_TITLE');
+Text::script('COM_EMUNDUS_APPLICATIONS_CUSTOM_ACTION_TITLE');
+
 $data = LayoutFactory::prepareVueData();
+
+$operators = [];
+foreach (ConditionOperatorEnum::cases() as $operator) {
+    $operators[] = ['value' => $operator->value, 'label' => Text::_($operator->getLabel())];
+}
+$data['operators'] = $operators;
+$data['operatorsFieldMapping'] = ConditionOperatorEnum::getAvailableOperatorsForFieldType();
+$data['actions'] = [
+    (new ActionUpdateStatus())->serialize(),
+    (new ActionRedirect())->serialize(),
+];
 
 $baseUrl = rtrim(Uri::root(), '/') . '/';
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();

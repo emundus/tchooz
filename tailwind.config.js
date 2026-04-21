@@ -23,6 +23,7 @@ module.exports = {
         "./media/com_emundus/js/collaborate.js",
         "./media/com_emundus/js/mixins/exports.js",
         "./media/com_emundus/js/mixins/utilities.js",
+        "./layouts/emundus/**/*.{html,js,php}"
     ],
     safelist: [
         {
