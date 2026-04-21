@@ -277,7 +277,7 @@ export default {
 			if (param.type === 'databasejoin') {
 				param.options = this.databases;
 				if (this.element.params['join_db_name'] !== '') {
-					this.updateDatabasejoinParams();
+					this.updateDatabasejoinParams(true);
 				}
 			}
 
@@ -347,19 +347,25 @@ export default {
 			formBuilderService.getSqlDropdownOptions(table, key, value, param.translate).then((response) => {
 				param.options = response.data;
 
-				if (
-					param.multiple == true &&
-					this.element.params[param.name] &&
-					typeof this.element.params[param.name] === 'string' &&
-					this.element.params[param.name].length > 0
-				) {
-					let ids_to_exclude = this.element.params[param.name].split(',');
+				if (param.multiple == true && this.element.params[param.name] && this.element.params[param.name].length > 0) {
+					let ids_to_exclude = [];
+					if (typeof this.element.params[param.name] === 'string') {
+						ids_to_exclude = this.element.params[param.name].split(',');
+					} else if (this.element.params[param.name] instanceof Array) {
+						for (const id of this.element.params[param.name]) {
+							ids_to_exclude.push(id.value);
+						}
+					}
+
 					const regex = /\'|"/gi;
 
 					this.element.params[param.name] = [];
 
 					ids_to_exclude.forEach((id) => {
-						id = id.replace(regex, '');
+						if (typeof id === 'string') {
+							id = id.replace(regex, '');
+						}
+
 						let option = param.options.find((option) => id == option.value);
 
 						if (option) {
@@ -376,19 +382,22 @@ export default {
 			});
 		},
 
-		updateDatabasejoinParams() {
+		updateDatabasejoinParams(init = false) {
 			if (!this.sysadmin) {
 				const index = this.databases.map((e) => e.database_name).indexOf(this.element.params['join_db_name']);
 
 				if (index !== -1) {
 					let database = this.databases[index];
-					this.element.params['join_key_column'] = database.join_column_id;
-					if (database.translation == 1) {
-						this.element.params['join_val_column'] = database.join_column_val + '_fr';
-						this.element.params['join_val_column_concat'] = '{thistable}.' + database.join_column_val + '_{shortlang}';
-					} else {
-						this.element.params['join_val_column'] = database.join_column_val;
-						this.element.params['join_val_column_concat'] = '';
+					if (!init) {
+						this.element.params['join_key_column'] = database.join_column_id;
+						if (database.translation == 1) {
+							this.element.params['join_val_column'] = database.join_column_val + '_fr';
+							this.element.params['join_val_column_concat'] =
+								'{thistable}.' + database.join_column_val + '_{shortlang}';
+						} else {
+							this.element.params['join_val_column'] = database.join_column_val;
+							this.element.params['join_val_column_concat'] = '';
+						}
 					}
 					this.databasejoin_description = this.databases[index].description;
 				} else {
@@ -412,20 +421,29 @@ export default {
 
 					let index = this.params.map((e) => e.name).indexOf('join_key_column');
 					this.params[index].options = response.data;
-					this.element.params['join_key_column'] = database
-						? database.join_column_id
-						: this.params[index].options[0].COLUMN_NAME;
+
+					if (!init) {
+						this.element.params['join_key_column'] = database
+							? database.join_column_id
+							: this.params[index].options[0].COLUMN_NAME;
+					}
 
 					index = this.params.map((e) => e.name).indexOf('join_val_column');
 					this.params[index].options = response.data;
-					this.element.params['join_val_column'] = database
-						? database.join_column_val
-						: this.params[index].options[0].COLUMN_NAME;
 
-					this.element.params['join_val_column_concat'] = '';
-					if (database && database.translation == 1) {
-						this.element.params['join_val_column'] = database.join_column_val + '_fr';
-						this.element.params['join_val_column_concat'] = '{thistable}.' + database.join_column_val + '_{shortlang}';
+					if (!init) {
+						this.element.params['join_val_column'] = database
+							? database.join_column_val
+							: this.params[index].options[0].COLUMN_NAME;
+					}
+
+					if (!init) {
+						this.element.params['join_val_column_concat'] = '';
+						if (database && database.translation == 1) {
+							this.element.params['join_val_column'] = database.join_column_val + '_fr';
+							this.element.params['join_val_column_concat'] =
+								'{thistable}.' + database.join_column_val + '_{shortlang}';
+						}
 					}
 
 					if (
@@ -443,7 +461,7 @@ export default {
 							'ORDER BY {thistable}.' + this.element.params['join_key_column'];
 					} else {
 						let orderByColumn = this.element.params['database_join_where_sql']
-							.split('ORDER BY')[1]
+							.split(/ORDER BY/i)[1]
 							.trim()
 							.split(' ')[0]
 							.replace('{thistable}.', '')
@@ -453,10 +471,15 @@ export default {
 
 						if (!columnExists) {
 							// reset order by clause to use the new join_key_column
-							this.element.params['database_join_where_sql'] =
-								this.element.params['database_join_where_sql'].split('ORDER BY')[0] +
-								'ORDER BY {thistable}.' +
-								this.element.params['join_key_column'];
+							if (this.element.params['database_join_where_sql']) {
+								this.element.params['database_join_where_sql'] =
+									this.element.params['database_join_where_sql'].split(/ORDER BY/i)[0] +
+									'ORDER BY {thistable}.' +
+									this.element.params['join_key_column'];
+							} else {
+								this.element.params['database_join_where_sql'] =
+									'ORDER BY {thistable}.' + this.element.params['join_key_column'];
+							}
 						}
 					}
 

@@ -15,6 +15,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -49,18 +50,28 @@ class EmundusModelLogs extends JModelList
 	 * @param   int     $user_from
 	 * @param   int     $user_to
 	 * @param   string  $fnum
-	 * @param   int     $action
+	 * @param   int|string     $action
 	 * @param   string  $crud
 	 * @param   string  $message
 	 *
 	 * @since 3.8.8
 	 */
-	static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '', $params = '')
+	static function log($user_from, $user_to, $fnum, int|string $action, $crud = '', $message = '', $params = '')
 	{
 		$logged = false;
 
 		jimport('joomla.log.log');
 		Log::addLogger(['text_file' => 'com_emundus.logs.php'], Log::ERROR, 'com_emundus');
+
+		if(is_string($action))
+		{
+			$actionRepository = new ActionRepository();
+			$actionEntity = $actionRepository->getByName($action);
+			if(!empty($actionEntity))
+			{
+				$action = $actionEntity->getId();
+			}
+		}
 
 		if (!empty($user_from)) {
 			$eMConfig                 = ComponentHelper::getParams('com_emundus');

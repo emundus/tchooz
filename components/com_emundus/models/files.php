@@ -37,6 +37,8 @@ use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterStatusChangeDefinition;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagAddDefinition;
+use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
 
@@ -1381,7 +1383,7 @@ class EmundusModelFiles extends JModelLegacy
 					foreach ($fnums as $fnum) {
                         $fnumInfos = $this->getFnumInfos($fnum);
 						$logsParams = array('created' => array_unique($group_labels, SORT_REGULAR));
-						EmundusModelLogs::log($current_user->id, (int)$fnumInfos['applicant_id'], $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						EmundusModelLogs::log($current_user->id, (int)$fnumInfos['applicant_id'], $fnum, ActionEnum::ACCESS_FILE->value, CrudEnum::CREATE->value, 'COM_EMUNDUS_ACCESS_ACCESS_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 					}
 				}
 			}
@@ -1450,7 +1452,7 @@ class EmundusModelFiles extends JModelLegacy
 					foreach ($fnums as $fnum) {
                         $fnumInfos = $this->getFnumInfos($fnum);
 						$logsParams = array('created' => array_unique($user_names, SORT_REGULAR));
-						EmundusModelLogs::log($current_user->id, $fnumInfos['applicant_id'], $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						EmundusModelLogs::log($current_user->id, $fnumInfos['applicant_id'], $fnum, ActionEnum::ACCESS_FILE_USERS->value, CrudEnum::CREATE->value, 'COM_EMUNDUS_ACCESS_ACCESS_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 					}
 				}
 			}
@@ -3038,7 +3040,7 @@ class EmundusModelFiles extends JModelLegacy
 			$leftJoin = ' LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id = jecc.campaign_id ';
 			$leftJoin .= ' LEFT JOIN #__emundus_setup_campaigns_more as escm ON escm.campaign_id = jecc.campaign_id ';
 			$leftJoin .= ' LEFT JOIN #__emundus_setup_programmes as sp ON sp.id = esc.program_id ';
-			$leftJoin .= ' LEFT JOIN #__emundus_setup_teaching_unity as estu ON estu.code = esc.training and estu.schoolyear = esc.year ';
+			$leftJoin .= ' LEFT JOIN #__emundus_setup_teaching_unity as estu ON estu.id = (SELECT estu2.id FROM #__emundus_setup_teaching_unity estu2 WHERE estu2.code = esc.training AND estu2.schoolyear = esc.year LIMIT 1) ';
 			$leftJoin .= ' LEFT JOIN #__users as u ON u.id = jecc.applicant_id ';
 			$leftJoin .= ' LEFT JOIN #__emundus_users as eu ON eu.user_id = u.id ';
 
