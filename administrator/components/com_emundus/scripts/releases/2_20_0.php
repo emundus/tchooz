@@ -2,6 +2,10 @@
 
 namespace scripts;
 
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\User\UserHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\Actions\CrudEntity;
 use Tchooz\Entities\Addons\AddonEntity;
@@ -145,6 +149,57 @@ class Release2_20_0Installer extends ReleaseInstaller
 			\EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FILE_SUBMITTED_PUBLIC_ACCESS_MESSAGE', 'Votre candidature a été soumise avec succès.');
 			\EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FILE_SUBMITTED_PUBLIC_ACCESS_MESSAGE', 'Your application has been successfully submitted.', 'override', 0, null, null, 'en-GB');
 
+			$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
+			if (empty($systemUserId))
+			{
+				require_once(JPATH_SITE . '/components/com_emundus/helpers/users.php');
+				require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
+
+				$h_users = new \EmundusHelperUsers();
+				$m_users = new \EmundusModelUsers();
+
+				$other_param = [
+					'firstname'    => 'Public',
+					'lastname'     => 'SYSTEM',
+					'profile'      => 1000,
+					'em_oprofiles' => '',
+					'univ_id'      => 0,
+					'em_groups'    => [],
+					'em_campaigns' => [],
+					'news'         => 0,
+				];
+
+				$user           = clone(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0));
+				$user->name     = 'Public SYSTEMACCOUNT';
+				$user->username = 'system-public@emundus.fr';
+				$user->email    = 'system-public@emundus.fr';
+
+				$password       = $h_users->generateStrongPassword(30);
+				$user->password = UserHelper::hashPassword($password);
+
+				$now                 = \EmundusHelperDate::getNow();
+				$user->registerDate  = $now;
+				$user->lastvisitDate = null;
+				$user->block         = 1;
+				$user->authProvider  = '';
+
+				$acl_aro_groups = $m_users->getDefaultGroup(1000);
+				$user->groups   = $acl_aro_groups;
+
+				$usertype       = $m_users->found_usertype($acl_aro_groups[0]);
+				$user->usertype = $usertype;
+
+				$systemUserId = $m_users->adduser($user, $other_param);
+				if (!empty($systemUserId))
+				{
+					\EmundusHelperUpdate::updateComponentParameter('com_emundus', 'system_public_user_id', $systemUserId);
+				}
+				else
+				{
+					$this->tasks[]     = false;
+					$result['message'] .= 'Failed to create system public user. ';
+				}
+			}
 		}
 		catch (\Exception $e)
 		{
