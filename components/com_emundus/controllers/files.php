@@ -1895,6 +1895,12 @@ class EmundusControllerFiles extends EmundusController
 				$fnumsArray = $m_files->mergeEvaluations($fnumsArray, $evaluations_by_fnum_by_step, $step_elements_name, ExportModeEnum::getFromId((int) $methode));
 			}
 
+			// Sort $fnumsArray in the same order of $fnums (sent by the front)
+			$orderIndex = array_flip($fnums);
+			usort($fnumsArray, function ($a, $b) use ($orderIndex) {
+				return ($orderIndex[$a['fnum']] ?? PHP_INT_MAX) <=> ($orderIndex[$b['fnum']] ?? PHP_INT_MAX);
+			});
+
 			// On met a jour la liste des fnums traités
 			$fnums = array();
 			foreach ($fnumsArray as $fnum) {

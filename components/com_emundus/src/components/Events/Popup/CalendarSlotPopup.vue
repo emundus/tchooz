@@ -312,77 +312,79 @@ export default {
 				return;
 			}
 
-			// Check if registrants already exixts on this slot
-			const slotStartDate =
-				this.$props.slot.start instanceof Temporal.ZonedDateTime
-					? this.convertOldDateTimeStringToZonedDateTime(slot['start_date'])
-					: new Date(slot['start_date']);
-			const slotEndDate =
-				this.$props.slot.end instanceof Temporal.ZonedDateTime
-					? this.convertOldDateTimeStringToZonedDateTime(slot['end_date'])
-					: new Date(slot['end_date']);
+			if (this.$props.slot) {
+				// Check if registrants already exixts on this slot
+				const slotStartDate =
+					this.$props.slot.start instanceof Temporal.ZonedDateTime
+						? this.convertOldDateTimeStringToZonedDateTime(slot['start_date'])
+						: new Date(slot['start_date']);
+				const slotEndDate =
+					this.$props.slot.end instanceof Temporal.ZonedDateTime
+						? this.convertOldDateTimeStringToZonedDateTime(slot['end_date'])
+						: new Date(slot['end_date']);
 
-			if (this.$props.slot && this.$props.slot.booked_count > 0) {
-				if (Temporal.ZonedDateTime.compare(slotStartDate, this.$props.slot.start) === 1) {
-					let errorMessage = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_GREATER_ERROR');
-					const date =
-						this.$props.slot.start instanceof Temporal.ZonedDateTime
-							? this.$props.slot.start
-							: new Date(this.$props.slot.start);
-					const hours =
-						date instanceof Temporal.ZonedDateTime
-							? date.toPlainTime().toString().slice(0, 5)
-							: date.toTimeString().slice(0, 5);
-					errorMessage = errorMessage.replace('{{start_date}}', hours);
+				if (this.$props.slot && this.$props.slot.booked_count > 0) {
+					if (Temporal.ZonedDateTime.compare(slotStartDate, this.$props.slot.start) === 1) {
+						let errorMessage = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_GREATER_ERROR');
+						const date =
+							this.$props.slot.start instanceof Temporal.ZonedDateTime
+								? this.$props.slot.start
+								: new Date(this.$props.slot.start);
+						const hours =
+							date instanceof Temporal.ZonedDateTime
+								? date.toPlainTime().toString().slice(0, 5)
+								: date.toTimeString().slice(0, 5);
+						errorMessage = errorMessage.replace('{{start_date}}', hours);
 
-					this.alertError(errorMessage);
-					return;
-				} else if (
-					Temporal.ZonedDateTime.compare(slotStartDate, this.$props.slot.start) !== 0 &&
-					!this.canANewAvailabilityBeCreated(slotStartDate)
-				) {
-					let errorMessage = '';
-					const dates = this.exampleDatesPossible(slotStartDate);
-					if (Array.isArray(dates)) {
-						if (dates.length >= 2) {
-							errorMessage = this.translate(
-								'COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_TWO_EXAMPLES_CONDITIONS_ERROR',
-							);
-							errorMessage = errorMessage
-								.replace('{{example_start_date_1}}', dates[0].toLocaleString())
-								.replace('{{example_start_date_2}}', dates[1].toLocaleString());
-						} else if (dates.length === 1) {
-							errorMessage = this.translate(
-								'COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_ONE_EXAMPLE_CONDITIONS_ERROR',
-							);
-							errorMessage = errorMessage.replace('{{example_start_date_1}}', dates[0].toLocaleString());
-						} else {
-							errorMessage = this.translate(
-								'COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_NO_EXAMPLE_CONDITIONS_ERROR',
-							);
+						this.alertError(errorMessage);
+						return;
+					} else if (
+						Temporal.ZonedDateTime.compare(slotStartDate, this.$props.slot.start) !== 0 &&
+						!this.canANewAvailabilityBeCreated(slotStartDate)
+					) {
+						let errorMessage = '';
+						const dates = this.exampleDatesPossible(slotStartDate);
+						if (Array.isArray(dates)) {
+							if (dates.length >= 2) {
+								errorMessage = this.translate(
+									'COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_TWO_EXAMPLES_CONDITIONS_ERROR',
+								);
+								errorMessage = errorMessage
+									.replace('{{example_start_date_1}}', dates[0].toLocaleString())
+									.replace('{{example_start_date_2}}', dates[1].toLocaleString());
+							} else if (dates.length === 1) {
+								errorMessage = this.translate(
+									'COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_ONE_EXAMPLE_CONDITIONS_ERROR',
+								);
+								errorMessage = errorMessage.replace('{{example_start_date_1}}', dates[0].toLocaleString());
+							} else {
+								errorMessage = this.translate(
+									'COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_NO_EXAMPLE_CONDITIONS_ERROR',
+								);
+							}
 						}
-					}
-					const hours =
-						slotStartDate instanceof Temporal.ZonedDateTime
-							? slotStartDate.toPlainTime().toString().slice(0, 5)
-							: slotStartDate.toTimeString().slice(0, 5);
-					errorMessage = errorMessage.replace('{{start_date}}', hours);
+						const hours =
+							slotStartDate instanceof Temporal.ZonedDateTime
+								? slotStartDate.toPlainTime().toString().slice(0, 5)
+								: slotStartDate.toTimeString().slice(0, 5);
+						errorMessage = errorMessage.replace('{{start_date}}', hours);
 
-					this.alertError(errorMessage);
-					return;
-				} else if (Temporal.ZonedDateTime.compare(slotEndDate, this.$props.slot.end) === -1) {
-					let errorMessage = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_END_DATE_ERROR');
-					const date =
-						this.$props.slot.end instanceof Temporal.ZonedDateTime
-							? this.$props.slot.end
-							: new Date(this.$props.slot.end);
-					const hours =
-						date instanceof Temporal.ZonedDateTime
-							? date.toPlainTime().toString().slice(0, 5)
-							: date.toTimeString().slice(0, 5);
-					errorMessage = errorMessage.replace('{{end_date}}', hours);
-					this.alertError(errorMessage);
-					return;
+						this.alertError(errorMessage);
+						return;
+					} else if (Temporal.ZonedDateTime.compare(slotEndDate, this.$props.slot.end) === -1) {
+						let errorMessage = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_END_DATE_ERROR');
+						const date =
+							this.$props.slot.end instanceof Temporal.ZonedDateTime
+								? this.$props.slot.end
+								: new Date(this.$props.slot.end);
+						const hours =
+							date instanceof Temporal.ZonedDateTime
+								? date.toPlainTime().toString().slice(0, 5)
+								: date.toTimeString().slice(0, 5);
+						errorMessage = errorMessage.replace('{{end_date}}', hours);
+						this.alertError(errorMessage);
+						return;
+					}
 				}
 			}
 
@@ -433,26 +435,28 @@ export default {
 						}
 					}
 
-					const start_date =
-						this.$props.slot.start instanceof Temporal.ZonedDateTime
-							? this.$props.slot.start
-							: new Date(this.$props.slot.start);
-					const start_hours =
-						start_date instanceof Temporal.ZonedDateTime
-							? start_date.toPlainTime().toString().slice(0, 5)
-							: start_date.toTimeString().slice(0, 5);
-					const end_date =
-						this.$props.slot.end instanceof Temporal.ZonedDateTime
-							? this.$props.slot.end
-							: new Date(this.$props.slot.end);
-					const end_hours =
-						end_date instanceof Temporal.ZonedDateTime
-							? end_date.toPlainTime().toString().slice(0, 5)
-							: end_date.toTimeString().slice(0, 5);
+					if (this.$props.slot) {
+						const start_date =
+							this.$props.slot.start instanceof Temporal.ZonedDateTime
+								? this.$props.slot.start
+								: new Date(this.$props.slot.start);
+						const start_hours =
+							start_date instanceof Temporal.ZonedDateTime
+								? start_date.toPlainTime().toString().slice(0, 5)
+								: start_date.toTimeString().slice(0, 5);
+						const end_date =
+							this.$props.slot.end instanceof Temporal.ZonedDateTime
+								? this.$props.slot.end
+								: new Date(this.$props.slot.end);
+						const end_hours =
+							end_date instanceof Temporal.ZonedDateTime
+								? end_date.toPlainTime().toString().slice(0, 5)
+								: end_date.toTimeString().slice(0, 5);
 
-					response.message = response.message.replace('{{start_date}}', start_hours);
-					response.message = response.message.replace('{{end_date}}', end_hours);
-					response.message = response.message.replace('{{booked_count}}', this.$props.slot.slot_capacity);
+						response.message = response.message.replace('{{start_date}}', start_hours);
+						response.message = response.message.replace('{{end_date}}', end_hours);
+						response.message = response.message.replace('{{booked_count}}', this.$props.slot.slot_capacity);
+					}
 
 					this.alertError(response.message);
 				}

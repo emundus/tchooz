@@ -362,7 +362,7 @@ class EmundusModelMessenger extends ListModel
 	{
 		$messages = [];
 
-		if(!class_exists('EmundusHelperDate'))
+		if (!class_exists('EmundusHelperDate'))
 		{
 			require_once JPATH_SITE . '/components/com_emundus/helpers/date.php';
 		}
@@ -384,6 +384,7 @@ class EmundusModelMessenger extends ListModel
 
 			$eMConfig              = ComponentHelper::getParams('com_emundus');
 			$anonymous_coordinator = $eMConfig->get('messenger_anonymous_coordinator', '0');
+			$anonymous_applicant   = $eMConfig->get('messenger_anonymous_applicant', '0');
 
 			try
 			{
@@ -404,9 +405,10 @@ class EmundusModelMessenger extends ListModel
 				}
 
 				$query->clear()
-					->select('m.*, CASE WHEN eu.is_anonym != 1 THEN u.name ELSE ' . $this->db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')) . ' END as name')
+					->select('m.*, CASE WHEN eu.is_anonym != 1 THEN u.name ELSE ' . $this->db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')) . ' END as name, cc.applicant_id')
 					->from($this->db->quoteName('#__messages', 'm'))
 					->leftJoin($this->db->quoteName('#__emundus_chatroom', 'c') . ' ON ' . $this->db->quoteName('c.id') . ' = ' . $this->db->quoteName('m.page'))
+					->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('cc.fnum') . ' = ' . $this->db->quoteName('c.fnum'))
 					->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('m.user_id_from'))
 					->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('u.id'))
 					->where($this->db->quoteName('c.fnum') . ' LIKE ' . $this->db->quote($fnum))
@@ -420,17 +422,29 @@ class EmundusModelMessenger extends ListModel
 					$message->date_hour = $hour;
 					$message->me        = $message->user_id_from == $user_id;
 
+					// If anonymous coordinator set name property to empty
+					if($anonymous_coordinator && $message->user_id_from !== $message->applicant_id && !$message->me)
+					{
+						$message->name = '';
+					}
+
+					if($anonymous_applicant && $message->user_id_from === $message->applicant_id && !$message->me)
+					{
+						$message->name = '';
+					}
+
 					if ($applicationFile->isAnonymous())
 					{
 						$message->name = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
 					}
 				}
 
-				$datas            = new stdClass;
-				$datas->dates     = $dates;
-				$datas->messages  = array_reverse($messages);
-				$datas->anonymous = $anonymous_coordinator;
-				$messages         = $datas;
+				$datas                      = new stdClass;
+				$datas->dates               = $dates;
+				$datas->messages            = array_reverse($messages);
+				$datas->anonymous           = $anonymous_coordinator;
+				$datas->anonymous_applicant = $anonymous_applicant;
+				$messages                   = $datas;
 			}
 			catch (Exception $e)
 			{

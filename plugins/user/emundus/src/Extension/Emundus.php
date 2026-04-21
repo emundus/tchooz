@@ -975,6 +975,16 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			);
 			$this->getApplication()->getDispatcher()->dispatch('onCallEventHandler', $event);
 
+			if($previous_url === 'index.php' && !$user->guest)
+			{
+				if(!class_exists('EmundusHelperMenu'))
+				{
+					include_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+				}
+
+				$previous_url = \EmundusHelperMenu::getHomepageLink();
+			}
+
 			if (!empty($previous_url))
 			{
 				Log::add('Log in ' . $user->username . ', user redirected to previous url ' . $previous_url . '.', Log::INFO, 'com_emundus.auth');
@@ -993,20 +1003,23 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		$userid = (int) $user['id'];
 
-		if (empty($options['redirect_link']))
+		if(!$this->getApplication()->isClient('administrator'))
 		{
-			include_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
-			$url = \EmundusHelperMenu::getLogoutRedirectLink();
-
-			$this->getApplication()->redirect(Uri::base(true) . $url);
-		}
-		else
-		{
-			if (!empty($options['redirect_message']))
+			if (empty($options['redirect_link']))
 			{
-				$this->getApplication()->enqueueMessage($options['redirect_message']);
+				include_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+				$url = \EmundusHelperMenu::getLogoutRedirectLink();
+
+				$this->getApplication()->redirect(Uri::base(true) . $url);
 			}
-			$this->getApplication()->redirect($options['redirect_link'], $options['redirect_code'] ?? 303);
+			else
+			{
+				if (!empty($options['redirect_message']))
+				{
+					$this->getApplication()->enqueueMessage($options['redirect_message']);
+				}
+				$this->getApplication()->redirect($options['redirect_link'], $options['redirect_code'] ?? 303);
+			}
 		}
 	}
 
