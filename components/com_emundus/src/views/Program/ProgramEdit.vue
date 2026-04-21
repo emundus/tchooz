@@ -62,11 +62,7 @@
 							<span v-else class="em-profile-font">{{ campaign.label }}</span>
 						</li>
 					</ul>
-					<a
-						@click="redirectJRoute('index.php?option=com_emundus&view=campaigns')"
-						class="em-profile-font tw-cursor-pointer tw-underline"
-						target="_blank"
-					>
+					<a @click="openCampaignsList()" class="em-profile-font tw-cursor-pointer tw-underline" target="_blank">
 						{{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS') }}
 					</a>
 				</div>
@@ -201,6 +197,13 @@ export default {
 					timer: 1500,
 				});
 			});
+		},
+		openCampaignsList() {
+			const sessionTab = sessionStorage.getItem('tchooz_selected_tab/' + document.location.hostname);
+			if (sessionTab) {
+				sessionStorage.setItem('tchooz_selected_tab/' + document.location.hostname, 'campaigns');
+			}
+			this.redirectJRoute('index.php?option=com_emundus&view=campaigns');
 		},
 		redirectJRoute(link) {
 			settingsService.redirectJRoute(link, useGlobalStore().getCurrentLang);

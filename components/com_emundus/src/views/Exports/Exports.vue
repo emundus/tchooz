@@ -290,6 +290,8 @@ export default defineComponent({
 			const selectedSynthesisIds = this.selectedSynthesis.map((el) => el.id);
 			const selectedAttachmentIds = this.selectedAttachments.map((el) => el.id);
 
+			const allowAsync = Joomla.getOptions('plg_system_emundus.async_export', 0);
+
 			exportService
 				.export(
 					this.selectedFormat,
@@ -298,6 +300,7 @@ export default defineComponent({
 					selectedSynthesisIds,
 					selectedAttachmentIds,
 					async,
+					allowAsync == 1,
 				)
 				.then((response) => {
 					this.loading = false;
@@ -329,8 +332,6 @@ export default defineComponent({
 							}
 						});
 					} else {
-						const allowAsync = Joomla.getOptions('plg_system_emundus.async_export', 0);
-
 						if (response.title === 'AbortError' && allowAsync == 1) {
 							// Rerun export with async flag
 							this.runExport(true);
