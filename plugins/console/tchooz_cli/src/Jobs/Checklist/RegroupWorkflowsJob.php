@@ -13,7 +13,6 @@ use Tchooz\Entities\Workflow\WorkflowEntity;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
-
 class RegroupWorkflowsJob extends TchoozChecklistJob
 {
 	private OutputInterface $output;
