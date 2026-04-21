@@ -87,20 +87,16 @@ class ObjectForm implements ObjectInterface
 					{
 						require_once(JPATH_SITE . DS . '/components/com_emundus/helpers/menu.php');
 					}
-					$h_menu = new \EmundusHelperMenu;
 
-					$tableuser = $h_menu->buildMenuQuery($reference_id);
-					foreach ($tableuser as $menu)
-					{
-						$forms[] = $menu->form_id;
-					}
+					$menutype = 'menu-profile'.$reference_id;
+					$forms = \EmundusHelperMenu::getApplicantFormsInMenus($menutype);
 				}
 				else
 				{
 					$forms = array($reference_id);
 				}
 			}
-
+			
 			$query->select('id,' . $db->quoteName($label) . ' as label')
 				->from($db->quoteName('#__' . $table));
 

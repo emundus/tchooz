@@ -142,7 +142,7 @@ enum HeadersEnum: string
 
 				return \EmundusHelperDate::displayDate($date_printed, 'DATE_FORMAT_LC2', 0);
 			case self::STATUS:
-				return $file->getStatus()->getLabel();
+				return $file->getStatus()?->getLabel();
 			case self::PROGRESS_FORMS:
 				return $file->getFormProgress();
 			case self::PROGRESS_ATTACHMENTS:

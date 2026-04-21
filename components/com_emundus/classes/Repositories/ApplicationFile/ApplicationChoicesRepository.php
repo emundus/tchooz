@@ -570,7 +570,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		if(!empty($search))
 		{
 			// Search in applicant name
-			$query->where('u.name LIKE ' . $this->db->quote('%' . $search . '%', false) . ' OR u.email LIKE ' . $this->db->quote('%' . $search . '%', false) . ' OR af.fnum LIKE ' . $this->db->quote('%' . $search . '%', false));
+			$query->andWhere('u.name LIKE ' . $this->db->quote('%' . $search . '%', false) . ' OR u.email LIKE ' . $this->db->quote('%' . $search . '%', false) . ' OR af.fnum LIKE ' . $this->db->quote('%' . $search . '%', false));
 		}
 
 		if(!empty($orderings)) {
