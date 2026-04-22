@@ -192,7 +192,16 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 }
                 else
                 {
-                    window.location.reload();
+                    const context = Joomla.getOptions('layout.emundus.actions.context', 'multiple');
+
+                    if (context === 'single')
+                    {
+                        window.location.href = '/index.php?option=com_emundus&task=openfile&fnum=' + fnum;
+                    }
+                    else
+                    {
+                        window.location.reload();
+                    }
                 }
             }
         }).catch(error => {

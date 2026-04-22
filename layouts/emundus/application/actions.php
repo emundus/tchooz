@@ -32,6 +32,8 @@ if (!empty($actions))
 	$document->addScriptOptions('layout.emundus.actions.' . $fnum, array_map(function ($action) {
 		return $action->__serialize();
 	}, $actions));
+    $document->addScriptOptions('layout.emundus.actions.context', $context);
+
 	$wa->registerAndUseScript('layout.emundus.fieldtohtmlfactory', 'layouts/emundus/script/FieldToHtmlFactory.js');
 	$wa->registerAndUseScript('layout.emundus.application.actions', 'layouts/emundus/script/application/actions.js', [], ['defer' => true], ['layout.emundus.fieldtohtmlfactory']);
 	Text::script('CANCEL');
