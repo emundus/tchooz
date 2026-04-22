@@ -689,14 +689,19 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 	private function assocFiles(array $fnums, $user, $group = null): bool
 	{
 
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		// 2.1.1. Association de l'ID user Expert avec le candidat (#__emundus_groups_eval)
-		$query->insert($db->quoteName('#__emundus_users_assoc'))
-			->columns($db->quoteName(['user_id', 'action_id', 'fnum', 'c', 'r', 'u', 'd']));
+		$read_access     = new \stdClass();
+		$read_access->id = 1;
+		$read_access->c  = 0;
+		$read_access->r  = 1;
+		$read_access->u  = 0;
+		$read_access->d  = 0;
+		$actions         = [$read_access];
 
-		$assocs = [];
+		$fnumsToAssoc = [];
 		foreach ($fnums as $fnum)
 		{
 			$check_query = $db->getQuery(true);
@@ -711,31 +716,17 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 				continue;
 			}
 
-			$assocs[] = $fnum;
-
-			$query->values($user->id . ', 1, ' . $db->Quote($fnum) . ', 0,1,0,0');
-			$query->values($user->id . ', 4, ' . $db->Quote($fnum) . ', 0,1,0,0');
-			$query->values($user->id . ', 5, ' . $db->Quote($fnum) . ', 1,1,1,0');
-			$query->values($user->id . ', 6, ' . $db->Quote($fnum) . ', 1,0,0,0');
-			$query->values($user->id . ', 7, ' . $db->Quote($fnum) . ', 1,0,0,0');
-			$query->values($user->id . ', 8, ' . $db->Quote($fnum) . ', 1,0,0,0');
-			$query->values($user->id . ', 14, ' . $db->Quote($fnum) . ', 1,1,1,0');
+			$fnumsToAssoc[] = $fnum;
 		}
 
-		if (!empty($assocs))
+		if (!empty($fnumsToAssoc))
 		{
-			try
+			if (!class_exists('EmundusModelFiles'))
 			{
-				$db->setQuery($query);
-				$db->execute();
+				require_once JPATH_ROOT . '/components/com_emundus/models/files.php';
 			}
-			catch (Exception $e)
-			{
-				echo $e->getMessage();
-				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
-
-				return false;
-			}
+			$m_files = new \EmundusModelFiles();
+			$m_files->shareUsers([$user->id], $actions, $fnumsToAssoc);
 		}
 
 		// 2.1.1B Association du compte utilisateur dans le groupe 'experts' defini dans les paramètres du plugin.
