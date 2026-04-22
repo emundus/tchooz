@@ -928,7 +928,8 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		$cache_key = 'ongoing_campaigns_' . ($this->withRelations ? 'with' : 'without') . '_relations';
 		if ($this->cache->contains($cache_key))
 		{
-			return $this->cache->get($cache_key);
+			$elements  = $this->getCampaignMoreElements();
+			return $this->factory->fromDbObjects($this->cache->get($cache_key), $this->withRelations, [], null, $elements);
 		}
 
 		try
@@ -948,13 +949,12 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 			$this->db->setQuery($query);
 			$results = $this->db->loadObjectList();
+			$this->cache->store($results, $cache_key);
 
 			if (!empty($results))
 			{
 				$elements  = $this->getCampaignMoreElements();
 				$campaigns = $this->factory->fromDbObjects($results, $this->withRelations, [], null, $elements);
-
-				$this->cache->store($campaigns, $cache_key);
 			}
 		}
 		catch (\Exception $e)
