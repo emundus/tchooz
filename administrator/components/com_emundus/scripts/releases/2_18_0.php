@@ -11,6 +11,11 @@
 namespace scripts;
 
 use Joomla\CMS\Component\ComponentHelper;
+use Tchooz\Factories\Language\LanguageFactory;
+use scripts\ReleaseInstaller;
+use Tchooz\Repositories\Language\LanguageRepository;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Reference\InternalReferenceEntity;
 
 class Release2_18_0Installer extends ReleaseInstaller
 {
@@ -38,6 +43,7 @@ class Release2_18_0Installer extends ReleaseInstaller
 			);
 			$this->tasks[]     = !empty($updateOwnerAction);
 
+			// set program id for existing campaigns
 			$query->clear()
 				->select('id')
 				->from($this->db->quoteName('#__menu'))

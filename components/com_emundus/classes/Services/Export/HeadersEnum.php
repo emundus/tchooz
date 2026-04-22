@@ -17,6 +17,7 @@ use Tchooz\Entities\User\EmundusUserEntity;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Label\LabelRepository;
+use Tchooz\Repositories\Reference\InternalReferenceRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 
 enum HeadersEnum: string
@@ -34,6 +35,8 @@ enum HeadersEnum: string
 	case STICKERS = 'stickers';
 	case PROGRESS_FORMS = 'progress_forms';
 	case PROGRESS_ATTACHMENTS = 'progress_attachments';
+	case SHORT_REFERENCE = 'short_reference';
+	case CUSTOM_REFERENCE = 'custom_reference';
 
 	case CAMPAIGN_LABEL = 'campaign_label';
 	case CAMPAIGN_YEAR = 'campaign_year';
@@ -65,6 +68,8 @@ enum HeadersEnum: string
 			self::STICKERS => Text::_('COM_EMUNDUS_FILES_TAGS'),
 			self::PROGRESS_FORMS => Text::_('COM_EMUNDUS_PROGRESS_FORMS_PERCENTAGE'),
 			self::PROGRESS_ATTACHMENTS => Text::_('COM_EMUNDUS_PROGRESS_ATTACHMENTS_PERCENTAGE'),
+			self::SHORT_REFERENCE => Text::_('COM_EMUNDUS_SHORT_REFERENCE'),
+			self::CUSTOM_REFERENCE => Text::_('COM_EMUNDUS_REFERENCE'),
 
 			self::CAMPAIGN_LABEL => Text::_('COM_EMUNDUS_CAMPAIGN'),
 			self::CAMPAIGN_YEAR => Text::_('COM_EMUNDUS_CAMPAIGN_YEAR'),
@@ -238,6 +243,12 @@ enum HeadersEnum: string
 				}
 
 				return !empty($choicesString) ? implode(', ', $choicesString) : Text::_('COM_EMUNDUS_NO_APPLICATION_CHOICE');
+			case self::SHORT_REFERENCE:
+				return $file->getShortReference();
+			case self::CUSTOM_REFERENCE:
+				$internalReferenceRepository = new InternalReferenceRepository();
+				$activeReference = $internalReferenceRepository->getActiveReference($file->getId());
+				return $activeReference ? $activeReference->getReference() : '';
 			default:
 				return null;
 		}

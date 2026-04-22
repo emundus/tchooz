@@ -13,6 +13,7 @@ enum MappingTransformersEnum: string
 	case MAP_VALUES = 'map_values';
 	case MAP_DATABASEJOIN_ELEMENT_VALUES = 'map_databasejoin_element_values';
 	case USE_FORMATTED_VALUE = 'use_formatted_value';
+	case SEQUENTIAL = 'sequential';
 	case BOOLEAN = 'boolean';
 	case EXTRACT_VALUE_AT_INDEX = 'extract_value_at_index';
 
@@ -28,6 +29,7 @@ enum MappingTransformersEnum: string
 			self::USE_FORMATTED_VALUE => Text::_('COM_EMUNDUS_MAPPING_TRANSFORMER_USE_FORMATTED_VALUE'),
 			self::BOOLEAN => Text::_('COM_EMUNDUS_MAPPING_TRANSFORMER_BOOLEAN'),
 			self::EXTRACT_VALUE_AT_INDEX => Text::_('COM_EMUNDUS_MAPPING_TRANSFORMER_EXTRACT_VALUE_AT_INDEX'),
+			self::SEQUENTIAL => Text::_('COM_EMUNDUS_MAPPING_TRANSFORMER_SEQUENTIAL'),
 		};
 	}
 }

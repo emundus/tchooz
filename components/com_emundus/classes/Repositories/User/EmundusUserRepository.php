@@ -14,6 +14,7 @@ use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
+use Joomla\Database\ParameterType;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\List\ListResult;
 use Tchooz\Entities\User\EmundusUserEntity;
@@ -32,7 +33,8 @@ use Tchooz\Traits\TraitTable;
 	'profile_picture',
 	'user_category',
 	'is_anonym',
-	'birth_date'
+	'birth_date',
+	'email_cc'
 ])]
 class EmundusUserRepository extends EmundusRepository implements RepositoryInterface
 {
@@ -97,6 +99,19 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 	public function getById(int $id): mixed
 	{
 		// TODO: Implement getById() method.
+	}
+
+	public function getIdByEmail(string $email): ?int
+	{
+		$query = $this->db->getQuery(true);
+		$query->select('id')
+			->from($this->db->quoteName('#__users'))
+			->where($this->db->quoteName('email') . ' = :email')
+			->bind(':email', $email, ParameterType::STRING);
+		$this->db->setQuery($query);
+		$user_id = $this->db->loadResult();
+
+		return !empty($user_id) ? (int)$user_id : null;
 	}
 
 	public function getByUserId(int $user_id): ?EmundusUserEntity

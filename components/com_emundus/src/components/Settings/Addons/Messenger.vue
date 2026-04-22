@@ -31,6 +31,16 @@ export default {
 					optional: true,
 				},
 				{
+					param: 'messenger_anonymous_applicant',
+					type: 'toggle',
+					placeholder: '',
+					value: '',
+					label: 'COM_EMUNDUS_SETTINGS_ADDONS_MESSENGER_ANONYMOUS_APPLICANT',
+					displayed: true,
+					hideLabel: true,
+					optional: true,
+				},
+				{
 					param: 'messenger_notifications_on_send',
 					type: 'toggle',
 					placeholder: '',
@@ -176,8 +186,9 @@ export default {
 		};
 	},
 	created() {
-		let configuration = JSON.parse(this.addon.configuration);
+		let configuration = typeof this.addon.params === 'string' ? JSON.parse(this.addon.params) : this.addon.params;
 
+		console.log(configuration);
 		this.fields.forEach((field) => {
 			field.value = configuration[field.param] || '';
 		});

@@ -9,6 +9,7 @@ use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\TableJoin;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
+use Tchooz\Entities\Fields\DateField;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\ValueFormatEnum;
@@ -50,7 +51,8 @@ class FileDataConditionResolver implements ConditionTargetResolverInterface
 	{
 		return [
 			new ChoiceField('status', Text::_('COM_EMUNDUS_ACCESS_STATUS'), $this->getStatusChoices(), false, true),
-			new ChoiceField('id_tag', Text::_('COM_EMUNDUS_TAGS'), $this->getTagsChoices(), false, true)
+			new ChoiceField('id_tag', Text::_('COM_EMUNDUS_TAGS'), $this->getTagsChoices(), false, true),
+			new DateField('date_time', Text::_('APPLICATION_CREATION_DATE'), false)
 		];
 	}
 
@@ -85,7 +87,6 @@ class FileDataConditionResolver implements ConditionTargetResolverInterface
 					$value = $db->loadResult();
 					break;
 			}
-
 		}
 
 		return $value;

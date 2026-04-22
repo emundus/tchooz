@@ -6,10 +6,11 @@ import Info from '@/components/Utils/Info.vue';
 import transformIntoParameterField from '@/mixins/transformIntoParameterField.js';
 import settingsService from '@/services/settings.js';
 import alerts from '@/mixins/alerts.js';
+import ParameterForm from '@/components/Utils/Form/ParameterForm.vue';
 
 export default {
 	name: 'IntegrationSetup',
-	components: { History, Tabs, Parameter, Info },
+	components: { ParameterForm, History, Tabs, Parameter, Info },
 	props: {
 		name: {
 			type: String,
@@ -58,9 +59,6 @@ export default {
 		onSelectTab(tabId) {
 			this.selectedTab = this.tabs.find((tab) => tab.id === tabId);
 		},
-		onParameterValueUpdated(parameter) {
-			// update this
-		},
 		saveApp() {
 			let config = {};
 
@@ -76,9 +74,9 @@ export default {
 
 			settingsService.setupApp(this.app.id, config).then((response) => {
 				if (response.status) {
-					this.alertSuccess(response.message);
+					this.alertSuccess(response.msg);
 				} else {
-					this.alertError(response.message);
+					this.alertError(response.msg);
 				}
 			});
 		},
@@ -98,12 +96,7 @@ export default {
 				v-if="selectedTab"
 				class="tw-mb-6 tw-flex tw-w-full tw-flex-col tw-justify-between tw-gap-3 tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-p-4 tw-font-medium tw-text-black rtl:tw-text-right"
 			>
-				<Parameter
-					v-for="parameter in selectedTab.parameters"
-					:key="selectedTab.id + '-' + parameter.param"
-					:parameter-object="parameter"
-					@parameter-value-updated="onParameterValueUpdated"
-				/>
+				<ParameterForm :groups="[selectedTab]" />
 				<div class="tw-mt-4 tw-flex tw-w-full tw-justify-end">
 					<button class="tw-btn-primary" @click="saveApp">
 						{{ translate('SAVE') }}

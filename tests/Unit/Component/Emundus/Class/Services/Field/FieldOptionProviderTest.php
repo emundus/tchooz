@@ -8,6 +8,12 @@ use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Services\Field\FieldOptionProvider;
 use Tchooz\Entities\Fields\ChoiceField;
 
+/**
+ * @package     Unit\Component\Emundus\Class\Services\Field
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Services\Field\FieldOptionProvider
+ */
 class FieldOptionProviderTest extends UnitTestCase
 {
 	/**

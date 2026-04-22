@@ -164,7 +164,7 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 			$query->clear()
 				->select($this->db->quoteName('esp.programmes'))
 				->from($this->db->quoteName('#__emundus_setup_programmes', 'esp'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esp.id') . ' = ' . $this->db->quoteName('esc.program_id'))
 				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
 				->where($this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quote($fnum));
 

@@ -4665,7 +4665,8 @@ class EmundusHelperFiles
 					'sp'   => 'jos_emundus_setup_programmes',
 					'u'    => 'jos_users',
 					'eu'   => 'jos_emundus_users',
-					'eta'  => 'jos_emundus_tag_assoc'
+					'eta'  => 'jos_emundus_tag_assoc',
+					'eir'  => 'jos_emundus_internal_reference'
 				];
 			}
 
@@ -4675,6 +4676,7 @@ class EmundusHelperFiles
 
 				$at_least_one = false;
 
+				$internal_reference_alias = array_search('jos_emundus_internal_reference', $already_joined);
 				$campaign_candidature_alias = array_search('jos_emundus_campaign_candidature', $already_joined);
 				$emundus_users_alias = array_search('jos_emundus_users', $already_joined);
 				if (empty($emundus_users_alias)) {
@@ -4693,10 +4695,12 @@ class EmundusHelperFiles
 				$scopes = [
 					$campaign_candidature_alias . '.applicant_id' => 'jecc.applicant_id',
 					$campaign_candidature_alias . '.fnum' => 'jecc.fnum',
+					$campaign_candidature_alias . '.short_reference' => 'jecc.short_reference',
+					$internal_reference_alias . '.reference' => 'eir.reference',
 					$users_alias . '.username' => 'u.username',
 					$emundus_users_alias . '.firstname' =>  'eu.firstname',
 					$emundus_users_alias . '.lastname' => 'eu.lastname',
-					$users_alias . '.email' => 'u.email',
+					$users_alias . '.email' => 'u.email'
 				];
 
 				foreach ($quick_search_filters as $index => $filter)
@@ -4706,6 +4710,10 @@ class EmundusHelperFiles
 						'eu.firstname',
 						'eu.lastname',
 						'u.email'
+					];
+					$reference_scopes = [
+						'jecc.short_reference',
+						'eir.reference'
 					];
 					if (!empty($filter['scope']))
 					{
@@ -4717,6 +4725,7 @@ class EmundusHelperFiles
 							$scope_index = 0;
 							foreach ($scopes as $scope_alias => $scope)
 							{
+								$filterValue = trim($filter['value']);
 								if ($index > 0 || $scope_index > 0)
 								{
 									$quick_search_where .= ' OR ';
@@ -4729,7 +4738,19 @@ class EmundusHelperFiles
 									$quick_search_where .= '((';
 								}
 
-								$quick_search_where .= $this->writeQueryWithOperator($scope, $filter['value'], 'LIKE');
+								if (in_array($scope, $reference_scopes))
+								{
+									$referenceValue = explode('#', $filter['value']);
+									if(sizeof($referenceValue) === 2)
+									{
+										match ($scope) {
+											'jecc.short_reference' => $filterValue = $referenceValue[1],
+											'eir.reference' => $filterValue = $referenceValue[0]
+										};
+									}
+								}
+
+								$quick_search_where .= $this->writeQueryWithOperator($scope, $filterValue, 'LIKE');
 								$scope_index++;
 
 								if($scope_index === count($scopes) && $anonymScopeFound)
@@ -4766,7 +4787,7 @@ class EmundusHelperFiles
 								$quick_search_where .= '(';
 							}
 
-							$quick_search_where .= $this->writeQueryWithOperator($scope_alias, $filter['value'], '=');
+							$quick_search_where .= $this->writeQueryWithOperator($scope_alias, trim($filter['value']), '=');
 
 							if($anonymScopeFound)
 							{
@@ -6297,7 +6318,7 @@ class EmundusHelperFiles
                             FROM #__emundus_campaign_candidature as jecc
                             LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                             LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
-                            LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
+                            LEFT JOIN #__emundus_setup_programmes as sp on sp.id = esc.program_id
                             LEFT JOIN #__users as u on u.id = jecc.applicant_id
                             LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                             LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
@@ -6352,7 +6373,7 @@ class EmundusHelperFiles
                             FROM #__emundus_campaign_candidature as jecc
                             LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                             LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
-                            LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
+                            LEFT JOIN #__emundus_setup_programmes as sp on sp.id = esc.program_id
                             LEFT JOIN #__users as u on u.id = jecc.applicant_id
                             LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                             LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum
@@ -6976,7 +6997,7 @@ class EmundusHelperFiles
 				{
 					$query->select('sp.id')
 						->from('#__emundus_setup_programmes as sp')
-						->leftJoin('#__emundus_setup_campaigns as esc ON esc.training = sp.code')
+						->leftJoin('#__emundus_setup_campaigns as esc ON esc.program_id = sp.id')
 						->where('esc.id = ' . $campaign_id);
 					$db->setQuery($query);
 					$program_id = $db->loadResult();
@@ -7004,7 +7025,7 @@ class EmundusHelperFiles
 							$query->select('COUNT(DISTINCT ecc.fnum)')
 								->from('#__emundus_campaign_candidature as ecc')
 								->leftJoin('#__emundus_setup_campaigns as esc ON esc.id = ecc.campaign_id')
-								->leftJoin('#__emundus_setup_programmes as sp ON sp.code = esc.training')
+								->leftJoin('#__emundus_setup_programmes as sp ON sp.id = esc.program_id')
 								->where('sp.id = ' . $program_id)
 								->andWhere('ecc.applicant_id = ' . $user_id)
 								->andWhere('ecc.published = 1');

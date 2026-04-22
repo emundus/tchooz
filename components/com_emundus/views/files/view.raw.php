@@ -17,12 +17,16 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.view');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Enums\CrudEnum;
+use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Actions\ActionRepository as AccessActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Services\Reference\InternalReferenceService;
 
 /**
  * HTML View class for the Emundus Component
@@ -105,7 +109,13 @@ class EmundusViewFiles extends JViewLegacy
 		}
 
 		$h_files              = new EmundusHelperFiles;
-		$params               = JComponentHelper::getParams('com_emundus');
+		$internalReferenceService = new InternalReferenceService(
+			new DateProvider(),
+			new ApplicationFileRepository()
+		);
+		$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity();
+
+		$params               = ComponentHelper::getParams('com_emundus');
 		$default_actions      = $params->get('default_actions', '[]');
 		$hide_default_actions = $params->get('hide_default_actions', 0);
 
@@ -128,7 +138,7 @@ class EmundusViewFiles extends JViewLegacy
 				$post = file_get_contents("php://input");
 				$post = json_decode($post, true);
 				$fnums = $post['fnums'];
-				
+
 				if ($fnums == 'all')
 				{
 					$m_files     = new EmundusModelFiles;
@@ -335,6 +345,50 @@ class EmundusViewFiles extends JViewLegacy
 				}
 
 				break;
+
+			case 'generatereference':
+				$actionRepository   = new AccessActionRepository();
+				$customReferenceAction = $actionRepository->getByName('custom_reference');
+
+				$fnum_array = [];
+
+				$post = file_get_contents("php://input");
+				$post = json_decode($post, true);
+				$fnums = $post['fnums'];
+
+				if ($fnums == 'all')
+				{
+					$m_files     = new EmundusModelFiles;
+					$fnums       = $m_files->getAllFnums();
+					$fnums_infos = $m_files->getFnumsInfos($fnums, 'object');
+					$fnums       = $fnums_infos;
+				}
+				else
+				{
+					$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+				}
+
+
+				foreach ($fnums as $key => $fnum)
+				{
+
+					if ($fnum->fnum === 'em-check-all')
+					{
+						unset($fnums[$key]);
+						continue;
+					}
+
+					if (EmundusHelperAccess::asAccessAction($customReferenceAction->getId(), CrudEnum::CREATE->value, $this->user->id, $fnum->fnum))
+					{
+						$fnum_array[] = $fnum->fnum;
+					}
+				}
+
+				// Store the fnums in the session
+				$this->app->setUserState('com_emundus.files.generatereference.fnums', $fnum_array);
+
+				break;
+
 
 			// Get list of application files
 			default:
@@ -553,6 +607,11 @@ class EmundusViewFiles extends JViewLegacy
 									$userObj->user->email = '';
 									$userObj->user->id    = '';
 								}
+
+								$userObj->showReference = $customReferenceFormatEntity->isShowInFiles();
+								$userObj->shortReference = $user['short_reference'];
+								$userObj->reference = $user['reference'];
+
 
 								$line['fnum'] = $userObj;
 							}

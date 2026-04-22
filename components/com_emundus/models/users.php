@@ -752,7 +752,7 @@ class EmundusModelUsers extends ListModel
 
 		$query->select('sc.*, esp.label as programme, sc.id as campaign_id')
 			->from($this->db->quoteName('#__emundus_setup_campaigns', 'sc'))
-			->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON sc.training = esp.code')
+			->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON sc.program_id = esp.id')
 			->order('sc.start_date DESC')
 			->order('sc.label ASC');
 
@@ -3293,7 +3293,7 @@ class EmundusModelUsers extends ListModel
 			->from($this->db->quoteName('#__emundus_setup_groups', 'sg'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_groups_repeat_course', 'grc') . ' ON ' . $this->db->quoteName('grc.parent_id') . ' = ' . $this->db->quoteName('sg.id'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->db->quoteName('sp.code') . ' = ' . $this->db->quoteName('grc.course'))
-			->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->db->quoteName('sp.code') . ' = ' . $this->db->quoteName('sc.training'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->db->quoteName('sp.id') . ' = ' . $this->db->quoteName('sc.program_id'))
 			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('cc.campaign_id') . ' = ' . $this->db->quoteName('sc.id'))
 			->where($this->db->quoteName('sg.id') . ' IN (' . implode(',', $group_ids) . ') AND (' . $this->db->quoteName('cc.fnum') . ' LIKE ' . $this->db->quote($fnum) . ' OR ' . $this->db->quoteName('sp.code') . ' IS NULL)');
 

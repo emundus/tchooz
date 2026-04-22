@@ -20,7 +20,7 @@ use Joomla\Registry\Registry;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
-use Tchooz\Repositories\ExternalReference\ExternalReferenceRepository;
+use Tchooz\Repositories\Reference\ExternalReferenceRepository;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -258,7 +258,7 @@ class FilesModel extends ListModel
 				// Add application choices
 				/*$addonRepository    = new AddonRepository();
 				$choices_addon      = $addonRepository->getByName('choices');
-				if ($choices_addon->getValue()->isEnabled())
+				if ($choices_addon->isActivated())
 				{
 					$choicesArray = [];
 					$applicationChoicesRepository = new ApplicationChoicesRepository();

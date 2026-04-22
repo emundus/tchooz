@@ -27,17 +27,13 @@ use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
 use PHPMailer\PHPMailer\Exception as phpMailerException;
 use Smalot\PdfParser\Parser;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Symfony\Component\Yaml\Yaml;
 use Tchooz\Entities\Fields\PasswordField;
-use Tchooz\Entities\Settings\AddonEntity;
 use Tchooz\Entities\Upload\UploadEntity;
-use Tchooz\Repositories\Addons\AddonRepository;
-use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Services\Integrations\IntegrationConfigurationRegistry;
 use Web357\Plugin\System\Microsoftoutlook365mailconnect\Extension\Microsoftoutlook365mailconnect;
@@ -2136,6 +2132,7 @@ class EmundusModelSettings extends ListModel
 
 		$params['microsoft365_applicationid'] = $microsoftParams->get('oauth_application_id', '');
 		$params['microsoft365_clientsecret']  = $microsoftParams->get('oauth_client_secret', '');
+		$params['microsoft365_tenantid']      = $microsoftParams->get('oauth_tenant_id', '');
 		$params['microsoft365_redirecturi']   = MicrosoftOutlookApplicationHelper::getInstance()->getRedirectUrl();
 		$params['microsoft365_isauthorized']  = MicrosoftOutlookApplicationHelper::getInstance()->isAuthorized();
 
@@ -2410,7 +2407,11 @@ class EmundusModelSettings extends ListModel
 
 		try
 		{
-			$result['status'] = $mailer->send();
+			$result['status'] = $mailer->Send();
+			if(!$result['status'])
+			{
+				throw new RuntimeException($mailer->ErrorInfo ?: 'Email sending failed without specific error');
+			}
 		}
 		catch (MailDisabledException|phpMailerException $e)
 		{
@@ -2418,6 +2419,12 @@ class EmundusModelSettings extends ListModel
 			$result['title']  = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR');
 			$result['text']   = Text::sprintf('COM_CONFIG_SENDMAIL_ERROR', $config['mailfrom']);
 			$result['desc']   = Text::_($this->convertTextException($e->getMessage()));
+		}
+		catch (Exception $e) {
+			$result['status'] = false;
+			$result['title']  = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR');
+			$result['text']   = Text::sprintf('COM_CONFIG_SENDMAIL_ERROR', $config['mailfrom']);
+			$result['desc']   = $e->getMessage();
 		}
 
 		if ($result['status'] && ($variables['server_type'] !== 'microsoftoutlook365mailconnect' && $mailer->Mailer !== $app->get('mailer')))
@@ -2527,6 +2534,7 @@ class EmundusModelSettings extends ListModel
 						$params                         = json_decode($result->params, true);
 						$params['oauth_application_id'] = $config['oauth_application_id'];
 						$params['oauth_client_secret']  = $config['oauth_client_secret'];
+						$params['oauth_tenant_id']      = $config['oauth_tenant_id'];
 						$params['oauth_from_email']     = $config['mailfrom'];
 
 						$query->clear()
@@ -3926,447 +3934,14 @@ class EmundusModelSettings extends ListModel
 		return $config;
 	}
 
-	public function getAddons()
-	{
-		$addons = [];
-
-		try
-		{
-			$emConfig = ComponentHelper::getParams('com_emundus');
-
-			if (!class_exists('AddonEntity'))
-			{
-				require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/Settings/AddonEntity.php');
-			}
-
-			$addon = new AddonEntity(
-				'COM_EMUNDUS_ADDONS_MESSENGER',
-				'messenger',
-				'chat_bubble',
-				'COM_EMUNDUS_ADDONS_MESSENGER_DESC'
-			);
-
-			$query = $this->db->getQuery(true);
-			$query->select('enabled')
-				->from($this->db->quoteName('#__extensions'))
-				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('module'))
-				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'));
-			$this->db->setQuery($query);
-			$enabled = $this->db->loadResult();
-
-			if ($enabled)
-			{
-				$query->clear()
-					->select('count(id)')
-					->from($this->db->quoteName('#__modules'))
-					->where($this->db->quoteName('module') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'))
-					->where($this->db->quoteName('published') . ' = 1');
-				$this->db->setQuery($query);
-				$enabled = $this->db->loadResult();
-
-				$addon->setEnabled((bool) $enabled);
-			}
-
-			$messenger_configuration                                      = [
-				'messenger_anonymous_coordinator'  => $emConfig->get('messenger_anonymous_coordinator', 0),
-				'messenger_notifications_on_send'  => $emConfig->get('messenger_notifications_on_send', 1),
-				'messenger_add_message_notif'      => $emConfig->get('messenger_add_message_notif', 0),
-				'messenger_notify_users_programs'  => $emConfig->get('messenger_notify_users_programs', 0),
-				'messenger_notify_groups'          => $emConfig->get('messenger_notify_groups', ''),
-				'messenger_notify_users'           => $emConfig->get('messenger_notify_users', ''),
-				'messenger_notify_frequency'       => $emConfig->get('messenger_notify_frequency', 'daily'),
-				'messenger_notify_frequency_times' => $emConfig->get('messenger_notify_frequency_times', 0),
-				'messenger_notify_frequency_type'  => $emConfig->get('messenger_notify_frequency_type', 'daily'),
-			];
-			$messenger_configuration['messenger_notify_frequency_custom'] = $messenger_configuration['messenger_notify_frequency_times'] . ' ' . $messenger_configuration['messenger_notify_frequency_type'];
-			$addon->setConfiguration($messenger_configuration);
-
-			$addons[] = $addon;
-
-			$smsAddon = new AddonEntity(
-				'COM_EMUNDUS_ADDONS_SMS',
-				'sms',
-				'send_to_mobile',
-				'COM_EMUNDUS_ADDONS_SMS_DESC'
-			);
-
-			$query->clear()
-				->select($this->db->quoteName('value'))
-				->from($this->db->quoteName('#__emundus_setup_config'))
-				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('sms'));
-
-			$this->db->setQuery($query);
-			$params = json_decode($this->db->loadResult(), true);
-			if ($params['displayed'])
-			{
-				$smsAddon->setEnabled($params['enabled'] ?? 0);
-				$smsAddon->setDisplayed(true);
-				$smsAddon->setConfiguration($params['params'] ?? []);
-				$addons[] = $smsAddon;
-			}
-
-			$query->clear()
-				->select($this->db->quoteName('value'))
-				->from($this->db->quoteName('#__emundus_setup_config'))
-				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('ranking'));
-
-			$this->db->setQuery($query);
-			$params = $this->db->loadResult();
-
-			if (!empty($params))
-			{
-				$params = json_decode($params, true);
-				if ($params['displayed'])
-				{
-					$rankingAddon = new AddonEntity(
-						Text::_('COM_EMUNDUS_ONBOARD_SETTINGS_MENU_RANKING'),
-						'ranking',
-						'leaderboard',
-						Text::_('COM_EMUNDUS_ONBOARD_SETTINGS_MENU_RANKING_DESC')
-					);
-					$rankingAddon->setEnabled($params['enabled'] ?? 0);
-					$rankingAddon->setDisplayed(true);
-					$rankingAddon->setConfiguration($params['params'] ?? []);
-					$addons[] = $rankingAddon;
-				}
-			}
-
-			require_once(JPATH_ROOT . '/components/com_emundus/classes/Repositories/Payment/PaymentRepository.php');
-			$payment_repo = new PaymentRepository();
-			$paymentAddon = $payment_repo->getAddon();
-
-			if ($paymentAddon->displayed == 1)
-			{
-				$addons[] = $paymentAddon;
-			}
-
-			$importAddon = new AddonEntity(
-				'COM_EMUNDUS_ADDONS_IMPORT',
-				'import',
-				'csv',
-				'COM_EMUNDUS_ADDONS_IMPORT_DESC'
-			);
-
-			$query->clear()
-				->select($this->db->quoteName('value'))
-				->from($this->db->quoteName('#__emundus_setup_config'))
-				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('import'));
-
-			$this->db->setQuery($query);
-			$params = json_decode($this->db->loadResult(), true);
-			if ($params['displayed'])
-			{
-				$importAddon->setEnabled($params['enabled'] ?? 0);
-				$importAddon->setDisplayed(true);
-				$importAddon->setConfiguration($params['params'] ?? []);
-				$addons[] = $importAddon;
-			}
-
-			$query->clear()
-				->select($this->db->quoteName('value'))
-				->from($this->db->quoteName('#__emundus_setup_config'))
-				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('anonymous'));
-
-			$this->db->setQuery($query);
-			$params = json_decode($this->db->loadResult(), true);
-
-			if ($params['displayed'])
-			{
-				$addons[] = new AddonEntity(
-					'COM_EMUNDUS_ADDONS_ANONYMOUS',
-					'anonymous',
-					'domino_mask',
-					'COM_EMUNDUS_ADDONS_ANONYMOUS_DESC',
-					json_encode($params['params']),
-					$params['enabled'] ?? 0,
-					1
-				);
-			}
-
-			$query->clear()
-				->select($this->db->quoteName('value'))
-				->from($this->db->quoteName('#__emundus_setup_config'))
-				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('crc'));
-
-			$this->db->setQuery($query);
-			$params = json_decode($this->db->loadResult(), true);
-			if ($params['displayed'])
-			{
-				$addons[] = new AddonEntity(
-					'COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CRC',
-					'crc',
-					'sensor_occupied',
-					'COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CRC_DESC',
-					json_encode($params['params']),
-					$params['enabled'] ?? 0,
-					1
-				);
-			}
-
-
-			$choicesAddon = new AddonEntity(
-				'COM_EMUNDUS_ADDONS_CHOICES',
-				'choices',
-				'checklist_rtl',
-				'COM_EMUNDUS_ADDONS_CHOICES_DESC'
-			);
-			$query->clear()
-				->select($this->db->quoteName('value'))
-				->from($this->db->quoteName('#__emundus_setup_config'))
-				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('choices'));
-
-			$this->db->setQuery($query);
-			$params = json_decode($this->db->loadResult(), true);
-			if ($params['displayed'])
-			{
-				$choicesAddon->setEnabled($params['enabled'] ?? 0);
-				$choicesAddon->setDisplayed(true);
-				$choicesAddon->setConfiguration($params['params'] ?? []);
-				$addons[] = $choicesAddon;
-			}
-
-			$addonRepository = new AddonRepository();
-			$automationAddon = $addonRepository->getByName('automation');
-
-			if ($automationAddon->getValue()->isDisplayed())
-			{
-				$addons[] = new AddonEntity(
-					'COM_EMUNDUS_ADDONS_AUTOMATION',
-					'automation',
-					'automation',
-					'COM_EMUNDUS_ADDONS_AUTOMATION_DESC',
-					json_encode($automationAddon->getValue()->getParams()),
-					$automationAddon->getValue()->isEnabled() ? 1 : 0,
-					1
-				);
-			}
-		}
-		catch (Exception $e)
-		{
-			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-		}
-
-		return $addons;
-	}
-
-	// TODO: Move addon management to dedicated repository with factories to handle each addon type
-	public function toggleAddon(string $type, int $enabled): bool
-	{
-		require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
-
-		$updated = false;
-
-		$query = $this->db->getQuery(true);
-
-		try
-		{
-			switch ($type)
-			{
-				case 'messenger':
-					// Check if the extension and module is installed
-					$query->clear()
-						->select('count(extension_id)')
-						->from($this->db->quoteName('#__extensions'))
-						->where($this->db->quoteName('type') . ' = ' . $this->db->quote('module'))
-						->where($this->db->quoteName('element') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'));
-					$this->db->setQuery($query);
-					$extension_installed = $this->db->loadResult();
-
-					if (empty($extension_installed))
-					{
-						// Install the extension
-						EmundusHelperUpdate::installExtension('mod_emundus_messenger_notifications', 'mod_emundus_messenger_notifications', null, 'module', $enabled, '', '{}', false, false);
-					}
-					else
-					{
-						$query->clear()
-							->update($this->db->quoteName('#__extensions'))
-							->set($this->db->quoteName('enabled') . ' = ' . $this->db->quote($enabled))
-							->where($this->db->quoteName('element') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'));
-						$this->db->setQuery($query);
-						$updated = $this->db->execute();
-					}
-
-					// Check if the module is installed
-					$query->clear()
-						->select('count(id)')
-						->from($this->db->quoteName('#__modules'))
-						->where($this->db->quoteName('module') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'));
-					$this->db->setQuery($query);
-					$module_installed = $this->db->loadResult();
-
-					if (empty($module_installed))
-					{
-						// Install the module
-						EmundusHelperUpdate::createModule('[APPLICANT] Messenger', 'header-c', 'mod_emundus_messenger_notifications', '{}', $enabled, 1, 1, 0, 0, false);
-					}
-					else
-					{
-						$query->clear()
-							->update($this->db->quoteName('#__modules'))
-							->set($this->db->quoteName('published') . ' = ' . $this->db->quote($enabled))
-							->where($this->db->quoteName('module') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'));
-						$this->db->setQuery($query);
-						$updated = $this->db->execute();
-					}
-
-					// Publish emails
-					$emails = ['messenger_reminder', 'messenger_reminder_group'];
-					$query->clear()
-						->update($this->db->quoteName('#__emundus_setup_emails'))
-						->set('published = ' . $this->db->quote($enabled))
-						->where('lbl IN (' . implode(',', $this->db->quote($emails)) . ')');
-					$this->db->setQuery($query);
-					$updated = $this->db->execute();
-
-					// Publish messages menu in application menu
-					$query->clear()
-						->update($this->db->quoteName('#__menu'))
-						->set('published = ' . $this->db->quote($enabled))
-						->where('menutype = ' . $this->db->quote('application'))
-						->where('link LIKE ' . $this->db->quote('index.php?option=com_emundus&view=messenger&format=raw&layout=coordinator'));
-					$this->db->setQuery($query);
-					$updated = $this->db->execute();
-					break;
-				case 'anonymous':
-				case 'sms':
-					$query->select('value')
-						->from($this->db->quoteName('#__emundus_setup_config'))
-						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
-					$this->db->setQuery($query);
-					$params = json_decode($this->db->loadResult(), true);
-
-					$params['enabled'] = $enabled === 1;
-					$query->clear()
-						->update($this->db->quoteName('#__emundus_setup_config'))
-						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
-						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
-					$this->db->setQuery($query);
-					$updated = $this->db->execute();
-
-					if ($type === 'anonymous')
-					{
-						$query->clear()
-							->update($this->db->quoteName('#__menu'))
-							->set('published = ' . $this->db->quote($enabled ? 1 : 0))
-							->where('alias IN (' . $this->db->quote('connect-from-token') . ', ' . $this->db->quote('anonym-registration') . ')');
-						$this->db->setQuery($query);
-						$this->db->execute();
-
-						$query->clear()
-							->update($this->db->quoteName('#__emundus_setup_emails'))
-							->set($this->db->quoteName('published') . ' = ' . $this->db->quote($enabled ? 1 : 0))
-							->where($this->db->quoteName('lbl') . ' = ' . $this->db->quote('anonym_token_email'));
-						$this->db->setQuery($query);
-						$this->db->execute();
-					}
-
-					break;
-				case 'ranking':
-					$query->clear()
-						->update($this->db->quoteName('#__menu'))
-						->set('published = ' . $this->db->quote($enabled))
-						->where('link LIKE ' . $this->db->quote('index.php?option=com_emundus&view=ranking'));
-					$this->db->setQuery($query);
-					$updated = $this->db->execute();
-
-					$query->clear()
-						->update($this->db->quoteName('#__emundus_setup_emails'))
-						->set('published = ' . $this->db->quote($enabled))
-						->where('lbl LIKE ' . $this->db->quote('ranking_locked'))
-						->orWhere('lbl LIKE ' . $this->db->quote('ask_lock_ranking'));
-					$this->db->setQuery($query);
-					$updated = $this->db->execute();
-
-					$query->clear()
-						->select('value')
-						->from($this->db->quoteName('#__emundus_setup_config'))
-						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('ranking'));
-
-					$this->db->setQuery($query);
-					$params = json_decode($this->db->loadResult(), true);
-
-					$params['enabled'] = $enabled;
-					$query->clear()
-						->update($this->db->quoteName('#__emundus_setup_config'))
-						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
-						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('ranking'));
-
-					$this->db->setQuery($query);
-					$updated = $this->db->execute();
-				case 'import':
-					// (Un)Publish emails
-					$query->clear()
-						->update($this->db->quoteName('#__emundus_setup_emails'))
-						->set('published = ' . $this->db->quote($enabled))
-						->where('lbl IN (' . $this->db->quote('import_account_created') . ', ' . $this->db->quote('import_file_created') . ', ' . $this->db->quote('import_file_updated') . ')');
-					$this->db->setQuery($query);
-					$updated = $this->db->execute();
-
-					// (Un)Publish import action
-					$query->clear()
-						->update($this->db->quoteName('#__emundus_setup_actions'))
-						->set($this->db->quoteName('status') . ' = ' . $this->db->quote($enabled))
-						->where($this->db->quoteName('name') . ' = ' . $this->db->quote('import'));
-					$this->db->setQuery($query);
-					$updated = $this->db->execute();
-
-					$query->clear()
-						->select('value')
-						->from($this->db->quoteName('#__emundus_setup_config'))
-						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('import'));
-
-					$this->db->setQuery($query);
-					$params = json_decode($this->db->loadResult(), true);
-
-					$params['enabled'] = $enabled;
-					$query->clear()
-						->update($this->db->quoteName('#__emundus_setup_config'))
-						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
-						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('import'));
-
-					$this->db->setQuery($query);
-					$updated = $this->db->execute();
-
-					break;
-				case 'choices':
-					// Enable step type
-					$query->clear()
-						->update($this->db->quoteName('#__emundus_setup_step_types'))
-						->set($this->db->quoteName('published') . ' = ' . $this->db->quote($enabled))
-						->where($this->db->quoteName('label') . ' = ' . $this->db->quote('COM_EMUNDUS_WORKFLOW_STEP_TYPE_CHOICES'));
-					$this->db->setQuery($query);
-					$updated = $this->db->execute();
-
-					$query->clear()
-						->select('value')
-						->from($this->db->quoteName('#__emundus_setup_config'))
-						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
-					$this->db->setQuery($query);
-					$params = json_decode($this->db->loadResult(), true);
-
-					$params['enabled'] = $enabled === 1;
-					$query->clear()
-						->update($this->db->quoteName('#__emundus_setup_config'))
-						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
-						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
-					$this->db->setQuery($query);
-					$updated = $this->db->execute();
-
-					break;
-			}
-		}
-		catch (Exception $e)
-		{
-			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-		}
-
-		return $updated;
-	}
-
-	public function setupMessenger($setup)
+	public function setupMessenger(object|array $setup)
 	{
 		$updated = false;
+
+		if(is_array($setup))
+		{
+			$setup = (object) $setup;
+		}
 
 		try
 		{
@@ -4399,6 +3974,7 @@ class EmundusModelSettings extends ListModel
 			}
 
 			$emConfig->set('messenger_anonymous_coordinator', $setup->messenger_anonymous_coordinator);
+			$emConfig->set('messenger_anonymous_applicant', $setup->messenger_anonymous_applicant);
 			$emConfig->set('messenger_notifications_on_send', $setup->messenger_notifications_on_send);
 			$emConfig->set('messenger_notify_users_programs', $setup->messenger_notify_users_programs);
 			$emConfig->set('messenger_notify_groups', $setup->messenger_notify_groups);

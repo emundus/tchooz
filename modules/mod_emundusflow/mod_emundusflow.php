@@ -17,6 +17,9 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Tchooz\Providers\DateProvider;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Services\Reference\InternalReferenceService;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -274,6 +277,13 @@ if (isset($user->fnum) && !empty($user->fnum))
 		$current_lang_id = 0;
 		$campaign_languages = [];
 	}
+
+	$internalReferenceService    = new InternalReferenceService(
+		new DateProvider(),
+		new ApplicationFileRepository()
+	);
+	$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity();
+	$isShowToApplicant = $customReferenceFormatEntity->isShowToApplicant();
 
 	require(ModuleHelper::getLayoutPath('mod_emundusflow', $layout));
 }

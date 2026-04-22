@@ -252,7 +252,7 @@ class ApplicationFileRepositoryTest extends UnitTestCase
 		$this->assertTrue($flushed, 'Le flush doit réussir');
 
 		$updatedApplicationFile = $this->repository->getByFnum($this->dataset['fnum']);
-		$this->assertEquals(1, $updatedApplicationFile->getStatus()->getId(), 'Le statut doit être mis à jour');
+		$this->assertEquals(1, $updatedApplicationFile->getStatus()->getStep(), 'Le statut doit être mis à jour');
 	}
 
 	/**
