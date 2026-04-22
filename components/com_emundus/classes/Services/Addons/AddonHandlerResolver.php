@@ -3,21 +3,16 @@
 namespace Tchooz\Services\Addons;
 
 use RuntimeException;
+use Tchooz\Services\Handlers\AbstractHandlerResolver;
 
-class AddonHandlerResolver
+class AddonHandlerResolver extends AbstractHandlerResolver
 {
-	protected string $basePath;
-
-	protected ?string $namespacePrefix;
-
-	public function __construct(string $basePath = null, string $namespacePrefix = null)
+	public function __construct()
 	{
-		$this->basePath = $basePath ?? JPATH_SITE . '/components/com_emundus/classes/Services/Addons/';
-
-		$this->namespacePrefix = $namespacePrefix;
+		parent::__construct(JPATH_SITE . '/components/com_emundus/classes/Services/Addons/Handlers/', '\\Tchooz\\Services\\Addons\\Handlers\\');
 	}
 
-	public function resolve(string $addonType, $addon): AddonHandlerInterface
+	public function resolve(string $addonType, $addon): AbstractAddonHandler
 	{
 		$classBase = str_replace(' ', '', ucwords(str_replace('_', ' ', $addonType))) . 'AddonHandler';
 		$fileName  = $this->basePath . $classBase . '.php';
@@ -32,7 +27,7 @@ class AddonHandlerResolver
 		if ($this->namespacePrefix) {
 			$candidates[] = '\\' . trim($this->namespacePrefix, '\\') . '\\' . $classBase;
 		} else {
-			$candidates[] = '\\Tchooz\\Services\\Addons\\' . $classBase;
+			$candidates[] = '\\Tchooz\\Services\\Addons\\Handlers\\' . $classBase;
 		}
 
 		$classFound = null;
@@ -48,8 +43,8 @@ class AddonHandlerResolver
 		}
 
 		$instance = new $classFound($addon);
-		if (!($instance instanceof AddonHandlerInterface)) {
-			throw new RuntimeException("Handler {$classFound} must implement AddonHandlerInterface");
+		if (!($instance instanceof AbstractAddonHandler)) {
+			throw new RuntimeException("Handler {$classFound} must extend AbstractAddonHandler");
 		}
 
 		return $instance;

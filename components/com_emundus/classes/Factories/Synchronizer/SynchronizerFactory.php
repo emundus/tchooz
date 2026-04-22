@@ -14,7 +14,7 @@ class SynchronizerFactory
 	 *
 	 * @return array<SynchronizerEntity>
 	 */
-	public function fromDbObjects(array $dbObjects): array
+	public static function fromDbObjects(array $dbObjects): array
 	{
 		$synchronizers = [];
 
@@ -22,23 +22,38 @@ class SynchronizerFactory
 		{
 			foreach ($dbObjects as $dbObject)
 			{
-				$synchronizers[] = new SynchronizerEntity(
-					$dbObject->id,
-					$dbObject->type,
-					$dbObject->name,
-					$dbObject->description ?? '',
-					!empty($dbObject->params) ? json_decode($dbObject->params, true) : [],
-					!empty($dbObject->config) ? json_decode($dbObject->config, true) : [],
-					(bool) $dbObject->published,
-					(bool) $dbObject->enabled,
-					$dbObject->icon ?? null,
-					$dbObject->consumptions ?? null,
-					!empty($dbObject->context) ? SynchronizerContextEnum::from($dbObject->context) : null
-				);
+				$synchronizers[] = self::buildEntity($dbObject);
 			}
 		}
 
 		return $synchronizers;
+	}
+
+	public function fromDbObject(array|object $dbObject): SynchronizerEntity
+	{
+		if(is_array($dbObject))
+		{
+			$dbObject = (object) $dbObject;
+		}
+
+		return self::buildEntity($dbObject);
+	}
+	
+	private static function buildEntity(object $dbObject): SynchronizerEntity
+	{
+		return new SynchronizerEntity(
+			$dbObject->id,
+			$dbObject->type,
+			$dbObject->name,
+			$dbObject->description ?? '',
+			!empty($dbObject->params) ? json_decode($dbObject->params, true) : [],
+			!empty($dbObject->config) ? json_decode($dbObject->config, true) : [],
+			(bool) $dbObject->published,
+			(bool) $dbObject->enabled,
+			$dbObject->icon ?? null,
+			$dbObject->consumptions ?? null,
+			!empty($dbObject->context) ? SynchronizerContextEnum::from($dbObject->context) : null
+		);
 	}
 
 	/**

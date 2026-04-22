@@ -2,6 +2,7 @@
 
 namespace Tchooz\Synchronizers\SMS;
 
+use Joomla\CMS\Language\Text;
 use Tchooz\Entities\SMS\SMSEntity;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
@@ -29,7 +30,7 @@ class OvhSMS {
 
 		if (empty($this->used_service)) {
 			Log::add('No sms service available', Log::ERROR, 'com_emundus.sms');
-			throw new \Exception('No sms service available');
+			throw new \Exception(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_OVH_SETUP_NO_SERVICES_AVAILABLE'));
 		}
 	}
 

@@ -6,6 +6,7 @@ use Tchooz\Entities\Automation\EventsDefinitions\Defaults\EventDefinition;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Repositories\ApplicationFile\StatusRepository;
 
 class onAfterStatusChangeDefinition extends EventDefinition
 {
@@ -36,17 +37,13 @@ class onAfterStatusChangeDefinition extends EventDefinition
 		{
 			return $this->statusChoices;
 		} else {
-			if (!class_exists('EmundusModelFiles'))
-			{
-				require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
-			}
-			$m_files = new \EmundusModelFiles();
-			$states  = $m_files->getAllStatus($this->getAutomatedTaskUserId());
+			$statusRepository = new StatusRepository();
+			$states = $statusRepository->getAll();
 
 			$choices = [];
 			foreach ($states as $state)
 			{
-				$choices[] = new ChoiceFieldValue($state['step'], $state['value']);
+				$choices[] = new ChoiceFieldValue($state->getStep(), $state->getLabel());
 			}
 
 			$this->statusChoices = $choices;

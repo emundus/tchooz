@@ -40,6 +40,7 @@ enum ActionEnum: string
 	case DECISION = 'decision';
 	case ADMISSION = 'admission';
 	case EVALUATION = 'evaluation';
+	case CUSTOM_REFERENCE = 'custom_reference';
 
 	// Platform actions
 	case CAMPAIGN = 'campaign';
@@ -107,6 +108,7 @@ enum ActionEnum: string
 			self::ADMISSION => Text::_('COM_EMUNDUS_ADMISSION'),
 			self::EVALUATION => Text::_('COM_EMUNDUS_ACCESS_EVALUATION_RIGHT'),
 			self::UPDATE_OWNER => Text::_('COM_EMUNDUS_ACL_UPDATE_OWNER'),
+			self::CUSTOM_REFERENCE => Text::_('COM_EMUNDUS_ACCESS_GENERATE_REFERENCE'),
 
 			// Platform actions
 			self::CAMPAIGN => Text::_('COM_EMUNDUS_ACL_CAMPAIGN'),
@@ -173,6 +175,7 @@ enum ActionEnum: string
 			self::ADMISSION => Text::_('COM_EMUNDUS_ADMISSION_DESC'),
 			self::EVALUATION => Text::_('COM_EMUNDUS_ACCESS_EVALUATION_DESC'),
 			self::UPDATE_OWNER => '',
+			self::CUSTOM_REFERENCE => Text::_('COM_EMUNDUS_ACCESS_GENERATE_REFERENCE_DESC'),
 
 			// Platform actions
 			self::CAMPAIGN => Text::_('COM_EMUNDUS_ACL_CAMPAIGN_DESC'),
@@ -237,7 +240,8 @@ enum ActionEnum: string
 			self::ADMISSION,
 			self::EVALUATION,
 			self::LOGS,
-			self::UPDATE_OWNER => ActionTypeEnum::FILE,
+			self::UPDATE_OWNER,
+			self::CUSTOM_REFERENCE => ActionTypeEnum::FILE,
 
 			self::CAMPAIGN,
 			self::PROGRAM,
@@ -293,6 +297,7 @@ enum ActionEnum: string
 			self::EXPORT => 17,
 			self::EXPORT_TROMBINOSCOPE => 18,
 			self::EXPORT_DOC => 19,
+			self::CUSTOM_REFERENCE => 20,
 			self::EXTERNAL_EXPORT => 20,
 			self::EXPORT_FICHE_DE_SYNTHESE => 21,
 			self::LOGS => 22,

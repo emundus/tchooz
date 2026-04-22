@@ -14,6 +14,8 @@ namespace scripts;
 use EmundusHelperUpdate;
 use Joomla\CMS\Component\ComponentHelper;
 use stdClass;
+use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Repositories\Addons\AddonRepository;
 
 class Release2_4_0Installer extends ReleaseInstaller
 {
@@ -312,26 +314,16 @@ class Release2_4_0Installer extends ReleaseInstaller
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ONBOARD_EVALUATION_LOCK_TEXT','Une fois votre évaluation soumise, vous ne pourrez plus la modifier. Veuillez vérifier attentivement vos réponses avant de valider.');
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ONBOARD_EVALUATION_LOCK_TEXT','Once you have submitted your evaluation, you will not be able to change it. Please check your answers carefully before validating.', 'override',0,null,null,'en-GB');
 
+			$addonRepository = new AddonRepository();
+			$smsAddon = $addonRepository->getByName('sms');
 
-			// if config sms not exist
-			$query->clear()
-				->select('*')
-				->from($this->db->quoteName('#__emundus_setup_config'))
-				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('sms'));
-
-			$this->db->setQuery($query);
-			$config = $this->db->loadObject();
-
-			if (empty($config->namekey))
+			if (empty($smsAddon))
 			{
-				$params = '{"enabled":0,"displayed":0,"params":{"encoding":"UCS-2", "service": "ovh"}}';
-				$query->clear()
-					->insert($this->db->quoteName('#__emundus_setup_config'))
-					->columns($this->db->quoteName('namekey') . ', ' . $this->db->quoteName('value'))
-					->values($this->db->quote('sms') . ', ' . $this->db->quote($params));
-
-				$this->db->setQuery($query);
-				$this->db->execute();
+				$smsAddon = new AddonEntity('sms', false, false, false, [
+					'encoding' => 'UCS-2',
+					'service' => 'ovh'
+				]);
+				$tasks[] = $addonRepository->flush($smsAddon);
 			}
 
 			EmundusHelperUpdate::addColumn('#__emundus_setup_emails_trigger', 'sms_id', 'INT(11) DEFAULT NULL');

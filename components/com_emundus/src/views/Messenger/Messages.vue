@@ -105,7 +105,6 @@ export default {
 			messengerServices.getMessagesByFnum(this.currentChatroom.fnum).then((response) => {
 				this.messages = response.data.messages;
 				this.dates = response.data.dates;
-				this.anonymous = parseInt(response.data.anonymous);
 
 				if (scroll) {
 					//this.scrollToBottom();
@@ -619,8 +618,7 @@ export default {
 									>
 										<p class="tw-flex" :class="message.me === true ? 'tw-justify-end' : 'tw-justify-start'">
 											<span class="tw-text-sm tw-font-bold">
-												<span v-if="anonymous === 0 && message.me !== true">{{ message.name }} - </span>
-												<span v-if="message.me === true">{{ message.name }} - </span>
+												<span v-if="message.name && message.name !== ''">{{ message.name }} - </span>
 												{{ message.date_hour }}
 											</span>
 										</p>

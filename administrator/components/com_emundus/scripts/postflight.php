@@ -15,6 +15,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Emundus\Plugin\Console\Tchooz\Style\EmundusProgressBar;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
@@ -24,12 +25,16 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Emundus\Administrator\Attributes\PostflightAttribute;
 use Joomla\Database\DatabaseInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\Actions\CrudEntity;
 use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Menus\ActionMenuEnum;
 use Tchooz\Enums\Menus\MenuHeadingEnum;
+use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Services\Reference\InternalReferenceService;
 
 require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_emundus/src/Attributes/PostflightAttribute.php';
@@ -1699,6 +1704,64 @@ class Com_EmundusPostflightTasks
 		}
 
 		return true;
+	}
+
+	#[PostflightAttribute(name: "Generate short reference for existing application files")]
+	public function generateShortReference(): bool
+	{
+		$generated = true;
+
+		// Get application files that have short_reference empty
+		$query = $this->db->getQuery(true)
+			->select('id, short_reference')
+			->from($this->db->quoteName('#__emundus_campaign_candidature'))
+			->where($this->db->quoteName('short_reference') . ' IS NULL')
+			->orWhere($this->db->quoteName('short_reference') . ' = ""');
+		$this->db->setQuery($query);
+		$applicationFiles = $this->db->loadObjectList();
+
+		if(!empty($applicationFiles))
+		{
+			EmundusHelperUpdate::displayMessage(
+				'Generating short reference for ' . count($applicationFiles) . ' application files.'
+			);
+
+			$output = new ConsoleOutput();
+			$progressBar = new EmundusProgressBar($output, count($applicationFiles));
+			$progressBar->start();
+
+			$applicationFileRepository = new ApplicationFileRepository();
+			$internalReferenceService = new InternalReferenceService(
+				new DateProvider(),
+				$applicationFileRepository
+			);
+
+			$successCount = 0;
+			foreach ($applicationFiles as $applicationFile)
+			{
+				$applicationFileEntity           = $applicationFileRepository->getById($applicationFile->id);
+				$shortReference = $internalReferenceService->generateShortReference($applicationFileEntity);
+				$applicationFileEntity->setShortReference($shortReference);
+				if(!$applicationFileRepository->flush($applicationFileEntity))
+				{
+					EmundusHelperUpdate::displayMessage(
+						'Failed to generate short reference for application file with id ' . $applicationFile->id,
+						'error'
+					);
+					$generated = false;
+					continue;
+				}
+
+				$successCount++;
+				$progressBar->advance();
+			}
+			$progressBar->finish('Generated short reference for ' . $successCount . ' application files.');
+		}
+		else {
+			EmundusHelperUpdate::displayMessage('No application file to update with short reference.');
+		}
+
+		return $generated;
 	}
 
 	/**

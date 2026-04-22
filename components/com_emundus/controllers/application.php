@@ -515,111 +515,105 @@ class EmundusControllerApplication extends EmundusController
 		echo $result;
 	}
 
-	/**
-	 * Get menus availables for an application file
-	 *
-	 * @since version 1.0.0
-	 */
-	public function getapplicationmenu()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::FILE, 'mode' => CrudEnum::READ]
+	])]
+	public function getapplicationmenu(): void
 	{
-		$response = ['status' => false];
+		$response = ['status' => false, 'code' => 400, 'msg' => Text::_('COM_EMUNDUS_ERROR_GET_MENU'), 'menus' => []];
 
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
-		{
-			die(Text::_('ACCESS_DENIED'));
-		}
-
-		$fnum = $this->input->get('fnum', null, 'STRING');
+		$fnum = $this->input->getString('fnum', null);
 		$res  = false;
 
-		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum))
+		if (!class_exists('EmundusModelWorkflow'))
 		{
-			if(!class_exists('EmundusModelWorkflow'))
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+		}
+		$m_workflow = new EmundusModelWorkflow();
+
+		$actionRepository = new ActionRepository();
+		$paymentAction    = $actionRepository->getByName('payment');
+
+		if (!class_exists('EmundusModelApplication'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
+		}
+		$m_application = new EmundusModelApplication();
+		$menus         = $m_application->getApplicationMenu($this->_user->id, $fnum);
+		$ccid          = EmundusHelperFiles::getIdFromFnum($fnum);
+
+		$menu_application = [];
+		if ($menus !== false)
+		{
+			$res              = true;
+			$i                = 0;
+
+			foreach ($menus as $menu)
 			{
-				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
-			}
-			$m_workflow = new EmundusModelWorkflow();
+				$access             = false;
+				$actions_for_access = explode(',', $menu['note']);
 
-			$actionRepository = new ActionRepository();
-			$paymentAction = $actionRepository->getByName('payment');
-
-			$m_application = $this->getModel('Application');
-			$menus         = $m_application->getApplicationMenu($this->_user->id, $fnum);
-			$ccid          = EmundusHelperFiles::getIdFromFnum($fnum);
-
-			if ($menus !== false)
-			{
-				$res              = true;
-				$menu_application = array();
-				$i                = 0;
-
-				foreach ($menus as $k => $menu)
+				foreach ($actions_for_access as $action_for_access)
 				{
-					$access             = false;
-					$actions_for_access = explode(',', $menu['note']);
+					$action    = explode('|', $action_for_access);
+					$action_id = $action[0];
 
-					foreach ($actions_for_access as $action_for_access)
+					if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $this->_user->id, $fnum))
 					{
-						$action    = explode('|', $action_for_access);
-						$action_id = $action[0];
-
-						if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $this->_user->id, $fnum))
-						{
-							$access = true;
-							break;
-						}
+						$access = true;
+						break;
 					}
-
-					if ($access)
-					{
-						if ($action_id == 36)
-						{
-							$messenger = $this->getModel('Messenger');
-
-							$notifications = $messenger->getNotificationsByFnum($fnum, $this->_user->id);
-							if ($notifications > 0)
-							{
-								$menu['notifications'] = $notifications;
-							}
-						}
-						if ($action_id == 10)
-						{
-							$m_comments             = $this->getModel('Comments');
-							$notifications_comments = sizeof($m_comments->getComments($ccid, $this->_user->id, false, [], 0, 1));
-							$menu['notifications']  = $notifications_comments;
-						}
-						if($action_id == $paymentAction->getId())
-						{
-							// Check if we have a payment step for this fnum
-							$paymentStep = $m_workflow->getPaymentStepFromFnum($fnum);
-							if(empty($paymentStep))
-							{
-								continue;
-							}
-						}
-
-						$menu_application[] = $menu;
-						if ((intval($menu['rgt']) - intval($menu['lft'])) == 1)
-						{
-							$menu_application[$i++]['hasSons'] = false;
-						}
-						else
-						{
-							$menu_application[$i++]['hasSons'] = true;
-						}
-					}
-
 				}
+
+				if ($access)
+				{
+					if ($action_id == 36)
+					{
+						if (!class_exists('EmundusModelMessenger'))
+						{
+							require_once(JPATH_ROOT . '/components/com_emundus/models/messenger.php');
+						}
+						$messenger = new EmundusModelMessenger();
+
+						$notifications = $messenger->getNotificationsByFnum($fnum, $this->_user->id);
+						if ($notifications > 0)
+						{
+							$menu['notifications'] = $notifications;
+						}
+					}
+					if ($action_id == 10)
+					{
+						$m_comments             = $this->getModel('Comments');
+						$notifications_comments = sizeof($m_comments->getComments($ccid, $this->_user->id, false, [], 0, 1));
+						$menu['notifications']  = $notifications_comments;
+					}
+					if ($action_id == $paymentAction->getId())
+					{
+						// Check if we have a payment step for this fnum
+						$paymentStep = $m_workflow->getPaymentStepFromFnum($fnum);
+						if (empty($paymentStep))
+						{
+							continue;
+						}
+					}
+
+					$menu_application[] = $menu;
+					if ((intval($menu['rgt']) - intval($menu['lft'])) == 1)
+					{
+						$menu_application[$i++]['hasSons'] = false;
+					}
+					else
+					{
+						$menu_application[$i++]['hasSons'] = true;
+					}
+				}
+
 			}
-			$response = array('status' => $res, 'menus' => $menu_application);
-		}
-		else
-		{
-			$response['msg'] = Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS');
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$response = ['status' => $res, 'menus' => $menu_application, 'code' => $res ? 200 : 400, 'msg' => $res ? Text::_('COM_EMUNDUS_SUCCESS_GET_MENU') : Text::_('COM_EMUNDUS_ERROR_GET_MENU')];
+
+		$this->sendJsonResponse($response);
 	}
 
 	/**

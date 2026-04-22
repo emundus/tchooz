@@ -1,6 +1,6 @@
 <?php
 /**
- * @package     Tchooz\Factories\ApplicationFile
+ * @package     Tchooz\Factories\Addons
  * @subpackage
  *
  * @copyright   A copyright
@@ -9,37 +9,57 @@
 
 namespace Tchooz\Factories\Addons;
 
-use Joomla\CMS\Factory;
-use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Addons\AddonEntity;
-use Tchooz\Entities\Addons\AddonValue;
-use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Factories\DBFactory;
-use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Providers\DateProvider;
 
 class AddonFactory implements DBFactory
 {
+	public static function fromDbObjects(array $dbObjects, bool|array $withRelations = true, array $exceptRelations = [], ?DatabaseDriver $db = null): array
+	{
+		$entities = [];
+
+		foreach ($dbObjects as $dbObject)
+		{
+			$entities[] = self::buildEntity($dbObject);
+		}
+
+		return $entities;
+	}
 
 	public function fromDbObject(object|array $dbObject, $withRelations = true, $exceptRelations = [], ?DatabaseDriver $db = null): AddonEntity
 	{
-		if(is_object($dbObject))
+		if (is_array($dbObject))
 		{
-			$dbObject = (array) $dbObject;
+			$dbObject = (object) $dbObject;
 		}
 
-		if(!empty($dbObject['value']) && is_string($dbObject['value']))
-		{
-			$dbObject['value'] = json_decode($dbObject['value'], true);
-		}
+		return self::buildEntity($dbObject);
+	}
 
-		return new AddonEntity(
-			namekey: $dbObject['namekey'] ?? '',
-			value: new AddonValue(
-				enabled: !empty($dbObject['value']['enabled']) && (bool) $dbObject['value']['enabled'],
-				displayed: !empty($dbObject['value']['displayed']) && (bool) $dbObject['value']['displayed'],
-				params: !empty($dbObject['value']['params']) ? $dbObject['value']['params'] : []
-			)
-		);
+	private static function buildEntity(object $dbObject): AddonEntity
+	{
+		$params = [];
+		if(!empty($dbObject->params) && is_string($dbObject->params))
+		{
+			$params = json_decode($dbObject->params, true);
+		}
+		$default = [];
+		 if(!empty($dbObject->default) && is_string($dbObject->default))
+		 {
+			 $default = json_decode($dbObject->default, true);
+		 }
+
+		 $activatedAt = !empty($dbObject->activated_at) && !DateProvider::isNullableDate($dbObject->activated_at) ? new \DateTimeImmutable($dbObject->activated_at) : null;
+		 return new AddonEntity(
+			 namekey: $dbObject->namekey ?? '',
+			 activated: isset($dbObject->activated) && $dbObject->activated == 1,
+			 displayed: isset($dbObject->displayed) && $dbObject->displayed == 1,
+			 suggested: isset($dbObject->suggested) && $dbObject->suggested == 1,
+			 params: $params,
+			 default: $default,
+			 activatedAt: $activatedAt
+		 );
 	}
 }

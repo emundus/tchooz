@@ -47,13 +47,12 @@ export default defineComponent({
 		};
 	},
 	created() {
-		this.addon.configuration =
-			typeof this.addon.configuration === 'string' ? JSON.parse(this.addon.configuration) : this.addon.configuration;
+		this.addon.params = typeof this.addon.params === 'string' ? JSON.parse(this.addon.params) : this.addon.params;
 	},
 	mounted() {
 		this.fields.forEach((field) => {
-			if (field.param in this.addon.configuration) {
-				field.value = this.addon.configuration[field.param];
+			if (field.param in this.addon.params) {
+				field.value = this.addon.params[field.param];
 			}
 		});
 
@@ -62,8 +61,8 @@ export default defineComponent({
 	methods: {
 		saveAddon() {
 			for (let field of this.fields) {
-				if (field.param in this.addon.configuration) {
-					this.addon.configuration[field.param] = field.value;
+				if (field.param in this.addon.params) {
+					this.addon.params[field.param] = field.value;
 				}
 			}
 

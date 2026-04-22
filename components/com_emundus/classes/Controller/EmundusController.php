@@ -18,6 +18,7 @@ use Joomla\CMS\User\User;
 use Joomla\Input\Input;
 use Symfony\Component\OptionsResolver\Exception\AccessException;
 use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\EmundusResponse;
 use Tchooz\Traits\TraitResponse;
@@ -137,6 +138,12 @@ abstract class EmundusController extends BaseController
 			return false;
 		}
 
+		// 0 - Guest users are denied access when any access level or action is required
+		if ($this->user->guest)
+		{
+			return false;
+		}
+
 		// 1 - Access level check
 		if ($access->accessLevel !== null)
 		{
@@ -163,7 +170,9 @@ abstract class EmundusController extends BaseController
 					continue;
 				}
 
-				if ($this->callAccessActionMethod($action['id'], $action['mode']->value, $this->user->id))
+				$actionMode = $action['mode']->value;
+				$actionId = $action['id'] instanceof ActionEnum ? $action['id']->value : $action['id'];
+				if ($this->callAccessActionMethod($actionId, $actionMode, $this->user->id))
 				{
 					return true;
 				}
