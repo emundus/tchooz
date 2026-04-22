@@ -340,11 +340,27 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 * @param   LoginEvent  $event
 	 *
 	 * @return void
+	 * @throws \Exception
 	 */
 	public function onUserLogin(LoginEvent $event): void
 	{
 		if (!$this->authenticatingPublicAccess)
 		{
+			if (Factory::getApplication()->isClient('site')) {
+				$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
+				if ($systemUserId !== 0 && $systemUserId === Factory::getApplication()->getIdentity()->id)
+				{
+					// Attempt to login with public system user with default login, block it, and log user IP
+					Log::add(
+						'Blocked login attempt with public system user ID: ' . $systemUserId . ' from IP: ' . $_SERVER['REMOTE_ADDR'],
+						Log::WARNING,
+						'plg_system_emunduspublicaccess'
+					);
+
+					$this->destroyPublicSession();
+				}
+			}
+
 			return;
 		}
 
@@ -795,12 +811,20 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @return  bool
 	 *
+	 * @throws \Exception
 	 * @since   1.0.0
 	 */
 	public static function isPublicAccessSession(): bool
 	{
-		$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
-		return Factory::getApplication()->getSession()->get(self::SESSION_PUBLIC_ACCESS_KEY, false) || $systemUserId === Factory::getApplication()->getIdentity()->id;
+		$publicAccessSession = false;
+
+		if (Factory::getApplication()->isClient('site'))
+		{
+			$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
+			$publicAccessSession = Factory::getApplication()->getSession()->get(self::SESSION_PUBLIC_ACCESS_KEY, false) || ($systemUserId !== 0 && $systemUserId === Factory::getApplication()->getIdentity()->id);
+		}
+
+		return $publicAccessSession;
 	}
 
 	/**
