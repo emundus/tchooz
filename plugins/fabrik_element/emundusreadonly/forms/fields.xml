@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields name="params">
+		<fieldset
+			name="plg-element-emundusreadonly-source"
+			label="PLG_ELEMENT_EMUNDUSREADONLY_SOURCE_HEADING"
+		>
+			<field
+				name="source_element_id"
+				type="sql"
+				default=""
+				label="PLG_ELEMENT_EMUNDUSREADONLY_SOURCE_ELEMENT_LABEL"
+				description="PLG_ELEMENT_EMUNDUSREADONLY_SOURCE_ELEMENT_DESC"
+				query="SELECT fe.id AS value,
+				              CONCAT(fl.db_table_name, ' :: ', COALESCE(NULLIF(fe.label, ''), fe.name)) AS text
+				       FROM #__fabrik_elements AS fe
+				       INNER JOIN #__fabrik_formgroup AS ffg ON ffg.group_id = fe.group_id
+				       INNER JOIN #__fabrik_lists AS fl ON fl.form_id = ffg.form_id
+				       WHERE fe.published = 1
+				         AND fe.plugin NOT IN ('emundusreadonly', 'captcha', 'button', 'display')
+				       ORDER BY fl.db_table_name, fe.label, fe.name" />
+
+			<field
+				name="empty_placeholder"
+				type="text"
+				default=""
+				label="PLG_ELEMENT_EMUNDUSREADONLY_EMPTY_PLACEHOLDER_LABEL"
+				description="PLG_ELEMENT_EMUNDUSREADONLY_EMPTY_PLACEHOLDER_DESC" />
+
+		</fieldset>
+	</fields>
+</form>

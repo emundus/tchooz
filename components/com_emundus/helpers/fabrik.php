@@ -1873,7 +1873,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		{
 			try
 			{
-				$query->select('fl.db_table_name,fe.name,fe.id, fe.plugin, fe.params, fg.params as group_params, fg.id as group_id, fj.table_join')
+				$query->select('fl.db_table_name,fe.name,fe.id, fe.plugin, fe.params, fg.params as group_params, fg.id as group_id, fj.table_join, ff.form_id')
 					->from($db->quoteName('#__fabrik_elements', 'fe'))
 					->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
 					->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('ffg.group_id'))

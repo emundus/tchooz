@@ -193,13 +193,18 @@ class CalculationFactory
 	}
 
 	/**
-	 * @param   string  $json
+	 * @param   ?string  $json
 	 *
 	 * @return array
 	 * @throws \Exception
 	 */
-	public static function validateCalculationConfigurationFromJson(string $json): array
+	public static function validateCalculationConfigurationFromJson(?string $json): array
 	{
+		if (empty($json))
+		{
+			throw new \Exception('Invalid custom calculation operation format');
+		}
+
 		$data = json_decode($json, true);
 
 		if (!is_array($data) || !isset($data['operation']) || !isset($data['fields']))
