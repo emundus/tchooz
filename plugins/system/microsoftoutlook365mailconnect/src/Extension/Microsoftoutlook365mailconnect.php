@@ -1,16 +1,16 @@
 <?php
 
 /* ======================================================
- # Microsoft/Outlook 365 Mail Connect for Joomla! - v1.0.8 (pro version)
+ # Microsoft/Outlook 365 Mail Connect for Joomla! - v1.0.9 (pro version)
  # -------------------------------------------------------
- # For Joomla! CMS (v4.x)
+ # For Joomla! CMS (v4.x, v5.x, v6.x)
  # Author: Web357 (Yiannis Christodoulou)
- # Copyright: (©) 2014-2024 Web357. All rights reserved.
+ # Copyright: (©) 2014-2026 Web357. All rights reserved.
  # License: GNU/GPLv3, https://www.gnu.org/licenses/gpl-3.0.html   
  # Website: https://www.web357.com
  # Demo: 
  # Support: support@web357.com
- # Last modified: Tuesday 03 February 2026, 10:20:16 AM
+ # Last modified: Tuesday 14 April 2026, 10:47:44 AM
  ========================================================= */
 declare(strict_types=1);
 
@@ -18,6 +18,7 @@ namespace Web357\Plugin\System\Microsoftoutlook365mailconnect\Extension;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Log\Log;
@@ -141,6 +142,23 @@ class Microsoftoutlook365mailconnect extends CMSPlugin implements SubscriberInte
         $db->setQuery($query)->execute();
         Factory::getCache()->clean('com_plugins');
         Factory::getCache()->clean('_system');
+    }
+
+    /**
+     * Sets the application instance for the current object
+     * (compatibility with Joomla! V4.0.2)
+     * @param mixed $app The application instance to be set.
+     * @return void
+     */
+    public function setApplication(CMSApplicationInterface $application): void
+    {
+        
+        $parent = get_parent_class($this);
+        if ($parent && method_exists($parent, 'setApplication')) {
+            parent::setApplication($application);
+        } else {
+            $this->app = $application;
+        }
     }
 
 }

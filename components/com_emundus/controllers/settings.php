@@ -1146,27 +1146,14 @@ class EmundusControllersettings extends EmundusController
 		exit;
 	}
 
-	public function getemailparameters()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function getemailparameters(): EmundusResponse
 	{
-		$response = ['status' => false, 'msg' => '', 'data' => []];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			$parameters         = $this->m_settings->getEmailParameters();
-			$response['status'] = true;
-			$response['msg']    = Text::_('SUCCESS');
-			$response['data']   = $parameters;
-		}
-		else
-		{
-			$response['msg'] = Text::_('ACCESS_DENIED');
-		}
-
-		echo json_encode($response);
-		exit;
+		$parameters         = $this->m_settings->getEmailParameters();
+		return EmundusResponse::ok($parameters);
 	}
 
-	public function testemail()
+	public function testemail(): void
 	{
 		$response = ['status' => false, 'title' => Text::_('ACCESS_DENIED'), 'text' => '', 'desc' => ''];
 
@@ -1306,6 +1293,7 @@ class EmundusControllersettings extends EmundusController
 				{
 					$config['oauth_application_id'] = $this->input->getString('microsoft365_applicationid', '');
 					$config['oauth_client_secret']  = $this->input->getString('microsoft365_clientsecret', '');
+					$config['oauth_tenant_id']      = $this->input->getString('microsoft365_tenantid', '');
 				}
 			}
 
