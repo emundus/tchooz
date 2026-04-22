@@ -2,12 +2,12 @@
 <extension type="plugin" group="system" method="upgrade">
     <name>PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT</name>
     <author>Web357 (Yiannis Christodoulou)</author>
-    <creationDate>2026-02-03</creationDate>
-    <copyright>Copyright: (©) 2014-2024 Web357. All rights reserved.</copyright>
+    <creationDate>2026-04-14</creationDate>
+    <copyright>Copyright: (©) 2014-2026 Web357. All rights reserved.</copyright>
     <license>GNU/GPLv3, https://www.gnu.org/licenses/gpl-3.0.html</license>
     <authorEmail>support@web357.com</authorEmail>
     <authorUrl>https://www.web357.com</authorUrl>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
     <variant>pro</variant>
     <description>PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT_XML_DESCRIPTION</description>
 

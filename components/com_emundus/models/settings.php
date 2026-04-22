@@ -2133,6 +2133,7 @@ class EmundusModelSettings extends ListModel
 
 		$params['microsoft365_applicationid'] = $microsoftParams->get('oauth_application_id', '');
 		$params['microsoft365_clientsecret']  = $microsoftParams->get('oauth_client_secret', '');
+		$params['microsoft365_tenantid']      = $microsoftParams->get('oauth_tenant_id', '');
 		$params['microsoft365_redirecturi']   = MicrosoftOutlookApplicationHelper::getInstance()->getRedirectUrl();
 		$params['microsoft365_isauthorized']  = MicrosoftOutlookApplicationHelper::getInstance()->isAuthorized();
 
@@ -2409,7 +2410,11 @@ class EmundusModelSettings extends ListModel
 
 		try
 		{
-			$result['status'] = $mailer->send();
+			$result['status'] = $mailer->Send();
+			if(!$result['status'])
+			{
+				throw new RuntimeException($mailer->ErrorInfo ?: 'Email sending failed without specific error');
+			}
 		}
 		catch (MailDisabledException|phpMailerException $e)
 		{
@@ -2417,6 +2422,12 @@ class EmundusModelSettings extends ListModel
 			$result['title']  = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR');
 			$result['text']   = Text::sprintf('COM_CONFIG_SENDMAIL_ERROR', $config['mailfrom']);
 			$result['desc']   = Text::_($this->convertTextException($e->getMessage()));
+		}
+		catch (Exception $e) {
+			$result['status'] = false;
+			$result['title']  = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR');
+			$result['text']   = Text::sprintf('COM_CONFIG_SENDMAIL_ERROR', $config['mailfrom']);
+			$result['desc']   = $e->getMessage();
 		}
 
 		if ($result['status'] && ($variables['server_type'] !== 'microsoftoutlook365mailconnect' && $mailer->Mailer !== $app->get('mailer')))
@@ -2526,6 +2537,7 @@ class EmundusModelSettings extends ListModel
 						$params                         = json_decode($result->params, true);
 						$params['oauth_application_id'] = $config['oauth_application_id'];
 						$params['oauth_client_secret']  = $config['oauth_client_secret'];
+						$params['oauth_tenant_id']      = $config['oauth_tenant_id'];
 						$params['oauth_from_email']     = $config['mailfrom'];
 
 						$query->clear()
