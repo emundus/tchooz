@@ -11,6 +11,7 @@
 namespace scripts;
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
@@ -238,8 +239,8 @@ class Release2_20_0Installer extends ReleaseInstaller
 			$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
 			if (empty($systemUserId))
 			{
+				require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 				require_once(JPATH_SITE . '/components/com_emundus/helpers/users.php');
-				require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
 				$h_users = new \EmundusHelperUsers();
 				$m_users = new \EmundusModelUsers();
