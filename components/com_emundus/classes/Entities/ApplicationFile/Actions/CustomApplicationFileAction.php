@@ -108,7 +108,8 @@ class CustomApplicationFileAction
 			'name' => $this->id,
 			'label' => $this->label,
 			'order' => 9999,
-			'parameters' => []
+			'parameters' => [],
+			'confirmBeforeExecute' => false,
 		];
 	}
 
