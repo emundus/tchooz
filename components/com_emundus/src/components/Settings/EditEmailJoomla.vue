@@ -118,7 +118,7 @@
 							</div>
 						</div>
 
-						<div class="tw-mt-7 tw-flex tw-gap-7">
+						<div class="tw-mt-7 tw-grid tw-grid-cols-2 tw-gap-7">
 							<div
 								v-for="parameter in microsoft_parameters"
 								:key="parameter.param"
@@ -400,6 +400,15 @@ export default {
 					label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_CLIENT_SECRET',
 					displayed: true,
 				},
+				{
+					param: 'microsoft_tenant_id',
+					type: 'text',
+					placeholder: '',
+					value: '',
+					label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_TENANT_ID',
+					displayed: true,
+					optional: true,
+				},
 			],
 
 			default_mail_from_server: 'tchooz.io',
@@ -453,6 +462,7 @@ export default {
 
 					this.microsoft_parameters[0].value = response.data.microsoft365_applicationid;
 					this.microsoft_parameters[1].value = response.data.microsoft365_clientsecret;
+					this.microsoft_parameters[2].value = response.data.microsoft365_tenantid;
 					this.microsoft365RedirectUri = response.data.microsoft365_redirecturi;
 					this.microsoft365IsAuthorized = response.data.microsoft365_isauthorized;
 
@@ -595,6 +605,7 @@ export default {
 				custom_server_type: this.custom_server_type.value,
 				microsoft365_applicationid: this.microsoft_parameters[0].value,
 				microsoft365_clientsecret: this.microsoft_parameters[1].value,
+				microsoft365_tenantid: this.microsoft_parameters[2].value,
 			};
 		},
 
@@ -777,10 +788,15 @@ export default {
 
 		microsoftLoginUrl() {
 			const clientId = this.microsoft_parameters[0].value;
+			const tenantId = this.microsoft_parameters[2].value;
 			const redirectUri = encodeURIComponent(this.microsoft365RedirectUri);
 			const scope = encodeURIComponent('Mail.Send Mail.Send.Shared User.Read offline_access');
 
-			return `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scope}`;
+			if (tenantId !== '') {
+				return `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scope}`;
+			} else {
+				return `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scope}`;
+			}
 		},
 
 		microsoftHelpMessage() {

@@ -1707,7 +1707,7 @@ class Com_EmundusPostflightTasks
 	}
 
 	#[PostflightAttribute(name: "Generate short reference for existing application files")]
-	private function generateShortReference(): bool
+	public function generateShortReference(): bool
 	{
 		$generated = true;
 

@@ -14,18 +14,19 @@
  ========================================================= */
 declare(strict_types=1);
 
-namespace Web357\Plugin\System\Microsoftoutlook365mailconnect\Field;
+namespace Web357\Plugin\System\Microsoftoutlook365mailconnect\Interfaces;
 
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Form\Field\TextField;
+use Joomla\Registry\Registry;
 
-class Msoutlook365passwordField extends TextField
-{
-    protected $type = 'msoutlook365password';
-
-    protected function getInput()
+if (interface_exists('Joomla\CMS\Mail\MailerFactoryInterface')) {
+    interface MailFactory extends \Joomla\CMS\Mail\MailerFactoryInterface
     {
-        return str_replace('type="text"', 'type="password"', parent::getInput());
+    }
+} else {
+    interface MailFactory
+    {
+        public function createMailer(?Registry $settings = null);
     }
 }
