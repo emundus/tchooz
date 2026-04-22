@@ -2285,6 +2285,8 @@ class EmundusModelFormbuilder extends ListModel
 				// DATABASE JOIN
 				if (isset($element['params']['join_db_name']))
 				{
+					$element['params']['join_db_name'] = trim($element['params']['join_db_name']);
+
 					$query->clear()
 						->select('*')
 						->from($this->db->quoteName('#__fabrik_joins'))
