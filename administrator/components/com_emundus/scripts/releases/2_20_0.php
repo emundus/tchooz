@@ -40,6 +40,27 @@ class Release2_20_0Installer extends ReleaseInstaller
 
 		try
 		{
+			$campaignColumn = \EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'public', 'TINYINT', 1, 0, 0);
+			$this->tasks[] = $campaignColumn['status'];
+			if(!$campaignColumn['status'])
+			{
+				$result['message'] .= $campaignColumn['message'];
+			}
+
+			$appFilePublicColumn = \EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'public', 'TINYINT', 1, 0, 0);
+			$this->tasks[] = $appFilePublicColumn['status'];
+			if(!$appFilePublicColumn['status'])
+			{
+				$result['message'] .= $appFilePublicColumn['message'];
+			}
+
+			$appFileAnonymousColumn = \EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'anonymous', 'TINYINT', 1, 0, 0);
+			$this->tasks[] = $appFileAnonymousColumn['status'];
+			if(!$appFileAnonymousColumn['status'])
+			{
+				$result['message'] .= $appFileAnonymousColumn['message'];
+			}
+
 			$query->select('params')
 				->from('#__modules')
 				->where('module = ' . $this->db->quote('mod_emundus_applications'))

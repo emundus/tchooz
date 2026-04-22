@@ -201,27 +201,6 @@ class Release2_19_0Installer extends ReleaseInstaller
 				$this->tasks[] = $this->db->updateObject('#__emundus_setup_sync', $sogecommerce, 'id');
 			}
 
-			$campaignColumn = \EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'public', 'TINYINT', 1, 0, 0);
-			$this->tasks[] = $campaignColumn['status'];
-			if(!$campaignColumn['status'])
-			{
-				$result['message'] .= $campaignColumn['message'];
-			}
-
-			$appFilePublicColumn = \EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'public', 'TINYINT', 1, 0, 0);
-			$this->tasks[] = $appFilePublicColumn['status'];
-			if(!$appFilePublicColumn['status'])
-			{
-				$result['message'] .= $appFilePublicColumn['message'];
-			}
-
-			$appFileAnonymousColumn = \EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'anonymous', 'TINYINT', 1, 0, 0);
-			$this->tasks[] = $appFileAnonymousColumn['status'];
-			if(!$appFileAnonymousColumn['status'])
-			{
-				$result['message'] .= $appFileAnonymousColumn['message'];
-			}
-
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
