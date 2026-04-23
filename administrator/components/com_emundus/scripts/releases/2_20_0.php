@@ -266,7 +266,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 				'alias'        => 'store-token',
 				'link'         => 'index.php?option=com_emundus&view=publicaccess&layout=storetoken',
 				'type'         => 'url',
-				'component_id' => 0,
+				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
 				'menu_show'    => 0
 			];
 			$storeTokenMenu = \EmundusHelperUpdate::addJoomlaMenu($datas, 0, 0);
