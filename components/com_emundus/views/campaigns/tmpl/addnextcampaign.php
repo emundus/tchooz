@@ -12,9 +12,11 @@ defined('_JEXEC') or die('Restricted Access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Factories\LayoutFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
 
 Text::script('COM_EMUNDUS_ONBOARD_FROM');
 Text::script('COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED');
@@ -302,14 +304,20 @@ $data['crud']     = [
     ]
 ];
 
-$data['anonymizationPolicies'] = array_map(
-    fn(AnonymizationPolicyEnum $policy) => [
-        'value' => $policy->value,
-        'label' => $policy->getLabel(),
-        'description' => Text::_('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_' . strtoupper($policy->name) . '_DESC'),
-    ],
-    AnonymizationPolicyEnum::cases()
-);
+$addonRepository = new AddonRepository();
+$addonAnonymous = $addonRepository->getByName(AddonEnum::ANONYMOUS->value);
+if ($addonAnonymous->isActivated())
+{
+    $data['anonymizationPolicies'] = array_map(
+        fn(AnonymizationPolicyEnum $policy) => [
+            'value' => $policy->value,
+            'label' => $policy->getLabel(),
+            'description' => Text::_('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_' . strtoupper($policy->name) . '_DESC'),
+        ],
+        AnonymizationPolicyEnum::cases()
+    );
+}
+$data['publicAddonActivated'] = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value)->isActivated();
 ?>
 
 <div id="em-component-vue"

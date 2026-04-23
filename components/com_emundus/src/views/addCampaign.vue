@@ -236,7 +236,7 @@
 						</span>
 					</div>
 
-					<div class="tw-flex tw-items-center">
+					<div v-if="publicAddonActivated" class="tw-flex tw-items-center">
 						<div class="em-toggle">
 							<input
 								type="checkbox"
@@ -251,7 +251,7 @@
 							<strong class="b em-toggle-switch"></strong>
 							<strong class="b em-toggle-track"></strong>
 						</div>
-						<span for="pinned" class="tw-ml-2 tw-flex tw-items-center"
+						<span for="public" class="tw-ml-2 tw-flex tw-items-center"
 							>{{ translate('COM_EMUNDUS_CAMPAIGNS_PUBLIC') }}
 							<span
 								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
@@ -609,6 +609,10 @@ export default {
 		anonymizationPolicies: {
 			type: Array,
 			default: () => [],
+		},
+		publicAddonActivated: {
+			type: Boolean,
+			default: false,
 		},
 	},
 

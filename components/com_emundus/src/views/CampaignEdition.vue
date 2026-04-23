@@ -57,6 +57,7 @@
 							:manyLanguages="manyLanguages"
 							:crud="crud"
 							:anonymizationPolicies="anonymizationPolicies"
+							:publicAddonActivated="publicAddonActivated"
 							@nextSection="next"
 							@getInformations="initInformations"
 							@updateHeader="updateHeader"
@@ -146,6 +147,10 @@ export default {
 		anonymizationPolicies: {
 			type: Array,
 			default: () => [],
+		},
+		publicAddonActivated: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	mixins: [mixin],
