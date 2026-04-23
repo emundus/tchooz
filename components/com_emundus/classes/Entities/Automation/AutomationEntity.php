@@ -5,6 +5,7 @@ namespace Tchooz\Entities\Automation;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
+use Tchooz\Entities\Automation\Actions\ActionSendEmail;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Joomla\CMS\Log\Log;
 use Tchooz\Repositories\Task\TaskRepository;
@@ -183,6 +184,11 @@ class AutomationEntity
 		$failedActions = [];
 		$nbFilesPassed = 0;
 
+		if(!class_exists('EmundusHelperEmails'))
+		{
+			require_once JPATH_SITE.'/components/com_emundus/helpers/emails.php';
+		}
+
 		$taskRepository = new TaskRepository();
 		foreach ($this->getIterationContexts($context) as $subContext)
 		{
@@ -214,6 +220,15 @@ class AutomationEntity
 				$actionContexts = $action->getExecutionTargets($subContext);
 
 				foreach($actionContexts as $actionContext) {
+					// If action is send email, we check if we have to exclude emundus emails
+					if($action instanceof ActionSendEmail && !empty($actionContext->getUserId())) {
+						$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($actionContext->getUserId());
+						if(!empty($user) && \EmundusHelperEmails::isEmailExcluded($user->email))
+						{
+							continue;
+						}
+					}
+					
 					if ($action->isAsynchronous())
 					{
 						Log::add('Action [' . $action->getId() . ' - ' . $action->getType() . '] is asynchronous and will be queued for : ' . $iterationContextIdentity . ' in automation [' . $this->getId() . '].', Log::DEBUG, 'com_emundus.automation');
