@@ -532,6 +532,12 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			$this->authenticatingPublicAccess = false;
 		}
 
+		// Bypass MFA captive page for public access sessions.
+		// The token validation already acts as a strong authentication factor;
+		// prompting for 2FA would confuse public/guest users who have no MFA methods configured.
+		$session->set('com_users.mfa_checked', 1);
+		$session->set('com_users.mandatory_mfa_setup', 0);
+
 		// Mark the session as a public access session, scoped to this specific fnum
 		$session->set(self::SESSION_PUBLIC_ACCESS_KEY, true);
 		$session->set(self::SESSION_PUBLIC_FNUM_KEY, $applicationFile->getFnum());

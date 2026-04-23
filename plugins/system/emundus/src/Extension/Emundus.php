@@ -379,8 +379,14 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			$plugin = PluginHelper::getPlugin('system', 'emundus');
 			$params = new Registry($plugin->params);
 			$mfaSso = $params->get('2faforSSO', 0);
+			$publicAccessUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
 
-			if ($mfaSso == 0 && ($isSamlUser || (!empty($userParams) && $userParams->OAuth2 === 'openid')))
+			if (!empty($publicAccessUserId) && $user->id === $publicAccessUserId)
+			{
+				// public access skip 2FA enforcement
+				return;
+			}
+			else if ($mfaSso == 0 && ($isSamlUser || (!empty($userParams) && $userParams->OAuth2 === 'openid')))
 			{
 				// If user logged in via SAML or OIDC we skip the 2FA enforcement
 				return;
