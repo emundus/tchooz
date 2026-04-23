@@ -27,22 +27,14 @@ use Joomla\Component\Users\Administrator\Helper\Mfa as MfaHelper;
 use Joomla\Component\Users\Administrator\Model\CaptiveModel;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
-use Joomla\DI\Container;
 use Joomla\Event\EventInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterRenderDefinition;
-use Tchooz\Entities\Emails\Modifiers\CapitalizeModifier;
-use Tchooz\Entities\Emails\Modifiers\ChoiceStatusModifier;
-use Tchooz\Entities\Emails\Modifiers\IndexModifier;
-use Tchooz\Entities\Emails\Modifiers\LettersModifier;
-use Tchooz\Entities\Emails\Modifiers\LowercaseModifier;
-use Tchooz\Entities\Emails\Modifiers\NumberModifier;
-use Tchooz\Entities\Emails\Modifiers\TrimModifier;
-use Tchooz\Entities\Emails\Modifiers\UppercaseModifier;
 use Tchooz\Entities\Emails\TagModifierRegistry;
-use Tchooz\Factories\Language\DbLanguageFactory;
+use Tchooz\Providers\DbLanguageProvider;
+use Tchooz\Providers\EmundusSubscriberProvider;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -124,58 +116,23 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 	public function onAfterInitialise(AfterInitialiseEvent $event): void
 	{
-		if (!class_exists('TagModifierRegistry'))
+		if($this->getApplication()->isClient('administrator') && file_exists(JPATH_LIBRARIES.'/emundus/vendor/autoload.php'))
 		{
-			require_once JPATH_SITE . '/components/com_emundus/classes/Interfaces/TagModifierInterface.php';
-			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/TagModifierRegistry.php';
-			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/UppercaseModifier.php';
-			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/LowercaseModifier.php';
-			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/CapitalizeModifier.php';
-			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/TrimModifier.php';
-			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/LettersModifier.php';
-			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/NumberModifier.php';
-			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/ChoiceStatusModifier.php';
-			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/IndexModifier.php';
+			require_once JPATH_LIBRARIES.'/emundus/vendor/autoload.php';
 		}
 
-		TagModifierRegistry::register(new UppercaseModifier());
-		TagModifierRegistry::register(new LowercaseModifier());
-		TagModifierRegistry::register(new CapitalizeModifier());
-		TagModifierRegistry::register(new TrimModifier());
-		TagModifierRegistry::register(new LettersModifier());
-		TagModifierRegistry::register(new NumberModifier());
-		TagModifierRegistry::register(new ChoiceStatusModifier());
-		TagModifierRegistry::register(new IndexModifier());
+		$container = Factory::getContainer();
 
-		if ($this->getApplication()->isClient('site'))
-		{
-			if (!class_exists('DbLanguageFactory'))
-			{
-				require_once JPATH_SITE . '/components/com_emundus/classes/Factories/Language/DbLanguageFactory.php';
-			}
-			if (!class_exists('DbLanguage'))
-			{
-				require_once JPATH_SITE . '/components/com_emundus/classes/Services/Language/DbLanguage.php';
-			}
+		// Register language provider
+		$dbLanguageProvider = new DbLanguageProvider();
+		$dbLanguageProvider->register($container);
 
-			$currentLang = Factory::getApplication()->getLanguage();
+		// Register email tag modifiers
+		TagModifierRegistry::registerDefaults();
 
-			$container = Factory::getContainer();
-			$container->alias('language.factory', DbLanguageFactory::class)
-				->share(
-					DbLanguageFactory::class,
-					function (Container $container) {
-						return new DbLanguageFactory();
-					},
-					true
-				);
-
-			$lang = $container->get(DbLanguageFactory::class)->createLanguage($currentLang->getTag(), false, $currentLang);
-
-			// Register the language object with Factory
-			$this->getApplication()->loadLanguage($lang);
-			Factory::$language = $lang;
-		}
+		// Register subscribers
+		$emundusSubscriberProvider = new EmundusSubscriberProvider();
+		$emundusSubscriberProvider->register($container);
 	}
 
 	public function injectLazyJS(EventInterface $event): void

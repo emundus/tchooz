@@ -406,9 +406,23 @@ export default {
 
 	async toggleAppEnabled(app_id, enabled) {
 		try {
-			return await fetchClient.post('disableapp', {
+			return await fetchClient.post('toggleapp', {
 				app_id: app_id,
 				enabled: enabled,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async toggleAppPublished(app_id, published) {
+		try {
+			return await fetchClient.post('toggleappdisplay', {
+				app_id: app_id,
+				published: published,
 			});
 		} catch (e) {
 			return {
@@ -447,6 +461,34 @@ export default {
 			return await fetchClient.post('toggleaddon', {
 				addon_type: addon_type,
 				enabled: enabled,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async toggleAddonDisplay(addon_type, displayed) {
+		try {
+			return await fetchClient.post('toggleaddondisplay', {
+				addon_type: addon_type,
+				displayed: displayed,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async toggleAddonSuggest(addon_type, suggested) {
+		try {
+			return await fetchClient.post('toggleaddonsuggest', {
+				addon_type: addon_type,
+				suggested: suggested,
 			});
 		} catch (e) {
 			return {
@@ -716,6 +758,77 @@ export default {
 			return {
 				status: false,
 				msg: e.message,
+			};
+		}
+	},
+	async getCustomReferenceFormat() {
+		try {
+			return await fetchClient.get('getcustomreferenceformat');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+				data: null,
+			};
+		}
+	},
+	async saveCustomReference(mappingData, form) {
+		if (typeof mappingData.target_object === 'object' && mappingData.target_object !== null) {
+			mappingData.target_object = mappingData.target_object.value;
+		}
+
+		if (mappingData.params) {
+			// foreach param entries, if param is an object, get its value
+			Object.entries(mappingData.params).forEach(([key, param]) => {
+				if (typeof param === 'object' && param !== null) {
+					mappingData.params[key] = param.value;
+				}
+			});
+		}
+
+		if (!mappingData.blocks) {
+			return {
+				status: false,
+				msg: 'NO_BLOCKS_PROVIDED',
+				data: null,
+			};
+		}
+
+		mappingData.blocks.map((block) => {
+			// if source_field is an object, get its value
+			if (typeof block.source_field === 'object' && block.source_field !== null) {
+				block.source_field = block.source_field.value;
+			}
+
+			return block;
+		});
+
+		// Rename blocks key to rows for backward compatibility with mapping format
+		mappingData.rows = mappingData.blocks;
+
+		try {
+			return await fetchClient.post('savecustomreference', {
+				mapping: JSON.stringify(mappingData),
+				...form,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async sendCommercialInterest(addonNamekey) {
+		try {
+			return await fetchClient.post('sendcommercialinterest', {
+				addon_type: addonNamekey,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+				data: null,
 			};
 		}
 	},

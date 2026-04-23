@@ -26,11 +26,11 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
-use Tchooz\Entities\Settings\AddonEntity;
 use Tchooz\Factories\ImportFactory;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\Programs\ProgramRepository;
 
 class EmundusModelCampaign extends ListModel
 {
@@ -367,7 +367,7 @@ class EmundusModelCampaign extends ListModel
 			$query = $this->_db->getQuery(true);
 			$query->select('esp.*')
 				->from($this->_db->quoteName('#__emundus_setup_programmes', 'esp'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.training') . ' = ' . $this->_db->quoteName('esp.code'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.program_id') . ' = ' . $this->_db->quoteName('esp.id'))
 				->where($this->_db->quoteName('esc.id') . ' = ' . $this->_db->quote($campaign_id));
 
 			try {
@@ -1104,9 +1104,9 @@ class EmundusModelCampaign extends ListModel
 				->leftJoin(
 					$this->_db->quoteName('#__emundus_setup_programmes', 'sp') .
 					' ON ' .
-					$this->_db->quoteName('sp.code') .
+					$this->_db->quoteName('sp.id') .
 					' LIKE ' .
-					$this->_db->quoteName('sc.training')
+					$this->_db->quoteName('sc.program_id')
 				)
 				->leftJoin(
 					$this->_db->quoteName('#__users', 'u') .
@@ -1182,7 +1182,7 @@ class EmundusModelCampaign extends ListModel
 
 			$query->select('sc.*')
 				->from($this->_db->quoteName('#__emundus_setup_programmes', 'sp'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->_db->quoteName('sp.code') . ' LIKE ' . $this->_db->quoteName('sc.training'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->_db->quoteName('sp.id') . ' LIKE ' . $this->_db->quoteName('sc.program_id'))
 				->where($this->_db->quoteName('sp.id') . ' = ' . $this->_db->quote($program))
 				->andWhere($this->_db->quoteName('sc.end_date') . ' >= ' . $this->_db->quote($date));
 
@@ -1785,15 +1785,7 @@ class EmundusModelCampaign extends ListModel
 			$m_emails   = new EmundusModelEmails;
 			$m_form     = new EmundusModelForm;
 
-			if (version_compare(JVERSION, '4.0', '>'))
-			{
-				$lang = $this->app->getLanguage();
-			}
-			else
-			{
-				$lang = Factory::getLanguage();
-			}
-
+			$lang = $this->app->getLanguage();
 			$actualLanguage = !empty($lang->getTag()) ? substr($lang->getTag(), 0, 2) : 'fr';
 
 			$eMConfig                       = ComponentHelper::getParams('com_emundus');
@@ -1891,6 +1883,12 @@ class EmundusModelCampaign extends ListModel
 						// Set published to 0
 						$data['published'] = 0;
 					}
+				}
+
+				if (!empty($data['training']))
+				{
+					$programRepository = new ProgramRepository();
+					$data['program_id'] = $programRepository->getByCode($data['training'])->getId();
 				}
 
 				$query->clear()
@@ -2059,7 +2057,7 @@ class EmundusModelCampaign extends ListModel
 			$limit_status  = [];
 			$fields        = ['id' => $cid];
 			$columns       = [];
-			$keys_to_unset = ['profileLabel', 'progid', 'status', 'languages', 'usercategories'];
+			$keys_to_unset = ['profileLabel', 'progid', 'status', 'languages', 'usercategories', 'program_id'];
 			$labels        = new stdClass;
 
 			$app->triggerEvent('onBeforeCampaignUpdate', $data);
@@ -2114,7 +2112,6 @@ class EmundusModelCampaign extends ListModel
 						$fields[$key] = $val;
 						break;
 					case 'profileLabel':
-					case 'progid':
 					case 'status':
 					case 'languages':
 					case 'usercategories':
@@ -2169,6 +2166,12 @@ class EmundusModelCampaign extends ListModel
 
 						$fields[$key] = $val;
 
+						break;
+					case 'training':
+						$fields[$key] = $val;
+						$programRepository = new ProgramRepository();
+						$program = $programRepository->getByCode($val);
+						$fields['program_id'] = !empty($program) ? $program->getId() : null;
 						break;
 					default:
 						$fields[$key] = $val;
@@ -2416,7 +2419,7 @@ class EmundusModelCampaign extends ListModel
 			$query->select(['sc.*', 'spr.label AS profileLabel', 'sp.id as progid'])
 				->from($this->_db->quoteName('#__emundus_setup_campaigns', 'sc'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_profiles', 'spr') . ' ON ' . $this->_db->quoteName('spr.id') . ' = ' . $this->_db->quoteName('sc.profile_id'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->_db->quoteName('sp.code') . ' = ' . $this->_db->quoteName('sc.training'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->_db->quoteName('sp.id') . ' = ' . $this->_db->quoteName('sc.program_id'))
 				->where($this->_db->quoteName('sc.id') . ' = ' . $id);
 
 			$this->_db->setQuery($query);
@@ -2436,7 +2439,7 @@ class EmundusModelCampaign extends ListModel
 			$query->clear()
 				->select('*')
 				->from($this->_db->quoteName('#__emundus_setup_programmes'))
-				->where($this->_db->quoteName('code') . ' LIKE ' . $this->_db->quote($results->campaign->training));
+				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($results->campaign->program_id));
 			$this->_db->setQuery($query);
 			$results->program = $this->_db->loadObject();
 
@@ -3993,7 +3996,7 @@ class EmundusModelCampaign extends ListModel
 						->select($this->_db->quoteName('espl.lang_id'))
 						->from($this->_db->quoteName('#__emundus_setup_programs_languages', 'espl'))
 						->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->_db->quoteName('esp.id') . ' = ' . $this->_db->quoteName('espl.program_id'))
-						->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.training') . ' = ' . $this->_db->quoteName('esp.code'))
+						->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.program_id') . ' = ' . $this->_db->quoteName('esp.id'))
 						->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.campaign_id') . ' = ' . $this->_db->quoteName('esc.id'))
 						->where($this->_db->quoteName('ecc.fnum') . ' LIKE ' . $this->_db->quote($fnum))
 						->andWhere($this->_db->quoteName('espl.lang_id') . ' > 0');

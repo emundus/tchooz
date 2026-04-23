@@ -381,7 +381,7 @@ class EmundusControllerExport extends BaseController
 					// If application choices module enabled add application choice columns
 					$addonRepository    = new AddonRepository();
 					$choices_addon      = $addonRepository->getByName('choices');
-					if ($choices_addon->getValue()->isEnabled())
+					if ($choices_addon->isActivated())
 					{
 						$elements['application_choices'] = Export::getApplicationChoiceColumns();
 					}

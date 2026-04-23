@@ -110,6 +110,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 				new Route(['GET'], 'v1/emundus/statistics', 'statistics.displayItem', [], ['component' => 'com_emundus']),
 				new Route(['GET'], 'v1/emundus/actions', 'actions.displayList', [], ['component' => 'com_emundus']),
 				new Route(['GET'], 'v1/emundus/status', 'status.displayList', [], ['component' => 'com_emundus']),
+				new Route(['GET'], 'v1/emundus/addons', 'addons.displayList', [], ['component' => 'com_emundus']),
 			]);
 		}
 		if (in_array('POST', $allowedVerbs))

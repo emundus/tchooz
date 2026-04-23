@@ -20,10 +20,12 @@ use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Factories\TransformerFactory;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Label\LabelRepository;
+use Tchooz\Repositories\Settings\ConfigurationRepository;
 use Tchooz\Repositories\Workflow\StepRepository;
 
 class Export
@@ -92,6 +94,10 @@ class Export
 		7 => [
 			'id'    => 'status',
 			'label' => 'COM_EMUNDUS_EXPORTS_PDF_STATUS',
+		],
+		8 => [
+			'id'    => 'short_reference',
+			'label' => 'COM_EMUNDUS_SHORT_REFERENCE',
 		],
 	];
 
@@ -537,6 +543,17 @@ class Export
 		{
 			$element['label']       = Text::_($element['label']);
 			$element['plugin_name'] = Text::_('COM_EMUNDUS_EXPORT_DIVERS');
+		}
+
+		$addonRepository = new AddonRepository();
+		$customReferenceFormat = $addonRepository->getByName('custom_reference_format');
+		if (!empty($customReferenceFormat) && $customReferenceFormat->isActivated())
+		{
+			$miscellaneousElements[] = [
+				'id'          => 'custom_reference',
+				'label'       => Text::_('COM_EMUNDUS_REFERENCE'),
+				'plugin_name' => Text::_('COM_EMUNDUS_REFERENCE')
+			];
 		}
 
 		$miscellaneousColumns['forms']['other_progress'] = [

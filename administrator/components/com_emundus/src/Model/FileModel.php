@@ -12,7 +12,7 @@ use Joomla\CMS\Filter\InputFilter;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
-use Tchooz\Repositories\ExternalReference\ExternalReferenceRepository;
+use Tchooz\Repositories\Reference\ExternalReferenceRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 
 class FileModel extends AdminModel
@@ -109,7 +109,7 @@ class FileModel extends AdminModel
 						// Add application choices
 						$addonRepository = new AddonRepository();
 						$choices_addon   = $addonRepository->getByName('choices');
-						if ($choices_addon->getValue()->isEnabled())
+						if ($choices_addon->isActivated())
 						{
 							$applicationChoicesRepository = new ApplicationChoicesRepository();
 							$moreFormId = $applicationChoicesRepository->getMoreFormId();

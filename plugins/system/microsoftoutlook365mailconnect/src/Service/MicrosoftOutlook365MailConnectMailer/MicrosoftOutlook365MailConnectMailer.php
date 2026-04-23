@@ -1,16 +1,16 @@
 <?php
 
 /* ======================================================
- # Microsoft/Outlook 365 Mail Connect for Joomla! - v1.0.8 (pro version)
+ # Microsoft/Outlook 365 Mail Connect for Joomla! - v1.0.9 (pro version)
  # -------------------------------------------------------
- # For Joomla! CMS (v4.x)
+ # For Joomla! CMS (v4.x, v5.x, v6.x)
  # Author: Web357 (Yiannis Christodoulou)
- # Copyright: (©) 2014-2024 Web357. All rights reserved.
+ # Copyright: (©) 2014-2026 Web357. All rights reserved.
  # License: GNU/GPLv3, https://www.gnu.org/licenses/gpl-3.0.html   
  # Website: https://www.web357.com
  # Demo: 
  # Support: support@web357.com
- # Last modified: Tuesday 03 February 2026, 10:20:16 AM
+ # Last modified: Tuesday 14 April 2026, 10:47:44 AM
  ========================================================= */
 declare(strict_types=1);
 
@@ -20,7 +20,6 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Mail\MailerInterface;
 use Throwable;
 use Web357\Plugin\System\Microsoftoutlook365mailconnect\Helper\MicrosoftOutlookApplicationHelper;
 
@@ -36,6 +35,8 @@ class MicrosoftOutlook365MailConnectMailer extends Web357Mailer
     const MICROSOFT_FALLBACK_MAILER_SERVICE = 'web357MicrosoftOutlook365FallbackMailer';
 
     public $Mailer = 'web357MicrosoftOutlook365MailConnect';
+
+    public $web357IsFallback = false;
 
     protected function toMicrosoftGraphMessageArray(): array
     {
@@ -168,9 +169,12 @@ class MicrosoftOutlook365MailConnectMailer extends Web357Mailer
 
     public function Send()
     {
-        // Ensure the From address is set correctly (JMail Log compatibility)
-        $microsoftOutlookApplicationHelper = MicrosoftOutlookApplicationHelper::getInstance();
-        $this->From = $microsoftOutlookApplicationHelper->getOauthFromEmail() ?: $microsoftOutlookApplicationHelper->getConfiguredEmail();
+        if (!$this->web357IsFallback) {
+            /* set Mailer again (Joomla! v4.0.2 compatibility) */
+            $this->Mailer = 'web357MicrosoftOutlook365MailConnect';
+            $microsoftOutlookApplicationHelper = MicrosoftOutlookApplicationHelper::getInstance();
+            $this->From = $microsoftOutlookApplicationHelper->getOauthFromEmail() ?: $microsoftOutlookApplicationHelper->getConfiguredEmail();
+        }
         return parent::Send();
     }
 
@@ -182,7 +186,7 @@ class MicrosoftOutlook365MailConnectMailer extends Web357Mailer
         } catch (Throwable $e) {
             if ($e->getCode() === 400) {
                 $this->notifyAdministrator($e);
-                return $this->sendWithFallback();;
+                return $this->sendWithFallback();
             }
             Log::add($e->getMessage(), Log::ERROR, 'microsoftoutlook365mailconnect');
             $this->ErrorInfo = $e->getMessage();
@@ -225,8 +229,11 @@ class MicrosoftOutlook365MailConnectMailer extends Web357Mailer
                     "Date: " . date('Y-m-d H:i:s') . "\n\n" .
                     "Error message: " . $e->getMessage() . "\n\n" .
                     "Please review the plugin configuration and re-authorize the connection if necessary.";
-                /** @var MailerInterface $mailer */
-                $mailer = Factory::getContainer()->get(static::MICROSOFT_FALLBACK_MAILER_SERVICE)->createMailer();
+
+                $mailer = $this->getFallbackMailer();
+                if (!$mailer) {
+                    return false;
+                }
                 $mailer->addRecipient($adminEmail);
                 $mailer->setSubject($subject);
                 $mailer->isHtml(false);
@@ -246,8 +253,10 @@ class MicrosoftOutlook365MailConnectMailer extends Web357Mailer
     protected function sendWithFallback()
     {
         try {
-            /** @var \Joomla\CMS\Mail\Mail $fallbackMailer */
-            $fallbackMailer = Factory::getContainer()->get(static::MICROSOFT_FALLBACK_MAILER_SERVICE)->createMailer();
+            $fallbackMailer = $this->getFallbackMailer();
+            if (!$fallbackMailer) {
+                return false;
+            }
 
             // Copy recipients
             foreach ($this->getToAddresses() as $addr) {
@@ -285,4 +294,28 @@ class MicrosoftOutlook365MailConnectMailer extends Web357Mailer
         }
     }
 
+    /**
+     * Retrieves a fallback mailer instance to be used when the primary mailer fails.
+     * The method checks if a custom fallback mailer service is defined or falls back
+     * to Joomla's default mailer if applicable. It ensures the fallback mailer is not
+     * the same as the primary Microsoft Outlook 365 mailer.
+     *
+     * @return mixed An instance of the mailer to be used as fallback, or false if no suitable mailer is found.
+     */
+    protected function getFallbackMailer()
+    {
+        $mailer = false;
+        $container = Factory::getContainer();
+        if ($container->has(static::MICROSOFT_FALLBACK_MAILER_SERVICE)) {
+            $mailer = $container->get(static::MICROSOFT_FALLBACK_MAILER_SERVICE)->createMailer();
+        } elseif (is_callable(['Joomla\CMS\Factory', 'getMailer'])) {
+            $mailer = Factory::getMailer();
+            if ($mailer->Mailer === 'web357MicrosoftOutlook365MailConnect') {
+                $mailer = false;
+            } elseif (property_exists($mailer, 'web357IsFallback')) {
+                $mailer->web357IsFallback = true;
+            }
+        }
+        return $mailer;
+    }
 }

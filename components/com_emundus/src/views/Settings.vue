@@ -60,7 +60,6 @@ import Multiselect from 'vue-multiselect';
 import SidebarMenu from '@/components/Menus/SidebarMenu.vue';
 import SettingsContent from '@/components/Settings/SettingsContent.vue';
 import Addons from '@/components/Settings/Addons.vue';
-import Integration from '@/components/Settings/Integration.vue';
 import Info from '@/components/Utils/Info.vue';
 import SectionComponent from '@/components/Settings/SectionComponent.vue';
 import WorkflowSettings from '@/views/Workflows/WorkflowSettings.vue';
@@ -71,6 +70,7 @@ import Swal from 'sweetalert2';
 import { useSettingsStore } from '@/stores/settings.js';
 import menus from '@/assets/data/settings/menus.js';
 import settingsService from '@/services/settings.js';
+import { useMappingStore } from '@/stores/mapping.js';
 
 export default {
 	name: 'globalSettings',
@@ -82,7 +82,6 @@ export default {
 		WebSecurity,
 		Multiselect,
 		Addons,
-		Integration,
 		Info,
 		WorkflowSettings,
 		AnalyticsSettings,

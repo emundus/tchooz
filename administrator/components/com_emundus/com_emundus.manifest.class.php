@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 use Joomla\Component\Emundus\Administrator\Attributes\PostflightAttribute;
 use Joomla\Database\DatabaseInterface;
+use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Services\Language\DbLanguage;
 use Tchooz\Traits\TraitVersion;
 
@@ -286,6 +287,8 @@ class Com_EmundusInstallerScript
 		{
 			EmundusHelperUpdate::displayMessage($result['message'], 'error');
 		}
+
+		$updates[] = \EmundusHelperUpdate::makeFromEntity(AddonEntity::class);
 
 		return !in_array(false, $updates);
 	}

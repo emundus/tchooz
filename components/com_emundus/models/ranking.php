@@ -14,7 +14,7 @@ use Joomla\Database\DatabaseDriver;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Log\Log;
-use Tchooz\Entities\Settings\AddonEntity;
+use Tchooz\Entities\Addons\AddonEntity;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
@@ -56,67 +56,47 @@ class EmundusModelRanking extends JModelList
 
 	    $this->h_cache = new EmundusHelperCache();
 	    $this->setRankingAddon();
-	    $this->activated = $this->rankingAddon->enabled && $this->rankingAddon->displayed;
+	    $this->activated = $this->rankingAddon->isActivated();
 
         Log::addLogger(['text_file' => 'com_emundus.ranking.php'], Log::ALL, 'com_emundus.ranking.php');
     }
 
 	/**
-	 * Load the SMS addon
+	 * Load the ranking addon
 	 */
 	private function setRankingAddon(): void
 	{
 		$cache_ranking_addon = $this->h_cache->get('ranking_addon');
 
-		if (!empty($cache_ranking_addon)) {
-			$this->rankingAddon = new AddonEntity(
-				$cache_ranking_addon->name,
-				$cache_ranking_addon->type,
-				$cache_ranking_addon->icon,
-				$cache_ranking_addon->description,
-				$cache_ranking_addon->configuration,
-				$cache_ranking_addon->enabled,
-				$cache_ranking_addon->displayed
-			);
+		if (!empty($cache_ranking_addon) && $cache_ranking_addon instanceof AddonEntity) {
+			$this->rankingAddon = $cache_ranking_addon;
+			return;
 		}
 
-		if (empty($this->rankingAddon)) {
-			$query = $this->db->createQuery();
+		$query = $this->db->createQuery();
 
-			$query->select($this->db->quoteName('value'))
-				->from($this->db->quoteName('#__emundus_setup_config'))
-				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('ranking'));
-			try {
-				$this->db->setQuery($query);
-				$config = $this->db->loadResult();
+		$query->select($this->db->quoteName('value'))
+			->from($this->db->quoteName('#__emundus_setup_config'))
+			->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('ranking'));
+		try {
+			$this->db->setQuery($query);
+			$config = $this->db->loadResult();
 
-				if (!empty($config)) {
-					$config = json_decode($config, true);
-					$this->rankingAddon = new AddonEntity(
-						'COM_EMUNDUS_ONBOARD_SETTINGS_MENU_RANKING',
-						'ranking',
-						'leaderboard',
-						'COM_EMUNDUS_ONBOARD_SETTINGS_MENU_RANKING_DESC',
-						'',
-						(bool)$config['enabled'],
-						(bool)$config['displayed']
-					);
+			if (!empty($config)) {
+				$config = json_decode($config, true);
+				$this->rankingAddon = new AddonEntity(
+					namekey: 'ranking',
+					params: !empty($config['params']) ? (array) $config['params'] : [],
+				);
 
-					$this->h_cache->set('ranking_addon', $this->rankingAddon);
-				} else {
-					$this->rankingAddon = new AddonEntity(
-						'COM_EMUNDUS_ONBOARD_SETTINGS_MENU_RANKING',
-						'ranking',
-						'leaderboard',
-						'COM_EMUNDUS_ONBOARD_SETTINGS_MENU_RANKING_DESC',
-						'',
-						false,
-						false
-					);
-				}
-			} catch (\Exception $e) {
-				Log::add('Error on load sms addon : ' . $e->getMessage(), Log::ERROR, 'com_emundus.sms');
+				$this->h_cache->set('ranking_addon', $this->rankingAddon);
+			} else {
+				$this->rankingAddon = new AddonEntity(
+					namekey: 'ranking',
+				);
 			}
+		} catch (\Exception $e) {
+			Log::add('Error on load ranking addon : ' . $e->getMessage(), Log::ERROR, 'com_emundus.ranking');
 		}
 	}
 

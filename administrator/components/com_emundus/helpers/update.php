@@ -2617,6 +2617,10 @@ class EmundusHelperUpdate
 				$result['message'] = 'ADDING COLUMN INDEX : Error : ' . $e->getMessage();
 			}
 		}
+		else {
+			$result['status']  = true;
+			$result['message'] = 'Index already exists';
+		}
 
 		return $result;
 	}
@@ -4578,5 +4582,181 @@ class EmundusHelperUpdate
 
 
 		return $added;
+	}
+
+	public static function makeFromEntity(string $entityClass): bool
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		try
+		{
+			$reflection      = new \ReflectionClass($entityClass);
+			$classAttributes = $reflection->getAttributes();
+			$tableName       = null;
+			foreach ($classAttributes as $attribute)
+			{
+				if ($attribute->getName() === 'Tchooz\\Attributes\\ORM\\Table')
+				{
+					$args      = $attribute->getArguments();
+					$tableName = $args['name'] ?? null;
+					break;
+				}
+			}
+			
+			if (empty($tableName))
+			{
+				EmundusHelperUpdate::displayMessage("Table name not found for entity $entityClass", 'error');
+
+				return false;
+			}
+
+			$tableName = str_replace('#__', $db->getPrefix(), $tableName);
+			$columns   = [];
+			foreach ($reflection->getProperties() as $property)
+			{
+				$attributes = $property->getAttributes();
+
+				$hasColumn  = false;
+				
+				$columnName = $property->getName();
+				$type       = $property->getType();
+				if($type instanceof \ReflectionNamedType)
+				{
+					$type = $type->getName();
+				}
+				else
+				{
+					$type = 'string';
+				}
+
+				$length     = null;
+				$nullable   = $property->getType()->allowsNull();
+				$default = null;
+
+				foreach ($attributes as $attribute)
+				{
+					if ($attribute->getName() === 'Tchooz\\Attributes\\ORM\\Column')
+					{
+						$hasColumn = true;
+						if ($attribute->getArguments()['type'] ?? null)
+						{
+							$type = $attribute->getArguments()['type'];
+						}
+						if ($attribute->getArguments()['name'] ?? null)
+						{
+							$columnName = $attribute->getArguments()['name'];
+						}
+						if ($attribute->getArguments()['length'] ?? null)
+						{
+							$length = $attribute->getArguments()['length'];
+						}
+
+						if ($options = $attribute->getArguments()['options'])
+						{
+							if (isset($options['default']))
+							{
+								$default = $options['default'];
+							}
+						}
+						break;
+					}
+				}
+
+				if ($hasColumn)
+				{
+					// Convert name to snake_case if not already
+					if (!preg_match('/^[a-z0-9_]+$/', $columnName))
+					{
+						$columnName = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $columnName));
+					}
+
+					// Mapping PHP types to SQL types
+					switch ($type)
+					{
+						case 'int':
+						case 'integer':
+						case 'number':
+							if (empty($length))
+							{
+								$length = 11;
+							}
+							$sqlType = \EmundusColumnTypeEnum::INT;
+							break;
+						case 'float':
+							$sqlType = \EmundusColumnTypeEnum::FLOAT;
+							break;
+						case 'bool':
+						case 'boolean':
+							if (empty($length))
+							{
+								$length = 1;
+							}
+							$sqlType = \EmundusColumnTypeEnum::TINYINT;
+							break;
+						case 'datetime':
+							$sqlType = \EmundusColumnTypeEnum::DATETIME;
+							break;
+						case 'date':
+							$sqlType = \EmundusColumnTypeEnum::DATE;
+							break;
+						case 'text':
+							$sqlType = \EmundusColumnTypeEnum::TEXT;
+							break;
+						case 'decimal':
+							$sqlType = \EmundusColumnTypeEnum::DECIMAL;
+							break;
+						case 'json':
+							$sqlType = \EmundusColumnTypeEnum::JSON;
+							break;
+						case 'blob':
+							$sqlType = \EmundusColumnTypeEnum::BLOB;
+							break;
+						case 'string':
+						default:
+							if (empty($length))
+							{
+								$length = 255;
+							}
+							$sqlType = \EmundusColumnTypeEnum::VARCHAR;
+					}
+
+					$columns[] = new \EmundusTableColumn($columnName, $sqlType, $length, $nullable, $default);
+				}
+			}
+
+			if (empty($columns))
+			{
+				self::displayMessage("No columns found for entity $entityClass", 'error');
+
+				return false;
+			}
+
+			// Vérifier si la table existe
+			$tableExists = $db->setQuery('SHOW TABLE STATUS WHERE Name LIKE ' . $db->quote($tableName))->loadResult();
+			if (!$tableExists)
+			{
+				return \EmundusHelperUpdate::createTable($tableName, $columns)['status'];
+			}
+			else
+			{
+				foreach ($columns as $column)
+				{
+					if(!\EmundusHelperUpdate::addColumn($tableName, $column->getName(), $column->getType()->value, $column->getLength(), $column->isNullable(), $column->getDefault())['status'])
+					{
+						self::displayMessage("Error adding column {$column->getName()} for entity $entityClass", 'error');
+
+						return false;
+					}
+				}
+
+				return true;
+			}
+		}
+		catch (\Exception $e)
+		{
+			self::displayMessage("Error processing entity $entityClass: " . $e->getMessage(), 'error');
+
+			return false;
+		}
 	}
 }

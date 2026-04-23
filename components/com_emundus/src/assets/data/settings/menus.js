@@ -54,14 +54,6 @@ export default [
 		published: true,
 	},
 	{
-		label: 'COM_EMUNDUS_GLOBAL_PARAMS_MENUS_INTEG',
-		name: 'integration',
-		icon: 'lan',
-		type: 'component',
-		component: 'Integration',
-		published: true,
-	},
-	{
 		label: 'COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS',
 		name: 'translate',
 		icon: 'translate',
