@@ -1358,7 +1358,10 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 							{
 								foreach ($users_emails as $user_email)
 								{
-									$sent_states[] = $m_emails->sendEmailNoFnum($user_email, $action->email_to_send, null, null, [], $fnum, true, [], $this->automated_task_user);
+									if(!EmundusHelperEmails::isEmailExcluded($user_email))
+									{
+										$sent_states[] = $m_emails->sendEmailNoFnum($user_email, $action->email_to_send, null, null, [], $fnum, true, [], $this->automated_task_user);
+									}
 								}
 							}
 							else
