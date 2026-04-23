@@ -265,7 +265,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 				'title'        => 'Sauvegarder ses informations d\'accès',
 				'alias'        => 'store-token',
 				'link'         => 'index.php?option=com_emundus&view=publicaccess&layout=storetoken',
-				'type'         => 'url',
+				'type'         => 'component',
 				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
 				'menu_show'    => 0
 			];
