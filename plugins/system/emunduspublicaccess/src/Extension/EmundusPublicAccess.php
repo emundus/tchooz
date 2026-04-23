@@ -56,6 +56,12 @@ use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
  *
  * @since 1.0.0
  */
+
+if (!class_exists('EmundusHelperMenu'))
+{
+	require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
+}
+
 final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 {
 	use DatabaseAwareTrait;
@@ -152,6 +158,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @return  void
 	 *
+	 * @throws \Exception
 	 * @since   1.0.0
 	 */
 	public function onAfterRoute(AfterRouteEvent $event): void
@@ -251,13 +258,14 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			else
 			{
 				$authorizedLinks = [
-					'index.php?option=com_emundus&view=application&layout=history'
+					'index.php?option=com_emundus&view=application&layout=history',
 				];
 
 				$currentMenu = $app->getMenu()->getActive();
 				if ($currentMenu->menutype !== 'topmenu' && !str_starts_with($currentMenu->menutype, 'menu-profile') && !in_array($currentMenu->link, $authorizedLinks, true))
 				{
-					throw new \Exception(Text::_('ACCESS_DENIED'), 403);
+					$app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+					$app->redirect('/index.php?option=com_emundus&task=openfile&fnum=' . self::getPublicAccessFnum());
 				}
 			}
 		}
@@ -402,11 +410,6 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 */
 	private function authenticatePublicAccess(string $accessToken, string $shortReference): void
 	{
-		if (!class_exists('EmundusHelperMenu'))
-		{
-			require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
-		}
-
 		try
 		{
 			$applicationFileRepository = new ApplicationFileRepository();
