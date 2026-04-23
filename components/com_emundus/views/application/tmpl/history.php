@@ -169,12 +169,15 @@ $icons = [
     function toggleLoader() {
         let loader = document.querySelector('.em-page-loader');
 
-        if (loader.classList.contains('hidden') || loader.style.display === 'none') {
-            loader.classList.remove('hidden');
-            loader.style.display = 'block';
-        } else {
-            loader.style.removeProperty('display');
-            loader.classList.add('hidden');
+        if (loader)
+        {
+            if (loader.classList.contains('hidden') || loader.style.display === 'none') {
+                loader.classList.remove('hidden');
+                loader.style.display = 'block';
+            } else {
+                loader.style.removeProperty('display');
+                loader.classList.add('hidden');
+            }
         }
     }
 

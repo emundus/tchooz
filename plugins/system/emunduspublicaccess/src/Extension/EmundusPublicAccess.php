@@ -250,8 +250,12 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			}
 			else
 			{
+				$authorizedLinks = [
+					'index.php?option=com_emundus&view=application&layout=history'
+				];
+
 				$currentMenu = $app->getMenu()->getActive();
-				if ($currentMenu->menutype !== 'topmenu' && !str_starts_with($currentMenu->menutype, 'menu-profile'))
+				if ($currentMenu->menutype !== 'topmenu' && !str_starts_with($currentMenu->menutype, 'menu-profile') && !in_array($currentMenu->link, $authorizedLinks, true))
 				{
 					throw new \Exception(Text::_('ACCESS_DENIED'), 403);
 				}
@@ -602,20 +606,20 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 
 		if (!empty($campaign))
 		{
-			$fnumSession               = new \stdClass();
-			$fnumSession->fnum         = $applicationFile->getFnum();
-			$fnumSession->applicant_id = $applicationFile->getUser()->id;
-			$fnumSession->applicant    = 1;
-			$fnumSession->status       = $applicationFile->getStatus()->getStep();
-			$fnumSession->start_date   = $campaign->getStartDate()->format('Y-m-d H:i:s');
-			$fnumSession->end_date     = $campaign->getEndDate()->format('Y-m-d H:i:s');
-			$fnumSession->published    = $applicationFile->getPublished();
-			$fnumSession->campaign_id  = $applicationFile->getCampaignId();
+			$fnumSession                 = new \stdClass();
+			$fnumSession->fnum           = $applicationFile->getFnum();
+			$fnumSession->applicant_id   = $applicationFile->getUser()->id;
+			$fnumSession->application_id = $applicationFile->getId();
+			$fnumSession->applicant      = 1;
+			$fnumSession->status         = $applicationFile->getStatus()->getStep();
+			$fnumSession->start_date     = $campaign->getStartDate()->format('Y-m-d H:i:s');
+			$fnumSession->end_date       = $campaign->getEndDate()->format('Y-m-d H:i:s');
+			$fnumSession->published      = $applicationFile->getPublished();
+			$fnumSession->campaign_id    = $applicationFile->getCampaignId();
+			$fnumSession->show_history   = 1;
 
 			$emundusSession->fnum                   = $applicationFile->getFnum();
-			$emundusSession->fnums                  = [
-				$applicationFile->getFnum() => $fnumSession
-			];
+			$emundusSession->fnums                  = [$applicationFile->getFnum() => $fnumSession];
 			$emundusSession->campaign_id            = $campaign->getId();
 			$emundusSession->status                 = $applicationFile->getStatus()->getStep();
 			$emundusSession->candidature_incomplete = ($applicationFile->getStatus()->getStep() == 0) ? 0 : 1;
