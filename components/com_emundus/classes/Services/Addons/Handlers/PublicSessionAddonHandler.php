@@ -65,6 +65,12 @@ class PublicSessionAddonHandler extends AbstractAddonHandler
 
 	public function onActivate(): bool
 	{
+		if (!class_exists('EmundusHelperUpdate'))
+		{
+			require_once(JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
+		}
+		\EmundusHelperUpdate::enableEmundusPlugins('emunduspublicaccess', 'system');
+
 		return $this->toggle(true);
 	}
 

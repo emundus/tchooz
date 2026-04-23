@@ -171,7 +171,14 @@ class Release2_20_0Installer extends ReleaseInstaller
 				$params             = [];
 				foreach ($handler->getParameters() as $parameter)
 				{
-					$params[$parameter->getName()] = null;
+					if ($parameter->getName() === 'token_validity_duration')
+					{
+						$params[$parameter->getName()] = 30;
+					}
+					else
+					{
+						$params[$parameter->getName()] = 1;
+					}
 				}
 				$publicSessionAddon->setParams($params);
 
@@ -250,6 +257,21 @@ class Release2_20_0Installer extends ReleaseInstaller
 			if ($this->tasks[] = $reveal_menu['status'])
 			{
 				$this->tasks[] = \EmundusHelperUpdate::insertFalangTranslation(1, $reveal_menu['id'], 'menu', 'title', 'Demander la désanonymisation du dossier', true);
+			}
+
+			$datas = [
+				'menutype'     => 'topmenu',
+				'title'        => 'Sauvegarder ses informations d\'accès',
+				'alias'        => 'store-token',
+				'link'         => 'index.php?option=com_emundus&view=publicaccess&layout=storetoken',
+				'type'         => 'url',
+				'component_id' => 0,
+				'menu_show'    => 0
+			];
+			$storeTokenMenu = \EmundusHelperUpdate::addJoomlaMenu($datas, 0, 0);
+			if ($this->tasks[] = $storeTokenMenu['status'])
+			{
+				$this->tasks[] = \EmundusHelperUpdate::insertFalangTranslation(1, $storeTokenMenu['id'], 'menu', 'title', 'Sauvegarder ses informations d\'accès', true);
 			}
 
 			\EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_PUBLIC_ACCESS_INVALID_TOKEN', 'La clé d\'accès est invalide ou a expiré. Veuillez vérifier votre clé et réessayer.');
