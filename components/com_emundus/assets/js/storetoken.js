@@ -39,43 +39,57 @@ document.addEventListener('DOMContentLoaded', function() {
 		// Track copied items
 		copiedItems[itemKey] = true;
 
-		// Enable continue button if both items are copied
 		if (copiedItems.token) {
-			const continueBtn = document.getElementById('continue-btn');
-			if (continueBtn) {
-				continueBtn.disabled = false;
-				continueBtn.classList.remove('tw-opacity-50', 'tw-cursor-not-allowed');
+			fetch('/index.php?option=com_emundus&task=markPublicAccessKeyAsStored', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRF-Token': Joomla.getOptions('csrf.token'),
+				},
+			}).catch(function (err) {
+				console.error('Failed to mark token as copied', err);
+			});
+		}
 
-				fetch('/index.php?option=com_emundus&task=markPublicAccessKeyAsStored', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'X-CSRF-Token': Joomla.getOptions('csrf.token'),
-					},
-				}).catch(function (err) {
-					console.error('Failed to mark token as copied', err);
-				});
+		updateContinueButton();
+	}
+
+	function updateContinueButton() {
+		const continueBtn = document.getElementById('continue-btn');
+		const confirmCheckbox = document.getElementById('confirm-copy');
+		if (continueBtn && confirmCheckbox) {
+			continueBtn.disabled = !confirmCheckbox.checked;
+			if (confirmCheckbox.checked) {
+				continueBtn.classList.remove('tw-opacity-50', 'tw-cursor-not-allowed');
+			} else {
+				continueBtn.classList.add('tw-opacity-50', 'tw-cursor-not-allowed');
 			}
 		}
 	}
 
+	document.getElementById('confirm-copy').addEventListener('change', function() {
+		const wrapper = this.closest('.tw-flex.tw-flex-row');
+		if (wrapper && this.checked) {
+			wrapper.classList.remove('tw-border-red-500');
+			wrapper.querySelector('label').classList.remove('tw-text-red-500');
+		}
+		updateContinueButton();
+	});
+
 	// add event listener on #continue-btn
 	document.getElementById('continue-btn').addEventListener('click', function() {
-		if (copiedItems.token)
+		const confirmCheckbox = document.getElementById('confirm-copy');
+		if (confirmCheckbox && confirmCheckbox.checked)
 		{
 			window.location.href = '/index.php?option=com_emundus&task=openfile&fnum=' + Joomla.getOptions('storetoken.fnum');
 		}
 		else
 		{
-			Swal.fire({
-				title: Joomla.Text._('COM_EMUNDUS_PLEASE_COPY_ACCESS_TOKEN_BEFORE_CONTINUE'),
-				text: '',
-				icon: 'warning',
-				showConfirmButton: false,
-				customClass: {
-					title: 'em-swal-title',
-				},
-			});
+			const wrapper = confirmCheckbox.closest('.tw-flex.tw-flex-row');
+			if (wrapper) {
+				wrapper.classList.add('tw-border-red-500');
+				wrapper.querySelector('label').classList.add('tw-text-red-500');
+			}
 		}
 	});
 

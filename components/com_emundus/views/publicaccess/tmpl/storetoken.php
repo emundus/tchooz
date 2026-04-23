@@ -20,7 +20,7 @@ $token = $this->compositeKey;
 		<div class="tw-text-center tw-mb-6">
 			<span class="material-symbols-outlined tw-text-5xl tw-text-orange-500 tw-mb-2">warning</span>
 			<h1 class="tw-text-2xl tw-font-semibold tw-mb-2">
-				<?php echo Text::_('COM_EMUNDUS_STORETOKEN_TITLE'); ?>
+				<?php echo sprintf(Text::_('COM_EMUNDUS_STORETOKEN_TITLE'), $this->shortReference); ?>
 			</h1>
 			<p class="tw-text-neutral-600">
 				<?php echo Text::_('COM_EMUNDUS_STORETOKEN_DESC'); ?>
@@ -36,7 +36,7 @@ $token = $this->compositeKey;
 		</div>
 
 		<!-- Composite key -->
-		<div class="tw-mb-6">
+		<div class="tw-mb-4">
 			<label class="tw-block tw-text-sm tw-font-medium tw-text-neutral-700 tw-mb-1">
 				<?php echo Text::_('COM_EMUNDUS_STORETOKEN_TOKEN_LABEL'); ?>
 			</label>
@@ -54,16 +54,25 @@ $token = $this->compositeKey;
 					class="tw-px-3 tw-py-2 tw-border tw-border-neutral-300 tw-rounded tw-bg-white hover:tw-bg-neutral-100 tw-transition-colors tw-flex tw-items-center tw-gap-1"
 					title="<?php echo Text::_('COM_EMUNDUS_STORETOKEN_COPY'); ?>"
 				>
-					<span class="material-symbols-outlined tw-text-lg" id="copy-token-icon">content_copy</span>
+					<span class="material-symbols-outlined tw-text-lg" id="copy-token-icon">
+                        content_copy
+                    </span>
+                    <span>
+                        <?php echo Text::_('COM_EMUNDUS_STORETOKEN_COPY'); ?>
+                    </span>
 				</button>
 			</div>
 		</div>
+
+        <div class="tw-flex tw-flex-row tw-items-center tw-mb-4 tw-p-2 tw-rounded tw-border tw-cursor-pointer tw-bg-neutral-100 tw-transition-all">
+            <input type="checkbox" name="confirm-copy" id="confirm-copy" class="tw-cursor-pointer"/>
+            <label for="confirm-copy" class="tw-mb-0 tw-cursor-pointer tw-transition-all"><?= Text::_('COM_EMUNDUS_CONFIRM_STORE_TOKEN') ?></label>
+        </div>
 
 		<!-- Continue button -->
 		<button
 			type="button"
 			id="continue-btn"
-			disabled
 			class="tw-w-full tw-btn-primary tw-opacity-50 tw-cursor-not-allowed tw-transition-all"
 		>
 			<?php echo Text::_('COM_EMUNDUS_STORETOKEN_CONTINUE'); ?>
