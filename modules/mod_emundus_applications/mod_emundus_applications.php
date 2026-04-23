@@ -15,6 +15,7 @@ use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
@@ -102,7 +103,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
 	$displayImportPublicFilesAction = false;
 	$addonRepository = new AddonRepository();
-	$publicSessionAddon = $addonRepository->getByName('public_session');
+	$publicSessionAddon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
 	if ($publicSessionAddon->isActivated())
 	{
 		if ($publicSessionAddon->getParams()['display_import_public_file_action'] == 1)

@@ -5,6 +5,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 
@@ -401,7 +402,7 @@ if ($user->guest || in_array($e_user->profile, $app_prof) || $tmpl === 'tchooz_s
 		if (!empty($campaign) && $campaign->isPublic() && $app->getIdentity()->guest === 1)
 		{
 			$addonRepository = new AddonRepository();
-			$addon = $addonRepository->getByName('public_session');
+			$addon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
 
 			if (!empty($addon) && $addon->isActivated())
 			{

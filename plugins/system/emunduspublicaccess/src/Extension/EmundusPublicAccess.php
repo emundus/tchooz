@@ -27,6 +27,7 @@ use Joomla\Event\SubscriberInterface;
 use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\User\AuthenticationModeEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
@@ -164,7 +165,7 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	public function onAfterRoute(AfterRouteEvent $event): void
 	{
 		$addonRepository = new AddonRepository();
-		$this->publicSessionAddon = $addonRepository->getByName('public_session');
+		$this->publicSessionAddon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
 		if (empty($this->publicSessionAddon) || $this->publicSessionAddon->isActivated() === false)
 		{
 			if (self::isPublicAccessSession())

@@ -17,6 +17,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 
 /** @var \Joomla\Component\Users\Site\View\Login\HtmlView $cookieLogin */
@@ -305,7 +306,7 @@ $allowDefaultLogin = (bool)$eMConfig->get('allow_default_login', 1);
 
     <?php
     $addonRepository = new AddonRepository();
-    $addon = $addonRepository->getByName('public_session');
+    $addon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
 
     if (!empty($addon) && $addon->isActivated())
     {

@@ -18,6 +18,7 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\Actions\CrudEntity;
 use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
@@ -163,11 +164,11 @@ class Release2_20_0Installer extends ReleaseInstaller
 
 			$resolver           = new AddonHandlerResolver();
 			$addonRepository    = new AddonRepository();
-			$publicSessionAddon = $addonRepository->getByName('public_session');
+			$publicSessionAddon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
 			if (empty($publicSessionAddon))
 			{
-				$publicSessionAddon = new AddonEntity('public_session', false, false, false);
-				$handler            = $resolver->resolve('public_session', $publicSessionAddon);
+				$publicSessionAddon = new AddonEntity(AddonEnum::PUBLIC_SESSION->value, false, false, false);
+				$handler            = $resolver->resolve(AddonEnum::PUBLIC_SESSION->value, $publicSessionAddon);
 				$params             = [];
 				foreach ($handler->getParameters() as $parameter)
 				{

@@ -11,6 +11,7 @@ use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Fields\YesnoField;
 use Tchooz\Entities\Fields\DateField;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\ValueFormatEnum;
@@ -58,13 +59,13 @@ class FileDataConditionResolver implements ConditionTargetResolverInterface
 		];
 
 		$addonRepository = new AddonRepository();
-		$publicAddon = $addonRepository->getByName('public_session');
+		$publicAddon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
 		if ($publicAddon->isActivated())
 		{
 			$parameters[] = new YesnoField('public', Text::_('COM_EMUNDUS_IS_PUBLIC'));
 		}
 
-		$anonymousAddon = $addonRepository->getByName('anonymous');
+		$anonymousAddon = $addonRepository->getByName(AddonEnum::ANONYMOUS->value);
 		if ($anonymousAddon->isActivated())
 		{
 			$parameters[] = new YesnoField('anonymous', Text::_('COM_EMUNDUS_IS_ANONYMOUS'));

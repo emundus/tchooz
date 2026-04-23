@@ -27,8 +27,10 @@ use Tchooz\EmundusResponse;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\ApplicationFile\StatusEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
@@ -2431,6 +2433,14 @@ class EmundusController extends JControllerLegacy
 	public function applyPubliclyToCampaign(): EmundusResponse
 	{
 		$response = EmundusResponse::denied();
+
+		$addonRepository = new AddonRepository();
+		$publicAddon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
+
+		if (!$publicAddon->isActivated())
+		{
+			return EmundusResponse::denied();
+		}
 
 		if ($this->app->getIdentity()->guest == 1)
 		{

@@ -6,6 +6,7 @@ use Joomla\CMS\Language\Text;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\ApplicationFile\ApplicationFileAccessEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Factories\ApplicationFile\ApplicationFileAccessFactory;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\EmundusRepository;
@@ -161,7 +162,7 @@ class ApplicationFileAccessRepository extends EmundusRepository
 				$encryptedToken = password_hash($token, PASSWORD_BCRYPT);
 
 				$addonRepository = new AddonRepository();
-				$publicAccessAddon = $addonRepository->getByName('public_session');
+				$publicAccessAddon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
 				$params = $publicAccessAddon->getParams();
 				$days = !empty($params['token_validity_duration']) ? intval($params['token_validity_duration']) : 30;
 
@@ -238,7 +239,7 @@ class ApplicationFileAccessRepository extends EmundusRepository
 			$encryptedToken = password_hash($token, PASSWORD_BCRYPT);
 
 			$addonRepository = new AddonRepository();
-			$publicAccessAddon = $addonRepository->getByName('public_session');
+			$publicAccessAddon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
 			$params = $publicAccessAddon->getParams();
 			$days = !empty($params['token_validity_duration']) ? intval($params['token_validity_duration']) : 30;
 
