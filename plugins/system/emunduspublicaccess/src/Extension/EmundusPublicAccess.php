@@ -398,11 +398,15 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 	 */
 	private function authenticatePublicAccess(string $accessToken, string $shortReference): void
 	{
+		if (!class_exists('EmundusHelperMenu'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
+		}
+
 		try
 		{
 			$applicationFileRepository = new ApplicationFileRepository();
 			$applicationFile           = $applicationFileRepository->getItemByField('short_reference', $shortReference, true);
-
 			if (empty($applicationFile))
 			{
 				Log::add(
@@ -412,6 +416,8 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 				);
 
 				$this->destroyPublicSession();
+				$this->getApplication()->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+				$this->getApplication()->redirect(\EmundusHelperMenu::getHomepageLink());
 			}
 
 			if (!$applicationFile->isPublic())
@@ -423,6 +429,8 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 				);
 
 				$this->destroyPublicSession();
+				$this->getApplication()->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+				$this->getApplication()->redirect(\EmundusHelperMenu::getHomepageLink());
 			}
 
 			$accessRepository = new ApplicationFileAccessRepository();
@@ -437,6 +445,8 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 				);
 
 				$this->destroyPublicSession();
+				$this->getApplication()->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+				$this->getApplication()->redirect(\EmundusHelperMenu::getHomepageLink());
 			}
 
 			// Token is valid — set up the public access session
@@ -453,6 +463,8 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			);
 
 			$this->destroyPublicSession();
+			$this->getApplication()->enqueueMessage(Text::_('COM_EMUNDUS_ERROR'), 'error');
+			$this->getApplication()->redirect(\EmundusHelperMenu::getHomepageLink());
 		}
 	}
 
@@ -790,14 +802,14 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 
 			if ($redirect)
 			{
-				$url = 'index.php?option=com_emundus&view=publicaccess&error=1'
-					. '&error_msg=' . urlencode(Text::_('COM_EMUNDUS_PUBLIC_ACCESS_SESSION_EXPIRED'));
+				$url = 'index.php?option=com_emundus&view=publicaccess';
 
 				if (!empty($fnum))
 				{
 					$url .= '&fnum=' . urlencode($fnum);
 				}
 
+				$app->enqueueMessage(Text::_('COM_EMUNDUS_PUBLIC_ACCESS_SESSION_EXPIRED'), 'error');
 				$app->redirect(Route::_($url, false));
 			}
 		}
