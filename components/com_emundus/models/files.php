@@ -41,6 +41,8 @@ use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 
 /**
  * Class EmundusModelFiles
@@ -4598,6 +4600,15 @@ class EmundusModelFiles extends JModelLegacy
 				catch (Exception $e) {
 					Log::add(Uri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 				}
+			}
+
+			$fileRepository = new ApplicationFileRepository();
+			$applicationFile = $fileRepository->getByFnum($fnum);
+			$fileAccessRepository = new ApplicationFileAccessRepository();
+			$revoked = $fileAccessRepository->revokeAccess($applicationFile);
+			if (!$revoked)
+			{
+				Log::add('File access have not been revoked on delete file ' . $fnum, Log::ERROR, 'com_emundus');
 			}
 
 			$query->clear()

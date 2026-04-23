@@ -158,7 +158,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 				$result['message'] .= $tableCreated['message'];
 			}
 
-			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_system_emunduspublicaccess', 'emunduspublicaccess', null, 'plugin', 0, 'system');
+			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_system_emunduspublicaccess', 'emunduspublicaccess', null, 'plugin', 1, 'system');
 			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_emundus_anonymization', 'anonymization', null, 'plugin', 0, 'emundus');
 
 			$resolver           = new AddonHandlerResolver();
@@ -275,6 +275,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 					'em_groups'    => [],
 					'em_campaigns' => [],
 					'news'         => 0,
+					'is_anonym'    => 1,
 				];
 
 				$user           = clone(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0));

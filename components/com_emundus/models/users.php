@@ -1246,6 +1246,12 @@ class EmundusModelUsers extends ListModel
 				$values[]  = $this->db->quote($user_category);
 			}
 
+			if (isset($params['is_anonym']))
+			{
+				$columns[] = 'is_anonym';
+				$values[]  = $params['is_anonym'] == 1 ? 1 : 0;
+			}
+
 			// check if emundus user not already inserted
 			$query->clear()
 				->select('id')

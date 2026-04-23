@@ -25,6 +25,7 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Emundus\Administrator\Attributes\PostflightAttribute;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Database\ParameterType;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\Actions\CrudEntity;
@@ -1792,6 +1793,83 @@ class Com_EmundusPostflightTasks
 		}
 
 		return true;
+	}
+
+	#[PostflightAttribute(name: "Check public access health")]
+	public function checkPublicAccess(): bool
+	{
+		$enabled = \EmundusHelperUpdate::enableEmundusPlugins('emunduspublicaccess', 'system');
+
+		$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
+		if (empty($systemUserId))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/users.php');
+
+			$h_users = new \EmundusHelperUsers();
+			$m_users = new \EmundusModelUsers();
+
+			$other_param = [
+				'firstname'    => 'Public',
+				'lastname'     => 'SYSTEM',
+				'profile'      => 1000,
+				'em_oprofiles' => '',
+				'univ_id'      => 0,
+				'em_groups'    => [],
+				'em_campaigns' => [],
+				'news'         => 0,
+				'is_anonym'    => 1,
+			];
+
+			$user           = clone(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0));
+			$user->name     = 'Public SYSTEMACCOUNT';
+			$user->username = 'system-public@emundus.fr';
+			$user->email    = 'system-public@emundus.fr';
+
+			$password       = $h_users->generateStrongPassword(30);
+			$user->password = UserHelper::hashPassword($password);
+
+			$now                 = \EmundusHelperDate::getNow();
+			$user->registerDate  = $now;
+			$user->lastvisitDate = null;
+			$user->block         = 1;
+			$user->authProvider  = '';
+
+			$acl_aro_groups = $m_users->getDefaultGroup(1000);
+			$user->groups   = $acl_aro_groups;
+
+			$usertype       = $m_users->found_usertype($acl_aro_groups[0]);
+			$user->usertype = $usertype;
+
+			$systemUserId = $m_users->adduser($user, $other_param);
+			if (!empty($systemUserId))
+			{
+				$updated = \EmundusHelperUpdate::updateComponentParameter('com_emundus', 'system_public_user_id', $systemUserId);
+
+				if (!$updated)
+				{
+					return false;
+				}
+			}
+		}
+		else
+		{
+			$query = $this->db->createQuery();
+			$query->update('#__emundus_users')
+				->set('is_anonym = 1')
+				->where('user_id = :user_id')
+				->bind(':user_id', $systemUserId, ParameterType::INTEGER);
+
+			$this->db->setQuery($query);
+			$updated = $this->db->execute();
+			if (!$updated)
+			{
+				return false;
+			}
+		}
+
+
+		return $enabled && !empty($systemUserId);
 	}
 
 	/**
