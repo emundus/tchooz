@@ -34,6 +34,12 @@ class ApplicationFileActionCopy extends ApplicationFileAction
 			return false;
 		}
 
+		if ($applicationFileEntity->isPublic())
+		{
+			// copy public file is not allowed
+			return false;
+		}
+
 		$campaignRepository = new CampaignRepository(false);
 		$campaign = $campaignRepository->getById($parameters['campaign_id']);
 

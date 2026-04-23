@@ -103,6 +103,18 @@ class ApplicationFileActionsRegistry
 				$availableActions[] = new ApplicationFileActionCreateTab();
 			}
 		}
+		else
+		{
+			if (Factory::getApplication()->isClient('site'))
+			{
+				$currentMenu = Factory::getApplication()->getMenu()->getActive();
+
+				if ($currentMenu->link === 'index.php?option=com_emundus&view=application&layout=history')
+				{
+					$availableActions[] = new ApplicationFileActionRedirectToFile();
+				}
+			}
+		}
 
 		if (ApplicationFileActionsEnum::UNANONYMIZE->isAvailable() && $applicationFileEntity->isAnonymous())
 		{
@@ -156,6 +168,21 @@ class ApplicationFileActionsRegistry
 					$availableActions[] = $customAction;
 				}
 			}
+		}
+
+		// Public sessions can not copy files
+		if ($applicationFileEntity->isPublic())
+		{
+			foreach ($availableActions as $key => $action)
+			{
+				if ($action->getActionType() === ApplicationFileActionsEnum::COPY)
+				{
+					unset($availableActions[$key]);
+					break;
+				}
+			}
+
+			$availableActions = array_values($availableActions);
 		}
 
 		return $availableActions;
