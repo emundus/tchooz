@@ -2666,7 +2666,7 @@ class EmundusModelForm extends ListModel
 			if (!in_array($table, $allowed_tables) && !$private_call) {
 				throw new Exception(Text::_('ACCESS_DENIED'));
 			}
-			
+
 			$current_shortlang = explode('-', JFactory::getLanguage()->getTag())[0];
 
 			try {
@@ -2945,7 +2945,20 @@ class EmundusModelForm extends ListModel
 					->where($this->db->quoteName('fe.published') . ' <> -2')
 					->group('esfrr.id');
 				$this->db->setQuery($query);
-				$js_condition->actions = $this->db->loadObjectList();
+				$elementActions = $this->db->loadObjectList();
+
+				$query->clear()
+					->select('esfrr.action,group_concat(DISTINCT(esfrr_fields.fields)) as fields,group_concat(DISTINCT(esfrr_fields.params) SEPARATOR "|") as params')
+					->from($this->db->quoteName('#__emundus_setup_form_rules_js_actions','esfrr'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_form_rules_js_actions_fields','esfrr_fields').' ON '.$this->db->quoteName('esfrr_fields.parent_id').' = '.$this->db->quoteName('esfrr.id'))
+					->leftJoin($this->db->quoteName('#__fabrik_groups','fg').' ON '.$this->db->quoteName('fg.id').' = '.$this->db->quoteName('esfrr_fields.fields'))
+					->where($this->db->quoteName('esfrr.parent_id') . ' = ' . $this->db->quote($js_condition->id))
+					->where($this->db->quoteName('fg.published') . ' <> -2')
+					->group('esfrr.id');
+				$this->db->setQuery($query);
+				$groupActions = $this->db->loadObjectList();
+
+				$js_condition->actions = array_merge($elementActions, $groupActions);
 
 				if($format == 'view')
 				{
@@ -2955,33 +2968,47 @@ class EmundusModelForm extends ListModel
 						$action->fields = explode(',',$action->fields);
 						$action->params = !empty($action->params) ? explode('|',$action->params) : [];
 
-						$query->clear()
-							->select('fe.label, fe.plugin, fe.default as default_value')
-							->from($this->db->quoteName('#__fabrik_elements','fe'))
-							->leftJoin($this->db->quoteName('#__fabrik_formgroup','ffg').' ON '.$this->db->quoteName('ffg.group_id').' = '.$this->db->quoteName('fe.group_id'))
-							->where($this->db->quoteName('fe.name') . ' IN (' . implode(',',$this->db->quote($action->fields)) . ')')
-							->where($this->db->quoteName('ffg.form_id') . ' = ' . $this->db->quote($form_id));
+						if (in_array($action->action, ['show_group','hide_group']))
+						{
+							$query->clear()
+								->select('fg.label')
+								->from($this->db->quoteName('#__fabrik_groups', 'fg'))
+								->where($this->db->quoteName('fg.id') . ' IN (' . implode(',', $this->db->quote($action->fields)) . ')');
+						}
+						else
+						{
+							$query->clear()
+								->select('fe.label, fe.plugin, fe.default as default_value')
+								->from($this->db->quoteName('#__fabrik_elements', 'fe'))
+								->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->db->quoteName('ffg.group_id') . ' = ' . $this->db->quoteName('fe.group_id'))
+								->where($this->db->quoteName('fe.name') . ' IN (' . implode(',', $this->db->quote($action->fields)) . ')')
+								->where($this->db->quoteName('ffg.form_id') . ' = ' . $this->db->quote($form_id));
+						}
+
 						$this->db->setQuery($query);
 						$actionElements = $this->db->loadObjectList();
 						foreach ($actionElements as $actionElement)
 						{
 							$label = Text::_($actionElement->label);
 
-							$plugin = ElementPluginEnum::tryFrom($actionElement->plugin);
-							if($actionElement->plugin === 'panel' && empty($label))
-							{
-								// Plugin name and start of default value
-								// Truncate to 30 characters and remove html tags for panel default values
-								$label = Text::_($actionElement->default_value);
-								$label = strip_tags($label);
-								if(strlen($label) > 30) {
-									$label = substr($label, 0, 30) . '...';
+							if(isset($actionElement->plugin)) {
+								$plugin = ElementPluginEnum::tryFrom($actionElement->plugin);
+								if ($actionElement->plugin === 'panel' && empty($label))
+								{
+									// Plugin name and start of default value
+									// Truncate to 30 characters and remove html tags for panel default values
+									$label = Text::_($actionElement->default_value);
+									$label = strip_tags($label);
+									if (strlen($label) > 30)
+									{
+										$label = substr($label, 0, 30) . '...';
+									}
+									$label = '[' . Text::_($plugin->getLabel()) . '] - ' . $label;
 								}
-								$label = '['.Text::_($plugin->getLabel()).'] - ' . $label;
-							}
-							elseif (empty($label) && !empty($plugin))
-							{
-								$label = '[' . Text::_($plugin->getLabel()) . ']';
+								elseif (empty($label) && !empty($plugin))
+								{
+									$label = '[' . Text::_($plugin->getLabel()) . ']';
+								}
 							}
 
 							$action->labels[] = $label;

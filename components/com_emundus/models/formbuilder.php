@@ -6125,6 +6125,8 @@ class EmundusModelFormbuilder extends ListModel
 			$this->db->setQuery($query);
 			$rules = $this->db->loadObjectList();
 
+			// TODO: Get groups of old form to map to new form groups and manage show/hide groups actions
+
 			foreach ($rules as $rule)
 			{
 				$insert = [
