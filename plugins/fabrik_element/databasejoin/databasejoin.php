@@ -156,7 +156,13 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		// Make sure same connection as this table
 		$fullElName = FArrayHelper::getValue($opts, 'alias', $table . '___' . $element->name);
 
-		if ($params->get('join_conn_id') == $connection->get('id') || $element->plugin != 'databasejoin')
+		$isSameConnection = $params->get('join_conn_id') == $connection->get('id');
+		if(!$isSameConnection && $element->plugin == 'databasejoin' && empty($params->get('join_conn_id')))
+		{
+			$isSameConnection = true;
+		}
+
+		if ($isSameConnection || $element->plugin != 'databasejoin')
 		{
 			$join = $this->getJoin();
 
