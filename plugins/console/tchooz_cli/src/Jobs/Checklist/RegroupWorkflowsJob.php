@@ -4,6 +4,8 @@ namespace Emundus\Plugin\Console\Tchooz\Jobs\Checklist;
 
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use EmundusModelWorkflow;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -149,7 +151,39 @@ class RegroupWorkflowsJob extends TchoozChecklistJob
 			$steps = $workflow->getSteps();
 			$firstWorkflowSteps = $keptWorkflow->getSteps();
 
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
 			foreach ($steps as $step) {
+				if ($step->isEvaluationStep())
+				{
+					// find corresponding step in first workflow (match by label + type, same rule as the grouping signature)
+					$correspondingStep = null;
+					foreach ($firstWorkflowSteps as $firstWorkflowStep) {
+						if ($firstWorkflowStep->getLabel() === $step->getLabel() && $firstWorkflowStep->getType()->getId() === $step->getType()->getId()) {
+							$correspondingStep = $firstWorkflowStep;
+							break;
+						}
+					}
+
+					if (empty($correspondingStep) || empty($step->getTable())) {
+						Log::add('No corresponding evaluation step found for step ID ' . $step->getId() . ' (' . $step->getLabel() . ') in kept workflow ' . $keptWorkflow->getId() . ', evaluation rows will be left orphaned', Log::WARNING, self::getJobName());
+						continue;
+					}
+
+					// remap step_id on all evaluation rows of the deleted step to the kept step
+					// otherwise #__fabrik_lists queries filtering on step_id would never match and rows would be orphaned
+					try {
+						$query->clear()
+							->update($db->quoteName($step->getTable()))
+							->set($db->quoteName('step_id') . ' = ' . (int) $correspondingStep->getId())
+							->where($db->quoteName('step_id') . ' = ' . (int) $step->getId());
+
+						$db->setQuery($query)->execute();
+					} catch (\Exception $e) {
+						Log::add('Failed to remap evaluation step_id from ' . $step->getId() . ' to ' . $correspondingStep->getId() . ' in table ' . $step->getTable() . ': ' . $e->getMessage(), Log::ERROR, self::getJobName());
+					}
+				}
+
 				if (!empty($step->getCampaignsDates()))
 				{
 					// find corresponding step in first workflow
