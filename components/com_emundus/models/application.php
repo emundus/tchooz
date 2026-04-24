@@ -2219,6 +2219,7 @@ class EmundusModelApplication extends ListModel
 									->from($this->_db->quoteName('#__fabrik_joins'))
 									->where($this->_db->quoteName('list_id') . ' = ' . $this->_db->quote($itemt->table_id))
 									->where($this->_db->quoteName('group_id') . ' = ' . $this->_db->quote($itemg->group_id))
+									->where($this->_db->quoteName('element_id') . ' = 0')
 									->where($this->_db->quoteName('table_join_key') . ' = ' . $this->_db->quote('parent_id'));
 								try {
 									$this->_db->setQuery($query);
@@ -2398,7 +2399,8 @@ class EmundusModelApplication extends ListModel
 
 														if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
 															$select = $this->getSelectFromDBJoinElementParams($params,'t');
-															$query->select($select)
+															$query->clear()
+																->select($select)
 																->from($this->_db->quoteName($params->join_db_name, 't'))
 																->leftJoin($this->_db->quoteName($itemt->db_table_name . '_' . $itemg->id . '_repeat_repeat_' . $elements[$j]->name, 'checkbox_repeat') . ' ON ' . $this->_db->quoteName('checkbox_repeat.' . $elements[$j]->name) . ' = ' . $this->_db->quoteName('t.id'))
 																->leftJoin($this->_db->quoteName($itemt->db_table_name . '_' . $itemg->id . '_repeat', 'repeat_grp') . ' ON ' . $this->_db->quoteName('repeat_grp.id') . ' = ' . $this->_db->quoteName('checkbox_repeat.parent_id'))
@@ -3222,6 +3224,7 @@ class EmundusModelApplication extends ListModel
 								->from($this->_db->quoteName('#__fabrik_joins'))
 								->where($this->_db->quoteName('list_id') . ' = ' . $itemt->table_id)
 								->where($this->_db->quoteName('group_id') . ' = ' . $itemg->group_id)
+								->where($this->_db->quoteName('element_id') . ' = 0')
 								->where($this->_db->quoteName('table_join_key') . ' LIKE ' . $this->_db->quote('parent_id'));
 							try {
 								$this->_db->setQuery($query);
@@ -3249,12 +3252,17 @@ class EmundusModelApplication extends ListModel
 								unset($element);
 
 								if ($itemg->group_id == 174) {
-									$query = 'SELECT `' . implode("`,`", $t_elt) . '`, id FROM ' . $table . '
-                                        WHERE parent_id=(SELECT id FROM ' . $itemt->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum) . ') OR applicant_id=' . $aid;
+									$query->clear()
+										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
+										->from($this->_db->quoteName($table))
+										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')')
+										->orWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($aid));
 								}
 								else {
-									$query = 'SELECT `' . implode("`,`", $t_elt) . '`, id FROM ' . $table . '
-                                    WHERE parent_id=(SELECT id FROM ' . $itemt->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum) . ')';
+									$query->clear()
+										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
+										->from($this->_db->quoteName($table))
+										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')');
 								}
 
 								try {
@@ -3296,7 +3304,8 @@ class EmundusModelApplication extends ListModel
 														$parent_id = strlen($elements[$j]->content_id) > 0 ? $elements[$j]->content_id : 0;
 														$select    = $this->getSelectFromDBJoinElementParams($params,'t');
 
-														$query->select($select)
+														$query->clear()
+															->select($select)
 															->from($this->_db->quoteName($params->join_db_name, 't'))
 															->leftJoin($this->_db->quoteName($itemt->db_table_name . '_' . $itemg->id . '_repeat_repeat_' . $elements[$j]->name, 'checkbox_repeat') . ' ON ' . $this->_db->quoteName('checkbox_repeat.' . $elements[$j]->name) . ' = ' . $this->_db->quoteName('t.id'))
 															->leftJoin($this->_db->quoteName($itemt->db_table_name . '_' . $itemg->id . '_repeat', 'repeat_grp') . ' ON ' . $this->_db->quoteName('repeat_grp.id') . ' = ' . $this->_db->quoteName('checkbox_repeat.parent_id'))
@@ -3508,9 +3517,21 @@ class EmundusModelApplication extends ListModel
 							}
 							unset($element);
 
-							$query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id=' . $itemg->group_id . ' AND table_join_key like "parent_id"';
-							$this->_db->setQuery($query);
-							$table = $this->_db->loadResult();
+							$query->clear()
+								->select('table_join')
+								->from($this->_db->quoteName('#__fabrik_joins'))
+								->where($this->_db->quoteName('list_id') . ' = ' . $this->_db->quote($itemt->table_id))
+								->where($this->_db->quoteName('group_id') . ' = ' . $this->_db->quote($itemg->group_id))
+								->where($this->_db->quoteName('element_id') . ' = 0')
+								->where($this->_db->quoteName('table_join_key') . ' = ' . $this->_db->quote('parent_id'));
+							try {
+								$this->_db->setQuery($query);
+								$table = $this->_db->loadResult();
+							}
+							catch (Exception $e) {
+								Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
+								throw $e;
+							}
 
 							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
 
@@ -3524,12 +3545,17 @@ class EmundusModelApplication extends ListModel
 								$forms .= '<h3 class="group">' . $group_label . '</h3>';
 
 								if ($itemg->group_id == 174) {
-									$query = 'SELECT `' . implode("`,`", $t_elt) . '`, id FROM ' . $table . '
-                                        WHERE parent_id=(SELECT id FROM ' . $itemt->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum) . ') OR applicant_id=' . $aid;
+									$query->clear()
+										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
+										->from($this->_db->quoteName($table))
+										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')')
+										->orWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($aid));
 								}
 								else {
-									$query = 'SELECT `' . implode("`,`", $t_elt) . '`, id FROM ' . $table . '
-                                    WHERE parent_id=(SELECT id FROM ' . $itemt->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum) . ')';
+									$query->clear()
+										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
+										->from($this->_db->quoteName($table))
+										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')');
 								}
 
 								$this->_db->setQuery($query);
