@@ -10,7 +10,6 @@ use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Payment\CartEntity;
 use Tchooz\Entities\Payment\TransactionEntity;
 use Tchooz\Entities\Payment\TransactionStatus;
-use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Payment\TransactionRepository;
 
