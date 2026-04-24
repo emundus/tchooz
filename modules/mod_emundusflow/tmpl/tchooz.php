@@ -9,6 +9,13 @@ use Joomla\CMS\Layout\LayoutHelper;
 
 defined('_JEXEC') or die('Restricted access');
 
+
+if (empty($applicationFile))
+{
+    return;
+}
+
+
 $config      = Factory::getApplication()->getConfig();
 $site_offset = $config->get('offset');
 
