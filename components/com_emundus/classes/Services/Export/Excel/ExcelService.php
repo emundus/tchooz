@@ -1595,7 +1595,7 @@ class ExcelService extends Export implements ExportInterface
 													{
 														// Trim and remove double quotes if any
 														$repeat_value = trim($repeat_value, '" ');
-														$repeat_value = date($date_elements[$k], strtotime($repeat_value));
+														$repeat_value = $this->formatDateValue($repeat_value, $date_elements[$k]);
 													}
 													$repeat_values[] = $repeat_value;
 												}
@@ -1610,7 +1610,7 @@ class ExcelService extends Export implements ExportInterface
 												}
 												else
 												{
-													$v = date($date_elements[$k], strtotime($v));
+													$v = $this->formatDateValue($v, $date_elements[$k]);
 												}
 											}
 											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
@@ -1633,7 +1633,7 @@ class ExcelService extends Export implements ExportInterface
 													}
 													else
 													{
-														$repeat_value = date('d/m/Y', strtotime($repeat_value));
+														$repeat_value = $this->formatDateValue($repeat_value, 'd/m/Y');
 													}
 													$repeat_values[] = $repeat_value;
 												}
@@ -1651,7 +1651,7 @@ class ExcelService extends Export implements ExportInterface
 												}
 												else
 												{
-													$v = date('d/m/Y', strtotime($v));
+													$v = $this->formatDateValue($v, 'd/m/Y');
 												}
 											}
 											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
@@ -1951,5 +1951,33 @@ class ExcelService extends Export implements ExportInterface
 	private function getcolumn($elts): array
 	{
 		return (array) json_decode(stripcslashes($elts));
+	}
+
+	/**
+	 * @deprecated Only used for old export version
+	 * Format a date string to the target format.
+	 * - If the value is already in the target format, it is returned unchanged.
+	 * - If strtotime cannot parse the value, the raw value is returned to avoid the "01/01/1970" fallback.
+	 */
+	private function formatDateValue(string $value, string $targetFormat): string
+	{
+		if ($value === '')
+		{
+			return '';
+		}
+
+		$dt = \DateTime::createFromFormat($targetFormat, $value);
+		if ($dt instanceof \DateTime && $dt->format($targetFormat) === $value)
+		{
+			return $value;
+		}
+
+		$timestamp = strtotime($value);
+		if ($timestamp === false)
+		{
+			return $value;
+		}
+
+		return date($targetFormat, $timestamp);
 	}
 }

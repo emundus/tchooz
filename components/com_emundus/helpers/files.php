@@ -1161,7 +1161,7 @@ class EmundusHelperFiles
 					->join('INNER', '#__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id')
 					->join('INNER', '#__fabrik_forms AS forme ON formgroup.form_id = forme.id')
 					->join('INNER', '#__fabrik_lists AS tab ON tab.form_id = formgroup.form_id')
-					->join('LEFT', '#__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))')
+					->join('LEFT', '#__fabrik_joins AS joins ON (tab.id = joins.list_id AND (element.id=joins.element_id OR (groupe.id=joins.group_id AND joins.element_id = 0)))')
 					->where('element.id IN (' . implode(',', $idsToFetch) . ')')
 					->order('find_in_set(element.id, "' . implode(',', $idsToFetch) . '")');
 
