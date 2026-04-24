@@ -153,23 +153,27 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 	 */
 	private function resolveCurrentFnum(array $data): ?string
 	{
-		$formModel = $this->getFormModel();
+		$fnum = null;
 
-		$candidates = [
-			$formModel?->_formData['fnum'] ?? null,
-			$data['fnum'] ?? null,
-			Factory::getApplication()->input->getString('fabrik_rowid', ''),
-		];
-
-		foreach ($candidates as $candidate)
+		foreach ($data as $key => $value)
 		{
-			$fnum = is_array($candidate) ? (string) reset($candidate) : (string) ($candidate ?? '');
-			if (preg_match('/^[0-9]{28}$/', $fnum) === 1)
+			if (str_ends_with($key, '___fnum'))
 			{
-				return $fnum;
+				$fnum = $value;
+				break;
 			}
 		}
 
-		return null;
+		if (empty($fnum))
+		{
+			$fnum = Factory::getApplication()->getInput()->getString('fnum', '');
+		}
+
+		if (!empty($fnum) && !EmundusHelperAccess::isFnumMine($fnum, Factory::getApplication()->getIdentity()->id) && !EmundusHelperAccess::asAccessAction(1, 'r', Factory::getApplication()->getIdentity()->id, $fnum))
+		{
+			$fnum = null;
+		}
+
+		return $fnum;
 	}
 }
