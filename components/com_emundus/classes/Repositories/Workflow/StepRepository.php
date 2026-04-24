@@ -173,6 +173,16 @@ class StepRepository
 			throw new \InvalidArgumentException(Text::_('COM_EMUNDUS_STEP_WORKFLOW_ID_NOT_SET'));
 		}
 
+		if (empty($step->getType()->getId()))
+		{
+			$stepTypeRepository = new StepTypeRepository();
+
+			if (!$stepTypeRepository->flush($step->getType()))
+			{
+				throw new \InvalidArgumentException(Text::_('COM_EMUNDUS_STEP_TYPE_NOT_SET'));
+			}
+		}
+
 		$query = $this->db->createQuery();
 		if (empty($step->getId()))
 		{
