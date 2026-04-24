@@ -12,97 +12,49 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
+use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Controller\EmundusController;
 
-/**
- * eMundus Component Controller
- *
- * @package    Joomla
- * @subpackage eMundus
- */
-
-/**
- * Class EmundusControllerTrombinoscope
- */
 class EmundusControllerTrombinoscope extends EmundusController
 {
+	private EmundusModelTrombinoscope $m_trombinoscrope;
 
-	protected $app;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     \JController
-	 * @since   1.0.0
-	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
 
-		$this->app = Factory::getApplication();
+		if(!class_exists('EmundusModelTrombinoscope'))
+		{
+			require_once(JPATH_BASE . '/components/com_emundus/models/trombinoscope.php');
+		}
+		$this->m_trombinoscrope    = new EmundusModelTrombinoscope();
 	}
 
-
-	/**
-	 * @param $string_fnums
-	 *
-	 * @return array
-	 *
-	 * @since version
-	 */
-	public function fnums_json_decode($string_fnums)
+	#[AccessAttribute(AccessLevelEnum::PARTNER, [
+		['id' => 31, 'mode' => CrudEnum::CREATE]
+	])]
+	public function generate_preview(): void
 	{
-		$fnums_obj = (array) json_decode(stripslashes($string_fnums), false, 512, JSON_BIGINT_AS_STRING);
-		if (@$fnums_obj[0] == 'all') {
-			$m_files         = $this->getmodel('Files');
-			$assoc_tab_fnums = true;
-			$fnums           = $m_files->getAllFnums($assoc_tab_fnums);
-		}
-		else {
-			$fnums = array();
-			foreach ($fnums_obj as $value) {
-				if (@$value->sid > 0) {
-					$fnums[] = array('fnum'         => @$value->fnum,
-					                 'applicant_id' => @$value->sid,
-					                 'campaign_id'  => @$value->cid
-					);
-				}
-			}
-		}
+		$gridL        = $this->app->getInput()->get('gridL');
+		$gridH        = $this->app->getInput()->get('gridH');
+		$margin       = $this->app->getInput()->get('margin');
+		$template     = $this->app->getInput()->post->get('template', null, 'raw');
+		$string_fnums = $this->app->getInput()->post->get('string_fnums', null, 'raw');
+		$generate     = $this->app->getInput()->get('generate');
+		$border       = $this->app->getInput()->get('border');
+		$fnums        = $this->m_trombinoscrope->fnums_json_decode($string_fnums);
+		$headerHeight = $this->app->getInput()->get('headerHeight');
 
-		return $fnums;
-	}
-
-
-	/**
-	 * Génération de code HTML pour l'affichage de la 1ère page de prévisualisation
-	 *
-	 * @throws Exception
-	 * @since version
-	 */
-	public function generate_preview()
-	{
-		$response     = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED'), 'html_content' => ''];
-
-		if (EmundusHelperAccess::asAccessAction(31, 'c', $this->app->getIdentity()->id)) {
-
-			$gridL        = $this->input->get('gridL');
-			$gridH        = $this->input->get('gridH');
-			$margin       = $this->input->get('margin');
-			$template     = $this->input->post->get('template', null, 'raw');
-			$string_fnums = $this->input->post->get('string_fnums', null, 'raw');
-			$generate     = $this->input->get('generate');
-			$border       = $this->input->get('border');
-			$fnums        = $this->fnums_json_decode($string_fnums);
-			$headerHeight = $this->input->get('headerHeight');
-			// Génération du HTML
-			$html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, false, false, $generate, false, false, $border, $headerHeight);
-			$response        = array(
-				'status'       => true,
-				'html_content' => $html_content
-			);
-		}
+		// Génération du HTML
+		$html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, false, false, $generate, false, false, $border, $headerHeight);
+		$response     = array(
+			'status'       => true,
+			'html_content' => $html_content
+		);
 
 		echo json_encode($response);
 		exit;
@@ -131,34 +83,44 @@ class EmundusControllerTrombinoscope extends EmundusController
 	 */
 	public function generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $templHeader, $templFooter, $generate, $preview = false, $checkHeader = false, $border = null, $headerHeight = null)
 	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-		$m_files = $this->getModel('Files');
+		if (!class_exists('EmundusModelFiles'))
+		{
+			require_once(JPATH_SITE . DS . '/components/com_emundus/models/files.php');
+		}
+		if (!class_exists('EmundusModelEmails'))
+		{
+			include_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
+		}
+		$emails  = new EmundusModelEmails();
+		$m_files = new EmundusModelFiles();
+
 		// Traitement du nombre de colonnes max par ligne
 		$nb_col_max = $gridL;
 		$nb_li_max  = $gridH;
 		$tab_margin = explode(',', $margin);
 		// Il faut ajouter px à la fin
-		for ($i = 0; $i < count($tab_margin); $i++) {
+		for ($i = 0; $i < count($tab_margin); $i++)
+		{
 			$tab_margin[$i] .= 'px';
 		}
 
-		if (count($tab_margin) > 1) {
+		if (count($tab_margin) > 1)
+		{
 			// L'utilisateur a séparé les marges par des virgules, il faut les séparer par des espaces pour le css
 			$marge_css_top    = $tab_margin[0];
 			$marge_css_left   = $tab_margin[1];
 			$marge_css_right  = $tab_margin[2];
 			$marge_css_bottom = $tab_margin[3];
 		}
-		else {
+		else
+		{
 			$marge_css_top    = $tab_margin[0];
 			$marge_css_left   = $tab_margin[0];
 			$marge_css_right  = $tab_margin[0];
 			$marge_css_bottom = $tab_margin[0];
 		}
 		// Génération du HTML
-		include_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
 
-		$emails   = $this->getModel('Emails');
 		$body     = '';
 		$nb_cell  = 0;
 		$tab_body = array();
@@ -166,21 +128,23 @@ class EmundusControllerTrombinoscope extends EmundusController
 
 		$template = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
 			$src = $match[1];
-			if (substr($src, 0, 1) === '/') {
+			if (substr($src, 0, 1) === '/')
+			{
 				$src = substr($src, 1);
 			}
 
 			return '<img src="' . $src;
 		}, $template);
 
-		foreach ($fnums as $fnum) {
+		foreach ($fnums as $fnum)
+		{
 			$post       = [
 				'FNUM'           => $fnum['fnum'],
 				'CAMPAIGN_LABEL' => $fnumInfo['label'],
 				'CAMPAIGN_YEAR'  => $fnumInfo['year'],
 				'CAMPAIGN_START' => $fnumInfo['start_date'],
 				'CAMPAIGN_END'   => $fnumInfo['end_date'],
-				'SITE_URL'       => JURI::base()
+				'SITE_URL'       => Uri::base()
 			];
 			$tags       = $emails->setTags($fnum["applicant_id"], $post, $fnum['fnum'], '', $template, true);
 			$body_tags  = preg_replace($tags['patterns'], $tags['replacements'], $template);
@@ -189,19 +153,19 @@ class EmundusControllerTrombinoscope extends EmundusController
 			$tab_body[] = $body_tmp;
 			$nb_cell++;
 		}
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'trombinoscope.php');
-		$trombi    = $this->getModel('Trombinoscope');
-		$programme = $trombi->getProgByFnum($post['FNUM']);
+
+		$programme =  $this->m_trombinoscrope->getProgByFnum($post['FNUM']);
 		// Marge gauche + droite
-		$marge_x = $trombi->pdf_margin_left + $trombi->pdf_margin_right;
+		$marge_x = $this->m_trombinoscrope->pdf_margin_left + $this->m_trombinoscrope->pdf_margin_right;
 		// Marge haut + bas par défaut tcpdf
-		$marge_y = $trombi->pdf_margin_header + $trombi->pdf_margin_footer;
+		$marge_y = $this->m_trombinoscrope->pdf_margin_header + $this->m_trombinoscrope->pdf_margin_footer;
 		// Nombre de cellules par page
 		$nb_cell_par_page = $nb_li_max * $nb_col_max;
 		// Nombre de pages
 		$nb_page = (int) ($nb_cell / $nb_cell_par_page);
 		// Dans le cas où le reste de la division n'est pas nul
-		if (($nb_cell % $nb_cell_par_page) > 0) {
+		if (($nb_cell % $nb_cell_par_page) > 0)
+		{
 			$nb_page++;
 		}
 		// Si l'on est en mode preview, on n'ira pas au-delà d'une page
@@ -215,19 +179,21 @@ class EmundusControllerTrombinoscope extends EmundusController
 		// Hauteur d'une cellule
 		$cell_height = (int) (($hauteur_px - $marge_y - (($marge_css_bottom * $nb_li_max) + ($marge_css_top * $nb_li_max))) / $nb_li_max - 10);
 		//border
-		if ($border == 1) {
+		if ($border == 1)
+		{
 			$borderCSS = '1px solid';
 		}
-		else {
+		else
+		{
 			$borderCSS = '0';
 		}
-		$trombi      = $this->getModel('Trombinoscope');
-		$htmlLetters = $trombi->selectHTMLLetters();
+		$htmlLetters = $this->m_trombinoscrope->selectHTMLLetters();
 		$templ       = [];
-		foreach ($htmlLetters as $letter) {
+		foreach ($htmlLetters as $letter)
+		{
 			$templ[$letter['attachment_id']] = $letter;
 		}
-		$headerH = (empty($headerHeight)) ? $trombi->default_header_height : $headerHeight;
+		$headerH = (empty($headerHeight)) ? $this->m_trombinoscrope->default_header_height : $headerHeight;
 		$head    = '
 <!DOCTYPE html>
 <html>
@@ -285,116 +251,138 @@ footer {
 		$body    = '';
 
 		$ind_cell = 0;
-		for ($cpt_page = 0; $cpt_page < $nb_page_max; $cpt_page++) {
+		for ($cpt_page = 0; $cpt_page < $nb_page_max; $cpt_page++)
+		{
 
-			for ($cpt_li = 0; $cpt_li < $nb_li_max; $cpt_li++) {
-				for ($cpt_col = 0; $cpt_col < $nb_col_max && $ind_cell < $nb_cell; $cpt_col++) {
+			for ($cpt_li = 0; $cpt_li < $nb_li_max; $cpt_li++)
+			{
+				for ($cpt_col = 0; $cpt_col < $nb_col_max && $ind_cell < $nb_cell; $cpt_col++)
+				{
 					$body .= '<div class="div-cell">' . $tab_body[$ind_cell] . '</div>';
 					$ind_cell++;
 				}
 				$body .= '<br>';
 			}
 			// Si l'on a plus d'une page, il faut insérer un délimiteur de page pour pouvoir ensuite générer le pdf page par page
-			if ($cpt_page > 0) {
+			if ($cpt_page > 0)
+			{
 				$body .= '<div style="page-break-after: always;"></div>';
 			}
 		}
 
-			$header_tags = preg_replace($tags['patterns'], $tags['replacements'], $templHeader);
-			$header_tmp  = $emails->setTagsFabrik($header_tags, array($fnum["fnum"]));
-			$header      = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
-				$src = $match[1];
-				if (substr($src, 0, 1) === '/') {
-					$src = substr($src, 1);
-				}
+		$header_tags = preg_replace($tags['patterns'], $tags['replacements'], $templHeader);
+		$header_tmp  = $emails->setTagsFabrik($header_tags, array($fnum["fnum"]));
+		$header      = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
+			$src = $match[1];
+			if (substr($src, 0, 1) === '/')
+			{
+				$src = substr($src, 1);
+			}
 
-				return '<img src="' . JURI::base() . $src;
-			}, $header_tmp);
-			$footer      = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
-				$src = $match[1];
-				if (substr($src, 0, 1) === '/') {
-					$src = substr($src, 1);
-				}
+			return '<img src="' . JURI::base() . $src;
+		}, $header_tmp);
+		$footer      = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
+			$src = $match[1];
+			if (substr($src, 0, 1) === '/')
+			{
+				$src = substr($src, 1);
+			}
 
-				return '<img src="' . JURI::base() . $src;
-			}, $templFooter);
+			return '<img src="' . JURI::base() . $src;
+		}, $templFooter);
 
-			$body = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
-				$src = $match[1];
+		$prefixSite = Uri::base(true);
+		if(!empty($prefixSite) && str_starts_with($prefixSite, '/'))
+		{
+			$prefixSite = substr($prefixSite, 1);
+		}
+		$body = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) use ($prefixSite) {
+			$src = $match[1];
 
-				$path = parse_url($src, PHP_URL_PATH);
-				$fullPath = JPATH_BASE . $path;
+			// Remove .. that can be here in start of src
+			$src = str_replace('../', '', $src);
+			if(!empty($prefixSite))
+			{
+				$src = str_replace($prefixSite, '', $src);
+			}
+			if (str_starts_with($src, '/'))
+			{
+				$src = substr($src, 1);
+			}
 
-				// Vérifie si le fichier existe
-				if (!file_exists($fullPath)) {
-					return $match[0]; // Ne rien modifier si l’image n'existe pas
-				}
+			$path     = parse_url($src, PHP_URL_PATH);
+			$fullPath = JPATH_BASE . '/' . $path;
 
-				// Lire et encoder l’image
-				$mimeType = mime_content_type($fullPath);
-				$allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
-				if (!in_array($mimeType, $allowedMimeTypes)) {
-					return $match[0]; // Ne rien modifier si le type MIME n'est pas autor
-				}
+			// Vérifie si le fichier existe
+			if (!file_exists($fullPath))
+			{
+				return $match[0]; // Ne rien modifier si l’image n'existe pas
+			}
 
-				$imageData = base64_encode(file_get_contents($fullPath));
-				$base64Src = 'data:' . $mimeType . ';base64,' . $imageData;
-				return '<img src="' . $base64Src . '"';
-			}, $body);
-		if ($checkHeader == 1) {
+			// Lire et encoder l’image
+			$mimeType         = mime_content_type($fullPath);
+			$allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
+			if (!in_array($mimeType, $allowedMimeTypes))
+			{
+				return $match[0]; // Ne rien modifier si le type MIME n'est pas autor
+			}
+
+			$imageData = base64_encode(file_get_contents($fullPath));
+			$base64Src = 'data:' . $mimeType . ';base64,' . $imageData;
+
+			return '<img src="' . $base64Src . '"';
+		}, $body);
+
+		if ($checkHeader == 1)
+		{
 			return $head . '<body class="em-body"><header>' . $header . '</header><footer>' . $footer . '</footer><main>' . $body . '</main></body></html>';
 		}
-		else {
+		else
+		{
 			return $head . '<body>' . $header . $body . $footer . '</body></html>';
 		}
 	}
 
-	/**
-	 *
-	 *
-	 * @throws Exception
-	 * @since version
-	 */
-	public function generate_pdf()
+	#[AccessAttribute(AccessLevelEnum::PARTNER, [
+		['id' => 31, 'mode' => CrudEnum::CREATE]
+	])]
+	public function generate_pdf(): void
 	{
-		$response     = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
-		$current_user = Factory::getApplication()->getIdentity();
+		$response['msg'] = Text::_('BAD_REQUEST');
 
-		if (EmundusHelperAccess::asAccessAction(31, 'c', $current_user->id)) {
-			$response['msg'] = Text::_('BAD_REQUEST');
+		$format = $this->app->getInput()->get('format');
 
-			$format = $this->input->get('format');
+		if (!empty($format))
+		{
+			$string_fnums = $this->app->getInput()->post->get('string_fnums', null, 'raw');
+			$fnums        = $this->m_trombinoscrope->fnums_json_decode(trim($string_fnums));
 
-			if (!empty($format)) {
-				$string_fnums = $this->input->post->get('string_fnums', null, 'raw');
-				$fnums        = $this->fnums_json_decode($string_fnums);
+			if (!empty($fnums))
+			{
+				$gridL        = $this->app->getInput()->get('gridL');
+				$gridH        = $this->app->getInput()->get('gridH');
+				$margin       = $this->app->getInput()->get('margin');
+				$template     = $this->app->getInput()->post->get('template', '', 'raw');
+				$header       = $this->app->getInput()->post->get('header', '', 'raw');
+				$footer       = $this->app->getInput()->post->get('footer', '', 'raw');
+				$generate     = $this->app->getInput()->get('generate');
+				$checkHeader  = $this->app->getInput()->get('checkHeader');
+				$format       = $this->app->getInput()->get('format');
+				$border       = $this->app->getInput()->get('border');
+				$headerHeight = $this->app->getInput()->get('headerHeight');
+				$html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $header, $footer, $generate, false, $checkHeader, $border, $headerHeight);
 
-				if (!empty($fnums)) {
-					$gridL        = $this->input->get('gridL');
-					$gridH        = $this->input->get('gridH');
-					$margin       = $this->input->get('margin');
-					$template     = $this->input->post->get('template', '', 'raw');
-					$header       = $this->input->post->get('header', '', 'raw');
-					$footer       = $this->input->post->get('footer', '', 'raw');
-					$generate     = $this->input->get('generate');
-					$checkHeader  = $this->input->get('checkHeader');
-					$format       = $this->input->get('format');
-					$border       = $this->input->get('border');
-					$headerHeight = $this->input->get('headerHeight');
-					$html_content = $this->generate_data_for_pdf($fnums, $gridL, $gridH, $margin, $template, $header, $footer, $generate, false, $checkHeader, $border, $headerHeight);
-
-					if (!empty($html_content)) {
-						require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/trombinoscope.php');
-						$m_trombinoscrope    = $this->getModel('Trombinoscope');
-						$response['pdf_url'] = $m_trombinoscrope->generate_pdf($html_content, $format);
-						$response['status']  = true;
-						$response['code']    = 200;
-						$response['msg']     = Text::_('SUCCESS');
-					}
-					else {
-						$response['code'] = 500;
-						$response['msg']  = Text::_('FAIL');
-					}
+				if (!empty($html_content))
+				{
+					$response['pdf_url'] = $this->m_trombinoscrope->generate_pdf($html_content, $format);
+					$response['status']  = true;
+					$response['code']    = 200;
+					$response['msg']     = Text::_('SUCCESS');
+				}
+				else
+				{
+					$response['code'] = 500;
+					$response['msg']  = Text::_('FAIL');
 				}
 			}
 		}
