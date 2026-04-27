@@ -1274,6 +1274,7 @@ class EmundusModelWorkflow extends JModelList
 
 		$query = $this->db->createQuery();
 		$stepId = $step instanceof StepEntity ? $step->getId() : $step->id;
+		$isEvaluationStep = $step instanceof StepEntity ? $step->isEvaluationStep() : $this->isEvaluationStep($step->type);
 
 		$query->clear()
 			->select('start_date, end_date')
@@ -1339,10 +1340,24 @@ class EmundusModelWorkflow extends JModelList
 				}
 				else
 				{
-					$dates['start_date'] = !empty($step_date_config->start_date) && $step_date_config->start_date !== '0000-00-00 00:00:00' ? $step_date_config->start_date : $campaign_dates['start_date'];
-					$dates['end_date']   = !empty($step_date_config->end_date) && $step_date_config->end_date !== '0000-00-00 00:00:00' ? $step_date_config->end_date : $campaign_dates['end_date'];
+					if($isEvaluationStep && (
+						(empty($step_date_config->start_date) || $step_date_config->start_date === '0000-00-00 00:00:00') ||
+						(empty($step_date_config->end_date) || $step_date_config->end_date === '0000-00-00 00:00:00')
+						)
+					)
+					{
+						$dates['infinite'] = true;
+					}
+					else {
+						$dates['start_date'] = !empty($step_date_config->start_date) && $step_date_config->start_date !== '0000-00-00 00:00:00' ? $step_date_config->start_date : $campaign_dates['start_date'];
+						$dates['end_date']   = !empty($step_date_config->end_date) && $step_date_config->end_date !== '0000-00-00 00:00:00' ? $step_date_config->end_date : $campaign_dates['end_date'];
+					}
 				}
 			}
+		}
+		elseif ($isEvaluationStep)
+		{
+			$dates['infinite'] = true;
 		}
 
 		return $dates;
