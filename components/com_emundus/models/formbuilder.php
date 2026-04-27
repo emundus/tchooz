@@ -2678,6 +2678,11 @@ class EmundusModelFormbuilder extends ListModel
 				$show_in_list_summary = $element['show_in_list_summary'] ? 1 : 0;
 			}
 
+			if($element['plugin'] === 'field')
+			{
+				$element['eval'] = 0;
+			}
+
 			// Update the element
 			$fields = array(
 				$this->db->quoteName('plugin') . ' = ' . $this->db->quote($element['plugin']),
@@ -2691,7 +2696,7 @@ class EmundusModelFormbuilder extends ListModel
 				$this->db->quoteName('alias') . ' = ' . $this->db->quote($element['alias']),
 			);
 
-			if ($element['plugin'] === 'panel')
+			if ($element['plugin'] === 'panel' || $element['plugin'] === 'field')
 			{
 				// Sanitize override to avoid XSS
 				if (!class_exists('HtmlSanitizerSingleton'))
@@ -2701,21 +2706,27 @@ class EmundusModelFormbuilder extends ListModel
 				$htmlSanitizer      = HtmlSanitizerSingleton::getInstance();
 				$element['default'] = $htmlSanitizer->sanitize($element['default']);
 
-				// Update translation of default label
-				$defaultKey         = 'ELEMENT_' . $element['id'] . '_DEFAULT';
-				$languageRepository = new LanguageRepository();
-				if (!empty($dbElement->default_text))
+				if($element['plugin'] === 'panel')
 				{
-					$translation = $languageRepository->getByTag($dbElement->default_text);
-					if (!empty($translation))
+					// Update translation of default label
+					$defaultKey         = 'ELEMENT_' . $element['id'] . '_DEFAULT';
+					$languageRepository = new LanguageRepository();
+					if (!empty($dbElement->default_text))
 					{
-						$defaultKey = $dbElement->default_text;
+						$translation = $languageRepository->getByTag($dbElement->default_text);
+						if (!empty($translation))
+						{
+							$defaultKey = $dbElement->default_text;
+						}
 					}
-				}
-				LanguageFactory::translate($defaultKey, [$lang => $element['default']], 'fabrik_elements', $element['id'], 'default');
-				//
+					LanguageFactory::translate($defaultKey, [$lang => $element['default']], 'fabrik_elements', $element['id'], 'default');
+					//
 
-				$fields[] = $this->db->quoteName('default') . ' = ' . $this->db->quote($defaultKey);
+					$fields[] = $this->db->quoteName('default') . ' = ' . $this->db->quote($defaultKey);
+				}
+				else {
+					$fields[] = $this->db->quoteName('default') . ' = ' . $this->db->quote($element['default']);
+				}
 			}
 
 			$query->clear()

@@ -230,7 +230,6 @@
 						width="100%"
 						height="100%"
 						frameborder="0"
-						style="padding-bottom: 36px"
 						id="preview_iframe"
 						name="preview_iframe"
 						:src="'/index.php?option=com_fabrik&view=form&formid=' + selectedPage + '&tmpl=component&preview=1'"
@@ -928,7 +927,17 @@ export default {
 						const css = '<style type="text/css">' + '.fabrikActions{display:none}; ' + '</style>';
 						frames['preview_iframe'].document.head.insertAdjacentHTML('beforeend', css);
 
-						this.loading = false;
+						const homepage = frames['preview_iframe'].document.querySelector('.homepage');
+						if (homepage) {
+							homepage.style.background = 'none';
+						}
+
+						const emundusForm = frames['preview_iframe'].document.querySelector('.emundus-form');
+						if (emundusForm) {
+							emundusForm.classList.add('tw-mr-6');
+							emundusForm.classList.add('tw-ml-6');
+							emundusForm.classList.add('tw-mb-6');
+						}
 					});
 				}, 500);
 			} else {
