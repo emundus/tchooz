@@ -19,6 +19,7 @@ enum SignStatusEnum: string
 	case SIGNED = 'signed';
 	case DECLINED = 'declined';
 	case CANCELLED = 'cancelled';
+	case FINISHING = 'finishing';
 
 	public function getLabel(): string
 	{
@@ -30,6 +31,7 @@ enum SignStatusEnum: string
 			self::SIGNED => Text::_('SIGN_STATUS_SIGNED'),
 			self::DECLINED => Text::_('SIGN_STATUS_DECLINED'),
 			self::CANCELLED => Text::_('SIGN_STATUS_CANCELLED'),
+			self::FINISHING => Text::_('SIGN_STATUS_FINISHING'),
 		};
 	}
 
@@ -41,6 +43,7 @@ enum SignStatusEnum: string
 			'Reminder sent' => self::REMINDER_SENT->value,
 			'Signed'        => self::SIGNED->value,
 			'Declined'      => self::DECLINED->value,
+			'Finishing'     => self::FINISHING->value,
 		];
 	}
 
@@ -49,7 +52,7 @@ enum SignStatusEnum: string
 		[$bg, $text] = match ($this)
 		{
 			self::AWAITING => ['tw-bg-yellow-500', 'tw-text-black'],
-			self::TO_SIGN, self::REMINDER_SENT => ['tw-bg-blue-700', 'tw-text-white'],
+			self::TO_SIGN, self::REMINDER_SENT, self::FINISHING => ['tw-bg-blue-700', 'tw-text-white'],
 			self::SIGNED => ['tw-bg-green-600', 'tw-text-white'],
 			self::DECLINED, self::CANCELLED => ['tw-bg-red-600', 'tw-text-white'],
 		};
@@ -69,7 +72,7 @@ enum SignStatusEnum: string
 		[$color, $icon] = match ($this)
 		{
 			self::AWAITING => ['tw-text-yellow-500', 'schedule'],
-			self::TO_SIGN, self::REMINDER_SENT => ['tw-text-blue-700', 'pending'],
+			self::TO_SIGN, self::REMINDER_SENT, self::FINISHING => ['tw-text-blue-700', 'pending'],
 			self::SIGNED => ['tw-text-green-600', 'check_circle'],
 			self::DECLINED, self::CANCELLED => ['tw-text-red-600', 'cancel'],
 		};
@@ -86,7 +89,7 @@ enum SignStatusEnum: string
 		return match ($this)
 		{
 			self::AWAITING => 'tw-bg-yellow-500',
-			self::TO_SIGN, self::REMINDER_SENT => 'tw-bg-blue-700',
+			self::TO_SIGN, self::REMINDER_SENT, self::FINISHING => 'tw-bg-blue-700',
 			self::SIGNED => 'tw-bg-green-600',
 			self::DECLINED, self::CANCELLED => 'tw-bg-red-600',
 		};

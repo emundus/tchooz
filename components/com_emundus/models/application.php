@@ -346,6 +346,8 @@ class EmundusModelApplication extends ListModel
 						$attachment->existsOnServer = true;
 					}
 
+					$attachment->value = Text::_($attachment->value);
+
 					$query->clear()
 						->select('profile_id')
 						->from($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
