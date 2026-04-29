@@ -13,6 +13,6 @@ defined('_JEXEC') or die('Restricted access');
 $d = $displayData;
 ?>
 <div id="<?= $d->id; ?>" class="fabrikinput fabrikElementReadOnly tw-text-gray-800">
-	<?= $d->value !== '' ? $d->value : ($d->placeholder ?? ''); ?>
+	<?= !empty($d->value) || $d->value == 0 ? $d->value : ($d->placeholder ?? ''); ?>
 </div>
 <input type="hidden" name="<?= $d->name; ?>" value="<?= $d->value; ?>" />
