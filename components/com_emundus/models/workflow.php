@@ -339,6 +339,42 @@ class EmundusModelWorkflow extends JModelList
 								// Save max_choices into workflow step choices rules table
 								$this->saveChoicesStepRules($step);
 							}
+
+							if ($this->isEvaluationStep($step['type']))
+							{
+								$query->clear()
+									->select('hidden_step')
+									->from($this->db->quoteName('#__emundus_setup_workflows_steps_hidden_steps'))
+									->where($this->db->quoteName('step_id') . ' = ' . $step['id']);
+								$this->db->setQuery($query);
+								$oldHiddenStepsIds = $this->db->loadColumn();
+
+								$hiddenStepsIds = $step['hidden_steps'] ?? [];
+								foreach ($hiddenStepsIds as $hiddenStepId)
+								{
+									if ($hiddenStepId < 1 || in_array($hiddenStepId, $oldHiddenStepsIds))
+									{
+										continue;
+									}
+
+									$hiddenStep = (object) [
+										'step_id' => $step['id'],
+										'hidden_step' => $hiddenStepId
+									];
+									$this->db->insertObject('#__emundus_setup_workflows_steps_hidden_steps', $hiddenStep);
+								}
+
+								$hiddenStepsIdsToRemove = array_diff($oldHiddenStepsIds, $hiddenStepsIds);
+								foreach ($hiddenStepsIdsToRemove as $hiddenStepId)
+								{
+									$query->clear()
+										->delete($this->db->quoteName('#__emundus_setup_workflows_steps_hidden_steps'))
+										->where($this->db->quoteName('step_id') . ' = ' . $step['id'])
+										->andWhere($this->db->quoteName('hidden_step') . ' = ' . $hiddenStepId);
+									$this->db->setQuery($query);
+									$this->db->execute();
+								}
+							}
 						}
 
 						// purge cache of 'workflow_programs'
@@ -814,11 +850,12 @@ class EmundusModelWorkflow extends JModelList
 
 		$query = $this->db->createQuery();
 		$query->clear()
-			->select('esws.*, GROUP_CONCAT(DISTINCT eswses.status) AS entry_status, payment_rules.adjust_balance_step_id, choices_rules.max, choices_rules.can_be_ordering, choices_rules.can_be_confirmed,choices_rules.can_be_sent, choices_rules.form_id as choices_form_id')
+			->select('esws.*, GROUP_CONCAT(DISTINCT eswses.status) AS entry_status, payment_rules.adjust_balance_step_id, choices_rules.max, choices_rules.can_be_ordering, choices_rules.can_be_confirmed,choices_rules.can_be_sent, choices_rules.form_id as choices_form_id, GROUP_CONCAT(DISTINCT hidden_steps.hidden_step) AS hidden_steps')
 			->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_payment_rules', 'payment_rules') . ' ON ' . $this->db->quoteName('payment_rules.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_choices_rules', 'choices_rules') . ' ON ' . $this->db->quoteName('choices_rules.step_id') . ' = ' . $this->db->quoteName('esws.id'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_hidden_steps', 'hidden_steps') . ' ON ' . $this->db->quoteName('hidden_steps.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 			->where('esws.id = ' . $id)
 			->group($this->db->quoteName('esws.id'));
 
@@ -826,8 +863,10 @@ class EmundusModelWorkflow extends JModelList
 			$this->db->setQuery($query);
 			$data = $this->db->loadObject();
 
-			if (!empty($data->id)) {
+			if (!empty($data->id))
+			{
 				$data->entry_status = array_unique(explode(',', $data->entry_status));
+				$data->hidden_steps = !empty($data->hidden_steps) ? array_filter(array_unique(explode(',', $data->hidden_steps))) : [];
 				$data->action_id = 1;
 				$data->table = '';
 
@@ -895,7 +934,9 @@ class EmundusModelWorkflow extends JModelList
 					$stepsCache[$id] = $data;
 					$this->h_cache->set('workflow_steps', $stepsCache);
 				}
-			} else {
+			}
+			else
+			{
 				$data = new stdClass();
 			}
 		} catch (Exception $e) {

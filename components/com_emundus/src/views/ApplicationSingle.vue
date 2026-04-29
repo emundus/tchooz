@@ -446,6 +446,11 @@ export default {
 		},
 		onClose(e) {
 			e.preventDefault();
+			if (window.__emVueApps && window.__emVueApps['steps-timeline']) {
+				window.__emVueApps['steps-timeline'].unmount();
+				delete window.__emVueApps['steps-timeline'];
+			}
+
 			this.hidden = true;
 			this.loading = true;
 			this.showModal = false;

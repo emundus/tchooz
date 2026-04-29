@@ -164,6 +164,16 @@ class EmundusControllerWorkflow extends EmundusController
 		$steps = $this->app->input->getString('steps');
 		$steps = json_decode($steps, true);
 
+		foreach ($steps as $key => $step)
+		{
+			if (!empty($step['hidden_steps']))
+			{
+				$steps[$key]['hidden_steps'] = array_map(function ($hiddenStep) {
+					return (int) $hiddenStep['id'];
+				}, $step['hidden_steps']);
+			}
+		}
+
 		$programs = $this->app->input->getString('programs');
 		$programs = json_decode($programs, true);
 
