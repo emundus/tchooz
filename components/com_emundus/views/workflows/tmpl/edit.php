@@ -63,6 +63,7 @@ Text::script('COM_EMUNDUS_WORKFLOW_CONFIGURE_PAYMENT_STEP');
 Text::script('COM_EMUNDUS_WORKFLOW_PAYMENT_STEP_RELATED_TO');
 Text::script('COM_EMUNDUS_WORKFLOW_DELETE_STEP_FAILED');
 Text::script('COM_EMUNDUS_WORKFLOW_ARCHIVED_STEP');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_HIDDEN_STEPS');
 
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_TYPE_CHOICES');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_MAX_CHOICES');
@@ -70,6 +71,7 @@ Text::script('COM_EMUNDUS_WORKFLOW_STEP_MAX_CHOICES_REQUIRED');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_ORDERING');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_CONFIRMED');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_SENT');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_HIDDEN_STEPS_SELECT');
 
 $data = LayoutFactory::prepareVueData();
 
@@ -87,9 +89,8 @@ $data['crud'] = [
 $datas = [
     ...$data,
     'workflowId' => $this->current_workflow_id,
-    'readonly' => $this->readOnly,
+    'readOnly' => $this->readOnly === 1,
 ];
-
 ?>
 
 <div id="em-component-vue" component="Workflows/WorkflowEdit"

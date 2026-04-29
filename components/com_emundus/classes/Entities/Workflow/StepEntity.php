@@ -2,9 +2,6 @@
 
 namespace Tchooz\Entities\Workflow;
 
-use Joomla\CMS\Factory;
-use Joomla\CMS\Log\Log;
-use Joomla\Database\DatabaseDriver;
 use Tchooz\Repositories\Payment\PaymentRepository;
 
 class StepEntity {
@@ -37,6 +34,11 @@ class StepEntity {
 	public int $table_id = 0;
 
 	/**
+	 * @var array<int>
+	 */
+	private array $hiddenSteps = [];
+
+	/**
 	 * @var array<CampaignStepDateEntity>|null $campaignsDates
 	 */
 	public ?array $campaignsDates = null;
@@ -44,22 +46,23 @@ class StepEntity {
 	private PaymentRepository $paymentRepository;
 
 	/**
-	 * @param   int                  $id
-	 * @param   int                  $workflow_id
-	 * @param   string               $label
-	 * @param   StepTypeEntity       $type
-	 * @param   ?int                 $profile_id
-	 * @param   ?int                 $form_id
-	 * @param   array                $entry_status
-	 * @param   int|null             $output_status
-	 * @param   int                  $multiple
-	 * @param   int                  $state
-	 * @param   int                  $ordering
-	 * @param   string               $table
-	 * @param   int                  $table_id
-	 * @param   array<CampaignStepDateEntity>|null  $campaignsDates (if you don't provide it, campaign dates won't be set, nor altered on updates, if you want to set or update them, you must provide them)
+	 * @param   int             $id
+	 * @param   int             $workflow_id
+	 * @param   string          $label
+	 * @param   StepTypeEntity  $type
+	 * @param   ?int            $profile_id
+	 * @param   ?int            $form_id
+	 * @param   array           $entry_status
+	 * @param   int|null        $output_status
+	 * @param   int             $multiple
+	 * @param   int             $state
+	 * @param   int             $ordering
+	 * @param   string          $table
+	 * @param   int             $table_id
+	 * @param   null            $campaignsDates  (if you don't provide it, campaign dates won't be set, nor altered on updates, if you want to set or update them, you must provide them)
+	 * @param   array<int>      $hiddenSteps
 	 */
-	public function __construct(int $id, int $workflow_id, string $label, StepTypeEntity $type, ?int $profile_id = 0, ?int $form_id = 0, array $entry_status = [], ?int $output_status = null, int $multiple = 0, int $state = 1, int $ordering = 0, string $table = '', int $table_id = 0, $campaignsDates = null)
+	public function __construct(int $id, int $workflow_id, string $label, StepTypeEntity $type, ?int $profile_id = 0, ?int $form_id = 0, array $entry_status = [], ?int $output_status = null, int $multiple = 0, int $state = 1, int $ordering = 0, string $table = '', int $table_id = 0, $campaignsDates = null, array $hiddenSteps = [])
 	{
 		$this->id = $id;
 		$this->workflow_id = $workflow_id;
@@ -75,6 +78,7 @@ class StepEntity {
 		$this->table = $table;
 		$this->table_id = $table_id;
 		$this->campaignsDates = $campaignsDates;
+		$this->hiddenSteps = $hiddenSteps;
 	}
 
 	public function getId(): int
@@ -262,7 +266,24 @@ class StepEntity {
 		return $this;
 	}
 
-	public function serialize()
+	public function getHiddenSteps(): array
+	{
+		return $this->hiddenSteps;
+	}
+
+	/**
+	 * @param   array<int>  $hiddenSteps
+	 *
+	 * @return $this
+	 */
+	public function setHiddenSteps(array $hiddenSteps): StepEntity
+	{
+		$this->hiddenSteps = $hiddenSteps;
+
+		return $this;
+	}
+
+	public function serialize(): array
 	{
 		return [
 			'id' => $this->getId(),
@@ -278,6 +299,7 @@ class StepEntity {
 			'ordering' => $this->ordering,
 			'table' => $this->table,
 			'table_id' => $this->table_id,
+			'hidden_steps' => $this->hiddenSteps,
 		];
 	}
 }

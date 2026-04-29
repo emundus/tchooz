@@ -37,6 +37,18 @@ class Release2_19_1Installer extends ReleaseInstaller
 			$this->db->setQuery($query);
 			$this->tasks[] = $this->db->execute();
 
+			$this->tasks[] = \EmundusHelperUpdate::createTable(
+				'jos_emundus_setup_workflows_steps_hidden_steps',
+				[
+					new \EmundusTableColumn('step_id', \EmundusColumnTypeEnum::INT, null, false),
+					new \EmundusTableColumn('hidden_step', \EmundusColumnTypeEnum::INT, null, false),
+				],
+				[
+					new \EmundusTableForeignKey('jos_emundus_setup_workflows_steps_hidden_steps_fk', 'step_id', 'jos_emundus_setup_workflows_steps', 'id', \EmundusTableForeignKeyOnEnum::CASCADE, \EmundusTableForeignKeyOnEnum::CASCADE),
+					new \EmundusTableForeignKey('jos_emundus_setup_workflows_steps_hidden_steps_fk_2', 'hidden_step', 'jos_emundus_setup_workflows_steps', 'id', \EmundusTableForeignKeyOnEnum::CASCADE, \EmundusTableForeignKeyOnEnum::CASCADE),
+				]
+			)['status'];
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
