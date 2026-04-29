@@ -34,6 +34,7 @@ use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Transformers\ApplicationChoicesTransformer;
 
 /**
@@ -8256,15 +8257,31 @@ class EmundusModelApplication extends ListModel
                     }
                 }
 
-				require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
-				$m_workflow = new EmundusModelWorkflow();
-				$workflow_data = $m_workflow->getWorkflowByFnum($fnum);
+				$workflowRepository = new WorkflowRepository();
+				$workflow = $workflowRepository->getWorkflowByFnum($fnum, true);
 
-				if (!empty($workflow_data['steps'])) {
-					foreach($workflow_data['steps'] as $step) {
-						if ($m_workflow->isEvaluationStep($step->type) && $use_evaluation_forms) {
+				if (!empty($workflow))
+				{
+					foreach($workflow->getSteps() as $step) {
+						if ($step->isEvaluationStep() && $use_evaluation_forms) {
 							if (!in_array($step->form_id, $forms)) {
 								$forms[] = $step->form_id;
+							}
+						}
+					}
+
+					if (!empty($workflow->getChildWorkflows()))
+					{
+						foreach($workflow->getChildWorkflows() as $childWorkflow) {
+							foreach($childWorkflow->getSteps() as $step)
+							{
+								if ($step->isEvaluationStep() && $use_evaluation_forms)
+								{
+									if (!in_array($step->form_id, $forms))
+									{
+										$forms[] = $step->form_id;
+									}
+								}
 							}
 						}
 					}
