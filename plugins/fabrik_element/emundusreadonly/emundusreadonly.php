@@ -98,7 +98,7 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 		$user   = Factory::getApplication()->getIdentity();
 		$userId = (int) $user->id;
 
-		if ($userId === 0 || (!EmundusHelperAccess::asAccessAction(1, 'r', $userId, $fnum) && !EmundusHelperAccess::isFnumMine($fnum, $userId)))
+		if ($userId === 0 || (!EmundusHelperAccess::asAccessAction(1, 'r', $userId, $fnum) && !EmundusHelperAccess::isFnumMine($userId, $fnum)))
 		{
 			Log::add(
 				sprintf('access DENIED user=%d fnum=%s source_element=%d', $userId, $fnum, $sourceId),
@@ -169,7 +169,7 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 			$fnum = Factory::getApplication()->getInput()->getString('fnum', '');
 		}
 
-		if (!empty($fnum) && !EmundusHelperAccess::isFnumMine($fnum, Factory::getApplication()->getIdentity()->id) && !EmundusHelperAccess::asAccessAction(1, 'r', Factory::getApplication()->getIdentity()->id, $fnum))
+		if (!empty($fnum) && !EmundusHelperAccess::isFnumMine(Factory::getApplication()->getIdentity()->id, $fnum) && !EmundusHelperAccess::asAccessAction(1, 'r', Factory::getApplication()->getIdentity()->id, $fnum))
 		{
 			$fnum = null;
 		}
