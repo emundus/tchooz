@@ -72,7 +72,9 @@ class PlgFabrik_ElementAction extends PlgFabrik_Element
 		if($type === 'generate_letter')
 		{
 			return array(
-				'letter' => $params->get('generate_letter_id')
+				'letter' => $params->get('generate_letter_id'),
+				'can_be_view' => $params->get('letter_can_be_viewed') ?? 1,
+				'overwrite' => $params->get('letter_overwrite') ?? 1
 			);
 		}
 		else
