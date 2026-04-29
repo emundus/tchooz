@@ -82,7 +82,7 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 	 * the source plugin's own formatting. Returns '' if access is denied or
 	 * if the source configuration is invalid — never raw error output.
 	 */
-	public function getFormattedValue($data): string
+	public function getFormattedValue($data): ?string
 	{
 		$value = '';
 
