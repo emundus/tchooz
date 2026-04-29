@@ -193,7 +193,7 @@ class CalculationFactory
 	}
 
 	/**
-	 * @param   string  $json
+	 * @param   ?string  $json
 	 *
 	 * @return array
 	 * @throws \Exception

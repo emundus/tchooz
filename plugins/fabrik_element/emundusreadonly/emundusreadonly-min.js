@@ -1,0 +1,1 @@
+define(["jquery","fab/element"],function(e,t){window.FbEmundusReadonly=new Class({Extends:t,initialize:function(e,t){this.parent(e,t)},update:function(e){this.getElement()&&(this.element.innerHTML=e)},getValue:function(){return""},setValue:function(){}});return window.FbEmundusReadonly});

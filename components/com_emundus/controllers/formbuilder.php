@@ -1249,6 +1249,53 @@ class EmundusControllerFormbuilder extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getElementsListOptions(): EmundusResponse
+	{
+		$search    = $this->input->getString('search_query', $this->input->getString('search', ''));
+		$elementId = $this->input->getInt('element_id', 0);
+		$formIds   = EmundusHelperFabrik::getFabrikFormsListIntendedToFiles();
+		$excluded  = [
+			ElementPluginEnum::DISPLAY->value,
+			ElementPluginEnum::EMUNDUSREADONLY->value,
+			ElementPluginEnum::ID->value,
+			ElementPluginEnum::USER->value,
+		];
+
+		$elements = EmundusHelperFabrik::searchFabrikElements($search, $formIds, $excluded, 20);
+
+		$elementsListOptions = [];
+		$seen                = [];
+		foreach ($elements as $element)
+		{
+			$elementsListOptions[] = [
+				'id'    => (int) $element->id,
+				'label' => Text::_($element->label),
+			];
+			$seen[(int) $element->id] = true;
+		}
+
+		// Preload the currently selected element so the multiselect can display its label on reopen
+		if ($elementId > 0 && !isset($seen[$elementId]))
+		{
+			$preloaded = EmundusHelperFabrik::searchFabrikElements('', $formIds, $excluded, 0);
+			foreach ($preloaded as $element)
+			{
+				if ((int) $element->id === $elementId)
+				{
+					array_unshift($elementsListOptions, [
+						'id'    => (int) $element->id,
+						'label' => Text::_($element->label),
+					]);
+					break;
+				}
+			}
+		}
+
+		return EmundusResponse::ok($elementsListOptions);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
 	public function getEmundusCalculationParameters(): EmundusResponse
 	{

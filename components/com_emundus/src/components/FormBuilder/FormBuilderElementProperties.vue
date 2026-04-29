@@ -174,8 +174,15 @@
 
 					<FormBuilderElementParams :element="element" :params="params" :key="element.id" :databases="databases" />
 
+					<FormBuilderReadOnlyParams
+						v-if="element.plugin === 'emundusreadonly'"
+						:element="element"
+						:key="element.id"
+						@updateParams="onUpdateParams"
+					/>
+
 					<FormBuilderEmundusCalculationParams
-						v-if="element.plugin === 'emundus_calculation'"
+						v-else-if="element.plugin === 'emundus_calculation'"
 						:element="element"
 						:key="element.id"
 						@updateParams="onUpdateParams"
@@ -213,10 +220,12 @@ import formBuilderMixin from '@/mixins/formbuilder.js';
 import FormBuilderElementOptions from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementOptions.vue';
 import Loader from '@/components/Atoms/Loader.vue';
 import FormBuilderEmundusCalculationParams from '@/components/FormBuilder/FormBuilderElements/FormBuilderEmundusCalculationParams.vue';
+import FormBuilderReadOnlyParams from '@/components/FormBuilder/FormBuilderElements/FormBuilderReadOnlyParams.vue';
 
 export default {
 	name: 'FormBuilderElementProperties',
 	components: {
+		FormBuilderReadOnlyParams,
 		FormBuilderEmundusCalculationParams,
 		Loader,
 		FormBuilderElementOptions,

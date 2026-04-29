@@ -341,7 +341,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	static function prepareElementParameters(string $plugin, ?bool $notempty = true, ?int $attachementId = 0): array
 	{
 
-		$plugin_no_required = ['display', 'panel', ElementPluginEnum::EMUNDUS_CALCULATION->value];
+		$plugin_no_required = ['display', 'panel', ElementPluginEnum::EMUNDUS_CALCULATION->value, ElementPluginEnum::EMUNDUSREADONLY->value];
 		$plugin_to_setup    = '';
 		if ($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email')
 		{
@@ -1873,7 +1873,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		{
 			try
 			{
-				$query->select('fl.db_table_name,fe.name,fe.id, fe.plugin, fe.params, fg.params as group_params, fg.id as group_id, fj.table_join')
+				$query->select('fl.db_table_name,fe.name,fe.id, fe.plugin, fe.params, fg.params as group_params, fg.id as group_id, fj.table_join, ff.form_id')
 					->from($db->quoteName('#__fabrik_elements', 'fe'))
 					->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
 					->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('ffg.group_id'))
@@ -1898,7 +1898,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $element;
 	}
 
-	public static function searchFabrikElements(string $searchName, array $formIds = [], array $excludedPlugins = []): array
+	public static function searchFabrikElements(string $searchName, array $formIds = [], array $excludedPlugins = [], int $limit = 0): array
 	{
 		$elements = [];
 
@@ -1954,6 +1954,11 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		if (!empty($excludedPlugins))
 		{
 			$query->andWhere('jfe.plugin NOT IN (' . implode(',', $db->quote($excludedPlugins)) . ')');
+		}
+
+		if (!empty($limit))
+		{
+			$query->setLimit($limit);
 		}
 
 		try
