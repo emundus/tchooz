@@ -1287,9 +1287,14 @@ class EmundusControllerFormbuilder extends EmundusController
 			{
 				if ((int) $element->id === $elementId)
 				{
+					$labels = [Text::_(Text::_($element->form_label), $element->group_label)];
+					$labels = array_filter($labels);
+					$labels = implode(' - ', $labels);
+					$label = !empty($labels) ? Text::_($element->label) . ' (' . $labels . ')' : Text::_($element->label);
+
 					array_unshift($elementsListOptions, [
 						'id'    => (int) $element->id,
-						'label' => Text::_($element->label),
+						'label' => $label,
 					]);
 					break;
 				}
