@@ -858,9 +858,14 @@ export default {
 	},
 
 	async saveApplicationFileCustomActions(customActions) {
+		let actions = JSON.parse(JSON.stringify(customActions));
+		actions.forEach((action) => {
+			action.action.parameters = {};
+		});
+
 		try {
 			return await fetchClient.post('saveApplicationFileCustomActions', {
-				actions: JSON.stringify(customActions),
+				actions: JSON.stringify(actions),
 			});
 		} catch (e) {
 			return {
