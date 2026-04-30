@@ -38,11 +38,11 @@ final class ApplicationChoices extends CMSPlugin implements SubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			'onCreateNewFile' => 'onCreateNewFile',
+			'onAfterCampaignCandidature' => 'onAfterCampaignCandidature',
 		];
 	}
 
-	public function onCreateNewFile(GenericEvent $event): bool
+	public function onAfterCampaignCandidature(GenericEvent $event): bool
 	{
 		$data = $event->getArguments();
 		$db   = $this->getDatabase();
