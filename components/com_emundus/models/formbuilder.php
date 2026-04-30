@@ -23,18 +23,21 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Calculation\Templates\CalculateDatesDiff;
 use Tchooz\Entities\Fabrik\FabrikElementEntity;
 use Tchooz\Entities\Indexer\IndexEntity;
+use Tchooz\Entities\Profile\ProfileEntity;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Language\LanguageRepository;
+use Tchooz\Repositories\Profile\ProfileRepository;
 use Tchooz\Services\Fabrik\ApplicantTableCreator;
 use Tchooz\Services\Fabrik\EvaluationTableCreator;
 
@@ -3491,8 +3494,19 @@ class EmundusModelFormbuilder extends ListModel
 	 * @param   bool  $keep_structure  keep structure true means that the new form id will store data in same table as the template
 	 *
 	 * @return array
+	 * @depecated Use duplicateForms in FabrikRepository instead (maybe some adaptions is needed for page models)
 	 */
-	function createMenuFromTemplate($label, $intro, $formid, $prid, bool $keep_structure = false, int $userId = 0)
+	function createMenuFromTemplate(
+		$label,
+		$intro,
+		$formid,
+		$prid,
+		bool $keep_structure = false,
+		int $userId = 0,
+		bool $checkModelTable = true,
+		array $languages = [],
+		?ProfileEntity $profile = null,
+	)
 	{
 		$response = array('status' => false, 'msg' => 'Failed to create menu from form template');
 
@@ -3507,7 +3521,7 @@ class EmundusModelFormbuilder extends ListModel
 				$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
 			}
 
-			if ($keep_structure)
+			if ($keep_structure && $checkModelTable)
 			{
 				$used = $this->checkIfModelTableIsUsedInForm($formid, $prid);
 
@@ -3519,31 +3533,33 @@ class EmundusModelFormbuilder extends ListModel
 				}
 			}
 
-			// Prepare Fabrik API
-			JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
-			$form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
-			$form->setId(intval($formid));
-			$groups = $form->getGroups();
-
 			// Prepare languages
 			$model_prefix = 'Model - ';
-			$languages    = LanguageHelper::getLanguages();
+			if(empty($languages))
+			{
+				$languages = LanguageHelper::getLanguages();
+			}
 
-			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
+			if(!class_exists('EmundusModelFalang'))
+			{
+				require_once(JPATH_SITE . '/components/com_emundus/models/falang.php');
+			}
 			$falang = new EmundusModelFalang();
+			//
 
-			$eMConfig = JComponentHelper::getParams('com_emundus');
+			$eMConfig = ComponentHelper::getParams('com_emundus');
 			$modules  = $eMConfig->get('form_builder_page_creation_modules', [93, 102, 103, 104, 168, 170]);
 
 
 			$query = $this->db->getQuery(true);
 
 			// Get the profile
-			$query->select('*')
-				->from($this->db->quoteName('#__emundus_setup_profiles'))
-				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($prid));
-			$this->db->setQuery($query);
-			$profile = $this->db->loadObject();
+			if(empty($profile))
+			{
+				$profileRepository = new ProfileRepository();
+				$profile           = $profileRepository->getById($prid);
+			}
+			//
 
 			if (!empty($profile))
 			{
@@ -3551,7 +3567,7 @@ class EmundusModelFormbuilder extends ListModel
 				$query->clear()
 					->select('*')
 					->from('#__menu')
-					->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($profile->menutype))
+					->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($profile->getMenutype()))
 					->andWhere($this->db->quoteName('type') . ' = ' . $this->db->quote('heading'));
 				$this->db->setQuery($query);
 				$menu_parent = $this->db->loadObject();
@@ -3575,8 +3591,8 @@ class EmundusModelFormbuilder extends ListModel
 							->clear()
 							->select('rgt')
 							->from($this->db->quoteName('#__menu'))
-							->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($profile->menutype))
-							->andWhere($this->db->quoteName('path') . ' LIKE ' . $this->db->quote($profile->menutype . '%'))
+							->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($profile->getMenutype()))
+							->andWhere($this->db->quoteName('path') . ' LIKE ' . $this->db->quote($profile->getMenutype() . '%'))
 							->andWhere($this->db->quoteName('published') . ' = 1')
 							->order('rgt');
 						$this->db->setQuery($query);
@@ -3592,8 +3608,8 @@ class EmundusModelFormbuilder extends ListModel
 
 						$params    = EmundusHelperFabrik::prepareFabrikMenuParams();
 						$datas     = [
-							'menutype'     => $profile->menutype,
-							'title'        => 'FORM_' . $profile->id . '_' . $newformid,
+							'menutype'     => $profile->getMenutype(),
+							'title'        => 'FORM_' . $profile->getId() . '_' . $newformid,
 							'link'         => 'index.php?option=com_fabrik&view=form&formid=' . $newformid,
 							'path'         => $menu_parent->path . '/' . str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr'])) . '-' . $newformid,
 							'alias'        => 'form-' . $newformid . '-' . str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr'])),
@@ -3620,14 +3636,12 @@ class EmundusModelFormbuilder extends ListModel
 						{
 							$update  = [
 								'id'        => $newmenuid,
-								'alias'     => 'menu-profile' . $profile->id . '-form-' . $newmenuid,
+								'alias'     => 'menu-profile' . $profile->getId() . '-form-' . $newmenuid,
 								'published' => 1
 							];
 							$update  = (object) $update;
 							$updated = $this->db->updateObject('#__menu', $update, 'id');
 
-							require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
-							$falang = new EmundusModelFalang;
 							$falang->insertFalang($label, $newmenuid, 'menu', 'title');
 
 							$response['id']     = $newformid;
@@ -5060,7 +5074,6 @@ class EmundusModelFormbuilder extends ListModel
 
 		if (!empty($form_id) || !empty($list_id))
 		{
-
 			$query = $this->db->getQuery(true);
 
 			$query->select($columns)
@@ -5488,11 +5501,13 @@ class EmundusModelFormbuilder extends ListModel
 			$query = $db->createQuery();
 
 			$query->clear()
-				->select('*')
-				->from('#__fabrik_forms')
-				->where($db->quoteName('id') . ' = ' . $db->quote($formId));
+				->select('ff.*, fl.id as list_id, fl.db_table_name')
+				->from($db->quoteName('#__fabrik_forms', 'ff'))
+				->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ff.id'))
+				->where($db->quoteName('ff.id') . ' = ' . $db->quote($formId));
 			$db->setQuery($query);
 			$formModel            = $db->loadAssoc();
+
 			$insert               = array_filter($formModel, function ($key) {
 				return $key != 'id' && $key != 'modified' && $key != 'checked_out_time' && $key != 'publish_down';
 			}, ARRAY_FILTER_USE_KEY);
@@ -5504,67 +5519,59 @@ class EmundusModelFormbuilder extends ListModel
 			$inserted  = $db->insertObject('#__fabrik_forms', $insert);
 			$newFormId = $inserted ? $db->insertid() : 0;
 
-			if (!empty($newFormId))
+			if(empty($newFormId))
 			{
-				JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
-				$fabrikFormModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
-				assert($fabrikFormModel instanceof FabrikFEModelForm);
-				$fabrikFormModel->setId($formId);
+				throw new RuntimeException('Failed to duplicate fabrik form id ' . $formId);
+			}
 
-				if (
-					str_starts_with('jos_emundus_evaluations', $fabrikFormModel->getListModel()->getTable()->db_table_name)
-					|| str_starts_with('jos_emundus_final_grade', $fabrikFormModel->getListModel()->getTable()->db_table_name)
-					|| str_starts_with('jos_emundus_admission', $fabrikFormModel->getListModel()->getTable()->db_table_name)
-				)
-				{
-					$keyPrefix = 'FORM_EVALUATION_';
-				}
-				else
-				{
-					if (!empty($args['profile_id']))
-					{
-						$keyPrefix = 'FORM_' . $args['profile_id'] . '_';
-					}
-					else
-					{
-						$keyPrefix = 'FORM_';
-					}
-				}
-
-				$labelPrefix = !empty($labelPrefix) ? Text::_($labelPrefix) : '';
-				$this->updateFabrikLabel($newFormId, $keyPrefix, '', $labelPrefix);
-				$this->updateFabrikLabel($newFormId, $keyPrefix, '_INTRO', '', 'fabrik_forms', 'intro');
-
-				$newListId = $this->duplicateFabrikList($fabrikFormModel->getListModel()->getId(), $newFormId, $args, $userId);
-				if (!empty($newListId))
-				{
-					$args['db_table_name'] = $this->getList(0, $newListId)->db_table_name;
-					if (!empty($args['profile_id']))
-					{
-						if (!$this->joinFabrikListToProfile($newListId, (int) $args['profile_id']))
-						{
-							throw new RuntimeException('Failed to join fabrik list id ' . $newListId . ' to profile id ' . (int) $args['profile_id']);
-						}
-					}
-
-					$duplicatedGroups = $this->duplicateFabrikGroups($formId, $newFormId, $newListId, $args, $userId);
-					if (!$duplicatedGroups)
-					{
-						throw new RuntimeException('Failed to duplicate fabrik groups for form id ' . $formId);
-					}
-					else
-					{
-						$this->duplicateConditions($formId, $newFormId);
-					}
-				}
-				else
-				{
-					throw new RuntimeException('Failed to duplicate fabrik list for form id ' . $formId);
-				}
+			$formModel = (object) $formModel;
+			if (
+				str_starts_with('jos_emundus_evaluations', $formModel->db_table_name)
+				|| str_starts_with('jos_emundus_final_grade', $formModel->db_table_name)
+				|| str_starts_with('jos_emundus_admission', $formModel->db_table_name)
+			)
+			{
+				$keyPrefix = 'FORM_EVALUATION_';
 			}
 			else
 			{
-				throw new RuntimeException('Failed to duplicate fabrik form id ' . $formId);
+				if (!empty($args['profile_id']))
+				{
+					$keyPrefix = 'FORM_' . $args['profile_id'] . '_';
+				}
+				else
+				{
+					$keyPrefix = 'FORM_';
+				}
+			}
+
+			$labelPrefix = !empty($labelPrefix) ? Text::_($labelPrefix) : '';
+			$this->updateFabrikLabel($newFormId, $keyPrefix, '', $labelPrefix);
+			$this->updateFabrikLabel($newFormId, $keyPrefix, '_INTRO', '', 'fabrik_forms', 'intro');
+
+			$newListId = $this->duplicateFabrikList($formModel->list_id, $newFormId, $args, $userId);
+			if(empty($newListId))
+			{
+				throw new RuntimeException('Failed to duplicate fabrik list for form id ' . $formId);
+			}
+
+			$args['db_table_name'] = $this->getList(0, $newListId)->db_table_name;
+			if (!empty($args['profile_id']))
+			{
+				if (!$this->joinFabrikListToProfile($newListId, (int) $args['profile_id']))
+				{
+					throw new RuntimeException('Failed to join fabrik list id ' . $newListId . ' to profile id ' . (int) $args['profile_id']);
+				}
+			}
+
+			$duplicatedGroups = $this->duplicateFabrikGroups($formId, $newFormId, $newListId, $args, $userId);
+			if (!$duplicatedGroups)
+			{
+				throw new RuntimeException('Failed to duplicate fabrik groups for form id ' . $formId);
+			}
+			else
+			{
+				$this->duplicateConditions($formId, $newFormId);
 			}
 		}
 
@@ -5664,9 +5671,9 @@ class EmundusModelFormbuilder extends ListModel
 
 		if (!empty($oldFormId) && !empty($newFormId))
 		{
-			$languages = JLanguageHelper::getLanguages();
-			JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
-			$fabrikFormModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+			$languages = LanguageHelper::getLanguages();
+			BaseDatabaseModel::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
+			$fabrikFormModel = BaseDatabaseModel::getInstance('Form', 'FabrikFEModel');
 			assert($fabrikFormModel instanceof FabrikFEModelForm);
 			$fabrikFormModel->setId($oldFormId);
 			$groups = $fabrikFormModel->getGroups();
@@ -5812,7 +5819,8 @@ class EmundusModelFormbuilder extends ListModel
 				$updateObj = (object) $update;
 				$db->updateObject('#__fabrik_groups', $updateObj, 'id');
 
-				foreach ($group->getMyElements() as $element)
+				$groupElements = $group->getMyElements();
+				foreach ($groupElements as $element)
 				{
 					$this->duplicateFabrikGroupElement($element, $newGroupId, $newFormId, $args);
 				}
@@ -6100,7 +6108,7 @@ class EmundusModelFormbuilder extends ListModel
 			$this->db->setQuery($query);
 			$this->db->execute();
 
-			$languages = JLanguageHelper::getLanguages();
+			$languages = LanguageHelper::getLanguages();
 			$labels    = [];
 			foreach ($languages as $language)
 			{

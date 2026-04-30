@@ -22,10 +22,14 @@ use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
+use Joomla\CMS\User\User;
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\EmundusResponse;
+use Tchooz\Repositories\Fabrik\FabrikRepository;
+use Tchooz\Repositories\Language\LanguageRepository;
+use Tchooz\Repositories\Profile\ProfileRepository;
 use Tchooz\Traits\TraitResponse;
 
 class EmundusModelForm extends ListModel
@@ -878,193 +882,152 @@ class EmundusModelForm extends ListModel
 		return $published;
 	}
 
-	public function duplicateForm($data)
+	// TODO: Refactor with entity pattern
+	public function duplicateForm(int|array $profiles, ?User $user = null): int
 	{
-		$duplicated = false;
-		if (!is_array($data)) {
-			$data = array($data);
+		$duplicated = 0;
+		if (!is_array($profiles)) {
+			$profiles = array($profiles);
 		}
 
-		if (!empty($data)) {
-
+		if (!empty($profiles)) {
 			$query = $this->db->getQuery(true);
 
-			require_once(JPATH_SITE . '/components/com_emundus/models/formbuilder.php');
-			$formbuilder = new EmundusModelFormbuilder();
+			if(empty($user))
+			{
+				$user = Factory::getApplication()->getIdentity();
+			}
+
+			if(!class_exists('EmundusModelFormbuilder'))
+			{
+				require_once(JPATH_SITE . '/components/com_emundus/models/formbuilder.php');
+			}
+			if(!class_exists('EmundusHelperMenu'))
+			{
+				require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+			}
+			$profileRepository  = new ProfileRepository();
+			$fabrikRepository  = new FabrikRepository(true, $user);
 
 			try {
-				foreach ($data as $pid) {
-					// Get profile
-					$query->clear()
-						->select('*')
-						->from($this->db->quoteName('#__emundus_setup_profiles'))
-						->where($this->db->quoteName('id') . ' = ' . $this->db->quote($pid));
-					$this->db->setQuery($query);
-					$oldprofile = $this->db->loadObject();
+				$languages = LanguageHelper::getLanguages();
 
-					if (!empty($oldprofile)) {
-						// Create a new profile
-						$new_profile_label = 'Copy - ' . $oldprofile->label;
+				foreach ($profiles as $profileid) {
+					// Duplicate profile
+					$oldProfile = $profileRepository->getById($profileid);
+					if(empty($oldProfile)) continue;
 
-						$insert = [
-							'label' => $new_profile_label,
-							'published' => 1,
-							'menutype' => $oldprofile->menutype,
-							'acl_aro_groups' => $oldprofile->acl_aro_groups,
-							'status' => $oldprofile->status
-						];
-						$insert = (object)$insert;
-						$this->db->insertObject('#__emundus_setup_profiles', $insert);
-						$newprofile = $this->db->insertid();
+					$profile = clone $oldProfile;
+					$profile->setLabel('Copy - ' . $profile->getLabel());
+					$profile->setId(0);
+					$profile->setPublished(1);
 
-						if (!empty($newprofile)) {
-							$newmenutype = 'menu-profile' . $newprofile;
-							$new_title = 'Copy - ' . $oldprofile->label;
-							if (strlen($new_title) > 48) {
-								$new_title = substr($new_title, 0, 45) . '...';
-							}
-							$newmenutype = $this->createMenuType($newmenutype, $new_title);
-							if (empty($newmenutype)) {
-								Log::add('Failed to create new menu from profile ' . $newprofile, Log::WARNING, 'com_emundus.error');
+					if(!$profileRepository->flush($profile))
+					{
+						Log::add('Failed to duplicate form, empty new profile ', Log::WARNING, 'com_emundus.error');
+						continue;
+					}
 
-								return false;
-							}
+					$newmenutype = 'menu-profile' . $profile->getId();
+					$new_title = $profile->getLabel();
+					if (strlen($new_title) > 48) {
+						$new_title = substr($new_title, 0, 45) . '...';
+					}
+					$newmenutype = $this->createMenuType($newmenutype, $new_title);
+					if (empty($newmenutype)) {
+						Log::add('Failed to create new menu from profile ' . $profile->getId(), Log::WARNING, 'com_emundus.error');
 
-							$update = [
-								'id' => $newprofile,
-								'menutype' => $newmenutype
-							];
-							$update = (object)$update;
-							$this->db->updateObject('#__emundus_setup_profiles', $update, 'id');
-							//
+						return false;
+					}
 
-							// Duplicate heading menu
-							$query->clear()
-								->select('*')
-								->from('#__menu')
-								->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($oldprofile->menutype))
-								->andWhere($this->db->quoteName('type') . ' = ' . $this->db->quote('heading'))
-								->andWhere('published = 1');
-							$this->db->setQuery($query);
-							$heading_to_duplicate = $this->db->loadObject();
+					$profile->setMenutype($newmenutype);
+					$profileRepository->flush($profile);
+					//
 
-							if (empty($heading_to_duplicate) || empty($heading_to_duplicate->id)) {
-								Log::add('Could not find heading menu when copying profile ' . $pid, Log::INFO, 'com_emundus.form');
+					// Duplicate heading menu
+					$headingToDuplicate = EmundusHelperMenu::getHeaderMenu($oldProfile->getMenutype());
 
-								$default_heading_menu                    = new stdClass();
-								$default_heading_menu->id                = 1;
-								$default_heading_menu->menutype          = '';
-								$default_heading_menu->title             = "PROFILE $pid - Copy";
-								$default_heading_menu->alias             = '';
-								$default_heading_menu->note              = '';
-								$default_heading_menu->path              = '';
-								$default_heading_menu->link              = '';
-								$default_heading_menu->type              = 'heading';
-								$default_heading_menu->published         = 1;
-								$default_heading_menu->parent_id         = 1;
-								$default_heading_menu->level             = 1;
-								$default_heading_menu->component_id      = 0;
-								$default_heading_menu->checked_out       = 0;
-								$default_heading_menu->params            = '{"menu-anchor_title":"","menu-anchor_css":"","menu-anchor_rel":"","menu_image":"","menu_image_css":"","menu_text":1,"menu_show":1}';
-								$default_heading_menu->home              = 0;
-								$default_heading_menu->language          = '*';
-								$default_heading_menu->client_id         = 0;
-								$default_heading_menu->template_style_id = 22;
-								$default_heading_menu->access            = 1;
-								$default_heading_menu->browserNav        = 0;
-								$heading_to_duplicate                    = $default_heading_menu;
-							}
+					if (empty($headingToDuplicate) || empty($headingToDuplicate->id)) {
+						Log::add('Could not find heading menu when copying profile ' . $profileid, Log::INFO, 'com_emundus.form');
 
-							if (!empty($heading_to_duplicate->id)) {
-								$insert = [];
-								foreach ($heading_to_duplicate as $key => $val) {
-									if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path' && $key != 'checked_out' && $key != 'checked_out_time') {
-										$insert[$key] = $val;
-									}
-									elseif ($key == 'menutype') {
-										$insert[$key] = $newmenutype;
-									}
-									elseif ($key == 'path') {
-										$insert[$key] = $newmenutype;
-									}
-									elseif ($key == 'alias') {
-										$insert[$key] = str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($new_title)) . '-' . $newprofile;
-									}
-								}
-								$insert = (object)$insert;
-								$inserted_heading = $this->db->insertObject('#__menu', $insert);
+						$default_heading_menu                    = new stdClass();
+						$default_heading_menu->id                = 1;
+						$default_heading_menu->menutype          = '';
+						$default_heading_menu->title             = "PROFILE $profileid - Copy";
+						$default_heading_menu->alias             = '';
+						$default_heading_menu->note              = '';
+						$default_heading_menu->path              = '';
+						$default_heading_menu->link              = '';
+						$default_heading_menu->type              = 'heading';
+						$default_heading_menu->published         = 1;
+						$default_heading_menu->parent_id         = 1;
+						$default_heading_menu->level             = 1;
+						$default_heading_menu->component_id      = 0;
+						$default_heading_menu->checked_out       = 0;
+						$default_heading_menu->params            = '{"menu-anchor_title":"","menu-anchor_css":"","menu-anchor_rel":"","menu_image":"","menu_image_css":"","menu_text":1,"menu_show":1}';
+						$default_heading_menu->home              = 0;
+						$default_heading_menu->language          = '*';
+						$default_heading_menu->client_id         = 0;
+						$default_heading_menu->template_style_id = 22;
+						$default_heading_menu->access            = 1;
+						$default_heading_menu->browserNav        = 0;
+						$headingToDuplicate                    = $default_heading_menu;
+					}
 
-								if ($inserted_heading) {
-									// Get fabrik_lists
-									$query->clear()
-										->select('link')
-										->from('#__menu')
-										->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($oldprofile->menutype))
-										->andWhere($this->db->quoteName('type') . ' = ' . $this->db->quote('component'))
-										->andWhere('published = 1');
-									$this->db->setQuery($query);
-									$links = $this->db->loadObjectList();
+					if(empty($headingToDuplicate->id)) {
+						Log::add('Failed to duplicate form, no heading menu found', Log::WARNING, 'com_emundus.error');
+						continue;
+					}
 
-									foreach ($links as $link) {
-										if (str_contains($link->link, 'formid')) {
-											$formsid_arr[] = explode('=', $link->link)[3];
-										}
-									}
-
-									foreach ($formsid_arr as $formid) {
-										$query->clear()
-											->select('label, intro')
-											->from($this->db->quoteName('#__fabrik_forms'))
-											->where($this->db->quoteName('id') . ' = ' . $this->db->quote($formid));
-										$this->db->setQuery($query);
-										$form = $this->db->loadObject();
-
-										$label = array();
-										$intro = array();
-
-										$languages = LanguageHelper::getLanguages();
-										foreach ($languages as $language) {
-											# Fabrik has a functionnality that adds <p> tags around the intro text, we need to remove them
-											$stripped_intro = strip_tags($form->intro);
-											if ($form->intro == '<p>' . $stripped_intro . '</p>') {
-												$form->intro = $stripped_intro;
-											}
-
-											$label[$language->sef] = LanguageFactory::getTranslation($form->label, $language->lang_code);
-											$intro[$language->sef] = LanguageFactory::getTranslation($form->intro, $language->lang_code);
-
-											if (empty($label[$language->sef])) {
-												$label[$language->sef] = '';
-											}
-											if (empty($intro[$language->sef])) {
-												$intro[$language->sef] = '';
-											}
-										}
-
-										$new_form = $formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile, true);
-									}
-
-									// Copy attachments
-									$copied = $this->copyAttachmentsToNewProfile($pid, $newprofile);
-
-									// Create checklist menu
-									$this->addChecklistMenu($newprofile);
-
-									$duplicated = $newprofile;
-								}
-								else {
-									Log::add('Failed to duplicate form, heading has not been created properly', Log::WARNING, 'com_emundus.error');
-								}
-							}
-							else {
-								Log::add('Failed to duplicate form, no heading menu found', Log::WARNING, 'com_emundus.error');
-							}
-							//
+					$insert = [];
+					foreach ($headingToDuplicate as $key => $val) {
+						if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path' && $key != 'checked_out' && $key != 'checked_out_time') {
+							$insert[$key] = $val;
 						}
-						else {
-							Log::add('Failed to duplicate form, empty new profile ', Log::WARNING, 'com_emundus.error');
+						elseif ($key == 'menutype') {
+							$insert[$key] = $newmenutype;
+						}
+						elseif ($key == 'path') {
+							$insert[$key] = $newmenutype;
+						}
+						elseif ($key == 'alias') {
+							$insert[$key] = str_replace(EmundusHelperMenu::getSpecialCharacters(), '-', strtolower($new_title)) . '-' . $profile->getId();
 						}
 					}
+					$insert = (object)$insert;
+					$inserted_heading = $this->db->insertObject('#__menu', $insert);
+					if(!$inserted_heading)
+					{
+						Log::add('Failed to duplicate form, heading has not been created properly', Log::WARNING, 'com_emundus.error');
+						continue;
+					}
+
+					// Get fabrik_lists
+					$formsid_arr = [];
+					$query->clear()
+						->select('link')
+						->from('#__menu')
+						->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($oldProfile->getMenutype()))
+						->andWhere($this->db->quoteName('type') . ' = ' . $this->db->quote('component'))
+						->andWhere('published = 1')
+						->order('lft');
+					$this->db->setQuery($query);
+					$links = $this->db->loadObjectList();
+					foreach ($links as $link) {
+						if (str_contains($link->link, 'formid')) {
+							$formsid_arr[] = explode('=', $link->link)[3];
+						}
+					}
+
+					$fabrikRepository->duplicateForms($formsid_arr, $profile, $languages);
+
+					// Copy attachments (profile was just created, skip existence check)
+					$this->copyAttachmentsToNewProfile($profileid, $profile->getId(), true);
+
+					// Create checklist menu
+					$this->addChecklistMenu($profile->getId());
+
+					$duplicated = $profile->getId();
 				}
 			}
 			catch (Exception $e) {
@@ -1074,10 +1037,13 @@ class EmundusModelForm extends ListModel
 
 		LanguageFactory::cleanCache();
 
+		$hCache = new EmundusHelperCache('com_emundus.menus');
+		$hCache->clean();
+
 		return $duplicated;
 	}
 
-	public function copyAttachmentsToNewProfile($oldprofile, $newprofile)
+	public function copyAttachmentsToNewProfile(int $oldprofile, int $newprofile, bool $newProfileVerified = false)
 	{
 		$copied = false;
 		$db = $this->db;
@@ -1086,17 +1052,20 @@ class EmundusModelForm extends ListModel
 
 			$query = $this->db->getQuery(true);
 
-			$new_profile_exists = false;
-			$query->select('id')
-				->from($this->db->quoteName('#__emundus_setup_profiles'))
-				->where($this->db->quoteName('id') . ' = ' . $newprofile);
+			$new_profile_exists = $newProfileVerified;
 
-			try {
-				$this->db->setQuery($query);
-				$new_profile_exists = $this->db->loadResult();
-			}
-			catch (Exception $e) {
-				Log::add('component/com_emundus/models/form | Error when get profile : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			if (!$newProfileVerified) {
+				$query->select('id')
+					->from($this->db->quoteName('#__emundus_setup_profiles'))
+					->where($this->db->quoteName('id') . ' = ' . $newprofile);
+
+				try {
+					$this->db->setQuery($query);
+					$new_profile_exists = $this->db->loadResult();
+				}
+				catch (Exception $e) {
+					Log::add('component/com_emundus/models/form | Error when get profile : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+				}
 			}
 
 			if (!empty($new_profile_exists)) {
@@ -2004,13 +1973,15 @@ class EmundusModelForm extends ListModel
 
 	public function addChecklistMenu($prid)
 	{
-
 		$query = $this->db->getQuery(true);
 
-		$eMConfig = JComponentHelper::getParams('com_emundus');
+		$eMConfig = ComponentHelper::getParams('com_emundus');
 		$modules  = $eMConfig->get('form_builder_page_creation_modules', [93, 102, 103, 104, 168, 170]);
 
-		require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'update.php');
+		if(!class_exists('EmundusHelperUpdate'))
+		{
+			require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+		}
 
 		try {
 			// Create the menu
@@ -2102,7 +2073,6 @@ class EmundusModelForm extends ListModel
 					$this->db->execute();
 				}
 			}
-
 			//
 
 			return $newmenuid;
