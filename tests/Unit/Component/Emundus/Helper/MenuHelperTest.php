@@ -185,5 +185,257 @@ class MenuHelperTest extends UnitTestCase
 		$cached = $hCache->get('menus_' . $this->testProfileId);
 		$this->assertNotEmpty($cached, 'Cache should contain all menus for the profile');
 	}
+
+	// =========================================================================
+	// getSpecialCharacters
+	// =========================================================================
+
+	/**
+	 * @covers EmundusHelperMenu::getSpecialCharacters
+	 */
+	public function testGetSpecialCharactersReturnsAnArray(): void
+	{
+		$result = EmundusHelperMenu::getSpecialCharacters();
+
+		$this->assertIsArray($result, 'getSpecialCharacters should return an array');
+	}
+
+	/**
+	 * @covers EmundusHelperMenu::getSpecialCharacters
+	 */
+	public function testGetSpecialCharactersReturnsNonEmptyArray(): void
+	{
+		$result = EmundusHelperMenu::getSpecialCharacters();
+
+		$this->assertNotEmpty($result, 'getSpecialCharacters should return a non-empty array');
+	}
+
+	/**
+	 * @covers EmundusHelperMenu::getSpecialCharacters
+	 */
+	public function testGetSpecialCharactersReturnsOnlyStringValues(): void
+	{
+		foreach (EmundusHelperMenu::getSpecialCharacters() as $char)
+		{
+			$this->assertIsString($char, 'Each special character should be a string');
+		}
+	}
+
+	/**
+	 * @covers EmundusHelperMenu::getSpecialCharacters
+	 */
+	public function testGetSpecialCharactersContainsExpectedCharacters(): void
+	{
+		$result = EmundusHelperMenu::getSpecialCharacters();
+
+		$expected = ['=', '&', ',', '#', '_', '*', ';', '!', '?', ':', '+', '$', '\'', ' ', '£', ')', '(', '@', '%'];
+
+		foreach ($expected as $char)
+		{
+			$this->assertContains($char, $result, "Special characters should contain '$char'");
+		}
+	}
+
+	/**
+	 * @covers EmundusHelperMenu::getSpecialCharacters
+	 */
+	public function testGetSpecialCharactersReturnsExactExpectedSet(): void
+	{
+		$expected = ['=', '&', ',', '#', '_', '*', ';', '!', '?', ':', '+', '$', '\'', ' ', '£', ')', '(', '@', '%'];
+		$result   = EmundusHelperMenu::getSpecialCharacters();
+
+		$this->assertCount(count($expected), $result, 'getSpecialCharacters should return exactly ' . count($expected) . ' characters');
+		$this->assertSame([], array_diff($expected, $result), 'No expected character should be missing');
+		$this->assertSame([], array_diff($result, $expected), 'No unexpected character should be present');
+	}
+
+	/**
+	 * @covers EmundusHelperMenu::getSpecialCharacters
+	 */
+	public function testGetSpecialCharactersIsDeterministic(): void
+	{
+		$first  = EmundusHelperMenu::getSpecialCharacters();
+		$second = EmundusHelperMenu::getSpecialCharacters();
+
+		$this->assertSame($first, $second, 'getSpecialCharacters should return the same result on every call');
+	}
+
+	// =========================================================================
+	// getHeaderMenu
+	// =========================================================================
+
+	/**
+	 * Load the menutype of the fixture profile from the DB.
+	 * Returns null if the profile has no menutype set.
+	 */
+	private function getFixtureMenutype(): ?string
+	{
+		$query = $this->db->getQuery(true)
+			->select($this->db->quoteName('menutype'))
+			->from($this->db->quoteName('#__emundus_setup_profiles'))
+			->where($this->db->quoteName('id') . ' = ' . $this->db->quote($this->testProfileId));
+		$this->db->setQuery($query);
+		$menutype = $this->db->loadResult();
+
+		return !empty($menutype) ? $menutype : null;
+	}
+
+	/**
+	 * Load a menutype that has at least one row with type = 'heading'.
+	 * Returns null when none exists in the DB.
+	 */
+	private function getHeadingMenutype(): ?string
+	{
+		$query = $this->db->getQuery(true)
+			->select($this->db->quoteName('menutype'))
+			->from($this->db->quoteName('#__menu'))
+			->where($this->db->quoteName('type') . ' = ' . $this->db->quote('heading'))
+			->where($this->db->quoteName('published') . ' = 1')
+			->setLimit(1);
+		$this->db->setQuery($query);
+		$menutype = $this->db->loadResult();
+
+		return !empty($menutype) ? $menutype : null;
+	}
+
+	/**
+	 * @covers EmundusHelperMenu::getHeaderMenu
+	 */
+	public function testGetHeaderMenuReturnsNullForNonExistentMenutype(): void
+	{
+		$result = EmundusHelperMenu::getHeaderMenu('__nonexistent_menutype_' . uniqid());
+
+		$this->assertNull($result, 'getHeaderMenu should return null for a menutype that does not exist');
+	}
+
+	/**
+	 * @covers EmundusHelperMenu::getHeaderMenu
+	 */
+	public function testGetHeaderMenuReturnsNullForEmptyString(): void
+	{
+		$result = EmundusHelperMenu::getHeaderMenu('');
+
+		$this->assertNull($result, 'getHeaderMenu should return null for an empty menutype string');
+	}
+
+	/**
+	 * @covers EmundusHelperMenu::getHeaderMenu
+	 */
+	public function testGetHeaderMenuReturnsObjectForValidMenutype(): void
+	{
+		$menutype = $this->getHeadingMenutype();
+
+		if (empty($menutype))
+		{
+			$this->markTestSkipped('No heading menu item found in the test DB');
+		}
+
+		$result = EmundusHelperMenu::getHeaderMenu($menutype);
+
+		$this->assertNotNull($result, 'getHeaderMenu should return an object for a menutype that has a heading item');
+		$this->assertIsObject($result);
+	}
+
+	/**
+	 * @covers EmundusHelperMenu::getHeaderMenu
+	 */
+	public function testGetHeaderMenuReturnedObjectHasExpectedProperties(): void
+	{
+		$menutype = $this->getHeadingMenutype();
+
+		if (empty($menutype))
+		{
+			$this->markTestSkipped('No heading menu item found in the test DB');
+		}
+
+		$result = EmundusHelperMenu::getHeaderMenu($menutype);
+
+		$this->assertNotNull($result);
+		$this->assertTrue(property_exists($result, 'id'), 'Result should have an id property');
+		$this->assertTrue(property_exists($result, 'menutype'), 'Result should have a menutype property');
+		$this->assertTrue(property_exists($result, 'type'), 'Result should have a type property');
+		$this->assertTrue(property_exists($result, 'published'), 'Result should have a published property');
+	}
+
+	/**
+	 * @covers EmundusHelperMenu::getHeaderMenu
+	 */
+	public function testGetHeaderMenuReturnedObjectTypeIsHeading(): void
+	{
+		$menutype = $this->getHeadingMenutype();
+
+		if (empty($menutype))
+		{
+			$this->markTestSkipped('No heading menu item found in the test DB');
+		}
+
+		$result = EmundusHelperMenu::getHeaderMenu($menutype);
+
+		$this->assertNotNull($result);
+		$this->assertSame('heading', $result->type, 'The returned menu item should have type = "heading"');
+	}
+
+	/**
+	 * @covers EmundusHelperMenu::getHeaderMenu
+	 */
+	public function testGetHeaderMenuReturnedMenutypeMatchesInput(): void
+	{
+		$menutype = $this->getHeadingMenutype();
+
+		if (empty($menutype))
+		{
+			$this->markTestSkipped('No heading menu item found in the test DB');
+		}
+
+		$result = EmundusHelperMenu::getHeaderMenu($menutype);
+
+		$this->assertNotNull($result);
+		$this->assertSame($menutype, $result->menutype, 'The returned menu item menutype should match the input');
+	}
+
+	/**
+	 * @covers EmundusHelperMenu::getHeaderMenu
+	 */
+	public function testGetHeaderMenuReturnedIdIsPositiveInteger(): void
+	{
+		$menutype = $this->getHeadingMenutype();
+
+		if (empty($menutype))
+		{
+			$this->markTestSkipped('No heading menu item found in the test DB');
+		}
+
+		$result = EmundusHelperMenu::getHeaderMenu($menutype);
+
+		$this->assertNotNull($result);
+		$this->assertGreaterThan(0, (int) $result->id, 'The returned menu item should have a positive ID');
+	}
+
+	/**
+	 * @covers EmundusHelperMenu::getHeaderMenu
+	 */
+	public function testGetHeaderMenuForProfileMenutypeReturnsConsistentResult(): void
+	{
+		$menutype = $this->getFixtureMenutype();
+
+		if (empty($menutype))
+		{
+			$this->markTestSkipped('Fixture profile has no menutype');
+		}
+
+		$first  = EmundusHelperMenu::getHeaderMenu($menutype);
+		$second = EmundusHelperMenu::getHeaderMenu($menutype);
+
+		// Both calls must return the same type (both null or both the same object)
+		if ($first === null)
+		{
+			$this->assertNull($second, 'Both calls should return null when no heading item exists');
+		}
+		else
+		{
+			$this->assertNotNull($second);
+			$this->assertEquals($first->id, $second->id, 'Repeated calls should return the same heading menu item');
+		}
+	}
 }
 
