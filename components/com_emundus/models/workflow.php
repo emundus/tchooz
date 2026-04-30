@@ -25,6 +25,7 @@ use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Enums\Workflow\WorkflowStepDatesRelativeUnitsEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Payment\TransactionRepository;
@@ -1650,8 +1651,8 @@ class EmundusModelWorkflow extends JModelList
 
 					$query->clear()
 						->insert('#__emundus_setup_step_types')
-						->columns('label, action_id, parent_id')
-						->values($this->db->quote($type['label']) . ', ' . $action_id . ', ' . $type['parent_id']);
+						->columns('label, action_id, parent_id, published')
+						->values($this->db->quote($type['label']) . ', ' . $action_id . ', ' . $type['parent_id'] . ', 1');
 					try
 					{
 						$this->db->setQuery($query);
@@ -1669,6 +1670,52 @@ class EmundusModelWorkflow extends JModelList
 
 			if (!empty($removed_types))
 			{
+				$actionRepository = new ActionRepository();
+				$stepTypeRepository = new StepTypeRepository();
+
+				$parentSteps = [];
+				foreach ($removed_types as $key => $type)
+				{
+					// Check here if steps are not associated else continue, we cannot delete type associated to workflows
+					$workflows = $stepTypeRepository->getWorkflowsByStepType($type->id);
+					if (!empty($workflows))
+					{
+						unset($removed_types[$key]);
+						$statuses[] = false;
+						continue;
+					}
+
+					if (!in_array($type->parent_id, array_keys($parentSteps)))
+					{
+						$query->clear()
+							->select('code')
+							->from($this->db->quoteName('#__emundus_setup_step_types'))
+							->where('id = ' . $type->parent_id);
+						$this->db->setQuery($query);
+						$parentSteps[$type->parent_id] = $this->db->loadResult();
+					}
+					
+					if ($parentSteps[$type->parent_id] === 'evaluator')
+					{
+						// Unpublish action associated to step types if parent_id is evaluator code
+						$action = $actionRepository->getById($type->action_id);
+
+						if(!empty($action))
+						{
+							$action->setStatus(false);
+							try
+							{
+								$actionRepository->flush($action);
+							}
+							catch (Exception $e)
+							{
+								$statuses[] = false;
+								Log::add('Error while deleting step types: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+							}
+						}
+					}
+				}
+
 				$removed_types_ids = array_map(function ($type) {
 					return $type->id;
 				}, $removed_types);

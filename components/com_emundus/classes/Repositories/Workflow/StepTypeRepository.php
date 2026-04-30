@@ -113,6 +113,34 @@ class StepTypeRepository extends EmundusRepository
 		return $stepTypes;
 	}
 
+	public function getWorkflowsByStepType(int $stepTypeId): array
+	{
+		$workflows = [];
+
+		$query = $this->db->getQuery(true)
+			->select($this->db->quoteName('workflow_id'))
+			->from($this->db->quoteName($this->getTableName(StepRepository::class)))
+			->where($this->db->quoteName('type') . ' = ' . $stepTypeId)
+			->group($this->db->quoteName('workflow_id'));
+		$this->db->setQuery($query);
+		$workflowIds = $this->db->loadColumn();
+		
+		if(!empty($workflowIds))
+		{
+			$workflowRepository = new WorkflowRepository();
+			foreach ($workflowIds as $workflowId)
+			{
+				$workflow = $workflowRepository->getWorkflowById($workflowId);
+				if(!empty($workflow))
+				{
+					$workflows[] = $workflow;
+				}
+			}
+		}
+
+		return $workflows;
+	}
+
 	/**
 	 * @param   StepTypeEntity  $stepType
 	 *

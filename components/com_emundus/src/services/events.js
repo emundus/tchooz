@@ -292,8 +292,6 @@ export default {
 	},
 
 	async assocUsers(slots, users, replace = true) {
-		console.log(slots);
-		console.log(users);
 		try {
 			return await fetchClient.post('assocusers', { slots: slots, users: users, replace: replace });
 		} catch (e) {
