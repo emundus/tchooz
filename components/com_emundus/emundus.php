@@ -1348,6 +1348,8 @@ Text::script('COM_EMUNDUS_NEW_REFERENCE');
 Text::script('COM_EMUNDUS_CUSTOM_REFERENCE_ACCESS_LOADER');
 Text::script('COM_EMUNDUS_CUSTOM_REFERENCE_GENERATE_DESC');
 
+Text::script('COM_EMUNDUS_EXPORT_SELECT_COLUMNS_NO_ELEMENTS');
+
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
 foreach ($actionlog_translation_tags as $tag => $translation)

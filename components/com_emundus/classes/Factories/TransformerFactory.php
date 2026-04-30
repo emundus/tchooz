@@ -11,6 +11,7 @@ namespace Tchooz\Factories;
 
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Interfaces\FabrikTransformerInterface;
+use Tchooz\Transformers\ApplicationChoicesTransformer;
 use Tchooz\Transformers\BirthdayTransformer;
 use Tchooz\Transformers\ChoicesTransformer;
 use Tchooz\Transformers\CurrencyTransformer;
@@ -39,6 +40,7 @@ class TransformerFactory
 			ElementPluginEnum::YESNO->value => new YesNoTransformer($translations),
 			ElementPluginEnum::CURRENCY->value => new CurrencyTransformer(),
 			ElementPluginEnum::IBAN->value => new IbanTransformer(),
+			ElementPluginEnum::APPLICATION_CHOICES->value => new ApplicationChoicesTransformer(),
 			default => new DefaultTransformer($fabrikElementParams),
 		};
 	}

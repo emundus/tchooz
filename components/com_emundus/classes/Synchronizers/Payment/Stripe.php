@@ -7,13 +7,11 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 use Stripe\StripeClient;
-use Tchooz\Entities\Payment\AlterationEntity;
-use Tchooz\Entities\Payment\AlterationType;
 use Tchooz\Entities\Payment\CartEntity;
-use Tchooz\Entities\Payment\ProductEntity;
 use Tchooz\Entities\Payment\TransactionEntity;
 use Joomla\CMS\Uri\Uri;
 use Tchooz\Entities\Payment\TransactionStatus;
+use Tchooz\Exception\EmundusInvalidAmountException;
 use Tchooz\Factories\Payment\StripeItemFactory;
 use Tchooz\Repositories\Payment\TransactionRepository;
 
@@ -89,6 +87,11 @@ class Stripe
 
 	public function prepareCheckout(TransactionEntity $transaction, CartEntity $cart): array
 	{
+		if ($cart->getTotal() < 0.50)
+		{
+			throw new EmundusInvalidAmountException(sprintf(Text::_('COM_EMUNDUS_STRIPE_MINIMUM_AMOUNT_ERROR'), $cart->getCurrency()->getSymbol()));
+		}
+
 		switch($transaction->getPaymentMethod()->name)
 		{
 			case 'sepa':
@@ -111,18 +114,39 @@ class Stripe
 
 	private function createCheckoutSession(TransactionEntity $transaction, CartEntity $cart): ?\Stripe\Checkout\Session
 	{
-		$items = $this->getItemsFromCart($cart, $transaction);
+		$checkoutData = $this->getItemsFromCart($cart, $transaction);
+
+		$sessionParams = [
+			'line_items'           => $checkoutData['line_items'],
+			'mode'                 => 'payment',
+			'success_url'          => Uri::base() . 'index.php?option=com_emundus&controller=webhook&task=updatePaymentTransaction&sync_id=' . $this->sync_id . '&transaction_ref=' . $transaction->getExternalReference(),
+			'cancel_url'           => Uri::base() . 'index.php?option=com_emundus&controller=webhook&task=updatePaymentTransaction&sync_id=' . $this->sync_id . '&transaction_ref=' . $transaction->getExternalReference(),
+			'client_reference_id'  => $transaction->getExternalReference(),
+			'payment_method_types' => ['card'],
+			'customer_email'       => $cart->getCustomer()->getEmail()
+		];
+
+		if (!empty($checkoutData['discounts']))
+		{
+			$stripeCoupons = [];
+			foreach ($checkoutData['discounts'] as $couponParams)
+			{
+				try
+				{
+					$coupon = $this->client->coupons->create($couponParams);
+					$stripeCoupons[] = ['coupon' => $coupon->id];
+				}
+				catch (\Exception $e)
+				{
+					Log::add('Failed to create Stripe coupon: ' . $e->getMessage(), Log::ERROR, 'com_emundus.stripe');
+					throw new \Exception('Failed to create Stripe discount coupon');
+				}
+			}
+			$sessionParams['discounts'] = $stripeCoupons;
+		}
 
 		try {
-			$session = $this->client->checkout->sessions->create([
-				'line_items' => [$items],
-				'mode' => 'payment',
-				'success_url' => Uri::base() . 'index.php?option=com_emundus&controller=webhook&task=updatePaymentTransaction&sync_id=' . $this->sync_id . '&transaction_ref=' . $transaction->getExternalReference(),
-				'cancel_url' => Uri::base() . 'index.php?option=com_emundus&controller=webhook&task=updatePaymentTransaction&sync_id=' . $this->sync_id . '&transaction_ref=' . $transaction->getExternalReference(),
-				'client_reference_id' => $transaction->getExternalReference(),
-				'payment_method_types' => ['card'], // todo: make configurable
-				'customer_email' => $cart->getCustomer()->getEmail()
-			]);
+			$session = $this->client->checkout->sessions->create($sessionParams);
 		} catch (\Exception $e) {
 			Log::add('Stripe checkout session creation failed: ' . $e->getMessage(), Log::ERROR, 'com_emundus.stripe');
 			throw new \Exception('Failed to create Stripe checkout session');
@@ -135,102 +159,14 @@ class Stripe
 	 * @param   CartEntity         $cart
 	 * @param   TransactionEntity  $transaction
 	 *
-	 * @return array
+	 * @return array{line_items: array, discounts: array}
 	 * @throws \Exception
 	 */
 	private function getItemsFromCart(CartEntity $cart, TransactionEntity $transaction): array
 	{
-		$items = [];
-
 		$factory = new StripeItemFactory();
 
-		if ($cart->getPayAdvance() === 1)
-		{
-			$totalAdvance = $cart->calculateTotalAdvance()->getTotalAdvance();
-			$items[] = $factory->createStripeItem($totalAdvance, $transaction->getCurrency(), Text::_('COM_EMUNDUS_PAYMENT_ADVANCE_PAYMENT'));
-		}
-		else
-		{
-			// Step 1: Calculate each product's price after product-specific alterations
-			// This mirrors the first loop in CartEntity::calculateTotal()
-			$product_lines = [];
-			foreach ($cart->getProducts() as $product) {
-				if (!($product instanceof ProductEntity)) {
-					continue;
-				}
-
-				$product_price = $product->getPrice();
-
-				foreach ($cart->getPriceAlterations() as $alteration) {
-					if (!($alteration instanceof AlterationEntity)) {
-						continue;
-					}
-
-					if (!empty($alteration->getProduct()) && $alteration->getProduct()->getId() === $product->getId()) {
-						if ($alteration->getType() === AlterationType::FIXED) {
-							$product_price += $alteration->getAmount();
-						} elseif ($alteration->getType() === AlterationType::PERCENTAGE) {
-							$product_price += $product_price * ($alteration->getAmount() / 100);
-						}
-					}
-				}
-
-				$product_lines[] = [
-					'label'       => $product->getLabel(),
-					'description' => $product->getDescription(),
-					'amount'      => $product_price, // in euros, after product-specific alterations
-				];
-			}
-
-			// Step 2: Apply global alterations (no product) on the subtotal
-			// This mirrors the second loop in CartEntity::calculateTotal()
-			$subtotal = array_sum(array_column($product_lines, 'amount'));
-
-			foreach ($cart->getPriceAlterations() as $alteration) {
-				if (!($alteration instanceof AlterationEntity)) {
-					continue;
-				}
-
-				if (empty($alteration->getProduct())) {
-					if ($alteration->getType() === AlterationType::FIXED || $alteration->getType() === AlterationType::ADJUST_BALANCE) {
-						// Distribute the fixed global alteration proportionally across products
-						if ($subtotal != 0) {
-							foreach ($product_lines as &$line) {
-								$line['amount'] += $alteration->getAmount() * ($line['amount'] / $subtotal);
-							}
-							unset($line);
-						}
-						$subtotal += $alteration->getAmount();
-					} elseif ($alteration->getType() === AlterationType::PERCENTAGE) {
-						// Apply percentage on each product proportionally (same ratio as before)
-						foreach ($product_lines as &$line) {
-							$line['amount'] += $line['amount'] * ($alteration->getAmount() / 100);
-						}
-						unset($line);
-						$subtotal += $subtotal * ($alteration->getAmount() / 100);
-					}
-				}
-			}
-
-			// Step 3: Build Stripe items, ensuring no negative amounts
-			// Stripe requires unit_amount to be a non-negative integer
-			foreach ($product_lines as $line) {
-				$amount = max(0, $line['amount']);
-				$items[] = $factory->createStripeItem($amount, $transaction->getCurrency(), $line['label'], $line['description']);
-			}
-
-			// Step 4: Assert sum of all items equals the cart total (both in euros)
-			$sum = array_sum(array_map(function($item) {
-				return isset($item['price_data']['unit_amount']) ? $item['price_data']['unit_amount'] / 100 : 0;
-			}, $items));
-
-			if (round($cart->getTotal(), 2) !== round($sum, 2)) {
-				Log::add('Stripe checkout session total amount mismatch: cart total is ' . $cart->getTotal() . ', but items sum is ' . $sum, Log::ERROR, 'com_emundus.stripe');
-				throw new \Exception('Total amount mismatch between cart and items');
-			}
-		}
-
-		return $items;
+		return $factory->buildCheckoutData($cart, $transaction->getCurrency());
 	}
 
 	public function verifySignature(string $payload): bool

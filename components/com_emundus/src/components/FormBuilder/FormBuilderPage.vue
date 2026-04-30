@@ -269,7 +269,7 @@ export default {
 						return { id: element.id, order: index + 1 };
 					});
 					formBuilderService.updateOrder(toElements, toGroup, movedElement).then((response) => {
-						updated = response.data.status;
+						updated = response.status;
 
 						if (!updated) {
 							this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED', '');

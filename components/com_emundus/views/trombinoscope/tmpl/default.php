@@ -6,66 +6,81 @@
  * Time: 01:15
  */
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die('Restricted access');
 
-$document = JFactory::getDocument();
-$document->addStyleSheet(JURI::base() . "media/com_emundus/css/emundus_trombinoscope.css");
+$document = Factory::getApplication()->getDocument();
+$wa = $document->getWebAssetManager();
+$wa->registerAndUseStyle('emundus_trombinoscope', Uri::base() . 'media/com_emundus/css/emundus_trombinoscope.css');
 
 if (!empty($this->htmlLetters)) {
 	?>
 
     <form action="" method="post" enctype="multipart/form-data" name="adminForm" id="job-form" class="form-validate">
-        <div class="em-container-trombi">
-            <div class="em-col-trombi">
-                <label for="trombi_format"><?= JText::_('COM_EMUNDUS_TROMBI_FORMAT'); ?></label>
-                <select name="trombi_format" id="trombi_format" class="trombi_format">
-					<?php foreach ($this->htmlLetters as $htmlLetter) : ?>
-                        <option value="<?= $htmlLetter['attachment_id']; ?>"><?= $htmlLetter['title']; ?></option>
-					<?php endforeach; ?>
-                </select>
-                <label for="trombi_grid"><?= JText::_('COM_EMUNDUS_TROMBI_GRID'); ?></label>
-                <div class="em-container-grid">
-                    <div>
-                        <label for="trombi_grid_width"><?= JText::_('COM_EMUNDUS_TROMBI_COLUMN'); ?></label>
-                        <select id="trombi_grid_width" name="trombi_grid_width" class="inputbox">
-                            <option value="1">1</option>
-                            <option value="2" selected="selected">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="trombi_grid_height"><?= JText::_('COM_EMUNDUS_TROMBI_LINE'); ?></label>
-                        <select id="trombi_grid_height" name="trombi_grid_height" class="inputbox">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4" selected="selected">4</option>
-                            <option value="5">5</option>
-                        </select>
+        <div class="tw-flex tw-flex-nowrap tw-p-4 tw-gap-8 tw-bg-white">
+            <div class="tw-flex tw-flex-col tw-gap-3">
+                <div class="tw-flex tw-flex-col">
+                    <label for="trombi_format" class="tw-font-medium"><?= Text::_('COM_EMUNDUS_TROMBI_FORMAT'); ?></label>
+                    <select name="trombi_format" id="trombi_format" class="trombi_format">
+                        <?php foreach ($this->htmlLetters as $htmlLetter) : ?>
+                            <option value="<?= $htmlLetter['attachment_id']; ?>"><?= $htmlLetter['title']; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="tw-flex tw-flex-col">
+                    <label for="trombi_grid" class="tw-font-medium"><?= Text::_('COM_EMUNDUS_TROMBI_GRID'); ?></label>
+                    <div class="em-container-grid">
+                        <div>
+                            <label for="trombi_grid_width" class="tw-font-medium"><?= Text::_('COM_EMUNDUS_TROMBI_COLUMN'); ?></label>
+                            <select id="trombi_grid_width" name="trombi_grid_width" class="inputbox">
+                                <option value="1">1</option>
+                                <option value="2" selected="selected">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="trombi_grid_height" class="tw-font-medium"><?= Text::_('COM_EMUNDUS_TROMBI_LINE'); ?></label>
+                            <select id="trombi_grid_height" name="trombi_grid_height" class="inputbox">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4" selected="selected">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-                <label for="trombi_margin"><?= JText::_('COM_EMUNDUS_TROMBI_MARGIN'); ?>
-                    <span> (<?= JText::_('COM_EMUNDUS_TROMBI_IN_PIXELS'); ?>)</span></label>
-                <input id="trombi_margin" name="trombi_margin" value="<?= $this->default_margin; ?>"
-                       class="trombi_margin"/>
 
-                <p class="trombi_margin_desc"><?= JText::_('COM_EMUNDUS_TROMBI_MARGIN_EXPLANATION1'); ?></p>
-                <p class="trombi_margin_desc trombi_margin_btm"><?= JText::_('COM_EMUNDUS_TROMBI_MARGIN_EXPLANATION2'); ?></p>
+                <div class="tw-flex tw-flex-col">
+                    <label for="trombi_margin" class="tw-font-medium"><?= Text::_('COM_EMUNDUS_TROMBI_MARGIN'); ?>
+                        <span> (<?= Text::_('COM_EMUNDUS_TROMBI_IN_PIXELS'); ?>)</span></label>
+                    <input id="trombi_margin" name="trombi_margin" value="<?= $this->default_margin; ?>"
+                           class="trombi_margin"/>
 
-                <div class="form-check">
+                    <p class="trombi_margin_desc tw-text-neutral-600"><?= Text::_('COM_EMUNDUS_TROMBI_MARGIN_EXPLANATION1'); ?></p>
+                    <p class="trombi_margin_desc trombi_margin_btm tw-text-neutral-600"><?= Text::_('COM_EMUNDUS_TROMBI_MARGIN_EXPLANATION2'); ?></p>
+                </div>
+
+                <div class="form-check tw-pl-0 tw-flex tw-items-center">
                     <input class="form-check-input" type="checkbox" value="" id="trombi_check">
-                    <label class="form-check-label" for="trombi_check">
-						<?= JText::_('COM_EMUNDUS_TROMBI_CHECKBOX'); ?>
+                    <label class="form-check-label tw-font-medium tw-mb-0" for="trombi_check">
+						<?= Text::_('COM_EMUNDUS_TROMBI_CHECKBOX'); ?>
                     </label>
                 </div>
-                <div class="form-check">
+
+                <div class="form-check tw-pl-0 tw-flex tw-items-center">
                     <input class="form-check-input" type="checkbox" value="" id="trombi_border">
-                    <label class="form-check-label" for="trombi_border">
-						<?= JText::_('COM_EMUNDUS_TROMBI_BORDER'); ?>
+                    <label class="form-check-label tw-font-medium tw-mb-0" for="trombi_border">
+						<?= Text::_('COM_EMUNDUS_TROMBI_BORDER'); ?>
                     </label>
                 </div>
+
                 <input type="hidden" id="selected_format" name="selected_format"
                        value="<?= $this->selected_format; ?>"/>
                 <p id="string_fnums" class="hidden" name="string_fnums"> <?= $this->string_fnums; ?> </p>
@@ -73,45 +88,49 @@ if (!empty($this->htmlLetters)) {
                 <input type="hidden" id="trombi_header" name="trombi_header" value=""/>
                 <input type="hidden" id="trombi_footer" name="trombi_footer" value=""/>
             </div>
-            <div class="em-col-trombi trombi-col-button">
-                <button onclick="window.location.hash='preview';" type="button" id="trombi_preview"
-                        class="btn btn-info trombi_button"><?= JText::_('COM_EMUNDUS_TROMBI_PREVIEW'); ?>
+
+            <div>
+                <button type="button" id="trombi_preview"
+                        class="btn btn-info trombi_button"><?= Text::_('COM_EMUNDUS_TROMBI_PREVIEW'); ?>
                     <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
                 </button>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <h3 class="title_wysiwyg"><?= JText::_('COM_EMUNDUS_TROMBI_TEMPLATE'); ?></h3>
-				<?= $this->wysiwyg; ?>
+        <div class="tw-bg-white  tw-flex tw-flex-col tw-gap-3">
+            <div>
+                <div>
+                    <h3 class="tw-mb-3"><?= Text::_('COM_EMUNDUS_TROMBI_TEMPLATE'); ?></h3>
+                    <?= $this->wysiwyg; ?>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <label for="trombi_header_height"><?= JText::_('COM_EMUNDUS_TROMBI_HEIGHT_HEADER'); ?></label>
-            <input id="trombi_header_height" name="trombi_header_height" value="" class="trombi_margin"/>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <h3 class="title_wysiwyg"><?= JText::_('COM_EMUNDUS_TROMBI_HEADER'); ?></h3>
-				<?= $this->wysiwyg_header; ?>
+            <div class="tw-flex tw-flex-col tw-gap-1">
+                <label for="trombi_header_height" class="tw-font-medium"><?= Text::_('COM_EMUNDUS_TROMBI_HEIGHT_HEADER'); ?></label>
+                <input id="trombi_header_height" name="trombi_header_height" value="" class="trombi_margin"/>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <h3 class="title_wysiwyg"><?= JText::_('COM_EMUNDUS_TROMBI_FOOTER'); ?></h3>
-				<?= $this->wysiwyg_footer; ?>
+            <div>
+                <div>
+                    <h3 class="tw-mb-3"><?= Text::_('COM_EMUNDUS_TROMBI_HEADER'); ?></h3>
+                    <?= $this->wysiwyg_header; ?>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12"><a href="<?= $this->form_elements_id_list; ?>"
-                                      target="_blank"><?= JText::_('COM_EMUNDUS_TROMBI_ID_LIST'); ?></a></div>
-            <div id="div-preview"></div>
+            <div>
+                <div>
+                    <h3 class="tw-mb-3"><?= Text::_('COM_EMUNDUS_TROMBI_FOOTER'); ?></h3>
+                    <?= $this->wysiwyg_footer; ?>
+                </div>
+            </div>
+            <div>
+                <div><a href="<?= $this->form_elements_id_list; ?>"
+                                          target="_blank"><?= Text::_('COM_EMUNDUS_TROMBI_ID_LIST'); ?></a></div>
+                <div id="div-preview"></div>
+            </div>
         </div>
 
     </form>
 
     <script>
+        var $ = jQuery.noConflict();
 
         $('#trombi_check').click(function () {
             $('#trombi_check').val(1);
@@ -207,6 +226,7 @@ if (!empty($this->htmlLetters)) {
                 },
                 success: function (data) {
                     const html_content = data.html_content;
+                    console.log(html_content)
 
                     $('#div-preview').html(html_content);
                     $('#data_for_pdf').html(html_content);
@@ -226,7 +246,7 @@ else {
 	?>
     <div class="em-container-trombi">
         <div class="em-col-trombi">
-            <p><?= JText::_('COM_EMUNDUS_TROMBINOSCOPE_GENERATE_UNAVAILABLE') ?></p>
+            <p><?= Text::_('COM_EMUNDUS_TROMBINOSCOPE_GENERATE_UNAVAILABLE') ?></p>
         </div>
     </div>
 	<?php

@@ -72,7 +72,7 @@ class ApplicationFileFactory implements DBFactory
 			data: [],
 			id: (int) $dbObject->id,
 			campaign: self::checkRelationLoad(CampaignRepository::class, $withRelations, $exceptRelations) ? $this->campaignRepository->getById((int) $dbObject->campaign_id) : null,
-			date_submitted: !empty($dbObject->date_submitted) ? new \DateTime($dbObject->date_submitted) : null,
+			date_submitted: !empty($dbObject->date_submitted) && $dbObject->date_submitted !== '0000-00-00 00:00:00' ? new \DateTime($dbObject->date_submitted) : null,
 			formProgress: (int) $dbObject->form_progress,
 			attachmentProgress: (int) $dbObject->attachment_progress,
 			updated_at: !empty($dbObject->updated_at) ? new \DateTime($dbObject->updated_at) : null,
