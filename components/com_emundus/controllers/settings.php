@@ -3869,12 +3869,37 @@ class EmundusControllersettings extends EmundusController
 	{
 		$conditionsList = [];
 
+		$config = ComponentHelper::getParams('com_emundus');
+
+		$storedValuesByType = [];
+		foreach ($config->get('custom_actions', []) as $action)
+		{
+			if (!empty($action->conditions))
+			{
+				$conditionGroup = json_decode($action->conditions, true);
+
+				foreach ($conditionGroup['conditions'] as $condition)
+				{
+					$storedValuesByType[$condition['type']][] = $condition['target'];
+				}
+
+				foreach ($conditionGroup['subGroups'] as $subGroup)
+				{
+					foreach ($subGroup['conditions'] as $condition)
+					{
+						$storedValuesByType[$condition['type']][] = $condition['target'];
+					}
+				}
+			}
+		}
+
 		$conditionRegistry = new ConditionRegistry();
 		$conditionsList = $conditionRegistry->getAvailableConditionSchemas([
 			'target_types' => [
 				TargetTypeEnum::FILE->value,
 				TargetTypeEnum::USER->value,
-			]
+			],
+			'storedValues' => $storedValuesByType
 		]);
 
 		return EmundusResponse::ok($conditionsList);
