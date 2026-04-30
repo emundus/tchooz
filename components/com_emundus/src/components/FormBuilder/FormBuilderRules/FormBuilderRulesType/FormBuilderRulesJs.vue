@@ -238,7 +238,7 @@ export default {
 			this.actions.forEach((action) => {
 				if (action.fields) {
 					let property = 'name';
-					if (action.action === 'define_repeat_group') {
+					if (['define_repeat_group', 'show_group', 'hide_group'].includes(action.action)) {
 						property = 'group_id';
 					}
 					let fields = [];

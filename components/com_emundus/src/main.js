@@ -48,6 +48,7 @@ import ApplicationChoicesList from '@/views/Application/ApplicationChoicesList.v
 if (document) {
 	let app = null;
 	let datas = {};
+	window.__emVueApps = window.__emVueApps || {};
 
 	let elements = [];
 
@@ -399,7 +400,13 @@ if (document) {
 				//
 
 				// Finally, mount the app
+				if (window.__emVueApps[el.id]) {
+					window.__emVueApps[el.id].unmount();
+					delete window.__emVueApps[el.id];
+				}
+
 				app.mount('#' + el.id);
+				window.__emVueApps[el.id] = app;
 				//
 
 				// Vue DevTools setup after mounting the app

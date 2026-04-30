@@ -99,10 +99,10 @@ class FieldTransformer
 					$query = $db->createQuery();
 					$query->clear()
 						->select([
-							$db->quoteName($params->join_key_column),
-							$db->quoteName($params->join_val_column)
+							$db->quoteName(trim($params->join_key_column)),
+							$db->quoteName(trim($params->join_val_column))
 						])
-						->from($db->quoteName($params->join_db_name));
+						->from($db->quoteName(trim($params->join_db_name)));
 
 					if (!empty($search))
 					{

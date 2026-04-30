@@ -154,4 +154,14 @@ export default {
 			};
 		}
 	},
+	async checkBeforeDeleteStepType(id) {
+		try {
+			return await client.get('checkbeforedeletesteptype', { id: id });
+		} catch (e) {
+			return {
+				status: false,
+				error: JSON.parse(e.message),
+			};
+		}
+	},
 };

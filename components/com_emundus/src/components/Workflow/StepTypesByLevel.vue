@@ -49,9 +49,13 @@ import workflowService from '@/services/workflow.js';
 import ColorPicker from '@/components/ColorPicker.vue';
 import tailwindPreset from '@/assets/data/colorpicker/presets/tailwind.js';
 
+import alerts from '@/mixins/alerts.js';
+import Swal from 'sweetalert2';
+
 export default {
 	name: 'StepTypesByLevel',
 	components: { ColorPicker },
+	mixins: [alerts],
 	props: {
 		defaultTypes: {
 			type: Array,
@@ -106,8 +110,15 @@ export default {
 			this.$emit('updateTypes', this.types);
 		},
 		deleteType(id) {
-			this.types = this.types.filter((type) => type.id !== id);
-			this.$emit('updateTypes', this.types);
+			// Check if we can before : if step attached to worflows cannot delete
+			workflowService.checkBeforeDeleteStepType(id).then((response) => {
+				if (response.status) {
+					this.types = this.types.filter((type) => type.id !== id);
+					this.$emit('updateTypes', this.types);
+				} else {
+					this.alertError('', response.error.msg, true);
+				}
+			});
 		},
 		addChildrenStepType(type) {
 			this.types.push({
@@ -139,6 +150,10 @@ export default {
 							title: this.translate('COM_EMUNDUS_WORKFLOW_SAVE_STEP_TYPES_SUCCESS'),
 							showConfirmButton: false,
 							timer: 1500,
+						});
+					} else {
+						this.alertError('', response.msg, true).then(() => {
+							window.location.reload();
 						});
 					}
 

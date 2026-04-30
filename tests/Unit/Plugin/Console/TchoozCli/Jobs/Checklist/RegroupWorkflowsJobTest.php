@@ -157,4 +157,102 @@ class RegroupWorkflowsJobTest extends UnitTestCase
 		$this->assertContains('2024-12-30', $dateStrings);
 		$this->assertNotContains('2024-10-15', $dateStrings);
 	}
+
+	/**
+	 * @covers \Emundus\Plugin\Console\Tchooz\Jobs\Checklist\RegroupWorkflowsJob::regroupWorkflows
+	 * @return void
+	 * @throws \Exception
+	 */
+	public function testRegroupWorkflowsRemapsEvaluationStepIds(): void
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		// Set up a throwaway evaluation table + fabrik_lists registration so saved steps
+		// resolve StepEntity::getTable() via the form_id JOIN (mimics jos_emundus_evaluations_XX).
+		$testTable = 'jos_emundus_evaluations_test_regroup';
+		$db->setQuery('DROP TABLE IF EXISTS ' . $db->quoteName($testTable))->execute();
+		$db->setQuery('CREATE TABLE ' . $db->quoteName($testTable) . ' (
+			id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+			fnum VARCHAR(50) DEFAULT NULL,
+			step_id INT UNSIGNED DEFAULT 0,
+			PRIMARY KEY (id)
+		)')->execute();
+
+		$db->setQuery("INSERT INTO #__fabrik_forms (label, record_in_database, published, created, modified) VALUES ('EVAL_REGROUP_TEST', 1, 1, NOW(), NOW())")->execute();
+		$testFormId = (int) $db->insertid();
+
+		$db->setQuery('INSERT INTO #__fabrik_lists (label, form_id, db_table_name, db_primary_key, connection_id, published, created, modified) VALUES ('
+			. $db->quote('EVAL_REGROUP_TEST') . ', ' . $testFormId . ', ' . $db->quote($testTable) . ', ' . $db->quote($testTable . '.id') . ', 1, 1, NOW(), NOW())')->execute();
+
+		// Two similar workflows with an evaluation step pointing at the same fabrik form — the
+		// grouping signature already forces identical form_id, so both steps share this table.
+		$programA = $this->h_dataset->createSampleProgram('Program eval A');
+		$programB = $this->h_dataset->createSampleProgram('Program eval B');
+
+		$stepType = new StepTypeEntity(2, 0, 'Evaluation', 'evaluator', 5);
+		$anotherStepType = new StepTypeEntity(0, 2, 'Specific eval', 'evaluator', 5);
+
+		$evalStepA = new StepEntity(0, 0, 'Eval step', $stepType, null, $testFormId, [0], 1);
+		$evalStepB = new StepEntity(0, 0, 'Eval step', $stepType, null, $testFormId, [0], 1);
+		$evalStepC = new StepEntity(0, 0, 'Eval step', $anotherStepType, null, $testFormId, [0], 1);
+
+		$workflowA = new WorkflowEntity(0, 'Eval Workflow A', 1, [$evalStepA], [$programA['programme_id']]);
+		$workflowB = new WorkflowEntity(0, 'Eval Workflow B', 1, [$evalStepB], [$programB['programme_id']]);
+		$workflowC = new WorkflowEntity(0, 'Eval Workflow C', 1, [$evalStepC], [$programB['programme_id']]);
+
+		$this->workflowRepository->save($workflowA);
+		$this->workflowRepository->save($workflowB);
+		$this->workflowRepository->save($workflowC);
+
+		$workflowA = $this->workflowRepository->getWorkflowById($workflowA->getId());
+		$workflowB = $this->workflowRepository->getWorkflowById($workflowB->getId());
+		$workflowC = $this->workflowRepository->getWorkflowById($workflowC->getId());
+		$stepA     = $workflowA->getSteps()[0];
+		$stepB     = $workflowB->getSteps()[0];
+		$stepC     = $workflowC->getSteps()[0];
+
+		$this->assertTrue($stepA->isEvaluationStep(), 'Reloaded step should be detected as an evaluation step');
+		$this->assertEquals($testTable, $stepA->getTable(), 'StepEntity::getTable() should resolve via fabrik_lists JOIN on form_id');
+		$this->assertNotEquals($stepA->getId(), $stepB->getId(), 'Steps from distinct workflows must have distinct IDs');
+
+		// Seed evaluation rows for both steps.
+		$db->setQuery('INSERT INTO ' . $db->quoteName($testTable) . ' (fnum, step_id) VALUES '
+			. '(' . $db->quote('fnum-A-1') . ', ' . $stepA->getId() . '), '
+			. '(' . $db->quote('fnum-A-2') . ', ' . $stepA->getId() . '), '
+			. '(' . $db->quote('fnum-B-1') . ', ' . $stepB->getId() . '), '
+			. '(' . $db->quote('fnum-C-1') . ', ' . $stepC->getId() . ')'
+		)->execute();
+
+		// Keep workflowA, drop workflowB.
+		RegroupWorkflowsJob::regroupWorkflows([$workflowA, $workflowB, $workflowC]);
+
+		$db->setQuery('SELECT step_id FROM ' . $db->quoteName($testTable) . ' ORDER BY id');
+		$stepIds = $db->loadColumn();
+
+		$this->assertCount(4, $stepIds, 'Existing evaluation rows should be preserved, not deleted');
+
+		// there should be 3 rows with step A and 1 row with step C
+		$this->assertContains($stepA->getId(), $stepIds);
+		$this->assertContains($stepC->getId(), $stepIds);
+		$this->assertNotContains($stepB->getId(), $stepIds);
+	}
+
+	protected function tearDown(): void
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		try
+		{
+			$testTable = 'jos_emundus_evaluations_test_regroup';
+			$db->setQuery('DELETE FROM ' . $db->quoteName('#__fabrik_lists') . ' WHERE ' . $db->quoteName('db_table_name') . ' = ' . $db->quote($testTable))->execute();
+			$db->setQuery('DELETE FROM ' . $db->quoteName('#__fabrik_forms') . ' WHERE ' . $db->quoteName('label') . ' = ' . $db->quote('EVAL_REGROUP_TEST'))->execute();
+			$db->setQuery('DROP TABLE IF EXISTS ' . $db->quoteName($testTable))->execute();
+		}
+		catch (\Exception $e)
+		{
+			// Best-effort cleanup — don't mask the original test failure if any.
+		}
+
+		parent::tearDown();
+	}
 }

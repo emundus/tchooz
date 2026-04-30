@@ -1069,6 +1069,24 @@ class EmundusHelperEmails
 
 		return $result;
 	}
+
+	public static function isEmailExcluded(string $email): bool
+	{
+		$excluded = false;
+
+		$eMConfig         = ComponentHelper::getParams('com_emundus');
+		$exclude_emundus_from_autoemails = $eMConfig->get('exclude_emundus_from_autoemails', 1);
+
+		if($exclude_emundus_from_autoemails == 1)
+		{
+			if(preg_match('/@emundus\.fr$/i', $email))
+			{
+				$excluded = true;
+			}
+		}
+
+		return $excluded;
+	}
 }
 
 ?>

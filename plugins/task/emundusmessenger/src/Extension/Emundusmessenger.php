@@ -101,13 +101,19 @@ class Emundusmessenger extends CMSPlugin implements SubscriberInterface
 
 			if (!empty($notifications))
 			{
-				require_once JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php';
+				require_once JPATH_SITE . '/components/com_emundus/models/emails.php';
+				require_once JPATH_SITE . '/components/com_emundus/helpers/emails.php';
 				$m_emails = new \EmundusModelEmails();
+				$h_emails = new \EmundusHelperEmails();
 
 				$email_tmpl = 'messenger_reminder_group';
 
 				foreach ($notifications as $notification)
 				{
+					if (!$h_emails->correctEmail($notification->email) || \EmundusHelperEmails::isEmailExcluded($notification->email)) {
+						continue;
+					}
+					
 					$query->clear()
 						->select('id')
 						->from('#__emundus_campaign_candidature')

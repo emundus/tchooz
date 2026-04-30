@@ -29,7 +29,6 @@ export default {
 	},
 	data() {
 		return {
-			campaignActivated: null,
 			renderingKey: 1,
 
 			loading: true,
@@ -249,34 +248,37 @@ export default {
 		};
 	},
 	created() {
+		const promises = [];
+
 		if (useCampaignStore().getActivated === null) {
-			campaignService.isImportActivated().then((response) => {
-				this.campaignActivated = response.data;
-				if (this.campaignActivated) {
-					useCampaignStore().updateActivated(true);
-					this.config.campaigns.tabs[0].actions.push(this.importAction);
-				} else {
-					useCampaignStore().updateActivated(false);
-				}
-			});
-		} else {
-			this.campaignActivated = useCampaignStore().getActivated;
+			promises.push(
+				campaignService.isImportActivated().then((response) => {
+					useCampaignStore().updateActivated(!!response.data);
+				}),
+			);
 		}
 
-		settingsService.checkAddonStatus('choices').then((response) => {
-			if (response.data.enabled) {
-				// Add a filter on parent campaign
-				this.config.campaigns.tabs[0].filters.push({
-					label: 'COM_EMUNDUS_ONBOARD_CAMPAIGNS_FILTER_PARENT',
-					allLabel: 'COM_EMUNDUS_ONBOARD_FILTER_ALL',
-					alwaysDisplay: true,
-					getter: 'getparentcampaignsforfilter',
-					controller: 'campaign',
-					key: 'parent_campaign',
-					values: null,
-				});
-			}
+		promises.push(
+			settingsService.checkAddonStatus('choices').then((response) => {
+				if (response.data.enabled) {
+					// Add a filter on parent campaign
+					this.config.campaigns.tabs[0].filters.push({
+						label: 'COM_EMUNDUS_ONBOARD_CAMPAIGNS_FILTER_PARENT',
+						allLabel: 'COM_EMUNDUS_ONBOARD_FILTER_ALL',
+						alwaysDisplay: true,
+						getter: 'getparentcampaignsforfilter',
+						controller: 'campaign',
+						key: 'parent_campaign',
+						values: null,
+					});
+				}
+			}),
+		);
 
+		Promise.all(promises).then(() => {
+			if (useCampaignStore().getActivated) {
+				this.config.campaigns.tabs[0].actions.push(this.importAction);
+			}
 			this.loading = false;
 		});
 	},

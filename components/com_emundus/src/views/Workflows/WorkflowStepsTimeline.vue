@@ -12,7 +12,11 @@ export default {
 	data() {
 		return {
 			steps: [],
+			stepsFiltered: [],
 			activeStepIndex: 0,
+
+			hiddenSteps: [],
+			reload: 0,
 		};
 	},
 	created() {
@@ -20,25 +24,68 @@ export default {
 	},
 	mounted() {
 		window.addEventListener('resize', this.calculateLinesWidth);
+		window.addEventListener('message', this.manageHiddenSteps);
 	},
 	beforeUnmount() {
 		window.removeEventListener('resize', this.calculateLinesWidth);
+		window.removeEventListener('message', this.manageHiddenSteps);
 	},
 	methods: {
-		async getStepsFromFnum() {
+		async getStepsFromFnum(dispatchEvent = false) {
 			workflowService
 				.getStepsFromFnum(this.fnum)
 				.then((response) => {
 					this.steps = response.data;
-					this.calculateLinesWidth();
+					this.stepsFiltered = this.steps;
+
+					if (!dispatchEvent) {
+						let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
+						let lastEvaluationTab = sessionStorage.getItem('com_emundus_last_tab_evaluation_' + menu);
+						if (lastEvaluationTab) {
+							let lastTabObj = JSON.parse(lastEvaluationTab);
+							this.hiddenSteps = lastTabObj.hidden_steps;
+
+							this.reloadSteps();
+						}
+					}
 
 					this.$nextTick(() => {
 						this.calculateLinesWidth();
 					});
+
+					if (dispatchEvent) {
+						this.dispatchStepSelectedEvent(this.steps[0]);
+					}
 				})
 				.catch((error) => {
 					console.log(error);
 				});
+		},
+		reloadSteps() {
+			if (this.hiddenSteps.length > 0) {
+				this.stepsFiltered = this.steps.filter((step) => {
+					var hiddenStepsIds = [];
+					for (const hiddenStep of this.hiddenSteps) {
+						hiddenStepsIds.push(hiddenStep);
+					}
+
+					return !hiddenStepsIds.includes(step.id);
+				});
+
+				this.activeStepIndex = 0;
+				this.dispatchStepSelectedEvent(this.stepsFiltered[0], true);
+			} else {
+				this.stepsFiltered = this.steps;
+
+				this.activeStepIndex = 0;
+				this.dispatchStepSelectedEvent(this.stepsFiltered[0], true);
+			}
+
+			this.reload++;
+
+			this.$nextTick(() => {
+				this.calculateLinesWidth();
+			});
 		},
 		stepDisplayedDate(step) {
 			if (step.dates.infinite) {
@@ -79,6 +126,9 @@ export default {
 
 			this.activeStepIndex = index;
 
+			this.dispatchStepSelectedEvent(step);
+		},
+		dispatchStepSelectedEvent(step) {
 			const stepSelectedEvent = new CustomEvent('stepSelected', {
 				detail: {
 					step: step,
@@ -89,7 +139,7 @@ export default {
 			this.$emit('stepSelected', step);
 		},
 		calculateLinesWidth() {
-			const nbSteps = this.steps.length;
+			const nbSteps = this.stepsFiltered.length;
 
 			for (let i = 0; i < nbSteps - 1; i++) {
 				const lineElement = document.getElementById('step-' + i + '-line');
@@ -105,10 +155,17 @@ export default {
 				}
 			}
 		},
+		manageHiddenSteps(e) {
+			if (e.data.type === 'reloadSteps' && e.data.hiddenSteps) {
+				this.hiddenSteps = JSON.parse(e.data.hiddenSteps);
+
+				this.reloadSteps();
+			}
+		},
 	},
 	computed: {
 		displayedSteps() {
-			return this.steps.filter((step) => step.state == 1);
+			return this.stepsFiltered.filter((step) => step.state == 1);
 		},
 		futureSteps() {
 			// the steps that are relative and not yet started are always future steps
@@ -151,6 +208,7 @@ export default {
 	<div
 		id="workflow-steps-timeline"
 		class="tw-flex tw-border-separate tw-flex-row tw-justify-evenly tw-gap-8 tw-rounded-coordinator-cards tw-bg-neutral-0 tw-p-4 tw-shadow-card"
+		:key="reload"
 	>
 		<div
 			v-for="(step, index) in displayedSteps"

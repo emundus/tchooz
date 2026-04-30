@@ -25,6 +25,7 @@ use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Enums\Workflow\WorkflowStepDatesRelativeUnitsEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Payment\TransactionRepository;
@@ -338,6 +339,42 @@ class EmundusModelWorkflow extends JModelList
 							{
 								// Save max_choices into workflow step choices rules table
 								$this->saveChoicesStepRules($step);
+							}
+
+							if ($this->isEvaluationStep($step['type']))
+							{
+								$query->clear()
+									->select('hidden_step')
+									->from($this->db->quoteName('#__emundus_setup_workflows_steps_hidden_steps'))
+									->where($this->db->quoteName('step_id') . ' = ' . $step['id']);
+								$this->db->setQuery($query);
+								$oldHiddenStepsIds = $this->db->loadColumn();
+
+								$hiddenStepsIds = $step['hidden_steps'] ?? [];
+								foreach ($hiddenStepsIds as $hiddenStepId)
+								{
+									if ($hiddenStepId < 1 || in_array($hiddenStepId, $oldHiddenStepsIds))
+									{
+										continue;
+									}
+
+									$hiddenStep = (object) [
+										'step_id' => $step['id'],
+										'hidden_step' => $hiddenStepId
+									];
+									$this->db->insertObject('#__emundus_setup_workflows_steps_hidden_steps', $hiddenStep);
+								}
+
+								$hiddenStepsIdsToRemove = array_diff($oldHiddenStepsIds, $hiddenStepsIds);
+								foreach ($hiddenStepsIdsToRemove as $hiddenStepId)
+								{
+									$query->clear()
+										->delete($this->db->quoteName('#__emundus_setup_workflows_steps_hidden_steps'))
+										->where($this->db->quoteName('step_id') . ' = ' . $step['id'])
+										->andWhere($this->db->quoteName('hidden_step') . ' = ' . $hiddenStepId);
+									$this->db->setQuery($query);
+									$this->db->execute();
+								}
 							}
 						}
 
@@ -814,11 +851,12 @@ class EmundusModelWorkflow extends JModelList
 
 		$query = $this->db->createQuery();
 		$query->clear()
-			->select('esws.*, GROUP_CONCAT(DISTINCT eswses.status) AS entry_status, payment_rules.adjust_balance_step_id, choices_rules.max, choices_rules.can_be_ordering, choices_rules.can_be_confirmed,choices_rules.can_be_sent, choices_rules.form_id as choices_form_id')
+			->select('esws.*, GROUP_CONCAT(DISTINCT eswses.status) AS entry_status, payment_rules.adjust_balance_step_id, choices_rules.max, choices_rules.can_be_ordering, choices_rules.can_be_confirmed,choices_rules.can_be_sent, choices_rules.form_id as choices_form_id, GROUP_CONCAT(DISTINCT hidden_steps.hidden_step) AS hidden_steps')
 			->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_payment_rules', 'payment_rules') . ' ON ' . $this->db->quoteName('payment_rules.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_choices_rules', 'choices_rules') . ' ON ' . $this->db->quoteName('choices_rules.step_id') . ' = ' . $this->db->quoteName('esws.id'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_hidden_steps', 'hidden_steps') . ' ON ' . $this->db->quoteName('hidden_steps.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 			->where('esws.id = ' . $id)
 			->group($this->db->quoteName('esws.id'));
 
@@ -826,8 +864,10 @@ class EmundusModelWorkflow extends JModelList
 			$this->db->setQuery($query);
 			$data = $this->db->loadObject();
 
-			if (!empty($data->id)) {
+			if (!empty($data->id))
+			{
 				$data->entry_status = array_unique(explode(',', $data->entry_status));
+				$data->hidden_steps = !empty($data->hidden_steps) ? array_filter(array_unique(explode(',', $data->hidden_steps))) : [];
 				$data->action_id = 1;
 				$data->table = '';
 
@@ -895,7 +935,9 @@ class EmundusModelWorkflow extends JModelList
 					$stepsCache[$id] = $data;
 					$this->h_cache->set('workflow_steps', $stepsCache);
 				}
-			} else {
+			}
+			else
+			{
 				$data = new stdClass();
 			}
 		} catch (Exception $e) {
@@ -1274,6 +1316,7 @@ class EmundusModelWorkflow extends JModelList
 
 		$query = $this->db->createQuery();
 		$stepId = $step instanceof StepEntity ? $step->getId() : $step->id;
+		$isEvaluationStep = $step instanceof StepEntity ? $step->isEvaluationStep() : $this->isEvaluationStep($step->type);
 
 		$query->clear()
 			->select('start_date, end_date')
@@ -1339,10 +1382,24 @@ class EmundusModelWorkflow extends JModelList
 				}
 				else
 				{
-					$dates['start_date'] = !empty($step_date_config->start_date) && $step_date_config->start_date !== '0000-00-00 00:00:00' ? $step_date_config->start_date : $campaign_dates['start_date'];
-					$dates['end_date']   = !empty($step_date_config->end_date) && $step_date_config->end_date !== '0000-00-00 00:00:00' ? $step_date_config->end_date : $campaign_dates['end_date'];
+					if($isEvaluationStep && (
+						(empty($step_date_config->start_date) || $step_date_config->start_date === '0000-00-00 00:00:00') ||
+						(empty($step_date_config->end_date) || $step_date_config->end_date === '0000-00-00 00:00:00')
+						)
+					)
+					{
+						$dates['infinite'] = true;
+					}
+					else {
+						$dates['start_date'] = !empty($step_date_config->start_date) && $step_date_config->start_date !== '0000-00-00 00:00:00' ? $step_date_config->start_date : $campaign_dates['start_date'];
+						$dates['end_date']   = !empty($step_date_config->end_date) && $step_date_config->end_date !== '0000-00-00 00:00:00' ? $step_date_config->end_date : $campaign_dates['end_date'];
+					}
 				}
 			}
+		}
+		elseif ($isEvaluationStep)
+		{
+			$dates['infinite'] = true;
 		}
 
 		return $dates;
@@ -1594,8 +1651,8 @@ class EmundusModelWorkflow extends JModelList
 
 					$query->clear()
 						->insert('#__emundus_setup_step_types')
-						->columns('label, action_id, parent_id')
-						->values($this->db->quote($type['label']) . ', ' . $action_id . ', ' . $type['parent_id']);
+						->columns('label, action_id, parent_id, published')
+						->values($this->db->quote($type['label']) . ', ' . $action_id . ', ' . $type['parent_id'] . ', 1');
 					try
 					{
 						$this->db->setQuery($query);
@@ -1613,6 +1670,52 @@ class EmundusModelWorkflow extends JModelList
 
 			if (!empty($removed_types))
 			{
+				$actionRepository = new ActionRepository();
+				$stepTypeRepository = new StepTypeRepository();
+
+				$parentSteps = [];
+				foreach ($removed_types as $key => $type)
+				{
+					// Check here if steps are not associated else continue, we cannot delete type associated to workflows
+					$workflows = $stepTypeRepository->getWorkflowsByStepType($type->id);
+					if (!empty($workflows))
+					{
+						unset($removed_types[$key]);
+						$statuses[] = false;
+						continue;
+					}
+
+					if (!in_array($type->parent_id, array_keys($parentSteps)))
+					{
+						$query->clear()
+							->select('code')
+							->from($this->db->quoteName('#__emundus_setup_step_types'))
+							->where('id = ' . $type->parent_id);
+						$this->db->setQuery($query);
+						$parentSteps[$type->parent_id] = $this->db->loadResult();
+					}
+					
+					if ($parentSteps[$type->parent_id] === 'evaluator')
+					{
+						// Unpublish action associated to step types if parent_id is evaluator code
+						$action = $actionRepository->getById($type->action_id);
+
+						if(!empty($action))
+						{
+							$action->setStatus(false);
+							try
+							{
+								$actionRepository->flush($action);
+							}
+							catch (Exception $e)
+							{
+								$statuses[] = false;
+								Log::add('Error while deleting step types: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+							}
+						}
+					}
+				}
+
 				$removed_types_ids = array_map(function ($type) {
 					return $type->id;
 				}, $removed_types);

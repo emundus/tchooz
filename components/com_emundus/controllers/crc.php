@@ -1114,14 +1114,14 @@ class EmundusControllerCrc extends BaseController
 							'',
 							ListDisplayEnum::TABLE,
 							'',
-							$organization->getDescription(),
+							$organization->getDescription() ?? '',
 						),
 						new AdditionalColumn(
 							Text::_('COM_EMUNDUS_ONBOARD_ADD_ORG_IDENTIFIER_CODE'),
 							'',
 							ListDisplayEnum::TABLE,
 							't.identifier_code',
-							$organization->getIdentifierCode()
+							$organization->getIdentifierCode() ?? ''
 						),
 						new AdditionalColumn(
 							Text::_('COM_EMUNDUS_ONBOARD_EDIT_ORG_ADDRESS'),

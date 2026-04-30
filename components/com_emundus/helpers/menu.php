@@ -414,6 +414,25 @@ class EmundusHelperMenu
 
 		return $link;
 	}
+
+	public static function getHeaderMenu(string $menutype): ?object
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->clear()
+			->select('*')
+			->from('#__menu')
+			->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype))
+			->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
+		$db->setQuery($query);
+		return $db->loadObject();
+	}
+
+	public static function getSpecialCharacters(): array
+	{
+		return array('=', '&', ',', '#', '_', '*', ';', '!', '?', ':', '+', '$', '\'', ' ', '£', ')', '(', '@', '%');
+	}
 }
 
 ?>

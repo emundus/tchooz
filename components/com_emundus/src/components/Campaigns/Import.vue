@@ -115,6 +115,9 @@ export default {
 					confirmButton: 'em-swal-confirm-button',
 					actions: 'em-swal-single-action',
 				},
+				didOpen: () => {
+					document.querySelector('.swal2-container').style.zIndex = '9999999';
+				},
 			});
 		},
 
@@ -168,6 +171,7 @@ export default {
 			campaignsService.scanImportFile(csv_import).then((response) => {
 				if (response.status) {
 					// Display success message with files count that will be imported
+					this.onClosePopup();
 					Swal.fire({
 						icon: 'warning',
 						title: this.translate('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_CONFIRM_TITLE'),
@@ -198,13 +202,43 @@ export default {
 								},
 							});
 
-							campaignsService.importFiles(csv_import).then((response) => {
-								if (response.status) {
+							campaignsService
+								.importFiles(csv_import)
+								.then((response) => {
+									if (response.status) {
+										Swal.fire({
+											title: this.translate('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_RESULT_TITLE'),
+											text: this.translate('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_RESULT_ROWS')
+												.replace('%rows%', response.data.files_imported.length)
+												.replace('%errors%', response.data.files_not_imported.length),
+											confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_RESULT_CLOSE'),
+											customClass: {
+												title: 'em-swal-title',
+												confirmButton: 'em-swal-confirm-button',
+												actions: 'em-swal-single-action',
+											},
+										}).then(() => {
+											this.onClosePopup();
+										});
+									} else {
+										Swal.fire({
+											title: this.translate('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_RESULT_TITLE'),
+											text: this.translate(response.msg),
+											confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_RESULT_CLOSE'),
+											customClass: {
+												title: 'em-swal-title',
+												confirmButton: 'em-swal-confirm-button',
+												actions: 'em-swal-single-action',
+											},
+										}).then(() => {
+											this.onClosePopup();
+										});
+									}
+								})
+								.catch((error) => {
 									Swal.fire({
 										title: this.translate('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_RESULT_TITLE'),
-										text: this.translate('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_RESULT_ROWS')
-											.replace('%rows%', response.data.files_imported.length)
-											.replace('%errors%', response.data.files_not_imported.length),
+										text: this.translate('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_RESULT_ERROR'),
 										confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_RESULT_CLOSE'),
 										customClass: {
 											title: 'em-swal-title',
@@ -214,8 +248,7 @@ export default {
 									}).then(() => {
 										this.onClosePopup();
 									});
-								}
-							});
+								});
 						} else {
 							this.submitted = false;
 						}
