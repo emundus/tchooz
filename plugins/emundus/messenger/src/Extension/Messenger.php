@@ -69,9 +69,11 @@ final class Messenger extends CMSPlugin implements SubscriberInterface
 			$db    = $this->getDatabase();
 			$query = $db->getQuery(true);
 
-			include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-			include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+			include_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+			include_once(JPATH_SITE . '/components/com_emundus/helpers/emails.php');
+			include_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 			$m_files   = new \EmundusModelFiles();
+			$h_emails = new \EmundusHelperEmails();
 			$fnumInfos = $m_files->getFnumInfos($data['fnum']);
 
 			$users_to_send = [];
@@ -192,6 +194,18 @@ final class Messenger extends CMSPlugin implements SubscriberInterface
 
 			if (!empty($users_to_send))
 			{
+				foreach ($users_to_send as $key => $user_id)
+				{
+					$user = $this->getUserFactory()->loadUserById($user_id);
+
+					if(!$h_emails->correctEmail($user->email) || \EmundusHelperEmails::isEmailExcluded($user->email))
+					{
+						unset($users_to_send[$key]);
+					}
+				}
+
+				$users_to_send = array_values($users_to_send);
+
 				$query->clear()
 					->insert($db->quoteName('#__emundus_chatroom_notifications'))
 					->columns([

@@ -795,7 +795,11 @@
         <field name="application_admission_name" type="text" default="" size="6"
                label="COM_EMUNDUS_CANDIDACY_ADMISSION_NAME" description="COM_EMUNDUS_CANDIDACY_ADMISSION_NAME_DESC"/>
     </fieldset>
-    <fieldset label="COM_EMUNDUS_EMAIL_REMINDER" name="email" description="COM_EMUNDUS_EMAIL_REMINDER_DESC">
+    <fieldset label="COM_EMUNDUS_EMAILCONFIG" name="email">
+        <field type="list" default="1" name="exclude_emundus_from_autoemails" label="COM_EMUNDUS_EMAIL_EXCLUDE_EMUNDUS_FROM_AUTOEMAILS">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
         <field
                 name="spacer2"
                 type="spacer"

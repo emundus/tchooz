@@ -8,7 +8,7 @@
 			></Tabs>
 
 			<iframe
-				:src="selectedEvaluation.url"
+				:src="'/' + currentLang + selectedEvaluation.url"
 				:key="selectedEvaluation.id"
 				@load="iframeLoaded($event)"
 				class="iframe-selected-evaluation tw-w-full tw-rounded-coordinator-cards tw-shadow-card"
@@ -26,6 +26,7 @@
 
 <script>
 import Tabs from '@/components/Utils/Tabs.vue';
+import { useGlobalStore } from '@/stores/global.js';
 
 export default {
 	name: 'EvaluationList',
@@ -43,6 +44,8 @@ export default {
 	data: () => {
 		return {
 			selectedEvaluation: 0,
+
+			currentLang: useGlobalStore().getShortLang,
 		};
 	},
 	created() {

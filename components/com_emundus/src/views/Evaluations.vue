@@ -150,6 +150,8 @@ export default {
 			}
 		},
 		updateTab(evaluation) {
+			window.postMessage({ type: 'reloadSteps', hiddenSteps: JSON.stringify(evaluation.hidden_steps) }, '*');
+
 			this.selectedTab = evaluation.id;
 			this.reloadEvaluationsKey++;
 

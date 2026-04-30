@@ -134,7 +134,8 @@ class Release2_10_0Installer extends ReleaseInstaller
 					'name'     => 'user_category',
 					'group_id' => $last_group_id,
 					'plugin'   => 'databasejoin',
-					'label'    => 'COM_EMUNDUS_USERS_USER_CATEGORY'
+					'label'    => 'COM_EMUNDUS_USERS_USER_CATEGORY',
+					'published' => 0,
 				];
 				$params            = [
 					'alias'                   => 'user_category',

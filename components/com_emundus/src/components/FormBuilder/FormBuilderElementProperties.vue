@@ -39,7 +39,12 @@
 					<!-- Help text -->
 					<div v-if="element.params" class="tw-mt-4">
 						<label for="element-rollover">{{ translate('COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT') }}</label>
-						<input id="element-rollover" name="element-alias" type="text" v-model="element.params.rollover" />
+						<input id="element-rollover" name="element-rollover" type="text" v-model="element.params.rollover" />
+					</div>
+
+					<div v-if="element.plugin === 'field'" class="tw-mt-4">
+						<label for="element-default">{{ translate('COM_EMUNDUS_ONBOARD_BUILDER_DEFAULT_VALUE') }}</label>
+						<input id="element-default" name="element-default" type="text" v-model="element.default" />
 					</div>
 
 					<!-- Publish/Unpublish -->

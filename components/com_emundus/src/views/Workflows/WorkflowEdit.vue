@@ -315,6 +315,43 @@
 											</p>
 										</div>
 
+										<div v-if="isEvaluationStep(step) && applicantSteps.length > 0" class="tw-mb-4 tw-flex tw-flex-col">
+											<label class="tw-mb-2 tw-font-medium">{{
+												translate('COM_EMUNDUS_WORKFLOW_STEP_HIDDEN_STEPS')
+											}}</label>
+											<Multiselect
+												v-if="canUpdate"
+												:options="applicantSteps"
+												v-model="step.hidden_steps"
+												label="label"
+												track-by="id"
+												:placeholder="translate('COM_EMUNDUS_WORKFLOW_STEP_HIDDEN_STEPS_SELECT')"
+												:selectLabel="translate('PRESS_ENTER_TO_SELECT')"
+												:multiple="true"
+											>
+											</Multiselect>
+
+											<div v-else>
+												<ul>
+													<li v-for="hiddenStep in step.hidden_steps" :key="hiddenStep">
+														{{
+															this.applicantSteps.find((applicantStep) => applicantStep.id === hiddenStep)?.label ||
+															hiddenStep
+														}}
+													</li>
+												</ul>
+											</div>
+
+											<span
+												class="tw-text-red-600"
+												v-if="
+													displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('entry_status')
+												"
+											>
+												{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_REQUIRED') }}
+											</span>
+										</div>
+
 										<div
 											v-if="isEvaluationStep(step)"
 											class="tw-mb-4 tw-flex tw-cursor-pointer tw-flex-row tw-items-center"
@@ -593,7 +630,11 @@ export default {
 					let tmpSteps = response.data.steps;
 					tmpSteps.forEach((step) => {
 						step.entry_status = this.statuses.filter((status) => step.entry_status.includes(status.id.toString()));
+						if (step.hidden_steps.length > 0) {
+							step.hidden_steps = tmpSteps.filter((tmpStep) => step.hidden_steps.includes(tmpStep.id.toString()));
+						}
 					});
+
 					this.steps = tmpSteps;
 
 					let program_ids = response.data.programs;
@@ -1174,6 +1215,9 @@ export default {
 		},
 		applicantProfiles() {
 			return this.profiles.filter((profile) => profile.applicantProfile);
+		},
+		applicantSteps() {
+			return this.steps.filter((step) => this.isApplicantStep(step) && step.id > 0);
 		},
 		parentStepTypes() {
 			return this.stepTypes.filter((type) => type.parent_id === 0);

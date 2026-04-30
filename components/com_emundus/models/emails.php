@@ -377,106 +377,136 @@ class EmundusModelEmails extends JModelList
 
 				$mail_from_address = $mail_from_sys;
 
-				foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
-					// Check if the user has access to the file
-					if (!$h_access->isUserAllowedToAccessFnum($recipient['id'],$student->fnum) || !$h_emails->assertCanSendMailToUser($recipient['id'])) {
-						$recipient_access = false;
-						continue;
-					}
-
-					$mailer = JFactory::getMailer();
-
-					$to = $recipient['email'];
-					$to_id = $recipient['id'];
-					$subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
-
-					$body = $trigger_email[$student->code]['tmpl']['message'];
-					if ($trigger_email[$student->code]['tmpl']['template']) {
-						$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger_email[$student->code]['tmpl']['template']);
-					}
-					$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
-					$body = $this->setTagsFabrik($body, array($student->fnum));
-
-					$toAttach= [];
-					if(!empty($trigger_email[$student->code]['tmpl']['letter_attachment'])){
-						include_once(JPATH_SITE . '/components/com_emundus/models/evaluation.php');
-						$m_eval = new EmundusModelEvaluation();
-						$letters = $m_eval->generateLetters($student->fnum, explode(',', $trigger_email[$student->code]['tmpl']['letter_attachment']), 1, 0, 0);
-
-						foreach($letters->files as $filename){
-							if(!empty($filename['filename'])) {
-								$toAttach[] = EMUNDUS_PATH_ABS . $student->id . '/' . $filename['filename'];
-							}
-						}
-					}
-					if(!empty($trigger_email[$student->code]['tmpl']['attachments'])){
-						require_once (JPATH_SITE . '/components/com_emundus/models/application.php');
-						$m_application = new EmundusModelApplication();
-						$attachments = $m_application->getAttachmentsByFnum($student->fnum,null, explode(',', $trigger_email[$student->code]['tmpl']['attachments']));
-
-						foreach ($attachments as $attachment) {
-							if(!empty($attachment->filename)) {
-								$toAttach[] = EMUNDUS_PATH_ABS . $student->id . '/' . $attachment->filename;
-							}
-						}
-					}
-
-					if (!empty($trigger_email[$student->code]['to']['cc'])) {
-						$cc = explode(',',$trigger_email[$student->code]['to']['cc']);
-						$mailer->addCc($cc);
-					}
-					if (!empty($trigger_email[$student->code]['to']['bcc'])) {
-						$bcc = explode(',',$trigger_email[$student->code]['to']['bcc']);
-						$mailer->addBCC($bcc);
-					}
-
-					$mailer->setSender([$mail_from_address, $mail_from_name]);
-					$mailer->addReplyTo($mail_from, $mail_from_name);
-					$mailer->addRecipient($to);
-					$mailer->addAttachment($toAttach);
-					$mailer->setSubject($subject);
-					$mailer->isHTML(true);
-					$mailer->Encoding = 'base64';
-					$mailer->setBody($body);
-
-					$custom_email_tag = EmundusHelperEmails::getCustomHeader();
-					if(!empty($custom_email_tag))
+				foreach ($trigger_email[$student->code]['to']['recipients'] as $id => $recipient) {
+					// Correct email
+					if($h_emails->correctEmail($recipient['email']))
 					{
-						$mailer->addCustomHeader($custom_email_tag);
-					}
+						// If $id != $student->id we have to check if whe have to exclude this email
+						if($id != $student->id && EmundusHelperEmails::isEmailExcluded($recipient['email']))
+						{
+							continue;
+						}
 
-					try {
-						$sent = $mailer->Send();
-					} catch (Exception $e) {
-						$sent = false;
-						JLog::add('eMundus Triggers - PHP Mailer send failed ' . $e->getMessage(), JLog::ERROR, 'com_emundus.email');
-					}
+						// Check if the user has access to the file
+						if (!$h_access->isUserAllowedToAccessFnum($recipient['id'], $student->fnum) || !$h_emails->assertCanSendMailToUser($recipient['id']))
+						{
+							$recipient_access = false;
+							continue;
+						}
 
-					if ($sent !== true) {
-						// echo 'Error sending email: ' . $sent;
-						JLog::add($sent, JLog::ERROR, 'com_emundus.email');
-					} else {
-						$from_id = !empty(JFactory::getUser()->id) ? JFactory::getUser()->id : 62;
+						$mailer = JFactory::getMailer();
 
-						if(!empty($trigger_email[$student->code]['tmpl']['tags'])) {
-							$tags = array_filter(explode(',',$trigger_email[$student->code]['tmpl']['tags']));
+						$to      = $recipient['email'];
+						$to_id   = $recipient['id'];
+						$subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
 
-							if(!empty($tags))
+						$body = $trigger_email[$student->code]['tmpl']['message'];
+						if ($trigger_email[$student->code]['tmpl']['template'])
+						{
+							$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger_email[$student->code]['tmpl']['template']);
+						}
+						$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+						$body = $this->setTagsFabrik($body, array($student->fnum));
+
+						$toAttach = [];
+						if (!empty($trigger_email[$student->code]['tmpl']['letter_attachment']))
+						{
+							include_once(JPATH_SITE . '/components/com_emundus/models/evaluation.php');
+							$m_eval  = new EmundusModelEvaluation();
+							$letters = $m_eval->generateLetters($student->fnum, explode(',', $trigger_email[$student->code]['tmpl']['letter_attachment']), 1, 0, 0);
+
+							foreach ($letters->files as $filename)
 							{
-								$m_files->tagFile([$student->fnum], $tags, $from_id);
+								if (!empty($filename['filename']))
+								{
+									$toAttach[] = EMUNDUS_PATH_ABS . $student->id . '/' . $filename['filename'];
+								}
+							}
+						}
+						if (!empty($trigger_email[$student->code]['tmpl']['attachments']))
+						{
+							require_once(JPATH_SITE . '/components/com_emundus/models/application.php');
+							$m_application = new EmundusModelApplication();
+							$attachments   = $m_application->getAttachmentsByFnum($student->fnum, null, explode(',', $trigger_email[$student->code]['tmpl']['attachments']));
+
+							foreach ($attachments as $attachment)
+							{
+								if (!empty($attachment->filename))
+								{
+									$toAttach[] = EMUNDUS_PATH_ABS . $student->id . '/' . $attachment->filename;
+								}
 							}
 						}
 
-						$emails_sent[] = $to;
-						$message = array(
-							'user_id_from' => $from_id,
-							'user_id_to' => $to_id,
-							'subject' => $subject,
-							'message' => $body,
-							'email_id' => $trigger_email[$student->code]['tmpl']['email_id'],
-							'email_to' => $to
-						);
-						$this->logEmail($message, $student->fnum);
+						if (!empty($trigger_email[$student->code]['to']['cc']))
+						{
+							$cc = explode(',', $trigger_email[$student->code]['to']['cc']);
+							$mailer->addCc($cc);
+						}
+						if (!empty($trigger_email[$student->code]['to']['bcc']))
+						{
+							$bcc = explode(',', $trigger_email[$student->code]['to']['bcc']);
+							$mailer->addBCC($bcc);
+						}
+
+						$mailer->setSender([$mail_from_address, $mail_from_name]);
+						$mailer->addReplyTo($mail_from, $mail_from_name);
+						$mailer->addRecipient($to);
+						$mailer->addAttachment($toAttach);
+						$mailer->setSubject($subject);
+						$mailer->isHTML(true);
+						$mailer->Encoding = 'base64';
+						$mailer->setBody($body);
+
+						$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+						if (!empty($custom_email_tag))
+						{
+							$mailer->addCustomHeader($custom_email_tag);
+						}
+
+						try
+						{
+							$sent = $mailer->Send();
+						}
+						catch (Exception $e)
+						{
+							$sent = false;
+							JLog::add('eMundus Triggers - PHP Mailer send failed ' . $e->getMessage(), JLog::ERROR, 'com_emundus.email');
+						}
+
+						if ($sent !== true)
+						{
+							// echo 'Error sending email: ' . $sent;
+							JLog::add($sent, JLog::ERROR, 'com_emundus.email');
+						}
+						else
+						{
+							$from_id = !empty(JFactory::getUser()->id) ? JFactory::getUser()->id : 62;
+
+							if (!empty($trigger_email[$student->code]['tmpl']['tags']))
+							{
+								$tags = array_filter(explode(',', $trigger_email[$student->code]['tmpl']['tags']));
+
+								if (!empty($tags))
+								{
+									$m_files->tagFile([$student->fnum], $tags, $from_id);
+								}
+							}
+
+							$emails_sent[] = $to;
+							$message       = array(
+								'user_id_from' => $from_id,
+								'user_id_to'   => $to_id,
+								'subject'      => $subject,
+								'message'      => $body,
+								'email_id'     => $trigger_email[$student->code]['tmpl']['email_id'],
+								'email_to'     => $to
+							);
+							$this->logEmail($message, $student->fnum);
+						}
+					}
+					else {
+						JLog::add('eMundus Triggers - Invalid email address for user ID ' . $recipient['id'] . ' : ' . $recipient['email'], JLog::ERROR, 'com_emundus.email');
 					}
 				}
 			}

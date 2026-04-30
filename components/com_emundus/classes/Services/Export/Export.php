@@ -621,7 +621,7 @@ class Export
 
 					$moreColumns['groups'][1]['elements'][] = [
 						'id'          => $elementEntity->getId(),
-						'label'       => $elementEntity->getLabel(),
+						'label'       => Text::_($elementEntity->getLabel()),
 						'plugin_name' => Text::_('COM_EMUNDUS_EXPORT_DIVERS'),
 					];
 				}

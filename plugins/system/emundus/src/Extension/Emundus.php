@@ -259,103 +259,102 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 	public function onAfterRender(AfterRenderEvent $event): void
 	{
 		$app = $this->getApplication();
-		if (!$app->isClient('site'))
-		{
-			return;
-		}
 
 		$user = $app->getIdentity();
-
-		// If samlredirect plugin is active and we're coming from saml login page we can try to update user informations
 		$userParams = (!empty($user->params)) ? json_decode($user->params) : [];
-		$isSamlUser = false;
-		if (!$user->guest && !empty($user->id) && PluginHelper::isEnabled('system', 'samlredirect'))
+
+		if ($app->isClient('site'))
 		{
-			$isSamlUser = $this->isSamlUser($user->id);
-		}
-
-		if (!$user->guest && $isSamlUser)
-		{
-			$db    = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->getQuery(true);
-
-			// Check if __miniorange_saml_config table exists
-			$tables      = $db->getTableList();
-			$tableExists = in_array($db->getPrefix() . 'miniorange_saml_config', $tables);
-
-			if ($tableExists)
+			// If samlredirect plugin is active and we're coming from saml login page we can try to update user informations
+			$isSamlUser = false;
+			if (!$user->guest && !empty($user->id) && PluginHelper::isEnabled('system', 'samlredirect'))
 			{
-				$query->select('single_signon_service_url')
-					->from($db->quoteName('#__miniorange_saml_config'));
-				$db->setQuery($query);
-				$singleSignOnServiceUrl = $db->loadResult();
+				$isSamlUser = $this->isSamlUser($user->id);
+			}
 
-				if (!empty($singleSignOnServiceUrl))
+			if (!$user->guest && $isSamlUser)
+			{
+				$db    = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true);
+
+				// Check if __miniorange_saml_config table exists
+				$tables      = $db->getTableList();
+				$tableExists = in_array($db->getPrefix() . 'miniorange_saml_config', $tables);
+
+				if ($tableExists)
 				{
-					$parsedUrl   = parse_url($singleSignOnServiceUrl);
-					$httpReferer = $_SERVER['HTTP_REFERER'] ?? '';
+					$query->select('single_signon_service_url')
+						->from($db->quoteName('#__miniorange_saml_config'));
+					$db->setQuery($query);
+					$singleSignOnServiceUrl = $db->loadResult();
 
-					if (!empty($httpReferer) && $httpReferer == ($parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/'))
+					if (!empty($singleSignOnServiceUrl))
 					{
-						$query->select('profile_key,profile_value')
-							->from($db->quoteName('#__user_profiles'))
-							->where($db->quoteName('user_id') . ' = ' . $db->quote($user->id));
-						$db->setQuery($query);
-						$profileDatas = $db->loadAssocList('profile_key', 'profile_value');
+						$parsedUrl   = parse_url($singleSignOnServiceUrl);
+						$httpReferer = $_SERVER['HTTP_REFERER'] ?? '';
 
-						foreach ($profileDatas as $profileKey => $profileValue)
+						if (!empty($httpReferer) && $httpReferer == ($parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/'))
 						{
-							$profileKeyParts = explode('.', $profileKey);
-							if (!empty($profileKeyParts[1]) && !empty($profileKeyParts[2]))
-							{
-								$query = 'SHOW COLUMNS FROM ' . $db->quoteName('#__' . $profileKeyParts[1]) . ' LIKE ' . $db->quote($profileKeyParts[2]);
-								$db->setQuery($query);
-								$columnExists = $db->loadResult();
+							$query->select('profile_key,profile_value')
+								->from($db->quoteName('#__user_profiles'))
+								->where($db->quoteName('user_id') . ' = ' . $db->quote($user->id));
+							$db->setQuery($query);
+							$profileDatas = $db->loadAssocList('profile_key', 'profile_value');
 
-								if (!empty($columnExists))
+							foreach ($profileDatas as $profileKey => $profileValue)
+							{
+								$profileKeyParts = explode('.', $profileKey);
+								if (!empty($profileKeyParts[1]) && !empty($profileKeyParts[2]))
 								{
-									// Update the user profile field in the users table
-									$query = $db->getQuery(true);
-									$query->update($db->quoteName('#__' . $profileKeyParts[1]))
-										->set($db->quoteName($profileKeyParts[2]) . ' = ' . $db->quote($profileValue))
-										->where($db->quoteName('user_id') . ' = ' . $db->quote($user->id));
+									$query = 'SHOW COLUMNS FROM ' . $db->quoteName('#__' . $profileKeyParts[1]) . ' LIKE ' . $db->quote($profileKeyParts[2]);
 									$db->setQuery($query);
-									$db->execute();
+									$columnExists = $db->loadResult();
+
+									if (!empty($columnExists))
+									{
+										// Update the user profile field in the users table
+										$query = $db->getQuery(true);
+										$query->update($db->quoteName('#__' . $profileKeyParts[1]))
+											->set($db->quoteName($profileKeyParts[2]) . ' = ' . $db->quote($profileValue))
+											->where($db->quoteName('user_id') . ' = ' . $db->quote($user->id));
+										$db->setQuery($query);
+										$db->execute();
+									}
 								}
 							}
 						}
 					}
 				}
+				// End of SAML user info update
+
+				// Add a class to the body tag depending on the emundus profile
+				$body = $app->getBody();
+
+				// Define class via emundus profile
+				$e_session = $app->getSession()->get('emundusUser');
+				if (!empty($e_session))
+				{
+					$class = $e_session->applicant == 1 ? 'em-applicant' : 'em-coordinator';
+				}
+				else
+				{
+					$class = 'em-guest';
+				}
+
+				preg_match_all(\chr(1) . '(<div.*\s+id="g-page-surround".*>)' . \chr(1) . 'i', $body, $matches);
+				foreach ($matches[0] as $match)
+				{
+					if (!strpos($match, 'class='))
+					{
+						$replace = '<div id="g-page-surround" class="' . $class . '">';
+						$body    = str_replace($match, $replace, $body);
+					}
+				}
+
+				$app->setBody($body);
+				// End of body class injection
 			}
 		}
-		// End of SAML user info update
-
-		// Add a class to the body tag depending on the emundus profile
-		$body = $app->getBody();
-
-		// Define class via emundus profile
-		$e_session = $app->getSession()->get('emundusUser');
-		if (!empty($e_session))
-		{
-			$class = $e_session->applicant == 1 ? 'em-applicant' : 'em-coordinator';
-		}
-		else
-		{
-			$class = 'em-guest';
-		}
-
-		preg_match_all(\chr(1) . '(<div.*\s+id="g-page-surround".*>)' . \chr(1) . 'i', $body, $matches);
-		foreach ($matches[0] as $match)
-		{
-			if (!strpos($match, 'class='))
-			{
-				$replace = '<div id="g-page-surround" class="' . $class . '">';
-				$body    = str_replace($match, $replace, $body);
-			}
-		}
-
-		$app->setBody($body);
-		// End of body class injection
 
 		PluginHelper::importPlugin('emundus');
 		$dispatcher    = $app->getDispatcher();
@@ -484,6 +483,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		 * MFA enabled we have the recheck flag. This prevents the user from enabling and immediately disabling MFA,
 		 * circumventing the requirement for MFA.
 		 */
+
 		// Make sure we are logged in
 		try
 		{
@@ -542,11 +542,13 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 	private function isMultiFactorAuthenticationPage(bool $onlyCaptive = false): bool
 	{
-		$input  = Factory::getApplication()->input;
+		$input  = Factory::getApplication()->getInput();
 		$option = $input->get('option');
+		$controller   = $input->get('controller');
 		$task   = $input->get('task');
 		$view   = $input->get('view');
 
+		$fulltask = $controller ? $controller . '.' . $task : $task;
 		if ($option !== 'com_users')
 		{
 			return false;
@@ -569,7 +571,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			);
 		}
 
-		return \in_array($view, $allowedViews) || \in_array($task, $allowedTasks);
+		return \in_array($view, $allowedViews) || \in_array($task, $allowedTasks) || \in_array($fulltask, $allowedTasks);
 	}
 
 	private function isMultiFactorAuthenticationPending(): bool

@@ -9,6 +9,7 @@ use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Enums\Workflow\WorkflowStepDateRelativeToEnum;
 use Tchooz\Enums\Workflow\WorkflowStepDatesRelativeUnitsEnum;
 use Tchooz\Repositories\Workflow\CampaignStepDateRepository;
+use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Repositories\Workflow\StepTypeRepository;
 
 class StepFactory
@@ -20,6 +21,7 @@ class StepFactory
 		if (!empty($dbObjects))
 		{
 			$stepTypeRepository = new StepTypeRepository();
+			$stepRepository = new StepRepository();
 			$campaignStepDateRepository = new CampaignStepDateRepository();
 
 			foreach ($dbObjects as $dbObject)
@@ -37,11 +39,24 @@ class StepFactory
 					}
 				}
 
+				$stepType = $stepTypeRepository->getStepTypeById($dbObject->type);
+				if (empty($stepType))
+				{
+					continue;
+				}
+
+				$hiddenSteps = [];
+				if (!empty($dbObject->hidden_steps))
+				{
+					$hiddenSteps = explode(',', $dbObject->hidden_steps);
+					$hiddenSteps = array_map('intval', $hiddenSteps);
+				}
+
 				$steps[] = new StepEntity(
 					id: $dbObject->id,
 					workflow_id: $dbObject->workflow_id,
 					label: $dbObject->label,
-					type: $stepTypeRepository->getStepTypeById($dbObject->type),
+					type: $stepType,
 					profile_id: $dbObject->profile_id,
 					form_id: $dbObject->form_id,
 					entry_status: !is_null($dbObject->entry_status) ? explode(',', $dbObject->entry_status) : [],
@@ -52,6 +67,7 @@ class StepFactory
 					table: $dbObject->table ?? '',
 					table_id: $dbObject->table_id ?? 0,
 					campaignsDates: $campaignStepDateRepository->getCampaignsDatesByStepId($dbObject->id),
+					hiddenSteps: $hiddenSteps
 				);
 			}
 		}

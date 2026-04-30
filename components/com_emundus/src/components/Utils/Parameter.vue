@@ -728,6 +728,9 @@ export default {
 					confirmButton: 'em-swal-confirm-button',
 					actions: 'em-swal-single-action',
 				},
+				didOpen: () => {
+					document.querySelector('.swal2-container').style.zIndex = '9999999';
+				},
 			});
 		},
 

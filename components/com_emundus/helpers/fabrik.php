@@ -3377,21 +3377,15 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				if ($isMulti)
 				{
 					$joinDbName = $params->join_db_name;
-					if(ElementPluginEnum::CASCADINGDROPDOWN)
+					if($plugin === ElementPluginEnum::CASCADINGDROPDOWN)
 					{
 						$cascadingdropdown_join_db_name    = explode('___', $params->cascadingdropdown_id);
 						$joinDbName = $cascadingdropdown_join_db_name[0];
 					}
 
 					$from       = $db->quoteName($joinDbName, 't_origin');
-					if(ElementPluginEnum::CASCADINGDROPDOWN)
-					{
-						$leftJoin[] = $db->quoteName($tableName2 . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $join_key_column;
-					}
-					else
-					{
-						$leftJoin[] = $db->quoteName($tableName . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $join_key_column;
-					}
+
+					$leftJoin[] = $db->quoteName($tableName2 . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $join_key_column;
 					$leftJoin[] = $db->quoteName($tableName2, 't_elt') . ' ON t_elt.id = t_repeat.parent_id';
 					$leftJoin[] = $db->quoteName($tableName, 't_table') . ' ON t_table.id = t_elt.parent_id';
 				}

@@ -149,13 +149,34 @@ function hideFabrikGroup(groups, clearElements = false) {
 
     groups.forEach((group, index) => {
         if (group) {
-            let selector = document.getElementById(`group${group}`)
+            var formDiv = document.querySelector(`.fabrikForm`).getAttribute('name');
+            var form = Fabrik.getBlock(formDiv)
+
+            var selector = document.getElementById(`group${group}`);
+
+            // If repeat group, first delete repeat iterations (kept according to minimum required)
+            var minRepeat = 1;
+            if(typeof form.options.minRepeat[group] !== 'undefined') {
+                minRepeat = form.options.minRepeat[group];
+            }
+
+            if(form.repeatGroupMarkers[group]) {
+                var repeat_rows = form.repeatGroupMarkers[group];
+
+                // Delete groups
+                for (var i = repeat_rows; i > minRepeat; i--) {
+                    var del_btn = jQuery(document.querySelector('#group' + group + ' .deleteGroup')).last()[0];
+                    var subGroup = jQuery(selector.getElements('.fabrikSubGroup')).last()[0];
+                    if (typeOf(del_btn) !== 'null') {
+                        var del_e = new Event.Mock(del_btn, 'click');
+                        form.deleteGroup(del_e, selector, subGroup);
+                    }
+                }
+            }
+
             if (selector) selector.classList.add('fabrikHide')
 
             if (clearElements) {
-                let formDiv = document.querySelector(`.fabrikForm`).getAttribute('name')
-                let form = Fabrik.getBlock(formDiv)
-
                 Object.values(form.elements).map((element) => {
                     if (element.groupid == group) element.clear()
                 })
