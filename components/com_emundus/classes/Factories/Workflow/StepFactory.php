@@ -39,6 +39,12 @@ class StepFactory
 					}
 				}
 
+				$stepType = $stepTypeRepository->getStepTypeById($dbObject->type);
+				if (empty($stepType))
+				{
+					continue;
+				}
+
 				$hiddenSteps = [];
 				if (!empty($dbObject->hidden_steps))
 				{
@@ -50,7 +56,7 @@ class StepFactory
 					id: $dbObject->id,
 					workflow_id: $dbObject->workflow_id,
 					label: $dbObject->label,
-					type: $stepTypeRepository->getStepTypeById($dbObject->type),
+					type: $stepType,
 					profile_id: $dbObject->profile_id,
 					form_id: $dbObject->form_id,
 					entry_status: !is_null($dbObject->entry_status) ? explode(',', $dbObject->entry_status) : [],

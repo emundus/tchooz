@@ -18,9 +18,8 @@ use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
+use Tchooz\Repositories\Workflow\StepTypeRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
-use Tchooz\Traits\TraitResponse;
-use Tchooz\Entities\Workflow\WorkflowEntity;
 use Tchooz\Controller\EmundusController;
 
 require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
@@ -554,5 +553,30 @@ class EmundusControllerWorkflow extends EmundusController
 		}
 
 		return EmundusResponse::ok($new_workflow_id);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function checkbeforedeletesteptype(): EmundusResponse
+	{
+		$stepTypeId = $this->input->getInt('id', 0);
+		if(empty($stepTypeId))
+		{
+			throw new \InvalidArgumentException(Text::_('MISSING_PARAMS'));
+		}
+
+		$stepTypeRepository = new StepTypeRepository();
+		$workflows = $stepTypeRepository->getWorkflowsByStepType($stepTypeId);
+
+		if(!empty($workflows))
+		{
+			$workflowsLabels = [];
+			foreach($workflows as $workflow)
+			{
+				$workflowsLabels[] = '<li>'.$workflow->getLabel().'</li>';
+			}
+			throw new RuntimeException(Text::sprintf('COM_EMUNDUS_WORKFLOW_ALREADY_ASSOCIATED_WITH_STEP_TYPE', implode('', $workflowsLabels)));
+		}
+
+		return EmundusResponse::ok();
 	}
 }
