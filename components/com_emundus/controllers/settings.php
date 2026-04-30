@@ -3882,6 +3882,11 @@ class EmundusControllersettings extends EmundusController
 		{
 			foreach ($action['conditions']['conditions'] as $key => $condition)
 			{
+				if (is_array($condition['target']))
+				{
+					$action['conditions']['conditions'][$key]['target'] = $condition['target']['value'];
+				}
+
 				if (is_array($condition['value']))
 				{
 					$values = [];
