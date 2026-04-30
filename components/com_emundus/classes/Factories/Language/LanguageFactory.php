@@ -149,9 +149,12 @@ class LanguageFactory implements DBFactory
 		return $deleted;
 	}
 
-	public static function getTranslation(string $key, ?string $langCode = null): ?string
+	public static function getTranslation(string $key, ?string $langCode = null, ?LanguageRepository $languageRepository = null): ?string
 	{
-		$languageRepository = new LanguageRepository();
+		if(empty($languageRepository))
+		{
+			$languageRepository = new LanguageRepository();
+		}
 
 		if ($langCode)
 		{

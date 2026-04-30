@@ -24,13 +24,38 @@
 				</div>
 
 				<div class="mt-4">
-					<div>
+					<div v-if="!['show_group', 'hide_group'].includes(action.action)">
 						<multiselect
 							v-model="action.fields"
 							label="label_tag"
 							:custom-label="labelTranslate"
 							:track-by="multiselectTrackBy"
 							:options="availableElements"
+							:multiple="actionMultiple"
+							:taggable="false"
+							select-label=""
+							selected-label=""
+							deselect-label=""
+							:placeholder="
+								actionMultiple
+									? translate('COM_EMUNDUS_FORM_BUILDER_RULE_SELECT_FIELDS')
+									: translate('COM_EMUNDUS_FORM_BUILDER_RULE_SELECT_FIELD')
+							"
+							:close-on-select="!actionMultiple"
+							:clear-on-select="false"
+							:searchable="true"
+							:allow-empty="true"
+							:key="action.action"
+						></multiselect>
+					</div>
+
+					<div v-else>
+						<multiselect
+							v-model="action.fields"
+							label="label_tag"
+							:custom-label="labelTranslate"
+							:track-by="multiselectTrackBy"
+							:options="availableGroups"
 							:multiple="actionMultiple"
 							:taggable="false"
 							select-label=""
@@ -165,6 +190,18 @@ export default {
 					value: 'define_repeat_group',
 					multiple: false,
 				},
+				{
+					id: 8,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_SHOW_GROUP',
+					value: 'show_group',
+					multiple: true,
+				},
+				{
+					id: 9,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE_GROUP',
+					value: 'hide_group',
+					multiple: true,
+				},
 			],
 
 			options: [],
@@ -187,6 +224,8 @@ export default {
 					this.minRepeat = this.$props.action.params[0].minRepeat;
 					this.maxRepeat = this.$props.action.params[0].maxRepeat;
 
+					this.$props.action.fields[index] = Object.values(this.page.Groups).find((group) => group.group_id == field);
+				} else if (['show_group', 'hide_group'].includes(this.$props.action.action)) {
 					this.$props.action.fields[index] = Object.values(this.page.Groups).find((group) => group.group_id == field);
 				} else {
 					this.$props.action.fields[index] = this.elements.find((element) => element.name === field);
@@ -290,8 +329,17 @@ export default {
 				return this.elements;
 			}
 		},
+		availableGroups() {
+			return Object.values(this.page.Groups);
+		},
 		multiselectTrackBy() {
-			return this.action.action == 'define_repeat_group' ? 'group_id' : 'name';
+			if (this.action.action == 'define_repeat_group') {
+				return 'group_id';
+			} else if (['show_group', 'hide_group'].includes(this.action.action)) {
+				return 'group_id';
+			} else {
+				return 'name';
+			}
 		},
 	},
 	watch: {
@@ -312,11 +360,16 @@ export default {
 				}
 
 				if (val === 'define_repeat_group') {
-					if (this.$props.action.params[0] == undefined) {
-						this.$props.action.params[0] = {};
+					if (!this.action.params) {
+						this.action.params = [];
 					}
-					this.$props.action.params[0].minRepeat = this.minRepeat;
-					this.$props.action.params[0].maxRepeat = this.maxRepeat;
+
+					if (this.action.params[0] == undefined) {
+						this.action.params[0] = {};
+					}
+
+					this.action.params[0].minRepeat = this.minRepeat;
+					this.action.params[0].maxRepeat = this.maxRepeat;
 				}
 			},
 			deep: true,

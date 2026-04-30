@@ -11,7 +11,9 @@ namespace Unit\Component\Emundus\Model;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Registry\Registry;
 use Joomla\Tests\Unit\UnitTestCase;
+use Tchooz\Repositories\Profile\ProfileRepository;
 
 /**
  * @package     Unit\Component\Emundus\Model
@@ -21,8 +23,12 @@ use Joomla\Tests\Unit\UnitTestCase;
  */
 class FormModelTest extends UnitTestCase
 {
+	private Registry $config;
+
+	const PROFILE_ID = 1001;
+
 	/**
-	 * @var    EmundusModelForm
+	 * @var    \EmundusModelForm
 	 * @since  4.2.0
 	 */
 	protected $model;
@@ -32,13 +38,23 @@ class FormModelTest extends UnitTestCase
 		parent::__construct('form', $data, $dataName, 'EmundusModelForm');
 	}
 
+	protected function setUp(): void
+	{
+		parent::setUp();
+
+		$this->config = Factory::getApplication()->getConfig();
+		$this->config->set('site_uri', 'https://example.com');
+		$this->config->set('live_site', 'https://example.com');
+	}
+
+
 	/**
 	 * @test
 	 * @covers EmundusModelForm::copyAttachmentsToNewProfile()
 	 */
 	public function testCopyAttachmentsToNewProfile()
 	{
-		$base_profile     = 1001;
+		$base_profile     = self::PROFILE_ID;
 		$fake_new_profile = 64567657;
 
 		$copy = $this->model->copyAttachmentsToNewProfile(0, $fake_new_profile);
@@ -59,15 +75,73 @@ class FormModelTest extends UnitTestCase
 
 	/**
 	 * @test
-	 * @covers EmundusModelForm::duplicateForm()
+	 * @covers EmundusModelForm::duplicateForm
+	 * @covers \Tchooz\Repositories\Fabrik\FabrikRepository::duplicateForms
+	 * @covers \Tchooz\Repositories\Fabrik\FabrikRepository::duplicateForm
+	 * @covers \Tchooz\Repositories\Fabrik\FabrikRepository::flushForm
+	 * @covers \Tchooz\Repositories\Fabrik\FabrikRepository::duplicateList
+	 * @covers \Tchooz\Repositories\Fabrik\FabrikRepository::flushList
+	 * @covers \Tchooz\Repositories\Fabrik\FabrikRepository::duplicateGroups
+	 * @covers \Tchooz\Repositories\Fabrik\FabrikRepository::duplicateGroup
+	 * @covers \Tchooz\Repositories\Fabrik\FabrikRepository::flushGroup
+	 * @covers \Tchooz\Repositories\Fabrik\FabrikRepository::duplicateElement
+	 * @covers \Tchooz\Repositories\Fabrik\FabrikRepository::flushElement
+	 * @covers \Tchooz\Repositories\Fabrik\FabrikRepository::updateFabrikLabel
+	 * @covers \Tchooz\Repositories\Fabrik\FabrikRepository::updateCalculationParametersAfterDuplicate
+	 * @covers \Tchooz\Repositories\Fabrik\FabrikRepository::duplicateConditions
 	 */
 	public function testDuplicateForm()
 	{
-		$pids      = [0];
-		$duplicate = $this->model->duplicateForm($pids);
-		$this->assertFalse($duplicate, 'Duplicate form requires a valid profile id');
+		$coord = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
 
-		// TODO: test duplicate form, error coming from cms language
+		$pids      = [0];
+		$duplicate = $this->model->duplicateForm($pids, $coord);
+		$this->assertEmpty($duplicate, 'Duplicate form requires a valid profile id');
+
+		// Get number of forms for profile 1001, we need to have the same count after duplication
+		$profileRepository = new ProfileRepository();
+		$oldProfile = $profileRepository->getById(self::PROFILE_ID);
+		$formsid_arr = [];
+		$query = $this->db->getQuery(true);
+		$query->select('link')
+			->from('#__menu')
+			->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($oldProfile->getMenutype()))
+			->andWhere($this->db->quoteName('type') . ' = ' . $this->db->quote('component'))
+			->andWhere('published = 1')
+			->order('lft');
+		$this->db->setQuery($query);
+		$links = $this->db->loadObjectList();
+		foreach ($links as $link) {
+			if (str_contains($link->link, 'formid')) {
+				$formsid_arr[] = explode('=', $link->link)[3];
+			}
+		}
+
+		$duplicatedProfile = $this->model->duplicateForm(self::PROFILE_ID, $coord);
+		$this->assertIsInt($duplicate, 'The method will return a valid profile id');
+		$this->assertGreaterThan(0, $duplicatedProfile, 'The method will return a positive profile id');
+		$this->assertNotEquals(self::PROFILE_ID, $duplicatedProfile);
+
+		$profileRepository = new ProfileRepository();
+		$newformsid_arr = [];
+		$newProfile = $profileRepository->getById($duplicatedProfile);
+		$query->clear()
+			->select('link')
+			->from('#__menu')
+			->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($newProfile->getMenutype()))
+			->andWhere($this->db->quoteName('type') . ' = ' . $this->db->quote('component'))
+			->andWhere('published = 1')
+			->order('lft');
+		$this->db->setQuery($query);
+		$links = $this->db->loadObjectList();
+		foreach ($links as $link) {
+			if (str_contains($link->link, 'formid')) {
+				$newformsid_arr[] = explode('=', $link->link)[3];
+			}
+		}
+
+		$this->assertEquals(sizeof($formsid_arr), sizeof($newformsid_arr), 'The number of forms is the same after duplication');
+		$this->assertNotEquals($formsid_arr, $newformsid_arr, 'The forms are different after duplication');
 	}
 
 	/**

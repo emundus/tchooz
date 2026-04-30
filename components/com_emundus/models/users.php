@@ -1331,6 +1331,7 @@ class EmundusModelUsers extends ListModel
 								'user_id' => $user_id,
 								'connected' => $this->user->id,
 								'campaign' => $campaign,
+								'fnum' => $fnum,
 								'context' => new EventContextEntity($this->user, [$fnum], [$user_id], [])
 							]
 						]);

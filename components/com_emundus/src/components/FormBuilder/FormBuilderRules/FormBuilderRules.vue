@@ -142,12 +142,12 @@
 							<div v-for="action in rule.actions" :key="action.id" class="tw-flex tw-items-center">
 								<span
 									class="material-symbols-outlined tw-mr-3 !tw-text-2xl !tw-font-medium tw-text-black"
-									v-if="['show', 'show_options'].includes(action.action)"
+									v-if="['show', 'show_options', 'show_group'].includes(action.action)"
 									>visibility</span
 								>
 								<span
 									class="material-symbols-outlined tw-mr-3 !tw-text-2xl !tw-font-medium tw-text-black"
-									v-if="['hide', 'hide_options'].includes(action.action)"
+									v-if="['hide', 'hide_options', 'hide_group'].includes(action.action)"
 									>visibility_off</span
 								>
 								<span
@@ -176,7 +176,7 @@
 										{{ repeatOptions(action) }}
 									</span>
 
-									<span class="actions-label">{{ action.labels.join(', ') }}</span>
+									<span class="actions-label">{{ actionLabel(action) }}</span>
 								</div>
 							</div>
 						</div>
@@ -376,6 +376,10 @@ export default {
 					return console.error(e); // error in the above string (in this case, yes)!
 				}
 			}
+		},
+
+		actionLabel(action) {
+			return action.labels.join(', ');
 		},
 
 		deleteRule(rule) {

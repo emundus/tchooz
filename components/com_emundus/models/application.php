@@ -34,6 +34,9 @@ use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
+use Tchooz\Transformers\ApplicationChoicesTransformer;
+
 /**
  * Emundus Component Application Model
  *
@@ -2219,6 +2222,7 @@ class EmundusModelApplication extends ListModel
 									->from($this->_db->quoteName('#__fabrik_joins'))
 									->where($this->_db->quoteName('list_id') . ' = ' . $this->_db->quote($itemt->table_id))
 									->where($this->_db->quoteName('group_id') . ' = ' . $this->_db->quote($itemg->group_id))
+									->where($this->_db->quoteName('element_id') . ' = 0')
 									->where($this->_db->quoteName('table_join_key') . ' = ' . $this->_db->quote('parent_id'));
 								try {
 									$this->_db->setQuery($query);
@@ -2398,7 +2402,8 @@ class EmundusModelApplication extends ListModel
 
 														if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
 															$select = $this->getSelectFromDBJoinElementParams($params,'t');
-															$query->select($select)
+															$query->clear()
+																->select($select)
 																->from($this->_db->quoteName($params->join_db_name, 't'))
 																->leftJoin($this->_db->quoteName($itemt->db_table_name . '_' . $itemg->id . '_repeat_repeat_' . $elements[$j]->name, 'checkbox_repeat') . ' ON ' . $this->_db->quoteName('checkbox_repeat.' . $elements[$j]->name) . ' = ' . $this->_db->quoteName('t.id'))
 																->leftJoin($this->_db->quoteName($itemt->db_table_name . '_' . $itemg->id . '_repeat', 'repeat_grp') . ' ON ' . $this->_db->quoteName('repeat_grp.id') . ' = ' . $this->_db->quoteName('checkbox_repeat.parent_id'))
@@ -2429,9 +2434,22 @@ class EmundusModelApplication extends ListModel
 
 															$this->_db->setQuery($query);
 															$ret = $this->_db->loadResult();
+
 															if (empty($ret)) {
-																$ret = $r_elt;
+																if (!$show_empty_fields)
+																{
+																	continue;
+																}
+																elseif (empty($r_elt))
+																{
+																	$ret = '';
+																}
+																else
+																{
+																	$ret = $r_elt;
+																}
 															}
+
 															$elt = Text::_($ret);
 														}
 													}
@@ -2786,9 +2804,23 @@ class EmundusModelApplication extends ListModel
 
 													$this->_db->setQuery($query);
 													$ret = $this->_db->loadResult();
-													if (empty($ret)) {
-														$ret = $element->content;
+
+													if(empty($ret))
+													{
+														if (!$show_empty_fields)
+														{
+															continue;
+														}
+														elseif (empty($element->content))
+														{
+															$ret = '';
+														}
+														else
+														{
+															$ret = $element->content;
+														}
 													}
+
 													$elt = Text::_($ret);
 												}
 											}
@@ -3061,6 +3093,7 @@ class EmundusModelApplication extends ListModel
 
 		if (isset($tableuser)) {
 			$allowed_groups = EmundusHelperAccess::getUserFabrikGroups($current_user_id);
+			$applicationChoicesTransformer = new ApplicationChoicesTransformer();
 
 			foreach ($tableuser as $key => $itemt) {
 				$query = $this->_db->getQuery(true);
@@ -3222,6 +3255,7 @@ class EmundusModelApplication extends ListModel
 								->from($this->_db->quoteName('#__fabrik_joins'))
 								->where($this->_db->quoteName('list_id') . ' = ' . $itemt->table_id)
 								->where($this->_db->quoteName('group_id') . ' = ' . $itemg->group_id)
+								->where($this->_db->quoteName('element_id') . ' = 0')
 								->where($this->_db->quoteName('table_join_key') . ' LIKE ' . $this->_db->quote('parent_id'));
 							try {
 								$this->_db->setQuery($query);
@@ -3249,12 +3283,17 @@ class EmundusModelApplication extends ListModel
 								unset($element);
 
 								if ($itemg->group_id == 174) {
-									$query = 'SELECT `' . implode("`,`", $t_elt) . '`, id FROM ' . $table . '
-                                        WHERE parent_id=(SELECT id FROM ' . $itemt->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum) . ') OR applicant_id=' . $aid;
+									$query->clear()
+										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
+										->from($this->_db->quoteName($table))
+										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')')
+										->orWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($aid));
 								}
 								else {
-									$query = 'SELECT `' . implode("`,`", $t_elt) . '`, id FROM ' . $table . '
-                                    WHERE parent_id=(SELECT id FROM ' . $itemt->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum) . ')';
+									$query->clear()
+										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
+										->from($this->_db->quoteName($table))
+										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')');
 								}
 
 								try {
@@ -3296,7 +3335,8 @@ class EmundusModelApplication extends ListModel
 														$parent_id = strlen($elements[$j]->content_id) > 0 ? $elements[$j]->content_id : 0;
 														$select    = $this->getSelectFromDBJoinElementParams($params,'t');
 
-														$query->select($select)
+														$query->clear()
+															->select($select)
 															->from($this->_db->quoteName($params->join_db_name, 't'))
 															->leftJoin($this->_db->quoteName($itemt->db_table_name . '_' . $itemg->id . '_repeat_repeat_' . $elements[$j]->name, 'checkbox_repeat') . ' ON ' . $this->_db->quoteName('checkbox_repeat.' . $elements[$j]->name) . ' = ' . $this->_db->quoteName('t.id'))
 															->leftJoin($this->_db->quoteName($itemt->db_table_name . '_' . $itemg->id . '_repeat', 'repeat_grp') . ' ON ' . $this->_db->quoteName('repeat_grp.id') . ' = ' . $this->_db->quoteName('checkbox_repeat.parent_id'))
@@ -3326,7 +3366,25 @@ class EmundusModelApplication extends ListModel
 														$query = preg_replace('#{shortlang}#', $this->locales, $query);
 
 														$this->_db->setQuery($query);
-														$elt = $this->_db->loadResult();
+														$ret = $this->_db->loadResult();
+
+														if(empty($ret))
+														{
+															if (!$show_empty_fields)
+															{
+																continue;
+															}
+															elseif (empty($r_elt))
+															{
+																$ret = '';
+															}
+															else
+															{
+																$ret = $r_elt;
+															}
+														}
+
+														$elt = Text::_($ret);
 													}
 												}
 												elseif ($elements[$j]->plugin == 'cascadingdropdown') {
@@ -3481,6 +3539,10 @@ class EmundusModelApplication extends ListModel
 													$thousandSeparator = $params->thousand_separator ?? '';
 													$elt = number_format((float)$r_elt, $numberDecimal, $decimalSeparator, $thousandSeparator);
 												}
+												elseif ($elements[$j]->plugin === ElementPluginEnum::APPLICATION_CHOICES->value)
+												{
+													$elt = $applicationChoicesTransformer->transform($r_elt);
+												}
 												else {
 													$elt = Text::_($r_elt);
 												}
@@ -3508,9 +3570,21 @@ class EmundusModelApplication extends ListModel
 							}
 							unset($element);
 
-							$query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id=' . $itemg->group_id . ' AND table_join_key like "parent_id"';
-							$this->_db->setQuery($query);
-							$table = $this->_db->loadResult();
+							$query->clear()
+								->select('table_join')
+								->from($this->_db->quoteName('#__fabrik_joins'))
+								->where($this->_db->quoteName('list_id') . ' = ' . $this->_db->quote($itemt->table_id))
+								->where($this->_db->quoteName('group_id') . ' = ' . $this->_db->quote($itemg->group_id))
+								->where($this->_db->quoteName('element_id') . ' = 0')
+								->where($this->_db->quoteName('table_join_key') . ' = ' . $this->_db->quote('parent_id'));
+							try {
+								$this->_db->setQuery($query);
+								$table = $this->_db->loadResult();
+							}
+							catch (Exception $e) {
+								Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
+								throw $e;
+							}
 
 							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
 
@@ -3524,12 +3598,17 @@ class EmundusModelApplication extends ListModel
 								$forms .= '<h3 class="group">' . $group_label . '</h3>';
 
 								if ($itemg->group_id == 174) {
-									$query = 'SELECT `' . implode("`,`", $t_elt) . '`, id FROM ' . $table . '
-                                        WHERE parent_id=(SELECT id FROM ' . $itemt->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum) . ') OR applicant_id=' . $aid;
+									$query->clear()
+										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
+										->from($this->_db->quoteName($table))
+										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')')
+										->orWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($aid));
 								}
 								else {
-									$query = 'SELECT `' . implode("`,`", $t_elt) . '`, id FROM ' . $table . '
-                                    WHERE parent_id=(SELECT id FROM ' . $itemt->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum) . ')';
+									$query->clear()
+										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
+										->from($this->_db->quoteName($table))
+										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')');
 								}
 
 								$this->_db->setQuery($query);
@@ -3602,7 +3681,25 @@ class EmundusModelApplication extends ListModel
 														$query = preg_replace('#{shortlang}#', $this->locales, $query);
 
 														$this->_db->setQuery($query);
-														$elt = Text::_($this->_db->loadResult());
+														$ret = $this->_db->loadResult();
+
+														if(empty($ret))
+														{
+															if (!$show_empty_fields)
+															{
+																continue;
+															}
+															elseif (empty($r_elt))
+															{
+																$ret = '';
+															}
+															else
+															{
+																$ret = $r_elt;
+															}
+														}
+
+														$elt = Text::_($ret);
 													}
 												}
 												elseif ($elements[$j]->plugin == 'cascadingdropdown') {
@@ -3776,6 +3873,10 @@ class EmundusModelApplication extends ListModel
 													$thousandSeparator = $params->thousand_separator ?? '';
 													$elt = number_format((float)$r_elt, $numberDecimal, $decimalSeparator, $thousandSeparator);
 												}
+												elseif ($elements[$j]->plugin === ElementPluginEnum::APPLICATION_CHOICES->value)
+												{
+													$elt = $applicationChoicesTransformer->transform($r_elt);
+												}
 												else {
 													$elt = Text::_($r_elt);
 												}
@@ -3935,7 +4036,25 @@ class EmundusModelApplication extends ListModel
 													$query = preg_replace('#{shortlang}#', $this->locales, $query);
 
 													$this->_db->setQuery($query);
-													$elt = Text::_($this->_db->loadResult());
+													$ret = $this->_db->loadResult();
+
+													if(empty($ret))
+													{
+														if (!$show_empty_fields)
+														{
+															continue;
+														}
+														elseif (empty($element->content))
+														{
+															$ret = '';
+														}
+														else
+														{
+															$ret = $element->content;
+														}
+													}
+
+													$elt = Text::_($ret);
 												}
 											}
 											elseif ($element->plugin == 'cascadingdropdown') {
@@ -4113,6 +4232,8 @@ class EmundusModelApplication extends ListModel
 												$decimalSeparator = $params->decimal_separator ?? ',';
 												$thousandSeparator = $params->thousand_separator ?? '';
 												$elt = number_format((float)$element->content, $numberDecimal, $decimalSeparator, $thousandSeparator);
+											} elseif ($element->plugin === ElementPluginEnum::APPLICATION_CHOICES->value) {
+												$elt = $applicationChoicesTransformer->transform($element->content);
 											}
 											else {
 												$elt = Text::_($element->content);
@@ -4139,6 +4260,11 @@ class EmundusModelApplication extends ListModel
 										}
 									}
 									elseif (empty($element->content) && $show_empty_fields == 1) {
+										if($element->plugin === 'databasejoin')
+										{
+											$element->content = '';
+										}
+
 										if (!empty($element->label) && $element->label != ' ') {
 											$forms .= '<tr><td><span style="color: #000000;">' . Text::_($element->label) . ' ' . '</span></td> <td>' . $element->content . '</td></tr>';
 										}
@@ -8133,15 +8259,31 @@ class EmundusModelApplication extends ListModel
                     }
                 }
 
-				require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
-				$m_workflow = new EmundusModelWorkflow();
-				$workflow_data = $m_workflow->getWorkflowByFnum($fnum);
+				$workflowRepository = new WorkflowRepository();
+				$workflow = $workflowRepository->getWorkflowByFnum($fnum, true);
 
-				if (!empty($workflow_data['steps'])) {
-					foreach($workflow_data['steps'] as $step) {
-						if ($m_workflow->isEvaluationStep($step->type) && $use_evaluation_forms) {
+				if (!empty($workflow))
+				{
+					foreach($workflow->getSteps() as $step) {
+						if ($step->isEvaluationStep() && $use_evaluation_forms) {
 							if (!in_array($step->form_id, $forms)) {
 								$forms[] = $step->form_id;
+							}
+						}
+					}
+
+					if (!empty($workflow->getChildWorkflows()))
+					{
+						foreach($workflow->getChildWorkflows() as $childWorkflow) {
+							foreach($childWorkflow->getSteps() as $step)
+							{
+								if ($step->isEvaluationStep() && $use_evaluation_forms)
+								{
+									if (!in_array($step->form_id, $forms))
+									{
+										$forms[] = $step->form_id;
+									}
+								}
 							}
 						}
 					}

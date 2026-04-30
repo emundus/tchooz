@@ -10,6 +10,7 @@ use Tchooz\Entities\Payment\AlterationEntity;
 use Tchooz\Entities\Payment\AlterationType;
 use Tchooz\Entities\Payment\PaymentMethodEntity;
 use Tchooz\Exception\EmundusAdjustBalanceAlreadyAddedException;
+use Tchooz\Exception\EmundusInvalidAmountException;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Entities\Payment\PaymentStepEntity;
 use Tchooz\Entities\Payment\CartEntity;
@@ -1136,9 +1137,15 @@ class CartRepository
 						throw new \Exception(Text::_('COM_EMUNDUS_ERROR_CONFIRMING_TRANSACTION'));
 					}
 				} else {
-					try {
+					try
+					{
 						$data = $synchronizer->prepareCheckout($transaction, $cart);
-					} catch (\Exception $e) {
+					}
+					catch (EmundusInvalidAmountException $e)
+					{
+						throw new \Exception(Text::_($e->getMessage()));
+					}
+					catch (\Exception $e) {
 						Log::add('Error preparing checkout: ' . $e->getMessage() . '. Cart ID ' . $cart->getId() . ', fnum ' . $cart->getFnum(), Log::ERROR, 'com_emundus.repository.cart');
 						throw new \Exception(Text::_('COM_EMUNDUS_ERROR_PREPARING_CHECKOUT'));
 					}

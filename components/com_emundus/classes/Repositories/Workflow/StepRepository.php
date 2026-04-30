@@ -75,9 +75,10 @@ class StepRepository
 			$query = $this->db->createQuery();
 
 			try {
-				$query->select('s.*, GROUP_CONCAT(es.status) AS entry_status, f.db_table_name AS ' . $this->db->quoteName('table') . ', f.id AS table_id')
+				$query->select('s.*, GROUP_CONCAT(es.status) AS entry_status, GROUP_CONCAT(eswshs.hidden_step) AS hidden_steps, f.db_table_name AS ' . $this->db->quoteName('table') . ', f.id AS table_id')
 					->from($this->db->quoteName($this->tableName, 's'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'es') . ' ON ' . $this->db->quoteName('s.id') . ' = ' . $this->db->quoteName('es.step_id'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_hidden_steps', 'eswshs') . ' ON ' . $this->db->quoteName('s.id') . ' = ' . $this->db->quoteName('eswshs.step_id'))
 					->leftJoin($this->db->quoteName('#__fabrik_lists', 'f') . ' ON ' . $this->db->quoteName('s.form_id') . ' = ' . $this->db->quoteName('f.form_id'))
 					->where($this->db->quoteName('s.workflow_id') . ' = ' . $workflowId)
 					->order($this->db->quoteName('s.ordering') . ' ASC')
@@ -171,6 +172,16 @@ class StepRepository
 		if (empty($step->getWorkflowId()))
 		{
 			throw new \InvalidArgumentException(Text::_('COM_EMUNDUS_STEP_WORKFLOW_ID_NOT_SET'));
+		}
+
+		if (empty($step->getType()->getId()))
+		{
+			$stepTypeRepository = new StepTypeRepository();
+
+			if (!$stepTypeRepository->flush($step->getType()))
+			{
+				throw new \InvalidArgumentException(Text::_('COM_EMUNDUS_STEP_TYPE_NOT_SET'));
+			}
 		}
 
 		$query = $this->db->createQuery();

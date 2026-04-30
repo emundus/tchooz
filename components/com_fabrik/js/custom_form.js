@@ -1,3 +1,4 @@
+/* global Fabrik, Joomla, Swal, typeOf, jQuery, requirejs */
 requirejs(['fab/fabrik'], function () {
   var removedFabrikFormSkeleton = false;
   var formDataChanged = false;
@@ -218,6 +219,7 @@ requirejs(['fab/fabrik'], function () {
   });
 
   Fabrik.addEvent('fabrik.form.group.delete.end', function (form, event) {
+    manageRepeatGroup(form);
     manageRules(form.form, form.element);
   });
 
@@ -244,7 +246,14 @@ requirejs(['fab/fabrik'], function () {
               manageRules(form, element, false);
 
               var $el = jQuery(element.element);
-              $el.on(element.getChangeEvent(), function (e) {
+              var changeEvent = element.getChangeEvent();
+              if(element.options.displayType === 'multilist' && element.options.advanced)
+              {
+                changeEvent = 'change';
+                $el = jQuery('#'+element.baseElementId);
+              }
+
+              $el.on(changeEvent, function (e) {
                 manageRules(form, element);
               });
             });
@@ -325,6 +334,7 @@ requirejs(['fab/fabrik'], function () {
     setTimeout(() => {
       // ID of the group that was duplicated (ex. group686)
       let repeat_groups = form.repeatGroupMarkers;
+
       repeat_groups.forEach(function (repeatGroupsMarked, group) {
         if (repeatGroupsMarked !== 0) {
           let minRepeat = Number(form.options.minRepeat[group]);
@@ -337,8 +347,10 @@ requirejs(['fab/fabrik'], function () {
               button.style.display = 'flex';
             });
 
-            // Hide delete button for first group
-            deleteButtons[0].style.display = 'none';
+            if(minRepeat > 0) {
+              // Hide delete button for first group
+              deleteButtons[0].style.display = 'none';
+            }
           } else if (minRepeat > 0) {
             deleteButtons.forEach(function (button) {
               button.style.display = 'none';
@@ -366,6 +378,12 @@ requirejs(['fab/fabrik'], function () {
               })
             }
           }
+        }
+        else if(Object.keys(form.options.group_repeats).includes(group)) {
+          let addButtons = document.querySelectorAll('.fabrikGroup .fabrikGroupRepeater .addGroup');
+          addButtons.forEach(function (button, index) {
+            button.style.display = 'flex';
+          })
         }
       });
     }, 100)
@@ -471,7 +489,7 @@ requirejs(['fab/fabrik'], function () {
 
             let fields = action.fields.split(',');
 
-            if (action.action == 'define_repeat_group') {
+            if (action.action === 'define_repeat_group') {
               let params = JSON.parse(action.params);
               params[0].maxRepeat = Number(params[0].maxRepeat);
               params[0].minRepeat = Number(params[0].minRepeat);
@@ -507,7 +525,18 @@ requirejs(['fab/fabrik'], function () {
               }
 
               manageRepeatGroup(form);
-            } else {
+            }
+            else if (['show_group','hide_group'].includes(action.action)) {
+              switch(action.action) {
+                case 'show_group':
+                    showFabrikGroup(fields);
+                    break;
+                case 'hide_group':
+                    hideFabrikGroup(fields, true);
+                    break;
+              }
+            }
+            else {
               form.elements.forEach((elt) => {
                 let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
                 let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
@@ -515,7 +544,7 @@ requirejs(['fab/fabrik'], function () {
                   if (['show', 'hide'].includes(action.action)) {
                     form.doElementFX('element_' + elt.strElement, action.action, elt);
 
-                    if (action.action == 'hide') {
+                    if (action.action === 'hide') {
                       if (clear && !elt_to_not_clear.includes(elt.plugin)) {
                         elt.clear();
                       }
@@ -543,7 +572,7 @@ requirejs(['fab/fabrik'], function () {
                   } else if (['set_optional', 'set_mandatory']) {
                     let required_icon = document.querySelector('label[for="' + id + '"] span.material-symbols-outlined');
                     if (required_icon) {
-                      if (action.action == 'set_optional') {
+                      if (action.action === 'set_optional') {
                         required_icon.style.display = 'none';
                       } else {
                         required_icon.style.display = 'inline-block';
@@ -560,12 +589,24 @@ requirejs(['fab/fabrik'], function () {
           let opposite_action = 'hide';
 
           rule.actions.forEach((action) => {
+            let fields = action.fields.split(',');
 
-            if (action.action == 'define_repeat_group') {
+            if (action.action === 'define_repeat_group') {
               form.options.maxRepeat[action.fields] = 0;
               form.options.minRepeat[action.fields] = 1;
               manageRepeatGroup(form);
-            } else {
+            }
+            else if (['show_group','hide_group'].includes(action.action)) {
+              switch(action.action) {
+                case 'show_group':
+                  hideFabrikGroup(fields, true);
+                  break;
+                case 'hide_group':
+                  showFabrikGroup(fields);
+                  break;
+              }
+            }
+            else {
 
               switch (action.action) {
               case 'show':
@@ -587,8 +628,6 @@ requirejs(['fab/fabrik'], function () {
                 opposite_action = 'set_optional';
                 break;
               }
-
-              let fields = action.fields.split(',');
 
               form.elements.forEach((elt) => {
                 let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
@@ -625,7 +664,7 @@ requirejs(['fab/fabrik'], function () {
                   } else if (['set_optional', 'set_mandatory']) {
                     let required_icon = document.querySelector('label[for="' + id + '"] span.material-symbols-outlined');
                     if (required_icon) {
-                      if (opposite_action == 'set_optional') {
+                      if (opposite_action === 'set_optional') {
                         required_icon.style.display = 'none';
                       } else {
                         required_icon.style.display = 'inline-block';

@@ -13,32 +13,13 @@ jimport('joomla.application.component.model');
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\Database\DatabaseInterface;
 
-class EmundusModelTrombinoscope extends JModelLegacy
+class EmundusModelTrombinoscope extends BaseDatabaseModel
 {
-
-	/* public $trombi_tpl = '
- <table cellpadding="2" style="width: 100%;">
-   <tbody>
-	 <tr style="border-collapse: collapse;">
-	   <td align="center" valign="top" style="text-align: center;">
-		 <p style="text-align: center;"><img src="[PHOTO]" alt="Photo" height="100" /> </p>
-		 <p style="text-align: center;"><b>[NAME]</b><br /></p>
-	   </td>
-	 </tr>
-   </tbody>
- </table>';
-
-
-	 public $badge_tpl = '<table width="100%">
-   <tbody>
-	 <tr>
-	   <td width="30%" align="left" valign="middle" style="vertical-align: top; width: 100px;"><img src="[LOGO]" alt="Logo" height="50" /></td>
-	   <td width="70%" align="left" valign="top" style="vertical-align: top;"><b>[NAME]</b></td>
-	 </tr>
-   </tbody>
- </table>
- ';*/
+	private DatabaseInterface $db;
+	
 	public $default_margin = '5';
 	public $default_header_height = '330';
 
@@ -51,26 +32,29 @@ class EmundusModelTrombinoscope extends JModelLegacy
 	public function __construct()
 	{
 		parent::__construct();
+		
+		$this->db = $this->getDatabase();
 	}
 
 	public function fnums_json_decode($string_fnums)
 	{
-		$fnums_obj = (array) json_decode(stripslashes($string_fnums), false, 512, JSON_BIGINT_AS_STRING);
+		if($string_fnums === 'all') {
+			if(!class_exists('EmundusModelFiles')) {
+				require_once JPATH_ROOT . '/components/com_emundus/models/files.php';
+			}
+			$mFiles = new EmundusModelFiles();
 
-		if (@$fnums_obj[0] == 'all') {
-			JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models', 'EmunusModel');
-			$model = JModelLegacy::getInstance('Files', 'EmundusModel', array('ignore_request' => true));
-
-			$assoc_tab_fnums = true;
-			$fnums           = $model->getAllFnums($assoc_tab_fnums);
+			$fnums           = $mFiles->getAllFnums(true);
 		}
 		else {
+			$fnums_obj = (array) json_decode(stripslashes($string_fnums), false, 512, JSON_BIGINT_AS_STRING);
+
 			$fnums = array();
 			foreach ($fnums_obj as $key => $value) {
-				if (@$value->sid > 0) {
-					$fnums[] = array('fnum'         => @$value->fnum,
-					                 'applicant_id' => @$value->sid,
-					                 'campaign_id'  => @$value->cid
+				if ($value->sid > 0) {
+					$fnums[] = array('fnum'         => $value->fnum,
+					                 'applicant_id' => $value->sid,
+					                 'campaign_id'  => $value->cid
 					);
 				}
 			}
@@ -83,31 +67,30 @@ class EmundusModelTrombinoscope extends JModelLegacy
 	{
 
 		if (!empty($programme_code)) {
-			$db = JFactory::getDBO();
 			if ($format == 'trombi') {
 				try {
-					$query = 'SELECT tmpl_trombinoscope FROM #__emundus_setup_programmes WHERE code like ' . $db->quote($programme_code);
-					$db->setQuery($query);
-					$this->trombi_tpl = $db->loadResult();
+					$query = 'SELECT tmpl_trombinoscope FROM #__emundus_setup_programmes WHERE code like ' . $this->db->quote($programme_code);
+					$this->db->setQuery($query);
+					$this->trombi_tpl = $this->db->loadResult();
 				}
 				catch (Exception $e) {
-					$query = "ALTER TABLE `jos_emundus_setup_programmes` ADD `tmpl_trombinoscope` VARCHAR(2048) NULL DEFAULT " . $db->quote($this->trombi_tpl);
-					$db->setQuery($query);
-					$db->execute();
+					$query = "ALTER TABLE `jos_emundus_setup_programmes` ADD `tmpl_trombinoscope` VARCHAR(2048) NULL DEFAULT " . $this->db->quote($this->trombi_tpl);
+					$this->db->setQuery($query);
+					$this->db->execute();
 					error_log($e->getMessage(), 0);
 					echo $e->getMessage();
 				}
 			}
 			else {
 				try {
-					$query = 'SELECT tmpl_badge FROM #__emundus_setup_programmes WHERE code like ' . $db->quote($programme_code);
-					$db->setQuery($query);
-					$this->badge_tpl = $db->loadResult();
+					$query = 'SELECT tmpl_badge FROM #__emundus_setup_programmes WHERE code like ' . $this->db->quote($programme_code);
+					$this->db->setQuery($query);
+					$this->badge_tpl = $this->db->loadResult();
 				}
 				catch (Exception $e) {
-					$query = "ALTER TABLE `#__emundus_setup_programmes` ADD `tmpl_badge` VARCHAR(2048) NULL DEFAULT " . $db->quote($this->badge_tpl);
-					$db->setQuery($query);
-					$db->execute();
+					$query = "ALTER TABLE `#__emundus_setup_programmes` ADD `tmpl_badge` VARCHAR(2048) NULL DEFAULT " . $this->db->quote($this->badge_tpl);
+					$this->db->setQuery($query);
+					$this->db->execute();
 					error_log($e->getMessage(), 0);
 					echo $e->getMessage();
 				}
@@ -115,25 +98,21 @@ class EmundusModelTrombinoscope extends JModelLegacy
 		}
 	}
 
-	/**
-	 * @param $fnum
-	 *
-	 * @return Exception|mixed|Exception
-	 */
-	public function getProgByFnum($fnum)
+	public function getProgByFnum(string $fnum): array
 	{
-		$db = $this->getDbo();
 		try {
-			$query = 'select  jesp.id, jesp.code, jesp.label  from #__emundus_campaign_candidature as jecc
-                        left join #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
-                        left join #__emundus_setup_programmes as jesp on jesp.code like jesc.training
-                        where jecc.fnum like ' . $db->quote($fnum);
-			$db->setQuery($query);
+			$query = $this->db->getQuery(true);
+			$query->select('jesp.id, jesp.code, jesp.label')
+				->from($this->db->quoteName('#__emundus_campaign_candidature', 'jecc'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'jesc') . ' ON jesc.id = jecc.campaign_id')
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'jesp') . ' ON jesp.code like jesc.training')
+				->where($this->db->quoteName('jecc.fnum') . ' = ' . $this->db->quote($fnum));
+			$this->db->setQuery($query);
 
-			return $db->loadAssoc();
+			return $this->db->loadAssoc();
 		}
 		catch (Exception $e) {
-			return $e;
+			return [];
 		}
 	}
 
@@ -161,35 +140,40 @@ class EmundusModelTrombinoscope extends JModelLegacy
 		return JURI::base() . 'tmp' . DS . $fileName;
 	}
 
-	public function selectHTMLLetters()
+	public function selectHTMLLetters(): array
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query->select(array($db->quoteName('title'), $db->quoteName('attachment_id'), $db->quoteName('body'), $db->quoteName('header'), $db->quoteName('footer')))
-			->from($db->quoteName('#__emundus_setup_letters'))
-			->where($db->quoteName('template_type') . ' = 2');
+		$query = $this->db->getQuery(true);
+		
+		$query->select([
+			$this->db->quoteName('title'),
+			$this->db->quoteName('attachment_id'),
+			$this->db->quoteName('body'),
+			$this->db->quoteName('header'),
+			$this->db->quoteName('footer')
+		])
+			->from($this->db->quoteName('#__emundus_setup_letters'))
+			->where($this->db->quoteName('template_type') . ' = 2');
 
-		$db->setQuery($query);
-
-		return $db->loadAssocList();
+		$this->db->setQuery($query);
+		return $this->db->loadAssocList();
 	}
 
 	public function selectLabelSetupAttachments($attachment_id)
 	{
 		$attachment = [];
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
-		$query->select($db->quoteName('lbl'))
-			->from($db->quoteName('#__emundus_setup_attachments', 'esa'))
-			->join('INNER', $db->quoteName('#__emundus_setup_letters', 'esl') . ' ON (' . $db->quoteName('esa.id') . ' = ' . $db->quoteName('esl.attachment_id') . ')')
-			->where($db->quoteName('esl.attachment_id') . ' = ' . $attachment_id);
+		$query->select($this->db->quoteName('lbl'))
+			->from($this->db->quoteName('#__emundus_setup_attachments', 'esa'))
+			->join('INNER', $this->db->quoteName('#__emundus_setup_letters', 'esl') . ' ON (' . $this->db->quoteName('esa.id') . ' = ' . $this->db->quoteName('esl.attachment_id') . ')')
+			->where($this->db->quoteName('esl.attachment_id') . ' = ' . $attachment_id);
 
-		$db->setQuery($query);
+		$this->db->setQuery($query);
 
 		try {
-			$attachment = $db->loadAssoc();
+			$attachment = $this->db->loadAssoc();
 		}
 		catch (Exception $e) {
 			JLog::add('Failed to select attachment attachment label' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');

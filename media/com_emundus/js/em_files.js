@@ -3522,6 +3522,7 @@ $(document).ready(function() {
                                     })
 
                                     getEvaluationStepsElements(code).then((evaluationStepsElements) => {
+                                        $('#evaluation-steps-elts').empty();
                                         if (evaluationStepsElements.length > 0) {
                                             // append to #evaluation-steps-elts
                                             $('#evaluation-steps-elts').append(evaluationStepsElements);
