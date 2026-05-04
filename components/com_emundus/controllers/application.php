@@ -3578,7 +3578,7 @@ class EmundusControllerApplication extends EmundusController
 				$action = $this->app->input->getString('action');
 
 				$registry = new ApplicationFileActionsRegistry();
-				$actions = $registry->getAvailableActions($applicationFile);
+				$actions = $registry->getAvailableActions(applicationFileEntity: $applicationFile, currentUser: $this->user);
 
 				$foundAction = null;
 				foreach ($actions as $availableAction)

@@ -6,6 +6,8 @@ use EmundusHelperCache;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\Plugin\Emundus\Anonymization\Extension\Anonymization;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\User\User;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileAction;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionCreateTab;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionMoveToTab;
@@ -34,6 +36,8 @@ class ApplicationFileActionsRegistry
 	{
 		$this->cache = new EmundusHelperCache();
 		$this->autoRegisterActions();
+
+		Log::addLogger(['text_file' => 'com_emundus.registry.custom_actions.php'], Log::ALL, ['com_emundus.registry.custom_actions']);
 	}
 
 	private function autoRegisterActions(): void
@@ -86,7 +90,7 @@ class ApplicationFileActionsRegistry
 		return $this->actions;
 	}
 
-	public function getAvailableActions(ApplicationFileEntity $applicationFileEntity, string $context = 'multiple'): array
+	public function getAvailableActions(ApplicationFileEntity $applicationFileEntity, string $context = 'multiple', ?User $currentUser = null): array
 	{
 		$availableActions = [];
 
@@ -155,17 +159,29 @@ class ApplicationFileActionsRegistry
 			return $a->getActionType()->getOrdering() <=> $b->getActionType()->getOrdering();
 		});
 
-		if (!empty($config->get('custom_actions')))
+		$customActions = $config->get('custom_actions', '');
+		if (!empty($customActions))
 		{
-			$customActions = $config->get('custom_actions');
+			if (empty($currentUser))
+			{
+				$currentUser = Factory::getApplication()->getIdentity();
+			}
 
 			foreach ($customActions as $id => $customAction)
 			{
-				$customAction = ApplicationFileActionFactory::customApplicationActionsFromConfig($customAction, $id);
-				$targetEntity = new ActionTargetEntity(Factory::getApplication()->getIdentity(), $applicationFileEntity->getFnum());
-				if (empty($customAction->getConditionGroup()) || $customAction->getConditionGroup()->isSatisfied($targetEntity))
+				try
 				{
-					$availableActions[] = $customAction;
+					$customAction = ApplicationFileActionFactory::customApplicationActionsFromConfig($customAction, $id);
+					$targetEntity = new ActionTargetEntity($currentUser, $applicationFileEntity->getFnum());
+
+					if (empty($customAction->getConditionGroup()) || $customAction->getConditionGroup()->isSatisfied($targetEntity))
+					{
+						$availableActions[] = $customAction;
+					}
+				}
+				catch (\Exception $e)
+				{
+					Log::add('Error while loading custom action: ' . $e->getMessage(), 'error', 'com_emundus.registry.custom_actions');
 				}
 			}
 		}

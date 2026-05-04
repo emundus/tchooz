@@ -23,7 +23,7 @@ $lang->load('com_emundus', JPATH_SITE . '/components/com_emundus', $lang->getLan
 $registry = new ApplicationFileActionsRegistry();
 $applicationRepository = new ApplicationFileRepository();
 $application = $applicationRepository->getByFnum($fnum);
-$actions = $registry->getAvailableActions($application, $context);
+$actions = $registry->getAvailableActions($application, $context, Factory::getApplication()->getIdentity());
 
 if (!empty($actions))
 {
