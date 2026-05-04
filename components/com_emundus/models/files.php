@@ -737,7 +737,7 @@ class EmundusModelFiles extends JModelLegacy
 					{
 						if ($h_files->isTableLinkedToCampaignCandidature($table_to_join))
 						{
-							$leftJoin                .= 'LEFT JOIN ' . $table_to_join . ' ON ' . $table_to_join . '.fnum = jecc.fnum ';
+							$leftJoin                .= ' LEFT JOIN ' . $table_to_join . ' ON ' . $table_to_join . '.fnum = jecc.fnum ';
 							$already_joined_tables[] = $table_to_join;
 						}
 						else
