@@ -2251,10 +2251,13 @@ class EmundusHelperEvents
 				$programRepository     = new ProgramRepository();
 				$emundusUserRepository = new EmundusUserRepository();
 				$groupAccessRepository = new GroupAccessRepository();
-				$actionRepository      = new ActionRepository();
 				$program               = $programRepository->getByCode($params['programme']->code);
 
-				$user_id = Factory::getApplication()->getIdentity()->id;
+				$user_id = $params['user_id'] ?? 0;
+				if(empty($user_id))
+				{
+					$user_id = Factory::getApplication()->getIdentity()->id;
+				}
 
 				$eMConfig            = ComponentHelper::getParams('com_emundus');
 				$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
