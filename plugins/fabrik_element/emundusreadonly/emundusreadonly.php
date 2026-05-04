@@ -133,6 +133,11 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 			Log::add('resolver failed for source ' . $sourceId . ' on fnum ' . $fnum . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.fabrik.readonly');
 		}
 
+		if (is_array($value))
+		{
+			$value = implode(', ', $value);
+		}
+
 		return $value;
 	}
 
