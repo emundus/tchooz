@@ -40,7 +40,7 @@ class UsersAssociatedToFilePredefinitionTest extends UnitTestCase
 		$this->assertIsArray($newTargets);
 		$this->assertNotEmpty($newTargets, 'There should be users associated with the file.');
 
-		$anotherApplicant = $this->h_dataset->createSampleUser(9, 'anotherapplicant@emundus.fr');
+		$anotherApplicant = $this->h_dataset->getOrCreateSampleUser(9, 'anotherapplicant@emundus.fr');
 
 		// coordinator should be one of the users associated with the file
 		// applicant should not be included in this list

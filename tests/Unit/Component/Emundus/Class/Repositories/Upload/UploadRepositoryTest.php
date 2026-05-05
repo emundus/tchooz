@@ -51,6 +51,7 @@ class UploadRepositoryTest extends UnitTestCase
 	 */
 	public function testGetByFnum(): void
 	{
+		$this->dataset['fnum'] = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
 		$upload = new UploadEntity(
 			0,
 			$this->dataset['applicant'],
