@@ -322,13 +322,18 @@ class MigrateJoomlaJob extends TchoozJob
 		$query_source = $this->databaseServiceSource->getDatabase()->getQuery(true);
 		$query        = $this->databaseService->getDatabase()->getQuery(true);
 
-		// We saved main menus fo current db to insert it after with id conflict
+		// We saved main menus of current db to insert it after with id conflict
 		$query->select('*')
 			->from($this->databaseService->getDatabase()->quoteName('jos_menu'))
 			->where($this->databaseService->getDatabase()->quoteName('menutype') . ' LIKE ' . $this->databaseService->getDatabase()->quote('main'))
 			->where($this->databaseService->getDatabase()->quoteName('parent_id') . ' = 1');
 		$this->databaseService->getDatabase()->setQuery($query);
 		$main_menus = $this->databaseService->getDatabase()->loadAssocList();
+
+		// Fix collation of alias
+		$queryString = 'ALTER TABLE jos_menu MODIFY COLUMN alias VARCHAR(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_ci;';
+		$this->databaseService->getDatabase()->setQuery($queryString);
+		$this->databaseService->getDatabase()->execute();
 
 		foreach ($main_menus as &$main_menu)
 		{
