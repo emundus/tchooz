@@ -310,6 +310,16 @@ class MigrateJoomlaJob extends TchoozJob
 
 			$progressBarExtensions->advance();
 		}
+
+		// Be sure that emundus extension is enabled
+		$query->clear()
+			->update($this->databaseService->getDatabase()->quoteName('jos_extensions'))
+			->set($this->databaseService->getDatabase()->quoteName('enabled') . ' = 1 ')
+			->where($this->databaseService->getDatabase()->quoteName('element') . ' = ' . $this->databaseService->getDatabase()->quote('com_emundus'))
+			->where($this->databaseService->getDatabase()->quoteName('type') . ' = ' . $this->databaseService->getDatabase()->quote('component'));
+		$this->databaseService->getDatabase()->setQuery($query);
+		$this->databaseService->getDatabase()->execute();
+
 		$progressBarExtensions->finish('Extensions migrated');
 
 		return $merged;
@@ -390,6 +400,20 @@ class MigrateJoomlaJob extends TchoozJob
 								$menu['component_id'] = $extension_id;
 							}
 						}
+					}
+
+					if($menu['link'] === 'index.php?option=com_emundus&view=evaluation')
+					{
+						$params = json_decode($menu['params'], true);
+						$params['filter_evaluated'] = 1;
+						$params['filter_steps'] = 1;
+						$params['allow_add_filter'] = 1;
+						$params['filter_published'] = 1;
+						$params['filter_tags'] = 1;
+						$params['filter_campaign'] = 1;
+						$params['filter_status'] = 1;
+
+						$menu['params'] = json_encode($params);
 					}
 
 					$query->clear()

@@ -687,12 +687,12 @@ include(\'index.php\');
 		$updated = [];
 		foreach ($elements as $element)
 		{
-			$params = json_decode($element->params, true);
-			$params['text_format'] = 'text';
+			$params                   = json_decode($element->params, true);
+			$params['text_format']    = 'text';
 			$params['integer_length'] = '28';
-			$element->params = json_encode($params);
+			$element->params          = json_encode($params);
 
-			if(str_contains($element->default, '->input->get(\'rowid\')'))
+			if (str_contains($element->default, '->input->get(\'rowid\')'))
 			{
 				$element->default = '';
 			}
@@ -732,7 +732,7 @@ include(\'index.php\');
 				unset($params['applicationsent_status']);
 			}
 
-			if(!empty($params['plugin_description']))
+			if (!empty($params['plugin_description']))
 			{
 				// Remove redirect plugin
 				$redirect_key = array_search('redirect', $params['plugin_description']);
@@ -762,7 +762,7 @@ include(\'index.php\');
 				}
 			}
 
-			if(!empty($params['form_php_file']))
+			if (!empty($params['form_php_file']))
 			{
 				// Search emundus-isApplicationSent.php in form_php_file
 				$isApplicationSent = array_search('emundus-isApplicationSent.php', $params['form_php_file']);
@@ -853,53 +853,30 @@ include(\'index.php\');
 					$menu = \EmundusHelperUpdate::addJoomlaMenu($adminMenu, $adminMenu['parent_id']);
 					if ($menu['status'])
 					{
-						$params = json_decode($adminMenu['params']);
-						if (!empty($params->em_use_module_for_filters) && $params->em_use_module_for_filters == 1)
+						$adminMenu['id'] = $menu['id'];
+						if($adminMenu['link'] === 'index.php?option=com_emundus&view=files' || $adminMenu['link'] === 'index.php?option=com_emundus&view=evaluation')
 						{
-							// Associate mod_emundus_filters to the menu
-							$query->clear()
-								->select('id')
-								->from($this->databaseService->getDatabase()->quoteName('#__modules'))
-								->where($this->databaseService->getDatabase()->quoteName('module') . ' LIKE ' . $this->databaseService->getDatabase()->quote('mod_emundus_filters'));
-							$this->databaseService->getDatabase()->setQuery($query);
-							$moduleid = $this->databaseService->getDatabase()->loadResult();
+							$params = json_decode($adminMenu['params'], true);
 
-							if (empty($moduleid))
+							$params['filter_on_fnums']  = 1;
+							$params['filter_status']    = 1;
+							$params['filter_campaign']  = 1;
+							$params['filter_programs']  = 1;
+							$params['filter_years']     = 1;
+							$params['filter_tags']      = 1;
+							$params['filter_published'] = 1;
+							$params['allow_add_filter'] = 1;
+
+							if($menu['link'] === 'index.php?option=com_emundus&view=evaluation')
 							{
-								// Create mod_emundus_filters
-								$datas    = [
-									'title'    => 'Filtres avancés',
-									'note'     => 'Advanced filters for files, evaluations views',
-									'content'  => '',
-									'position' => 'emundus_filters',
-									'module'   => 'mod_emundus_filters',
-									'access'   => 1,
-									'params'   => [
-										'filter_on_fnums'  => 1,
-										'element_id'       => 0,
-										'filter_status'    => 1,
-										'filter_campaign'  => 1,
-										'filter_programs'  => 1,
-										'filter_years'     => 1,
-										'filter_tags'      => 1,
-										'filter_published' => 1,
-										'layout'           => '_:vue',
-										'module_tag'       => 'div',
-										'bootstrap_size'   => 0,
-										'header_tag'       => 'h3',
-										'header_class'     => '',
-										'style'            => 0,
-									]
-								];
-								$moduleid = \EmundusHelperUpdate::addJoomlaModule($datas);
+								$params['filter_evaluated'] = 1;
+								$params['filter_steps'] = 1;
 							}
 
-							$menuModule = [
-								'moduleid' => $moduleid,
-								'menuid'   => $menu['id'],
-							];
-							$menuModule = (object) $menuModule;
-							$this->databaseService->getDatabase()->insertObject('#__modules_menu', $menuModule);
+							$adminMenu['params'] = json_encode($params);
+							$adminMenu           = (object) $adminMenu;
+
+							$this->databaseService->getDatabase()->updateObject('jos_menu', $adminMenu, 'id');
 						}
 
 						$inserted[] = $adminMenu;
@@ -932,7 +909,7 @@ include(\'index.php\');
 			->where('TABLE_NAME LIKE ' . $this->databaseService->getDatabase()->quote('%jos_emundus%'));
 		$this->databaseService->getDatabase()->setQuery($query);
 		$columns = $this->databaseService->getDatabase()->loadObjectList();
-		
+
 		$updated = [];
 		foreach ($columns as $column)
 		{
@@ -964,6 +941,7 @@ include(\'index.php\');
 			->set($this->databaseService->getDatabase()->quoteName('plugin') . ' = ' . $this->databaseService->getDatabase()->quote('emundus_fileupload'))
 			->where($this->databaseService->getDatabase()->quoteName('plugin') . ' = ' . $this->databaseService->getDatabase()->quote('emundus_fileupload_new'));
 		$this->databaseService->getDatabase()->setQuery($query);
+
 		return $this->databaseService->getDatabase()->execute();
 	}
 
@@ -972,13 +950,14 @@ include(\'index.php\');
 	{
 		$query = $this->databaseService->getDatabase()->createQuery();
 
-		$query->update($this->databaseService->getDatabase()->quoteName('#__fabrik_elements','fe'))
+		$query->update($this->databaseService->getDatabase()->quoteName('#__fabrik_elements', 'fe'))
 			->set($this->databaseService->getDatabase()->quoteName('fe.default') . ' = 0')
 			->leftJoin($this->databaseService->getDatabase()->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->databaseService->getDatabase()->quoteName('ffg.group_id') . ' = ' . $this->databaseService->getDatabase()->quoteName('fe.group_id'))
 			->leftJoin($this->databaseService->getDatabase()->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $this->databaseService->getDatabase()->quoteName('ff.id') . ' = ' . $this->databaseService->getDatabase()->quoteName('ffg.form_id'))
 			->where($this->databaseService->getDatabase()->quoteName('fe.name') . ' = ' . $this->databaseService->getDatabase()->quote('status'))
 			->where($this->databaseService->getDatabase()->quoteName('ff.label') . ' = ' . $this->databaseService->getDatabase()->quote('SETUP_FILL_A_NEW_APPLICATION_FORM'));
 		$this->databaseService->getDatabase()->setQuery($query);
+
 		return $this->databaseService->getDatabase()->execute();
 	}
 
@@ -988,18 +967,18 @@ include(\'index.php\');
 		$replaced = true;
 
 		$gantry_assets = JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml';
-		if(file_exists($gantry_assets))
+		if (file_exists($gantry_assets))
 		{
 			$yaml_content = file_get_contents($gantry_assets);
 			$yaml_content = str_replace('https://cdn.jsdelivr.net/npm/sweetalert2@8', 'media/com_emundus/js/lib/sweetalert/sweetalert.min.js', $yaml_content);
-			$replaced = !empty(file_put_contents($gantry_assets, $yaml_content));
+			$replaced     = !empty(file_put_contents($gantry_assets, $yaml_content));
 		}
 
 		return $replaced;
 	}
 
 	#[CheckAttribute(description: "Rebuild menu filters for files and evaluations")]
-	private function rebuildMenuFilters()
+	private function rebuildMenuFilters(): bool
 	{
 		$rebuilded = true;
 
@@ -1017,43 +996,43 @@ include(\'index.php\');
 		{
 			$params = json_decode($menu_item->params, true);
 
-			if(!empty($params['em_filters_names']))
+			if (!empty($params['em_filters_names']))
 			{
 				$filters_to_keep = explode(',', $params['em_filters_names']);
 
 				foreach ($filters_to_keep as $filter)
 				{
-					if($filter === 'tag' && $params['filter_tags'] == 0)
+					if ($filter === 'tag' && $params['filter_tags'] == 0)
 					{
 						$params['filter_tags'] = 1;
 					}
 
-					if($filter === 'published' && $params['filter_published'] == 0)
+					if ($filter === 'published' && $params['filter_published'] == 0)
 					{
 						$params['filter_published'] = 1;
 					}
 
-					if($filter === 'schoolyear' && $params['filter_years'] == 0)
+					if ($filter === 'schoolyear' && $params['filter_years'] == 0)
 					{
 						$params['filter_years'] = 1;
 					}
 
-					if($filter === 'programme' && $params['filter_programs'] == 0)
+					if ($filter === 'programme' && $params['filter_programs'] == 0)
 					{
 						$params['filter_programs'] = 1;
 					}
 
-					if($filter === 'campaign' && $params['filter_campaign'] == 0)
+					if ($filter === 'campaign' && $params['filter_campaign'] == 0)
 					{
 						$params['filter_campaign'] = 1;
 					}
 
-					if($filter === 'status' && $params['filter_status'] == 0)
+					if ($filter === 'status' && $params['filter_status'] == 0)
 					{
 						$params['filter_status'] = 1;
 					}
 
-					if($filter === 'adv_filter' && $params['allow_add_filter'] == 0)
+					if ($filter === 'adv_filter' && $params['allow_add_filter'] == 0)
 					{
 						$params['allow_add_filter'] = 1;
 					}
@@ -1074,8 +1053,8 @@ include(\'index.php\');
 	private function checkMenu()
 	{
 		$checks = [];
-		$db = $this->databaseService->getDatabase();
-		$query = $db->createQuery();
+		$db     = $this->databaseService->getDatabase();
+		$query  = $db->createQuery();
 
 		// check that the submenu in application menu for 12|r (profile edition) is using the correct link
 		$query->clear()
@@ -1087,7 +1066,8 @@ include(\'index.php\');
 		$db->setQuery($query);
 		$menu = $db->loadObject();
 
-		if ($menu->link !== 'index.php?option=com_emundus&view=application&format=raw&layout=account') {
+		if ($menu->link !== 'index.php?option=com_emundus&view=application&format=raw&layout=account')
+		{
 			$menu->link = 'index.php?option=com_emundus&view=application&format=raw&layout=account';
 
 			$query->clear()
