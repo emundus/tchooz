@@ -27,7 +27,6 @@ class RegroupWorkflowsJobTest extends UnitTestCase
 	public function setUp(): void
 	{
 		parent::setUp();
-
 		$this->h_dataset->resetWorkflows();
 
 		$db = Factory::getContainer()->get('DatabaseDriver');

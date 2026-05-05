@@ -2313,8 +2313,8 @@ class EmundusHelperEvents
 									$group->setPrograms([$program]);
 									$groupRepository->flush($group);
 
-									// Copy ACL
-									$accessRights = $groupAccessRepository->getItemsByField('group_id', $groupTemplate, true);
+									$accessRights    = $groupAccessRepository->getItemsByField('group_id', $groupTemplate, true);
+									$newAccessRights = [];
 									foreach ($accessRights as $accessRight)
 									{
 										assert($accessRight instanceof GroupAccessEntity);
@@ -2324,13 +2324,17 @@ class EmundusHelperEvents
 											continue;
 										}
 
-										$newAccessRight = new GroupAccessEntity(
+										$newAccessRights[] = new GroupAccessEntity(
 											0,
 											$group,
 											$accessRight->getAction(),
 											$accessRight->getCrud()
 										);
-										$groupAccessRepository->flush($newAccessRight);
+									}
+
+									if (!empty($newAccessRights))
+									{
+										$groupAccessRepository->flushBatch($newAccessRights);
 									}
 								}
 							}

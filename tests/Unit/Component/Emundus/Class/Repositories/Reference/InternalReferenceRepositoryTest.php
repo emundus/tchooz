@@ -275,10 +275,12 @@ class InternalReferenceRepositoryTest extends UnitTestCase
 	 */
 	public function testGetByIdAfterApplicationFileDelete(): void
 	{
+		$localFnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+
 		$coordinator = $this->userFactory->loadUserById($this->dataset['coordinator']);
 		$target      = new ActionTargetEntity(
 			$coordinator,
-			$this->dataset['fnum'],
+			$localFnum,
 			$this->dataset['applicant'],
 		);
 
@@ -290,7 +292,7 @@ class InternalReferenceRepositoryTest extends UnitTestCase
 		$this->assertNotEmpty($retrievedRef1->getReference());
 
 		// Delete the application file and verify that the reference can still be retrieved without errors
-		$this->h_dataset->deleteSampleFile($this->dataset['fnum']);
+		$this->h_dataset->deleteSampleFile($localFnum);
 		$retrievedRefAfterDelete = $this->repository->getById($ref1->getId());
 		$this->assertNotEmpty($retrievedRefAfterDelete);
 		$this->assertEquals($retrievedRefAfterDelete->getId(), $ref1->getId());
