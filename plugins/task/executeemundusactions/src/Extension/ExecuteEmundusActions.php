@@ -114,6 +114,7 @@ class ExecuteEmundusActions extends CMSPlugin implements SubscriberInterface
 
 					if ($task->getStatus() !== TaskStatusEnum::FAILED) {
 						$task->setStatus(TaskStatusEnum::FAILED);
+						$task->setAttempts($task->getAttempts() + 1);
 						$repository->saveTask($task);
 					}
 					$failed = true;
