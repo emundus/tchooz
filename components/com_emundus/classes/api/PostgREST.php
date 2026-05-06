@@ -9,12 +9,9 @@
 
 namespace Tchooz\api;
 
-use JComponentHelper;
-use JFactory;
-use JLog;
-
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -26,7 +23,7 @@ class PostgREST extends Api
 	{
 		parent::__construct();
 
-		$this->db = Factory::getDbo();
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
 		$config = ComponentHelper::getParams('com_emundus');
 		$this->setAuth($config->get('postgrest_api_bearer_token', ''));
@@ -69,7 +66,7 @@ class PostgREST extends Api
 			}
 		}
 		catch (\Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $result;
@@ -129,7 +126,7 @@ class PostgREST extends Api
 
 					$this->db->setQuery($query);
 					if (!$this->db->execute()) {
-						JLog::add('Error when map Postgrest api datas with query : ' . $query->__toString() . ' with error : ' . $this->db->getErrorMsg(), JLog::ERROR, 'com_emundus');
+						Log::add('Error when map Postgrest api datas with query : ' . $query->__toString() . ' with error : ' . $this->db->getErrorMsg(), Log::ERROR, 'com_emundus');
 
 						return false;
 					}
@@ -138,7 +135,7 @@ class PostgREST extends Api
 		}
 		catch (\Exception $e) {
 			$result = false;
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $result;
