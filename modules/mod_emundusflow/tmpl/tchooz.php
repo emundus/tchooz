@@ -180,14 +180,14 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			<?php if ($show_back_button == 1) : ?>
                 <a href="<?php echo $home_link ?>"
                    title="<?php echo strip_tags(Text::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT')) ?>">
-                    <button class="tw-btn-primary"><?php echo Text::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
+                    <button class="tw-btn-primary" style="line-height: 1.5rem;"><?php echo Text::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
                 </a>
 			<?php endif; ?>
             <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>"
                target="blank" title="<?php echo Text::_('PRINT') ?>">
                 <button class="tw-btn-secondary mod_emundus_flow___print">
-                    <span class="material-symbols-outlined" style="font-size: 19px">print</span>
-                    <p style="font-size: 19px"><?php echo Text::_('PRINT') ?></p>
+                    <span><?php echo Text::_('PRINT') ?></span>
+                    <span class="material-symbols-outlined">print</span>
                 </button>
             </a>
             <?php
