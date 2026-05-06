@@ -74,7 +74,7 @@ class PlgFabrik_ElementPanel extends PlgFabrik_Element
 	{
 		if (!$this->getParams()->get('display_showlabel', true))
 		{
-			return $this->getValue(array());;
+			return $this->getValue(array());
 		}
 
 		return parent::getRawLabel();
