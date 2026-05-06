@@ -119,6 +119,7 @@ class LabelRepositoryTest extends UnitTestCase
 	public function testGetByFnumWithTagNonExisting(): void
 	{
 		// Associate to fnum for testing
+		$this->dataset['fnum'] = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
 		$assocTag = (object)[
 			'fnum' => $this->dataset['fnum'],
 			'id_tag' => 9999,

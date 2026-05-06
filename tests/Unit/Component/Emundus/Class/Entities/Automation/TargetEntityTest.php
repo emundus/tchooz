@@ -34,6 +34,7 @@ class TargetEntityTest extends UnitTestCase
 	 */
 	public function testResolveWithPredefinition()
 	{
+		$this->refreshDataset();
 		$targetEntity = new TargetEntity(1, TargetTypeEnum::FILE, new ApplicantOtherFilesPredefinition());
 
 		$ctx = new ActionTargetEntity($this->coordinatorUser, $this->dataset['fnum'], $this->dataset['applicant']);

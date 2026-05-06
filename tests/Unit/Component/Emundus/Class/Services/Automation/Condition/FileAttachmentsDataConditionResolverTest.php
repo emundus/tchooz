@@ -16,7 +16,7 @@ class FileAttachmentsDataConditionResolverTest extends UnitTestCase
 
 	public function setUp(): void
 	{
-		parent::setUp();
+		$this->refreshDataset();
 		$this->resolver = new FileAttachmentsDataConditionResolver();
 		$this->context = new ActionTargetEntity(
 			Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']),

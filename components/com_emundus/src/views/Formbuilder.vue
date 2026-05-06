@@ -765,6 +765,7 @@ export default {
 				this.setSectionShown('page');
 			}
 			this.setSectionShown(this.showInSection);
+			this.formBuilderStore.updateFormId(page_id);
 		},
 		setSectionShown(section) {
 			if (this.showInSection === 'rules-add' && section !== 'rules' && section !== 'rules-add') {
@@ -947,7 +948,7 @@ export default {
 		},
 
 		selectedPage(newValue) {
-			useFormBuilderStore().updateFormId(newValue);
+			this.formBuilderStore.updateFormId(newValue);
 		},
 	},
 };

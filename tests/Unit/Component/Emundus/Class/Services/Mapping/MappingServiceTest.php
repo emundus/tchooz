@@ -22,7 +22,7 @@ class MappingServiceTest extends UnitTestCase
 
 	public function setUp(): void
 	{
-		parent::setUp();
+		$this->refreshDataset();
 		$this->service = new MappingService();
 		$this->context = new ActionTargetEntity(
 			Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']),

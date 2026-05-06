@@ -1305,10 +1305,13 @@ class Release2_2_0Installer extends ReleaseInstaller
 				->andWhere($this->db->quoteName('fe.name') . ' LIKE ' . $this->db->quote('date_time'));
 			$this->db->setQuery($query);
 			$setup_email_history_date_elt         = $this->db->loadObject();
-			$params                               = json_decode($setup_email_history_date_elt->params, true);
-			$params['jdate_table_format']         = 'd/m/Y H:i:s';
-			$setup_email_history_date_elt->params = json_encode($params);
-			$this->db->updateObject('#__fabrik_elements', $setup_email_history_date_elt, 'id');
+			if(!empty($setup_email_history_date_elt))
+			{
+				$params                               = json_decode($setup_email_history_date_elt->params, true);
+				$params['jdate_table_format']         = 'd/m/Y H:i:s';
+				$setup_email_history_date_elt->params = json_encode($params);
+				$this->db->updateObject('#__fabrik_elements', $setup_email_history_date_elt, 'id');
+			}
 
 			// Replace [NAME] by [APPLICANT_NAME] in message column of emundus_Setup_emails
 			$query->clear()

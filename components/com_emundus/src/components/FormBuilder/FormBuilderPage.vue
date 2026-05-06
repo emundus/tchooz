@@ -91,7 +91,6 @@ import globalMixin from '@/mixins/mixin.js';
 import errorMixin from '@/mixins/errors.js';
 
 import { useFormBuilderStore } from '@/stores/formbuilder.js';
-import { useGlobalStore } from '@/stores/global.js';
 
 export default {
 	components: {

@@ -24,6 +24,28 @@ const alerts = {
 
 			return await this.displayAlert(options, callback);
 		},
+		async alertInfo(title, text = '', textIsHTML = false, callback = null, timer = 1500) {
+			let options = {
+				title: this.translate(title),
+				icon: 'info',
+				showCancelButton: false,
+				showConfirmButton: false,
+				timer: timer,
+				customClass: {
+					title: 'em-swal-title',
+				},
+			};
+
+			if (text && text.length > 0) {
+				if (textIsHTML) {
+					options.html = text;
+				} else {
+					options.text = this.translate(text);
+				}
+			}
+
+			return await this.displayAlert(options, callback);
+		},
 		async alertError(title, text = '', textIsHTML = false, callback = null) {
 			let options = {
 				title: this.translate(title),

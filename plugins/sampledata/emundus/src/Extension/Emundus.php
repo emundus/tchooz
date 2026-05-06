@@ -239,8 +239,20 @@ final class Emundus extends CMSPlugin
 				],
 			];
 
+			$query = $this->db->getQuery(true);
 			foreach ($programs as $program)
 			{
+				$query->clear()
+					->select('id')
+					->from($this->db->quoteName('#__emundus_setup_programmes'))
+					->where($this->db->quoteName('code') . ' = ' . $this->db->quote($program['code']));
+				$this->db->setQuery($query);
+				$exist = $this->db->loadResult();
+				if ($exist)
+				{
+					continue;
+				}
+
 				$campaigns = $program['campaigns'];
 				unset($program['campaigns']);
 
@@ -249,6 +261,7 @@ final class Emundus extends CMSPlugin
 				{
 					throw new \RuntimeException($this->db->getErrorMsg());
 				}
+				$program_id = $this->db->insertid();
 
 				$link_program = [
 					'parent_id' => $all_rights_group_id,
@@ -259,8 +272,9 @@ final class Emundus extends CMSPlugin
 
 				foreach ($campaigns as $campaign)
 				{
-					$campaign['user'] = $user->id;
-					$campaign         = (object) $campaign;
+					$campaign['user']       = $user->id;
+					$campaign['program_id'] = $program_id;
+					$campaign               = (object) $campaign;
 					if (!$this->db->insertObject('#__emundus_setup_campaigns', $campaign))
 					{
 						throw new \RuntimeException($this->db->getErrorMsg());
@@ -522,12 +536,23 @@ final class Emundus extends CMSPlugin
 				]
 			];
 
+			$query = $this->db->getQuery(true);
 			foreach ($users as $user)
 			{
-				$user_id = $this->createSampleUser($user);
+				$query->clear()
+					->select('id')
+					->from($this->db->quoteName('#__users'))
+					->where($this->db->quoteName('username') . ' = ' . $this->db->quote($user['username']));
+				$this->db->setQuery($query);
+				$user_id = $this->db->loadResult();
+
 				if (empty($user_id))
 				{
-					throw new \RuntimeException('Failed to create sample user');
+					$user_id = $this->createSampleUser($user);
+					if (empty($user_id))
+					{
+						throw new \RuntimeException('Failed to create sample user');
+					}
 				}
 
 				$query->clear()
@@ -754,7 +779,7 @@ final class Emundus extends CMSPlugin
 		$zip_codes         = ['75001', '75002', '75003', '75004', '75005', '75006', '75007', '75008', '75009', '75010', '64505', '17000', '16100', '75014', '75015', '75016', '75017', '75018', '75019', '75020'];
 		$fonctions         = ['Développeur', 'Business Développeur', 'Chef de projet', 'Directeur', 'Manager', 'Responsable', 'Consultant', 'Ingénieur', 'Architecte', 'Designer', 'Graphiste', 'Décorateur'];
 		$languages         = [1, 2, 3, 4, 5, 6, 7];
-		$languages_repeat         = ['Anglais', 'Allemand', 'Arabe', 'Chinois', 'Espagnol', 'Italien', 'Russe'];
+		$languages_repeat  = ['Anglais', 'Allemand', 'Arabe', 'Chinois', 'Espagnol', 'Italien', 'Russe'];
 		$languages_writing = ['Débutant', 'Intermédiaire', 'Avancé'];
 		$survey            = [1, 2, 3, 4];
 		$query->clear()
@@ -791,7 +816,7 @@ final class Emundus extends CMSPlugin
 				'first_language' => $languages[array_rand($languages)],
 			],
 			'emundus_9_00'            => [
-				'e_360_7754' => '["'.$survey[array_rand($survey)].'"]',
+				'e_360_7754' => '["' . $survey[array_rand($survey)] . '"]',
 			]
 		];
 

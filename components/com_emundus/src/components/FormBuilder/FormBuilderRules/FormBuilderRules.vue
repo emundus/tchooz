@@ -210,8 +210,6 @@ import Swal from 'sweetalert2';
 import { useFormBuilderStore } from '@/stores/formbuilder.js';
 import Popover from '@/components/Popover.vue';
 
-import { useGlobalStore } from '@/stores/global.js';
-
 export default {
 	components: { Popover },
 	props: {

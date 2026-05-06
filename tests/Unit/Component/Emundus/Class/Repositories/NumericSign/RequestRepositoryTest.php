@@ -20,9 +20,9 @@ use Tchooz\Repositories\NumericSign\RequestRepository;
  */
 class RequestRepositoryTest extends UnitTestCase
 {
-	public function __construct(?string $name = null, array $data = [], $dataName = '')
+	public function setUp(): void
 	{
-		parent::__construct();
+		parent::setUp();
 
 		$this->model = new RequestRepository($this->db);
 	}

@@ -173,6 +173,7 @@ class FilesModelTest extends UnitTestCase
 	 */
 	public function testgetFnumArray2()
 	{
+		$this->refreshDataset();
 		$fnums    = [];
 		$elements = [];
 		$data     = $this->model->getFnumArray2($fnums, $elements);

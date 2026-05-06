@@ -116,7 +116,7 @@ class SettingsModelTest extends UnitTestCase
 	public function testupdateTags()
 	{
 		$tag   = $this->model->createTag();
-		$label = 'Nouvelle étiquette modifiée';
+		$label = 'Nouvelle étiquette modifiée ' . time();
 
 		$update = $this->model->updateTags($tag->id, $label, 'lightblue');
 		$this->assertTrue($update, 'La modification d\'une étiquette fonctionne');
