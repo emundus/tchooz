@@ -7,7 +7,7 @@ export const useFormBuilderStore = defineStore('formbuilder', {
 		pageElements: [],
 		documentModels: [],
 		rulesKeywords: '',
-		formId: null,
+		formId: 0,
 	}),
 	getters: {
 		getLastSave: (state) => state.lastSave,
