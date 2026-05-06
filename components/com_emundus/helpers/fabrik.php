@@ -3280,7 +3280,6 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 		else
 		{
-			// TODO: Manage join_val_column_concat
 			if ($isDatabaseJoin)
 			{
 				$join_key_column = $params->join_key_column;
