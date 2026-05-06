@@ -3284,15 +3284,28 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			if ($isDatabaseJoin)
 			{
 				$join_key_column = $params->join_key_column;
-				if($plugin === ElementPluginEnum::CASCADINGDROPDOWN) {
+				if ($plugin === ElementPluginEnum::CASCADINGDROPDOWN)
+				{
 					$cascadingdropdown_id    = explode('___', $params->cascadingdropdown_id);
 					$join_key_column = $cascadingdropdown_id[1];
 				}
 
 				$join_val_column = $params->join_val_column;
-				if($plugin === ElementPluginEnum::CASCADINGDROPDOWN) {
+				if ($plugin === ElementPluginEnum::CASCADINGDROPDOWN)
+				{
 					$cascadingdropdown_label    = explode('___', $params->cascadingdropdown_label);
 					$join_val_column = $cascadingdropdown_label[1];
+				}
+
+				if (!empty($params->join_val_column_concat))
+				{
+					$join_val_column_concat = str_replace('{thistable}', 't_origin', $params->join_val_column_concat);
+					$join_val_column_concat = str_replace('{shortlang}', substr(Factory::getApplication()->getLanguage()->getTag(), 0, 2), $join_val_column_concat);
+					$join_val_column        = (!empty($join_val_column_concat) && $join_val_column_concat != '') ? 'CONCAT(' . $join_val_column_concat . ')' : $params->join_val_column;
+				}
+				else
+				{
+					$join_val_column = 't_origin.' . $join_val_column;
 				}
 
 				// join_key_column = raw, join_val_column = formatted
@@ -3302,7 +3315,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 					if ($return === ValueFormatEnum::BOTH)
 					{
-						$select = 'GROUP_CONCAT(t_origin.' . $join_key_column . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(t_origin.' . $join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+						$select = 'GROUP_CONCAT(t_origin.' . $join_key_column . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(' . $join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 					}
 					elseif ($return === ValueFormatEnum::RAW)
 					{
@@ -3310,7 +3323,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					}
 					else
 					{
-						$select = 'GROUP_CONCAT(t_origin.' . $join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+						$select = 'GROUP_CONCAT(' . $join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 					}
 				}
 				else
@@ -3322,7 +3335,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					{
 						if ($return === ValueFormatEnum::BOTH)
 						{
-							$select = 'GROUP_CONCAT(t_origin.' . $join_key_column . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(t_origin.' . $join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+							$select = 'GROUP_CONCAT(t_origin.' . $join_key_column . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(' . $join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 						}
 						elseif ($return === ValueFormatEnum::RAW)
 						{
@@ -3330,14 +3343,14 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 						}
 						else
 						{
-							$select = 'GROUP_CONCAT(t_origin.' . $join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+							$select = 'GROUP_CONCAT(' . $join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 						}
 					}
 					else
 					{
 						if ($return === ValueFormatEnum::BOTH)
 						{
-							$select = 't_origin.' . $join_key_column . ' as raw, t_origin.' . $join_val_column . ' as val, ' . $select_origin_val . ' ';
+							$select = 't_origin.' . $join_key_column . ' as raw, ' . $join_val_column . ' as val, ' . $select_origin_val . ' ';
 						}
 						elseif ($return === ValueFormatEnum::RAW)
 						{
@@ -3345,7 +3358,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 						}
 						else
 						{
-							$select = 't_origin.' . $join_val_column . ' as val, ' . $select_origin_val . ' ';
+							$select = $join_val_column . ' as val, ' . $select_origin_val . ' ';
 						}
 					}
 				}
