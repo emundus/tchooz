@@ -57,7 +57,6 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 		$this->m_workflow = new \EmundusModelWorkflow();
 		$this->m_evaluation = new \EmundusModelEvaluation();
 
-
 		if (!class_exists('IndexEntity')) {
 			require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/Indexer/IndexEntity.php');
 		}
@@ -119,6 +118,7 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 			$progressBar->setMessage('Migrating programmes evaluations');
 			$progressBar->start();
 
+			$allMigrated = [];
 			foreach ($programs as $program) {
 				$evaluation_forms = [
 					$this->m_program->getEvaluationGrid($program->id),
@@ -181,6 +181,7 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 
 							if ($new_evaluation_form_id === $evaluation_form_id)
 							{
+								$allMigrated[] = false;
 								$this->output->writeln($this->colors['red'] . 'New evaluation form id is the same as old evaluation form id for programme ' . $program->id . ' (' . $program->label . ')' . $this->colors['reset']);
 								throw new \Exception('New evaluation form id is the same as old evaluation form id for programme ' . $program->id . ' (' . $program->label . ')');
 							}
@@ -256,20 +257,24 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 
 							if (!empty($step_id)) {
 								Log::add('Created evaluation step for programme ' . $program->id . ' (' . $program->label . ')  with id ' . $step_id, Log::INFO, self::getJobName());
-								$migrated = $this->migrateDataFromOldToNewTables($evaluation_form_id, $step_id, $program->id);
+								$migratedData = $this->migrateDataFromOldToNewTables($evaluation_form_id, $step_id, $program->id);
+								$allMigrated[] = $migratedData;
 
-								if ($migrated) {
+								if ($migratedData) {
 									Log::add('Migrated data from old evaluation form to new evaluation form', Log::INFO, self::getJobName());
-
 								} else {
 									$this->output->writeln($this->colors['red'] . 'Failed to migrate data from old evaluation form to new evaluation form' . $this->colors['reset']);
 								}
 							} else {
+								$allMigrated[] = false;
 								$this->output->writeln($this->colors['red'] .'Failed to create evaluation step for programme ' . $program->id . ' (' . $program->label . ')' . $this->colors['reset']);
 							}
 						}
 					}
-				} else {
+				}
+				else
+				{
+					$this->output->writeln('No evaluation forms found for programme ' . $program->id . ' (' . $program->label . ')');
 					Log::add('No evaluation forms found for programme ' . $program->id . ' (' . $program->label . ')', Log::INFO, self::getJobName());
 				}
 
@@ -277,6 +282,7 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 			}
 
 			$progressBar->finish();
+			$migrated = !in_array(false, $allMigrated);
 		} else {
 			Log::add('No programmes found', Log::INFO, self::getJobName());
 			$this->output->writeln('No programmes found');
