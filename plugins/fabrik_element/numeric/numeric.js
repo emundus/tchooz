@@ -3,12 +3,21 @@ define(['jquery', 'fab/element'],
         window.FbNumeric = new Class({
             Extends: FbElement,
             options: {},
-            mask: null,
+
             initialize: function(element, options) {
                 this.setPlugin('numeric');
                 this.parent(element, options);
+
                 this.addMask();
             },
+
+            cloned: function(c) {
+                this.mask = null;
+                this.addMask();
+
+                this.parent(c);
+            },
+
             addMask: function () {
                 if (this.mask) {
                     this.mask.destroy();
@@ -25,10 +34,23 @@ define(['jquery', 'fab/element'],
                         normalizeZeros: true,
                         min: this.options.format.min || Number.MIN_SAFE_INTEGER,
                         max: this.options.format.max || Number.MAX_SAFE_INTEGER,
-
                     }
                 );
-            }
+            },
+
+            update: function(e)
+            {
+                if (typeOf(this.element) === 'null') {
+                    return;
+                }
+                this.setValue(e);
+            },
+
+            setValue: function (val)
+            {
+                // Necessary for cloned
+                this.mask.value = val;
+            },
         });
 
         return window.FbNumeric;

@@ -314,6 +314,7 @@ class ExcelServiceTest extends UnitTestCase
 	 */
 	public function testExport(): void
 	{
+		$this->refreshDataset();
 		$coord = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
 		$exportEntity = new ExportEntity(0, new \DateTime(), $coord, '', ExportFormatEnum::XLSX, null, null, 0);
 		$exportRepository = new ExportRepository();
@@ -333,7 +334,7 @@ class ExcelServiceTest extends UnitTestCase
 
 		try {
 			$service = new ExcelService([$this->dataset['fnum']], $coord, $options, $exportEntity);
-			$result = $service->export('tmp/', null, 'fr-FR');
+			$result = $service->export('tmp/', null);
 			$this->assertTrue($result->isStatus(), 'The export should complete successfully');
 			$this->assertNotEmpty($result->getFilePath(), 'The export result should contain a file path');
 			$this->assertFileExists($result->getFilePath(), 'The exported file should exist at the specified path');

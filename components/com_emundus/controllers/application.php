@@ -3346,7 +3346,7 @@ class EmundusControllerApplication extends EmundusController
     }
 
 	/**
-	 * @depecated Need to move this to a real feature of application files group
+	 * @deprecated Need to move this to a real feature of application files group
 	 */
     #[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
     public function getsignedfile(): void
@@ -3364,7 +3364,7 @@ class EmundusControllerApplication extends EmundusController
             }
             $m_application = new EmundusModelApplication();
 
-            $file = $m_application->getSignedFile($ids[0]);
+            $file = $m_application->getSignedFile((int) $ids[0]);
             if (!empty($file))
             {
                 $response['data']   = $file;
