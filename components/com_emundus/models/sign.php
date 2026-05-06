@@ -193,8 +193,8 @@ class EmundusModelSign extends ListModel
 
 						if (!empty($contact))
 						{
-							$signer['order'] = (int)$signer['order'];
-							$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, $signer['page'] ?? 0, $signer['position'] ?? '', $signer['authentication_level'] ?? SignAuthenticationLevelEnum::STANDARD->value, $signer['anchor'] ?? '', $signer['order'] ?? 0);
+							$signer['order'] = isset($signer['order']) ? (int)$signer['order'] : 0;
+							$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, $signer['page'] ?? 0, $signer['position'] ?? '', $signer['authentication_level'] ?? SignAuthenticationLevelEnum::STANDARD->value, $signer['anchor'] ?? '', $signer['order']);
 						}
 					}
 				}
