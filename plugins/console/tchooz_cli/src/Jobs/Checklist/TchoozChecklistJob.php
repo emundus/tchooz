@@ -43,6 +43,12 @@ class TchoozChecklistJob extends TchoozJob
 		],
 		[
 			'type'   => 'error',
+			'word'   => 'use classes\api',
+			'advice' => 'Namespace classes\api is deprecated, use Tchooz\api instead.',
+			'groups' => []
+		],
+		[
+			'type'   => 'error',
 			'word'   => 'EmundusController',
 			'advice' => 'You should not use controller in event handler code. You should call Respositories or Models methods directly instead.'
 		],
