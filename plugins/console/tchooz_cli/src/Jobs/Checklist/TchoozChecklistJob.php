@@ -39,12 +39,14 @@ class TchoozChecklistJob extends TchoozJob
 		[
 			'type'   => 'error',
 			'word'   => 'Factory::getMailer',
-			'advice' => 'It contains Factory::getMailer. You should at least replace it by using sendEmail or sendEmailNoFnum method.'
+			'advice' => 'It contains Factory::getMailer. You should at least replace it by using sendEmail or sendEmailNoFnum method.',
+			'groups' => []
 		],
 		[
 			'type'   => 'error',
 			'word'   => 'EmundusController',
-			'advice' => 'You should not use controller in event handler code. You should call Respositories or Models methods directly instead.'
+			'advice' => 'You should not use controller in event handler code. You should call Respositories or Models methods directly instead.',
+			'groups' => []
 		],
 		[
 			'type'   => 'warning',
@@ -83,6 +85,7 @@ class TchoozChecklistJob extends TchoozJob
 			'type'   => 'error',
 			'word'   => 'EmundusModelCustom',
 			'advice' => 'EmundusModelCustom is deprecated, the functions should be moved to a generic model.',
+			'groups' => []
 		]
 	];
 
@@ -101,6 +104,11 @@ class TchoozChecklistJob extends TchoozJob
 	 */
 	protected function verifyCodeCompatibility(string $code, OutputInterface $output, InputInterface $input, string $group = '')
 	{
+		if (empty($code)) {
+			$output->writeln('<comment>No code provided for analysis.</comment>');
+			return;
+		}
+
 		// 1. Écrire le code dans un fichier temporaire
 		$tmpFile = tempnam(sys_get_temp_dir(), 'event_handler_') . '.php';
 		file_put_contents($tmpFile, "<?php\n" . $code);
@@ -132,7 +140,7 @@ class TchoozChecklistJob extends TchoozJob
 
 		// catch some keywords that could be replaced or are deprecated
 		foreach (self::KEYWORDS as $keyword) {
-			if (!empty($keyword['groups']) && in_array($group, $keyword['groups'])) {
+			if (!empty($keyword['groups']) && !in_array($group, $keyword['groups'])) {
 				continue;
 			}
 
@@ -142,11 +150,6 @@ class TchoozChecklistJob extends TchoozJob
 				preg_match_all($pattern, $code, $matches);
 
 				$output->writeln('<' . $keyword['type'] . '> Code [' . implode(',', $matches[0]) . ']: ' . $keyword['advice'] . '</' . $keyword['type'] . '>');
-
-				if (in_array('evaluations', $keyword['groups']))
-				{
-					// todo: search where new element is
-				}
 			}
 		}
 
