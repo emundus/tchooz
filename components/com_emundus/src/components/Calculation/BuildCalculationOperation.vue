@@ -39,6 +39,13 @@ export default {
 			initialized: false,
 		};
 	},
+	setup() {
+		const formBuilderStore = useFormBuilderStore();
+
+		return {
+			formBuilderStore,
+		};
+	},
 	created() {
 		const fieldNames = Object.values(this.fields).map((field) => field.field);
 
@@ -203,7 +210,7 @@ export default {
 		},
 
 		searchFields(search, type = 'form_data', parameters = {}) {
-			parameters.formId = useFormBuilderStore().formId;
+			parameters.formId = this.formBuilderStore.getFormId;
 
 			automationService.getConditionsFields(type, parameters, search).then((response) => {
 				if (response.status) {

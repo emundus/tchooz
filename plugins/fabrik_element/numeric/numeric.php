@@ -51,9 +51,11 @@ class PlgFabrik_ElementNumeric extends PlgFabrik_Element
 		$decimalNumber = $this->getParams()->get('decimal', 2);
 		$thousandSeparator = $this->getParams()->get('thousand_separator', '');
 
-		$value = number_format($value, $decimalNumber, $decimalSeparator, $thousandSeparator);
+		if (!is_numeric($value)) {
+			return '';
+		}
 
-		return $value;
+		return number_format($value, $decimalNumber, $decimalSeparator, $thousandSeparator);
 	}
 
 	public function elementJavascript($repeatCounter): array

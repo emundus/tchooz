@@ -31,9 +31,9 @@ class ContactRepositoryTest extends UnitTestCase
 
 	private array $organizationFixtures = [];
 
-	public function __construct(?string $name = null, array $data = [], $dataName = '')
+	public function setUp(): void
 	{
-		parent::__construct();
+		parent::setUp();
 		$this->initDataSet();
 
 		$this->model = new ContactRepository();

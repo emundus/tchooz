@@ -24,6 +24,7 @@ class ApplicationFileServiceTest extends UnitTestCase
 	 */
 	public function testUpdateOwner(): void
 	{
+		$this->refreshDataset();
 		$uploadRepository          = new UploadRepository();
 		$applicationFileRepository = new ApplicationFileRepository();
 		$applicationFile           = $applicationFileRepository->getByFnum($this->dataset['fnum']);

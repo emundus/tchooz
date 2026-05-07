@@ -19,10 +19,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MigrateEmundusJob extends TchoozJob
 {
 	public function __construct(
-		private readonly object            $logger,
-		private readonly DatabaseService   $databaseServiceSource,
-		private readonly DatabaseService   $databaseService,
-		private readonly int $limit = 1000
+		private readonly object          $logger,
+		private readonly DatabaseService $databaseServiceSource,
+		private readonly DatabaseService $databaseService,
+		private readonly int             $limit = 1000
 	)
 	{
 		parent::__construct($logger);
@@ -43,6 +43,16 @@ class MigrateEmundusJob extends TchoozJob
 			throw new \RuntimeException('No tables found in source or destination database');
 		}
 
+		// Delete the foreign key constraint of user for update owner feature in forms table
+		foreach ($dbTables as $table)
+		{
+			if (str_contains($table, 'jos_emundus_1') || str_contains($table, 'jos_emundus_9') || str_contains($table, 'jos_emundus_evaluations'))
+			{
+				$this->databaseService->deleteForeignKey($table, 'jos_emundus_users', 'user_id', 'user');
+			}
+		}
+		//
+
 		$views           = $this->databaseServiceSource->getViews();
 		$emundusTables   = array_filter($dbSourceTables, function ($table) {
 			return str_contains($table, 'jos_emundus_');
@@ -50,7 +60,7 @@ class MigrateEmundusJob extends TchoozJob
 		$tablesToMigrate = $emundusTables;
 		$tablesToMigrate = array_diff($tablesToMigrate, $views);
 		$tablesToDrop    = array_intersect($dbTables, $tablesToMigrate);
-		if(!empty($tablesToDrop))
+		if (!empty($tablesToDrop))
 		{
 			$progressBarDropping = new EmundusProgressBar($section1, count($tablesToDrop));
 
@@ -96,6 +106,12 @@ class MigrateEmundusJob extends TchoozJob
 				//throw new \RuntimeException('Error while converting table ' . $table . ' to utf8mb4');
 			}
 
+			if($table === 'jos_emundus_users')
+			{
+				// Need to add user_id as a unique key for foreign keys
+				$this->databaseServiceSource->addUniqueKey($table, 'user_id');
+			}
+
 			$tableDump = $this->databaseServiceSource->getTableCreate($table);
 			if (empty($tableDump[$table]) || !$this->databaseService->getDatabase()->setQuery($tableDump[$table])->execute())
 			{
@@ -103,14 +119,21 @@ class MigrateEmundusJob extends TchoozJob
 				throw new \RuntimeException('Error while creating table ' . $table);
 			}
 
+			// Delete the foreign key constraint of user in form tables for update owner feature
+			if (str_contains($table, 'jos_emundus_1') || str_contains($table, 'jos_emundus_evaluations'))
+			{
+				$this->databaseService->deleteForeignKey($table, 'jos_emundus_users', 'user_id', 'user');
+			}
+			//
+
 			$count = $this->databaseServiceSource->getDatasCount($table);
 
 			// If datas are too many, we have to split the insertions
 			if ($count > $this->limit)
 			{
-				$limit = $this->limit;
+				$limit  = $this->limit;
 				$offset = 0;
-				$datas = $this->databaseServiceSource->getDatas($table, $limit, $offset);
+				$datas  = $this->databaseServiceSource->getDatas($table, $limit, $offset);
 				while (!empty($datas))
 				{
 					if (!$this->databaseService->insertDatas($datas, $table))
@@ -123,7 +146,7 @@ class MigrateEmundusJob extends TchoozJob
 					}
 
 					$offset += $limit;
-					$datas = $this->databaseServiceSource->getDatas($table, $limit, $offset);
+					$datas  = $this->databaseServiceSource->getDatas($table, $limit, $offset);
 				}
 			}
 			else

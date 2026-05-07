@@ -139,6 +139,7 @@ export default {
 			return {
 				status: false,
 				msg: e.message,
+				code: e.code,
 			};
 		}
 	},

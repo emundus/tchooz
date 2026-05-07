@@ -21,12 +21,6 @@ use Tchooz\Entities\List\ItemAccessor;
  */
 class ItemAccessorTest extends UnitTestCase
 {
-	public function __construct(?string $name = null, array $data = [], $dataName = '')
-	{
-		parent::__construct();
-		$this->initDataSet();
-	}
-
 	public function testGetAccessorValue(): void
 	{
 		// Test with an array

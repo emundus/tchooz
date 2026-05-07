@@ -34,9 +34,9 @@ class UserCategoryRepositoryTest extends UnitTestCase
 {
 	private array $categoriesFixtures = [];
 
-	public function __construct(?string $name = null, array $data = [], $dataName = '')
+	public function setUp(): void
 	{
-		parent::__construct();
+		parent::setUp();
 		$this->model = new UserCategoryRepository();
 		$this->initDataSet();
 	}

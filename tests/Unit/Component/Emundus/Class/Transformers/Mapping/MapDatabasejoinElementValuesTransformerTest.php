@@ -14,6 +14,7 @@ class MapDatabasejoinElementValuesTransformerTest extends UnitTestCase
 	protected function setUp(): void
 	{
 		parent::setUp();
+		$this->dataset['campaign'] = $this->h_dataset->createSampleCampaign($this->dataset['program'], 1);
 		require_once (JPATH_ROOT . '/components/com_emundus/helpers/files.php');
 
 		$this->transformer = new MapDatabasejoinElementValuesTransformer();

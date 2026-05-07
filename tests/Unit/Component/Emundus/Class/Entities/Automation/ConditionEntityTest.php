@@ -23,6 +23,11 @@ use Tchooz\Transformers\Mapping\ExtractValueAtIndexTransformer;
  */
 class ConditionEntityTest extends UnitTestCase
 {
+	public function setUp(): void
+	{
+		$this->refreshDataset();
+	}
+
 	/**
 	 * @covers \Tchooz\Entities\Automation\ConditionEntity::__construct
 	 * @covers \Tchooz\Entities\Automation\ConditionEntity::isSatisfied
