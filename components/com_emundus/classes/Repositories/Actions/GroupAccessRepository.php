@@ -74,6 +74,73 @@ class GroupAccessRepository extends EmundusRepository implements RepositoryInter
 		return true;
 	}
 
+	/**
+	 * Insert a batch of new GroupAccessEntity rows in a single multi-row INSERT.
+	 *
+	 * Only entities without an id are inserted; entities with an id are skipped (they would
+	 * require an UPDATE, which doesn't batch). Returns the number of rows that were inserted.
+	 *
+	 * @param   GroupAccessEntity[]  $entities
+	 *
+	 * @return int
+	 * @throws \Exception
+	 */
+	public function flushBatch(array $entities): int
+	{
+		if (empty($entities))
+		{
+			return 0;
+		}
+
+		$rows = [];
+		foreach ($entities as $entity)
+		{
+			assert($entity instanceof GroupAccessEntity);
+
+			if (!empty($entity->getId()))
+			{
+				continue;
+			}
+
+			if (empty($entity->getGroup()) || empty($entity->getAction()))
+			{
+				throw new \Exception('Group access entity must have a group and action');
+			}
+
+			$rows[] = implode(',', [
+				(int) $entity->getGroup()->getId(),
+				(int) $entity->getAction()->getId(),
+				(int) $entity->getCrud()->getCreate(),
+				(int) $entity->getCrud()->getRead(),
+				(int) $entity->getCrud()->getUpdate(),
+				(int) $entity->getCrud()->getDelete(),
+			]);
+		}
+
+		if (empty($rows))
+		{
+			return 0;
+		}
+
+		$query = $this->db->getQuery(true)
+			->insert($this->db->quoteName($this->tableName))
+			->columns($this->db->quoteName(['group_id', 'action_id', 'c', 'r', 'u', 'd']));
+
+		foreach ($rows as $row)
+		{
+			$query->values($row);
+		}
+
+		$this->db->setQuery($query);
+
+		if (!$this->db->execute())
+		{
+			throw new \Exception('Failed to batch-insert group access rows');
+		}
+
+		return count($rows);
+	}
+
 	public function delete(int $id): bool
 	{
 		// TODO: Implement delete() method.

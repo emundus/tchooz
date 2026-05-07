@@ -310,6 +310,16 @@ class MigrateJoomlaJob extends TchoozJob
 
 			$progressBarExtensions->advance();
 		}
+
+		// Be sure that emundus extension is enabled
+		$query->clear()
+			->update($this->databaseService->getDatabase()->quoteName('jos_extensions'))
+			->set($this->databaseService->getDatabase()->quoteName('enabled') . ' = 1 ')
+			->where($this->databaseService->getDatabase()->quoteName('element') . ' = ' . $this->databaseService->getDatabase()->quote('com_emundus'))
+			->where($this->databaseService->getDatabase()->quoteName('type') . ' = ' . $this->databaseService->getDatabase()->quote('component'));
+		$this->databaseService->getDatabase()->setQuery($query);
+		$this->databaseService->getDatabase()->execute();
+
 		$progressBarExtensions->finish('Extensions migrated');
 
 		return $merged;
@@ -322,13 +332,18 @@ class MigrateJoomlaJob extends TchoozJob
 		$query_source = $this->databaseServiceSource->getDatabase()->getQuery(true);
 		$query        = $this->databaseService->getDatabase()->getQuery(true);
 
-		// We saved main menus fo current db to insert it after with id conflict
+		// We saved main menus of current db to insert it after with id conflict
 		$query->select('*')
 			->from($this->databaseService->getDatabase()->quoteName('jos_menu'))
 			->where($this->databaseService->getDatabase()->quoteName('menutype') . ' LIKE ' . $this->databaseService->getDatabase()->quote('main'))
 			->where($this->databaseService->getDatabase()->quoteName('parent_id') . ' = 1');
 		$this->databaseService->getDatabase()->setQuery($query);
 		$main_menus = $this->databaseService->getDatabase()->loadAssocList();
+
+		// Fix collation of alias
+		$queryString = 'ALTER TABLE jos_menu MODIFY COLUMN alias VARCHAR(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_ci;';
+		$this->databaseService->getDatabase()->setQuery($queryString);
+		$this->databaseService->getDatabase()->execute();
 
 		foreach ($main_menus as &$main_menu)
 		{
@@ -385,6 +400,20 @@ class MigrateJoomlaJob extends TchoozJob
 								$menu['component_id'] = $extension_id;
 							}
 						}
+					}
+
+					if($menu['link'] === 'index.php?option=com_emundus&view=evaluation')
+					{
+						$params = json_decode($menu['params'], true);
+						$params['filter_evaluated'] = 1;
+						$params['filter_steps'] = 1;
+						$params['allow_add_filter'] = 1;
+						$params['filter_published'] = 1;
+						$params['filter_tags'] = 1;
+						$params['filter_campaign'] = 1;
+						$params['filter_status'] = 1;
+
+						$menu['params'] = json_encode($params);
 					}
 
 					$query->clear()

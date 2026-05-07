@@ -56,12 +56,14 @@ class EvaluationModelTest extends UnitTestCase
 	 */
 	public function testgetLetterTemplateForFnum()
 	{
+		$this->refreshDataset();
 		$letters = $this->model->getLetterTemplateForFnum('');
 		$this->assertIsArray($letters, 'getLetterTemplateForFnum should return an array');
 		$this->assertEmpty($letters, 'Without parameters, getLetterTemplateForFnum should return an empty array');
 
 		$letter_attachement_id = $this->h_dataset->createSampleAttachment();
 		$letter_id = $this->h_dataset->createSampleLetter($letter_attachement_id, 2, [$this->dataset['program']['programme_code']], [0], [$this->dataset['campaign']]);
+		$this->assertNotEmpty($letter_id, 'testgetLetterTemplateForFnum, sample letter creation failed');
 
 		$letters = $this->model->getLetterTemplateForFnum($this->dataset['fnum'], [$letter_attachement_id]);
 		$this->assertNotEmpty($letters, 'I should retrieve letters by fnum and letter attachement id');

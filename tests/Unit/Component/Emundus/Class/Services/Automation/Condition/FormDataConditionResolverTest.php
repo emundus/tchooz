@@ -21,7 +21,7 @@ class FormDataConditionResolverTest extends UnitTestCase
 
 	public function setUp(): void
 	{
-		parent::setUp();
+		$this->refreshDataset();
 		$this->resolver = new FormDataConditionResolver();
 		$this->context = new ActionTargetEntity(
 			Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']),

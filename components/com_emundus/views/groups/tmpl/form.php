@@ -82,7 +82,7 @@ $statusRepository = new StatusRepository();
 $statuses         = $statusRepository->getAll();
 
 $attachmentRepository = new AttachmentTypeRepository();
-$attachments = $attachmentRepository->get();
+$attachments = $attachmentRepository->get([], 0);
 
 $fabrikRepository = new FabrikRepository(false);
 $fabrikFactory = new FabrikFactory($fabrikRepository);

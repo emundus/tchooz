@@ -28,7 +28,7 @@ class ConditionsQueryFactoryTest extends UnitTestCase
 
 	public function setUp(): void
 	{
-		parent::setUp();
+		$this->refreshDataset();
 		$registry = new ConditionRegistry();
 		$this->factory = new ConditionsQueryFactory($this->db, $registry);
 		$this->coordinatorUser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);

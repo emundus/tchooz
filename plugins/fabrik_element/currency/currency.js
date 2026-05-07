@@ -8,7 +8,6 @@ define(['jquery', 'fab/element'],
 
         initialize: function (element, options)
         {
-
             this.setPlugin('currency');
             this.parent(element, options);
 
@@ -100,7 +99,7 @@ define(['jquery', 'fab/element'],
             const select = this.HTMLSelectElement;
             const val = select.value;
             const symbol = this.getSymbolFromIso3(val);
-            const displayiso3 =this.element.getElementById('currency_displayiso3').value;
+            const displayiso3 = this.element.getElementById('currency_displayiso3').value;
             if(displayiso3 == 1) {
                 element.textContent = symbol + ' (' + val + ')';
             } else {
@@ -130,6 +129,16 @@ define(['jquery', 'fab/element'],
                 }
             }
             return symbol;
+        },
+
+        // Bind events to the actual input rather than the wrapper element,
+        // otherwise the event is not triggered when the input value changes
+        addNewEventAux: function (action, js)
+        {
+            const target = (action === 'change' && this.HTMLInputElement) ? this.HTMLInputElement : this.element;
+            target.addEvent(action, function (e) {
+                typeOf(js) === 'function' ? js.delay(0, this, this) : eval(js);
+            }.bind(this));
         },
 
         addMask: function ()
@@ -173,6 +182,7 @@ define(['jquery', 'fab/element'],
         {
             const decimalSep = this.allSelectedCurrencies[this.idSelectedCurrency].decimal_separator;
             this.mask.value = val.toString().replace('.', decimalSep);
+
         },
 
 

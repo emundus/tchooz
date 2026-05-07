@@ -11,6 +11,8 @@ use Joomla\Component\Scheduler\Administrator\Task\Status as TaskStatus;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
 use Joomla\DI\Container;
 use Joomla\Event\SubscriberInterface;
+use Tchooz\Entities\Automation\ActionExecutionMessage;
+use Tchooz\Enums\Automation\ActionMessageTypeEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Factories\Language\DbLanguageFactory;
 use Tchooz\Factories\Language\LanguageFactory;
@@ -114,6 +116,8 @@ class ExecuteEmundusActions extends CMSPlugin implements SubscriberInterface
 
 					if ($task->getStatus() !== TaskStatusEnum::FAILED) {
 						$task->setStatus(TaskStatusEnum::FAILED);
+						$task->setAttempts($task->getAttempts() + 1);
+						$task->addExecutionMessage(new ActionExecutionMessage('Task marked as failed due to an error: ' . $e->getMessage(), ActionMessageTypeEnum::ERROR));
 						$repository->saveTask($task);
 					}
 					$failed = true;

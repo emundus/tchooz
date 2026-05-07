@@ -137,6 +137,8 @@ class TaskRepository
 				{
 					$task->setStatus(TaskStatusEnum::FAILED);
 					$task->setUpdatedAt(new \DateTimeImmutable('now'));
+					$task->setAttempts($task->getAttempts() + 1);
+					$task->addExecutionMessage(new ActionExecutionMessage('Task marked as failed due to timeout.', ActionMessageTypeEnum::ERROR));
 					$this->saveTask($task);
 					Log::add('Marked in-progress task ID ' . $task->getId() . ' as failed due to timeout.', Log::WARNING, 'com_emundus.task.repository');
 				}

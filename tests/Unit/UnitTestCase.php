@@ -15,6 +15,7 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\QueryInterface;
 use PHPUnit\Framework\TestCase;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Unit\Helper\Dataset;
 use Tchooz\Repositories\Payment\PaymentRepository;
 
@@ -50,6 +51,8 @@ abstract class UnitTestCase extends TestCase
 	 */
 	protected array $dataset = [];
 
+	private bool $specificSetup = false;
+
 	public function __construct(?string $name = null, array $data = [], $dataName = '', $className = null, $directory = '', $construct_args = [])
 	{
 		parent::__construct($name, $data, $dataName);
@@ -74,15 +77,18 @@ abstract class UnitTestCase extends TestCase
 					$directory = JPATH_BASE . '/components/com_emundus/models/';
 				}
 
-				require_once $directory . $name . '.php';
+				if(file_exists( $directory . $name . '.php'))
+				{
+					require_once $directory . $name . '.php';
 
-				if (!empty($construct_args))
-				{
-					$this->model = new $className(...$construct_args);
-				}
-				else
-				{
-					$this->model = new $className();
+					if (!empty($construct_args))
+					{
+						$this->model = new $className(...$construct_args);
+					}
+					else
+					{
+						$this->model = new $className();
+					}
 				}
 			}
 		}
@@ -128,9 +134,27 @@ abstract class UnitTestCase extends TestCase
 
 	protected function setUp(): void
 	{
-		$this->dataset['applicant_email']   = 'applicant_' . rand(0, 99999) . '@emundus.fr';
+		$this->specificSetup = false;
+		$this->dataset['applicant_email']   = 'applicant_unit_test@emundus.fr';
+		$this->dataset['applicant']         = $this->h_dataset->getOrCreateSampleUser(1000, $this->dataset['applicant_email']);
+		$this->dataset['coordinator_email'] = 'coordinator_unit_test@emundus.fr';
+		$this->dataset['coordinator']       = $this->h_dataset->getOrCreateSampleUser(2, $this->dataset['coordinator_email'], 'test1234', [2, 7], 'Test', 'COORD', [1]);
+		$this->dataset['program']           = $this->h_dataset->getOrCreateSampleProgram('Programme Test Unitaire', $this->dataset['coordinator']);
+		$this->dataset['campaign']          = $this->h_dataset->getOrCreateSampleCampaign($this->dataset['program'], $this->dataset['coordinator']);
+		$this->dataset['fnum']              = $this->h_dataset->getOrCreateSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		if (!class_exists('EmundusHelperFiles'))
+		{
+			require_once JPATH_BASE . '/components/com_emundus/helpers/files.php';
+		}
+		$this->dataset['ccid'] = \EmundusHelperFiles::getIdFromFnum($this->dataset['fnum']);
+	}
+
+	protected function refreshDataset(): void
+	{
+		$this->specificSetup = true;
+		$this->dataset['applicant_email']   = 'applicant_unit_test' . rand(0, 999999) . '@emundus.fr';
 		$this->dataset['applicant']         = $this->h_dataset->createSampleUser(1000, $this->dataset['applicant_email']);
-		$this->dataset['coordinator_email'] = 'coordinator_' . rand(0, 99999) . '@emundus.fr';
+		$this->dataset['coordinator_email'] = 'coordinator_unit_test' . rand(0, 999999) . '@emundus.fr';
 		$this->dataset['coordinator']       = $this->h_dataset->createSampleUser(2, $this->dataset['coordinator_email'], 'test1234', [2, 7], 'Test', 'COORD', [1]);
 		$this->dataset['program']           = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $this->dataset['coordinator']);
 		$this->dataset['campaign']          = $this->h_dataset->createSampleCampaign($this->dataset['program'], $this->dataset['coordinator']);
@@ -144,12 +168,22 @@ abstract class UnitTestCase extends TestCase
 
 	protected function tearDown(): void
 	{
-		$this->h_dataset->deleteSampleUser($this->dataset['applicant']);
-		$this->h_dataset->deleteSampleUser($this->dataset['coordinator']);
-		$this->h_dataset->deleteSampleFile($this->dataset['fnum']);
-		$this->h_dataset->deleteSampleCampaign($this->dataset['campaign']);
-		$this->h_dataset->deleteSampleProgram($this->dataset['program']['programme_id']);
-		$this->h_dataset->deleteSamples();
+		$workflowRepository = new WorkflowRepository();
+		$workflow = $workflowRepository->getWorkflowByProgramId($this->dataset['program']['programme_id']);
+		if (!empty($workflow))
+		{
+			$workflowRepository->delete($workflow);
+		}
+
+		if ($this->specificSetup)
+		{
+			$this->h_dataset->deleteSampleUser($this->dataset['applicant']);
+			$this->h_dataset->deleteSampleUser($this->dataset['coordinator']);
+			$this->h_dataset->deleteSampleFile($this->dataset['fnum']);
+			$this->h_dataset->deleteSampleCampaign($this->dataset['campaign']);
+			$this->h_dataset->deleteSampleProgram($this->dataset['program']['programme_id']);
+			$this->h_dataset->deleteSamples();
+		}
 	}
 
 	protected static function callPrivateMethod($obj, $name, array $args)

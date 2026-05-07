@@ -92,8 +92,7 @@ class CartRepositoryTest extends UnitTestCase
 			$mandatory_product->setCurrency($currency);
 			$mandatory_product->setPrice(500.0);
 			$mandatory_product->setMandatory(1);
-			$mandatory_product_id = $product_repository->flush($mandatory_product);
-			$mandatory_product->setId($mandatory_product_id);
+			$product_repository->flush($mandatory_product);
 
 			$optional_product = new ProductEntity();
 			$optional_product->setLabel('Produit obligatoire');
@@ -101,8 +100,7 @@ class CartRepositoryTest extends UnitTestCase
 			$optional_product->setMandatory(0);
 			$optional_product->setPrice(20);
 			$optional_product->setCurrency($currency);
-			$optional_product_id = $product_repository->flush($optional_product);
-			$optional_product->setId($optional_product_id);
+			$product_repository->flush($optional_product);
 
 			$payment_step = null;
 			foreach ($this->payment_workflow['steps'] as $step)
@@ -269,5 +267,11 @@ class CartRepositoryTest extends UnitTestCase
 
 		$this->expectException(\Exception::class);
 		$this->model->verifyCart($cart, $this->dataset['coordinator']);
+	}
+
+	public function tearDown(): void
+	{
+		$this->h_dataset->deleteSampleCart($this->dataset['fnum']);
+		parent::tearDown();
 	}
 }

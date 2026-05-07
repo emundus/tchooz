@@ -28,8 +28,8 @@ class GenerateReferenceSubscriber extends EmundusSubscriber
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			'onCreateNewFile'     => 'generateShortReference',
-			'onAfterStatusChange' => 'generateReference',
+			'onAfterCampaignCandidature' => 'generateShortReference',
+			'onAfterStatusChange'        => 'generateReference',
 		];
 	}
 
@@ -44,15 +44,15 @@ class GenerateReferenceSubscriber extends EmundusSubscriber
 			}
 
 			$applicationFileRepository = new ApplicationFileRepository();
-			$internalReferenceService = new InternalReferenceService(
+			$internalReferenceService  = new InternalReferenceService(
 				new DateProvider(),
 				$applicationFileRepository
 			);
 
-			$applicationFileEntity           = $applicationFileRepository->getByFnum($data['fnum']);
-			$shortReference = $internalReferenceService->generateShortReference($applicationFileEntity);
+			$applicationFileEntity = $applicationFileRepository->getByFnum($data['fnum']);
+			$shortReference        = $internalReferenceService->generateShortReference($applicationFileEntity);
 			$applicationFileEntity->setShortReference($shortReference);
-			if(!$applicationFileRepository->flush($applicationFileEntity))
+			if (!$applicationFileRepository->flush($applicationFileEntity))
 			{
 				Log::add('Failed to flush generated short reference for file ' . $applicationFileEntity->getFnum(), Log::ERROR);
 			}
@@ -81,8 +81,8 @@ class GenerateReferenceSubscriber extends EmundusSubscriber
 				return;
 			}
 
-			$applicationFileRepository = new ApplicationFileRepository();
-			$internalReferenceService = new InternalReferenceService(
+			$applicationFileRepository   = new ApplicationFileRepository();
+			$internalReferenceService    = new InternalReferenceService(
 				new DateProvider(),
 				$applicationFileRepository
 			);
@@ -94,7 +94,7 @@ class GenerateReferenceSubscriber extends EmundusSubscriber
 			}
 
 			// We only want to generate if the application file does not have a reference yet
-			$ccid                      = $applicationFileRepository->getIdByFnum($data['fnum']);
+			$ccid = $applicationFileRepository->getIdByFnum($data['fnum']);
 			if (empty($ccid))
 			{
 				return;
@@ -125,7 +125,7 @@ class GenerateReferenceSubscriber extends EmundusSubscriber
 				$applicationFile->getUser()->id,
 			);
 
-			$reference                = $internalReferenceService->generateReference($customReferenceFormatEntity, $target);
+			$reference = $internalReferenceService->generateReference($customReferenceFormatEntity, $target);
 
 			if (!$internalReferenceRepository->flush($reference))
 			{

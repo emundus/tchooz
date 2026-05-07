@@ -2251,10 +2251,13 @@ class EmundusHelperEvents
 				$programRepository     = new ProgramRepository();
 				$emundusUserRepository = new EmundusUserRepository();
 				$groupAccessRepository = new GroupAccessRepository();
-				$actionRepository      = new ActionRepository();
 				$program               = $programRepository->getByCode($params['programme']->code);
 
-				$user_id = Factory::getApplication()->getIdentity()->id;
+				$user_id = $params['user_id'] ?? 0;
+				if(empty($user_id))
+				{
+					$user_id = Factory::getApplication()->getIdentity()->id;
+				}
 
 				$eMConfig            = ComponentHelper::getParams('com_emundus');
 				$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
@@ -2310,8 +2313,8 @@ class EmundusHelperEvents
 									$group->setPrograms([$program]);
 									$groupRepository->flush($group);
 
-									// Copy ACL
-									$accessRights = $groupAccessRepository->getItemsByField('group_id', $groupTemplate, true);
+									$accessRights    = $groupAccessRepository->getItemsByField('group_id', $groupTemplate, true);
+									$newAccessRights = [];
 									foreach ($accessRights as $accessRight)
 									{
 										assert($accessRight instanceof GroupAccessEntity);
@@ -2321,13 +2324,17 @@ class EmundusHelperEvents
 											continue;
 										}
 
-										$newAccessRight = new GroupAccessEntity(
+										$newAccessRights[] = new GroupAccessEntity(
 											0,
 											$group,
 											$accessRight->getAction(),
 											$accessRight->getCrud()
 										);
-										$groupAccessRepository->flush($newAccessRight);
+									}
+
+									if (!empty($newAccessRights))
+									{
+										$groupAccessRepository->flushBatch($newAccessRights);
 									}
 								}
 							}

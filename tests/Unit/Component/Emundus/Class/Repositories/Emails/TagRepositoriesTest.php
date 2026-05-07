@@ -29,7 +29,7 @@ class TagRepositoriesTest extends UnitTestCase
 	public function testGetAllFabrikTags(): void
 	{
 		try {
-			$tags = $this->repository->getAllFabrikTags('DESC', '', 25, 0, 'all',0, 0, $this->dataset['coordinator']);
+			$tags = $this->repository->getAllFabrikTags('DESC', '', 25, 0, 'all',0, 0, 1);
 			$this->assertIsArray($tags);
 			$this->assertNotEmpty($tags);
 			$this->assertArrayHasKey('datas', $tags, 'Tags array have "datas" key');

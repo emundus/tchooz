@@ -42,11 +42,11 @@ class ProfileFactory implements DBFactory
 		return new ProfileEntity(
 			$dbObject->id,
 			$dbObject->label,
-			$dbObject->description,
+			$dbObject->description ?? '',
 			$dbObject->published,
 			$dbObject->menutype,
 			$dbObject->acl_aro_groups,
-			$dbObject->class
+			$dbObject->class ?? 'label-default'
 		);
 	}
 }

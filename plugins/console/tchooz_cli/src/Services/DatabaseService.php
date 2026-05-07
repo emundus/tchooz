@@ -27,7 +27,7 @@ class DatabaseService
 	{
 		if (!empty($configuration) && !empty($configuration->db))
 		{
-			$this->host = $configuration->host;
+			$this->host          = $configuration->host;
 			$this->dbName        = $configuration->db;
 			$options             = array();
 			$options['driver']   = isset($configuration->dbtype) ? preg_replace('/[^A-Z0-9_\.-]/i', '', $configuration->dbtype) : 'mysqli';
@@ -247,6 +247,7 @@ class DatabaseService
 		catch (\Exception $e)
 		{
 			Log::add('Error while converting table ' . $table . ' to utf8mb4: ' . $e->getMessage(), Log::ERROR, 'tchooz_cli');
+
 			return false;
 		}
 	}
@@ -262,7 +263,8 @@ class DatabaseService
 
 		$primaryKey = $this->db->loadResult();
 		// Some old tables does not have primary key :/
-		if(empty($primaryKey)) {
+		if (empty($primaryKey))
+		{
 			// Check if we have an id column
 			$this->query->clear()
 				->select('COLUMN_NAME')
@@ -278,10 +280,11 @@ class DatabaseService
 				// This is not a good practice, but we have to do it for old tables
 				$primaryKey = '*';
 			}
-			else {
+			else
+			{
 				$primaryKey = $this->db->quoteName($primaryKey);
 			}
-			
+
 		}
 
 		return $primaryKey;
@@ -292,7 +295,7 @@ class DatabaseService
 		$primaryKey = $this->getPrimaryKey($table);
 
 		$this->query->clear()
-			->select('count('.$primaryKey.')')
+			->select('count(' . $primaryKey . ')')
 			->from($this->db->quoteName($table));
 		$this->db->setQuery($this->query);
 
@@ -309,6 +312,7 @@ class DatabaseService
 			$this->query->setLimit($limit, $offset);
 		}
 		$this->db->setQuery($this->query);
+
 		return $this->db->loadAssocList();
 	}
 
@@ -402,10 +406,68 @@ class DatabaseService
 		$this->db->setQuery($this->query);
 		$emundusExtension = $this->db->loadObject();
 
-		$manifestCache = json_decode($emundusExtension->manifest_cache, true);
-		$manifestCache['version'] = '2.0.0';
+		$manifestCache                    = json_decode($emundusExtension->manifest_cache, true);
+		$manifestCache['version']         = '2.0.0';
 		$emundusExtension->manifest_cache = json_encode($manifestCache);
 
 		return $this->db->updateObject('jos_extensions', $emundusExtension, 'extension_id');
+	}
+
+	public function deleteForeignKey(string $table, string $referenceTable, string $referenceColumn, string $column): bool
+	{
+		$deleted = true;
+
+		$queryFk = "SELECT DISTINCT CONCAT(
+  'ALTER TABLE `', kcu.TABLE_NAME,
+  '` DROP FOREIGN KEY `', kcu.CONSTRAINT_NAME, '`;'
+) AS drop_sql
+FROM information_schema.KEY_COLUMN_USAGE kcu
+WHERE kcu.TABLE_SCHEMA = DATABASE()
+  AND kcu.REFERENCED_TABLE_NAME = " . $this->db->quote($referenceTable) . "
+  AND kcu.REFERENCED_COLUMN_NAME = " . $this->db->quote($referenceColumn) . "
+  AND kcu.COLUMN_NAME = " . $this->db->quote($column) . "
+  AND kcu.TABLE_NAME LIKE " . $this->db->quote($table) . ";";
+		$this->db->setQuery($queryFk);
+		$dropConstraintsSql = $this->db->loadColumn();
+
+		foreach ($dropConstraintsSql as $sql)
+		{
+			$this->db->setQuery($sql);
+			if (!$deleted = $this->db->execute())
+			{
+				Log::add('Error while deleting foreign key constraint: ' . $sql, Log::ERROR, 'tchooz_cli');
+				break;
+			}
+		}
+
+		return $deleted;
+	}
+
+	public function addUniqueKey(string $table, string $column)
+	{
+		$uniqueKeyCreated = false;
+
+		$query = "SELECT INDEX_NAME, COLUMN_NAME, NON_UNIQUE, SEQ_IN_INDEX FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ".$this->db->quote($table)." ORDER BY INDEX_NAME, SEQ_IN_INDEX;";
+		$this->db->setQuery($query);
+		$indexes = $this->db->loadAssocList();
+
+		foreach ($indexes as $index)
+		{
+			if($index['COLUMN_NAME'] == $column)
+			{
+				$query = "ALTER TABLE ".$this->db->quoteName($table)." DROP INDEX ".$this->db->quoteName($index['INDEX_NAME']).",ADD UNIQUE KEY (".$this->db->quoteName($column).");";
+				$this->db->setQuery($query);
+				$uniqueKeyCreated = $this->db->execute();
+			}
+		}
+
+		if(!$uniqueKeyCreated)
+		{
+			$query = "ALTER TABLE ".$this->db->quoteName($table)." ADD UNIQUE KEY (".$this->db->quoteName($column).");";
+			$this->db->setQuery($query);
+			$uniqueKeyCreated = $this->db->execute();
+		}
+
+		return $uniqueKeyCreated;
 	}
 }

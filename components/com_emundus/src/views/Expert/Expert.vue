@@ -3,9 +3,12 @@ import TipTapEditor from 'tip-tap-editor';
 import emailService from '@/services/email.js';
 import Multiselect from 'vue-multiselect';
 
+import alerts from '@/mixins/alerts.js';
+
 export default {
 	name: 'Expert',
 	components: { Multiselect, TipTapEditor },
+	mixins: [alerts],
 	props: {},
 	data: () => ({
 		loading: false,
@@ -145,6 +148,16 @@ export default {
 						},
 						timer: 3000,
 					});
+				} else if (response.code === 20) {
+					this.alertConfirm(
+						'COM_EMUNDUS_EXPERT_MAIL_SENT_WAITING',
+						'COM_EMUNDUS_EXPERT_MAIL_SENT_WAITING_MESSAGE',
+						false,
+						'COM_EMUNDUS_OK',
+						'COM_EMUNDUS_ACTIONS_CANCEL',
+						null,
+						false,
+					);
 				}
 			});
 		},
@@ -164,8 +177,10 @@ export default {
 		'form.emailId': function (val) {
 			if (val > 0) {
 				let email = this.emails.find((email) => email.id === val);
-				this.form.subject = email.subject;
-				this.form.body = email.message;
+				if (email) {
+					this.form.subject = email.subject;
+					this.form.body = email.message;
+				}
 			}
 		},
 	},
