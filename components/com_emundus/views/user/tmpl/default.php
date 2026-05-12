@@ -42,7 +42,7 @@ if($current_user->activation == -2) {
                 </p>
                 <div class="containerButtons">
                     <input id="email" type="text" name="email" value="<?= $this->user_email ?>" class="mail">
-                    <input type="button" onclick="activation()" class="btn btn-primary btn-resend"
+                    <input id="btn-resend" type="button" onclick="activation()" class="btn btn-primary btn-resend"
                            value="<?= Text::_('COM_EMUNDUS_MAIL_SEND_NEW'); ?>">
                 </div>
             </div>
@@ -61,26 +61,72 @@ if($current_user->activation == -2) {
         document.getElementById('g-page-surround').style.background = 'white';
         document.getElementById('g-footer').style.display = 'none';
         document.getElementById('header-c').style.display = 'none';
+
+        const btn = document.getElementById('btn-resend');
+        startCooldown(btn, (b) => {
+            b.disabled = false;
+            b.value = Joomla.JText._('COM_EMUNDUS_MAIL_SEND_NEW');
+        });
     });
 
+    const COOLDOWN_SECONDS = 15;
+
+    function startCooldown(btn, onComplete) {
+        let remaining = COOLDOWN_SECONDS;
+        btn.disabled = true;
+        btn.value = '(' + remaining + 's)';
+
+        const interval = setInterval(() => {
+            remaining--;
+            if (remaining <= 0) {
+                clearInterval(interval);
+                onComplete(btn);
+            } else {
+                btn.value = '(' + remaining + 's)';
+            }
+        }, 1000);
+    }
+
     function activation() {
+        const btn = document.getElementById('btn-resend');
+
+        if (btn.disabled) {
+            return;
+        }
+
+        btn.disabled = true;
         document.getElementsByClassName('em-page-loader')[0].style.display = 'block';
+
         return new Promise(function (resolve, reject) {
             let formData = new FormData();
             formData.append('email', document.getElementById('email').value);
+
+            let headers = {};
+            if (typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
+                var csrf = Joomla.getOptions('csrf.token', '');
+                if (csrf) {
+                    headers = {
+                        'X-CSRF-Token': csrf,
+                    };
+                }
+            }
+
             fetch(window.location.origin + '/index.php?option=com_emundus&controller=users&task=activation', {
+                headers: headers,
                 body: formData,
                 method: 'post'
-            }).then((response) => {
+            }).then(async (response) => {
+                let responseJson = await response.json();
                 if (response.ok) {
-                    return response.json();
+                    return responseJson
                 } else {
                     Swal.fire({
                         title: Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE'),
-                        type: 'error',
+                        text: responseJson.msg,
+                        icon: 'error',
                         showConfirmButton: false,
                         showCancelButton: false,
-                        timer: 1500,
+                        timer: 4000,
                         customClass: {
                             title: 'em-swal-title',
                         },
@@ -90,8 +136,9 @@ if($current_user->activation == -2) {
                 }
             }).then((res) => {
                 document.getElementsByClassName('em-page-loader')[0].style.display = 'none';
-
                 if (res.status) {
+                    btn.disabled = true;
+                    btn.value = Joomla.JText._('COM_EMUNDUS_MAIL_SENDED');
                     Swal.fire({
                         title: Joomla.JText._('COM_EMUNDUS_MAIL_SENDED'),
                         text: res.msg,
@@ -115,6 +162,7 @@ if($current_user->activation == -2) {
                             title: 'em-swal-title',
                         },
                     });
+                    btn.disabled = true;
                     reject(res.msg);
                 }
             });

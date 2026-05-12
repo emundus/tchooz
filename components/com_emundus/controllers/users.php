@@ -1400,6 +1400,13 @@ class EmundusControllerUsers extends EmundusController
 
 	public function activation()
 	{
+		$this->checkToken();
+		$session = $this->app->getSession();
+		$activationCount = $session->get('activation_token', 0);
+		if ($activationCount > 0) {
+			throw new Exception(Text::_('COM_EMUNDUS_USERS_ACTIVATION_ERROR'));
+		}
+		$session->set('activation_token', $activationCount + 1);
 		$m_user = $this->getModel('User');
 
 		$email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
