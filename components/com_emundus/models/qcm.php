@@ -81,7 +81,7 @@ class EmundusModelQcm extends JModelList
 		$m_profile = new EmundusModelProfile;
 
 		$query
-			->select(['sq.count', 'qas.sectionid', 'group_concat(qaq.questionid) as questions'])
+            ->select(['sq.count','group_concat(qas.sectionid) as sectionid','group_concat(qaq.questionid) as questions'])
 			->from($db->quoteName('#__emundus_setup_qcm', 'sq'))
 			->leftJoin($db->quoteName('#__emundus_setup_qcm_repeat_sectionid', 'qas') . ' ON ' . $db->quoteName('sq.id') . ' = ' . $db->quoteName('qas.parent_id'))
 			->leftJoin($db->quoteName('#__emundus_setup_qcm_repeat_questionid', 'qaq') . ' ON ' . $db->quoteName('sq.id') . ' = ' . $db->quoteName('qaq.parent_id'))
@@ -92,11 +92,13 @@ class EmundusModelQcm extends JModelList
 			$db->setQuery($query);
 			$questions_assoc = $db->loadObject();
 
-			if (!empty($questions_assoc->sectionid)) {
+            $sectionsIds = explode(',',$questions_assoc->sectionid);
+
+            if(!empty($sectionsIds)){
 				$query->clear()
 					->select('id')
 					->from($db->quoteName('#__emundus_qcm_questions'))
-					->where($db->quoteName('section') . ' = ' . $db->quote($questions_assoc->sectionid));
+                    ->where($db->quoteName('section') . ' IN (' . implode(',',array_map([$db, 'quote'],$sectionsIds)) . ' ) ');
 				$db->setQuery($query);
 				$questions = $db->loadColumn();
 			}
