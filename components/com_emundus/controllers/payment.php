@@ -630,7 +630,7 @@ class EmundusControllerPayment extends BaseController
 			if (empty($currency_id))
 			{
 				$addon                 = $payment_repository->getAddon();
-				$payment_configuration = $addon->getConfiguration();
+				$payment_configuration = $addon->getParams();
 
 				if (!empty($payment_configuration['currency_id']))
 				{
