@@ -115,6 +115,12 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 		$fabrikRepository->setFactory($fabrikFactory);
 		$fabrikElement = $fabrikRepository->getElementById($sourceId);
 
+		if (empty($fabrikElement))
+		{
+			Log::add('source element ' . $sourceId . ' not found', Log::ERROR, 'com_emundus.fabrik.readonly');
+			return '';
+		}
+
 		if (!$this->isTableAllowed($fabrikElement->getDbTableName()))
 		{
 			Log::add('access DENIED for source ' . $sourceId . ' on fnum ' . $fnum . ': table ' . $fabrikElement->getDbTableName() . ' is not allowed', Log::WARNING, 'com_emundus.fabrik.readonly');
