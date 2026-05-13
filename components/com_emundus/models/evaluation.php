@@ -1284,7 +1284,7 @@ class EmundusModelEvaluation extends JModelList
 		$this->_applicants = [];
 		if (!empty($step_ids))  {
 			foreach ($step_ids as $step_id) {
-				$list = array_merge($list, $this->getEvaluationsList($step_id, count($step_ids)));
+				$list = array_merge($list, $this->getEvaluationsList($step_id, count($step_ids), selected_evaluators: $selected_evaluators));
 			}
 			$grouped_list = [];
 			foreach($list as $item) {
@@ -1321,7 +1321,7 @@ class EmundusModelEvaluation extends JModelList
 		return $list;
 	}
 
-	function getEvaluationsList($step_id = 0, $nb_steps = 1, $user_id = null)
+	function getEvaluationsList($step_id = 0, $nb_steps = 1, $user_id = null, $selected_evaluators = [])
 	{
 		$evaluations_list = [];
 
@@ -1497,6 +1497,10 @@ class EmundusModelEvaluation extends JModelList
 		}
 
 		$query .= ' AND esc.published = 1';
+
+		if(!empty($selected_evaluators) && !empty($step_id)) {
+			$query .= ' AND ' . $step_data->table . '.evaluator IN (' . implode(',', $selected_evaluators) . ') ';
+		}
 
 		$query .= $q['q'];
 		$query .= ' ' . $group_by;

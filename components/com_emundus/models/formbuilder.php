@@ -2199,19 +2199,25 @@ class EmundusModelFormbuilder extends ListModel
 				$lang = substr($lang->getTag(), 0, 2);
 			}
 
+			$labelKey        = null;
+			$isNewTranslation = false;
 			if ($element['label'] != $dbElement->label)
 			{
-				$key                = 'ELEMENT_' . $element['id'] . '_LABEL';
+				$labelKey           = 'ELEMENT_' . $element['id'] . '_LABEL';
 				$languageRepository = new LanguageRepository();
 				if (!empty($dbElement->label))
 				{
 					$translation = $languageRepository->getByTag($dbElement->label);
 					if (!empty($translation))
 					{
-						$key = $dbElement->label;
+						$labelKey = $dbElement->label;
+					}
+					else
+					{
+						$isNewTranslation = true;
 					}
 				}
-				LanguageFactory::translate($key, [$lang => $element['label']], 'fabrik_elements', $element['id'], 'label');
+				LanguageFactory::translate($labelKey, [$lang => $element['label']], 'fabrik_elements', $element['id'], 'label', original_text: $dbElement->label);
 			}
 			//
 
@@ -2698,6 +2704,11 @@ class EmundusModelFormbuilder extends ListModel
 				$this->db->quoteName('modified') . ' = ' . $this->db->quote($date),
 				$this->db->quoteName('alias') . ' = ' . $this->db->quote($element['alias']),
 			);
+
+			if ($labelKey !== null)
+			{
+				$fields[] = $this->db->quoteName('label') . ' = ' . $this->db->quote($labelKey);
+			}
 
 			if ($element['plugin'] === 'panel' || $element['plugin'] === 'field')
 			{

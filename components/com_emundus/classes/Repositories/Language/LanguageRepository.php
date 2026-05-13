@@ -96,7 +96,7 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 			{
 				$data->created_by    = $language->getCreatedBy();
 				$data->created_date  = $language->getCreatedDate()->format('Y-m-d H:i:s');
-				$data->original_text = $language->getOverride();
+				$data->original_text = $language->getOriginalText();
 				$data->original_md5  = md5($language->getOverride());
 
 				if ($executed = $this->db->insertObject($this->tableName, $data))

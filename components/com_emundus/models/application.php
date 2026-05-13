@@ -36,6 +36,8 @@ use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Transformers\ApplicationChoicesTransformer;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 /**
  * Emundus Component Application Model

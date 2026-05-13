@@ -162,7 +162,11 @@ requirejs(['fab/fabrik'], function () {
               clearFormSession(form.id);
 
               if (e.srcElement.classList.contains('goback-btn')) {
-                window.history.back();
+                if (document.referrer && document.referrer.includes('/apply')) {
+                  window.location.href = '/';
+                } else {
+                  window.history.back();
+                }
               }
 
               let href = window.location.origin + '/index.php';
@@ -190,7 +194,11 @@ requirejs(['fab/fabrik'], function () {
           clearFormSession(form.id);
           if (e.srcElement.classList.contains('goback-btn')) {
             if (window.history.length > 1) {
-              window.history.back();
+              if (document.referrer && document.referrer.includes('/apply')) {
+                window.location.href = '/';
+              } else {
+                window.history.back();
+              }
             } else {
               window.close();
             }

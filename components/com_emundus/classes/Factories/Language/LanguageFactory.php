@@ -69,7 +69,8 @@ class LanguageFactory implements DBFactory
 		?string $reference_table = '',
 		?int    $reference_id = 0,
 		?string $reference_field = '',
-		?int    $user_id = 0
+		?int    $user_id = 0,
+		?string $original_text = null
 	): string
 	{
 		$languageRepository = new LanguageRepository();
@@ -98,7 +99,7 @@ class LanguageFactory implements DBFactory
 					$tag,
 					$language->lang_code,
 					$override,
-					$override,
+					$original_text ?? $override,
 					'override',
 					$creator,
 					null,
