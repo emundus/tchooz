@@ -284,6 +284,10 @@ class EmundusModelQcm extends JModelList
 			$db->setQuery($query);
 			$db->execute();
 
+            $answers = $answers ?? [];
+            $answers = is_array($answers) ? $answers : [$answers];
+            $answers = $answers ?: [''];
+
 			$answers      = implode(',', $answers);
 			$answers_text = '';
 			if (!empty($answers)) {
@@ -370,20 +374,25 @@ class EmundusModelQcm extends JModelList
 			$maximal_points     = (float) $qcm_module['mod_em_qcm_points_maximal'];
 			//
 
-			foreach ($good_answers as $good_answer) {
-				if (!in_array($good_answer, $answers)) {
-					$points -= $missing_penalities;
-				}
-			}
+            if(!empty($answers)){
+                foreach ($good_answers as $good_answer) {
+                    if (!in_array($good_answer, $answers)) {
+                        $points -= $missing_penalities;
+                    }
+                }
 
-			foreach ($answers as $answer) {
-				if (in_array($answer, $good_answers)) {
-					$points += $right_answers;
-				}
-				else {
-					$points -= $wrong_answers;
-				}
-			}
+                foreach ($answers as $answer) {
+                    if (in_array($answer, $good_answers)) {
+                        $points += $right_answers;
+                    }
+                    else {
+                        $points -= $wrong_answers;
+                    }
+                }
+            }
+            else{
+                $points -= $wrong_answers;
+            }
 
 			if ($points < $minimal_points) {
 				$points = $minimal_points;
