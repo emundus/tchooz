@@ -170,6 +170,13 @@ class AliasDataConditionResolver implements ConditionTargetResolverInterface
 						$value = explode(',', $value);
 					}
 				}
+				elseif ($field->getOriginalType() === ElementPluginEnum::DATABASEJOIN->value)
+				{
+					if(empty($value))
+					{
+						$value = null;
+					}
+				}
 			}
 		}
 

@@ -81,7 +81,7 @@ class EmundusModelQcm extends JModelList
 		$m_profile = new EmundusModelProfile;
 
 		$query
-			->select(['sq.count', 'qas.sectionid', 'group_concat(qaq.questionid) as questions'])
+            ->select(['sq.count','group_concat(qas.sectionid) as sectionid','group_concat(qaq.questionid) as questions'])
 			->from($db->quoteName('#__emundus_setup_qcm', 'sq'))
 			->leftJoin($db->quoteName('#__emundus_setup_qcm_repeat_sectionid', 'qas') . ' ON ' . $db->quoteName('sq.id') . ' = ' . $db->quoteName('qas.parent_id'))
 			->leftJoin($db->quoteName('#__emundus_setup_qcm_repeat_questionid', 'qaq') . ' ON ' . $db->quoteName('sq.id') . ' = ' . $db->quoteName('qaq.parent_id'))
@@ -92,11 +92,13 @@ class EmundusModelQcm extends JModelList
 			$db->setQuery($query);
 			$questions_assoc = $db->loadObject();
 
-			if (!empty($questions_assoc->sectionid)) {
+            $sectionsIds = explode(',',$questions_assoc->sectionid);
+
+            if(!empty($sectionsIds)){
 				$query->clear()
 					->select('id')
 					->from($db->quoteName('#__emundus_qcm_questions'))
-					->where($db->quoteName('section') . ' = ' . $db->quote($questions_assoc->sectionid));
+                    ->where($db->quoteName('section') . ' IN (' . implode(',',array_map([$db, 'quote'],$sectionsIds)) . ' ) ');
 				$db->setQuery($query);
 				$questions = $db->loadColumn();
 			}
@@ -282,6 +284,10 @@ class EmundusModelQcm extends JModelList
 			$db->setQuery($query);
 			$db->execute();
 
+            $answers = $answers ?? [];
+            $answers = is_array($answers) ? $answers : [$answers];
+            $answers = $answers ?: [''];
+
 			$answers      = implode(',', $answers);
 			$answers_text = '';
 			if (!empty($answers)) {
@@ -368,20 +374,25 @@ class EmundusModelQcm extends JModelList
 			$maximal_points     = (float) $qcm_module['mod_em_qcm_points_maximal'];
 			//
 
-			foreach ($good_answers as $good_answer) {
-				if (!in_array($good_answer, $answers)) {
-					$points -= $missing_penalities;
-				}
-			}
+            if(!empty($answers)){
+                foreach ($good_answers as $good_answer) {
+                    if (!in_array($good_answer, $answers)) {
+                        $points -= $missing_penalities;
+                    }
+                }
 
-			foreach ($answers as $answer) {
-				if (in_array($answer, $good_answers)) {
-					$points += $right_answers;
-				}
-				else {
-					$points -= $wrong_answers;
-				}
-			}
+                foreach ($answers as $answer) {
+                    if (in_array($answer, $good_answers)) {
+                        $points += $right_answers;
+                    }
+                    else {
+                        $points -= $wrong_answers;
+                    }
+                }
+            }
+            else{
+                $points -= $wrong_answers;
+            }
 
 			if ($points < $minimal_points) {
 				$points = $minimal_points;
