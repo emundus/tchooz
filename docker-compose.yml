@@ -32,12 +32,12 @@ services:
       TCHOOZ_MAILER: smtp
       TCHOOZ_MAIL_FROM: dev@emundus.fr
       TCHOOZ_MAIL_FROM_NAME: EMUNDUS Dev
-      TCHOOZ_MAIL_SMTP_AUTH: 1
-      TCHOOZ_MAIL_SMTP_USER: 
-      TCHOOZ_MAIL_SMTP_PASS: 
-      TCHOOZ_MAIL_SMTP_HOST: smtp.domain.com
-      TCHOOZ_MAIL_SMTP_SECURITY: tls
-      TCHOOZ_MAIL_SMTP_PORT: 2525
+      TCHOOZ_MAIL_SMTP_AUTH: 0
+      TCHOOZ_MAIL_SMTP_USER:
+      TCHOOZ_MAIL_SMTP_PASS:
+      TCHOOZ_MAIL_SMTP_HOST: mailhog
+      TCHOOZ_MAIL_SMTP_SECURITY: none
+      TCHOOZ_MAIL_SMTP_PORT: 1025
       TCHOOZ_CACHING: 0
       TCHOOZ_CACHE_HANDLER: file
       TCHOOZ_CACHE_LIFETIME: 15
@@ -78,6 +78,8 @@ services:
     depends_on:
       joomladb:
         condition: service_healthy
+      mailhog:
+        condition: service_started
     links:
       - joomladb:mysql
     extra_hosts:
@@ -130,5 +132,13 @@ services:
 
         # Exposes BLACKFIRE_CLIENT_* environment variables
         # allowing the client to communicate with Blackfire's API:
-        BLACKFIRE_CLIENT_ID: 
-        BLACKFIRE_CLIENT_TOKEN: 
+        BLACKFIRE_CLIENT_ID:
+        BLACKFIRE_CLIENT_TOKEN:
+
+  mailhog:
+    container_name: joomla5_mailhog
+    image: mailhog/mailhog:latest
+    restart: always
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
