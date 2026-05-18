@@ -6779,7 +6779,7 @@ class EmundusHelperFiles
 		return $q;
 	}
 
-	public function getEncryptedTables()
+	public static function getEncryptedTables()
 	{
 		$table_names = [];
 
