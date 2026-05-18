@@ -17,7 +17,7 @@ class DateTransformer implements FabrikTransformerInterface
 	public function transform(mixed $value, array $options = []): string
 	{
 		$transformedValue = '';
-		$dates = explode(',', $value);
+		$dates = is_string($value) ? explode(',', $value) : $value;
 
 		if (!empty($dates))
 		{
