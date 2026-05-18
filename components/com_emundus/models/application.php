@@ -2374,6 +2374,10 @@ class EmundusModelApplication extends ListModel
 
 												if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
+													if ($form_params->note == 'encrypted') {
+														$r_elt = EmundusHelperFabrik::decryptDatas($r_elt,null,'aes-128-cbc',$elements[$j]->plugin);
+													}
+
 													if (in_array($elements[$j]->plugin,['date','jdate'])) {
 														if (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00')) {
 															$elt = date(EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), strtotime($r_elt));
