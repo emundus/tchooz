@@ -69,9 +69,9 @@ export default {
 			messengerServices.getChatroomsByUser().then((response) => {
 				this.chatrooms = response.data;
 
-				/*if (this.chatrooms.length > 0) {
-          this.currentChatroom = this.chatrooms.find(chatroom => chatroom.status === 1);
-        }*/
+				if (this.chatrooms.length > 0) {
+					this.currentChatroom = this.chatrooms.find((chatroom) => chatroom.status === 1) || this.chatrooms[0];
+				}
 
 				if (this.chatrooms && this.chatrooms.length && this.unread_messages && this.unread_messages.length > 0) {
 					this.unread_messages.forEach((unread_message) => {
