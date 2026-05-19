@@ -208,7 +208,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                                                 <label class="tw-mb-0"><?= $value->reference; ?></label>
                                                             <?php endif; ?>
                                                             <?php if (!empty($value->shortReference)) : ?>
-                                                                <span>#<?= $value->shortReference; ?></span>
+                                                                <span class="em_list_text"><strong>#<?= $value->shortReference; ?></strong></span>
                                                             <?php endif; ?>
                                                         </div>
                                                     <?php else: ?>
