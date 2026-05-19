@@ -25,7 +25,6 @@ use \setasign\Fpdi\Fpdi;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
-use Tchooz\Entities\ApplicationFile\StatusEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\CrudEnum;
@@ -2522,6 +2521,11 @@ class EmundusController extends JControllerLegacy
 						'fnum' => $applicationEntity->getFnum(),
 						'token' => $token,
 					];
+				}
+				else
+				{
+					$this->app->enqueueMessage(Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_FAILED'), 'error');
+					$this->app->redirect(Route::_(EmundusHelperMenu::getHomepageLink('/'), false));
 				}
 			}
 		} else
