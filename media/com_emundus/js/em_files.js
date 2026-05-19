@@ -1261,6 +1261,8 @@ function runAction(action, url = '', option = '') {
 
         // Validating tags
         case 14:
+            const newTagInput = document.querySelector('input#new-tag');
+            const newTag = (newTagInput && option != 1) ? (newTagInput.value.trim() || '') : '';
             addLoader();
             var url="";
             if (option == 1)
@@ -1272,7 +1274,7 @@ function runAction(action, url = '', option = '') {
                 type:'POST',
                 url: '/'+url,
                 dataType:'json',
-                data:({fnums:checkInput, tag: tag}),
+                data:({fnums:checkInput, tag: tag, newTag: newTag}),
                 success: function(result) {
                     if (result.status) {
                         $('.modal-body').empty();
@@ -4061,6 +4063,9 @@ $(document).ready(function() {
                         });
                         html += '</select></div>';
 
+                        html += '<div id="new-tag-or" class="tw-mt-4 tw-w-full tw-flex tw-flex-row tw-justify-evenly tw-gap-2 tw-items-center"><hr class="tw-w-full" /><span class="tw-text-neutral-500 tw-text-center tw-w-20">' + Joomla.Text._('COM_EMUNDUS_OR') + '</span><hr class="tw-w-full" /></div>';
+                        html += '<div id="new-tag-wrapper" class="tw-mt-4"><label for="new-tag" class="tw-font-medium">' + Joomla.Text._('COM_EMUNDUS_APPLICATION_ADD_NEW_TAG') + '</label> <input name="new-tag" id="new-tag" value="" type="text" placeholder="' + Joomla.Text._('COM_EMUNDUS_APPLICATION_ADD_NEW_TAG_PLACEHOLDER') + '"/></div>';
+
                         preconfirm = "return document.querySelector('input[name=em-tags]:checked').value ";
 
                         removeLoader();
@@ -4096,16 +4101,6 @@ $(document).ready(function() {
                                 })
                             }
                             $("#em-action-tag").val('').trigger("chosen:updated");
-                        });
-
-                        /***
-                         * On Tag change
-                         */
-                        $('#em-action-tag').on('change', function() {
-                            if ($(this).val() != null)
-                                $('#success-ok').removeAttr("disabled");
-                            else
-                                $('#success-ok').attr("disabled", "disabled");
                         });
                     },
                     error: function(jqXHR) {
@@ -4413,12 +4408,12 @@ $(document).ready(function() {
                         option.disabled = true;
                         option.hide();
                     }
-                })
+                });
             } else {
                 document.querySelectorAll('#em-action-tag option').forEach((option) => {
                     option.disabled = false;
                     option.show();
-                })
+                });
             }
             $("#em-action-tag").val('').trigger("liszt:updated");
         });

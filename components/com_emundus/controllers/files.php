@@ -29,6 +29,7 @@ use Tchooz\Entities\Filters\FilterEntity;
 use Tchooz\Enums\Filters\FilterModeEnum;
 use Tchooz\Factories\Filters\FilterFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\ApplicationFile\TagsRepository;
 use Tchooz\Repositories\Filters\FilterRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
 use Tchooz\Enums\Export\ExportModeEnum;
@@ -912,14 +913,52 @@ class EmundusControllerFiles extends EmundusController
 	 * Add a tag to an application.
 	 * @since 6.0
 	 */
-	public function tagfile()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function tagfile(): void
 	{
 		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('BAD_REQUEST')];
 
-		$fnums = $this->input->getString('fnums', null);
-		$tag   = (array) $this->input->get('tag', []);
+		$fnums  = $this->input->getString('fnums', null);
+		$tag    = (array) $this->input->get('tag', []);
+		$newTag = trim($this->input->getString('newTag', ''));
 
-		if (!empty($fnums) && !empty($tag)) {
+		if (!empty($fnums) && (!empty($tag) || $newTag !== ''))
+		{
+			if ($newTag !== '')
+			{
+				$tagsRepository = new TagsRepository();
+
+				if ($tagsRepository->existsByLabel($newTag))
+				{
+					$response['code'] = EmundusResponse::HTTP_CONFLICT;
+					$response['msg']  = Text::_('COM_EMUNDUS_TAGS_TAG_ALREADY_EXISTS');
+
+					echo json_encode((object) $response);
+					exit;
+				}
+
+				try
+				{
+					$createdTag = $tagsRepository->create($newTag);
+				}
+				catch (\Exception $e)
+				{
+					Log::add('Failed to create tag on the fly: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+					$createdTag = null;
+				}
+
+				if (empty($createdTag))
+				{
+					$response['code'] = 500;
+					$response['msg']  = Text::_('COM_EMUNDUS_TAGS_CREATE_FAILED');
+
+					echo json_encode((object) $response);
+					exit;
+				}
+
+				$tag[] = $createdTag->getId();
+			}
+
 			$m_files = $this->getModel('Files');
 			$fnums   = ($fnums == 'all') ? $m_files->getAllFnums() : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
