@@ -677,123 +677,125 @@ class EmundusModelMessenger extends ListModel
 		$h_cache = new EmundusHelperCache();
 
 		try
+		{
+			if ($applicant)
 			{
-				if ($applicant)
+				if ($h_cache->isEnabled())
 				{
-					if ($h_cache->isEnabled())
+					if (EmundusPublicAccess::isPublicAccessSession())
 					{
-						if (EmundusPublicAccess::isPublicAccessSession())
-						{
-							$notifications = $h_cache->get('notifications_' . EmundusPublicAccess::getPublicAccessFnum());
-						}
-						else
-						{
-							$notifications = $h_cache->get('notifications_' . $user_id);
-						}
+						$notifications = $h_cache->get('notifications_' . EmundusPublicAccess::getPublicAccessFnum());
 					}
-					else {
-						$notifications = false;
-					}
-
-					if ($notifications === false)
+					else
 					{
-						$query->select('ec.fnum, ecn.chatroom_id as page, COUNT(ecn.message_id) as notifications, concat(eu.lastname, " ", eu.firstname) as fullname, group_concat(ecn.message_id) as messages')
-							->from($this->db->quoteName('#__emundus_chatroom_notifications', 'ecn'))
-							->leftJoin($this->db->quoteName('#__emundus_chatroom', 'ec') . ' ON ' . $this->db->quoteName('ec.id') . ' = ' . $this->db->quoteName('ecn.chatroom_id'))
-							->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.id') . ' = ' . $this->db->quoteName('ec.ccid'))
-							->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' LIKE ' . $this->_db->quoteName('ecn.user_id'))
-							->where($this->db->quoteName('ecn.user_id') . ' = ' . $this->db->quote($user_id))
-							->where($this->db->quoteName('ecc.applicant_id') . ' = ' . $this->db->quote($user_id))
-							->andWhere($this->db->quoteName('ec.status') . ' = 1')
-							->group('ecn.chatroom_id');
-
-						if (EmundusPublicAccess::isPublicAccessSession())
-						{
-							$query->andWhere($this->db->quoteName('ec.fnum') . ' = ' . $this->db->quote(EmundusPublicAccess::getPublicAccessFnum()));
-						}
-
-						$this->db->setQuery($query);
-						$notifications = $this->db->loadAssocList();
-
-						if ($h_cache->isEnabled())
-						{
-							if (EmundusPublicAccess::isPublicAccessSession())
-							{
-								$h_cache->set('notifications_' . EmundusPublicAccess::getPublicAccessFnum(), $notifications);
-							}
-							else
-							{
-								$h_cache->set('notifications_' . $user_id, $notifications);
-							}
-						}
+						$notifications = $h_cache->get('notifications_' . $user_id);
 					}
 				}
 				else
 				{
-					if (!class_exists('EmundusHelperDate'))
+					$notifications = false;
+				}
+
+				if ($notifications === false)
+				{
+					$query->select('ec.fnum, ecn.chatroom_id as page, COUNT(ecn.message_id) as notifications, concat(eu.lastname, " ", eu.firstname) as fullname, group_concat(ecn.message_id) as messages')
+						->from($this->db->quoteName('#__emundus_chatroom_notifications', 'ecn'))
+						->leftJoin($this->db->quoteName('#__emundus_chatroom', 'ec') . ' ON ' . $this->db->quoteName('ec.id') . ' = ' . $this->db->quoteName('ecn.chatroom_id'))
+						->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.id') . ' = ' . $this->db->quoteName('ec.ccid'))
+						->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' LIKE ' . $this->_db->quoteName('ecn.user_id'))
+						->where($this->db->quoteName('ecn.user_id') . ' = ' . $this->db->quote($user_id))
+						->where($this->db->quoteName('ecc.applicant_id') . ' = ' . $this->db->quote($user_id))
+						->andWhere($this->db->quoteName('ec.status') . ' = 1')
+						->group('ecn.chatroom_id');
+
+					if (EmundusPublicAccess::isPublicAccessSession())
 					{
-						require_once JPATH_SITE . '/components/com_emundus/helpers/date.php';
+						$query->andWhere($this->db->quoteName('ec.fnum') . ' = ' . $this->db->quote(EmundusPublicAccess::getPublicAccessFnum()));
 					}
 
-					if($h_cache->isEnabled())
-					{
-						$notifications = $h_cache->get('notifications_no_applicant');
-					}
-					else {
-						$notifications = false;
-					}
+					$this->db->setQuery($query);
+					$notifications = $this->db->loadAssocList();
 
-					if($notifications === false)
+					if ($h_cache->isEnabled())
 					{
-						// Get count of messages since last reply from an other user that applicant
-						$query->select('ecc.fnum, m.page, COUNT(m.message_id) as notifications, CASE WHEN eu.is_anonym != 1 AND ecc.anonymous != 1 THEN concat(eu.lastname, " ", eu.firstname) ELSE '.$this->db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')).' END as fullname, group_concat(m.message_id) as messages')
-							->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
-							->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' LIKE ' . $this->_db->quoteName('ecc.applicant_id'))
-							->leftJoin($this->_db->quoteName('#__emundus_chatroom', 'ec') . ' ON ' . $this->_db->quoteName('ec.fnum') . ' LIKE ' . $this->_db->quoteName('ecc.fnum'))
-							->leftJoin($this->_db->quoteName('#__messages', 'm') . ' ON ' . $this->_db->quoteName('m.page') . ' = ' . $this->_db->quoteName('ec.id'))
-							->where($this->_db->quoteName('m.user_id_from') . ' = ' . $this->_db->quoteName('ecc.applicant_id'))
-							->andWhere($this->_db->quoteName('m.date_time') . ' > COALESCE((SELECT MAX(date_time) FROM jos_messages WHERE page = ec.id AND user_id_from <> ecc.applicant_id),"1970-01-01 00:00:00")')
-							->andWhere($this->_db->quoteName('m.date_time') . ' <= NOW()')
-							->andWhere($this->db->quoteName('ec.status') . ' = 1')
-							->group('ecc.fnum');
-						$this->_db->setQuery($query);
-						$notifications = $this->_db->loadAssocList();
-
-						if($h_cache->isEnabled())
+						if (EmundusPublicAccess::isPublicAccessSession())
 						{
-							$h_cache->set('notifications_no_applicant', $notifications);
+							$h_cache->set('notifications_' . EmundusPublicAccess::getPublicAccessFnum(), $notifications);
 						}
-					}
-
-					if (!empty($notifications) && $messages_content)
-					{
-						foreach ($notifications as $key => $notification)
+						else
 						{
-							if (EmundusHelperAccess::isUserAllowedToAccessFnum($user_id,$notification['fnum']) === false || EmundusHelperAccess::asAccessAction(36, 'c', $user_id, $notification['fnum']) === false)
-							{
-								unset($notifications[$key]);
-								continue;
-							}
-
-							$messages_ids = explode(',', $notification['messages']);
-							$query->clear()
-								->select('m.message_id,m.message,m.date_time')
-								->from($this->_db->quoteName('#__messages', 'm'))
-								->where($this->_db->quoteName('m.message_id') . ' IN (' . implode(',',$messages_ids) . ')');
-							$this->_db->setQuery($query);
-							$notifications[$key]['messages'] = $this->_db->loadAssocList();
-							foreach ($notifications[$key]['messages'] as $k => $message)
-							{
-								$notifications[$key]['messages'][$k]['date_time'] = EmundusHelperDate::displayDate($message['date_time']);
-							}
+							$h_cache->set('notifications_' . $user_id, $notifications);
 						}
 					}
 				}
 			}
-			catch (Exception $e)
+			else
 			{
-				Log::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : ' . $user_id . ' with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+				if (!class_exists('EmundusHelperDate'))
+				{
+					require_once JPATH_SITE . '/components/com_emundus/helpers/date.php';
+				}
+
+				if ($h_cache->isEnabled())
+				{
+					$notifications = $h_cache->get('notifications_no_applicant', false);
+				}
+				else
+				{
+					$notifications = false;
+				}
+
+				if ($notifications === false)
+				{
+					// Get count of messages since last reply from an other user that applicant
+					$query->select('ecc.fnum, m.page, COUNT(m.message_id) as notifications, CASE WHEN eu.is_anonym != 1 AND ecc.anonymous != 1 THEN concat(eu.lastname, " ", eu.firstname) ELSE CONCAT(' . $this->db->quote(Text::_('COM_EMUNDUS_ONBOARD_FILE')) . ', " #", ecc.short_reference) END as fullname, group_concat(m.message_id) as messages')
+						->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+						->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' LIKE ' . $this->_db->quoteName('ecc.applicant_id'))
+						->leftJoin($this->_db->quoteName('#__emundus_chatroom', 'ec') . ' ON ' . $this->_db->quoteName('ec.fnum') . ' LIKE ' . $this->_db->quoteName('ecc.fnum'))
+						->leftJoin($this->_db->quoteName('#__messages', 'm') . ' ON ' . $this->_db->quoteName('m.page') . ' = ' . $this->_db->quoteName('ec.id'))
+						->where($this->_db->quoteName('m.user_id_from') . ' = ' . $this->_db->quoteName('ecc.applicant_id'))
+						->andWhere($this->_db->quoteName('m.date_time') . ' > COALESCE((SELECT MAX(date_time) FROM jos_messages WHERE page = ec.id AND user_id_from <> ecc.applicant_id),"1970-01-01 00:00:00")')
+						->andWhere($this->_db->quoteName('m.date_time') . ' <= NOW()')
+						->andWhere($this->db->quoteName('ec.status') . ' = 1')
+						->group('ecc.fnum');
+					$this->_db->setQuery($query);
+					$notifications = $this->_db->loadAssocList();
+
+					if ($h_cache->isEnabled())
+					{
+						$h_cache->set('notifications_no_applicant', $notifications);
+					}
+				}
+
+				if (!empty($notifications) && $messages_content)
+				{
+					foreach ($notifications as $key => $notification)
+					{
+						if (EmundusHelperAccess::isUserAllowedToAccessFnum($user_id, $notification['fnum']) === false || EmundusHelperAccess::asAccessAction(36, 'c', $user_id, $notification['fnum']) === false)
+						{
+							unset($notifications[$key]);
+							continue;
+						}
+
+						$messages_ids = explode(',', $notification['messages']);
+						$query->clear()
+							->select('m.message_id,m.message,m.date_time')
+							->from($this->_db->quoteName('#__messages', 'm'))
+							->where($this->_db->quoteName('m.message_id') . ' IN (' . implode(',', $messages_ids) . ')');
+						$this->_db->setQuery($query);
+						$notifications[$key]['messages'] = $this->_db->loadAssocList();
+						foreach ($notifications[$key]['messages'] as $k => $message)
+						{
+							$notifications[$key]['messages'][$k]['date_time'] = EmundusHelperDate::displayDate($message['date_time']);
+						}
+					}
+				}
 			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : ' . $user_id . ' with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+		}
 
 		return $notifications;
 	}
