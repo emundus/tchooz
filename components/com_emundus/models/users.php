@@ -45,8 +45,11 @@ use Joomla\Ldap\LdapClient;
 use Joomla\Registry\Registry;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use \Joomla\CMS\User\User;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterAddUserToGroupDefinition;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Traits\TraitDispatcher;
 
 /**
  * Emundus Component Users Model
@@ -55,6 +58,8 @@ use Tchooz\Entities\Automation\EventsDefinitions\onAfterAddUserToGroupDefinition
  */
 class EmundusModelUsers extends ListModel
 {
+	use TraitDispatcher;
+
 	/**
 	 * @var   int  The total number of items
 	 * @since version 1.0.0
@@ -1322,32 +1327,42 @@ class EmundusModelUsers extends ListModel
 			}
 
 			if (!empty($campaigns) && is_array($campaigns)) {
+				$applicant = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
+				$applicationFileRepository = new ApplicationFileRepository();
+
 				foreach ($campaigns as $campaign) {
-					$this->app->triggerEvent('onBeforeCampaignCandidature', [$user_id, $this->user->id, $campaign]);
-					$this->app->triggerEvent('onCallEventHandler', ['onBeforeCampaignCandidature', ['user_id' => $user_id, 'connected' => $this->user->id, 'campaign' => $campaign]]);
+					$this->dispatchJoomlaEvent('onBeforeCampaignCandidature', [
+						'user_id' => $user_id,
+						'connected' => $this->user->id,
+						'campaign' => $campaign,
+						'context' => new EventContextEntity(
+							$this->app->getIdentity(),
+							[],
+							[$user_id],
+						)
+					]);
 
 					$fnum = EmundusHelperFiles::createFnum($campaign, $user_id);
 
 					if (!empty($fnum)) {
-						$columns = array('applicant_id', 'user_id', 'campaign_id', 'fnum');
-						$values  = array($user_id, $this->user->id, $campaign, $fnum);
-						$query->clear()
-							->insert($this->db->quoteName('#__emundus_campaign_candidature'))
-							->columns($this->db->quoteName($columns))
-							->values(implode(',', $this->db->quote($values)));
-						$this->db->setQuery($query);
-						$this->db->execute();
+						$applicationFileEntity = new ApplicationFileEntity(
+							$applicant,
+							$fnum,
+							0,
+							$campaign
+						);
+						$applicationFileRepository->flush($applicationFileEntity);
 
-						$this->app->triggerEvent('onAfterCampaignCandidature', [$user_id, $this->user->id, $campaign]);
-						$this->app->triggerEvent('onCallEventHandler', [
-							'onAfterCampaignCandidature',
-							[
-								'user_id' => $user_id,
-								'connected' => $this->user->id,
-								'campaign' => $campaign,
-								'fnum' => $fnum,
-								'context' => new EventContextEntity($this->user, [$fnum], [$user_id], [])
-							]
+						$this->dispatchJoomlaEvent('onAfterCampaignCandidature', [
+							'user_id' => $user_id,
+							'connected' => $this->user->id,
+							'campaign' => $campaign,
+							'fnum' => $fnum,
+							'context' => new EventContextEntity(
+								$this->app->getIdentity(),
+								[$fnum],
+								[$user_id],
+							)
 						]);
 					}
 				}

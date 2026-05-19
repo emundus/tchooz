@@ -1162,7 +1162,7 @@ class EmundusModelForm extends ListModel
 
 			$query = $this->db->getQuery(true);
 
-			$query->select('id, label')
+			$query->select('id, label, intro')
 				->from($this->db->quoteName('#__fabrik_forms'))
 				->where($this->db->quoteName('id') . ' = ' . $id);
 
@@ -1173,6 +1173,10 @@ class EmundusModelForm extends ListModel
 
 				if (!empty($form->label)) {
 					$form->label = Text::_($form->label);
+				}
+
+				if (!empty($form->label)) {
+					$form->intro = Text::_($form->intro);
 				}
 			}
 			catch (Exception $e) {

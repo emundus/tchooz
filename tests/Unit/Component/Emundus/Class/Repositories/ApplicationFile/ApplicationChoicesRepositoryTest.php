@@ -30,15 +30,17 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 {
 	private array $campaignsFixtures = [];
 
-	public function __construct(?string $name = null, array $data = [], $dataName = '')
+	public function setUp(): void
 	{
-		parent::__construct();
+		parent::setUp();
 
 		$this->model = new ApplicationChoicesRepository();
 	}
 
 	private function loadFixtures(): void
 	{
+		$this->refreshDataset();
+
 		$programRepository  = new ProgramRepository();
 		$programEntity      = $programRepository->getById($this->dataset['program']['programme_id']);
 		$campaignRepository = new CampaignRepository();

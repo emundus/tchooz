@@ -38,6 +38,8 @@ use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Transformers\ApplicationChoicesTransformer;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 /**
  * Emundus Component Application Model
@@ -2390,6 +2392,10 @@ class EmundusModelApplication extends ListModel
 												}
 
 												if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
+
+													if ($form_params->note == 'encrypted') {
+														$r_elt = EmundusHelperFabrik::decryptDatas($r_elt,null,'aes-128-cbc',$elements[$j]->plugin);
+													}
 
 													if (in_array($elements[$j]->plugin,['date','jdate'])) {
 														if (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00')) {
@@ -8837,40 +8843,67 @@ class EmundusModelApplication extends ListModel
         return $files;
     }
 
-    public function getSignedFile($id)
-    {
-        $file = '';
-        
-        $query = $this->_db->createQuery();
+	/**
+	 * @param   int  $id
+	 *
+	 * @return string
+	 * @deprecated originally come from platform Prestation Sociales. Must be replaced by something more generic
+	 */
+	public function getSignedFile(int $id): string
+	{
+		$file = '';
 
-        $query->clear()
-            ->select('fnum')
-            ->from('data_lots_883_repeat')
-            ->where('parent_id = ' . $this->_db->quote($id));
-        $this->_db->setQuery($query);
-        $fnums = $this->_db->loadColumn();
+		if (!empty($id))
+		{
+			$query = $this->_db->createQuery();
+			$query->clear()
+				->select('fnum')
+				->from('data_lots_883_repeat')
+				->where('parent_id = ' . $this->_db->quote($id));
 
-        if (!empty($fnums)) {
-            foreach ($fnums as $fnum) {
-                $query->clear()
-                    ->select('eu.filename,ecc.applicant_id')
-                    ->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
-                    ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quoteName('eu.fnum'))
-                    ->where('eu.attachment_id = 71')
-                    ->where('eu.fnum = ' . $this->_db->quote($fnum));
-                $this->_db->setQuery($query);
-                $file = $this->_db->loadObject();
+			try
+			{
+				$this->_db->setQuery($query);
+				$fnums = $this->_db->loadColumn();
 
-                if (!empty($file)) {
-                    $file = '/images/emundus/files/' . $file->applicant_id . '/' . $file->filename;
-                    break;
-                }
-                else{
-                    $file='';
-                }
-            }
-        }
+				if (!empty($fnums))
+				{
+					foreach ($fnums as $fnum)
+					{
+						$query->clear()
+							->select('eu.filename, ecc.applicant_id')
+							->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
+							->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quoteName('eu.fnum'))
+							->where('eu.attachment_id = 71')
+							->where('eu.fnum = ' . $this->_db->quote($fnum));
+						$this->_db->setQuery($query);
+						$file = $this->_db->loadObject();
 
-        return $file;
-    }
+						if (!empty($file))
+						{
+							$file = '/images/emundus/files/' . $file->applicant_id . '/' . $file->filename;
+
+							if (!file_exists(JPATH_SITE . $file))
+							{
+								Log::add('Signed file not found at path: ' . JPATH_SITE . $file, Log::ERROR, 'com_emundus.error');
+								$file = '';
+							}
+
+							break;
+						}
+						else
+						{
+							$file = '';
+						}
+					}
+				}
+			}
+			catch (\Exception $e)
+			{
+				Log::add('Error when get signed file : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $file;
+	}
 }

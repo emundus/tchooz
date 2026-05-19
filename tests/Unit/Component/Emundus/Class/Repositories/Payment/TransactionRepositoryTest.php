@@ -32,9 +32,9 @@ class TransactionRepositoryTest extends UnitTestCase
 
 	private $payment_step = null;
 
-	public function __construct(?string $name = null, array $data = [], $dataName = '')
+	public function setUp(): void
 	{
-		parent::__construct();
+		parent::setUp();
 		$this->model          = new TransactionRepository();
 		$this->workflow_model = new \EmundusModelWorkflow();
 	}
@@ -120,7 +120,6 @@ class TransactionRepositoryTest extends UnitTestCase
 			];
 
 			$updated = $this->workflow_model->updateWorkflow($workflow, $steps, [['id' => $this->dataset['program']['programme_id']]]);
-
 			$this->payment_workflow = $this->workflow_model->getWorkflow($workflow_id);
 
 			$currency_repository = new CurrencyRepository();
@@ -133,8 +132,7 @@ class TransactionRepositoryTest extends UnitTestCase
 			$mandatory_product->setCurrency($currency);
 			$mandatory_product->setPrice(500.0);
 			$mandatory_product->setMandatory(1);
-			$mandatory_product_id = $product_repository->flush($mandatory_product);
-			$mandatory_product->setId($mandatory_product_id);
+			$product_repository->flush($mandatory_product);
 
 			$optional_product = new ProductEntity();
 			$optional_product->setLabel('Produit obligatoire');
@@ -142,8 +140,7 @@ class TransactionRepositoryTest extends UnitTestCase
 			$optional_product->setMandatory(0);
 			$optional_product->setPrice(20);
 			$optional_product->setCurrency($currency);
-			$optional_product_id = $product_repository->flush($optional_product);
-			$optional_product->setId($optional_product_id);
+			$product_repository->flush($optional_product);
 
 			$payment_step = null;
 			foreach ($this->payment_workflow['steps'] as $step)
@@ -317,5 +314,11 @@ class TransactionRepositoryTest extends UnitTestCase
 		$this->assertEquals($line[3], $customer->getFullName(), 'Full name should match');
 		$this->assertEquals($line[4], $customer->getUserId(), 'Buyer id should match');
 		$this->assertEquals($line[6], $transaction->getAmount() . ' ' . $transaction->getCurrency()->getSymbol(), 'Amount should match');
+	}
+
+	public function tearDown(): void
+	{
+		$this->h_dataset->deleteSampleCart($this->dataset['fnum']);
+		parent::tearDown();
 	}
 }

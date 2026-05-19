@@ -37,6 +37,7 @@ class CampaignRepositoryTest extends UnitTestCase
 	 */
 	public function testGetAllCampaigns()
 	{
+		$this->refreshDataset();
 		$campaign1 = $this->repository->getById($this->h_dataset->createSampleCampaign($this->dataset['program']));
 		$campaign2 = $this->repository->getById($this->h_dataset->createSampleCampaign($this->dataset['program']));
 		$campaign3 = $this->repository->getById($this->dataset['campaign']);
@@ -64,11 +65,14 @@ class CampaignRepositoryTest extends UnitTestCase
 	 */
 	public function testGetAllCampaignsWithSearch(): void
 	{
+		$this->refreshDataset();
+
 		$campaign =  $this->repository->getById($this->dataset['campaign']);
-		$campaign->setLabel('Unique label for search test');
+		$uniqueLabel = 'Unique label ' . uniqid();
+		$campaign->setLabel($uniqueLabel);
 		$this->repository->flush($campaign);
 
-		$campaigns = $this->repository->getAllCampaigns('DESC', 'Unique label for search test', 25, 0, 'esc.id', false);
+		$campaigns = $this->repository->getAllCampaigns('DESC', $uniqueLabel, 25, 0, 'esc.id', false);
 		$this->assertCount(1, $campaigns->getItems(), 'The getAllCampaigns method should return an array with one element');
 		$this->assertEquals($campaign->getId(), $campaigns->getItems()[0]->getId(), 'The campaign id found should be the same as the original');
 
@@ -82,6 +86,7 @@ class CampaignRepositoryTest extends UnitTestCase
 	 */
 	public function testGetAllCampaignsDateFilter(): void
 	{
+		$this->refreshDataset();
 		$ongoingCampaign = $this->repository->getById($this->dataset['campaign']);
 		$ongoingCampaign->setStartDate((new \DateTime())->modify('-1 day'));
 		$ongoingCampaign->setEndDate((new \DateTime())->modify('+1 day'));
@@ -272,6 +277,7 @@ class CampaignRepositoryTest extends UnitTestCase
 	 */
 	public function testGetCampaignDefaultStep(): void
 	{
+		$this->refreshDataset();
 		$defaultStep = $this->repository->getCampaignDefaultStep($this->dataset['campaign']);
 		$campaign = $this->repository->getById($this->dataset['campaign']);
 

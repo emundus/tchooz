@@ -312,7 +312,7 @@ small {
     font-size: 15px;
     font-weight: 500;
 }
-.em-goback-btn {
+.em-goback-btn, .back-button-link {
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 
     button.btn.goback-btn {

@@ -30,7 +30,7 @@
 
 				<div class="tw-mb-4">
 					<label for="page-intro">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_INTRO') }}</label>
-					<textarea id="page-into" name="page-intro" class="tw-w-full" v-model="page_tmp.intro" />
+					<textarea id="page-intro" name="page-intro" class="tw-w-full" v-model="page_tmp.intro" />
 				</div>
 			</div>
 		</div>

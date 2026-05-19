@@ -11,7 +11,11 @@ namespace Emundus\Plugin\Console\Tchooz\Jobs\Checklist;
 
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Emundus\Plugin\Console\Tchooz\Style\EmundusProgressBar;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryInterface;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
@@ -35,6 +39,8 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 
 	private ?InputInterface $input = null;
 
+	private User $user;
+
 	public function __construct(
 		private readonly object            $logger,
 		private readonly DatabaseService   $databaseServiceSource,
@@ -50,6 +56,9 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 		$this->m_program = new \EmundusModelProgramme();
 		$this->m_campaign = new \EmundusModelCampaign();
 		$this->workflowRepository = new WorkflowRepository();
+
+		$automated_task_user = ComponentHelper::getParams('com_emundus')->get('automated_task_user', 62);
+		$this->user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($automated_task_user);
 
 		parent::__construct($logger);
 	}
@@ -428,7 +437,7 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 			$program['code'] = '';
 			unset($program['id']);
 
-			$response = $this->m_program->addProgram($program);
+			$response = $this->m_program->addProgram($program, $this->user);
 
 			if (!empty($response['programme_id'])) {
 				$new_program = $program;

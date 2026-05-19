@@ -1293,7 +1293,7 @@ $(document).ready(function () {
 							},
 							preConfirm: function () {
 								var link = document.createElement('a');
-								link.href = '/tmp/' + result.fileName;
+								link.href = '/index.php?option=com_emundus&task=getfile&u=tmp/' + result.fileName;
 								link.download = result.fileName;
 								document.body.appendChild(link);
 								link.click();

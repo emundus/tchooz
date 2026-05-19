@@ -202,7 +202,7 @@ class CalculationFactory
 	{
 		if (empty($json))
 		{
-			throw new \Exception('Invalid custom calculation operation format');
+			throw new \Exception('Custom calculation operation is empty');
 		}
 
 		$data = json_decode($json, true);

@@ -33,9 +33,12 @@ use EmundusModelUsers;
 use Exception;
 use JFactory;
 use JLog;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Entities\Automation\Actions\ActionUpdateStatus;
 use Tchooz\Entities\Automation\AutomationEntity;
@@ -91,6 +94,53 @@ class Dataset
 				]
 			);
 		}
+	}
+
+	public function getOrCreateSampleUser($profile = null, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2], $firstname = 'Test', $lastname = 'USER', array $groups = []): int
+	{
+		$user_id = 0;
+		$query = $this->db->createQuery();
+		$query->select('id')
+			->from('#__users')
+			->where('username = ' . $this->db->quote($username));
+
+		try
+		{
+			$user_id = $this->db->setQuery($query)->loadResult();
+		}
+		catch (Exception $e)
+		{
+
+		}
+
+		if (empty($user_id))
+		{
+			$user_id = $this->createSampleUser($profile, $username, $password, $j_groups, $firstname, $lastname, $groups);
+		}
+		elseif (!empty($groups))
+		{
+			// Check if user is already in the group
+			$query->clear()
+				->select('group_id')
+				->from('#__emundus_groups')
+				->where('user_id = ' . $user_id);
+			$existingGroups = $this->db->setQuery($query)->loadColumn();
+
+			// Check if we have to add the group
+			foreach ($groups as $group) {
+				if (!in_array($group, $existingGroups)) {
+					$query->clear()
+						->insert($this->db->quoteName('#__emundus_groups'))
+						->columns('user_id, group_id')
+						->values($user_id . ',' . $group);
+					$this->db->setQuery($query);
+					$this->db->execute();
+				}
+			}
+
+		}
+
+		return $user_id;
 	}
 
 	public function createSampleUser($profile = null, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2], $firstname = 'Test', $lastname = 'USER', array $groups = []): int
@@ -167,6 +217,41 @@ class Dataset
 		}
 
 		return $deleted;
+	}
+
+	public function getOrCreateSampleFile($campaignId, $userId, $return_ccid = false)
+	{
+		$result = '';
+		$query = $this->db->createQuery();
+
+		if ($return_ccid)
+		{
+			$query->select('id');
+		}
+		else
+		{
+			$query->select('fnum');
+		}
+
+		$query->from('#__emundus_campaign_candidature')
+			->where('campaign_id = ' . $campaignId)
+			->where('applicant_id = ' . $userId);
+
+		try
+		{
+			$this->db->setQuery($query);
+			$result = $this->db->loadResult();
+
+			if (empty($result))
+			{
+				$result = $this->createSampleFile($campaignId, $userId, $return_ccid);
+			}
+		} catch(Exception $e)
+		{
+
+		}
+
+		return $result;
 	}
 
 	public function createSampleFile($cid, $uid, $return_ccid = false){
@@ -356,10 +441,27 @@ class Dataset
 		return $deleted;
 	}
 
-	public function createSampleProgram($label = 'Programme Test Unitaire',$user_id = 1, $programmes = null)
+	public function getOrCreateSampleProgram($label = 'Programme Test Unitaire', $user_id = 1, $programmes = null)
+	{
+		$programRepository = new ProgramRepository();
+		$programEntity = $programRepository->getItemByField('label', $label, true);
+
+		 if (!empty($programEntity)) {
+			$program = [
+				'programme_id' => $programEntity->getId(),
+				'programme_code' => $programEntity->getCode(),
+			];
+		} else {
+			$program = $this->createSampleProgram($label, $user_id, $programmes);
+		}
+
+		return $program;
+	}
+
+	public function createSampleProgram($label = 'Programme Test Unitaire', $user_id = 1, $programmes = null)
 	{
 		$m_programme = new EmundusModelProgramme;
-		$program = $m_programme->addProgram(['label' => $label, 'published' => 1, 'programmes' => $programmes],Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id));
+		$program = $m_programme->addProgram(['label' => $label, 'published' => 1, 'programmes' => $programmes], Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id));
 		$m_programme->addProgramToGroup($program['programme_code'], 1);
 
 		return $program;
@@ -379,6 +481,28 @@ class Dataset
 		}
 
 		return $deleted;
+	}
+
+	public function getOrCreateSampleCampaign($program, $user_id = 1)
+	{
+		$campaign_id = 0;
+
+		if (!empty($program))
+		{
+			$campaignRepository = new CampaignRepository();
+			$campaignIds = $campaignRepository->getCampaignIdsByPrograms([$program['programme_id']]);
+
+			if (!empty($campaignIds))
+			{
+				$campaign_id = $campaignIds[0];
+			}
+			else
+			{
+				$campaign_id = $this->createSampleCampaign($program, $user_id);
+			}
+		}
+
+		return $campaign_id;
 	}
 
 	public function createSampleCampaign($program, $user_id = 1)
@@ -669,7 +793,7 @@ class Dataset
 		} catch (Exception $e) {
 			$form_id = $this->createUnitTestFabrikForm();
 		}
-
+		
 		if (!empty($create_table)) {
 			$query = $this->db->getQuery(true);
 			$query->select('form_id')
@@ -827,9 +951,9 @@ class Dataset
                   UNIQUE KEY `fnum` (`fnum`),
                   KEY `user` (`user`)
                 )";
-
+				
 				$this->db->setQuery($create_table);
-				$this->db->execute();
+				$result = $this->db->execute();
 
 				$create_table = "CREATE TABLE `jos_emundus_unit_test_form_repeat_dbjoin_multi` (
                       `id` int NOT NULL AUTO_INCREMENT,
@@ -1075,6 +1199,13 @@ class Dataset
 
 	public function resetWorkflows(): void
 	{
+		$query = $this->db->createQuery();
+		$query->delete('jos_emundus_cart')
+			->where('1 = 1');
+
+		$this->db->setQuery($query);
+		$this->db->execute();
+
 		$repository = new WorkflowRepository();
 		$workflows = $repository->getWorkflows();
 
@@ -1173,5 +1304,22 @@ class Dataset
 				}
 			}
 		}
+	}
+
+	public function deleteSampleCart(string $fnum): bool
+	{
+		$deleted = false;
+
+		if (!empty($fnum))
+		{
+			$query = $this->db->createQuery();
+			$query->delete('jos_emundus_cart')
+				->where('fnum = ' . $this->db->quote($fnum));
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		return $deleted;
 	}
 }

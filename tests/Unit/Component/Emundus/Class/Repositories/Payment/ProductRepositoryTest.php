@@ -30,9 +30,9 @@ class ProductRepositoryTest extends UnitTestCase
 	private CurrencyEntity $defaultCurrency;
 
 
-	public function __construct()
+	public function setUp(): void
 	{
-		parent::__construct();
+		parent::setUp();
 		$this->productRepository = new ProductRepository();
 		$currency_repository = new CurrencyRepository();
 		$this->defaultCurrency = $currency_repository->getCurrencyById(1);

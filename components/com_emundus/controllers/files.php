@@ -2264,11 +2264,7 @@ class EmundusControllerFiles extends EmundusController
 			}
 
 			if (!empty($fnumsArray)) {
-				$encrypted_tables = $h_files->getEncryptedTables();
-				if (!empty($encrypted_tables)) {
-					$cipher         = 'aes-128-cbc';
-					$encryption_key = JFactory::getConfig()->get('secret');
-				}
+				$encrypted_tables = EmundusHelperFiles::getEncryptedTables();
 
 				$emParams = ComponentHelper::getParams('com_emundus');
 				$excel_elts_to_escape = $emParams->get('export_elements_to_escape', '');

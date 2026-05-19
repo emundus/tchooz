@@ -112,9 +112,3 @@ $datas = [
 	}
 	?>
 </div>
-
-<style>
-    #evaluations-container {
-        height: calc(100vh - 151px);
-    }
-</style>

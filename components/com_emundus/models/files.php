@@ -739,7 +739,7 @@ class EmundusModelFiles extends JModelLegacy
 					{
 						if ($h_files->isTableLinkedToCampaignCandidature($table_to_join))
 						{
-							$leftJoin                .= 'LEFT JOIN ' . $table_to_join . ' ON ' . $table_to_join . '.fnum = jecc.fnum ';
+							$leftJoin                .= ' LEFT JOIN ' . $table_to_join . ' ON ' . $table_to_join . '.fnum = jecc.fnum ';
 							$already_joined_tables[] = $table_to_join;
 						}
 						else
@@ -6179,31 +6179,28 @@ class EmundusModelFiles extends JModelLegacy
 			}
 			$start = $i;
 
+			$app = Factory::getApplication();
+			$config = $app->getConfig();
+			$base_url = $config->get('live_site', '');
+
+			if (empty($base_url)) {
+				if ($app->isClient('site')) {
+					$base_url = Uri::base();
+				} else if ($app->isClient('administrator')) {
+					$base_url = Uri::root();
+				}
+			}
+
+			if (!empty($base_url) && !str_ends_with($base_url, '/'))
+			{
+				$base_url .= '/';
+			}
 
 			if (count($files_list) === 1 && !empty($files_list[0]))
 			{
 				copy($files_list[0], JPATH_SITE . DS . 'tmp' . DS . $file);
 
 				$start = $i;
-
-				$app = Factory::getApplication();
-				$config = $app->getConfig();
-				$siteurl = $config->get('live_site');
-
-				if (empty($siteurl)) {
-					if ($app->isClient('site')) {
-						$base_url = Uri::base();
-					} else if ($app->isClient('administrator')) {
-						$base_url = Uri::root();
-					}
-				} else {
-					$base_url = $siteurl;
-				}
-
-				if (!empty($base_url) && !str_ends_with($base_url, '/'))
-				{
-					$base_url .= '/';
-				}
 
 				$dataresult = [
 					'start' => $start, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
@@ -6265,7 +6262,7 @@ class EmundusModelFiles extends JModelLegacy
 				$dataresult = [
 					'start' => $start, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
 					'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
+					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>$base_url, 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
 				];
 				$response_status = true;
 			}
@@ -6275,11 +6272,11 @@ class EmundusModelFiles extends JModelLegacy
 				$dataresult = [
 					'start' => $start, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
 					'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
+					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>$base_url, 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
 				];
 			}
 		}
-
+		
 		return [
 			'status' => $response_status,
 			'json' => $dataresult
