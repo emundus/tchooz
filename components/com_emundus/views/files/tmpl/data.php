@@ -199,8 +199,21 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                                 <div class="em_list_photo"><?= $value->photo; ?></div>
 											<?php endif; ?>
                                             <div class="em_list_text">
-												<?php if ($anonymize_data) : ?>
-                                                    <div class="em_list_fnum"><?= $value->val; ?></div>
+                                                <?php if ($anonymize_data || $line['is_anonym']->val || $line['anonymous']->val) : ?>
+                                                    <?php if ($value->showReference): ?>
+                                                        <div class="tw-flex tw-items-end tw-gap-1 tw-whitespace-nowrap"
+                                                             title="<?= (!empty($value->reference) ? $value->reference : '') . '#' . (!empty($value->shortReference) ? $value->shortReference : ''); ?>"
+                                                        >
+                                                            <?php if (!empty($value->reference)) : ?>
+                                                                <label class="tw-mb-0"><?= $value->reference; ?></label>
+                                                            <?php endif; ?>
+                                                            <?php if (!empty($value->shortReference)) : ?>
+                                                                <span>#<?= $value->shortReference; ?></span>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <div class="em_list_fnum"><?= $value->val; ?></div>
+                                                    <?php endif; ?>
 												<?php else : ?>
                                                     <span class="em_list_text tw-flex tw-items-center tw-justify-between"
                                                           title="<?= $value->val; ?>">
@@ -222,9 +235,6 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                                                 <span class="tw-text-sm tw-text-neutral-500">#<?= $value->shortReference; ?></span>
                                                             <?php endif; ?>
                                                         </div>
-                                                    <?php endif; ?>
-                                                    <?php if ($line['is_anonym']->val != 1 && $line['anonymous']->val != 1): ?>
-                                                        <div class="em_list_user_id"><?= $value->user->id; ?></div>
                                                     <?php endif; ?>
 												<?php endif; ?>
                                             </div>

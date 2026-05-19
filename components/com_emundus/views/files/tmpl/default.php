@@ -323,8 +323,21 @@ $datas = [
                                                             <div class="em_list_photo"><?= $value->photo; ?></div>
 												        <?php endif; ?>
                                                         <div class="em_list_text">
-													        <?php if ($anonymize_data) : ?>
-                                                                <div class="em_list_fnum"><?= $value->val; ?></div>
+													        <?php if ($anonymize_data || $line['is_anonym']->val || $line['anonymous']->val) : ?>
+                                                                <?php if ($value->showReference): ?>
+                                                                    <div class="tw-flex tw-items-end tw-gap-1 tw-whitespace-nowrap"
+                                                                         title="<?= (!empty($value->reference) ? $value->reference : '') . '#' . (!empty($value->shortReference) ? $value->shortReference : ''); ?>"
+                                                                    >
+                                                                        <?php if (!empty($value->reference)) : ?>
+                                                                            <label class="tw-mb-0"><?= $value->reference; ?></label>
+                                                                        <?php endif; ?>
+                                                                        <?php if (!empty($value->shortReference)) : ?>
+                                                                            <span>#<?= $value->shortReference; ?></span>
+                                                                        <?php endif; ?>
+                                                                    </div>
+                                                                <?php else: ?>
+                                                                    <div class="em_list_fnum"><?= $value->val; ?></div>
+                                                                <?php endif; ?>
 													        <?php else : ?>
                                                                 <span class="em_list_text tw-flex tw-items-center tw-justify-between" title="<?= $value->val; ?>">
                                                                     <strong> <?= $value->user->name; ?></strong>
