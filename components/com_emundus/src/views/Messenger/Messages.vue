@@ -592,7 +592,7 @@ export default {
 							id="messages__list"
 							:class="{
 								'tw-relative tw-mb-4 tw-max-h-[65vh] tw-min-h-[60vh]': applicant == false,
-								'tw-absolute tw-max-h-[80%]': applicant == true,
+								'tw-absolute tw-max-h-[79%]': applicant == true,
 							}"
 							:style="messages_loading ? 'opacity: 0' : ''"
 						>
@@ -641,7 +641,7 @@ export default {
 						</div>
 
 						<div
-							class="tw-bottom-3 tw-mr-3 tw-w-full tw-px-3"
+							class="tw-bottom-1 tw-mr-3 tw-w-full tw-px-3"
 							:class="{
 								'tw-sticky': applicant == false,
 								'tw-absolute': applicant == true,
