@@ -9,7 +9,7 @@
 
 namespace Tchooz\Services\Addons;
 
-use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\Addons\AddonStatus;
@@ -223,6 +223,32 @@ class AddonService
 	public function getAddon(string $namekey): ?AddonEntity
 	{
 		return $this->repository->getByName($namekey);
+	}
+
+	public function getParameters(AddonEntity $addon): array
+	{
+		$handler = $this->resolver->resolve($addon->getNamekey(), $addon);
+
+		return $handler->getConfiguration()?->getParameters() ?? [];
+	}
+
+	public function setup(string $namekey, object $setup): bool
+	{
+		$addon = $this->getAddon($namekey);
+		if (!$addon)
+		{
+			throw new \RuntimeException('Synchronizer not found');
+		}
+
+		$handler = $this->resolver->resolve($addon->getNamekey(), $addon);
+
+		// 1. Save the configuration
+		if (!$handler->onSetup($setup, $this->repository))
+		{
+			throw new \RuntimeException(Text::_('COM_EMUNDUS_SETTINGS_ADDON_APP_SETUP_FAILED'));
+		}
+
+		return true;
 	}
 
 	/**

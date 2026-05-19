@@ -404,6 +404,19 @@ export default {
 		}
 	},
 
+	async setupAddon(addon_type, setup) {
+		try {
+			return await fetchClient.post('setupaddon', {
+				addon_type: addon_type,
+				setup: JSON.stringify(setup),
+			});
+		} catch (e) {
+			return {
+				status: false,
+			};
+		}
+	},
+
 	async toggleAppEnabled(app_id, enabled) {
 		try {
 			return await fetchClient.post('toggleapp', {
