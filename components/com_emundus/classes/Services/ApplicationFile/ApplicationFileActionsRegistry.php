@@ -90,6 +90,30 @@ class ApplicationFileActionsRegistry
 		return $this->actions;
 	}
 
+	public function getConfiguredActions(): array
+	{
+		$configuredActions = [];
+		foreach ($this->getActions() as $action)
+		{
+			if ($action->getActionType()->isAvailable())
+			{
+				$configuredActions[] = $action;
+			}
+		}
+
+		$config  = ComponentHelper::getParams('com_emundus');
+		$customActions = $config->get('custom_actions', '');
+		if (!empty($customActions))
+		{
+			foreach ($customActions as $id => $customAction)
+			{
+				$configuredActions[] = ApplicationFileActionFactory::customApplicationActionsFromConfig($customAction, $id);
+			}
+		}
+
+		return $configuredActions;
+	}
+
 	public function getAvailableActions(ApplicationFileEntity $applicationFileEntity, string $context = 'multiple', ?User $currentUser = null): array
 	{
 		$availableActions = [];
