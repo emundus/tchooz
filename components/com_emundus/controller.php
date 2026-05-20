@@ -2493,7 +2493,7 @@ class EmundusController extends JControllerLegacy
 
 					if (empty($applicationEntity->getFnum()) || empty($applicationEntity->getShortReference()))
 					{
-						throw new \Exception();
+						throw new \Exception(Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_FAILED'));
 					}
 
 					$fileAccessRepository = new ApplicationFileAccessRepository();

@@ -259,11 +259,13 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 				$applicationFileEntity->setId($ccid);
 				$flushed = true;
 
-				$this->dispatchJoomlaEvent('onCreateNewFile',
+				$this->dispatchJoomlaEvent('onAfterCampaignCandidature',
 					[
 						'user_id' => $applicationFileEntity->getUser()->id,
 						'fnum' => $applicationFileEntity->getFnum(),
 						'cid' => $applicationFileEntity->getCampaignId(),
+						'campaign' => $applicationFileEntity->getCampaignId(),
+						'connected' => $applicationFileEntity->getUser()->id,
 						'context' => new EventContextEntity(
 							$applicationFileEntity->getUser(),
 							[$applicationFileEntity->getFnum()],
