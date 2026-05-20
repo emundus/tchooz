@@ -194,14 +194,18 @@ class DiscountRepository
 		try {
 			$this->db->setQuery($query);
 			$flushed = $this->db->execute();
+
+			if ($flushed && empty($discount_entity->getId())) {
+				$discount_entity->setId((int) $this->db->insertid());
+			}
 		} catch (\Exception $e) {
 			Log::add('Error saving discount: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.discount');
 		}
 
 		return $flushed;
 	}
-	
-	public function delete(int $discount_id): bool 
+
+	public function delete(int $discount_id): bool
 	{
 		$deleted = false;
 		

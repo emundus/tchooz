@@ -6,8 +6,10 @@ use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
+use Tchooz\Entities\Automation\Actions\Traits\WithProductChoice;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
+use Tchooz\Entities\Fields\YesnoField;
 use Tchooz\Entities\Payment\ProductEntity;
 use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
@@ -18,9 +20,12 @@ use Tchooz\Repositories\Payment\ProductRepository;
 
 class ActionUpdateCartProducts extends ActionEntity
 {
+	use WithProductChoice;
+
 	public const ADD_OR_REMOVE_PARAMETER = 'add_or_remove';
 	public const ADD = 'add';
 	public const REMOVE = 'remove';
+	public const MANDATORY = 'mandatory';
 
 	public static function getIcon(): ?string
 	{
@@ -70,33 +75,26 @@ class ActionUpdateCartProducts extends ActionEntity
 
 			if (!empty($step->id))
 			{
-				$cart = $cartRepository->getCartByFnum($fnum, $step->id);
+				$cart = $cartRepository->getCartByFnum($fnum, $step->id, $this->getAutomatedTaskUserId());
 
 				if (!empty($cart)) {
 					$actionProducts = (array) $this->getParameterValue('products');
 					$actionProducts = array_map('intval', $actionProducts);
 
+					$mandatoryFlag = !empty($this->getParameterValue(self::MANDATORY)) ? 1 : 0;
 					switch($this->getParameterValue(self::ADD_OR_REMOVE_PARAMETER))
 					{
 						case self::ADD:
 							$saveCart = false;
 							foreach ($actionProducts as $actionProductId)
 							{
-								$alreadyInCart = false;
-								foreach ($cart->getProducts() as $product)
-								{
-									if ($product->getId() === $actionProductId)
-									{
-										$alreadyInCart = true;
-										break;
-									}
-								}
-
+								$alreadyInCart = !empty($this->findMatchingProduct($cart->getProducts(), $actionProductId));
 								if (!$alreadyInCart)
 								{
 									$product = $productRepository->getProductById($actionProductId);
 									if (!empty($product->getId()))
 									{
+										$product->setMandatory($mandatoryFlag);
 										$cart->addProduct($product);
 										$saveCart = true;
 									}
@@ -116,14 +114,11 @@ class ActionUpdateCartProducts extends ActionEntity
 							$needToSave = false;
 							foreach ($actionProducts as $actionProductId)
 							{
-								foreach ($cart->getProducts() as $product)
+								$productToRemove = $this->findMatchingProduct($cart->getProducts(), $actionProductId);
+								if (!empty($productToRemove))
 								{
-									if ($product->getId() === $actionProductId)
-									{
-										$cart->removeProduct($product);
-										$needToSave = true;
-										break;
-									}
+									$cart->removeProduct($productToRemove);
+									$needToSave = true;
 								}
 							}
 
@@ -160,31 +155,17 @@ class ActionUpdateCartProducts extends ActionEntity
 					new ChoiceFieldValue(self::ADD, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_UPDATE_TAGS_PARAMETER_ADD_OR_REMOVE_ADD')),
 					new ChoiceFieldValue(self::REMOVE, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_UPDATE_TAGS_PARAMETER_ADD_OR_REMOVE_REMOVE')),
 				], true),
-				new ChoiceField('products', Text::_('COM_EMUNDUS_ACTION_UPDATE_CART_PRODUCTS_PARAMETER_PRODUCTS_LABEL'), $this->getProductsList(), true, true)
+				$this->buildProductChoiceField(
+					'products',
+					Text::_('COM_EMUNDUS_ACTION_UPDATE_CART_PRODUCTS_PARAMETER_PRODUCTS_LABEL'),
+					true,
+					true
+				),
+				new YesnoField(self::MANDATORY, Text::_('COM_EMUNDUS_ACTION_UPDATE_CART_PRODUCTS_PARAMETER_MANDATORY_LABEL'), 0),
 			];
 		}
 
 		return $this->parameters;
-	}
-
-	/**
-	 * @return array<ChoiceFieldValue>
-	 */
-	private function getProductsList(): array
-	{
-		$options = [];
-
-		$productRepository = new ProductRepository();
-		$products = $productRepository->getProducts(0);
-
-		foreach ($products as $product)
-		{
-			assert($product instanceof ProductEntity);
-
-			$options[] = new ChoiceFieldValue($product->getId(), $product->getLabel());
-		}
-
-		return $options;
 	}
 
 	public static function getCategory(): ?ActionCategoryEnum
@@ -205,5 +186,24 @@ class ActionUpdateCartProducts extends ActionEntity
 	public function getLabelForLog(): string
 	{
 		return $this->getLabel();
+	}
+
+	/**
+	 * @param   array<ProductEntity>  $products
+	 * @param   int    $productId
+	 *
+	 * @return ProductEntity|null
+	 */
+	private function findMatchingProduct(array $products, int $productId): ?ProductEntity
+	{
+		foreach ($products as $product)
+		{
+			if ($product->getId() === $productId)
+			{
+				return $product;
+			}
+		}
+
+		return null;
 	}
 }
