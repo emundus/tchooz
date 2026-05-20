@@ -2086,13 +2086,12 @@ class EmundusControllersettings extends EmundusController
 		}
 
 		$appsSerialized = [];
+		$integrationService = new IntegrationService();
 		foreach($apps as $app)
 		{
 			assert($app instanceof SynchronizerEntity);
 			$appSerialized = $app->serialize();
 			$appSerialized['parameters'] = [];
-
-			$integrationService = new IntegrationService();
 
 			try
 			{
@@ -2262,10 +2261,45 @@ class EmundusControllersettings extends EmundusController
 			{
 				continue;
 			}
-			$data[] = $addon->__serialize();
+
+			$addonSerialized = $addon->__serialize();
+			$parameters = $addonService->getParameters($addon);
+			foreach ($parameters as $parameter)
+			{
+				assert($parameter instanceof Field);
+				$addonSerialized['parameters'][] = $parameter->toSchema();
+				if(empty($addonSerialized['params'][$parameter->getGroup()->getName()]))
+				{
+					$addonSerialized['params'][$parameter->getGroup()->getName()] = [];
+				}
+				if(empty($addonSerialized['params'][$parameter->getGroup()->getName()][$parameter->getName()]))
+				{
+					$addonSerialized['params'][$parameter->getGroup()->getName()][$parameter->getName()] = '';
+				}
+			}
+			$data[] = $addonSerialized;
 		}
 
 		return EmundusResponse::ok($data, Text::_('ADDONS_FOUND'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function setupaddon(): EmundusResponse
+	{
+		$addon_type = $this->input->getString('addon_type', '');
+		$setup  = $this->input->getRaw('setup', []);
+
+		if (empty($addon_type) || empty($setup))
+		{
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
+		}
+
+		$setup = json_decode($setup);
+
+		$addonService = new AddonService();
+		$addonService->setup($addon_type, $setup);
+
+		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_SETUP_SUCCESS'));
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]

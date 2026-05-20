@@ -39,6 +39,7 @@ use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\List\ListColumnTypesEnum;
 use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
@@ -2499,8 +2500,6 @@ class EmundusControllerApplication extends EmundusController
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
-
-			return;
 		}
 
 		$id = $this->input->getInt('id', 0);
@@ -2509,8 +2508,6 @@ class EmundusControllerApplication extends EmundusController
 			$response['code']    = 400;
 			$response['message'] = 'Missing id parameter.';
 			$this->sendJsonResponse($response);
-
-			return;
 		}
 
 		$fnum = $this->input->getString('fnum', '');
@@ -2529,8 +2526,6 @@ class EmundusControllerApplication extends EmundusController
 			$response['code']    = 400;
 			$response['message'] = 'Missing fnum parameter.';
 			$this->sendJsonResponse($response);
-
-			return;
 		}
 
 		$repository = new ApplicationChoicesRepository();
@@ -2541,8 +2536,6 @@ class EmundusControllerApplication extends EmundusController
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
-
-			return;
 		}
 
 		$choice->setState(ChoicesStateEnum::REJECTED);
@@ -2555,6 +2548,28 @@ class EmundusControllerApplication extends EmundusController
 		$response['status']  = true;
 		$response['data']    = $choiceObject;
 		$response['message'] = 'Choice refused successfully.';
+		
+		// AUTOMATIONS : If we have other admitted choices, we stay here. Else we check if a status parameter is set and then update file status then redirect to homepage
+		$addonRepository = new AddonRepository();
+		$addon = $addonRepository->getByName('choices');
+		$statusWhenRefused = $addon->getParam('status_when_refused', 'configuration');
+		if(!empty($statusWhenRefused))
+		{
+			$otherAcceptedChoices = $repository->getItemsByFields(['fnum' => $current_fnum, 'state' => ChoicesStateEnum::ACCEPTED->value]);
+			if (empty($otherAcceptedChoices))
+			{
+				if(!class_exists('EmundusModelFiles'))
+				{
+					require_once JPATH_SITE . '/components/com_emundus/models/files.php';
+				}
+				$mFiles = new EmundusModelFiles();
+				
+				$mFiles->updateState([$current_fnum], $statusWhenRefused, $this->_user->id);
+
+				$response['redirect'] = EmundusHelperMenu::getHomepageLink();
+			}
+		}
+
 		$this->sendJsonResponse($response);
 	}
 

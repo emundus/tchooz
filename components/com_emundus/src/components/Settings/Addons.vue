@@ -16,10 +16,12 @@ import CustomReference from '@/components/Settings/Addons/CustomReference.vue';
 import StripeSetup from '@/components/Settings/Integration/StripeSetup.vue';
 import AmmonSetup from '@/components/Settings/Integration/AmmonSetup.vue';
 import IntegrationSetup from '@/components/Settings/Integration/IntegrationSetup.vue';
+import AddonSetup from '@/components/Settings/Addons/AddonSetup.vue';
 
 export default {
 	name: 'Addons',
 	components: {
+		AddonSetup,
 		IntegrationSetup,
 		AmmonSetup,
 		StripeSetup,
@@ -575,6 +577,15 @@ export default {
 					"
 				></PaymentAddon>
 
+				<AnonymAddon
+					v-else-if="currentAddon.namekey === 'anonymous'"
+					:addon="currentAddon"
+					@addonSaved="
+						currentAddon = null;
+						getAddons();
+					"
+				></AnonymAddon>
+
 				<CustomReference
 					v-else-if="currentAddon.namekey === 'custom_reference_format'"
 					@addonSaved="
@@ -583,14 +594,7 @@ export default {
 					"
 				></CustomReference>
 
-				<Addon
-					v-else
-					:addon="currentAddon"
-					@addonSaved="
-						currentAddon = null;
-						getAddons();
-					"
-				></Addon>
+				<AddonSetup v-else-if="currentAddon.namekey !== ''" :addon="currentAddon" :name="currentAddon.label" />
 			</div>
 
 			<div v-if="currentApp">
