@@ -161,13 +161,17 @@ export default {
 			</div>-->
 
 			<div class="tw-flex tw-flex-col">
-				<label for="description"> {{ translate('COM_EMUNDUS_CART_DISCOUNT_DESCRIPTION_LABEL') }} <span class="tw-text-red-500">*</span></label>
+				<label for="description">
+					{{ translate('COM_EMUNDUS_CART_DISCOUNT_DESCRIPTION_LABEL') }} <span class="tw-text-red-500">*</span></label
+				>
 				<textarea name="description" v-model="alteration.description" :disabled="alteration.discount_id > 0"></textarea>
 			</div>
 
 			<div class="tw-grid tw-grid-cols-[minmax(0,1fr)_max-content] tw-gap-6">
 				<div class="tw-col-[1] tw-flex tw-w-full tw-flex-col">
-					<label for="amount"> {{ translate('COM_EMUNDUS_CART_DISCOUNT_AMOUNT_LABEL') }} <span class="tw-text-red-500">*</span></label>
+					<label for="amount">
+						{{ translate('COM_EMUNDUS_CART_DISCOUNT_AMOUNT_LABEL') }} <span class="tw-text-red-500">*</span></label
+					>
 					<input type="number" name="amount" v-model="alteration.amount" :disabled="alteration.discount_id > 0" />
 				</div>
 
