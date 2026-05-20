@@ -11,10 +11,14 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\CMS\Language\Text;
 use Joomla\CMS\Environment\Browser;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\String\StringHelper;
+use Joomla\Registry\Registry;
+use OCH\Plugin\Captcha\ochCaptcha\Provider\OchcaptchaProvider;
 use ReCaptcha\ReCaptcha;
 
 require_once JPATH_ROOT . '/plugins/fabrik_element/captcha/vendor/autoload.php';
@@ -28,6 +32,8 @@ require_once JPATH_ROOT . '/plugins/fabrik_element/captcha/vendor/autoload.php';
 class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 {
 	protected $font = 'monofont.ttf';
+
+	protected $ochCaptchaId = null;
 
 	/**
 	 * Generate captcha text
@@ -216,9 +222,10 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 			}
 		}
 
+		switch ($params->get('captcha-method')) {
 		// Old v1 reCaptcha not longer supported, handle like v2 reCaptcha(checkbox) - here called 'nocaptcha'
-		if ($params->get('captcha-method') == 'nocaptcha' || $params->get('captcha-method') == 'recaptcha')
-		{
+		case 'nocaptcha':
+		case 'recaptcha':
 			$layout                = $this->getLayout('nocaptcha');
 			$displayData           = new stdClass;
 			$displayData->id       = $id;
@@ -227,9 +234,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 			$displayData->lang     = FabrikWorker::replaceWithLanguageTags(StringHelper::strtolower($params->get('recaptcha_lang', 'en')));
 
 			return $layout->render($displayData);
-		}
-		elseif ($params->get('captcha-method') == 'invisible')
-		{
+		case 'invisible':
 			$layout                = $this->getLayout('nocaptcha-invisible');
 			$displayData           = new stdClass;
 			$displayData->id       = $id;
@@ -238,9 +243,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 			$displayData->lang     = FabrikWorker::replaceWithLanguageTags(StringHelper::strtolower($params->get('recaptcha_lang', 'en')));
 
 			return $layout->render($displayData);
-		}
-		else
-		{
+		case 'standard':
 			if (!function_exists('imagettfbbox'))
 			{
 				throw new RuntimeException(Text::_('PLG_FABRIK_ELEMENT_CAPTCHA_STANDARD_TTF_ERROR'));
@@ -282,6 +285,23 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 			$displayData->size = $size;
 
 			return $layout->render($displayData);
+		case 'ochcaptcha':
+			$ochCaptcha = PluginHelper::getPlugin('captcha', 'ochcaptcha');
+			if (!$ochCaptcha || PluginHelper::isEnabled('captcha', 'ochcaptcha') === false) {
+				$this->app->enqueueMessage(Text::_('PLG_ELEMENT_CAPTCHA_OCHCAPTCHA_NOTFOUND'), 'error');
+				return Text::_('PLG_ELEMENT_CAPTCHA_OCHCAPTCHA_NOTFOUND');
+			}
+			$lang = Factory::getLanguage();
+			$lang->load('plg_captcha_ochcaptcha', JPATH_PLUGINS . '/captcha/ochcaptcha');
+			$captcha = new OchcaptchaProvider(
+				new Registry(json_decode($ochCaptcha->params)),
+				$this->app
+			);
+			$html = $captcha->display('fab_ochcaptcha', ['id' => $id, 'class' => 'required']);
+			// Extract the ochCaptcha html ID as ochCaptcha appends a numeric to the end.
+			preg_match('/id="(' . preg_quote($id, '/') . '[^"]+)"/', $html, $matches);
+			$this->ochCaptchaId = $matches[1] ?? null;
+			return $html;
 		}
 	}
 
@@ -316,8 +336,11 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 
 		$method = $params->get('captcha-method', '');
 
-		if ($method === 'nocaptcha' || $method === 'invisible' || $method === 'recaptcha')
-		{
+		switch ($params->get('captcha-method')) {
+		// Old v1 reCaptcha not longer supported, handle like v2 reCaptcha(checkbox) - here called 'nocaptcha'
+		case 'nocaptcha':
+		case 'recaptcha':
+		case 'invisible':
 			if ($input->get('g-recaptcha-response'))
 			{
 				$privateKey = $params->get('recaptcha_privatekey');
@@ -363,9 +386,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 			}
 
 			return false;
-		}
-		else
-		{
+		default:
 			$this->getParams();
 
 			if ($this->session->get('com_' . $this->package . '.element.captcha.security_code', null) != $data)
@@ -374,6 +395,25 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 			}
 
 			return true;
+		case 'ochcaptcha':
+			$ochCaptcha = PluginHelper::getPlugin('captcha', 'ochcaptcha');
+			if (!$ochCaptcha || PluginHelper::isEnabled('captcha', 'ochcaptcha') === false) {
+				$this->app->enqueueMessage(Text::_('PLG_ELEMENT_CAPTCHA_OCHCAPTCHA_NOTFOUND'), 'error');
+				return false;
+			}
+			$lang = Factory::getLanguage();
+			$lang->load('plg_captcha_ochcaptcha', JPATH_PLUGINS . '/captcha/ochcaptcha');
+			$captcha = new OchcaptchaProvider(
+				new Registry(json_decode($ochCaptcha->params)),
+				$this->app
+			);
+			try {
+				$res = $captcha->checkAnswer();
+				return true;
+			} catch (\RuntimeException $e) {
+				$this->app->enqueueMessage($e->getMessage(), 'error');
+				return false;
+			}
 		}
 	}
 
@@ -419,7 +459,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 		if ($params->get('captcha-showloggedin', 0) == 1 || $this->user->get('id') == 0)
 		{
 			$params       = $this->getParams();
-			$id           = $this->getHTMLId($repeatCounter);
+			$id           = $this->ochCaptchaId ?? $this->getHTMLId($repeatCounter);
 			$opts         = $this->getElementJSOptions($repeatCounter);
 			$opts->method = $params->get('captcha-method');
 			$opts->siteKey = $params->get('recaptcha_publickey');
