@@ -2449,12 +2449,11 @@ class EmundusModelEvaluation extends JModelList
 			$user_id = $this->app->getIdentity()->id;
 		}
 
-		if(!empty($fnums))
+		if (!empty($fnums))
 		{
 			$averageByStepsByFnums = $this->getEvaluationAverageBySteps($fnums, $user_id);
 
-			// Calculate overall average by fnum
-			foreach($averageByStepsByFnums as $stepId => $averagesByFnum)
+			foreach ($averageByStepsByFnums as $averagesByFnum)
 			{
 				foreach ($averagesByFnum as $fnum => $average)
 				{
@@ -2509,16 +2508,23 @@ class EmundusModelEvaluation extends JModelList
 			}
 
 			$query = $this->db->createQuery();
+			$quotedFnums = implode(',', array_map([$this->db, 'quote'], $fnums));
 
 			foreach ($steps as $step) {
-				$average_element = $this->getEvaluationFormAverageElement($step);
+				$average_element = $this->getEvaluationFormAverageElement($step->form_id);
 
-				if (!empty($average_element)) {
+				if (!empty($average_element) && !empty($step->workflow_id)) {
+					// Restrict the average computation to fnums whose campaign program is linked
+					// to this step's workflow, so a file is never averaged against a step it does
+					// not belong to (eg. an evaluator with access to multiple workflows).
 					$query->clear()
 						->select('ROUND(AVG(COALESCE(' . $this->db->quoteName('eval_table.' . $average_element['name']) . ', 0.00)),2) AS average, ecc.fnum')
 						->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
-						->leftJoin($this->db->quoteName($step->table, 'eval_table') . ' on eval_table.ccid = ecc.id')
-						->where($this->db->quoteName('ecc.fnum') . ' IN (' . implode(',', $fnums) . ')')
+						->innerJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id = ecc.campaign_id')
+						->innerJoin($this->db->quoteName('#__emundus_setup_workflows_programs', 'eswp') . ' ON eswp.program_id = esc.program_id')
+						->leftJoin($this->db->quoteName($step->table, 'eval_table') . ' ON eval_table.ccid = ecc.id')
+						->where($this->db->quoteName('ecc.fnum') . ' IN (' . $quotedFnums . ')')
+						->where($this->db->quoteName('eswp.workflow_id') . ' = ' . (int) $step->workflow_id)
 						->group($this->db->quoteName('ecc.fnum'));
 
 					try {
@@ -2535,21 +2541,21 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 	/**
-	 * @param   object  $step
+	 * @param   int  $formId
 	 *
 	 * @return array
 	 */
-	private function getEvaluationFormAverageElement(object $step): array
+	public function getEvaluationFormAverageElement(int $formId): array
 	{
 		$element = [];
 
-		if (!empty($step->form_id)) {
+		if (!empty($formId)) {
 			$query = $this->db->createQuery();
 
 			$query->select('jfe.*')
 				->from($this->db->quoteName('#__fabrik_elements', 'jfe'))
 				->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfe.group_id')
-				->where('jffg.form_id = ' . $step->form_id)
+				->where('jffg.form_id = ' . $formId)
 				->andWhere('jfe.published = 1')
 				->andWhere('jfe.plugin = ' . $this->db->quote('average') . ' OR jfe.params LIKE ' . $this->db->quote('%used_as_total%'));
 

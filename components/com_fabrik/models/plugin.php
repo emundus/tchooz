@@ -841,6 +841,11 @@ class FabrikPlugin extends CMSPlugin
 		{
 			if ($showAll)
 			{
+				//Allow for backend only
+				if (!Factory::getApplication()->isClient('administrator')) {
+					header('HTTP/1.1 403 Forbidden');
+					jexit(Text::_('JERROR_ALERTNOAUTHOR').' F1');
+				}
 				// Show all db columns
 				$cid = $input->get('cid', -1);
 				$cnn = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel('Connection', 'FabrikFEModel');
@@ -896,6 +901,13 @@ class FabrikPlugin extends CMSPlugin
 				/** @var FabrikFEModelList $model */
 				$model = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel('List', 'FabrikFEModel');
 				$model->setId($tid);
+
+				//Only allow for backend or appropriate form access
+				if (!Factory::getApplication()->isClient('administrator') && $model->getFormModel()->checkAccessFromListSettings() == 0) {
+					header('HTTP/1.1 403 Forbidden');
+					jexit(Text::_('JERROR_ALERTNOAUTHOR').' F2');
+				}
+
 				$table       = $model->getTable();
 				$db          = $model->getDb();
 				$groups      = $model->getFormGroupElementData();

@@ -406,6 +406,7 @@ class FabrikControllerDetails extends BaseController
 	 *
 	 * @return  null
 	 */
+/* Details view should not do any validation*/
 	public function ajax_validate()
 	{
 		$app = Factory::getApplication();
@@ -414,12 +415,19 @@ class FabrikControllerDetails extends BaseController
 		$model->setId($input->getInt('formid', 0));
 		$model->getForm();
 		$model->setRowId($input->get('rowid', '', 'string'));
+		
+		if ($model->checkAccessFromListSettings() == 0) {
+			header('HTTP/1.1 403 Forbidden');
+			jexit(Text::_('JERROR_ALERTNOAUTHOR').' F4ajaxval');
+		}
+		
 		$model->validate();
 		$data = array('modified' => $model->modifiedValidationData);
 
 		// Validating entire group when navigating form pages
 		$data['errors'] = $model->errors;
 		echo json_encode($data);
+
 	}
 
 	/**

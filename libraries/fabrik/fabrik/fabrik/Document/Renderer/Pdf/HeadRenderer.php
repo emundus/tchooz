@@ -366,7 +366,9 @@ class HeadRenderer extends DocumentRenderer
 				$buffer .= $tab . $tab . '//<![CDATA[' . $lnEnd;
 			}
 
-			$buffer .= $content . $lnEnd;
+			$scriptContent = is_array($content) ? implode($lnEnd, $content) : (string) $content;
+            $buffer .= $scriptContent . $lnEnd;
+			//$buffer .= $content . $lnEnd;
 
 			// See above note
 			if ($document->_mime != 'text/html')

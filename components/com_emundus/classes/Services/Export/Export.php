@@ -103,8 +103,8 @@ class Export
 
 	const MANAGEMENT_OTHER_ELEMENTS = [
 		[
-			'id'    => 'average_score_by_steps',
-			'label' => 'COM_EMUNDUS_EXPORT_AVERAGE_SCORE_BY_STEPS',
+			'id'    => 'overall_average_score',
+			'label' => 'COM_EMUNDUS_EXPORT_OVERALL_AVERAGE_SCORE',
 		]
 	];
 
@@ -161,48 +161,44 @@ class Export
 			$header = HeadersEnum::tryFrom($elementId);
 			if (!empty($header))
 			{
-				// todo: change this, it looks rough to handle header specificity here
-				if ($header === HeadersEnum::AVERAGE_SCORE_BY_STEPS)
+				$result['label'] = Text::_($header->getLabel());
+				foreach ($files as $file)
 				{
-					$fnums = array_map(function ($file) {
-						return $file->getFnum();
-					}, $files);
-
-					if (!class_exists('EmundusModelEvaluation'))
-					{
-						require_once(JPATH_ROOT.'/components/com_emundus/models/evaluation.php');
-					}
-					$evaluationModel = new EmundusModelEvaluation();
-					$averagesBySteps = $evaluationModel->getEvaluationAverageBySteps($fnums, 0);
-
-					if (!empty($averagesBySteps))
-					{
-						$stepRepository = new StepRepository();
-
-						foreach ($averagesBySteps as $stepId => $averageByFnum)
-						{
-							$step = $stepRepository->getStepById($stepId);
-							$result['label'] = Text::_($header->getLabel()) . ' - ' . Text::_($step->label);
-							foreach ($files as $file)
-							{
-								$result['data'][$file->getFnum()] = $averageByFnum[$file->getFnum()] ?? '';
-							}
-						}
-					}
-				}
-				else
-				{
-					$result['label'] = Text::_($header->getLabel());
-					foreach ($files as $file)
-					{
-						$result['data'][$file->getFnum()] = $header->transform($file, $this->labelRepository, null, $format);
-					}
+					$result['data'][$file->getFnum()] = $header->transform($file, $this->labelRepository, null, $format);
 				}
 
 				return $result;
 			}
 
-			if(str_starts_with($elementId, 'application_choice_more_'))
+			if (str_starts_with($elementId, 'evaluation_average_step_'))
+			{
+				$stepId = (int) str_replace('evaluation_average_step_', '', $elementId);
+
+				$stepRepository = new StepRepository();
+				$step = $stepRepository->getStepById($stepId);
+
+				$fnums = array_map(function ($file) {
+					return $file->getFnum();
+				}, $files);
+
+				if (!empty($step))
+				{
+					$result['label'] = Text::_('COM_EMUNDUS_ONBOARD_TYPE_AVERAGE') . ' ' . Text::_('COM_EMUNDUS_EVALUATION_EVAL_STEP') . ' ' . $step->getLabel();
+
+					if (!class_exists('EmundusModelEvaluation'))
+					{
+						require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
+					}
+					$evaluation = new EmundusModelEvaluation();
+					$averageScoresByFnums = $evaluation->getEvaluationAverageBySteps($fnums, 0, [$stepId]);
+
+					foreach ($files as $file)
+					{
+						$result['data'][$file->getFnum()] = $averageScoresByFnums[$stepId][$file->getFnum()] ?? '';
+					}
+				}
+			}
+			else if(str_starts_with($elementId, 'application_choice_more_'))
 			{
 				$elementParts = explode('_', $elementId);
 				$moreFieldId  = (int) end($elementParts);
@@ -237,8 +233,7 @@ class Export
 					}
 				}
 			}
-
-			if (str_starts_with($elementId, 'campaign_more_'))
+			else if (str_starts_with($elementId, 'campaign_more_'))
 			{
 				$elementParts = explode('_', $elementId);
 				$moreFieldId  = (int) end($elementParts);

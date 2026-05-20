@@ -6043,7 +6043,10 @@ class EmundusModelFormbuilder extends ListModel
 
 						foreach ($languages as $language)
 						{
-							$labels_to_duplicate[$language->sef] = str_replace($args['model_prefix'], '', LanguageFactory::getTranslation($sub_label, $language->lang_code));
+							$translation = LanguageFactory::getTranslation($sub_label, $language->lang_code);
+							$labels_to_duplicate[$language->sef] = $translation !== null
+								? str_replace($args['model_prefix'], '', $translation)
+								: $sub_label;
 							if ($args['label'][$language->sef] == '')
 							{
 								$args['label'][$language->sef] = $sub_label;
@@ -6058,7 +6061,10 @@ class EmundusModelFormbuilder extends ListModel
 				$labels_to_duplicate = array();
 				foreach ($languages as $language)
 				{
-					$labels_to_duplicate[$language->sef] = str_replace($args['model_prefix'], '', LanguageFactory::getTranslation($element->element->label, $language->lang_code));
+					$translation = LanguageFactory::getTranslation($element->element->label, $language->lang_code);
+					$labels_to_duplicate[$language->sef] = $translation !== null
+						? str_replace($args['model_prefix'], '', $translation)
+						: $element->element->label;
 					if ($args['label'][$language->sef] == '')
 					{
 						$args['label'][$language->sef] = $element->element->label;

@@ -37,6 +37,7 @@
 				<option value="nocaptcha">reCaptcha (Checkbox) v2</option>
 				<option value="invisible">reCaptcha (Invisible) v2</option>
 				<option value="recaptcha">reCaptcha v1</option>
+				<option value="ochcaptcha">ochCaptcha</option>
 			</field>
 		</fieldset>
 

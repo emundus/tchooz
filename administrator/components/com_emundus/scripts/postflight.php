@@ -1430,8 +1430,8 @@ class Com_EmundusPostflightTasks
 
 			// Blacklist
 			$storage_value['dynamic_blacklist']         = 1;
-			$storage_value['dynamic_blacklist_counter'] = 5;
-			$storage_value['dynamic_blacklist_time']    = 300;
+			$storage_value['dynamic_blacklist_counter'] = 10;
+			$storage_value['dynamic_blacklist_time']    = 60;
 			$storage_value['blacklist_email']           = 0;
 
 			// Strict mode
