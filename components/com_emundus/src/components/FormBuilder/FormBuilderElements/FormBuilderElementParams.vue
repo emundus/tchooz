@@ -535,7 +535,7 @@ export default {
 				return (
 					element.publish &&
 					this.element.id != element.element_id &&
-					['field', 'calc', 'average', 'dropdown', 'radiobutton'].includes(element.plugin) &&
+					['field', 'calc', 'average', 'dropdown', 'radiobutton', 'numeric', 'emundus_calculation'].includes(element.plugin) &&
 					!['parent_id'].includes(element.name)
 				);
 			});

@@ -97,6 +97,40 @@ class StepRepository
 	}
 
 	/**
+	 * @param   int  $formId
+	 *
+	 * @return array<StepEntity>
+	 * @throws \Exception
+	 */
+	public function getStepsByFormId(int $formId): array
+	{
+		$steps = [];
+
+		if (!empty($formId))
+		{
+			$query = $this->db->createQuery();
+
+			try {
+				$query->select('s.*, GROUP_CONCAT(es.status) AS entry_status, f.db_table_name AS ' . $this->db->quoteName('table') . ', f.id AS table_id')
+					->from($this->db->quoteName($this->tableName, 's'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'es') . ' ON ' . $this->db->quoteName('s.id') . ' = ' . $this->db->quoteName('es.step_id'))
+					->leftJoin($this->db->quoteName('#__fabrik_lists', 'f') . ' ON ' . $this->db->quoteName('s.form_id') . ' = ' . $this->db->quoteName('f.form_id'))
+					->where($this->db->quoteName('s.form_id') . ' = ' . $formId)
+					->group('s.id');
+
+				$this->db->setQuery($query);
+				$results = $this->db->loadObjectList();
+				$steps = StepFactory::fromDbObjects($results);
+			} catch (\Exception $e) {
+				Log::add('Error while fetching steps for form ID ' . $formId . ': ' . $e->getMessage() . ' ' . $query->__toString(), Log::ERROR, 'com_emundus.repository.step');
+				throw new \Exception(Text::_('COM_EMUNDUS_ERROR_FETCHING_STEPS'));
+			}
+		}
+
+		return $steps;
+	}
+
+	/**
 	 * @param   array  $filters
 	 * @param   int    $limit
 	 * @param   int    $page
