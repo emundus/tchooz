@@ -6,7 +6,7 @@
 
         &:hover {
             p,span {
-                color: var(--em-profile-color);
+                color: var(--neutral-0);
             }
         }
     }

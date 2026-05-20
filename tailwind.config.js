@@ -262,30 +262,47 @@ module.exports = {
                 '.btn-primary': {
                     backgroundColor: 'var(--em-profile-color)',
                     color: 'var(--neutral-0) !important',
-                    border: '1px solid var(--em-profile-color)',
+                    border: '1px solid var(--em-profile-color) !important',
                     textShadow: 'none',
                     textTransform: 'math-auto',
-                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
-                    fontSize: '16px',
+                    textDecoration: 'none',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal) !important',
+                    fontSize: 'var(--em-applicant-font-size)',
                     fontFamily: 'var(--em-profile-font)',
-                    lineHeight: '1.25',
+                    lineHeight: '1.5',
                     borderRadius: 'var(--em-applicant-br)',
-                    transition: 'all 0.2s ease-out',
-                    display: 'flex',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important',
+                    display: 'flex !important',
                     justifyContent: 'center',
                     alignItems: 'center',
                     cursor: 'pointer',
+                    minHeight: '40px',
+                    boxShadow: 'none',
 
                     '&:hover': {
-                        backgroundColor: 'var(--neutral-0)',
-                        color: 'var(--em-profile-color) !important',
-                        border: '1px solid var(--em-profile-color)',
+                        backgroundColor: 'color-mix(in srgb, var(--em-primary-color), var(--neutral-900) 30%) !important',
+                        color: 'var(--neutral-0) !important',
+                        border: '1px solid var(--em-profile-color) !important',
                         textDecoration: 'none',
+                    },
+
+                    '&:active': {
+                        backgroundColor: 'color-mix(in srgb, var(--em-primary-color), var(--neutral-900) 60%)'
                     },
 
                     '&:disabled': {
                         opacity: '0.6',
                         cursor: 'not-allowed',
+                    },
+
+                    '&:focus': {
+                        color: 'var(--neutral-0)',
+                        boxShadow: 'none'
+                    },
+
+                    '&:focus-visible': {
+                        outline: '2px solid color-mix(in srgb, var(--em-primary-color), var(--neutral-900) 30%)',
+                        outlineOffset: '2px'
                     }
                 },
 

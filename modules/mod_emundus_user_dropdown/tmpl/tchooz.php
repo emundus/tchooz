@@ -9,6 +9,9 @@
 // No direct access.
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
+use Tchooz\Enums\UI\ButtonVariantEnum;
+use Tchooz\Enums\UI\ButtonWidthEnum;
 
 defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
@@ -98,11 +101,6 @@ if ($user != null)
             border-bottom: 1px solid #fff;
         }
 
-        #userDropdownMenu li > a:hover,
-        #userDropdownMenu .active > a {
-            background: #<?= $secondary_color; ?>;
-        }
-
         .select {
             text-align: left;
             width: 100%;
@@ -132,10 +130,6 @@ if ($user != null)
 
         .select .profile-select:focus {
             background-color: var(--neutral-0) !important;
-        }
-
-        .dropdown-menu > li > a {
-            padding: unset;
         }
 
         .userDropdown-tip {
@@ -351,10 +345,17 @@ if ($user != null)
 			?>
 
 			<?php if ($show_update == '1') : ?>
-                <li><a class="edit-button-user em-flex-row em-flex-important em-flex-center"
-                       href="<?= $link_edit_profile ?>" style="margin-top: 0"><span
-                                class="material-symbols-outlined tw-mr-2">person_outline</span><?= JText::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL') ?>
-                    </a></li>
+                <li>
+                    <?php
+                    echo LayoutHelper::render('emundus.button', [
+                        'variant' => ButtonVariantEnum::PRIMARY,
+                        'icon'    => 'person_outline',
+                        'width'   => ButtonWidthEnum::FULL,
+                        'text'    => Text::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL'),
+                        'href'    => $link_edit_profile,
+                    ]);
+                    ?>
+                </li>
 			<?php endif; ?>
             <?php if (!empty($link_exports)) : ?>
             <li><a class="edit-button-user em-flex-row em-flex-important em-flex-center"
