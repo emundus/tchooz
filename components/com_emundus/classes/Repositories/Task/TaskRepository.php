@@ -29,6 +29,8 @@ class TaskRepository
 
 	private DatabaseDriver $db;
 
+	public const MAX_TASK_ATTEMPTS = 3;
+
 	public function __construct(?DatabaseDriver $db = null)
 	{
 		$this->db = $db ?? Factory::getContainer()->get('DatabaseDriver');
@@ -76,7 +78,7 @@ class TaskRepository
 				->from($this->getTableName(self::class))
 				->where($this->db->quoteName('status') . ' = ' . $this->db->quote(TaskStatusEnum::PENDING->value))
 				->orWhere($this->db->quoteName('status') . ' = ' . $this->db->quote(TaskStatusEnum::FAILED->value)
-					. ' AND ' . $this->db->quoteName('attempts') . ' < 3'
+					. ' AND ' . $this->db->quoteName('attempts') . ' < ' . $this->db->quote(self::MAX_TASK_ATTEMPTS)
 					. ' AND ' . $this->db->quoteName('updated_at') . ' <= ' . $this->db->quote((new \DateTimeImmutable('-' . $retryAfterMin . ' minutes'))->format('Y-m-d H:i:s'))
 				)
 				->order($this->db->quoteName('priority') . 'DESC, '. $this->db->quoteName('created_at') . ' ASC')
