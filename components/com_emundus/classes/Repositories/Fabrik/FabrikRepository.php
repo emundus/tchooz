@@ -1029,11 +1029,8 @@ class FabrikRepository
 		$intro_to_duplicate  = [];
 		foreach ($languages as $language)
 		{
-			$labels_to_duplicate[$language->sef] = LanguageFactory::getTranslation($oldGroup->label, $language->lang_code);
-			if (is_null($labels_to_duplicate[$language->sef]))
-			{
-				$labels_to_duplicate[$language->sef] = '';
-			}
+			$translation = LanguageFactory::getTranslation($oldGroup->label, $language->lang_code);
+			$labels_to_duplicate[$language->sef] = $translation !== null ? $translation : $oldGroup->label;
 
 			if (!empty($oldIntroKey))
 			{
@@ -1159,25 +1156,27 @@ class FabrikRepository
 			foreach ($params->sub_options->sub_labels as $index => $sub_label)
 			{
 				$labels_to_duplicate = array();
+				if (is_null($sub_label)) $sub_label = '';
 
+				$subLabelKey = 'SUBLABEL_' . $element->group_id . '_' . $element->id . '_' . $index;
 				foreach ($languages as $language)
 				{
-					$labels_to_duplicate[$language->sef] = LanguageFactory::getTranslation($sub_label, $language->lang_code);
+					$translation = LanguageFactory::getTranslation($sub_label, $language->lang_code);
+					$labels_to_duplicate[$language->sef] = $translation !== null ? $translation : $sub_label;
 				}
-				LanguageFactory::translate('SUBLABEL_' . $element->group_id . '_' . $element->id . '_' . $index, $labels_to_duplicate, 'fabrik_elements', $element->id, 'sub_labels', $this->user->id);
-				$sub_labels[] = 'SUBLABEL_' . $element->group_id . '_' . $element->id . '_' . $index;
+				LanguageFactory::translate($subLabelKey, $labels_to_duplicate, 'fabrik_elements', $element->id, 'sub_labels', $this->user->id);
+				$sub_labels[] = $subLabelKey;
 			}
 			$params->sub_options->sub_labels = $sub_labels;
 		}
 
 		$labels_to_duplicate = array();
+		if(is_null($element->label)) $element->label = '';
+
 		foreach ($languages as $language)
 		{
-			$labels_to_duplicate[$language->sef] = LanguageFactory::getTranslation($element->label, $language->lang_code);
-			if (is_null($labels_to_duplicate[$language->sef]))
-			{
-				$labels_to_duplicate[$language->sef] = '';
-			}
+			$translation = LanguageFactory::getTranslation($element->label, $language->lang_code);
+			$labels_to_duplicate[$language->sef] = $translation !== null ? $translation : $element->label;
 		}
 		LanguageFactory::translate($labelKey, $labels_to_duplicate, 'fabrik_elements', $element->id, 'label', $this->user->id);
 		//
