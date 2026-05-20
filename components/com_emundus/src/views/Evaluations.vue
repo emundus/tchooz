@@ -148,6 +148,12 @@ export default {
 				iframeDoc.querySelector('.emundus-form').classList.add('eval-form-split-view');
 				iframeDoc.querySelector('body .platform-content > div').classList.add('eval-form-split-view-container');
 			}
+
+			let iframeEl = document.querySelector('.iframe-evaluation-list');
+			let evaluatorStepContainer = document.querySelector('.em-container-evaluator-step');
+			if (iframeEl && evaluatorStepContainer) {
+				iframeEl.style.height = iframeEl.contentWindow.document.body.scrollHeight + 32 + 'px';
+			}
 		},
 		updateTab(evaluation) {
 			window.postMessage({ type: 'reloadSteps', hiddenSteps: JSON.stringify(evaluation.hidden_steps) }, '*');
