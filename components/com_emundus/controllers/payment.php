@@ -28,6 +28,8 @@ use Tchooz\Entities\Payment\PaymentMethodEntity;
 use Tchooz\Entities\Payment\ProductCategoryEntity;
 use Tchooz\Entities\Payment\ProductEntity;
 use Tchooz\Entities\Payment\TransactionStatus;
+use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Payment\AlterationRepository;
 use Tchooz\Repositories\Payment\CartRepository;
@@ -1091,6 +1093,18 @@ class EmundusControllerPayment extends BaseController
 					}
 				}
 
+				// Override : un produit marqué obligatoire au niveau de cette ligne
+				// jos_emundus_cart_product (typiquement par une automation) n'est jamais
+				// retirable, même s'il n'apparaît pas dans la config de l'étape.
+				if ($removable) {
+					foreach ($cart->getProducts() as $cart_product) {
+						if ($cart_product->getId() === $product_id && $cart_product->getMandatory() === 1) {
+							$removable = false;
+							break;
+						}
+					}
+				}
+
 				if ($removable) {
 					$removed = $cart_repository->removeProduct($cart, $product_id, $this->app->getIdentity()->id);
 
@@ -1662,6 +1676,28 @@ class EmundusControllerPayment extends BaseController
 			} else {
 				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_COUNTRIES_NOT_FOUND'), 'status' => false];
 			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getproductoptions(): void
+	{
+		$this->checkToken('get');
+		$response = ['code' => 403, 'status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
+
+		if (EmundusHelperAccess::asAccessAction(ActionEnum::PAYMENT->value, CrudEnum::READ->value, $this->app->getIdentity()->id)) {
+			$products = (new ProductRepository())->getProducts(0);
+			$response['data']   = array_map(
+				static fn(ProductEntity $product) => [
+					'value' => $product->getId(),
+					'label' => $product->getLabel(),
+				],
+				$products
+			);
+			$response['status'] = true;
+			$response['code']   = 200;
+			$response['msg']    = '';
 		}
 
 		$this->sendJsonResponse($response);

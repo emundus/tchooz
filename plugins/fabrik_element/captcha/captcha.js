@@ -21,7 +21,14 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
                 requirejs(['https://www.google.com/recaptcha/api.js?onload=fabrikCaptureLoaded&render=explicit']);
             }
-            this.parent(element, options);
+	        if (options.method === 'ochcaptcha') {
+	        	const el = document.getElementById(element);
+	        	if (el.type == 'hidden') {
+	        		// Hide the container to reduce the space requirements on the form
+	        		el.closest('.fabrikElementContainer').classList.add('d-none');
+	        	}
+	        }
+           this.parent(element, options);
         },
 
         captureCompleted: function (response)

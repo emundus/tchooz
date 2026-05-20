@@ -582,6 +582,12 @@ class FabrikControllerForm extends BaseController
 		$model->setId($input->getInt('formid', 0));
 		$model->getForm();
 		$model->setRowId($input->get('rowid', '', 'string'));
+		
+		if ($model->checkAccessFromListSettings() == 0) {
+			header('HTTP/1.1 403 Forbidden');
+			jexit(Text::_('JERROR_ALERTNOAUTHOR').' F3ajaxval');
+		}
+		
 		$model->validate();
 		$data = array('modified' => $model->modifiedValidationData);
 

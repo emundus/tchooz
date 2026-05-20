@@ -169,6 +169,16 @@ class ConditionService
 		return $this->db->loadObjectList();
 	}
 
+	public function hasOptionalityRules(string $field): bool
+	{
+		$rules = $this->getRules([
+			'fields' => $field,
+			'action' => ['set_optional', 'set_mandatory']
+		]);
+
+		return !empty($rules);
+	}
+
 	public function getConditions(int $ruleId, int $formId = 0)
 	{
 		$query = $this->buildConditionsQuery();

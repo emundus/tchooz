@@ -5564,6 +5564,17 @@ class FabrikFEModelList extends FormModel
 			$condition = StringHelper::strtoupper($this->filters['condition'][$i]);
 			$key = $this->filters['key'][$i];
 			$filterEval = $this->filters['eval'][$i];
+					
+			// Allow filterEval EVAL or QUERY for prefilters only
+			$eval_search_type = $this->filters['search_type'][$i];
+			if (($filterEval == FABRIKFILTER_EVAL || $filterEval == FABRIKFILTER_QUERY) && !str_contains(strtolower($eval_search_type), 'prefilter') ) {
+				$this->app->enqueueMessage
+				('Filter eval restricted to prefilters, please inform your Website Admin: ' . $key . ' /  ' . $value. ' /  ' . $eval_search_type,'error');
+				$value = '---invalid---';
+				$filterEval = FABRIKFILTER_TEXT;
+				$this->filters['eval'][$i] = $filterEval;
+			}
+			
 			$elid = FArrayHelper::getValue($elementIds, $i);
 			$key2 = array_key_exists('key2', $this->filters) ? FArrayHelper::getValue($this->filters['key2'], $i, '') : '';
 
@@ -5675,15 +5686,12 @@ class FabrikFEModelList extends FormModel
 
 			$elementModel->_rawFilter = $raw;
 
-			if ($filterEval == '1')
-			{
-				// $$$ rob hehe if you set $i in the eval'd code all sorts of chaos ensues
-				$origi = $i;
+			
+			if ($filterEval == '1') {			
 				$value = htmlspecialchars_decode($value, ENT_QUOTES);
 				FabrikWorker::clearEval();
 				$value = Php::Eval(['code' => $value, 'vars'=>['elementModel'=>$elementModel]]);
 				FabrikWorker::logEval($value, 'Caught exception on eval of tableModel::getFilterArray() ' . $key . ': %s');
-				$i = $origi;
 			}
 
 			if ($condition == 'LATERTHISYEAR' || $condition == 'EARLIERTHISYEAR')
