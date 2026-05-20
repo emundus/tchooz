@@ -220,17 +220,23 @@ class CartRepository
 
 				// Load products
 				$query = $this->db->createQuery();
-				$query->select($this->db->quoteName(['product_id']))
+				$query->select($this->db->quoteName(['product_id', 'mandatory']))
 					->from($this->db->quoteName('jos_emundus_cart_product'))
 					->where($this->db->quoteName('cart_id') . ' = ' . $this->db->quote($cart_entity->getId()));
 				$this->db->setQuery($query);
-				$product_ids = $this->db->loadColumn();
+				$cart_product_rows = $this->db->loadObjectList('product_id') ?: [];
 
-				if (!empty($product_ids)) {
+				if (!empty($cart_product_rows)) {
 					$productRepository = new ProductRepository();
-					$products = $productRepository->getProducts(0, 1, ['p.id' => $product_ids]);
+					$products = $productRepository->getProducts(0, 1, ['p.id' => array_keys($cart_product_rows)]);
 
 					foreach ($products as $product) {
+						// Le flag mandatory au niveau cart_product surcharge celui du produit :
+						// permet à une automation d'imposer un produit sur ce panier précis
+						// sans toucher à la config de l'étape de paiement.
+						if (isset($cart_product_rows[$product->getId()])) {
+							$product->setMandatory((int) $cart_product_rows[$product->getId()]->mandatory);
+						}
 						$cart_entity->addProduct($product);
 					}
 				}
@@ -531,10 +537,11 @@ class CartRepository
 
 					// save products
 					foreach ($cart_entity->getProducts() as $product) {
+						$mandatory = !empty($product->getMandatory()) ? 1 : 0;
 						$query->clear()
 							->insert($this->db->quoteName('jos_emundus_cart_product'))
-							->columns($this->db->quoteName(['cart_id', 'product_id']))
-							->values($this->db->quote($cart_entity->getId()) . ', ' . $this->db->quote($product->getId()));
+							->columns($this->db->quoteName(['cart_id', 'product_id', 'mandatory']))
+							->values($this->db->quote($cart_entity->getId()) . ', ' . $this->db->quote($product->getId()) . ', ' . $this->db->quote($mandatory));
 						$this->db->setQuery($query);
 						$this->db->execute();
 					}
@@ -609,10 +616,11 @@ class CartRepository
 
 					// save products
 					foreach ($cart_entity->getProducts() as $product) {
+						$mandatory = !empty($product->getMandatory()) ? 1 : 0;
 						$query->clear()
 							->insert($this->db->quoteName('jos_emundus_cart_product'))
-							->columns($this->db->quoteName(['cart_id', 'product_id']))
-							->values($this->db->quote($cart_entity->getId()) . ', ' . $this->db->quote($product->getId()));
+							->columns($this->db->quoteName(['cart_id', 'product_id', 'mandatory']))
+							->values($this->db->quote($cart_entity->getId()) . ', ' . $this->db->quote($product->getId()) . ', ' . $this->db->quote($mandatory));
 						$this->db->setQuery($query);
 						$this->db->execute();
 					}
@@ -780,7 +788,7 @@ class CartRepository
 		return $cart;
 	}
 
-	public function addProduct(CartEntity $cart, int $product_id, int $user_id): bool
+	public function addProduct(CartEntity $cart, int $product_id, int $user_id, int $mandatory = 0): bool
 	{
 		$added = false;
 
@@ -790,14 +798,16 @@ class CartRepository
 			$product = $productRepository->getProductById($product_id);
 
 			if (!empty($product->getId())) {
+				$mandatory_flag = !empty($mandatory) ? 1 : 0;
 				$query = $this->db->createQuery();
 				$query->insert($this->db->quoteName('jos_emundus_cart_product'))
-					->columns($this->db->quoteName(['cart_id', 'product_id', 'updated_by', 'updated_at']))
-					->values($this->db->quote($cart->getId()) . ', ' . $this->db->quote($product_id) . ', ' .  $this->db->quote($user_id) . ', ' . $this->db->quote(date('Y-m-d H:i:s')));
+					->columns($this->db->quoteName(['cart_id', 'product_id', 'mandatory', 'updated_by', 'updated_at']))
+					->values($this->db->quote($cart->getId()) . ', ' . $this->db->quote($product_id) . ', ' . $this->db->quote($mandatory_flag) . ', ' .  $this->db->quote($user_id) . ', ' . $this->db->quote(date('Y-m-d H:i:s')));
 				$this->db->setQuery($query);
 				$added = $this->db->execute();
 
 				if ($added) {
+					$product->setMandatory($mandatory_flag);
 					$cart->addProduct($product);
 
 					$details = ['updated' => [['element' => $product->getLabel() . ' ' . $product->getDisplayedPrice()]]];

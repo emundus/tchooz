@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Factory;
 use Joomla\String\StringHelper;
+use Tchooz\Services\Fabrik\ConditionService;
 
 jimport('joomla.application.component.model');
 
@@ -91,6 +92,26 @@ class FabrikFEModelElementValidator extends FabModel
 		PluginHelper::importPlugin('fabrik_validationrule');
 		$i = 0;
 
+		if(!in_array('notempty', $usedPlugins))
+		{
+			$elt = $this->elementModel->getFullName();
+			$elt = explode('___', $elt)[1];
+
+			$conditionService = new ConditionService();
+
+			if ($conditionService->hasOptionalityRules($elt))
+			{
+				// Add notempty as used plugin
+				$usedPlugins[] = 'notempty';
+				$published[] = true;
+				$showIcon[] = true;
+				$validateIn[] = 'both';
+				$validationOn[] = 'both';
+				$mustValidate[] = '0';
+				$validateHidden[] = '0';
+			}
+		}
+
 		foreach ($usedPlugins as $usedPlugin)
 		{
 			if ($usedPlugin !== '')
@@ -111,7 +132,7 @@ class FabrikFEModelElementValidator extends FabModel
 					PluginHelper::getPlugin('fabrik_validationrule', $usedPlugin);
 					$plugIn->elementModel = $this->elementModel;
 					$this->validations[] = $plugIn;
-
+					
 					// Set params relative to plugin render order
 					$plugIn->setParams($params, $i);
 

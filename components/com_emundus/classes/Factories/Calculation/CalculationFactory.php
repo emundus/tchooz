@@ -120,14 +120,14 @@ class CalculationFactory
 
 					list($formId, $elementId) = explode('.', $element->getParams()->dates_diff_form->start_date_element);
 					$startDateElt   = $fabrikRepository->getElementById($elementId);
-					$transformer    = TransformerFactory::make($startDateElt->getPlugin()->value, ['details_date_format' => 'Y-m-d']);
+					$transformer    = TransformerFactory::make($startDateElt->getPlugin()->value, ['details_date_format' => 'Y-m-d', 'date_format' => 'Y-m-d', 'jdate_time_format' => 'Y-m-d']);
 					$startDateValue = $transformer->transform($values[$element->getParams()->dates_diff_form->start_date_element] ?? null);
 
 					if (!empty($element->getParams()->dates_diff_form->end_date_element))
 					{
 						list($formId, $elementId) = explode('.', $element->getParams()->dates_diff_form->end_date_element);
 						$endDateElt   = $fabrikRepository->getElementById($elementId);
-						$transformer  = TransformerFactory::make($endDateElt->getPlugin()->value, ['details_date_format' => 'Y-m-d']);
+						$transformer  = TransformerFactory::make($endDateElt->getPlugin()->value, ['details_date_format' => 'Y-m-d', 'date_format' => 'Y-m-d', 'jdate_time_format' => 'Y-m-d']);
 						$endDatevalue = $transformer->transform($values[$element->getParams()->dates_diff_form->end_date_element] ?? null);
 					}
 

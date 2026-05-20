@@ -290,7 +290,7 @@ export default {
 
 	async importFiles(csvImport) {
 		try {
-			return await client.post('importfiles', csvImport);
+			return await client.post('importfiles', csvImport, null, 120000);
 		} catch (e) {
 			return {
 				status: false,

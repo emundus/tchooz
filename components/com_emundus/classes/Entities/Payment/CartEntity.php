@@ -465,12 +465,21 @@ class CartEntity {
 
 		if (!empty($alteration->getDiscount()))
 		{
+			// Dédup sur le tuple (discount, product). Une remise globale (sans produit)
+			// et la même remise liée à un produit sont deux altérations distinctes.
+			$incomingProductId = !empty($alteration->getProduct()) ? $alteration->getProduct()->getId() : null;
+
 			$already_added = false;
 			foreach ($this->alterations as $existing_alteration) {
+				$existingDiscount = $existing_alteration->getDiscount();
+				if (empty($existingDiscount) || $existingDiscount->getId() !== $alteration->getDiscount()->getId()) {
+					continue;
+				}
 
-				if (!empty($existing_alteration->getDiscount()) && $existing_alteration->getDiscount()->getId() === $alteration->getDiscount()->getId())
-				{
+				$existingProductId = !empty($existing_alteration->getProduct()) ? $existing_alteration->getProduct()->getId() : null;
+				if ($existingProductId === $incomingProductId) {
 					$already_added = true;
+					break;
 				}
 			}
 

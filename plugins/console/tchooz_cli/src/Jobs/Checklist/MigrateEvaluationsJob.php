@@ -24,7 +24,9 @@ use Tchooz\Entities\Indexer\IndexEntity;
 use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Entities\Workflow\WorkflowEntity;
+use Joomla\CMS\Language\LanguageHelper;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Repositories\Workflow\StepTypeRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
@@ -143,7 +145,19 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 							}
 
 							if (empty($evaluations_old_new_mapping[$evaluation_form_id])) {
-								$new_evaluation_form_id = $this->m_form_builder->duplicateFabrikForm($evaluation_form_id, $user->id, ['keep_structure' => false, 'model_prefix' => '', 'profile_id' => null], '');
+								$db = $this->databaseService->getDatabase();
+								$query = $db->getQuery(true);
+								$query->select('ff.*, fl.id as list_id, fl.db_table_name')
+									->from($db->quoteName('#__fabrik_forms', 'ff'))
+									->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON fl.form_id = ff.id')
+									->where('ff.id = ' . $evaluation_form_id);
+								$db->setQuery($query);
+								$oldForm = $db->loadObject();
+
+								$fabrikRepository = new FabrikRepository(true, $user);
+								$languages = LanguageHelper::getLanguages();
+								$duplicatedForm = $fabrikRepository->duplicateForm($oldForm, null, $languages);
+								$new_evaluation_form_id = $duplicatedForm->form->id;
 
 								if (!empty($new_evaluation_form_id))
 								{

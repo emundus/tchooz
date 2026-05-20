@@ -600,18 +600,25 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		}
 
 		$rowId = $input->get('rowid', '', 'string');
+		$usekey = $input->get('usekey', '', 'string');
 
 		if (empty($rowId))
 		{
+			$this->app->enqueueMessage(Text::_('rowid empty'));
 			$this->app->redirect($url);
 			exit;
 		}
 
 		$listModel = $this->getListModel();
-		$row = $listModel->getRow($rowId, false);
+		if (empty($usekey)) {
+			$row = $listModel->getRow($rowId, false);
+		} else {
+			$row = findRow($usekey, $rowId, false);
+		}
 
 		if (empty($row))
 		{
+			$this->app->enqueueMessage(Text::_('Row not found, no QR code created').$rowId);
 			$this->app->redirect($url);
 			exit;
 		}
@@ -718,11 +725,26 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 
 		// set format to 'pdf' if rendering pdf, so onAjax_renderQRCode() will automagically use "allow_pdf_local"
 		$format = $this->app->input->get('format', 'html') === 'pdf' ? 'pdf' : 'raw';
+		
+		// Forward all GET params to the AJAX src URL so active pre-filters are satisfied.
+		$extraParams = '';
+
+		// Strategy 1 (list view): use Joomla input API.
+		$inputVars = $this->app->input->get->getArray();
+
+		foreach ($inputVars as $key => $val)
+		{
+			if (is_string($val))
+			{
+				$extraParams .= '&amp;' . htmlspecialchars((string)$key, ENT_COMPAT, 'UTF-8') . '=' . urlencode($val);
+			}
+		}
+		
 		$src = COM_FABRIK_LIVESITE .
 			'index.php?option=com_' . $this->package .
 			'&amp;task=plugin.pluginAjax&amp;plugin=field&amp;method=ajax_renderQRCode' .
 			'&amp;format=' . $format . '&amp;element_id=' . $elementId . '&amp;formid=' . $formId .
-			'&amp;rowid=' . $rowId . '&amp;repeatcount=0';
+			'&amp;rowid=' . $rowId . '&amp;repeatcount=0' . $extraParams;
 
 		$layout = $this->getLayout('qr');
 		$displayData = new stdClass;

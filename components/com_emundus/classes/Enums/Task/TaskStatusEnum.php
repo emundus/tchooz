@@ -10,6 +10,7 @@ enum TaskStatusEnum: string
 	case IN_PROGRESS = 'in_progress';
 	case COMPLETED = 'completed';
 	case FAILED = 'failed';
+	case SKIPPED = 'skipped';
 
 	public function getIcon(): string
 	{
@@ -18,6 +19,7 @@ enum TaskStatusEnum: string
 			self::IN_PROGRESS => 'clock_loader_40',
 			self::COMPLETED => 'check_circle',
 			self::FAILED => 'running_with_errors',
+			self::SKIPPED => 'disabled_by_default',
 		};
 	}
 
@@ -31,6 +33,7 @@ enum TaskStatusEnum: string
 			self::IN_PROGRESS => '#3b82f6', // blue-500
 			self::COMPLETED => '#10b981', // green-500
 			self::FAILED => '#ef4444', // red-500
+			self::SKIPPED => '#6b7280',
 		};
 	}
 
@@ -41,6 +44,7 @@ enum TaskStatusEnum: string
 			self::IN_PROGRESS => Text::_('COM_EMUNDUS_TASK_STATUS_IN_PROGRESS'),
 			self::COMPLETED => Text::_('COM_EMUNDUS_TASK_STATUS_COMPLETED'),
 			self::FAILED => Text::_('COM_EMUNDUS_TASK_STATUS_FAILED'),
+			self::SKIPPED => Text::_('COM_EMUNDUS_TASK_STATUS_SKIPPED'),
 		};
 	}
 
@@ -51,6 +55,7 @@ enum TaskStatusEnum: string
 			self::COMPLETED => 'tw-mr-2 tw-h-max tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-bg-green-800 tw-text-white material-symbols-outlined',
 			self::IN_PROGRESS => 'tw-mr-2 tw-h-max tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-bg-blue-700  tw-text-white material-symbols-outlined',
 			self::PENDING => 'tw-mr-2 tw-h-max tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-bg-yellow-700  tw-text-white material-symbols-outlined',
+			self::SKIPPED => 'tw-mr-2 tw-h-max tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-bg-gray-700  tw-text-white material-symbols-outlined',
 		};
 	}
 }

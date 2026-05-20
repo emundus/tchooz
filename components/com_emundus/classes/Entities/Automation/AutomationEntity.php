@@ -8,6 +8,8 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Entities\Automation\Actions\ActionSendEmail;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Joomla\CMS\Log\Log;
+use Tchooz\Enums\Automation\ActionMessageTypeEnum;
+use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Repositories\Task\TaskRepository;
 use Tchooz\Traits\TraitAutomatedTask;
 
@@ -182,6 +184,7 @@ class AutomationEntity
 
 		$successActions = [];
 		$failedActions = [];
+		$skippedActions = [];
 		$nbFilesPassed = 0;
 
 		if(!class_exists('EmundusHelperEmails'))
@@ -221,10 +224,16 @@ class AutomationEntity
 
 				foreach($actionContexts as $actionContext) {
 					// If action is send email, we check if we have to exclude emundus emails
-					if($action instanceof ActionSendEmail && !empty($actionContext->getUserId())) {
+					if ($action instanceof ActionSendEmail && !empty($actionContext->getUserId())) {
 						$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($actionContext->getUserId());
-						if(!empty($user) && \EmundusHelperEmails::isEmailExcluded($user->email))
+
+						if (!empty($user) && \EmundusHelperEmails::isEmailExcluded($user->email))
 						{
+							$skippedActions[] = ['action_id' => $action->getId(), 'label' => $action->getLabelForLog(), 'context' => $actionContext->serialize()];
+							$task = $taskRepository->addActionToQueue($action, $actionContext, $this->getAutomatedTaskUserId());
+							$task->setStatus(TaskStatusEnum::SKIPPED);
+							$task->addExecutionMessage(new ActionExecutionMessage('Action skipped because the user email is excluded from receiving Emundus emails.', ActionMessageTypeEnum::INFO));
+							$taskRepository->saveTask($task);
 							continue;
 						}
 					}
@@ -280,6 +289,7 @@ class AutomationEntity
 						'nb_files_processed' => $nbFilesPassed,
 						'successful_actions' => $successActions,
 						'failed_actions' => $failedActions,
+						'skipped_actions' => $skippedActions,
 						'context' => $context->serialize()
 					]
 				),
