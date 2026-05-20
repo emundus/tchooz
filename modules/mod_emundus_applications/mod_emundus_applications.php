@@ -200,12 +200,6 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$history_link                        = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=application&layout=history', true);
 	$choices_link                        = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=application_choices', true);
 
-	$payment_repository = new PaymentRepository();
-	if ($payment_repository->getAddon()->enabled === 1)
-	{
-		$actions[] = 'transactions';
-	}
-
 	// Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
 	if ($layout == '_:ccirs-drh')
 	{

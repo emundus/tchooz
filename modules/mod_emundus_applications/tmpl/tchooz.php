@@ -8,9 +8,13 @@
 
 // no direct access
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
+use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 
 defined('_JEXEC') or die;
 
@@ -245,22 +249,27 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 		<?php if (!empty(Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'))) : ?>
             <p>
 				<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'); ?>
-				<?php if (!empty($actions)) : ?>
+				<?php
+
+                $registry = new ApplicationFileActionsRegistry();
+                $applicationRepository = new ApplicationFileRepository();
+                $configuredActions = $registry->getConfiguredActions();
+
+                if (!empty($configuredActions)) : ?>
 					<?php echo '(';
-					foreach ($actions as $key => $action)
+					foreach ($configuredActions as $key => $action)
 					{
+                        $actionLabel = $action instanceof CustomApplicationFileAction ? $action->getLabel() : $action->getActionType()->getLabel();
+                        $actionLabel = strtolower($actionLabel);
+
 						if ($key == 0)
 						{
-							echo Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_' . strtoupper($action));
+							echo $actionLabel;
 						}
 						else
 						{
-							echo ', ' . Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_' . strtoupper($action));
+							echo ', ' . $actionLabel;
 						}
-					}
-					if ($show_tabs == 1)
-					{
-						echo ', ' . Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_TABS');
 					}
 					echo ').'; ?>
 				<?php else : ?>
