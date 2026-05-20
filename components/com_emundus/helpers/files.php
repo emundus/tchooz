@@ -4557,8 +4557,12 @@ class EmundusHelperFiles
 	 * @param   array   $already_joined
 	 * @param   string  $caller
 	 * @param   array   $caller_params
+	 * @param   array   $filters_to_exclude
+	 * @param   null    $menu_item
+	 * @param   null    $user
 	 *
 	 * @return array containing 'q' the where clause and 'join' the join clause
+	 * @throws Exception
 	 */
 	public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = [], $filters_to_exclude = [], $menu_item = null, $user = null)
 	{
@@ -5372,6 +5376,21 @@ class EmundusHelperFiles
 									break;
 								case 'application_choices':
 									$where['q'] .= ' AND ' . $this->writeQueryWithOperator('eccc.campaign_id', $filter['value'], $filter['operator']);
+									break;
+								case 'access_expiration_date':
+									if (!in_array('jos_emundus_file_access', $already_joined))
+									{
+										$jecc_alias                 = array_search('jos_emundus_campaign_candidature', $already_joined);
+										$already_joined['jfaccess'] = 'jos_emundus_file_access';
+										$file_access_alias          = 'jfaccess';
+										$where['join']              .= ' LEFT JOIN #__emundus_file_access as jfaccess on jfaccess.ccid = ' . $jecc_alias . '.id ';
+									}
+									else
+									{
+										$file_access_alias = array_search('jos_emundus_file_access', $already_joined);
+									}
+
+									$where['q'] .= ' AND ' . $this->writeQueryWithOperator($file_access_alias . '.expiration_date', $filter['value'], $filter['operator'], 'date');
 									break;
 								default:
 									break;

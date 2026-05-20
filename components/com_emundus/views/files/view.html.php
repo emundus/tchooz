@@ -18,6 +18,7 @@ use Joomla\CMS\MVC\View\HtmlView;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Services\Reference\InternalReferenceService;
 
@@ -47,6 +48,7 @@ class EmundusViewFiles extends HtmlView
 	private EmundusModelUsers $m_users;
 
 	private ApplicationChoicesRepository $applicationChoicesRepository;
+	private ApplicationFileAccessRepository $applicationFileAccessRepository;
 
 	public function __construct($config = array())
 	{
@@ -78,6 +80,7 @@ class EmundusViewFiles extends HtmlView
 		$this->m_users = new EmundusModelUsers();
 
 		$this->applicationChoicesRepository = new ApplicationChoicesRepository();
+		$this->applicationFileAccessRepository = new ApplicationFileAccessRepository();
 
 		parent::__construct($config);
 	}
@@ -284,6 +287,10 @@ class EmundusViewFiles extends HtmlView
 						$data[0]['application_choices'] = Text::_('COM_EMUNDUS_APPLICATION_CHOICES');
 						$colsSup['application_choices'] = array();
 						break;
+					case 'access_expiration_date':
+						$data[0]['access_expiration_date'] = Text::_('COM_EMUNDUS_ACCESS_EXPIRATION_DATE');
+						$colsSup['access_expiration_date'] = array();
+						break;
 					case 'module':
 						// Get every module without a positon.
 						$mod_emundus_custom = array();
@@ -474,6 +481,18 @@ class EmundusViewFiles extends HtmlView
 					$choicesHtml .= '</ul>';
 
 					$colsSup['application_choices'][$fnum] = $choicesHtml;
+				}
+			}
+
+			if (isset($colsSup['access_expiration_date']))
+			{
+				$expirationDates = $this->applicationFileAccessRepository->getExpirationDatesByFnums($fnumArray);
+				$dateFormat      = Text::_('DATE_FORMAT_LC2');
+				foreach ($fnumArray as $fnum)
+				{
+					$colsSup['access_expiration_date'][$fnum] = isset($expirationDates[$fnum])
+						? EmundusHelperDate::displayDate($expirationDates[$fnum]->format('Y-m-d H:i:s'), $dateFormat)
+							: Text::_('COM_EMUNDUS_NO_EXPIRATION_DATE');
 				}
 			}
 

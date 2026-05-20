@@ -51,6 +51,43 @@ class ApplicationFileAccessRepository extends EmundusRepository
 	}
 
 	/**
+	 * Return expiration dates indexed by fnum for the given fnums.
+	 *
+	 * @param   string[]  $fnums
+	 *
+	 * @return array<string, \DateTimeImmutable>
+	 */
+	public function getExpirationDatesByFnums(array $fnums): array
+	{
+		$expirationDates = [];
+
+		$fnums = array_filter(array_unique($fnums));
+		if (empty($fnums))
+		{
+			return $expirationDates;
+		}
+
+		$query = $this->db->createQuery();
+		$query->select(['ecc.fnum', 'efa.expiration_date'])
+			->from($this->db->quoteName('jos_emundus_file_access', 'efa'))
+			->innerJoin($this->db->quoteName('jos_emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.id') . ' = ' . $this->db->quoteName('efa.ccid'))
+			->where($this->db->quoteName('ecc.fnum') . ' IN (' . implode(',', $this->db->quote($fnums)) . ')');
+
+		$this->db->setQuery($query);
+		$rows = $this->db->loadAssocList();
+
+		foreach ($rows as $row)
+		{
+			if (!empty($row['expiration_date']) && $row['expiration_date'] !== '0000-00-00 00:00:00')
+			{
+				$expirationDates[$row['fnum']] = new \DateTimeImmutable($row['expiration_date']);
+			}
+		}
+
+		return $expirationDates;
+	}
+
+	/**
 	 * @param   int  $applicationFileId
 	 *
 	 * @return ApplicationFileAccessEntity|null

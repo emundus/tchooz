@@ -25,6 +25,7 @@ use Tchooz\Enums\CrudEnum;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Actions\ActionRepository as AccessActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Services\Reference\InternalReferenceService;
 
@@ -82,6 +83,7 @@ class EmundusViewFiles extends JViewLegacy
 	protected int $fnumsCount;
 
 	private ApplicationChoicesRepository $applicationChoicesRepository;
+	private ApplicationFileAccessRepository $applicationFileAccessRepository;
 
 	public function __construct($config = array())
 	{
@@ -93,6 +95,7 @@ class EmundusViewFiles extends JViewLegacy
 		require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 
 		$this->applicationChoicesRepository = new ApplicationChoicesRepository();
+		$this->applicationFileAccessRepository = new ApplicationFileAccessRepository();
 
 		$this->app  = Factory::getApplication();
 		$this->user = $this->app->getIdentity();
@@ -528,6 +531,10 @@ class EmundusViewFiles extends JViewLegacy
 								$data[0]['application_choices'] = Text::_('COM_EMUNDUS_APPLICATION_CHOICES');
 								$colsSup['application_choices'] = array();
 								break;
+							case 'access_expiration_date':
+								$data[0]['access_expiration_date'] = Text::_('COM_EMUNDUS_ACCESS_EXPIRATION_DATE');
+								$colsSup['access_expiration_date'] = array();
+								break;
 							case 'module':
 								// Get every module without a positon.
 								$mod_emundus_custom = array();
@@ -726,6 +733,18 @@ class EmundusViewFiles extends JViewLegacy
 							$choicesHtml .= '</ul>';
 
 							$colsSup['application_choices'][$fnum] = $choicesHtml;
+						}
+					}
+
+					if (isset($colsSup['access_expiration_date']))
+					{
+						$expirationDates = $this->applicationFileAccessRepository->getExpirationDatesByFnums($fnumArray);
+						$dateFormat      = Text::_('DATE_FORMAT_LC2');
+						foreach ($fnumArray as $fnum)
+						{
+							$colsSup['access_expiration_date'][$fnum] = isset($expirationDates[$fnum])
+								? htmlspecialchars($expirationDates[$fnum]->format($dateFormat))
+								: '';
 						}
 					}
 
