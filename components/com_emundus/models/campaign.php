@@ -4157,7 +4157,7 @@ class EmundusModelCampaign extends ListModel
 					foreach ($rows_to_import as $row)
 					{
 						$origin_datas = [];
-						if(!empty($row['orig_datas'])) {
+						if (!empty($row['orig_datas'])) {
 							$origin_datas = $row['orig_datas'];
 							unset($row['orig_datas']);
 						}
@@ -4270,10 +4270,40 @@ class EmundusModelCampaign extends ListModel
 								if (empty($fnum))
 								{
 									$importApplicationEntity->generateFnum($campaign_id);
+
+									// avoid same fnum, todo: remove that once fnum will have a random ending (public campaigns feature)
+									$collision_attempts = 0;
+									while ($collision_attempts < 60)
+									{
+										$collision_query = $this->_db->getQuery(true);
+										$collision_query->select('id')
+											->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+											->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($importApplicationEntity->getFnum()));
+										$this->_db->setQuery($collision_query);
+										if (empty($this->_db->loadResult()))
+										{
+											break;
+										}
+
+										$current_fnum = $importApplicationEntity->getFnum();
+										$date_part    = substr($current_fnum, 0, 14);
+										$rest         = substr($current_fnum, 14);
+										$date_time    = DateTime::createFromFormat('YmdHis', $date_part);
+										if ($date_time !== false)
+										{
+											$date_time->modify('+1 second');
+											$importApplicationEntity->setFnum($date_time->format('YmdHis') . $rest);
+										}
+										else
+										{
+											$importApplicationEntity->generateFnum($campaign_id);
+										}
+										$collision_attempts++;
+									}
 								}
 								else
 								{
-									if($create_new_fnum === 2) {
+									if ($create_new_fnum === 2) {
 										// Do nothing, we continue with the next row
 										continue;
 									}
@@ -4293,21 +4323,16 @@ class EmundusModelCampaign extends ListModel
 							{
 								$datas = $importFactory->formatDatas($datas);
 								$importApplicationEntity->setData($datas);
-
-								if ($applicationFileRepository->flush($importApplicationEntity, $user_id))
-								{
-									$files_imported[] = $fnum;
-									$status           = true;
-								}
-								else
-								{
-									$files_not_imported[] = $fnum;
-								}
 							}
-							else
+
+							if ($applicationFileRepository->flush($importApplicationEntity, $user_id))
 							{
 								$files_imported[] = $fnum;
 								$status           = true;
+							}
+							else
+							{
+								$files_not_imported[] = $fnum;
 							}
 
 							$onAfterImportRowEventHandler = new GenericEvent(
@@ -4339,8 +4364,6 @@ class EmundusModelCampaign extends ListModel
 							$dispatcher->dispatch('onCallEventHandler', $onAfterImportRowEventHandler);
 							$dispatcher->dispatch('onAfterImportRow', $onAfterImportRow);
 						}
-
-						sleep(0.5);
 					}
 
 					$onAfterImportCSVEventHandler = new GenericEvent(
