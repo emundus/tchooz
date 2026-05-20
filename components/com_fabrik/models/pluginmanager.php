@@ -342,7 +342,17 @@ class FabrikFEModelPluginmanager extends FabModel
 				]);
 				$plugin->setStructure(PluginStructure::J4);
 			} else {
-				throw new RuntimeException('plugin manager: did not load ' . $className);
+                // Allow for J6 namespaced plugins
+                $class = "Fabrik\\Plugin\\" . ucfirst($group) . "\\" . ucfirst($className) . "\\Extension\\" . ucfirst($className);
+                if (class_exists($class)) {
+                    $plugin = new $class($dispatcher, [
+                        'name' => !empty($className) ? StringHelper::strtolower($className) : '',
+                        'type' => StringHelper::strtolower('fabrik_' . $group)
+                    ]);
+                    $plugin->setStructure(PluginStructure::J4);
+                } else {
+                    throw new RuntimeException('plugin manager: did not load ' . $className);
+                }
 			}
 		}
 		// Needed for viz
