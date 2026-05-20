@@ -299,6 +299,14 @@ class CheckHealthJob extends TchoozJob
 							->where($this->databaseService->getDatabase()->quoteName('module') . ' LIKE ' . $this->databaseService->getDatabase()->quote('mod_emundus_cas'));
 						$this->databaseService->getDatabase()->setQuery($query);
 						$checked = $this->databaseService->getDatabase()->execute();
+
+						$casElements = ['mod_emundus_cas', 'emundus_caslogin', 'caslogin'];
+						$query->clear()
+							->update($this->databaseService->getDatabase()->quoteName('jos_extensions'))
+							->set($this->databaseService->getDatabase()->quoteName('enabled') . ' = 0')
+							->whereIn($this->databaseService->getDatabase()->quoteName('element'), $casElements);
+						$this->databaseService->getDatabase()->setQuery($query);
+						$checked = $this->databaseService->getDatabase()->execute();
 					}
 				}
 			}
