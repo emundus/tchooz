@@ -17,7 +17,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Log\Log;
 use Symfony\Component\OptionsResolver\Exception\AccessException;
 use Tchooz\Attributes\AccessAttribute;
 use Tchooz\Controller\EmundusController;
@@ -52,6 +52,8 @@ class EmundusControllerCampaign extends EmundusController
 
 		$this->m_campaign = new EmundusModelCampaign();
 		$this->campaignRepository = new CampaignRepository();
+
+		Log::addLogger(['text_file' => 'com_emundus.campaign.php'], Log::ALL, 'com_emundus.campaign');
 	}
 
 	public function setMCampaign(EmundusModelCampaign $m_campaign): void
@@ -1122,14 +1124,23 @@ class EmundusControllerCampaign extends EmundusController
 		flush();
 		ob_flush();
 
-		$m_campaign = $this->getModel('Campaign');
-		$result     = $m_campaign->importFiles($file, $campaign_id, $send_email, $create_new_fnum);
+		try
+		{
+			$m_campaign = $this->getModel('Campaign');
+			$results     = $m_campaign->importFiles($file, $campaign_id, $send_email, $create_new_fnum);
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Failed importing file : ' . $e->getMessage(), Log::ERROR, 'com_emundus.campaign');
+			throw new \RuntimeException(Text::_('COM_EMUNDUS_ONBOARD_ERROR_IMPORTING_FILE') . ': ' . $e->getMessage(), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
+		}
+
 		if (empty($results))
 		{
 			throw new \RuntimeException(Text::_('COM_EMUNDUS_ONBOARD_ERROR_IMPORTING_FILE'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 		}
 
-		return EmundusResponse::ok($result, Text::_('SUCCESS'));
+		return EmundusResponse::ok($results, Text::_('SUCCESS'));
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
