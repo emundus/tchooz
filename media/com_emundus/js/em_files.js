@@ -4098,10 +4098,31 @@ $(document).ready(function() {
                                 document.querySelectorAll('#em-action-tag option').forEach((option) => {
                                     option.disabled = false;
                                     option.show();
-                                })
+                                });
                             }
                             $("#em-action-tag").val('').trigger("chosen:updated");
                         });
+
+                        $(document).on('click', '#em-tags-delete', function (e) {
+                            toggleAddNewTag()
+                        });
+                        $(document).on('click', '#em-tags-add', function (e) {
+                            toggleAddNewTag(false);
+                        });
+
+                        function toggleAddNewTag(deleteTag = true)
+                        {
+                            if (deleteTag)
+                            {
+                                $('#new-tag-or').hide()
+                                $('#new-tag-wrapper').hide();
+                            }
+                            else
+                            {
+                                $('#new-tag-or').show();
+                                $('#new-tag-wrapper').show();
+                            }
+                        }
                     },
                     error: function(jqXHR) {
                         console.log(jqXHR.responseText);
