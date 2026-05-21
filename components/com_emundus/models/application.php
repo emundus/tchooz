@@ -351,7 +351,7 @@ class EmundusModelApplication extends ListModel
 						$attachment->existsOnServer = true;
 					}
 
-					$attachment->timedate = EmundusHelperDate::displayDate($attachment->modified, 'DATE_FORMAT_LC2', 0);
+					$attachment->timedate = EmundusHelperDate::displayDate($attachment->timedate, 'DATE_FORMAT_LC2', 0);
 					$attachment->modified = EmundusHelperDate::displayDate($attachment->modified, 'DATE_FORMAT_LC2', 0);
 
 					$query->clear()
