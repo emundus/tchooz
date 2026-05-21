@@ -351,6 +351,9 @@ class EmundusModelApplication extends ListModel
 						$attachment->existsOnServer = true;
 					}
 
+					$attachment->timedate = EmundusHelperDate::displayDate($attachment->modified, 'DATE_FORMAT_LC2', 0);
+					$attachment->modified = EmundusHelperDate::displayDate($attachment->modified, 'DATE_FORMAT_LC2', 0);
+
 					$query->clear()
 						->select('profile_id')
 						->from($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
