@@ -259,10 +259,15 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 			}
 			else
 			{
+				$uri = Uri::getInstance();
 				$currentMenu = $app->getMenu()->getActive();
 				if (!self::isAuthorizedMenuItem($currentMenu))
 				{
 					$app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+					$app->redirect('/index.php?option=com_emundus&task=openfile&fnum=' . self::getPublicAccessFnum());
+				}
+				else if ($uri->getPath() === '/index.php' && empty($uri->getQuery()))
+				{
 					$app->redirect('/index.php?option=com_emundus&task=openfile&fnum=' . self::getPublicAccessFnum());
 				}
 			}
