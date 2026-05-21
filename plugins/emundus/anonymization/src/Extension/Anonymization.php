@@ -38,7 +38,7 @@ final class Anonymization extends CMSPlugin implements SubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			'onCreateNewFile' => 'onCreateNewFile',
+			'onAfterCampaignCandidature' => 'onAfterCampaignCandidature',
 		];
 	}
 
@@ -52,7 +52,7 @@ final class Anonymization extends CMSPlugin implements SubscriberInterface
 	 *
 	 * @return bool
 	 */
-	public function onCreateNewFile(GenericEvent $event): bool
+	public function onAfterCampaignCandidature(GenericEvent $event): bool
 	{
 		$data = $event->getArguments();
 
