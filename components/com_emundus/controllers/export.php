@@ -37,6 +37,7 @@ use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Export\ExportRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Task\TaskRepository;
+use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\EmundusResponse;
 use Tchooz\Services\Export\Excel\ExcelService;
@@ -431,8 +432,44 @@ class EmundusControllerExport extends BaseController
 
 					break;
 				case 'management':
-					$form        = $fabrikRepository->getFormById($elementId);
-					$subElements = [$form->__serialize()];
+					$form            = $fabrikRepository->getFormById($elementId);
+					$form            = $form->__serialize();
+
+					if (!class_exists('EmundusModelEvaluation'))
+					{
+						require_once ( JPATH_ROOT . '/components/com_emundus/models/evaluation.php' );
+					}
+					$evaluationModel = new EmundusModelEvaluation();
+					$avgElt          = $evaluationModel->getEvaluationFormAverageElement($form['id']);
+					if (!empty($avgElt))
+					{
+						$stepRepository = new StepRepository();
+						$steps          = $stepRepository->getStepsByFormId($form['id']);
+
+						if (!empty($steps))
+						{
+							$group = [
+								'id' => 'evaluation_average_' . $form['id'],
+								'name' => 'evaluation_average_' . $form['id'],
+								'label' => Text::_('COM_EMUNDUS_AVERAGE_SCORE_BY_STEPS') . ' - ' . $form['label'],
+								'published' => true,
+								'elements' => []
+							];
+
+							foreach ($steps as $step)
+							{
+								$group['elements'][] = [
+									'id' => 'evaluation_average_step_' . $step->getId(),
+									'name' => 'evaluation_average_step_' . $step->getId(),
+									'label' => Text::_('COM_EMUNDUS_ONBOARD_TYPE_AVERAGE') . ' ' . Text::_('COM_EMUNDUS_EVALUATION_EVAL_STEP') . ' ' . $step->getLabel(),
+								];
+							}
+
+							$form['groups'][] = $group;
+						}
+					}
+
+					$subElements = [$form];
 					break;
 				default:
 			}

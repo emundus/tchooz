@@ -66,7 +66,7 @@ export default {
 		areMandatoryFieldsFilled() {
 			let filled = true;
 
-			let mandatoryFields = ['amount', 'type'];
+			let mandatoryFields = ['amount', 'type', 'description'];
 
 			mandatoryFields.forEach((field) => {
 				if (this.alteration[field] === '' || this.alteration[field] === 0) {
@@ -161,13 +161,17 @@ export default {
 			</div>-->
 
 			<div class="tw-flex tw-flex-col">
-				<label for="description"> {{ translate('COM_EMUNDUS_CART_DISCOUNT_DESCRIPTION_LABEL') }} </label>
+				<label for="description">
+					{{ translate('COM_EMUNDUS_CART_DISCOUNT_DESCRIPTION_LABEL') }} <span class="tw-text-red-500">*</span></label
+				>
 				<textarea name="description" v-model="alteration.description" :disabled="alteration.discount_id > 0"></textarea>
 			</div>
 
 			<div class="tw-grid tw-grid-cols-[minmax(0,1fr)_max-content] tw-gap-6">
 				<div class="tw-col-[1] tw-flex tw-w-full tw-flex-col">
-					<label for="amount"> {{ translate('COM_EMUNDUS_CART_DISCOUNT_AMOUNT_LABEL') }} </label>
+					<label for="amount">
+						{{ translate('COM_EMUNDUS_CART_DISCOUNT_AMOUNT_LABEL') }} <span class="tw-text-red-500">*</span></label
+					>
 					<input type="number" name="amount" v-model="alteration.amount" :disabled="alteration.discount_id > 0" />
 				</div>
 
@@ -188,12 +192,12 @@ export default {
 			<button
 				v-if="alteration.id < 1"
 				class="tw-btn-primary"
-				:disabled="!areMandatoryFieldsFilled"
+				:disabled="!areMandatoryFieldsFilled()"
 				@click="onClickAddDiscount"
 			>
 				{{ translate('COM_EMUNDUS_ADD') }}
 			</button>
-			<button v-else class="tw-btn-primary" :disabled="!areMandatoryFieldsFilled" @click="onClickUpdateDiscount">
+			<button v-else class="tw-btn-primary" :disabled="!areMandatoryFieldsFilled()" @click="onClickUpdateDiscount">
 				{{ translate('COM_EMUNDUS_SAVE') }}
 			</button>
 		</div>

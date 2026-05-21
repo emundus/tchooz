@@ -1079,9 +1079,9 @@ class EmundusHelperEmails
 		$eMConfig         = ComponentHelper::getParams('com_emundus');
 		$exclude_emundus_from_autoemails = $eMConfig->get('exclude_emundus_from_autoemails', 1);
 
-		if($exclude_emundus_from_autoemails == 1)
+		if ($exclude_emundus_from_autoemails == 1)
 		{
-			if(preg_match('/@emundus\.fr$/i', $email))
+			if (preg_match('/@emundus\.fr$/i', $email))
 			{
 				$excluded = true;
 			}

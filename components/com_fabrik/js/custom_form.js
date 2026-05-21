@@ -583,6 +583,22 @@ requirejs(['fab/fabrik'], function () {
                         required_icon.style.display = 'inline-block';
                       }
                     }
+                    else {
+                      if (action.action == 'set_mandatory') {
+                        let label = document.querySelector('label[for="' + id + '"]');
+                        if(label)
+                        {
+                          // Create the span element and insert it into the label
+                          let icon = document.createElement('span');
+                          icon.classList.add('material-symbols-outlined','!tw-text-xs', 'tw-text-red-600', 'tw-mr-0');
+                          icon.style.top = '-5px';
+                          icon.style.position = 'relative';
+                          icon.innerText = 'emergency';
+
+                          label.appendChild(icon);
+                        }
+                      }
+                    }
                   }
                 }
               });

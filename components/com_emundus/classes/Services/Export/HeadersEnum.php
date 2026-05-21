@@ -9,9 +9,11 @@
 
 namespace Tchooz\Services\Export;
 
+use EmundusModelEvaluation;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use MangoPay\User;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\User\EmundusUserEntity;
 use Tchooz\Enums\ValueFormatEnum;
@@ -46,7 +48,7 @@ enum HeadersEnum: string
 	case PROGRAM_NAME = 'program_name';
 	case PROGRAM_CATEGORY = 'program_category';
 
-	case AVERAGE_SCORE_BY_STEPS = 'average_score_by_steps';
+	case OVERALL_AVERAGE_SCORE = 'overall_average_score';
 
 	case APPLICATION_CHOICE_CAMPAIGN = 'application_choice_campaign';
 	case APPLICATION_CHOICE_STATUS = 'application_choice_status';
@@ -79,9 +81,9 @@ enum HeadersEnum: string
 			self::PROGRAM_NAME => Text::_('COM_EMUNDUS_PROGRAMME'),
 			self::PROGRAM_CATEGORY => Text::_('COM_EMUNDUS_PROGRAMME_CATEGORY'),
 
-			self::AVERAGE_SCORE_BY_STEPS => Text::_('COM_EMUNDUS_AVERAGE_SCORE_BY_STEPS'),
 			self::APPLICATION_CHOICE_CAMPAIGN => Text::_('COM_EMUNDUS_APPLICATION_CHOICE_CAMPAIGN'),
 			self::APPLICATION_CHOICE_STATUS => Text::_('COM_EMUNDUS_APPLICATION_CHOICE_STATUS'),
+			self::OVERALL_AVERAGE_SCORE => Text::_('COM_EMUNDUS_EXPORT_OVERALL_AVERAGE_SCORE'),
 		};
 	}
 
@@ -89,7 +91,8 @@ enum HeadersEnum: string
 		ApplicationFileEntity $file,
 		?LabelRepository      $labelRepository = null,
 		?EmundusUserEntity    $emundusUser = null,
-		ValueFormatEnum       $format = ValueFormatEnum::FORMATTED
+		ValueFormatEnum       $format = ValueFormatEnum::FORMATTED,
+		?User   			 $currentUser = null
 	)
 	{
 		switch ($this)
@@ -249,6 +252,15 @@ enum HeadersEnum: string
 				$internalReferenceRepository = new InternalReferenceRepository();
 				$activeReference = $internalReferenceRepository->getActiveReference($file->getId());
 				return $activeReference ? $activeReference->getReference() : '';
+			case self::OVERALL_AVERAGE_SCORE:
+				$evaluationModel = new EmundusModelEvaluation();
+				if (!$currentUser)
+				{
+					$currentUser = Factory::getApplication()->getIdentity();
+				}
+
+				return $evaluationModel->getEvaluationAverageByFnum([$file->getFnum()], $currentUser->id)[$file->getFnum()];
+				break;
 			default:
 				return null;
 		}

@@ -371,6 +371,8 @@ class EmundusModelApplication extends ListModel
 					}
 
 					$attachment->value = Text::_($attachment->value);
+					$attachment->timedate = EmundusHelperDate::displayDate($attachment->modified, 'DATE_FORMAT_LC2', 0);
+					$attachment->modified = EmundusHelperDate::displayDate($attachment->modified, 'DATE_FORMAT_LC2', 0);
 
 					$query->clear()
 						->select('profile_id')

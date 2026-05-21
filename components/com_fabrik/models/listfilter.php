@@ -1102,6 +1102,10 @@ class FabrikFEModelListfilter extends FabModel
 				continue;
 			}
 
+			if (is_array($val) && FArrayHelper::getValue($val, 'eval', FABRIKFILTER_TEXT) != FABRIKFILTER_TEXT) {
+				$this->app->enqueueMessage
+						('Querystring filter reset to TEXT, please inform your Website Admin: ' . $key . ': '. implode(' / ',$val),'error');			
+			}
 			$eval = FABRIKFILTER_TEXT;
 			$condition = is_array($val) ? FArrayHelper::getValue($val, 'condition', $elementModel->getDefaultFilterCondition())
 				: $elementModel->getDefaultFilterCondition();
@@ -1415,6 +1419,10 @@ class FabrikFEModelListfilter extends FabModel
 					}
 				}
 
+				if (is_array($value) && FArrayHelper::getValue($value, 'eval', FABRIKFILTER_TEXT) != FABRIKFILTER_TEXT) {
+					$this->app->enqueueMessage
+						('Post filter reset to TEXT, please inform your Website Admin: ' . $key . implode(' / ',$value),'error');			
+				}
 				$eval = FABRIKFILTER_TEXT;
 
 				if (!is_a($elementModel, 'PlgFabrik_ElementDatabasejoin'))
