@@ -31,7 +31,7 @@
 					v-else-if="selectedEvaluationStep.evaluations.length > 0"
 					v-show="!loading"
 					:src="'/' + currentLang + selectedEvaluationStep.evaluations[0].url"
-					class="iframe-evaluation-list tw-w-full tw-bg-coordinator-bg tw-p-6"
+					class="iframe-evaluation-list tw-w-full tw-bg-coordinator-bg tw-p-4"
 					:key="selectedTab"
 					@load="iframeLoaded($event)"
 				>
@@ -153,16 +153,14 @@ export default {
 
 			const evaluatorStepContainer = document.querySelector('.em-container-evaluator-step');
 			if (iframeEl && evaluatorStepContainer) {
-				const body = iframeDoc.body;
-				const html = iframeDoc.documentElement;
-				const contentHeight = Math.max(
-					body ? body.scrollHeight : 0,
-					html ? html.scrollHeight : 0,
-					body ? body.offsetHeight : 0,
-					html ? html.offsetHeight : 0,
-				);
-				iframeEl.style.height = contentHeight + 32 + 'px';
-				iframeEl.style.flex = '0 0 auto';
+				// Wait for iframe content to finish layout before measuring
+				requestAnimationFrame(() => {
+					const body = iframeDoc.body;
+					if (body) {
+						const contentHeight = body.scrollHeight;
+						iframeEl.style.height = contentHeight + 'px';
+					}
+				});
 			}
 		},
 		updateTab(evaluation) {
@@ -188,7 +186,7 @@ export default {
 <style scoped>
 .iframe-evaluation-list {
 	width: 100%;
-	min-height: 80%;
+	min-height: 500px;
 	border: unset;
 	height: 100%;
 	flex: 0 0 auto;
