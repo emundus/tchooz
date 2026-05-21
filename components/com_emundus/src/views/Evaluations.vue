@@ -31,7 +31,7 @@
 					v-else-if="selectedEvaluationStep.evaluations.length > 0"
 					v-show="!loading"
 					:src="'/' + currentLang + selectedEvaluationStep.evaluations[0].url"
-					class="iframe-evaluation-list tw-w-full tw-grow tw-bg-coordinator-bg tw-p-6"
+					class="iframe-evaluation-list tw-w-full tw-bg-coordinator-bg tw-p-6"
 					:key="selectedTab"
 					@load="iframeLoaded($event)"
 				>
@@ -143,16 +143,26 @@ export default {
 		},
 		iframeLoaded(event) {
 			this.loading = false;
-			let iframeDoc = event.target.contentDocument || event.target.contentWindow.document;
+			const iframeEl = event.target;
+			const iframeDoc = iframeEl.contentDocument || iframeEl.contentWindow.document;
+
 			if (iframeDoc.querySelector('.emundus-form')) {
 				iframeDoc.querySelector('.emundus-form').classList.add('eval-form-split-view');
 				iframeDoc.querySelector('body .platform-content > div').classList.add('eval-form-split-view-container');
 			}
 
-			let iframeEl = document.querySelector('.iframe-evaluation-list');
-			let evaluatorStepContainer = document.querySelector('.em-container-evaluator-step');
+			const evaluatorStepContainer = document.querySelector('.em-container-evaluator-step');
 			if (iframeEl && evaluatorStepContainer) {
-				iframeEl.style.height = iframeEl.contentWindow.document.body.scrollHeight + 32 + 'px';
+				const body = iframeDoc.body;
+				const html = iframeDoc.documentElement;
+				const contentHeight = Math.max(
+					body ? body.scrollHeight : 0,
+					html ? html.scrollHeight : 0,
+					body ? body.offsetHeight : 0,
+					html ? html.offsetHeight : 0,
+				);
+				iframeEl.style.height = contentHeight + 32 + 'px';
+				iframeEl.style.flex = '0 0 auto';
 			}
 		},
 		updateTab(evaluation) {
@@ -181,5 +191,6 @@ export default {
 	min-height: 80%;
 	border: unset;
 	height: 100%;
+	flex: 0 0 auto;
 }
 </style>
