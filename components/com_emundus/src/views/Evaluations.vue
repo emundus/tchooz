@@ -153,7 +153,8 @@ export default {
 
 			const evaluatorStepContainer = document.querySelector('.em-container-evaluator-step');
 			if (iframeEl && evaluatorStepContainer) {
-				// Wait for iframe content to finish layout before measuring
+				// Shrink iframe to 0 so scrollHeight reflects actual content, not stretched container
+				iframeEl.style.height = '0px';
 				requestAnimationFrame(() => {
 					const body = iframeDoc.body;
 					if (body) {
