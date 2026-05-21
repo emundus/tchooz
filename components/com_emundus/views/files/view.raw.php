@@ -67,11 +67,12 @@ class EmundusViewFiles extends JViewLegacy
 
 	protected array $code;
 	protected array $fnum_assoc;
-	protected bool $use_module_for_filters = true;
 
 	protected array $docs;
 	protected array $prgs;
 	protected string $fnums;
+
+	public bool $displayUserId = true;
 
 	/** FILTERS */
 	protected $applied_filters;
@@ -798,6 +799,8 @@ class EmundusViewFiles extends JViewLegacy
 				$this->delayAct   = EmundusHelperJavascript::delayAct();
 				$this->accessObj  = $objAccess;
 				$this->colsSup    = $colsSup;
+
+				$this->displayUserId = (bool) $menu_params->get('display_user_id', 1);
 				break;
 		}
 

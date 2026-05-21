@@ -223,7 +223,9 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                                         <?php endif; ?>
                                                     </span>
                                                     <div class="em_list_email"><?= $value->user->email; ?></div>
-                                                    <div class="em_list_user_id"><?= $value->user->id; ?></div>
+                                                    <?php if ($this->displayUserId) :?>
+                                                        <div class="em_list_user_id"><?= $value->user->id; ?></div>
+                                                    <?php endif; ?>
                                                     <?php if ($value->showReference) : ?>
                                                         <div class="tw-flex tw-items-end tw-gap-1 tw-whitespace-nowrap"
                                                              title="<?= (!empty($value->reference) ? $value->reference : '') . '#' . (!empty($value->shortReference) ? $value->shortReference : ''); ?>"

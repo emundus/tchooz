@@ -40,6 +40,7 @@ class EmundusViewFiles extends HtmlView
 	protected $actions;
 	protected bool $use_module_for_filters = true;
 	protected array $lists;
+	public bool $displayUserId = true;
 	protected JPagination $pagination;
 
 	private EmundusModelMessenger $m_messenger;
@@ -544,6 +545,7 @@ class EmundusViewFiles extends HtmlView
 		$this->delayAct   = EmundusHelperJavascript::delayAct();
 		$this->accessObj  = $objAccess;
 		$this->colsSup    = $colsSup;
+		$this->displayUserId = (bool) $menu_params->get('display_user_id', 1);
 
 		parent::display($tpl);
 	}

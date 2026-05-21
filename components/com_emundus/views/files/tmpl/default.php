@@ -346,7 +346,7 @@ $datas = [
                                                                     <?php endif; ?>
                                                                 </span>
                                                                 <div class="em_list_email"><?= $value->user->email; ?></div>
-                                                                <?php if ($line['is_anonym']->val != 1 && $line['anonymous']->val != 1): ?>
+                                                                <?php if ($this->displayUserId && $line['is_anonym']->val != 1 && $line['anonymous']->val != 1): ?>
                                                                     <div class="em_list_user_id"><?= $value->user->id; ?></div>
                                                                 <?php endif; ?>
                                                                 <?php if ($value->showReference) : ?>

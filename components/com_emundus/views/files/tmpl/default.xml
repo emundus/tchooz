@@ -31,6 +31,11 @@
             </field>
             <field name="em_columns_ordered" value="" type="textarea" label="COM_EMUNDUS_COLUMNS_ORDERDED"
                    description="COM_EMUNDUS_COLUMNS_ORDERDED_DESC"/>
+
+            <field name="display_user_id" default="1" type="list" label="COM_EMUNDUS_DISPLAY_USER_ID">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
         </fieldset>
 
         <fieldset addfieldpath="/administrator/components/com_emundus/models/fields" name="filters">
