@@ -492,7 +492,7 @@ class EmundusViewFiles extends HtmlView
 				foreach ($fnumArray as $fnum)
 				{
 					$colsSup['access_expiration_date'][$fnum] = isset($expirationDates[$fnum])
-						? EmundusHelperDate::displayDate($expirationDates[$fnum]->format('Y-m-d H:i:s'), $dateFormat)
+						? EmundusHelperDate::displayDate($expirationDates[$fnum]->format('Y-m-d H:i:s'), $dateFormat, 0)
 							: Text::_('COM_EMUNDUS_NO_EXPIRATION_DATE');
 				}
 			}

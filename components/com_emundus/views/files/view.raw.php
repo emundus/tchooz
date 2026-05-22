@@ -744,8 +744,8 @@ class EmundusViewFiles extends JViewLegacy
 						foreach ($fnumArray as $fnum)
 						{
 							$colsSup['access_expiration_date'][$fnum] = isset($expirationDates[$fnum])
-								? htmlspecialchars($expirationDates[$fnum]->format($dateFormat))
-								: '';
+								? EmundusHelperDate::displayDate($expirationDates[$fnum]->format('Y-m-d H:i:s'), $dateFormat, 0)
+								: Text::_('COM_EMUNDUS_NO_EXPIRATION_DATE');
 						}
 					}
 
