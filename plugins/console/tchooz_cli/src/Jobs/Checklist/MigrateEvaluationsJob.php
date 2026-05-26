@@ -156,7 +156,7 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 
 								$fabrikRepository = new FabrikRepository(true, $user);
 								$languages = LanguageHelper::getLanguages();
-								$duplicatedForm = $fabrikRepository->duplicateForm($oldForm, null, $languages);
+								$duplicatedForm = $fabrikRepository->duplicateForm($oldForm, null, $languages, false);
 								$new_evaluation_form_id = $duplicatedForm->form->id;
 
 								if (!empty($new_evaluation_form_id))
