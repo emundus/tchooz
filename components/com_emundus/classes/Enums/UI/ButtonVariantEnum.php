@@ -22,6 +22,8 @@ enum ButtonVariantEnum: string
 	case DISABLED = 'disabled';
 	case DASHED = 'dashed';
 	case RED = 'red';
+	case WARNING = 'warning';
+	case INFO = 'info';
 
 	public function cssClass(): string
 	{
@@ -33,6 +35,8 @@ enum ButtonVariantEnum: string
 			self::LINK => 'tw-underline tw-border-0',
 			self::CANCEL => 'tw-btn-cancel',
 			self::RED => 'tw-btn-red',
+			self::WARNING => 'tw-btn-warning',
+			self::INFO => 'tw-btn-info',
 			self::DISABLED => 'em-disabled-button',
 		};
 	}

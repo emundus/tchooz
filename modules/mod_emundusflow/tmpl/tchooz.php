@@ -7,6 +7,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
 use Tchooz\Enums\UI\ButtonVariantEnum;
 use Tchooz\Enums\UI\ButtonWidthEnum;

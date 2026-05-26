@@ -101,11 +101,6 @@ class EmundusHelperAccess
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, AccessLevelEnum::APPLICANT);
 	}
 
-	static function asRegisteredAccessLevel($user_id)
-	{
-		return EmundusHelperAccess::isAllowedAccessLevel($user_id, 2);
-	}
-
 	static function asPublicAccessLevel($user_id)
 	{
 		return EmundusHelperAccess::isAllowedAccessLevel($user_id, AccessLevelEnum::PUBLIC);

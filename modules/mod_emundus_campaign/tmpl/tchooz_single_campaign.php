@@ -381,7 +381,8 @@ if ($anonymizationPolicy === AnonymizationPolicyEnum::OPTIONAL)
                                 'variant' => ButtonVariantEnum::PRIMARY,
                                 'width'   => ButtonWidthEnum::FULL,
                                 'text'    => Text::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'),
-                                'href'    => $register_url
+                                'href'    => $register_url,
+                                'id' => 'register-url'
                             ]);
                         ?>
 					<?php endif; ?>
