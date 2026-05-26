@@ -1536,6 +1536,7 @@ class EmundusModelProfile extends ListModel
 
 			// If the user is admitted then we fill the session with information about the admitted file
 			// regardeless of the current campaign
+			$emundusSession->application_id         = !empty($fnum) ? EmundusHelperFiles::getIdFromFnum($fnum) : 0;
 			$emundusSession->fnum                   = $campaign["fnum"];
 			$emundusSession->fnums                  = array_merge($this->getApplicantFnums($current_user->id), $m_application->getMyFilesRequests($current_user->id));
 			$emundusSession->campaign_id            = $campaign["id"];

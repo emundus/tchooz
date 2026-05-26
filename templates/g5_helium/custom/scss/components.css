@@ -56,9 +56,9 @@
             color: var(--neutral-0);
         }
 
-        &:hover, &:focus, &:active {
+        &:hover {
             p,span {
-                color: var(--red-500);
+                color: var(--neutral-0);
             }
         }
     }

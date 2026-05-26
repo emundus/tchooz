@@ -29,7 +29,8 @@ use Tchooz\Repositories\RepositoryInterface;
 		'user_id',
 		'form_progress',
 		'attachment_progress',
-		'short_reference'
+		'short_reference',
+		'name'
 	]
 )]
 class ApplicationFileRepository extends EmundusRepository implements RepositoryInterface
@@ -258,7 +259,8 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 					'published'           => $applicationFileEntity->getPublished(),
 					'form_progress'       => $applicationFileEntity->getFormProgress(),
 					'attachment_progress' => $applicationFileEntity->getAttachmentProgress(),
-					'short_reference'     => $applicationFileEntity->getShortReference()
+					'short_reference'     => $applicationFileEntity->getShortReference(),
+					'name'                => $applicationFileEntity->getName(),
 				];
 
 				if (!$this->db->updateObject('#__emundus_campaign_candidature', $data, 'id'))
@@ -351,7 +353,8 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 				'status'              => $status,
 				'published'           => $applicationFileEntity->getPublished(),
 				'form_progress'       => 0,
-				'attachment_progress' => 0
+				'attachment_progress' => 0,
+				'name'                => $applicationFileEntity->getName(),
 			];
 			$campaign_candidature = (object) $campaign_candidature;
 			$this->db->insertObject('#__emundus_campaign_candidature', $campaign_candidature);

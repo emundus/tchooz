@@ -2,7 +2,10 @@
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Enums\UI\ButtonVariantEnum;
+use Tchooz\Enums\UI\ButtonWidthEnum;
 use Tchooz\Factories\Language\LanguageFactory;
 
 defined('_JEXEC') or die;
@@ -463,15 +466,20 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 				                            <?php
 				                            $details_url = !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2);
 				                            ?>
-                                            <a class="btn btn-secondary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
-                                               role="button" href='<?php echo $details_url; ?>'
-                                               data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
+                                            <?php
+                                                echo LayoutHelper::render('emundus.button', [
+                                                    'variant' => ButtonVariantEnum::SECONDARY,
+                                                    'width'   => ButtonWidthEnum::FULL,
+                                                    'text'    => Text::_('MOD_EM_CAMPAIGN_MORE_INFO'),
+                                                    'href'    => $details_url
+                                                ]);
+                                            ?>
                                         </div>
 		                            <?php endif; ?>
 
 								<?php
                                     if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($campaign_pinned->end_date)) && (strtotime($now) > strtotime($campaign_pinned->start_date))) : ?>
-                                    <div>
+                                    <div class="tw-mt-2">
 										<?php
 										$can_apply = 1;
                                         $is_limit_obtained = false;
@@ -511,13 +519,22 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 										?>
                                         <?php if($can_apply == 1) : ?>
                                             <?php if($is_limit_obtained) : ?>
-                                                <a class="em-disabled-button em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
-                                                   role="button" href='javascript:void(0);'
-                                                   data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED'); ?></a>
+                                                <?php
+                                                    echo LayoutHelper::render('emundus.button', [
+                                                        'variant' => ButtonVariantEnum::DISABLED,
+                                                        'width'   => ButtonWidthEnum::FULL,
+                                                        'text'    => Text::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED')
+                                                    ]);
+                                                ?>
                                             <?php else : ?>
-                                            <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
-                                               role="button" href='<?php echo $register_url; ?>'
-                                               data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                                                <?php
+                                                    echo LayoutHelper::render('emundus.button', [
+                                                        'variant' => ButtonVariantEnum::PRIMARY,
+                                                        'width'   => ButtonWidthEnum::FULL,
+                                                        'text'    => Text::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'),
+                                                        'href'    => $register_url
+                                                    ]);
+                                                ?>
                                             <?php endif; ?>
                                         <?php endif; ?>
                                     </div>
@@ -1135,18 +1152,23 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 		                                <?php endif; ?>
 
 		                                <?php if ($mod_em_campaign_show_info_button == 1) : ?>
-                                            <div>
+                                            <div class="tw-mt-2">
 				                                <?php
 				                                $details_url = !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2);
 				                                ?>
-                                                <a class="btn btn-secondary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
-                                                   role="button" href='<?php echo $details_url; ?>'
-                                                   data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
+                                                <?php
+                                                    echo LayoutHelper::render('emundus.button', [
+                                                        'variant' => ButtonVariantEnum::SECONDARY,
+                                                        'width'   => ButtonWidthEnum::FULL,
+                                                        'text'    => Text::_('MOD_EM_CAMPAIGN_MORE_INFO'),
+                                                        'href'    => $details_url
+                                                    ]);
+                                                ?>
                                             </div>
 		                                <?php endif; ?>
 
 									<?php if ($mod_em_campaign_show_apply_button == 1 && (strtotime($now) < strtotime($result->end_date)) && (strtotime($now) > strtotime($result->start_date))) : ?>
-                                        <div>
+                                        <div class="tw-mt-2">
 											<?php
 											$can_apply = 1;
 											$is_limit_obtained = false;
@@ -1215,13 +1237,22 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 											?>
 	                                        <?php if($can_apply == 1) : ?>
 		                                        <?php if($is_limit_obtained) : ?>
-                                                    <a class="em-disabled-button em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
-                                                       role="button" href='javascript:void(0);'
-                                                       data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED'); ?></a>
+                                                    <?php
+                                                        echo LayoutHelper::render('emundus.button', [
+                                                            'variant' => ButtonVariantEnum::DISABLED,
+                                                            'width'   => ButtonWidthEnum::FULL,
+                                                            'text'    => Text::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED')
+                                                        ]);
+                                                    ?>
 		                                        <?php else : ?>
-                                                    <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
-                                                       role="button" href='<?php echo $register_url; ?>'
-                                                       data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                                                    <?php
+                                                        echo LayoutHelper::render('emundus.button', [
+                                                            'variant' => ButtonVariantEnum::PRIMARY,
+                                                            'width'   => ButtonWidthEnum::FULL,
+                                                            'text'    => Text::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'),
+                                                            'href'    => $register_url
+                                                        ]);
+                                                    ?>
 		                                        <?php endif; ?>
 	                                        <?php endif; ?>
                                         </div>

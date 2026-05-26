@@ -3,11 +3,8 @@
 namespace Emundus\Plugin\Console\Tchooz\Jobs\Checklist;
 
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
-
 class CheckEmundusTagsJob extends TchoozChecklistJob
 {
 	private OutputInterface $output;

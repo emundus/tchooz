@@ -1,6 +1,13 @@
 <?php // no direct access
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
+use Tchooz\Enums\UI\ButtonVariantEnum;
+use Tchooz\Enums\UI\ButtonWidthEnum;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -174,18 +181,35 @@ $now      = $dateTime->format('Y-m-d H:i:s');
         </div>
         <div class="tw-flex tw-items-center tw-justify-end tw-gap-2 mod_emundus_flow___buttons">
 			<?php if ($show_back_button == 1) : ?>
-                <a href="<?php echo $home_link ?>"
-                   title="<?php echo strip_tags(JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT')) ?>">
-                    <button class="tw-btn-primary"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
-                </a>
+                <?php
+                    echo LayoutHelper::render('emundus.button', [
+                        'variant' => ButtonVariantEnum::PRIMARY,
+                        'width'   => ButtonWidthEnum::FIT,
+                        'text'    => Text::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT'),
+                        'href'    => $home_link,
+                    ]);
+                ?>
 			<?php endif; ?>
-            <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>"
-               target="blank" title="<?php echo JText::_('PRINT') ?>">
-                <button class="tw-btn-secondary mod_emundus_flow___print">
-                    <span class="material-symbols-outlined" style="font-size: 19px">print</span>
-                    <p><?php echo JText::_('PRINT') ?></p>
-                </button>
-            </a>
+
+            <?php
+                echo LayoutHelper::render('emundus.button', [
+                    'variant' => ButtonVariantEnum::SECONDARY,
+                    'icon' => 'print',
+                    'iconPosition' => 'left',
+                    'width'   => ButtonWidthEnum::FIT,
+                    'text'    => Text::_('PRINT'),
+                    'href'    => Uri::base() . 'component/emundus/?task=pdf&amp;fnum='.$current_application->fnum,
+                    'target' => '_blank',
+                ]);
+            ?>
+            <?php
+
+                $data = [
+                    'fnum' => $current_application->fnum,
+                    'context' => 'single'
+                ];
+                echo LayoutHelper::render('emundus.application.actions', $data, '', $data);
+            ?>
         </div>
     </div>
 	<?php if ($show_deadline == 1 || $show_status == 1) : ?>
@@ -209,14 +233,14 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 
 			<?php if ($show_deadline == 1) : ?>
                 <div class="tw-flex tw-items-center">
-                    <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
+                    <p class="em-text-neutral-600 em-font-size-16"> <?php echo Text::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
                     <span class="tw-ml-1.5" style="white-space: nowrap"><?php echo EmundusHelperDate::displayDate($deadline,'DATE_FORMAT_EMUNDUS') ?></span>
                 </div>
 			<?php endif; ?>
 
 			<?php if ($show_programme == 1) : ?>
                 <div class="tw-flex tw-items-center em-flex-wrap">
-                    <p class="em-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
+                    <p class="em-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
                     <p class="em-programme-tag" style="color: <?php echo $color ?>;margin: unset;padding: 0">
 						<?php echo $current_application->prog_label; ?>
                     </p>
@@ -225,7 +249,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 
 			<?php if ($show_status == 1) : ?>
                 <div class="tw-flex tw-items-center">
-                    <p class="em-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_STATUS'); ?> : </p>
+                    <p class="em-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_STATUS'); ?> : </p>
                     <div class="mod_emundus_flow___status_<?= $current_application->class; ?> tw-flex">
                         <span class="label label-<?= $current_application->class; ?>"><?= $current_application->value ?></span>
                     </div>
@@ -234,7 +258,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 
 	        <?php if($fnumInfos['applicant_id'] !== Factory::getApplication()->getIdentity()->id) : ?>
                 <div class="tw-flex tw-items-center">
-                    <p class="tw-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_APPLICANT'); ?></p>
+                    <p class="tw-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_APPLICANT'); ?></p>
                     <p><?= $fnumInfos['name']; ?></p>
                 </div>
 	        <?php endif; ?>
