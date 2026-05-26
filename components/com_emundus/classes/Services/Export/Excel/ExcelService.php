@@ -28,6 +28,7 @@ use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
+use Tchooz\Enums\Export\ExportSettingEnum;
 use Tchooz\Enums\Upload\UploadFormatEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
@@ -323,13 +324,14 @@ class ExcelService extends Export implements ExportInterface
 					}
 
 					// 4.b) Elements headers
+					$displayEvaluatorName = (bool) $this->options->getSetting(ExportSettingEnum::DISPLAY_EVALUATOR_NAME);
 					$elementIds = $this->options->getElements() ?? [];
 					foreach ($elementIds as $elementId)
 					{
 						$data = $this->getData($elementId, $sampleFiles);
 
 						// evaluator column for evaluation tables
-						if (!empty($data['is_evaluation']) && !empty($data['db_table_name']))
+						if ($displayEvaluatorName && !empty($data['is_evaluation']) && !empty($data['db_table_name']))
 						{
 							$evaluatorElementId = 'evaluator_' . $data['db_table_name'];
 							if (!array_key_exists($evaluatorElementId, $json['headers']))
@@ -350,8 +352,9 @@ class ExcelService extends Export implements ExportInterface
 				// ----------------------------
 				$totalFnums = count($allFnums);
 
-				$synthesisIds = $this->options->getSynthesis() ?? [];
-				$elementIds   = $this->options->getElements() ?? [];
+				$synthesisIds         = $this->options->getSynthesis() ?? [];
+				$elementIds           = $this->options->getElements() ?? [];
+				$displayEvaluatorName = (bool) $this->options->getSetting(ExportSettingEnum::DISPLAY_EVALUATOR_NAME);
 
 				while ($processed < $totalFnums)
 				{
@@ -488,7 +491,7 @@ class ExcelService extends Export implements ExportInterface
 							$data = $this->getData($elementId, $files);
 
 							// evaluator column
-							if (!empty($data['is_evaluation']) && !empty($data['db_table_name']))
+							if ($displayEvaluatorName && !empty($data['is_evaluation']) && !empty($data['db_table_name']))
 							{
 								$evaluatorElementId = 'evaluator_' . $data['db_table_name'];
 
