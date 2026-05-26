@@ -260,19 +260,19 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 	{
 		$app = $this->getApplication();
 
-		$user = $app->getIdentity();
+		$user       = $app->getIdentity();
 		$userParams = (!empty($user->params)) ? json_decode($user->params) : [];
 
-		if ($app->isClient('site'))
+		if ($app->isClient('site') && !$user->guest)
 		{
 			// If samlredirect plugin is active and we're coming from saml login page we can try to update user informations
 			$isSamlUser = false;
-			if (!$user->guest && !empty($user->id) && PluginHelper::isEnabled('system', 'samlredirect'))
+			if (!empty($user->id) && PluginHelper::isEnabled('system', 'samlredirect'))
 			{
 				$isSamlUser = $this->isSamlUser($user->id);
 			}
 
-			if (!$user->guest && $isSamlUser)
+			if ($isSamlUser)
 			{
 				$db    = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
@@ -326,34 +326,45 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 					}
 				}
 				// End of SAML user info update
-
-				// Add a class to the body tag depending on the emundus profile
-				$body = $app->getBody();
-
-				// Define class via emundus profile
-				$e_session = $app->getSession()->get('emundusUser');
-				if (!empty($e_session))
-				{
-					$class = $e_session->applicant == 1 ? 'em-applicant' : 'em-coordinator';
-				}
-				else
-				{
-					$class = 'em-guest';
-				}
-
-				preg_match_all(\chr(1) . '(<div.*\s+id="g-page-surround".*>)' . \chr(1) . 'i', $body, $matches);
-				foreach ($matches[0] as $match)
-				{
-					if (!strpos($match, 'class='))
-					{
-						$replace = '<div id="g-page-surround" class="' . $class . '">';
-						$body    = str_replace($match, $replace, $body);
-					}
-				}
-
-				$app->setBody($body);
-				// End of body class injection
 			}
+			
+			// Add a class to the body tag depending on the emundus profile
+			$body = $app->getBody();
+
+			// Define class via emundus profile
+			$e_session = $app->getSession()->get('emundusUser');
+			if (!empty($e_session))
+			{
+				$class = $e_session->applicant == 1 ? 'em-applicant' : 'em-coordinator';
+			}
+			else
+			{
+				$class = 'em-guest';
+			}
+
+			// Accessibility classes
+			$a11y_mono = (bool) $app->getIdentity()->getParam('a11y_mono', '');
+			$class     .= $a11y_mono ? ' a11y-monochrome' : '';
+			$a11y_mono = (bool) $app->getIdentity()->getParam('a11y_contrast', '');
+			$class     .= $a11y_mono ? ' a11y-high-contrast' : '';
+			$a11y_mono = (bool) $app->getIdentity()->getParam('a11y_highlight', '');
+			$class     .= $a11y_mono ? ' a11y-link-highlight' : '';
+			$a11y_mono = (bool) $app->getIdentity()->getParam('a11y_font', '');
+			$class     .= $a11y_mono ? ' a11y-font' : '';
+			//
+
+			preg_match_all(\chr(1) . '(<div.*\s+id="g-page-surround".*>)' . \chr(1) . 'i', $body, $matches);
+			foreach ($matches[0] as $match)
+			{
+				if (!strpos($match, 'class='))
+				{
+					$replace = '<div id="g-page-surround" class="' . $class . '">';
+					$body    = str_replace($match, $replace, $body);
+				}
+			}
+
+			$app->setBody($body);
+			// End of body class injection
 		}
 
 		PluginHelper::importPlugin('emundus');

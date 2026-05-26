@@ -9,6 +9,8 @@
 
 namespace Tchooz\Services\Export;
 
+use Tchooz\Enums\Export\ExportSettingEnum;
+
 class ExportOptions
 {
 	private string $format;
@@ -20,6 +22,13 @@ class ExportOptions
 	private array $elements;
 
 	private string $lang;
+
+	/**
+	 * Runtime toggles whose keys are declared in {@see ExportSettingEnum}.
+	 * Stored as [enum value => casted value]. Use getSetting() rather than
+	 * touching the array directly — it falls back to the enum default.
+	 */
+	private array $settings = [];
 	//
 
 	public function __construct(
@@ -101,5 +110,53 @@ class ExportOptions
 	public function setLang(string $lang): void
 	{
 		$this->lang = $lang;
+	}
+
+	public function getSetting(ExportSettingEnum $key): mixed
+	{
+		return $this->settings[$key->value] ?? $key->getDefault();
+	}
+
+	public function setSetting(ExportSettingEnum $key, mixed $value): void
+	{
+		$this->settings[$key->value] = $key->cast($value);
+	}
+
+	/**
+	 * Replace the whole bag from raw input (array or stdClass). Unknown keys are
+	 * ignored; known keys are cast through their enum definition.
+	 */
+	public function setSettings(array|object|null $raw): void
+	{
+		$this->settings = [];
+
+		if (empty($raw))
+		{
+			return;
+		}
+
+		$raw = is_object($raw) ? (array) $raw : $raw;
+
+		foreach (ExportSettingEnum::cases() as $case)
+		{
+			if (array_key_exists($case->value, $raw))
+			{
+				$this->settings[$case->value] = $case->cast($raw[$case->value]);
+			}
+		}
+	}
+
+	/**
+	 * @return array<string, mixed> Effective settings (stored values + enum defaults for missing keys).
+	 */
+	public function getSettings(): array
+	{
+		$out = [];
+		foreach (ExportSettingEnum::cases() as $case)
+		{
+			$out[$case->value] = $this->settings[$case->value] ?? $case->getDefault();
+		}
+
+		return $out;
 	}
 }

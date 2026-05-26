@@ -3101,7 +3101,7 @@ class EmundusModelApplication extends ListModel
 	}
 
 
-	public function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null, $eids = null, $attachments = true, $step_types = [1], $current_user_id = 0)
+	public function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null, $eids = null, $attachments = true, $step_types = [1], $current_user_id = 0, $display_evaluator_name = true)
 	{
 		if(empty($current_user_id))
 		{
@@ -3238,7 +3238,7 @@ class EmundusModelApplication extends ListModel
 							$page_title_inserted = true;
 						}
 
-						if(!$evaluator_inserted && !empty($evaluator_name))
+						if($display_evaluator_name && !$evaluator_inserted && !empty($evaluator_name))
 						{
 							$forms .= '<h3>' . Text::_('EVALUATOR') . ': ' . $evaluator_name . '</h3>';
 							$evaluator_inserted = true;

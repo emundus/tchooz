@@ -2,10 +2,16 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Session\Session;
-use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
-use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Session\Session;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
+use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
+use Tchooz\Enums\UI\ButtonVariantEnum;
+use Tchooz\Enums\UI\ButtonWidthEnum;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -196,24 +202,34 @@ assert($applicationFile instanceof ApplicationFileEntity);
         </div>
         <div class="tw-flex tw-items-center tw-justify-end tw-gap-2 mod_emundus_flow___buttons">
 			<?php if ($show_back_button == 1) :
-                if (EmundusPublicAccess::isPublicAccessSession())
-                {
-                    $home_link = '/index.php?option=com_users&task=user.logout&' . Session::getFormToken() . '=1';
-                }
-            ?>
-                <a href="<?php echo $home_link ?>"
-                   title="<?php echo strip_tags(Text::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT')) ?>">
-                    <button class="tw-btn-primary" style="line-height: 1.5rem;"><?php echo Text::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
-                </a>
+				if (EmundusPublicAccess::isPublicAccessSession())
+				{
+					$home_link = '/index.php?option=com_users&task=user.logout&' . Session::getFormToken() . '=1';
+				}
+			?>
+                <?php
+                    echo LayoutHelper::render('emundus.button', [
+                        'variant' => ButtonVariantEnum::PRIMARY,
+                        'width'   => ButtonWidthEnum::FIT,
+                        'text'    => Text::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT'),
+                        'href'    => $home_link,
+                    ]);
+                ?>
 			<?php endif; ?>
-            <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $applicationFile->getFnum() ?>"
-               target="blank" title="<?php echo Text::_('PRINT') ?>">
-                <button class="tw-btn-secondary mod_emundus_flow___print">
-                    <span><?php echo Text::_('PRINT') ?></span>
-                    <span class="material-symbols-outlined">print</span>
-                </button>
-            </a>
+
             <?php
+                echo LayoutHelper::render('emundus.button', [
+                    'variant' => ButtonVariantEnum::SECONDARY,
+                    'icon' => 'print',
+                    'iconPosition' => 'left',
+                    'width'   => ButtonWidthEnum::FIT,
+                    'text'    => Text::_('PRINT'),
+                    'href'    => Uri::base() . 'component/emundus/?task=pdf&amp;fnum='.$applicationFile->getFnum(),
+                    'target' => '_blank',
+                ]);
+            ?>
+            <?php
+
                 $data = [
                     'fnum' => $applicationFile->getFnum(),
                     'context' => 'single'
