@@ -3,6 +3,9 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
+use Tchooz\Enums\UI\ButtonVariantEnum;
+use Tchooz\Enums\UI\ButtonWidthEnum;
 
 header('Content-Type: text/html; charset=utf-8');
 
@@ -334,16 +337,31 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
 						$register_url .= "&redirect=" . $formUrl;
 					}
 					if ($is_limit_obtained) : ?>
-                        <button class="em-disabled-button em-w-100" role="button"
-                                data-toggle="sc-modal"><?= JText::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED'); ?></button>
+                        <?php
+                            echo LayoutHelper::render('emundus.button', [
+                                'variant' => ButtonVariantEnum::DISABLED,
+                                'width'   => ButtonWidthEnum::FULL,
+                                'text'    => Text::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED')
+                            ]);
+                        ?>
 					<?php else : ?>
-                        <a class="btn btn-primary em-w-100 em-applicant-default-font"
-                           href='<?php echo $register_url; ?>'
-                           data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                        <?php
+                            echo LayoutHelper::render('emundus.button', [
+                                'variant' => ButtonVariantEnum::PRIMARY,
+                                'width'   => ButtonWidthEnum::FULL,
+                                'text'    => Text::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'),
+                                'href'    => $register_url
+                            ]);
+                        ?>
 					<?php endif; ?>
 				<?php elseif ($can_apply == -1) : ?>
-                    <button class="em-disabled-button em-w-100" role="button"
-                            data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_IS_FINISH'); ?></button>
+                    <?php
+                        echo LayoutHelper::render('emundus.button', [
+                            'variant' => ButtonVariantEnum::DISABLED,
+                            'width'   => ButtonWidthEnum::FULL,
+                            'text'    => Text::_('MOD_EM_CAMPAIGN_CAMPAIGN_IS_FINISH')
+                        ]);
+                    ?>
 				<?php endif; ?>
             </div>
 		<?php endif; ?>

@@ -917,4 +917,51 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	{
 		$this->cache->clean();
 	}
+
+	/**
+	 * @return array<CampaignEntity>
+	 */
+	public function getOngoingCampaigns(): array
+	{
+		$campaigns = [];
+
+		$cache_key = 'ongoing_campaigns_' . ($this->withRelations ? 'with' : 'without') . '_relations';
+		if ($this->cache->contains($cache_key))
+		{
+			$elements  = $this->getCampaignMoreElements();
+			return $this->factory->fromDbObjects($this->cache->get($cache_key), $this->withRelations, [], null, $elements);
+		}
+
+		try
+		{
+			$now   = new Date();
+			$query = $this->db->getQuery(true);
+
+			$query->select($this->columns)
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->where($this->db->quoteName($this->alias . '.published') . ' = 1')
+				->where($this->db->quoteName($this->alias . '.start_date') . ' <= ' . $this->db->quote($now->toSql()))
+				->where(
+					'(' . $this->db->quoteName($this->alias . '.end_date') . ' >= ' . $this->db->quote($now->toSql()) .
+					' OR ' . $this->db->quoteName($this->alias . '.end_date') . ' = ' . $this->db->quote('0000-00-00 00:00:00') . ')'
+				)
+				->order($this->db->quoteName($this->alias . '.end_date') . ' ASC');
+
+			$this->db->setQuery($query);
+			$results = $this->db->loadObjectList();
+			$this->cache->store($results, $cache_key);
+
+			if (!empty($results))
+			{
+				$elements  = $this->getCampaignMoreElements();
+				$campaigns = $this->factory->fromDbObjects($results, $this->withRelations, [], null, $elements);
+			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error on getAvailableCampaigns : ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.campaign');
+		}
+
+		return $campaigns;
+	}
 }

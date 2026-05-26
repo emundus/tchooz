@@ -23,6 +23,7 @@ module.exports = {
         "./media/com_emundus/js/collaborate.js",
         "./media/com_emundus/js/mixins/exports.js",
         "./media/com_emundus/js/mixins/utilities.js",
+        "./layouts/emundus/**/*.{html,js,php}"
     ],
     safelist: [
         {
@@ -275,8 +276,10 @@ module.exports = {
                     display: 'flex !important',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    flexWrap: 'nowrap',
+                    whiteSpace: 'nowrap',
                     cursor: 'pointer',
-                    minHeight: '40px',
+                    height: '40px',
                     boxShadow: 'none',
 
                     '&:hover': {
@@ -313,7 +316,7 @@ module.exports = {
                     textShadow: 'none',
                     textTransform: 'math-auto',
                     padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
-                    fontSize: '16px',
+                    fontSize: 'var(--em-applicant-font-size)',
                     fontFamily: 'var(--em-profile-font)',
                     lineHeight: '1.25',
                     borderRadius: 'var(--em-applicant-br)',
@@ -321,7 +324,10 @@ module.exports = {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    flexWrap: 'nowrap',
+                    whiteSpace: 'nowrap',
                     cursor: 'pointer',
+                    height: '40px',
 
                     '&:hover': {
                         backgroundColor: 'var(--em-secondary-color)',
@@ -347,6 +353,7 @@ module.exports = {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    height: '40px',
 
                     '&:hover': {
                         backgroundColor: 'var(--em-tertiary-color)',
@@ -371,6 +378,7 @@ module.exports = {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    height: '40px',
 
                     '&:hover': {
                         backgroundColor: 'var(--em-coordinator-secondary-color)',
@@ -391,24 +399,26 @@ module.exports = {
                 '.btn-red': {
                     backgroundColor: 'var(--red-500)',
                     color: 'var(--neutral-0) !important',
-                    border: '1px solid var(--red-500)',
+                    border: '1px solid var(--red-500)  !important',
                     textShadow: 'none',
                     textTransform: 'math-auto',
-                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
-                    fontSize: '16px',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal) !important',
+                    fontSize: 'var(--em-applicant-font-size)',
                     fontFamily: 'var(--em-profile-font)',
-                    lineHeight: '1.25',
+                    lineHeight: '1.5',
                     borderRadius: 'var(--em-applicant-br)',
-                    transition: 'all 0.2s ease-out',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
                     cursor: 'pointer',
+                    height: '40px',
+                    boxShadow: 'none',
 
                     '&:hover': {
-                        backgroundColor: 'var(--neutral-0)',
-                        color: 'var(--red-500) !important',
-                        border: '1px solid var(--red-500)',
+                        backgroundColor: 'color-mix(in srgb, var(--red-500), var(--neutral-900) 30%) !important',
+                        color: 'var(--neutral-0) !important',
+                        border: '1px solid var(--red-500) !important',
                         textDecoration: 'none',
                     },
 
@@ -433,6 +443,7 @@ module.exports = {
                     justifyContent: 'center',
                     alignItems: 'center',
                     cursor: 'pointer',
+                    height: '40px',
 
                     '&:hover': {
                         backgroundColor: 'hsl(from var(--em-profile-color) h s l / 30%)',
