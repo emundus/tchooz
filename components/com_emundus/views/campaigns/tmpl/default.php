@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted Access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
 use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Factories\LayoutFactory;
@@ -249,9 +250,7 @@ if ($addonAnonymous->isActivated())
 $data['publicAddonActivated'] = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value)->isActivated();
 ?>
 
-<div id="em-component-vue"
-     component="Campaigns"
-     data="<?= htmlspecialchars(json_encode($data), ENT_QUOTES, 'UTF-8'); ?>">
-</div>
-
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>
+<?php echo LayoutHelper::render('emundus.vue-mount', [
+    'component' => 'Campaigns',
+    'data'      => $data,
+]); ?>

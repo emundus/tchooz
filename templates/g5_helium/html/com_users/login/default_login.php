@@ -326,13 +326,13 @@ $allowDefaultLogin = (bool)$eMConfig->get('allow_default_login', 1);
         let username_field = document.querySelector('#username');
         if (username_field) {
             username_field.setAttribute('placeholder', '<?php echo JText::_('COM_USERS_LOGIN_EMAIL_PLACEHOLDER'); ?>');
-            username_field.setAttribute('aria-describedby', 'alert-message-text');
+            username_field.setAttribute('aria-labelledby', 'username-lbl');
             username_field.setAttribute('autocomplete', 'email');
             username_field.focus();
         }
         let password_field = document.querySelector('#password');
         if (password_field) {
-            password_field.setAttribute('aria-describedby', 'alert-message-text');
+            password_field.setAttribute('aria-labelledby', 'password-lbl');
             password_field.setAttribute('autocomplete', 'current-password');
         }
 

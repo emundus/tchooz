@@ -107,6 +107,12 @@ class PdfOptions extends ExportOptions
 
 		$pdfOptions->setFilename($application_form_name);
 
+		if (isset($options->settings))
+		{
+			$rawSettings = is_string($options->settings) ? json_decode($options->settings, true) : $options->settings;
+			$pdfOptions->setSettings($rawSettings);
+		}
+
 		return $pdfOptions;
 	}
 

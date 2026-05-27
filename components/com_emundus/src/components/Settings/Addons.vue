@@ -577,14 +577,14 @@ export default {
 					"
 				></PaymentAddon>
 
-				<AnonymAddon
-					v-else-if="currentAddon.namekey === 'anonymous'"
+				<Addon
+					v-else-if="currentAddon.namekey === 'anonymous' || currentAddon.namekey === 'public_session'"
 					:addon="currentAddon"
 					@addonSaved="
 						currentAddon = null;
 						getAddons();
 					"
-				></AnonymAddon>
+				></Addon>
 
 				<CustomReference
 					v-else-if="currentAddon.namekey === 'custom_reference_format'"

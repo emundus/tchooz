@@ -140,6 +140,11 @@ module.exports = {
                     800: 'var(--orange-800)',
                     900: 'var(--orange-900)',
                 },
+                yellow: {
+                    200: 'var(--tertiary-200)',
+                    300: 'var(--tertiary-300)',
+                    400: 'var(--tertiary-400)',
+                },
                 neutral: {
                     0: 'var(--neutral-0)',
                     50: 'var(--neutral-50)',
@@ -263,30 +268,49 @@ module.exports = {
                 '.btn-primary': {
                     backgroundColor: 'var(--em-profile-color)',
                     color: 'var(--neutral-0) !important',
-                    border: '1px solid var(--em-profile-color)',
+                    border: '1px solid var(--em-profile-color) !important',
                     textShadow: 'none',
                     textTransform: 'math-auto',
-                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
-                    fontSize: '16px',
+                    textDecoration: 'none',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal) !important',
+                    fontSize: 'var(--em-applicant-font-size)',
                     fontFamily: 'var(--em-profile-font)',
-                    lineHeight: '1.25',
+                    lineHeight: '1.5',
                     borderRadius: 'var(--em-applicant-br)',
-                    transition: 'all 0.2s ease-out',
-                    display: 'flex',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important',
+                    display: 'flex !important',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    flexWrap: 'nowrap',
+                    whiteSpace: 'nowrap',
                     cursor: 'pointer',
+                    height: '40px',
+                    boxShadow: 'none',
 
                     '&:hover': {
-                        backgroundColor: 'var(--neutral-0)',
-                        color: 'var(--em-profile-color) !important',
-                        border: '1px solid var(--em-profile-color)',
+                        backgroundColor: 'color-mix(in srgb, var(--em-primary-color), var(--neutral-900) 30%) !important',
+                        color: 'var(--neutral-0) !important',
+                        border: '1px solid var(--em-profile-color) !important',
                         textDecoration: 'none',
+                    },
+
+                    '&:active': {
+                        backgroundColor: 'color-mix(in srgb, var(--em-primary-color), var(--neutral-900) 60%)'
                     },
 
                     '&:disabled': {
                         opacity: '0.6',
                         cursor: 'not-allowed',
+                    },
+
+                    '&:focus': {
+                        color: 'var(--neutral-0)',
+                        boxShadow: 'none'
+                    },
+
+                    '&:focus-visible': {
+                        outline: '2px solid color-mix(in srgb, var(--em-primary-color), var(--neutral-900) 30%)',
+                        outlineOffset: '2px'
                     }
                 },
 
@@ -297,7 +321,7 @@ module.exports = {
                     textShadow: 'none',
                     textTransform: 'math-auto',
                     padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
-                    fontSize: '16px',
+                    fontSize: 'var(--em-applicant-font-size)',
                     fontFamily: 'var(--em-profile-font)',
                     lineHeight: '1.25',
                     borderRadius: 'var(--em-applicant-br)',
@@ -305,7 +329,10 @@ module.exports = {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    flexWrap: 'nowrap',
+                    whiteSpace: 'nowrap',
                     cursor: 'pointer',
+                    height: '40px',
 
                     '&:hover': {
                         backgroundColor: 'var(--em-secondary-color)',
@@ -331,6 +358,7 @@ module.exports = {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    height: '40px',
 
                     '&:hover': {
                         backgroundColor: 'var(--em-tertiary-color)',
@@ -338,6 +366,153 @@ module.exports = {
                         border: '1px solid var(--em-tertiary-color)',
                         textDecoration: 'none',
                     },
+                },
+
+                '.btn-info': {
+                    backgroundColor: 'var(--blue-500)',
+                    color: 'var(--neutral-0) !important',
+                    border: '1px solid var(--blue-500) !important',
+                    textShadow: 'none',
+                    textTransform: 'math-auto',
+                    textDecoration: 'none',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal) !important',
+                    fontSize: 'var(--em-applicant-font-size)',
+                    fontFamily: 'var(--em-profile-font)',
+                    lineHeight: '1.5',
+                    borderRadius: 'var(--em-applicant-br)',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important',
+                    display: 'flex !important',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexWrap: 'nowrap',
+                    whiteSpace: 'nowrap',
+                    cursor: 'pointer',
+                    height: '40px',
+                    boxShadow: 'none',
+
+                    '&:hover': {
+                        backgroundColor: 'color-mix(in srgb, var(--blue-500), var(--neutral-900) 30%) !important',
+                        color: 'var(--neutral-0) !important',
+                        border: '1px solid var(--blue-500) !important',
+                        textDecoration: 'none',
+                    },
+
+                    '&:active': {
+                        backgroundColor: 'color-mix(in srgb, var(--blue-500), var(--neutral-900) 60%)'
+                    },
+
+                    '&:disabled': {
+                        opacity: '0.6',
+                        cursor: 'not-allowed',
+                    },
+
+                    '&:focus': {
+                        color: 'var(--neutral-0)',
+                        boxShadow: 'none'
+                    },
+
+                    '&:focus-visible': {
+                        outline: '2px solid color-mix(in srgb, var(--blue-500), var(--neutral-900) 30%)',
+                        outlineOffset: '2px'
+                    }
+                },
+
+                '.btn-warning': {
+                    backgroundColor: 'var(--tertiary-200)',
+                    color: 'var(--neutral-0) !important',
+                    border: '1px solid var(--tertiary-200) !important',
+                    textShadow: 'none',
+                    textTransform: 'math-auto',
+                    textDecoration: 'none',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal) !important',
+                    fontSize: 'var(--em-applicant-font-size)',
+                    fontFamily: 'var(--em-profile-font)',
+                    lineHeight: '1.5',
+                    borderRadius: 'var(--em-applicant-br)',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important',
+                    display: 'flex !important',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexWrap: 'nowrap',
+                    whiteSpace: 'nowrap',
+                    cursor: 'pointer',
+                    height: '40px',
+                    boxShadow: 'none',
+
+                    '&:hover': {
+                        backgroundColor: 'color-mix(in srgb, var(--tertiary-200), var(--neutral-900) 30%) !important',
+                        color: 'var(--neutral-0) !important',
+                        border: '1px solid var(--tertiary-200) !important',
+                        textDecoration: 'none',
+                    },
+
+                    '&:active': {
+                        backgroundColor: 'color-mix(in srgb, var(--tertiary-200), var(--neutral-900) 60%)'
+                    },
+
+                    '&:disabled': {
+                        opacity: '0.6',
+                        cursor: 'not-allowed',
+                    },
+
+                    '&:focus': {
+                        color: 'var(--neutral-0)',
+                        boxShadow: 'none'
+                    },
+
+                    '&:focus-visible': {
+                        outline: '2px solid color-mix(in srgb, var(--tertiary-200), var(--neutral-900) 30%)',
+                        outlineOffset: '2px'
+                    }
+                },
+
+                '.btn-orange': {
+                    backgroundColor: 'var(--orange-600)',
+                    color: 'var(--neutral-0) !important',
+                    border: '1px solid var(--orange-600) !important',
+                    textShadow: 'none',
+                    textTransform: 'math-auto',
+                    textDecoration: 'none',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal) !important',
+                    fontSize: 'var(--em-applicant-font-size)',
+                    fontFamily: 'var(--em-profile-font)',
+                    lineHeight: '1.5',
+                    borderRadius: 'var(--em-applicant-br)',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important',
+                    display: 'flex !important',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexWrap: 'nowrap',
+                    whiteSpace: 'nowrap',
+                    cursor: 'pointer',
+                    height: '40px',
+                    boxShadow: 'none',
+
+                    '&:hover': {
+                        backgroundColor: 'color-mix(in srgb, var(--orange-600), var(--neutral-900) 30%) !important',
+                        color: 'var(--neutral-0) !important',
+                        border: '1px solid var(--orange-600) !important',
+                        textDecoration: 'none',
+                    },
+
+                    '&:active': {
+                        backgroundColor: 'color-mix(in srgb, var(--orange-600), var(--neutral-900) 60%)'
+                    },
+
+                    '&:disabled': {
+                        opacity: '0.6',
+                        cursor: 'not-allowed',
+                    },
+
+                    '&:focus': {
+                        color: 'var(--neutral-0)',
+                        boxShadow: 'none'
+                    },
+
+                    '&:focus-visible': {
+                        outline: '2px solid color-mix(in srgb, var(--orange-600), var(--neutral-900) 30%)',
+                        outlineOffset: '2px'
+                    }
                 },
 
                 '.btn-cancel': {
@@ -355,6 +530,7 @@ module.exports = {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    height: '40px',
 
                     '&:hover': {
                         backgroundColor: 'var(--em-coordinator-secondary-color)',
@@ -375,24 +551,26 @@ module.exports = {
                 '.btn-red': {
                     backgroundColor: 'var(--red-500)',
                     color: 'var(--neutral-0) !important',
-                    border: '1px solid var(--red-500)',
+                    border: '1px solid var(--red-500)  !important',
                     textShadow: 'none',
                     textTransform: 'math-auto',
-                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
-                    fontSize: '16px',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal) !important',
+                    fontSize: 'var(--em-applicant-font-size)',
                     fontFamily: 'var(--em-profile-font)',
-                    lineHeight: '1.25',
+                    lineHeight: '1.5',
                     borderRadius: 'var(--em-applicant-br)',
-                    transition: 'all 0.2s ease-out',
-                    display: 'flex',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important',
+                    display: 'flex !important',
                     justifyContent: 'center',
                     alignItems: 'center',
                     cursor: 'pointer',
+                    height: '40px',
+                    boxShadow: 'none',
 
                     '&:hover': {
-                        backgroundColor: 'var(--neutral-0)',
-                        color: 'var(--red-500) !important',
-                        border: '1px solid var(--red-500)',
+                        backgroundColor: 'color-mix(in srgb, var(--red-500), var(--neutral-900) 30%) !important',
+                        color: 'var(--neutral-0) !important',
+                        border: '1px solid var(--red-500) !important',
                         textDecoration: 'none',
                     },
 
@@ -401,6 +579,7 @@ module.exports = {
                         cursor: 'not-allowed',
                     }
                 },
+
                 '.btn-dashed': {
                     backgroundColor: 'hsl(from var(--em-profile-color) h s l / 15%)',
                     color: 'var(--em-profile-color) !important',
@@ -417,6 +596,7 @@ module.exports = {
                     justifyContent: 'center',
                     alignItems: 'center',
                     cursor: 'pointer',
+                    height: '40px',
 
                     '&:hover': {
                         backgroundColor: 'hsl(from var(--em-profile-color) h s l / 30%)',

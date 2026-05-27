@@ -10,6 +10,7 @@ variables:
 stages:
   - prepare
   - build
+  - accessibility
   - test
   - release
   - deploy

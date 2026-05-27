@@ -25,6 +25,7 @@ use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Entities\User\EmundusUserEntity;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
+use Tchooz\Enums\Export\ExportSettingEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
@@ -360,8 +361,8 @@ class PdfService extends Export implements ExportInterface
 
 		try
 		{
-			$forms = $this->m_application->getFormsPDF($applicationFile->getUser()->id, $applicationFile->getFnum(), null, 0, null, $elementIds, true, $stepTypes, $this->user->id);
-
+			$displayEvaluatorName = (bool) $this->options->getSetting(ExportSettingEnum::DISPLAY_EVALUATOR_NAME);
+			$forms = $this->m_application->getFormsPDF($applicationFile->getUser()->id, $applicationFile->getFnum(), null, 0, null, $elementIds, true, $stepTypes, $this->user->id, $displayEvaluatorName);
 		}
 		catch (\Exception $e)
 		{

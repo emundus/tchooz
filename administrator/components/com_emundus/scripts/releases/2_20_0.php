@@ -42,6 +42,32 @@ class Release2_20_0Installer extends ReleaseInstaller
 
 		try
 		{
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('menutype') . ' LIKE ' . $this->db->quote('usermenu'))
+				->andWhere($this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_emundus&view=accessibility&layout=user'));
+			$this->db->setQuery($query);
+			$accessibilityUserMenu = $this->db->loadResult();
+
+			if (empty($accessibilityUserMenu))
+			{
+				$data                  = [
+					'menutype'     => 'usermenu',
+					'title'        => 'Paramètres d\'accessibilité',
+					'alias'        => 'parametres-accessibilite',
+					'path'         => 'parametres-accessibilite',
+					'link'         => 'index.php?option=com_emundus&view=accessibility&layout=user',
+					'type'         => 'component',
+					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+					'params'       => [
+						'menu_show' => 0
+					],
+				];
+				$accessibilityUserMenu = \EmundusHelperUpdate::addJoomlaMenu($data)['id'];
+				\EmundusHelperUpdate::insertFalangTranslation(1, $accessibilityUserMenu, 'menu', 'title', 'Accessibility settings');
+			}
+
 			$campaignColumn = \EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'public', 'TINYINT', 1, 0, 0);
 			$this->tasks[] = $campaignColumn['status'];
 			if(!$campaignColumn['status'])
@@ -63,11 +89,6 @@ class Release2_20_0Installer extends ReleaseInstaller
 				$result['message'] .= $appFileAnonymousColumn['message'];
 			}
 
-			$query->select('params')
-				->from('#__modules')
-				->where('module = ' . $this->db->quote('mod_emundus_applications'))
-				->andWhere('published = 1');
-
 			$eventsAdded   = \EmundusHelperUpdate::addCustomEvents([
 				['label' => 'onAskForAnonymousReveal', 'published' => 1, 'category' => 'File', 'available' => 0]
 			]);
@@ -78,10 +99,10 @@ class Release2_20_0Installer extends ReleaseInstaller
 			}
 
 			$query->clear()
-				->select('parent_id')
-				->from($this->db->quoteName('#__menu'))
-				->where($this->db->quoteName('link') . ' = ' . $this->db->quote('index.php?option=com_emundus&controller=files&task=getstate'))
-				->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote('actions'));
+				->select('params')
+				->from('#__modules')
+				->where('module = ' . $this->db->quote('mod_emundus_applications'))
+				->andWhere('published = 1');
 			$this->db->setQuery($query);
 			$params = $this->db->loadResult();
 
@@ -128,6 +149,9 @@ class Release2_20_0Installer extends ReleaseInstaller
 					{
 						$config->set('action_history', 0);
 					}
+
+					$config->set('action_delete', 1);
+					$config->set('action_transaction', 1);
 
 					$componentId = ComponentHelper::getComponent('com_emundus')->id;
 

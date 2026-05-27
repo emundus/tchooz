@@ -3,6 +3,9 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
+use Tchooz\Enums\UI\ButtonVariantEnum;
+use Tchooz\Enums\UI\ButtonWidthEnum;
 use Joomla\CMS\Router\Route;
 use Joomla\Plugin\Emundus\Anonymization\Extension\Anonymization;
 use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
@@ -355,28 +358,42 @@ if ($anonymizationPolicy === AnonymizationPolicyEnum::OPTIONAL)
 						$register_url .= "&redirect=" . $formUrl;
 					}
 					if ($is_limit_obtained) : ?>
-                        <button class="em-disabled-button em-w-100" role="button"
-                                data-toggle="sc-modal"><?= Text::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED'); ?></button>
+                        <?php
+                            echo LayoutHelper::render('emundus.button', [
+                                'variant' => ButtonVariantEnum::DISABLED,
+                                'width'   => ButtonWidthEnum::FULL,
+                                'text'    => Text::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED')
+                            ]);
+                        ?>
 					<?php else : ?>
                         <?php
-                            if ($anonymizationPolicy === AnonymizationPolicyEnum::OPTIONAL)
-                            {
-                                ?>
-                                <div class="tw-flex tw-flex-row tw-items-center tw-mb-4 tw-cursor-pointer" title="<?= Text::_('MOD_EM_CAMPAIGN_APPLY_ANONYMOUSLY_DESC') ?>">
-                                    <input type="checkbox" name="anonymous" id="anonymous" class="tw-cursor-pointer"/>
-                                    <label for="anonymous" class="tw-mb-0 tw-cursor-pointer"><?= Text::_('MOD_EM_CAMPAIGN_APPLY_ANONYMOUSLY') ?></label>
-                                </div>
-                                <?php
-                            }
-                        ?>
+							if ($anonymizationPolicy === AnonymizationPolicyEnum::OPTIONAL)
+							{
+								?>
+								<div class="tw-flex tw-flex-row tw-items-center tw-mb-4 tw-cursor-pointer" title="<?= Text::_('MOD_EM_CAMPAIGN_APPLY_ANONYMOUSLY_DESC') ?>">
+									<input type="checkbox" name="anonymous" id="anonymous" class="tw-cursor-pointer"/>
+									<label for="anonymous" class="tw-mb-0 tw-cursor-pointer"><?= Text::_('MOD_EM_CAMPAIGN_APPLY_ANONYMOUSLY') ?></label>
+								</div>
+								<?php
+							}
 
-                        <a id="register-url" class="tw-btn-primary em-w-100"
-                           href='<?php echo $register_url; ?>'
-                           data-toggle="sc-modal"><?php echo Text::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                            echo LayoutHelper::render('emundus.button', [
+                                'variant' => ButtonVariantEnum::PRIMARY,
+                                'width'   => ButtonWidthEnum::FULL,
+                                'text'    => Text::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'),
+                                'href'    => $register_url,
+                                'id' => 'register-url'
+                            ]);
+                        ?>
 					<?php endif; ?>
 				<?php elseif ($can_apply == -1) : ?>
-                    <button class="em-disabled-button em-w-100" role="button"
-                            data-toggle="sc-modal"><?php echo Text::_('MOD_EM_CAMPAIGN_CAMPAIGN_IS_FINISH'); ?></button>
+                    <?php
+                        echo LayoutHelper::render('emundus.button', [
+                            'variant' => ButtonVariantEnum::DISABLED,
+                            'width'   => ButtonWidthEnum::FULL,
+                            'text'    => Text::_('MOD_EM_CAMPAIGN_CAMPAIGN_IS_FINISH')
+                        ]);
+                    ?>
 				<?php endif; ?>
             </div>
 		<?php endif; ?>

@@ -20,6 +20,8 @@ defined('_JEXEC') or die;
 
 Text::script('COM_EMUNDUS_APPLICATION_SHARE_CONFIRM_DELETE');
 
+$lang = Factory::$language;
+$lang->load('com_emundus', JPATH_SITE . '/components/com_emundus');
 
 $config      = JFactory::getConfig();
 $site_offset = $config->get('offset');
