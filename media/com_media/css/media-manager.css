@@ -1118,7 +1118,6 @@ html[dir="rtl"] ul.media-tree ul {
 }
 
 .media-preview-close {
-  color: inherit;
   opacity: .7;
   background: none;
   border: 0;
@@ -1126,6 +1125,7 @@ html[dir="rtl"] ul.media-tree ul {
   position: absolute;
   top: -2rem;
   right: 0;
+  color: var(--light) !important;
 }
 
 .media-preview-close:hover {
