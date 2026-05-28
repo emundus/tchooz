@@ -366,6 +366,7 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 				$query->where('(' . $this->db->quoteName($this->alias . '.firstname') . ' LIKE ' . $searchEscaped
 					. ' OR ' . $this->db->quoteName($this->alias . '.lastname') . ' LIKE ' . $searchEscaped
 					. ' OR ' . $this->db->quoteName($this->alias . '.user_id') . ' LIKE ' . $searchEscaped
+					. ' OR ' . $this->db->quoteName('u.email') . ' LIKE ' . $searchEscaped
 					. ')');
 			}
 			$sort = strtoupper($sort) === 'ASC' ? 'ASC' : 'DESC';
