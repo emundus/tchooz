@@ -10,6 +10,7 @@
 
 namespace scripts;
 
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Joomla\CMS\Component\ComponentHelper;
 
 class Release2_20_0Installer extends ReleaseInstaller
@@ -29,6 +30,8 @@ class Release2_20_0Installer extends ReleaseInstaller
 
 		try
 		{
+			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_fabrik_element_' . ElementPluginEnum::EMUNDUSREADONLY->value, ElementPluginEnum::EMUNDUSREADONLY->value, null, 'plugin', 1, 'fabrik_element');
+
 			$query->clear()
 				->select('id')
 				->from($this->db->quoteName('#__menu'))
