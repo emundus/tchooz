@@ -1,5 +1,5 @@
-<template>
-	<div id="evaluations-container">
+<template class="tw-h-full">
+	<div id="evaluations-container" class="tw-h-full">
 		<div v-if="evaluationsSteps.length > 0" class="tw-mt-2 tw-flex tw-h-full tw-flex-col">
 			<nav class="tw-overflow-x-auto tw-pt-1">
 				<ul class="tw-flex tw-list-none tw-flex-row">
