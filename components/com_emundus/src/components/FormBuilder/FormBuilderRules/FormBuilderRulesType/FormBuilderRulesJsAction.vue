@@ -192,13 +192,13 @@ export default {
 				},
 				{
 					id: 8,
-					label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_SHOW_GROUP',
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_SHOW_SECTION',
 					value: 'show_group',
 					multiple: true,
 				},
 				{
 					id: 9,
-					label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE_GROUP',
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE_SECTION',
 					value: 'hide_group',
 					multiple: true,
 				},
