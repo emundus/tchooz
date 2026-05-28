@@ -16,6 +16,7 @@ use Joomla\CMS\Uri\Uri;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterSubmitEvaluationDefinition;
 use Tchooz\Repositories\Workflow\StepRepository;
+use Tchooz\Traits\TraitSyncRepeats;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -35,6 +36,15 @@ require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
  */
 class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 {
+	use TraitSyncRepeats;
+
+	public function onLoad(): bool
+	{
+		$this->syncReadonlyRepeats();
+
+		return true;
+	}
+
 	public function onBeforeLoad(): void
 	{
 		$language     = $this->app->getLanguage();
