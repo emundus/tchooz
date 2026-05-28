@@ -276,22 +276,12 @@ final class EmundusPublicAccess extends CMSPlugin implements SubscriberInterface
 
 	public static function isAuthorizedMenuItem(MenuItem $currentMenu): bool
 	{
-		$authorizedLinks = [
-			'index.php?option=com_emundus&view=application&layout=history',
-		];
-
 		$unauthorizedApplicantAliases = [
 			'toutes-les-campagnes',
 			'mes-candidatures'
 		];
 
-		if (
-			$currentMenu->menutype !== 'topmenu'
-			&& $currentMenu->menutype !== 'applicantmenu'
-			&& !str_starts_with($currentMenu->menutype, 'menu-profile')
-			&& !in_array($currentMenu->link, $authorizedLinks, true)
-			|| (in_array($currentMenu->alias, $unauthorizedApplicantAliases) && $currentMenu->menutype === 'applicantmenu')
-		)
+		if (in_array($currentMenu->alias, $unauthorizedApplicantAliases) && $currentMenu->menutype === 'applicantmenu')
 		{
 			return false;
 		}
