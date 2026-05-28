@@ -184,7 +184,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 				$result['message'] .= $tableCreated['message'];
 			}
 
-			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_system_emunduspublicaccess', 'emunduspublicaccess', null, 'plugin', 1, 'system');
+			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_system_emunduspublicaccess', 'emunduspublicaccess', null, 'plugin', 0, 'system');
 			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_emundus_anonymization', 'anonymization', null, 'plugin', 0, 'emundus');
 
 			$resolver           = new AddonHandlerResolver();
@@ -206,6 +206,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 						$params[$parameter->getName()] = 1;
 					}
 				}
+				$params['has_been_activated_once'] = 0;
 				$publicSessionAddon->setParams($params);
 
 				$this->tasks[] = $addonRepository->flush($publicSessionAddon);
@@ -358,8 +359,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 				}
 			}
 
-			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_emundus_anonymization', 'anonymization', null, 'plugin', 1, 'emundus');
-			$this->tasks[] = \EmundusHelperUpdate::enableEmundusPlugins('anonymization', 'plugin');
+			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_emundus_anonymization', 'anonymization', null, 'plugin', 0, 'emundus');
 			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_fabrik_element_' . ElementPluginEnum::EMUNDUSREADONLY->value, ElementPluginEnum::EMUNDUSREADONLY->value, null, 'plugin', 1, 'fabrik_element');
 
 			$result['status'] = !in_array(false, $this->tasks);

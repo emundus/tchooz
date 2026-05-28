@@ -10,6 +10,7 @@ use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\Fields\Field;
 use Tchooz\Entities\Fields\NumericField;
 use Tchooz\Entities\Fields\YesnoField;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Services\Addons\AbstractAddonHandler;
 use Tchooz\Services\Addons\AddonHandlerInterface;
 
@@ -70,6 +71,12 @@ class PublicSessionAddonHandler extends AbstractAddonHandler
 			require_once(JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
 		}
 		\EmundusHelperUpdate::enableEmundusPlugins('emunduspublicaccess', 'system');
+
+		$params = $this->addon->getParams();
+		$params['has_been_activated_once'] = 1;
+		$this->addon->setParams($params);
+		$addonRepository = new AddonRepository();
+		$addonRepository->flush($this->addon);
 
 		return $this->toggle(true);
 	}
