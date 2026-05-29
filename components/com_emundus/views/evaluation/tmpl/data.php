@@ -162,6 +162,11 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 											<?php elseif ($k == 'status'): ?>
                                                 <span class="label label-<?php echo $value->status_class ?>"
                                                       title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
+                                            <?php elseif ($k == 'evaluated'): ?>
+                                                <div class="tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap">
+                                                    <span class="material-symbols-outlined tw-rounded-full <?php echo $value->bg_color . ' ' . $value->icon_color; ?>"><?php echo $value->icon; ?></span>
+                                                    <span class="<?php echo $value->text_color; ?>"><?php echo $value->val ?></span>
+                                                </div>
 											<?php elseif ($k == 'fnum'): ?>
 												<?php if ($this->open_file_in_modal) : ?>
                                                     <div id="<?php echo $value->val ?>"
