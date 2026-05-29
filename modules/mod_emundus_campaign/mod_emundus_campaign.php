@@ -5,6 +5,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Session\Session;
 use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
@@ -414,7 +415,7 @@ if ($user->guest || in_array($e_user->profile, $app_prof) || $tmpl === 'tchooz_s
 				}
 				else
 				{
-					$redirect_url = Route::_('/index.php?option=com_emundus&task=applyPubliclyToCampaign');
+					$redirect_url = Route::_('/index.php?option=com_emundus&task=applyPubliclyToCampaign&' . Session::getFormToken() . '=1');
 				}
 			}
 		}

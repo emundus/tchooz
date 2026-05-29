@@ -177,7 +177,7 @@ if ($is_anonym_user && !$allow_anonym_files)
 
 $m_users         = new EmundusModelUsers;
 $profile_details = new stdClass();
-if (!JFactory::getUser()->guest)
+if (!Factory::getApplication()->getIdentity()->guest)
 {
 	if (!empty($user->profile))
 	{

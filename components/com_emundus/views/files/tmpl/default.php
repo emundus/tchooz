@@ -329,10 +329,10 @@ $datas = [
                                                                          title="<?= (!empty($value->reference) ? $value->reference : '') . '#' . (!empty($value->shortReference) ? $value->shortReference : ''); ?>"
                                                                     >
                                                                         <?php if (!empty($value->reference)) : ?>
-                                                                            <label class="tw-mb-0"><?= $value->reference; ?></label>
+                                                                            <label class="tw-mb-0"><strong><?= $value->reference; ?></strong></label>
                                                                         <?php endif; ?>
                                                                         <?php if (!empty($value->shortReference)) : ?>
-                                                                            <span class="em_list_text"><strong>#<?= $value->shortReference; ?></strong></span>
+                                                                            <span class="em_list_text <?= !empty($value->reference) ? 'tw-text-sm tw-text-neutral-500' : ''; ?>">#<?= $value->shortReference; ?></span>
                                                                         <?php endif; ?>
                                                                     </div>
                                                                 <?php else: ?>

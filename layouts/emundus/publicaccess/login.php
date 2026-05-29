@@ -4,6 +4,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Session\Session;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 
 defined('_JEXEC') or die;
@@ -46,7 +47,7 @@ if (!empty($campaignId))
     <?php if ($showCreateApplicationFile): ?>
         <p><?= Text::_('COM_EMUNDUS_APPLY_TO_CAMPAIGN_PUBLICLY'); ?></p>
 
-        <a href="<?= Route::_('/index.php?option=com_emundus&task=applyPubliclyToCampaign&cid=' . $campaignId); ?>"
+        <a href="<?= Route::_('/index.php?option=com_emundus&task=applyPubliclyToCampaign&cid=' . $campaignId . '&' . Session::getFormToken() . '=1'); ?>"
            class="tw-btn-primary">
 		    <?= Text::_('COM_EMUNDUS_APPLY_PUBLICALLY_BUTTON'); ?>
         </a>

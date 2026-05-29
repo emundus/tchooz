@@ -2432,7 +2432,7 @@ class EmundusController extends JControllerLegacy
 	 */
 	public function applyPubliclyToCampaign(): EmundusResponse
 	{
-		$this->checkToken();
+		$this->checkToken('get');
 		$response = EmundusResponse::denied();
 
 		$addonRepository = new AddonRepository();
