@@ -1253,13 +1253,26 @@ class EmundusControllerFormbuilder extends EmundusController
 	public function getElementsListOptions(): EmundusResponse
 	{
 		$search    = $this->input->getString('search_query', $this->input->getString('search', ''));
+		$currentElementId = $this->input->getInt('current_element_id', 0);
+		$currentElementFormId = !empty($currentElementId) ? EmundusHelperFabrik::getElementById($currentElementId)->form_id : 0;
+
+		// THIS CORRESPONDS TO THE ELEMENT ID THAT WE ARE READING (SOURCE)
 		$elementId = $this->input->getInt('element_id', 0);
+		$elementFormId = !empty($elementId) ? EmundusHelperFabrik::getElementById($elementId)->form_id : 0;
+
 		$formIds   = EmundusHelperFabrik::getFabrikFormsListIntendedToFiles();
+		$formIds = array_diff($formIds, [$currentElementFormId]);
+
 		$excluded  = [
 			ElementPluginEnum::DISPLAY->value,
 			ElementPluginEnum::EMUNDUSREADONLY->value,
 			ElementPluginEnum::ID->value,
 			ElementPluginEnum::USER->value,
+			ElementPluginEnum::PANEL->value,
+			ElementPluginEnum::EMUNDUS_FILEUPLOAD->value,
+			ElementPluginEnum::FILEUPLOAD->value,
+			ElementPluginEnum::CAPTCHA->value,
+			ElementPluginEnum::PASSWORD->value,
 		];
 
 		$elements = EmundusHelperFabrik::searchFabrikElements($search, $formIds, $excluded, 20);
@@ -1282,7 +1295,7 @@ class EmundusControllerFormbuilder extends EmundusController
 		// Preload the currently selected element so the multiselect can display its label on reopen
 		if ($elementId > 0 && !isset($seen[$elementId]))
 		{
-			$preloaded = EmundusHelperFabrik::searchFabrikElements('', $formIds, $excluded, 0);
+			$preloaded = EmundusHelperFabrik::searchFabrikElements('', [$elementFormId], $excluded);
 			foreach ($preloaded as $element)
 			{
 				if ((int) $element->id === $elementId)

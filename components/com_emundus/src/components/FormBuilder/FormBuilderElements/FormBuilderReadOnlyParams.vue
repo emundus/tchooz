@@ -43,11 +43,24 @@ export default {
 					tagValidations: [],
 				},
 			},
+			adaptToRepetitionsField: {
+				param: 'adapt_to_repetitions',
+				type: 'toggle',
+				value: parseInt(this.element.params?.adapt_to_repetitions ?? 0) === 1 ? 1 : 0,
+				label: 'COM_EMUNDUS_ONBOARD_BUILDER_EMUNDUSREADONLY_ADAPT_TO_REPETITIONS',
+				helptext: 'COM_EMUNDUS_ONBOARD_BUILDER_EMUNDUSREADONLY_ADAPT_TO_REPETITIONS_HELPTEXT',
+				helpTextType: 'icon',
+				optional: true,
+				displayed: true,
+				trueValue: 1,
+				falseValue: 0,
+			},
 		};
 	},
 	computed: {
 		asyncAttributes() {
 			return {
+				current_element_id: this.element.id,
 				element_id: this.sourceField.value ?? 0,
 			};
 		},
@@ -57,6 +70,10 @@ export default {
 			const picked = parameter?.value;
 			const id = picked && typeof picked === 'object' ? picked.id : picked;
 			this.element.params.source_element_id = id ? parseInt(id) : '';
+			this.$emit('updateParams', this.element.params);
+		},
+		onAdaptToRepetitionsUpdated(parameter) {
+			this.element.params.adapt_to_repetitions = parseInt(parameter?.value ?? 0) === 1 ? 1 : 0;
 			this.$emit('updateParams', this.element.params);
 		},
 	},
@@ -71,6 +88,11 @@ export default {
 			:async-attributes="asyncAttributes"
 			:help-text-type="sourceField.helpTextType"
 			@valueUpdated="onSourceUpdated"
+		/>
+		<Parameter
+			:parameter-object="adaptToRepetitionsField"
+			:help-text-type="adaptToRepetitionsField.helpTextType"
+			@valueUpdated="onAdaptToRepetitionsUpdated"
 		/>
 	</div>
 </template>

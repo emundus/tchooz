@@ -28,6 +28,8 @@ use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\Fabrik\FabrikObjectsEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Factories\Language\LanguageFactory;
+use Tchooz\Services\Fabrik\ApplicantTableCreator;
+use Tchooz\Services\Fabrik\EvaluationTableCreator;
 
 // TODO: Add caching layer
 class FabrikRepository
@@ -807,7 +809,7 @@ class FabrikRepository
 		return $duplicatedForms;
 	}
 
-	public function duplicateForm(object $oldForm, ?ProfileEntity $profile = null, array $languages = []): object
+	public function duplicateForm(object $oldForm, ?ProfileEntity $profile = null, array $languages = [], ?bool $keepStructure = true): object
 	{
 		$form     = clone $oldForm;
 		$form->id = 0;
@@ -843,7 +845,7 @@ class FabrikRepository
 		$this->updateFabrikLabel($form->id, $keyPrefix, '', $labelPrefix);
 		$this->updateFabrikLabel($form->id, $keyPrefix, '_INTRO', '', 'fabrik_forms', 'intro');
 
-		$list = $this->duplicateList($oldListId, $form->id, $profile);
+		$list = $this->duplicateList($oldListId, $form->id, $profile, $keepStructure);
 
 		if (!empty($profile))
 		{
@@ -894,7 +896,7 @@ class FabrikRepository
 		return $flushed;
 	}
 
-	public function duplicateList(int $id, int $formId, ?ProfileEntity $profile = null): object
+	public function duplicateList(int $id, int $formId, ?ProfileEntity $profile = null, ?bool $keepStructure = true): object
 	{
 		$query = $this->db->getQuery(true);
 
@@ -908,6 +910,24 @@ class FabrikRepository
 		$list->id      = 0;
 		$list->form_id = $formId;
 		$list->access  = !empty($profile) ? $profile->getAclAroGroups() : 1;
+
+		if (!$keepStructure)
+		{
+			$creators = [
+				new ApplicantTableCreator(),
+				new EvaluationTableCreator()
+			];
+
+			foreach ($creators as $creator)
+			{
+				if ($creator->supports($list->db_table_name))
+				{
+					$list->db_table_name  = $creator->createTableFromReference($list->db_table_name, []);
+					$list->db_primary_key = $list->db_table_name . '.id';
+					break;
+				}
+			}
+		}
 
 		if ($this->flushList($list))
 		{

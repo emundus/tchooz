@@ -27,6 +27,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
 use Tchooz\Entities\Automation\ActionTargetEntity;
+use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
@@ -59,7 +60,7 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 		$displayData              = new stdClass();
 		$displayData->id          = $this->getHTMLId($repeatCounter);
 		$displayData->name        = $this->getHTMLName($repeatCounter);
-		$displayData->value       = $this->getFormattedValue($data);
+		$displayData->value       = $this->getFormattedValue($data, (int) $repeatCounter);
 		$displayData->placeholder = (string) $params->get('empty_placeholder', '');
 
 		return $layout->render($displayData);
@@ -81,14 +82,22 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 	 * Resolve and return the value from the source element, rendered using
 	 * the source plugin's own formatting. Returns '' if access is denied or
 	 * if the source configuration is invalid — never raw error output.
+	 *
+	 * When the element is configured with adapt_to_repetitions = 1, the source
+	 * is assumed to live in a joined repeating group; the value returned is
+	 * the one at index $repeatCounter (so each evaluator-side repetition shows
+	 * exactly one applicant-side entry). The TraitSyncRepeats trait, plugged
+	 * into the host form plugin, is responsible for ensuring the evaluator
+	 * group has the matching number of repetitions.
 	 */
-	public function getFormattedValue($data): ?string
+	public function getFormattedValue($data, int $repeatCounter = 0): ?string
 	{
 		$value = '';
 
-		$params   = $this->getParams();
-		$sourceId = (int) $params->get('source_element_id', 0);
-		$fnum       = $this->resolveCurrentFnum($data);
+		$params              = $this->getParams();
+		$sourceId            = (int) $params->get('source_element_id', 0);
+		$adaptToRepetitions  = (int) $params->get('adapt_to_repetitions', 0) === 1;
+		$fnum                = $this->resolveCurrentFnum($data);
 
 		if (empty($sourceId) || $fnum === null)
 		{
@@ -109,7 +118,6 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 			return '';
 		}
 
-		$context = new ActionTargetEntity($user, $fnum);
 		$fabrikRepository = new FabrikRepository(true);
 		$fabrikFactory = new FabrikFactory($fabrikRepository);
 		$fabrikRepository->setFactory($fabrikFactory);
@@ -127,6 +135,12 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 			return '';
 		}
 
+		if ($adaptToRepetitions)
+		{
+			return $this->getRepetitionValue($fabrikElement, $fnum, $repeatCounter);
+		}
+
+		$context = new ActionTargetEntity($user, $fnum);
 		$fabrikForm = $fabrikRepository->getFormFromElementId($sourceId);
 		$fieldName = $fabrikForm->getId() . '.' . $sourceId;
 
@@ -148,15 +162,91 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 	}
 
 	/**
+	 * Pick the value at $repeatCounter from a source element living in a joined
+	 * repeating group. Uses LEFT_JOIN export mode so the helper returns the
+	 * per-repetition list instead of a CSV string.
+	 */
+	private function getRepetitionValue($fabrikElement, string $fnum, int $repeatCounter): string
+	{
+		try
+		{
+			if (!class_exists('EmundusHelperFabrik'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/helpers/fabrik.php';
+			}
+
+			$values = (new \EmundusHelperFabrik())->getFabrikElementValues(
+				$fabrikElement->toArray(false),
+				[$fnum],
+				0,
+				ValueFormatEnum::FORMATTED,
+				0,
+				ExportModeEnum::LEFT_JOIN
+			);
+
+			$bag = $values[$fabrikElement->getId()][$fnum]['val'] ?? null;
+			if (!is_array($bag))
+			{
+				return '';
+			}
+
+			return (string) ($bag[$repeatCounter] ?? '');
+		}
+		catch (Throwable $e)
+		{
+			Log::add(
+				'repetition lookup failed for source ' . $fabrikElement->getId() . ' on fnum ' . $fnum . ' @ idx ' . $repeatCounter . ': ' . $e->getMessage(),
+				Log::ERROR,
+				'com_emundus.fabrik.readonly'
+			);
+			return '';
+		}
+	}
+
+	/**
 	 * Whitelist check:
-	 *  - application / management → the table must expose a `fnum` column
-	 *  - profile → the table must be one of the known profile tables
+	 *  - application / management → the table must expose a `fnum` column.
+	 *  - joined repeating sub-table → its parent (via #__fabrik_joins) must
+	 *    expose a `fnum` column. Without this, sources living in a repeating
+	 *    group would always be rejected even though their parent form is a
+	 *    valid candidate/management form.
 	 */
 	private function isTableAllowed(string $tableName): bool
 	{
-		$columns = Factory::getContainer()->get('DatabaseDriver')->getTableColumns($tableName, false);
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$columns = $db->getTableColumns($tableName, false);
 
-		return is_array($columns) && array_key_exists('fnum', $columns);
+		if (!is_array($columns))
+		{
+			return false;
+		}
+
+		if (array_key_exists('fnum', $columns))
+		{
+			return true;
+		}
+
+		if (!array_key_exists('parent_id', $columns))
+		{
+			return false;
+		}
+
+		$query = $db->createQuery()
+			->select($db->quoteName('join_from_table'))
+			->from($db->quoteName('#__fabrik_joins'))
+			->where($db->quoteName('table_join') . ' = :tableName')
+			->bind(':tableName', $tableName, ParameterType::STRING);
+		$db->setQuery($query);
+		$parentTable = $db->loadResult();
+
+		if (empty($parentTable))
+		{
+			return false;
+		}
+
+		$parentColumns = $db->getTableColumns($parentTable, false);
+
+		return is_array($parentColumns) && array_key_exists('fnum', $parentColumns);
 	}
 
 	/**

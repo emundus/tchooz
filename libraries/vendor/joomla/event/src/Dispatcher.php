@@ -9,8 +9,6 @@
 
 namespace Joomla\Event;
 
-use Tchooz\Subscribers\GenerateReferenceSubscriber;
-
 /**
  * Implementation of a DispatcherInterface supporting prioritized listeners.
  *

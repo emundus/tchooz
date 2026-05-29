@@ -17,7 +17,7 @@
 				       INNER JOIN #__fabrik_formgroup AS ffg ON ffg.group_id = fe.group_id
 				       INNER JOIN #__fabrik_lists AS fl ON fl.form_id = ffg.form_id
 				       WHERE fe.published = 1
-				         AND fe.plugin NOT IN ('emundusreadonly', 'captcha', 'button', 'display')
+				         AND fe.plugin NOT IN ('emundusreadonly', 'captcha', 'button', 'display', 'internalid', 'user', 'panel', 'emundus_fileupload', 'fileupload', 'password')
 				       ORDER BY fl.db_table_name, fe.label, fe.name" />
 
 			<field
@@ -26,6 +26,16 @@
 				default=""
 				label="PLG_ELEMENT_EMUNDUSREADONLY_EMPTY_PLACEHOLDER_LABEL"
 				description="PLG_ELEMENT_EMUNDUSREADONLY_EMPTY_PLACEHOLDER_DESC" />
+
+			<field
+				name="adapt_to_repetitions"
+				type="radio"
+				default="0"
+				label="PLG_ELEMENT_EMUNDUSREADONLY_ADAPT_TO_REPETITIONS_LABEL"
+				description="PLG_ELEMENT_EMUNDUSREADONLY_ADAPT_TO_REPETITIONS_DESC">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
 
 		</fieldset>
 	</fields>
