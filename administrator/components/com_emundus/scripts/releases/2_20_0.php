@@ -24,7 +24,6 @@ use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Services\Addons\AddonHandlerResolver;
-use Tchooz\Enums\Fabrik\ElementPluginEnum;
 
 class Release2_20_0Installer extends ReleaseInstaller
 {
