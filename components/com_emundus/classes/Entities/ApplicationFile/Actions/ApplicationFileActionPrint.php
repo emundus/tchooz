@@ -16,6 +16,6 @@ class ApplicationFileActionPrint extends ApplicationFileActionRedirectTo
 
 	public function getRedirectUrl(ApplicationFileEntity $applicationFileEntity, array $parameters = [], ?User $currentUser = null): string
 	{
-		return 'component/emundus/?task=pdf&fnum=' . $applicationFileEntity->getFnum();
+		return '/index.php?option=com_emundus&task=pdf&fnum=' . $applicationFileEntity->getFnum();
 	}
 }
