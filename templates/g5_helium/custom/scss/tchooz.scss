@@ -48,11 +48,18 @@
 
 .em-disabled-button {
   background: var(--neutral-300);
-  border: 1px solid var(--neutral-300);
+  border: 1px solid var(--neutral-300) !important;
   border-radius: var(--em-applicant-br);
-  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
-  color: var(--neutral-600);
+  padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
+  color: var(--neutral-600) !important;
   cursor: not-allowed;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background-color: var(--neutral-400) !important;
+    color: var(--neutral-600) !important;
+    border: 1px solid var(--neutral-300) !important;
+  }
 }
 
 .em-error-button {
