@@ -2,16 +2,12 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
-use Joomla\CMS\Router\Route;
-use Joomla\CMS\Uri\Uri;use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
 use Tchooz\Enums\UI\ButtonVariantEnum;
 use Tchooz\Enums\UI\ButtonWidthEnum;
-use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
-use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 
 defined('_JEXEC') or die('Restricted access');
 
-$config      = JFactory::getConfig();
+$config      = Factory::getApplication()->getConfig();
 $site_offset = $config->get('offset');
 
 $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
@@ -20,35 +16,6 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 ?>
 
 <style>
-    .btn.btn-primary.mod_emundus_flow___print:hover,
-    .btn.btn-primary.mod_emundus_flow___print:active,
-    .btn.btn-primary.mod_emundus_flow___print:focus {
-        color: var(--neutral-0) !important;
-        background: var(--em-primary-color) !important;
-        border: 1px solid var(--em-primary-color) !important;
-    }
-
-    .btn.btn-primary.mod_emundus_flow___print:hover .material-symbols-outlined,
-    .btn.btn-primary.mod_emundus_flow___print:active .material-symbols-outlined,
-    .btn.btn-primary.mod_emundus_flow___print:focus .material-symbols-outlined {
-        color: var(--neutral-0) !important;
-    }
-
-    .mod_emundus_flow___print {
-        display: flex !important;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .mod_emundus_flow___print p {
-        font-family: var(--em-profile-font);
-        line-height: 20px;
-    }
-
-    .btn-primary.mod_emundus_flow___print {
-        background: white;
-    }
-
     .mod_emundus_flow___infos {
         flex-wrap: wrap;
         grid-gap: 12px;
@@ -192,17 +159,6 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			<?php endif; ?>
 
             <?php
-                echo LayoutHelper::render('emundus.button', [
-                    'variant' => ButtonVariantEnum::SECONDARY,
-                    'icon' => 'print',
-                    'iconPosition' => 'left',
-                    'width'   => ButtonWidthEnum::FIT,
-                    'text'    => Text::_('PRINT'),
-                    'href'    => Uri::base() . 'component/emundus/?task=pdf&amp;fnum='.$current_application->fnum,
-                    'target' => '_blank',
-                ]);
-            ?>
-            <?php
 
                 $data = [
                     'fnum' => $current_application->fnum,
@@ -271,7 +227,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 	$file_tags_display = '';
 	if (!empty($file_tags)) {
 	    $m_email = new EmundusModelEmails();
-	    $emundusUser = JFactory::getSession()->get('emundusUser');
+	    $emundusUser = Factory::getApplication()->getSession()->get('emundusUser');
 
 	    $post = array(
 		    'APPLICANT_ID'   => $user->id,

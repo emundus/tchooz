@@ -2,6 +2,24 @@ export default [
 	{
 		displayed: true,
 		component: 'emundus',
+		label: 'COM_EMUNDUS_APPLICATION_FILE_ACTIONS_PRINT_SHOW',
+		param: 'action_print',
+		type: 'yesno',
+		options: [
+			{
+				label: 'JNO',
+				value: 0,
+			},
+			{
+				label: 'JYES',
+				value: 1,
+			},
+		],
+		value: 1,
+	},
+	{
+		displayed: true,
+		component: 'emundus',
 		label: 'COM_EMUNDUS_APPLICATION_FILE_ACTIONS_RENAME_SHOW',
 		param: 'action_rename',
 		type: 'yesno',
