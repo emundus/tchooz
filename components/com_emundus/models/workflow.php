@@ -22,10 +22,12 @@ use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\StepTypeEntity;
+use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Enums\Workflow\WorkflowStepDatesRelativeUnitsEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Payment\TransactionRepository;
@@ -1217,32 +1219,63 @@ class EmundusModelWorkflow extends JModelList
 					$this->db->setQuery($query);
 					$step = $this->db->loadObject();
 
-					if (empty($step->id) && !empty($file_infos['campaign_id']))
+					if (empty($step) && !empty($file_infos['campaign_id']))
 					{
-						if (!class_exists('CampaignRepository'))
-						{
-							require_once(JPATH_ROOT . '/components/com_emundus/classes/Repositories/Campaigns/CampaignRepository.php');
-						}
 						$campaignRepository = new CampaignRepository();
 						$campaign           = $campaignRepository->getById($file_infos['campaign_id']);
-						$parent_campaigns   = !empty($campaign->getParent()) ? [$campaign->getParent()->getId()] : [];
-						$linked_campaigns   = $campaignRepository->getAllCampaigns('ASC', '', 0, 0, 'esc.id', null, $file_infos['campaign_id'], null, null, null, [], $parent_campaigns);
 
-						if ($linked_campaigns->getTotalItems() > 0)
+						$linked_campaign_ids = [];
+						if (!empty($campaign))
 						{
-							foreach ($linked_campaigns->getItems() as $linked_campaign)
+							if (!empty($campaign->getParent()))
 							{
-								$linked_steps = $this->getCampaignSteps(($linked_campaign->getId()));
-								foreach ($linked_steps as $linked_step)
-								{
-									if (!in_array($linked_step->type, $types)  || !in_array($file_infos['status'], $linked_step->entry_status))
-									{
-										continue;
-									}
+								// File is on a child choice campaign — inherit from parent's workflow
+								$linked_campaign_ids[] = $campaign->getParent()->getId();
+							}
+							else
+							{
+								// File is on a parent campaign — only the choices actually chosen by the applicant,
+								// ordered by state priority (most advanced first), then by applicant ranking.
+								$applicationChoicesRepository = new ApplicationChoicesRepository();
+								$choices                      = $applicationChoicesRepository->getChoicesByFnum($file_infos['fnum']);
 
-									$step = $linked_step;
-									break 2;
+								if (!empty($choices))
+								{
+									usort($choices, function ($a, $b) {
+										$priority_diff = $b->getState()->getPriority() <=> $a->getState()->getPriority();
+										if ($priority_diff !== 0)
+										{
+											return $priority_diff;
+										}
+
+										return $a->getOrder() <=> $b->getOrder();
+									});
+
+									foreach ($choices as $choice)
+									{
+										if (!$choice->getState()->isActive() || empty($choice->getCampaign()))
+										{
+											continue;
+										}
+
+										$linked_campaign_ids[] = $choice->getCampaign()->getId();
+									}
 								}
+							}
+						}
+
+						foreach ($linked_campaign_ids as $linked_campaign_id)
+						{
+							$linked_steps = $this->getCampaignSteps($linked_campaign_id, false);
+							foreach ($linked_steps as $linked_step)
+							{
+								if (!in_array($linked_step->type, $types) || !in_array($file_infos['status'], $linked_step->entry_status))
+								{
+									continue;
+								}
+
+								$step = $linked_step;
+								break 2;
 							}
 						}
 					}
@@ -1810,7 +1843,7 @@ class EmundusModelWorkflow extends JModelList
 	 *
 	 * @return array
 	 */
-	public function getCampaignSteps(int $campaign_id): array
+	public function getCampaignSteps(int $campaign_id, bool $loadLinkedWorkflows = true): array
 	{
 		$steps = [];
 
@@ -1828,11 +1861,14 @@ class EmundusModelWorkflow extends JModelList
 			if (!empty($program_id))
 			{
 				$programs_ids = [$program_id];
-				$campaignRepository = new CampaignRepository();
-				$linked_programs_ids = $campaignRepository->getLinkedProgramsIds($campaign_id);
-				if(!empty($linked_programs_ids))
+				if($loadLinkedWorkflows)
 				{
-					$programs_ids = array_unique(array_merge($programs_ids, $linked_programs_ids));
+					$campaignRepository  = new CampaignRepository();
+					$linked_programs_ids = $campaignRepository->getLinkedProgramsIds($campaign_id);
+					if (!empty($linked_programs_ids))
+					{
+						$programs_ids = array_unique(array_merge($programs_ids, $linked_programs_ids));
+					}
 				}
 
 				$workflows = $this->getWorkflows([], 0, 0, $programs_ids);

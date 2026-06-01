@@ -96,6 +96,45 @@ enum ChoicesStateEnum: int
 		);
 	}
 
+	public function isActive(): bool
+	{
+		return match ($this)
+		{
+			self::DRAFT,
+			self::REJECTED,
+			self::REJECTED_FOR_APPLICATION,
+			self::CONFIRMED_REJECTED,
+			self::RESIGNATION,
+			self::DISABLED => false,
+			default => true,
+		};
+	}
+
+	public function getPriority(): int
+	{
+		return match ($this)
+		{
+			self::CONFIRMED_DEF      => 100,
+			self::CONFIRMED          => 90,
+			self::BOOKING_SELECTED   => 80,
+			self::CALLED             => 70,
+			self::ACCEPTED           => 60,
+			self::WAITING_LIST       => 50,
+			self::CHOICE_COMPLETED   => 45,
+			self::WAITING_JURY       => 40,
+			self::WAITING_DECISION   => 30,
+			self::WAITING            => 20,
+			self::NEED_REQUIREMENTS  => 15,
+			self::CHOICE_NOT_OPEN    => 5,
+			self::DRAFT,
+			self::REJECTED,
+			self::REJECTED_FOR_APPLICATION,
+			self::CONFIRMED_REJECTED,
+			self::RESIGNATION,
+			self::DISABLED           => 0,
+		};
+	}
+
 	public static function isValidState(string $value): ChoicesStateEnum|null
 	{
 		return match (strtolower($value))

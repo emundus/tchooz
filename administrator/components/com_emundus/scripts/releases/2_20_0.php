@@ -154,6 +154,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 
 					$config->set('action_delete', 1);
 					$config->set('action_transaction', 1);
+					$config->set('action_print', 1);
 
 					$componentId = ComponentHelper::getComponent('com_emundus')->id;
 

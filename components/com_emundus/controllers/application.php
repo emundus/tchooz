@@ -2440,8 +2440,20 @@ class EmundusControllerApplication extends EmundusController
 			return;
 		}
 
+		if (!class_exists('EmundusHelperFiles'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
+		}
+		if (!class_exists('EmundusModelWorkflow'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
+		}
+		$m_workflow = new EmundusModelWorkflow();
+
+		$choicesStep = $m_workflow->getChoicesStepFromFnum($current_fnum);
+
 		$choice->setState(ChoicesStateEnum::CONFIRMED);
-		$repository->flush($choice, false);
+		$repository->flush($choice, false, (!empty($choicesStep) && !empty($choicesStep->output_status)) ? $choicesStep->output_status : null);
 
 		// Set other choices to rejected
 		$other_choices = $repository->getChoicesByFnum($current_fnum);
@@ -2454,31 +2466,10 @@ class EmundusControllerApplication extends EmundusController
 			}
 		}
 
-		if (!class_exists('EmundusHelperFiles'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
-		}
-		if (!class_exists('EmundusModelApplication'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/models/application.php';
-		}
-		if (!class_exists('EmundusModelWorkflow'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
-		}
-		$m_workflow = new EmundusModelWorkflow();
-
-		$choicesStep = $m_workflow->getChoicesStepFromFnum($current_fnum);
-
-		$m_application = new EmundusModelApplication();
-		$m_application->moveApplication($choice->getFnum(), $choice->getFnum(), $choice->getCampaign()->getId(), (!empty($choicesStep) && !empty($choicesStep->output_status)) ? $choicesStep->output_status : null);
-
 		$choiceObject               = $choice->__serialize();
 		$choiceObject['state_html'] = $choice->getState()->getHtmlBadge();
 
-		$m_workflow    = new EmundusModelWorkflow();
 		$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($current_fnum);
-
 		$redirect_url = 'index.php';
 		if (!empty($current_phase->id))
 		{

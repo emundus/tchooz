@@ -423,7 +423,7 @@ class EmundusModelMessenger extends ListModel
 					$message->me        = $message->user_id_from == $user_id;
 
 					// If anonymous coordinator set name property to empty
-					if($anonymous_coordinator && $message->user_id_from !== $message->applicant_id && !$message->me)
+					if($anonymous_coordinator && $message->user_id_from !== $message->applicant_id && $message->applicant_id === $user_id)
 					{
 						$message->name = '';
 					}
