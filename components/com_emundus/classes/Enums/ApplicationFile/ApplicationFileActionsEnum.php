@@ -10,6 +10,7 @@ use Tchooz\Entities\Fields\StringField;
 use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
+use function Symfony\Component\String\s;
 
 enum ApplicationFileActionsEnum: string
 {
@@ -23,9 +24,10 @@ enum ApplicationFileActionsEnum: string
 	case DELETE = 'delete';
 	case TRANSACTION = 'transaction';
 	case OPENFILE = 'openfile';
-
 	case MOVE_TO_TAB = 'move_to_tab';
 	case CREATE_TAB = 'create_tab';
+
+	case PRINT = 'print';
 
 	public function getLabel(): string
 	{
@@ -42,6 +44,7 @@ enum ApplicationFileActionsEnum: string
 			self::TRANSACTION => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_TRANSACTION'),
 			self::MOVE_TO_TAB => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_MOVE_TO_TAB'),
 			self::CREATE_TAB => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_CREATE_TAB'),
+			self::PRINT => Text::_('COM_EMUNDUS_APPLICATION_PRINT_APPLICATION'),
 		};
 	}
 
@@ -60,6 +63,7 @@ enum ApplicationFileActionsEnum: string
 			self::TRANSACTION => 'universal_currency',
 			self::MOVE_TO_TAB => 'tab_move',
 			self::CREATE_TAB => 'tab_new_right',
+			self::PRINT => 'print',
 		};
 	}
 
@@ -114,6 +118,7 @@ enum ApplicationFileActionsEnum: string
 		return match($this)
 		{
 			self::OPENFILE => 0,
+			self::PRINT => 0,
 			self::RENAME => 1,
 			self::MOVE_TO_TAB => 2,
 			self::CREATE_TAB => 2,

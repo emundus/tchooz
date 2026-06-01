@@ -66,7 +66,7 @@ $classes = trim(
 	$variant->cssClass()
 	. ' ' . $width->cssClass()
 	. ($extraCls !== '' ? ' ' . $extraCls : '')
-	. ($isLink && $disabled ? ' em-disabled-button' : '')
+	. ($isLink && $disabled ? ' em-disabled-button' : '') // todo: use tailwind classes instead of a custom one for disabled links
 );
 
 $tag = $isLink ? 'a' : 'button';

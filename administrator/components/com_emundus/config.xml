@@ -431,7 +431,10 @@
 
     <fieldset label="COM_EMUNDUS_APPLICATIONS_ACTIONS" name="application_actions"
               description="COM_EMUNDUS_APPLICATIONS_ACTIONS_DESC">
-
+        <field type="list" name="action_print" label="COM_EMUNDUS_APPLICATION_FILE_ACTIONS_PRINT_SHOW" default="1">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
         <field type="list" name="action_rename" label="COM_EMUNDUS_APPLICATION_FILE_ACTIONS_RENAME_SHOW" default="1">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
