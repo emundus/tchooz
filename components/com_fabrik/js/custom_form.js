@@ -286,6 +286,18 @@ requirejs(['fab/fabrik'], function () {
     }
   });
 
+  Fabrik.addEvent('fabrik.dbjoin.update', function(element, options) {
+    var filteredOptions = options.filter(function(opt) {
+      return opt.value !== '' && opt.value !== 0 && opt.value !== '0';
+    });
+
+    if (filteredOptions.length === 1) {
+      element.update(filteredOptions[0].value);
+    }
+
+    jQuery(element.element).trigger(element.getChangeEvent());
+  });
+
   window.setInterval(function () {
     if (!removedFabrikFormSkeleton && Object.entries(Fabrik.blocks).length > 0) {
       removeFabrikFormSkeleton();
