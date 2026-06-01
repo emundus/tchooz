@@ -536,7 +536,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			return false;
 		}
 
-		$allowedViews = ['captive', 'method', 'methods', 'callback'];
+		$allowedViews = ['captive'];
 		$allowedTasks = [
 			'captive.display', 'captive.captive', 'captive.validate',
 			'methods.display',
@@ -544,6 +544,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		if (!$onlyCaptive)
 		{
+			$allowedViews = array_merge($allowedViews, ['method', 'methods', 'callback']);
 			$allowedTasks = array_merge(
 				$allowedTasks,
 				[
