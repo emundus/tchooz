@@ -21,6 +21,21 @@ class CheckJumiJob extends TchoozChecklistJob
 {
 	private OutputInterface $output;
 
+	private const AUTO_DELETE_TITLES = [
+		'Formulaires',
+		'Forms',
+		'Documents optionnels',
+		'Optional documents',
+		'Documents obligatoires',
+		'Mandatory documents',
+		'Documents chargés',
+		'Période dépôt',
+		'SAVE REGISTRATION',
+		'Fix Fabrik repeat group redirect.',
+		'Burger menu en mobile'
+	];
+
+
 	public function __construct(
 		private readonly object            $logger,
 		private readonly DatabaseService   $databaseServiceSource,
@@ -121,9 +136,18 @@ class CheckJumiJob extends TchoozChecklistJob
 					$this->output->writeln('Module ' . $module->title . ' is not associated to any menu.');
 				}
 
-				$helper = new QuestionHelper();
-				$question = new ConfirmationQuestion('Delete module ' . $module->title . ' ? [y/n]', false);
-				if ($helper->ask($input, $output, $question)) {
+				$autoDelete = in_array($module->title, self::AUTO_DELETE_TITLES);
+
+				if ($autoDelete) {
+					$this->output->writeln('Module ' . $module->title . ' is in the auto-delete list. Deleting automatically...');
+					$shouldDelete = true;
+				} else {
+					$helper = new QuestionHelper();
+					$question = new ConfirmationQuestion('Delete module ' . $module->title . ' ? [y/n]', false);
+					$shouldDelete = $helper->ask($input, $output, $question);
+				}
+
+				if ($shouldDelete) {
 					$this->output->writeln('Deleting Jumi module ' . $module->title . '...');
 					$query->clear()
 						->delete('#__modules')
