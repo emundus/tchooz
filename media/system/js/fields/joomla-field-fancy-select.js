@@ -136,7 +136,9 @@ window.customElements.define('joomla-field-fancy-select', class extends HTMLElem
       renderSelectedChoices: 'always',
       shouldSort: false,
       fuseOptions: {
-        threshold: 0.3 // Strict search
+        threshold: 0.3,
+        // Strict search
+        distance: 850 // Set distance so Fuse can match across full label length (~255 chars)
       },
       noResultsText: Joomla.Text._('JGLOBAL_SELECT_NO_RESULTS_MATCH', 'No results found'),
       noChoicesText: Joomla.Text._('JGLOBAL_SELECT_NO_RESULTS_MATCH', 'No results found'),

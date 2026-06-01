@@ -1766,17 +1766,17 @@
         },
         {
             "name": "joomla/filter",
-            "version": "3.0.5",
-            "version_normalized": "3.0.5.0",
+            "version": "dev-3.x-release-may-26",
+            "version_normalized": "dev-3.x-release-may-26",
             "source": {
                 "type": "git",
-                "url": "https://github.com/joomla-framework/filter.git",
-                "reference": "06c9e672d15099622dbb56c8e2a7461ce26d37f6"
+                "url": "git@github.com:joomla-framework/security-filter.git",
+                "reference": "f2451b21a2aa512eb8ed011a719184e834e08584"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/filter/zipball/06c9e672d15099622dbb56c8e2a7461ce26d37f6",
-                "reference": "06c9e672d15099622dbb56c8e2a7461ce26d37f6",
+                "url": "https://api.github.com/repos/joomla-framework/security-filter/zipball/f2451b21a2aa512eb8ed011a719184e834e08584",
+                "reference": "f2451b21a2aa512eb8ed011a719184e834e08584",
                 "shasum": ""
             },
             "require": {
@@ -1793,7 +1793,7 @@
             "suggest": {
                 "joomla/language": "Required only if you want to use `OutputFilter::stringURLSafe`."
             },
-            "time": "2025-09-30T15:42:09+00:00",
+            "time": "2026-05-14T07:16:54+00:00",
             "type": "joomla-package",
             "extra": {
                 "branch-alias": {
@@ -1807,7 +1807,11 @@
                     "Joomla\\Filter\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Joomla\\Filter\\Tests\\": "Tests/"
+                }
+            },
             "license": [
                 "GPL-2.0-or-later"
             ],
@@ -1819,9 +1823,19 @@
                 "joomla"
             ],
             "support": {
-                "issues": "https://github.com/joomla-framework/filter/issues",
-                "source": "https://github.com/joomla-framework/filter/tree/3.0.5"
+                "source": "https://github.com/joomla-framework/security-filter/tree/3.x-release-may-26",
+                "issues": "https://github.com/joomla-framework/security-filter/issues"
             },
+            "funding": [
+                {
+                    "type": "github",
+                    "url": "https://github.com/joomla"
+                },
+                {
+                    "type": "custom",
+                    "url": "https://community.joomla.org/sponsorship-campaigns.html"
+                }
+            ],
             "install-path": "../joomla/filter"
         },
         {
@@ -2075,17 +2089,17 @@
         },
         {
             "name": "joomla/oauth2",
-            "version": "3.0.2",
-            "version_normalized": "3.0.2.0",
+            "version": "3.0.3",
+            "version_normalized": "3.0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/joomla-framework/oauth2.git",
-                "reference": "58ca7b98f6794b02c786ff53cfdcce3997430740"
+                "reference": "318bae49ddfe67f83626bc05e0d0c82d20c365d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/oauth2/zipball/58ca7b98f6794b02c786ff53cfdcce3997430740",
-                "reference": "58ca7b98f6794b02c786ff53cfdcce3997430740",
+                "url": "https://api.github.com/repos/joomla-framework/oauth2/zipball/318bae49ddfe67f83626bc05e0d0c82d20c365d0",
+                "reference": "318bae49ddfe67f83626bc05e0d0c82d20c365d0",
                 "shasum": ""
             },
             "require": {
@@ -2102,7 +2116,7 @@
                 "phpunit/phpunit": "^9.5.28",
                 "squizlabs/php_codesniffer": "^3.7.2"
             },
-            "time": "2025-09-19T18:25:42+00:00",
+            "time": "2026-04-19T10:05:06+00:00",
             "type": "joomla-package",
             "extra": {
                 "branch-alias": {
@@ -2129,7 +2143,7 @@
             ],
             "support": {
                 "issues": "https://github.com/joomla-framework/oauth2/issues",
-                "source": "https://github.com/joomla-framework/oauth2/tree/3.0.2"
+                "source": "https://github.com/joomla-framework/oauth2/tree/3.0.3"
             },
             "install-path": "../joomla/oauth2"
         },
@@ -3235,17 +3249,17 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.50",
-            "version_normalized": "3.0.50.0",
+            "version": "3.0.52",
+            "version_normalized": "3.0.52.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "aa6ad8321ed103dc3624fb600a25b66ebf78ec7b"
+                "reference": "2adaefc83df2ec548558307690f376dd7d4f4fce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/aa6ad8321ed103dc3624fb600a25b66ebf78ec7b",
-                "reference": "aa6ad8321ed103dc3624fb600a25b66ebf78ec7b",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/2adaefc83df2ec548558307690f376dd7d4f4fce",
+                "reference": "2adaefc83df2ec548558307690f376dd7d4f4fce",
                 "shasum": ""
             },
             "require": {
@@ -3263,7 +3277,7 @@
                 "ext-mcrypt": "Install the Mcrypt extension in order to speed up a few other cryptographic operations.",
                 "ext-openssl": "Install the OpenSSL extension in order to speed up a wide variety of cryptographic operations."
             },
-            "time": "2026-03-19T02:57:58+00:00",
+            "time": "2026-04-27T07:02:15+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -3328,7 +3342,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.50"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.52"
             },
             "funding": [
                 {

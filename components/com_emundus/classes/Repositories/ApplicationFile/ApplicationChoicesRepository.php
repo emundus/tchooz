@@ -50,7 +50,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		$this->factory = new ApplicationChoicesFactory();
 	}
 
-	public function flush(ApplicationChoicesEntity $entity, ?bool $checkRules = true): bool
+	public function flush(ApplicationChoicesEntity $entity, ?bool $checkRules = true, ?int $outputStatus = null): bool
 	{
 		$flushed = false;
 
@@ -119,7 +119,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 				require_once JPATH_SITE . '/components/com_emundus/models/application.php';
 			}
 			$m_application = new \EmundusModelApplication();
-			$m_application->moveApplication($entity->getFnum(), $entity->getFnum(), $entity->getCampaign()->getId());
+			$m_application->moveApplication($entity->getFnum(), $entity->getFnum(), $entity->getCampaign()->getId(), !empty($outputStatus) ? $outputStatus : null);
 		}
 		// If old state was confirmed and new state is not, move application back to parent campaign
 		elseif (
