@@ -111,7 +111,7 @@ final class SessionGC extends CMSPlugin implements SubscriberInterface
 	    }
 
 	    if ($enableGC) {
-	        $session->gc();
+		    $session->gc();
         }
 
         $enableMetadata = (int) $event->getArgument('params')->enable_session_metadata_gc ?? 1;
