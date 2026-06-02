@@ -23,7 +23,15 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 	private const IGNORED_TABLES = [
 		'jos_emundus_evaluations',
 		'jos_emundus_final_grade',
-		'jos_emundus_admission'
+		'jos_emundus_admission',
+		'jos_emundus_setup_csv_import',
+		'jos_emundus_jury',
+		'jos_emundus_candidat_meeting',
+		'jos_emundus_logs',
+	];
+
+	private const AUTO_DELETE_TABLES = [
+		'jos_emundus_logs',
 	];
 
 	public function __construct(
@@ -39,6 +47,8 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 	{
 		$this->output = $output;
 
+		$this->deleteDeprecatedFabrikLists();
+
 		$this->checkFnumsFields($input);
 
 		$this->checkCalcFields($input);
@@ -46,6 +56,26 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 		$this->checkDatabaseJoinFields($input);
 
 		$this->checkForms($input);
+	}
+
+	/**
+	 * Supprime les listes Fabrik liées à des tables dépréciées qui peuvent être retirées sans risque.
+	 */
+	private function deleteDeprecatedFabrikLists(): void
+	{
+		$db = $this->databaseService->getDatabase();
+		$query = $db->createQuery();
+
+		$query->delete($db->quoteName('#__fabrik_lists'))
+			->where($db->quoteName('db_table_name') . ' IN (' . implode(',', array_map([$db, 'quote'], self::AUTO_DELETE_TABLES)) . ')');
+
+		try {
+			$db->setQuery($query);
+			$db->execute();
+			$this->output->writeln('<info>Deprecated Fabrik lists deleted successfully.</info>');
+		} catch (\Exception $e) {
+			$this->output->writeln('<error>Failed to delete deprecated Fabrik lists: ' . $e->getMessage() . '</error>');
+		}
 	}
 
 	private function checkFnumsFields(InputInterface $input): void
