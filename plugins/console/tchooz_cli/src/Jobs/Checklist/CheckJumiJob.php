@@ -139,7 +139,7 @@ class CheckJumiJob extends TchoozChecklistJob
 				$autoDelete = in_array($module->title, self::AUTO_DELETE_TITLES);
 
 				if ($autoDelete) {
-					$this->output->writeln('Module ' . $module->title . ' is in the auto-delete list. Deleting automatically...');
+					$this->output->writeln('<comment>Module ' . $module->title . ' is in the auto-delete list. Deleting automatically...</comment>');
 					$shouldDelete = true;
 				} else {
 					$helper = new QuestionHelper();
@@ -156,9 +156,9 @@ class CheckJumiJob extends TchoozChecklistJob
 					try {
 						$db->setQuery($query);
 						$db->execute();
-						$this->output->writeln('Module ' . $module->title . ' deleted successfully.');
+						$this->output->writeln('<info>Module ' . $module->title . ' deleted successfully.</info>');
 					} catch (\Exception $e) {
-						$this->output->writeln('Error deleting module: ' . $e->getMessage());
+						$this->output->writeln('<error>Error deleting module: ' . $e->getMessage() . '</error>');
 					}
 				} else {
 					$this->output->writeln('Module ' . $module->title . ' not deleted.');
