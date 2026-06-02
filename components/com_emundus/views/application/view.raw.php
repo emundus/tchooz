@@ -20,6 +20,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Reference\InternalReferenceEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\CrudEnum;
@@ -90,6 +91,8 @@ class EmundusViewApplication extends HtmlView
 	protected bool $showReference;
 	protected ApplicationFileEntity $applicationFile;
 
+	protected ?ApplicationFileEntity $applicationFile = null;
+
 	function __construct($config = array())
 	{
 		parent::__construct($config);
@@ -125,19 +128,16 @@ class EmundusViewApplication extends HtmlView
 		$layout = $jinput->getString('layout', 0);
 		$Itemid = $jinput->get('Itemid', 0);
 
-		$applicationFileRepository = new ApplicationFileRepository();
-		$applicationFile           = $applicationFileRepository->getByFnum($fnum);
+		$this->applicationFileRepository = new ApplicationFileRepository();
+		$this->applicationFile     = $this->applicationFileRepository->getByFnum($fnum);
 
-		$this->ccid        = $applicationFile->getId();
+		$this->ccid        = $this->applicationFile->getId();
 		$this->fnum        = $fnum;
-		$this->student     = $applicationFile->getUser();
-		$this->sid         = $applicationFile->getUser()->id;
-		$this->student_id  = $applicationFile->getUser()->id;
-		$this->userid      = $applicationFile->getUser()->id;
-		$this->campaign_id = $applicationFile->getCampaignId();
-
-		$applicationFileRepository = new ApplicationFileRepository();
-		$this->applicationFile = $applicationFileRepository->getById($this->ccid);
+		$this->student     = $this->applicationFile->getUser();
+		$this->sid         = $this->applicationFile->getUser()->id;
+		$this->student_id  = $this->applicationFile->getUser()->id;
+		$this->userid      = $this->applicationFile->getUser()->id;
+		$this->campaign_id = $this->applicationFile->getCampaign()->getId();
 
 		if (!class_exists('EmundusModelApplication'))
 		{
@@ -167,10 +167,10 @@ class EmundusViewApplication extends HtmlView
 					if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id) && $applicant[0]->is_anonym != 1 && !$this->applicationFile->isAnonymous())
 					{
 						$this->synthesis = new stdClass();
-						$program         = $m_application->getProgramSynthesis($applicationFile->getCampaign()->getId());
+						$program         = $m_application->getProgramSynthesis($this->applicationFile->getCampaign()->getId());
 						if (!empty($program->synthesis))
 						{
-							$campaignInfo = $m_application->getUserCampaigns($this->sid, $applicationFile->getCampaign()->getId());
+							$campaignInfo = $m_application->getUserCampaigns($this->sid, $this->applicationFile->getCampaign()->getId());
 
 							if (!class_exists('EmundusModelEmails'))
 							{
@@ -179,12 +179,12 @@ class EmundusViewApplication extends HtmlView
 							$m_emails = new EmundusModelEmails();
 							$tag      = array(
 								'FNUM'                 => $fnum,
-								'CAMPAIGN_NAME'        => $applicationFile->getCampaign()->getLabel(),
-								'CAMPAIGN_LABEL'       => $applicationFile->getCampaign()->getLabel(),
-								'APPLICATION_STATUS'   => $applicationFile->getStatus()->getLabel(),
+								'CAMPAIGN_NAME'        => $this->applicationFile->getCampaign()->getLabel(),
+								'CAMPAIGN_LABEL'       => $this->applicationFile->getCampaign()->getLabel(),
+								'APPLICATION_STATUS'   => $this->applicationFile->getStatus()->getLabel(),
 								'APPLICATION_TAGS'     => $fnum,
-								'APPLICATION_PROGRESS' => $applicationFile->getFormProgress(),
-								'ATTACHMENT_PROGRESS'  => $applicationFile->getAttachmentProgress()
+								'APPLICATION_PROGRESS' => $this->applicationFile->getFormProgress(),
+								'ATTACHMENT_PROGRESS'  => $this->applicationFile->getAttachmentProgress()
 							);
 
 							$tags = $m_emails->setTags($this->sid, $tag, $fnum, '', $program->synthesis);
@@ -294,7 +294,7 @@ class EmundusViewApplication extends HtmlView
 						$m_evaluation = new EmundusModelEvaluation();
 
 						// get evaluation form ID
-						$formid = $m_evaluation->getEvaluationFormByProgramme($applicationFile->getCampaign()->getProgram()->getCode());
+						$formid = $m_evaluation->getEvaluationFormByProgramme($this->applicationFile->getCampaign()->getProgram()->getCode());
 
 						$message = 'COM_EMUNDUS_EVALUATIONS_NO_EVALUATION_FORM_SET';
 						if (!empty($formid))
@@ -367,7 +367,7 @@ class EmundusViewApplication extends HtmlView
 						$myEval       = $m_evaluation->getDecisionFnum($fnum);
 
 						// get evaluation form ID
-						$formid = $m_evaluation->getDecisionFormByProgramme($applicationFile->getCampaign()->getProgram()->getCode());
+						$formid = $m_evaluation->getDecisionFormByProgramme($this->applicationFile->getCampaign()->getProgram()->getCode());
 
 						$url_form = '';
 						if (!empty($formid))
@@ -400,7 +400,7 @@ class EmundusViewApplication extends HtmlView
 							}
 
 							// get evaluation form ID
-							$formid_eval = $m_evaluation->getEvaluationFormByProgramme($applicationFile->getCampaign()->getProgram()->getCode());
+							$formid_eval = $m_evaluation->getEvaluationFormByProgramme($this->applicationFile->getCampaign()->getProgram()->getCode());
 							if (!empty($formid_eval))
 							{
 								$this->url_evaluation = Uri::base() . 'index.php?option=com_emundus&view=evaluation&layout=data&format=raw&Itemid=' . $Itemid . '&cfnum=' . $fnum;
@@ -655,7 +655,7 @@ class EmundusViewApplication extends HtmlView
 						$this->formsProgress = $m_application->getFormsProgress($fnum);
 						$this->forms         = $m_application->getForms($this->sid, $fnum, $this->defaultpid->pid);
 						$this->applicant     = $applicant[0];
-						$this->shortReference        = $applicationFile->getShortReference();
+						$this->shortReference        = $this->applicationFile->getShortReference();
 
 						$internalReferenceService = new InternalReferenceService(
 							new DateProvider(),
@@ -667,7 +667,7 @@ class EmundusViewApplication extends HtmlView
 						if ($this->showReference)
 						{
 							$internalReferenceRepository = new InternalReferenceRepository();
-							$this->reference             = $internalReferenceRepository->getActiveReference($applicationFile->getId());
+							$this->reference             = $internalReferenceRepository->getActiveReference($this->applicationFile->getId());
 						}
 
 					}
@@ -765,7 +765,7 @@ class EmundusViewApplication extends HtmlView
 						$m_files = new EmundusModelFiles();
 
 						$myAdmission_form_id = $m_files->getAdmissionFormidByFnum($fnum);
-						$admission_form      = $m_admission->getAdmissionFormByProgramme($applicationFile->getCampaign()->getProgram()->getCode());
+						$admission_form      = $m_admission->getAdmissionFormByProgramme($this->applicationFile->getCampaign()->getProgram()->getCode());
 
 						if (!empty($admission_form))
 						{
@@ -826,7 +826,7 @@ class EmundusViewApplication extends HtmlView
 						$evaluations = $m_interview->getEvaluationsByFnum($fnum);
 
 						// get evaluation form ID
-						$formid = $m_interview->getInterviewFormByProgramme($applicationFile->getCampaign()->getProgram()->getCode());
+						$formid = $m_interview->getInterviewFormByProgramme($this->applicationFile->getCampaign()->getProgram()->getCode());
 
 
 						if (!empty($formid))

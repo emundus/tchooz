@@ -11,6 +11,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -18,22 +19,24 @@ use Joomla\CMS\Uri\Uri;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Joomla\CMS\Factory;
-use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
-use Tchooz\Enums\CrudEnum;
-use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Controller\EmundusController;
 use Tchooz\EmundusResponse;
-use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Filters\FilterEntity;
+use Tchooz\Entities\Label\LabelEntity;
+use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\Filters\FilterModeEnum;
 use Tchooz\Factories\Filters\FilterFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\TagsRepository;
 use Tchooz\Repositories\Filters\FilterRepository;
+use Tchooz\Repositories\Label\LabelRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
-use Tchooz\Enums\Export\ExportModeEnum;
-use Tchooz\Controller\EmundusController;
 
 jimport('joomla.application.component.controller');
 jimport('joomla.user.helper');
@@ -919,83 +922,70 @@ class EmundusControllerFiles extends EmundusController
 	 * @since 6.0
 	 */
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
-	public function tagfile(): void
+	public function tagfile(): EmundusResponse
 	{
-		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('BAD_REQUEST')];
+		$fnums        = $this->input->getString('fnums', null);
+		$tag          = (array) $this->input->get('tag', []);
+		$newTag       = trim($this->input->getString('newTag', ''));
+		$newTagClass  = trim($this->input->getString('newTagClass', 'label-default'));
 
-		$fnums  = $this->input->getString('fnums', null);
-		$tag    = (array) $this->input->get('tag', []);
-		$newTag = trim($this->input->getString('newTag', ''));
-
-		if (!empty($fnums) && (!empty($tag) || $newTag !== ''))
+		if(empty($fnums))
 		{
-			if ($newTag !== '')
-			{
-				$tagsRepository = new TagsRepository();
-
-				if ($tagsRepository->existsByLabel($newTag))
-				{
-					$response['code'] = EmundusResponse::HTTP_CONFLICT;
-					$response['msg']  = Text::_('COM_EMUNDUS_TAGS_TAG_ALREADY_EXISTS');
-
-					echo json_encode((object) $response);
-					exit;
-				}
-
-				try
-				{
-					$createdTag = $tagsRepository->create($newTag);
-				}
-				catch (\Exception $e)
-				{
-					Log::add('Failed to create tag on the fly: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-					$createdTag = null;
-				}
-
-				if (empty($createdTag))
-				{
-					$response['code'] = 500;
-					$response['msg']  = Text::_('COM_EMUNDUS_TAGS_CREATE_FAILED');
-
-					echo json_encode((object) $response);
-					exit;
-				}
-
-				$tag[] = $createdTag->getId();
-			}
-
-			$m_files = $this->getModel('Files');
-			$fnums   = ($fnums == 'all') ? $m_files->getAllFnums() : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-
-			if (!empty($fnums)) {
-				$validFnums = [];
-				foreach ($fnums as $fnum) {
-					if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
-						$validFnums[] = $fnum;
-					}
-				}
-				unset($fnums);
-				$response['status'] = $m_files->tagFile($validFnums, $tag);
-
-				if ($response['status']) {
-					$response['code']   = 200;
-					$response['msg']    = Text::_('COM_EMUNDUS_TAGS_SUCCESS');
-					$response['tagged'] = $validFnums;
-				}
-				else {
-					$response['code'] = 500;
-					$response['msg']  = Text::_('FAIL');
-				}
-			}
+			throw new \InvalidArgumentException('Missing fnums parameter');
 		}
 
-		echo json_encode((object) ($response));
-		exit;
+		if(empty($tag) && empty($newTag))
+		{
+			throw new \InvalidArgumentException('Missing tag or newTag parameter');
+		}
+
+		if ($newTag !== '')
+		{
+			$labelRepository = new LabelRepository();
+
+			if ($labelRepository->existsByLabel($newTag))
+			{
+				return EmundusResponse::fail(Text::_('COM_EMUNDUS_TAGS_TAG_ALREADY_EXISTS'), EmundusResponse::HTTP_CONFLICT);
+			}
+
+			$labelEntity = new LabelEntity($newTag, $newTagClass !== '' ? $newTagClass : 'label-default');
+			if(!$labelRepository->flush($labelEntity))
+			{
+				throw new \Exception(Text::_('COM_EMUNDUS_TAGS_CREATE_FAILED'));
+			}
+
+			$tag[] = $labelEntity->getId();
+		}
+
+		$m_files = $this->getModel('Files');
+		$fnums   = ($fnums == 'all') ? $m_files->getAllFnums() : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+
+		if(empty($fnums))
+		{
+			throw new \InvalidArgumentException('Missing fnums parameter');
+		}
+
+		$validFnums = [];
+		foreach ($fnums as $fnum) {
+			if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
+				$validFnums[] = $fnum;
+			}
+		}
+		unset($fnums);
+		if(!$m_files->tagFile($validFnums, $tag))
+		{
+			throw new \RuntimeException(Text::_('COM_EMUNDUS_TAGS_ADD_FAILED'));
+		}
+
+		return new EmundusResponse(true, Text::_('COM_EMUNDUS_TAGS_SUCCESS'), EmundusResponse::HTTP_OK, $validFnums, '', 'tagged');
 	}
 
-	public function deletetags()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::TAG, 'mode' => CrudEnum::CREATE],
+		['id' => ActionEnum::TAG, 'mode' => CrudEnum::DELETE]
+	])]
+	public function deletetags(): void
 	{
-
 		$fnums = $this->input->getString('fnums', null);
 		$tags  = $this->input->getVar('tag', null);
 
@@ -1008,26 +998,33 @@ class EmundusControllerFiles extends EmundusController
 			$fnums = $m_files->getAllFnums();
 		}
 
-		JPluginHelper::importPlugin('emundus');
+		PluginHelper::importPlugin('emundus');
 		$this->app->triggerEvent('onCallEventHandler', ['onBeforeTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
+
+		$deletedAll = [];
+		if (!is_array($tags))
+		{
+			$tags = [$tags];
+		}
 
 		foreach ($fnums as $fnum) {
 			if ($fnum != 'em-check-all') {
 				foreach ($tags as $tag) {
-					$hastags = $m_files->getTagsByIdFnumUser($tag, $fnum, $this->_user->id);
-					if ($hastags) {
-						$m_application->deleteTag($tag, $fnum);
+					$hasTags = $m_files->getTagsByIdFnumUser($tag, $fnum, $this->_user->id);
+
+					if ($hasTags) {
+						$deletedAll[] = $m_application->deleteTag($tag, $fnum);
 					}
 					else {
 						if (EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum)) {
-							$m_application->deleteTag($tag, $fnum);
+							$deletedAll[] = $m_application->deleteTag($tag, $fnum);
 						}
 					}
 				}
 			}
 		}
 
-		echo json_encode((object) (array('status' => true, 'msg' => Text::_('COM_EMUNDUS_TAGS_DELETE_SUCCESS'))));
+		echo json_encode((object) (array('status' => !in_array(false, $deletedAll) && !empty($deletedAll), 'msg' => Text::_('COM_EMUNDUS_TAGS_DELETE_SUCCESS'))));
 		exit;
 	}
 

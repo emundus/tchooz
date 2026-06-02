@@ -1276,9 +1276,10 @@ function runAction(action, url = '', option = '') {
                 dataType:'json',
                 data:({fnums:checkInput, tag: tag, newTag: newTag}),
                 success: function(result) {
+                    $('.modal-body').empty();
+                    removeLoader();
+
                     if (result.status) {
-                        $('.modal-body').empty();
-                        removeLoader();
                         Swal.fire({
                             position: 'center',
                             icon: 'success',
@@ -1295,9 +1296,6 @@ function runAction(action, url = '', option = '') {
                             $('#'+result.tagged[i].fnum+'_check').parents('td').addClass(result.tagged[i].class);
                         }
                     } else {
-                        $('.modal-body').empty();
-                        removeLoader();
-
                         Swal.fire({
                             title: Joomla.Text._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE'),
                             text: '',
@@ -1319,7 +1317,21 @@ function runAction(action, url = '', option = '') {
                     $('body').removeClass('modal-open');
                 },
                 error: function (jqXHR) {
-                    console.log(jqXHR.responseText);
+                    $('.modal-body').empty();
+                    removeLoader();
+                    let response = JSON.parse(jqXHR.responseText);
+
+                    Swal.fire({
+                        title: response.msg,
+                        text: response.description,
+                        icon: 'error',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        reverseButtons: true,
+                        customClass: {
+                            title: 'em-swal-title'
+                        },
+                    });
                 }
             });
             break;
