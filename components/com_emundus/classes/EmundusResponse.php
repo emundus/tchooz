@@ -81,6 +81,7 @@ class EmundusResponse implements \JsonSerializable
 		public int    $code,
 		public mixed  $data = [],
 		public string $description = '',
+		public string $dataKey = 'data'
 	)
 	{
 	}
@@ -103,11 +104,11 @@ class EmundusResponse implements \JsonSerializable
 	public function jsonSerialize(): array
 	{
 		return [
-			'status'      => $this->status,
-			'msg'         => $this->msg,
-			'code'        => $this->code,
-			'data'        => $this->data,
-			'description' => $this->description,
+			'status'       => $this->status,
+			'msg'          => $this->msg,
+			'code'         => $this->code,
+			$this->dataKey => $this->data,
+			'description'  => $this->description,
 		];
 	}
 
