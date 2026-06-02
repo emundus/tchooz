@@ -72,7 +72,7 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 				$this->output->writeln('Checking fnum fields for PHP 8 compatibility...');
 
 				$query->clear()
-					->select('id, ' . $this->databaseService->getDatabase()->quoteName('default'))
+					->select('id')
 					->from($this->databaseService->getDatabase()->quoteName('jos_fabrik_elements'))
 					->where('name = ' . $this->databaseService->getDatabase()->quote('fnum'))
 					->andWhere('published = 1')
@@ -80,9 +80,21 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 					->andWhere('eval = 1');
 
 				$this->databaseService->getDatabase()->setQuery($query);
-				$fnumElements = $this->databaseService->getDatabase()->loadObjectList();
+				$fnumElementIds = $this->databaseService->getDatabase()->loadColumn();
 
-				foreach ($fnumElements as $fnumElement) {
+				foreach ($fnumElementIds as $fnumElementId) {
+					// Re-fetch chaque élément depuis la base pour prendre en compte les corrections faites en cours d'exécution
+					$freshQuery = $this->databaseService->getDatabase()->createQuery();
+					$freshQuery->select('id, ' . $this->databaseService->getDatabase()->quoteName('default'))
+						->from($this->databaseService->getDatabase()->quoteName('jos_fabrik_elements'))
+						->where('id = ' . (int) $fnumElementId);
+					$this->databaseService->getDatabase()->setQuery($freshQuery);
+					$fnumElement = $this->databaseService->getDatabase()->loadObject();
+
+					if (empty($fnumElement)) {
+						continue;
+					}
+
 					$this->output->writeln('====================================');
 					$this->output->writeln('Fnum Element ID: ' . $fnumElement->id);
 
@@ -152,12 +164,28 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 			$this->output->writeln('Checking calc fields for PHP 8 compatibility...');
 
 			$query->clear('select')
-				->select('jfe.id, jfe.label, jfe.params, jfl.db_table_name');
+				->select('jfe.id');
 
 			$db->setQuery($query);
-			$calcElements = $db->loadObjectList();
+			$calcElementIds = $db->loadColumn();
 
-			foreach ($calcElements as $calcElement) {
+			foreach ($calcElementIds as $calcElementId) {
+				// Re-fetch chaque élément depuis la base pour prendre en compte les corrections faites en cours d'exécution
+				$freshQuery = $db->createQuery();
+				$freshQuery->select('jfe.id, jfe.label, jfe.params, jfl.db_table_name')
+					->from($db->quoteName('jos_fabrik_elements', 'jfe'))
+					->leftJoin($db->quoteName('jos_fabrik_groups', 'jfg') . ' ON jfe.group_id = jfg.id')
+					->leftJoin($db->quoteName('jos_fabrik_formgroup', 'jffg') . ' ON jfg.id = jffg.group_id')
+					->leftJoin($db->quoteName('jos_fabrik_forms', 'jff') . ' ON jffg.form_id = jff.id')
+					->leftJoin($db->quoteName('jos_fabrik_lists', 'jfl') . ' ON jff.id = jfl.form_id')
+					->where('jfe.id = ' . (int) $calcElementId);
+				$db->setQuery($freshQuery);
+				$calcElement = $db->loadObject();
+
+				if (empty($calcElement)) {
+					continue;
+				}
+
 				$this->output->writeln('====================================');
 				$this->output->writeln('Calc Element ID: ' . $calcElement->id);
 				$this->output->writeln('Label: ' . $calcElement->label);
@@ -220,12 +248,28 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 				$this->output->writeln('Checking database join fields for PHP 8 compatibility...');
 
 				$query->clear('select')
-					->select('jfe.id, jfe.label, jfe.params, jfl.db_table_name');
+					->select('jfe.id');
 
 				$db->setQuery($query);
-				$databaseJoinElements = $db->loadObjectList();
+				$databaseJoinElementIds = $db->loadColumn();
 
-				foreach ($databaseJoinElements as $element) {
+				foreach ($databaseJoinElementIds as $databaseJoinElementId) {
+					// Re-fetch chaque élément depuis la base pour prendre en compte les corrections faites en cours d'exécution
+					$freshQuery = $db->createQuery();
+					$freshQuery->select('jfe.id, jfe.label, jfe.params, jfl.db_table_name')
+						->from($db->quoteName('jos_fabrik_elements', 'jfe'))
+						->leftJoin($db->quoteName('jos_fabrik_groups', 'jfg') . ' ON jfe.group_id = jfg.id')
+						->leftJoin($db->quoteName('jos_fabrik_formgroup', 'jffg') . ' ON jfg.id = jffg.group_id')
+						->leftJoin($db->quoteName('jos_fabrik_forms', 'jff') . ' ON jffg.form_id = jff.id')
+						->leftJoin($db->quoteName('jos_fabrik_lists', 'jfl') . ' ON jff.id = jfl.form_id')
+						->where('jfe.id = ' . (int) $databaseJoinElementId);
+					$db->setQuery($freshQuery);
+					$element = $db->loadObject();
+
+					if (empty($element)) {
+						continue;
+					}
+
 					$this->output->writeln('====================================');
 					$this->output->writeln('Database Join Element ID: ' . $element->id);
 					$this->output->writeln('Label: ' . $element->label);
@@ -293,12 +337,24 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 			}
 
 			$query->clear('select')
-				->select('jff.id, jff.label, jff.params');
+				->select('jff.id');
 
 			$this->databaseService->getDatabase()->setQuery($query);
-			$forms = $this->databaseService->getDatabase()->loadObjectList();
+			$formIds = $this->databaseService->getDatabase()->loadColumn();
 
-			foreach ($forms as $form) {
+			foreach ($formIds as $formId) {
+				// Re-fetch chaque formulaire depuis la base pour prendre en compte les corrections faites en cours d'exécution
+				$freshQuery = $this->databaseService->getDatabase()->createQuery();
+				$freshQuery->select('jff.id, jff.label, jff.params')
+					->from($this->databaseService->getDatabase()->quoteName('jos_fabrik_forms', 'jff'))
+					->where('jff.id = ' . (int) $formId);
+				$this->databaseService->getDatabase()->setQuery($freshQuery);
+				$form = $this->databaseService->getDatabase()->loadObject();
+
+				if (empty($form)) {
+					continue;
+				}
+
 				$this->output->writeln('====================================');
 				$this->output->writeln('Form ID: ' . $form->id);
 				$this->output->writeln('Label: ' . $form->label);

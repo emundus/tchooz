@@ -122,16 +122,21 @@ class TchoozChecklistJob extends TchoozJob
 		// 2. Lancer PHPStan sur ce fichier
 		$phpstanCmd = 'libraries/emundus/vendor/bin/phpstan analyse -c "libraries/emundus/phpstan.neon" --error-format=table --memory-limit=1G ' . escapeshellarg($tmpFile);
 
+		$hasIssues = false;
+
 		try {
 			$outputStan = shell_exec($phpstanCmd);
 
 			// 3. Afficher le résultat
 			if (empty($outputStan)) {
 				$output->writeln('<error>PHPStan n\'a rien retourné. Vérifiez la configuration ou les chemins.</error>');
+				$hasIssues = true;
 			} elseif (str_contains($outputStan, 'Result is incomplete because of severe errors')) {
 				$output->writeln('<error>PHPStan: Résultat incomplet à cause d\'erreurs graves:</error>');
+				$hasIssues = true;
 			} elseif (str_contains($outputStan, ' [ERROR] ')) {
 				$output->writeln('<error>PHPStan errors detected for this code:</error>');
+				$hasIssues = true;
 			}
 
 			if (!empty($outputStan)) {
@@ -139,6 +144,7 @@ class TchoozChecklistJob extends TchoozJob
 			}
 		} catch (\Exception $e) {
 			$output->writeln('<error>Error executing PHPStan: ' . $e->getMessage() . '</error>');
+			$hasIssues = true;
 		}
 
 		// 4. Nettoyer le fichier temporaire
@@ -156,11 +162,14 @@ class TchoozChecklistJob extends TchoozJob
 				preg_match_all($pattern, $code, $matches);
 
 				$output->writeln('<' . $keyword['type'] . '> Code [' . implode(',', $matches[0]) . ']: ' . $keyword['advice'] . '</' . $keyword['type'] . '>');
+				$hasIssues = true;
 			}
 		}
 
-		$helper = new QuestionHelper();
-		$question = new ConfirmationQuestion('Press enter to continue', true);
-		$helper->ask($input, $output, $question);
+		if ($hasIssues) {
+			$helper = new QuestionHelper();
+			$question = new ConfirmationQuestion('Press enter to continue', true);
+			$helper->ask($input, $output, $question);
+		}
 	}
 }
