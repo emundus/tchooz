@@ -26,19 +26,19 @@ class ApplicationFileAnonymizationTest extends UnitTestCase
 {
 	private ApplicationFileRepository $repository;
 
+	public function __construct(?string $name = null, array $data = [], $dataName = '', $className = null, $directory = '', $construct_args = [])
+	{
+		parent::__construct($name, $data, $dataName);
+		$this->repository = new ApplicationFileRepository();
+		$addonService = new AddonService();
+		$addonService->activate(AddonEnum::ANONYMOUS->value);
+	}
+
 	/**
 	 * @var array Fnums créés pendant les tests, à nettoyer dans tearDown
 	 */
 	private array $createdFnums = [];
 
-	public function setUp(): void
-	{
-		parent::setUp();
-		$this->repository = new ApplicationFileRepository();
-
-		$addonService = new AddonService();
-		$addonService->activate(AddonEnum::ANONYMOUS->value);
-	}
 
 	protected function tearDown(): void
 	{
