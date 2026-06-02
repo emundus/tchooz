@@ -28,6 +28,12 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 		'jos_emundus_jury',
 		'jos_emundus_candidat_meeting',
 		'jos_emundus_logs',
+		'jos_emundus_setup_programmes',
+		'jos_emundus_setup_groups',
+		'jos_emundus_setup_letters',
+		'jos_emundus_setup_campaigns_more',
+		'jos_emundus_uploads',
+		'jos_emundus_setup_exceptions',
 	];
 
 	private const AUTO_DELETE_TABLES = [
