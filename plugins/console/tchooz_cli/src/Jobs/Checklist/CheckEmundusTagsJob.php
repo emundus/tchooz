@@ -41,7 +41,10 @@ class CheckEmundusTagsJob extends TchoozChecklistJob
 		$query->select('id, tag, request, description')
 			->from($db->quoteName('#__emundus_setup_tags'))
 			->where($db->quoteName('published') . ' = 1')
-			->andWhere($db->quoteName('request') . ' LIKE ' . $db->quote('php|%'));
+			->andWhere($db->quoteName('request') . ' LIKE ' . $db->quote('php|%'))
+			->andWhere($db->quoteName('tag') . ' NOT LIKE ' . $db->quote('ZOOM_MEETING%'))
+			->andWhere($db->quoteName('tag') . ' NOT LIKE ' . $db->quote('ZOOM_SESSION%'))
+			->andWhere($db->quoteName('tag') . ' != ' . $db->quote('MESSENGER_NOTIFY'));
 
 		try
 		{
