@@ -4190,21 +4190,36 @@ class EmundusModelFiles extends JModelLegacy
 		return $tags;
 	}
 
-	public function getTagsByIdFnumUser($tid, $fnum, $user_id)
+	/**
+	 * @param $tid
+	 * @param $fnum
+	 * @param $user_id
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
+	public function getTagsByIdFnumUser($tid, $fnum, $user_id): bool
 	{
-		$query = 'SELECT * FROM #__emundus_tag_assoc 
-                    WHERE id_tag = ' . $tid . ' AND fnum LIKE "' . $fnum . '" AND user_id = ' . $user_id;
+		$hasTag = false;
+
+		$query = $this->_db->createQuery();
+		$query->select('*')
+			->from($this->_db->qn('#__emundus_tag_assoc'))
+			->where('id_tag = ' . $this->_db->quote($tid) . ' AND fnum LIKE "' . $this->_db->quote($fnum) . '" AND user_id = ' . $this->_db->quote($user_id));
+
 		try {
 			$this->_db->setQuery($query);
 			$res = $this->_db->loadAssocList();
+
 			if (count($res) > 0)
-				return true;
-			else
-				return false;
+				$hasTag = true;
 		}
 		catch (Exception $e) {
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 			throw $e;
 		}
+
+		return $hasTag;
 	}
 
 	/**

@@ -1261,6 +1261,8 @@ function runAction(action, url = '', option = '') {
 
         // Validating tags
         case 14:
+            const newTagInput = document.querySelector('input#new-tag');
+            const newTag = (newTagInput && option != 1) ? (newTagInput.value.trim() || '') : '';
             addLoader();
             var url="";
             if (option == 1)
@@ -1272,11 +1274,12 @@ function runAction(action, url = '', option = '') {
                 type:'POST',
                 url: '/'+url,
                 dataType:'json',
-                data:({fnums:checkInput, tag: tag}),
+                data:({fnums:checkInput, tag: tag, newTag: newTag}),
                 success: function(result) {
+                    $('.modal-body').empty();
+                    removeLoader();
+
                     if (result.status) {
-                        $('.modal-body').empty();
-                        removeLoader();
                         Swal.fire({
                             position: 'center',
                             icon: 'success',
@@ -1293,9 +1296,6 @@ function runAction(action, url = '', option = '') {
                             $('#'+result.tagged[i].fnum+'_check').parents('td').addClass(result.tagged[i].class);
                         }
                     } else {
-                        $('.modal-body').empty();
-                        removeLoader();
-
                         Swal.fire({
                             title: Joomla.Text._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE'),
                             text: '',
@@ -1317,7 +1317,21 @@ function runAction(action, url = '', option = '') {
                     $('body').removeClass('modal-open');
                 },
                 error: function (jqXHR) {
-                    console.log(jqXHR.responseText);
+                    $('.modal-body').empty();
+                    removeLoader();
+                    let response = JSON.parse(jqXHR.responseText);
+
+                    Swal.fire({
+                        title: response.msg,
+                        text: response.description,
+                        icon: 'error',
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        reverseButtons: true,
+                        customClass: {
+                            title: 'em-swal-title'
+                        },
+                    });
                 }
             });
             break;
@@ -4061,6 +4075,9 @@ $(document).ready(function() {
                         });
                         html += '</select></div>';
 
+                        html += '<div id="new-tag-or" class="tw-mt-4 tw-w-full tw-flex tw-flex-row tw-justify-evenly tw-gap-2 tw-items-center"><hr class="tw-w-full" /><span class="tw-text-neutral-500 tw-text-center tw-w-20">' + Joomla.Text._('COM_EMUNDUS_OR') + '</span><hr class="tw-w-full" /></div>';
+                        html += '<div id="new-tag-wrapper" class="tw-mt-4"><label for="new-tag" class="tw-font-medium">' + Joomla.Text._('COM_EMUNDUS_APPLICATION_ADD_NEW_TAG') + '</label> <input name="new-tag" id="new-tag" value="" type="text" placeholder="' + Joomla.Text._('COM_EMUNDUS_APPLICATION_ADD_NEW_TAG_PLACEHOLDER') + '"/></div>';
+
                         preconfirm = "return document.querySelector('input[name=em-tags]:checked').value ";
 
                         removeLoader();
@@ -4093,20 +4110,31 @@ $(document).ready(function() {
                                 document.querySelectorAll('#em-action-tag option').forEach((option) => {
                                     option.disabled = false;
                                     option.show();
-                                })
+                                });
                             }
                             $("#em-action-tag").val('').trigger("chosen:updated");
                         });
 
-                        /***
-                         * On Tag change
-                         */
-                        $('#em-action-tag').on('change', function() {
-                            if ($(this).val() != null)
-                                $('#success-ok').removeAttr("disabled");
-                            else
-                                $('#success-ok').attr("disabled", "disabled");
+                        $(document).on('click', '#em-tags-delete', function (e) {
+                            toggleAddNewTag()
                         });
+                        $(document).on('click', '#em-tags-add', function (e) {
+                            toggleAddNewTag(false);
+                        });
+
+                        function toggleAddNewTag(deleteTag = true)
+                        {
+                            if (deleteTag)
+                            {
+                                $('#new-tag-or').hide()
+                                $('#new-tag-wrapper').hide();
+                            }
+                            else
+                            {
+                                $('#new-tag-or').show();
+                                $('#new-tag-wrapper').show();
+                            }
+                        }
                     },
                     error: function(jqXHR) {
                         console.log(jqXHR.responseText);
@@ -4413,12 +4441,12 @@ $(document).ready(function() {
                         option.disabled = true;
                         option.hide();
                     }
-                })
+                });
             } else {
                 document.querySelectorAll('#em-action-tag option').forEach((option) => {
                     option.disabled = false;
                     option.show();
-                })
+                });
             }
             $("#em-action-tag").val('').trigger("liszt:updated");
         });

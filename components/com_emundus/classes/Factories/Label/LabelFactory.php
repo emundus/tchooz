@@ -23,22 +23,28 @@ class LabelFactory implements DBFactory
 			$dbObject = (object) $dbObject;
 		}
 
-		return new LabelEntity(
-			label: $dbObject->label ?? '',
-			class: $dbObject->class ?? '',
-			ordering: $dbObject->ordering ?? 0,
-			id: $dbObject->id ?? 0
-		);
+		return self::buildEntity($dbObject);
 	}
 
-	public function fromDbObjects(array $dbObjects, bool|array $withRelations = true, array $exceptRelations = [], ?DatabaseDriver $db = null): mixed
+	public static function fromDbObjects(array $dbObjects, bool|array $withRelations = true, array $exceptRelations = [], ?DatabaseDriver $db = null): mixed
 	{
 		$entities = [];
 		foreach ($dbObjects as $dbObject)
 		{
-			$entities[] = $this->fromDbObject($dbObject, $withRelations, $exceptRelations, $db);
+			$entities[] = self::buildEntity($dbObject);
 		}
 
 		return $entities;
+	}
+
+	public static function buildEntity(object $dbObject): LabelEntity
+	{
+		return new LabelEntity(
+			label: $dbObject->label ?? '',
+			class: $dbObject->class ?? '',
+			ordering: (int) ($dbObject->ordering ?? 0),
+			id: $dbObject->id,
+			category: $dbObject->category ?? '',
+		);
 	}
 }

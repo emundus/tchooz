@@ -51,7 +51,7 @@ class EmundusController extends JControllerLegacy
 
 		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getSession()->get('emundusUser');
-		$this->_db   = Factory::getDBO();
+		$this->_db   = Factory::getContainer()->get('DatabaseDriver');
 	}
 
 	function display($cachable = false, $urlparams = false)
