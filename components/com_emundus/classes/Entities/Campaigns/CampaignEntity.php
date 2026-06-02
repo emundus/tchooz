@@ -309,19 +309,12 @@ class CampaignEntity
 		return $this;
 	}
 
-	public function getAnonymizationPolicy(): AnonymizationPolicyEnum
+	public function getAnonymizationPolicy(): ?AnonymizationPolicyEnum
 	{
-		$policy = AnonymizationPolicyEnum::FORBIDDEN;
-
-		if (!empty($this->anonymizationPolicy))
-		{
-			$policy = $this->anonymizationPolicy;
-		}
-
-		return $policy;
+		return $this->anonymizationPolicy;
 	}
 
-	public function setAnonymizationPolicy(AnonymizationPolicyEnum $policy): self
+	public function setAnonymizationPolicy(?AnonymizationPolicyEnum $policy): self
 	{
 		$this->anonymizationPolicy = $policy;
 

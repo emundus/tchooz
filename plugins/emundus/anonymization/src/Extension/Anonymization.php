@@ -17,7 +17,9 @@ use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Campaigns\CampaignEntity;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
@@ -55,11 +57,12 @@ final class Anonymization extends CMSPlugin implements SubscriberInterface
 	public function onAfterCampaignCandidature(GenericEvent $event): bool
 	{
 		$data = $event->getArguments();
-
-		$campaign_id = (int) ($data['cid'] ?? 0);
-		$fnum = $data['fnum'] ?? '';
-
-		if (empty($campaign_id) || empty($fnum))
+		if (empty($data['context']) || !($data['context'] instanceof EventContextEntity))
+		{
+			return true;
+		}
+		$fnum = $data['context']->getFiles()[0] ?? '';
+		if (empty($fnum))
 		{
 			return true;
 		}
@@ -67,7 +70,8 @@ final class Anonymization extends CMSPlugin implements SubscriberInterface
 		try
 		{
 			$campaignRepository = new CampaignRepository(false);
-			$campaign = $campaignRepository->getById($campaign_id);
+			$campaigns = $campaignRepository->getCampaignsByFnums([$fnum]);
+			$campaign = !empty($campaigns) ? reset($campaigns) : null;
 
 			if (empty($campaign))
 			{
@@ -128,7 +132,8 @@ final class Anonymization extends CMSPlugin implements SubscriberInterface
 		$policy = AnonymizationPolicyEnum::FORBIDDEN;
 
 		$addonRepository = new AddonRepository();
-		$addon = $addonRepository->getByName('anonymous');
+		$addon = $addonRepository->getByName(AddonEnum::ANONYMOUS->value);
+
 		if ($addon !== null && $addon->isActivated())
 		{
 			if ($campaign->getAnonymizationPolicy() === AnonymizationPolicyEnum::GLOBAL)

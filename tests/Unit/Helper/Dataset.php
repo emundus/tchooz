@@ -534,13 +534,19 @@ class Dataset
 		return $campaign_id;
 	}
 
-	public function updateCampaignAnonymizationPolicy(int $campaign_id, string $policy): bool
+	public function updateCampaignAnonymizationPolicy(int $campaign_id, ?string $policy): bool
 	{
 		$query = $this->db->getQuery(true);
 
-		$query->update('#__emundus_setup_campaigns')
-			->set($this->db->quoteName('anonymization_policy') . ' = ' . $this->db->quote($policy))
-			->where('id = ' . $campaign_id);
+		$query->update('#__emundus_setup_campaigns');
+			if (!empty($policy))
+			{
+				$query->set($this->db->quoteName('anonymization_policy') . ' = ' . $this->db->quote($policy));
+			} else {
+				$query->set($this->db->quoteName('anonymization_policy') . ' = NULL');
+			}
+
+			$query->where('id = ' . $campaign_id);
 
 		$this->db->setQuery($query);
 		return $this->db->execute();

@@ -861,7 +861,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 					'visible'              => $campaignEntity->isVisible() ? 1 : 0,
 					'parent_id'            => !empty($campaignEntity->getParent()) ? $campaignEntity->getParent()->getId() : null,
 					'public'               => $campaignEntity->isPublic() ? 1 : 0,
-					'anonymization_policy' => $campaignEntity->getAnonymizationPolicy(),
+					'anonymization_policy' => !empty($campaignEntity->getAnonymizationPolicy()) ? $campaignEntity->getAnonymizationPolicy()->value : null,
 				];
 				if ($flushed = $this->db->insertObject('#__emundus_setup_campaigns', $insert))
 				{
@@ -886,7 +886,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 					'visible'              => $campaignEntity->isVisible() ? 1 : 0,
 					'parent_id'            => !empty($campaignEntity->getParent()) ? $campaignEntity->getParent()->getId() : null,
 					'public'               => $campaignEntity->isPublic() ? 1 : 0,
-					'anonymization_policy' => $campaignEntity->getAnonymizationPolicy(),
+					'anonymization_policy' => !empty($campaignEntity->getAnonymizationPolicy()) ? $campaignEntity->getAnonymizationPolicy()->value : null,
 				];
 
 				$flushed = $this->db->updateObject('#__emundus_setup_campaigns', $update, 'id');

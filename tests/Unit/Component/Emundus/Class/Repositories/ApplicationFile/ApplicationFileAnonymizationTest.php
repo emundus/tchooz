@@ -6,8 +6,12 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Services\Addons\AddonService;
 
 /**
  * @package     Unit\Component\Emundus\Class\Repositories\ApplicationFile
@@ -31,6 +35,9 @@ class ApplicationFileAnonymizationTest extends UnitTestCase
 	{
 		parent::setUp();
 		$this->repository = new ApplicationFileRepository();
+
+		$addonService = new AddonService();
+		$addonService->activate(AddonEnum::ANONYMOUS->value);
 	}
 
 	protected function tearDown(): void
@@ -40,7 +47,6 @@ class ApplicationFileAnonymizationTest extends UnitTestCase
 		{
 			$this->h_dataset->deleteSampleFile($fnum);
 		}
-
 		parent::tearDown();
 	}
 
@@ -260,6 +266,8 @@ class ApplicationFileAnonymizationTest extends UnitTestCase
 	public function testFlushWithDefaultAnonymizationPolicyIsForbidden(): void
 	{
 		// Ne pas modifier la politique, la valeur par défaut doit être FORBIDDEN
+		$this->h_dataset->updateCampaignAnonymizationPolicy($this->dataset['campaign'], null);
+
 		$applicationFile = $this->createNewApplicationFileEntity(true);
 
 		$flushed = $this->repository->flush($applicationFile, $this->dataset['coordinator']);

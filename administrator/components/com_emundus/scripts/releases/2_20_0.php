@@ -228,7 +228,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 						$value = null;
 						if ($parameter->getName() === 'policy')
 						{
-							$value = AnonymizationPolicyEnum::OPTIONAL;
+							$value = AnonymizationPolicyEnum::FORBIDDEN->value;
 						}
 						$params[$parameter->getName()] = $value;
 					}
