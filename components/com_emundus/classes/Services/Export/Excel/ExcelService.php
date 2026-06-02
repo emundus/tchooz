@@ -1484,7 +1484,7 @@ class ExcelService extends Export implements ExportInterface
 							{
 								$line .= "'" . $v . "\t";
 								$line .= $status[$v]['value'] . "\t";
-								$uid  = intval(substr($v, 21, 7));
+								$uid  = $h_files::getApplicantIdFromFnum($v);
 								if (!$anonymize_data)
 								{
 									$userProfil = $this->m_users->getUserById($uid)[0];
