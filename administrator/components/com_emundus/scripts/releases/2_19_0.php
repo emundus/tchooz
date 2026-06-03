@@ -10,14 +10,11 @@
 
 namespace scripts;
 
-use Joomla\CMS\Component\ComponentHelper;
-use Tchooz\Factories\Language\LanguageFactory;
-use scripts\ReleaseInstaller;
-use Tchooz\Repositories\Language\LanguageRepository;
 use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Reference\InternalReferenceEntity;
-use Tchooz\Repositories\Addons\AddonRepository;
 
 class Release2_19_0Installer extends ReleaseInstaller
 {

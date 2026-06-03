@@ -345,7 +345,8 @@ class EmundusViewEvaluation extends JViewLegacy
 
 							if ($display_state_column == 1)
 							{
-								$user['evaluated'] = $m_workflow->isEvaluated($step_data, $this->_user->id, $ccid) ? Text::_('COM_EMUNDUS_EVALUATION_EVALUATED') : Text::_('COM_EMUNDUS_EVALUATION_TO_EVALUATE');
+								$is_evaluated = $m_workflow->isEvaluated($step_data, $this->_user->id, $ccid);
+								$user['evaluated'] = $is_evaluated ? Text::_('COM_EMUNDUS_EVALUATION_EVALUATED') : Text::_('COM_EMUNDUS_EVALUATION_TO_EVALUATE');
 							}
 
 							$current_row_form    = $step_data->form_id;
@@ -400,9 +401,23 @@ class EmundusViewEvaluation extends JViewLegacy
 									$userObj->photo = "";
 								}
 								$userObj->user       = JFactory::getUser((int) substr($value, -7));
-								$userObj->user->name = $user['is_anonym'] == 1 ? $value : $user['name'];
 								$userObj->unread_messages = !empty($unread_messages) ? $unread_messages[$value] : '';
-								$userObj->user->email = $user['is_anonym'] == 1 ? Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') : $userObj->user->email;
+
+								if ($user['is_anonym'] == 1 || !empty($user['anonymous']))
+								{
+									$userObj->user->name  = $value;
+									$userObj->user->email = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+								}
+								elseif (EmundusHelperAccess::isDataAnonymized(Factory::getApplication()->getIdentity()->id))
+								{
+									$userObj->user->name  = $value;
+									$userObj->user->email = '';
+									$userObj->user->id    = '';
+								}
+								else
+								{
+									$userObj->user->name  = $user['name'];
+								}
 
 								$userObj->showReference = $customReferenceFormatEntity->isShowInFiles();
 								$userObj->shortReference = $user['short_reference'];
@@ -414,6 +429,16 @@ class EmundusViewEvaluation extends JViewLegacy
 							elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'code' || $key == 'applicant_id' || $key == 'campaign_id' || $key == 'unread_messages' || $key == 'commentaire')
 							{
 								continue;
+							}
+							elseif ($key == 'evaluated' && isset($is_evaluated) && $display_state_column == 1)
+							{
+								$userObj->val        = $value;
+								$userObj->type       = 'text';
+								$userObj->icon       = $is_evaluated ? 'check_circle' : 'cancel';
+								$userObj->text_color = $is_evaluated ? 'tw-text-green-700' : 'tw-text-red-700';
+								$userObj->icon_color = $is_evaluated ? 'tw-text-green-600' : 'tw-text-red-700';
+								$userObj->bg_color   = $is_evaluated ? 'tw-bg-main-50' : 'tw-bg-red-100';
+								$line[$key]          = $userObj;
 							}
 							elseif ($key == 'evaluator' && $show_evaluator)
 							{

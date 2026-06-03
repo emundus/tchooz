@@ -12,15 +12,13 @@ namespace Tchooz\Subscribers;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
-use Joomla\Event\SubscriberInterface;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Reference\InternalReferenceRepository;
-use Tchooz\Repositories\Settings\ConfigurationRepository;
-use Tchooz\Services\Reference\InternalReferenceFormat;
 use Tchooz\Services\Reference\InternalReferenceService;
 
 class GenerateReferenceSubscriber extends EmundusSubscriber
@@ -49,8 +47,16 @@ class GenerateReferenceSubscriber extends EmundusSubscriber
 				$applicationFileRepository
 			);
 
-			$applicationFileEntity = $applicationFileRepository->getByFnum($data['fnum']);
-			$shortReference        = $internalReferenceService->generateShortReference($applicationFileEntity);
+			if ($event->hasArgument('context') && $data['context'] instanceof EventContextEntity && !empty($data['context']->getParameters()['application_file']) && $data['context']->getParameters()['application_file'] instanceof ApplicationFileEntity)
+			{
+				$applicationFileEntity = $data['context']->getParameters()['application_file'];
+			}
+			else
+			{
+				$applicationFileEntity = $applicationFileRepository->getByFnum($data['fnum']);
+			}
+
+			$shortReference = $internalReferenceService->generateShortReference($applicationFileEntity);
 			$applicationFileEntity->setShortReference($shortReference);
 			if (!$applicationFileRepository->flush($applicationFileEntity))
 			{

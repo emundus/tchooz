@@ -8,12 +8,14 @@ import FormatSelector from '@/components/Atoms/FormatSelector.vue';
 import Tabs from '@/components/Utils/Tabs.vue';
 import SplitButton from '@/components/Atoms/SplitButton.vue';
 import Info from '@/components/Utils/Info.vue';
+import Parameter from '@/components/Utils/Parameter.vue';
+import transformIntoParameterField from '@/mixins/transformIntoParameterField.js';
 import { VueDraggableNext as draggable } from 'vue-draggable-next';
 
 export default defineComponent({
 	name: 'Exports',
-	components: { draggable, Info, SplitButton, Tabs, FormatSelector, Stepper, Button },
-	mixins: [alerts],
+	components: { draggable, Info, SplitButton, Tabs, FormatSelector, Stepper, Button, Parameter },
+	mixins: [alerts, transformIntoParameterField],
 	props: {
 		fnumsCount: {
 			type: Number,
@@ -145,6 +147,8 @@ export default defineComponent({
 			selectedHeaders: [],
 			selectedSynthesis: [],
 			selectedAttachments: [],
+
+			settingsParameters: [],
 		};
 	},
 	created() {
@@ -155,8 +159,10 @@ export default defineComponent({
 
 		this.getAvailableFormats().finally(() => {
 			this.getExportTemplates().finally(() => {
-				this.loading = false;
-				this.formatLoading = false;
+				this.getSettingsSchema().finally(() => {
+					this.loading = false;
+					this.formatLoading = false;
+				});
 			});
 		});
 	},
@@ -177,6 +183,34 @@ export default defineComponent({
 					resolve(this.exportTemplates);
 				});
 			});
+		},
+
+		getSettingsSchema() {
+			return new Promise((resolve) => {
+				exportService.getSettingsSchema().then((response) => {
+					if (response.status && Array.isArray(response.data)) {
+						this.settingsParameters = response.data.map((field) => {
+							const param = this.fromFieldEntityToParameter(field, field.default);
+							// The mixin drops the group from its output — re-attach it so we can
+							// filter parameters by tab in the template.
+							param.group = field.group || null;
+							return param;
+						});
+					}
+					resolve(this.settingsParameters);
+				});
+			});
+		},
+
+		settingsForTab(tabCode) {
+			return this.settingsParameters.filter((p) => p.group && p.group.name === tabCode);
+		},
+
+		buildSettingsPayload() {
+			return this.settingsParameters.reduce((acc, p) => {
+				acc[p.param] = p.value;
+				return acc;
+			}, {});
 		},
 
 		previousStep() {
@@ -299,6 +333,7 @@ export default defineComponent({
 					selectedHeaderIds,
 					selectedSynthesisIds,
 					selectedAttachmentIds,
+					this.buildSettingsPayload(),
 					async,
 					allowAsync == 1,
 				)
@@ -776,6 +811,20 @@ export default defineComponent({
 							<div
 								class="tw-relative tw-flex tw-max-h-[70vh] tw-min-h-[70vh] tw-flex-col tw-gap-2 tw-overflow-scroll tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card"
 							>
+								<div
+									v-if="settingsForTab(activeTab.code).length > 0"
+									class="tw-mb-3 tw-flex tw-flex-col tw-gap-2 tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-4 tw-shadow-card"
+								>
+									<p class="!tw-mt-0 tw-mb-0 tw-font-semibold">
+										{{ this.translate('COM_EMUNDUS_EXPORTS_SETTINGS_TITLE') }}
+									</p>
+									<Parameter
+										v-for="parameter in settingsForTab(activeTab.code)"
+										:key="parameter.param"
+										:parameter-object="parameter"
+									/>
+								</div>
+
 								<div v-if="subLoading" class="tw-flex tw-flex-col tw-items-center tw-justify-center">
 									<div class="em-loader"></div>
 

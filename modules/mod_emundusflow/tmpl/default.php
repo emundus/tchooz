@@ -1,4 +1,6 @@
 <?php // no direct access
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+
 defined('_JEXEC') or die('Restricted access');
 
 $renew           = '';
@@ -15,6 +17,8 @@ if ($forms >= 100 && $attachments >= 100 && $sent == 0) {
     </a>
   </div>';
 }
+
+assert($applicationFile instanceof ApplicationFileEntity);
 
 ?>
 <div class="ui attached segment">
@@ -84,7 +88,7 @@ if ($forms >= 100 && $attachments >= 100 && $sent == 0) {
             <i class="large time outline icon"></i>
             <div class="content">
                 <div class="description"><span
-                            class="label label-<?php echo $current_application->class; ?>"> <?php echo @$current_application->value; ?></span>
+                            class="label label-<?php echo $applicationFile->getStatus()->getColor(); ?>"> <?php echo $applicationFile->getStatus()->getLabel(); ?></span>
                 </div>
             </div>
         </div>

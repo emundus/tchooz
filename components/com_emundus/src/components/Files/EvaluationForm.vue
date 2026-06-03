@@ -5,7 +5,7 @@
 			:src="url"
 			class="iframe-evaluation"
 			id="iframe-evaluation"
-			@load="loading = false"
+			@load="iframeLoaded"
 			title="Evaluation form"
 		/>
 		<div class="em-page-loader" v-if="loading"></div>
@@ -87,6 +87,9 @@ export default {
 					}
 				});
 			});
+		},
+		iframeLoaded() {
+			this.loading = false;
 		},
 	},
 };

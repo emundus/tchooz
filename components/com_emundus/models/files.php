@@ -41,6 +41,8 @@ use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 
 /**
  * Class EmundusModelFiles
@@ -690,8 +692,8 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		$select = 'select jecc.fnum, jecc.short_reference, ss.step, ss.value as status, ss.class as status_class, ' .
-			'CASE WHEN eu.is_anonym = 1 THEN "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" ELSE concat(upper(trim(eu.lastname)), " ", eu.firstname) END AS name, ' .
-			'jecc.applicant_id, jecc.campaign_id, eu.is_anonym, eir.reference ';
+			'CASE WHEN eu.is_anonym = 1 OR jecc.anonymous = 1 THEN "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" ELSE concat(upper(trim(eu.lastname)), " ", eu.firstname) END AS name, ' .
+			'jecc.applicant_id, jecc.campaign_id, eu.is_anonym, jecc.anonymous,  eir.reference ';
 
 		// prevent double left join on query
 		$already_joined_tables = [
@@ -795,7 +797,7 @@ class EmundusModelFiles extends JModelLegacy
                     LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum
-                    LEFT JOIN #__emundus_internal_reference as eir on eir.ccid=jecc.id and eir.active = 1';
+                    LEFT JOIN #__emundus_internal_reference as eir on eir.ccid=jecc.id and eir.active = 1 ';
 
 		if (in_array('unread_messages', $em_other_columns)) {
 			$query .= ' LEFT JOIN #__emundus_chatroom as ec on ec.fnum = jecc.fnum
@@ -2229,11 +2231,13 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 	/**
-	 * @param $fnum
+	 * @param         $fnum
+	 * @param   int   $user_id
+	 * @param   bool  $check_is_anonym
 	 *
-	 * @return bool|mixed
+	 * @return array
 	 */
-	public function getFnumInfos($fnum, $user_id = 0, bool $check_is_anonym = true)
+	public function getFnumInfos($fnum, $user_id = 0, bool $check_is_anonym = true): array
 	{
 		$fnumInfos = [];
 
@@ -2244,7 +2248,7 @@ class EmundusModelFiles extends JModelLegacy
 
 		try {
 			$query = $this->_db->getQuery(true);
-			$query->select('cc.id as ccid, u.name, u.email, u.username, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id, eu.is_anonym, cc.short_reference')
+			$query->select('cc.id as ccid, u.name, u.email, u.username, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id, eu.is_anonym, cc.anonymous,  cc.short_reference')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->_db->quoteName('c.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
 				->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('cc.applicant_id'))
@@ -2254,7 +2258,7 @@ class EmundusModelFiles extends JModelLegacy
 			$this->_db->setQuery($query);
 			$fnumInfos = $this->_db->loadAssoc();
 
-			$anonymize_data = EmundusHelperAccess::isDataAnonymized($user_id) || ($check_is_anonym && $fnumInfos['is_anonym'] == 1);
+			$anonymize_data = EmundusHelperAccess::isDataAnonymized($user_id) || ($check_is_anonym && ($fnumInfos['is_anonym'] == 1 || $fnumInfos['anonymous'] == 1));
 			if ($anonymize_data) {
 				$fnumInfos['name']  = $fnum;
 				$fnumInfos['email'] = $fnum;
@@ -2268,15 +2272,15 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 	/**
-	 * @param $fnums
+	 * @param           $fnums
+	 * @param   string  $format
 	 *
-	 * @return bool|mixed
+	 * @return mixed
 	 */
-	public function getFnumsInfos($fnums, $format = 'array')
+	public function getFnumsInfos($fnums, string $format = 'array'): mixed
 	{
 		try {
-
-			$query = 'select u.name, u.email, cc.fnum, ss.step, ss.value, sc.label, sc.start_date, sc.end_date, sc.year, sc.id as campaign_id, sc.published, sc.training, cc.applicant_id, eu.is_anonym
+			$query = 'select u.name, u.email, cc.fnum, cc.anonymous, ss.step, ss.value, sc.label, sc.start_date, sc.end_date, sc.year, sc.id as campaign_id, sc.published, sc.training, cc.applicant_id, eu.is_anonym
                         from #__emundus_campaign_candidature as cc
                         left join #__users as u on u.id = cc.applicant_id
                         left join #__emundus_users as eu on eu.user_id = cc.applicant_id
@@ -2293,7 +2297,6 @@ class EmundusModelFiles extends JModelLegacy
 			}
 		}
 		catch (Exception $e) {
-			echo $e->getMessage();
 			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
@@ -2469,7 +2472,7 @@ class EmundusModelFiles extends JModelLegacy
 				$query = 'select jos_emundus_campaign_candidature.fnum, esc.label, sp.code, esc.id as campaign_id';
 			}
 			else {
-				$query = 'select jos_emundus_campaign_candidature.fnum,' .
+				$query = 'select jos_emundus_campaign_candidature.fnum, jos_emundus_campaign_candidature.anonymous' .
 					'CASE WHEN eu.is_anonym = 0 THEN u.email ELSE ' . $this->_db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')) . ' END as email'
 				.', esc.label, sp.code, esc.id as campaign_id';
 			}
@@ -3023,7 +3026,7 @@ class EmundusModelFiles extends JModelLegacy
 			else {
 				$query = 'SELECT jecc.fnum, '.
 					'CASE WHEN eu.is_anonym != 1 THEN u.email ELSE ' . $this->_db->quote('COM_EMUNDUS_ANONYM_ACCOUNT') . ' END as email, '.
-					' esc.label, sp.code, esc.id as campaign_id';
+					' jecc.anonymous, esc.label, sp.code, esc.id as campaign_id';
 			}
 
 			$already_joined = [
@@ -4190,21 +4193,36 @@ class EmundusModelFiles extends JModelLegacy
 		return $tags;
 	}
 
-	public function getTagsByIdFnumUser($tid, $fnum, $user_id)
+	/**
+	 * @param $tid
+	 * @param $fnum
+	 * @param $user_id
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
+	public function getTagsByIdFnumUser($tid, $fnum, $user_id): bool
 	{
-		$query = 'SELECT * FROM #__emundus_tag_assoc 
-                    WHERE id_tag = ' . $tid . ' AND fnum LIKE "' . $fnum . '" AND user_id = ' . $user_id;
+		$hasTag = false;
+
+		$query = $this->_db->createQuery();
+		$query->select('*')
+			->from($this->_db->qn('#__emundus_tag_assoc'))
+			->where('id_tag = ' . $this->_db->quote($tid) . ' AND fnum LIKE "' . $this->_db->quote($fnum) . '" AND user_id = ' . $this->_db->quote($user_id));
+
 		try {
 			$this->_db->setQuery($query);
 			$res = $this->_db->loadAssocList();
+
 			if (count($res) > 0)
-				return true;
-			else
-				return false;
+				$hasTag = true;
 		}
 		catch (Exception $e) {
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 			throw $e;
 		}
+
+		return $hasTag;
 	}
 
 	/**
@@ -4597,6 +4615,15 @@ class EmundusModelFiles extends JModelLegacy
 				catch (Exception $e) {
 					Log::add(Uri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 				}
+			}
+
+			$fileRepository = new ApplicationFileRepository();
+			$applicationFile = $fileRepository->getByFnum($fnum);
+			$fileAccessRepository = new ApplicationFileAccessRepository();
+			$revoked = $fileAccessRepository->revokeAccess($applicationFile);
+			if (!$revoked)
+			{
+				Log::add('File access have not been revoked on delete file ' . $fnum, Log::ERROR, 'com_emundus');
 			}
 
 			$query->clear()

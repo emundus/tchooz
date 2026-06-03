@@ -33,6 +33,8 @@ use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Transformers\ApplicationChoicesTransformer;
@@ -269,6 +271,7 @@ class EmundusModelApplication extends ListModel
 				$this->_db->quoteName('eu.user_id'),
 				$this->_db->quoteName('ecc.applicant_id'),
 				$this->_db->quoteName('ecc.id','ccid'),
+				$this->_db->quoteName('ecc.anonymous','anonymous'),
 				'esa.*',
 				$this->_db->quoteName('eu.attachment_id'),
 				$this->_db->quoteName('eu.filename'),
@@ -344,12 +347,32 @@ class EmundusModelApplication extends ListModel
 				}
 
 				foreach ($attachments as $attachment) {
+					// application file anonymous property
+					if ($attachment->anonymous)
+					{
+						if ($attachment->modified_by === $attachment->applicant_id)
+						{
+							$attachment->modified_user_name = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+						}
+
+
+						if ($attachment->user_id === $attachment->applicant_id)
+						{
+							$attachment->user_name = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+						}
+					}
+
+
 					if (!file_exists(EMUNDUS_PATH_ABS . $attachment->applicant_id . '/' . $attachment->filename)) {
 						$attachment->existsOnServer = false;
 					}
 					else {
 						$attachment->existsOnServer = true;
 					}
+
+					$attachment->value = Text::_($attachment->value);
+					$attachment->timedate = EmundusHelperDate::displayDate($attachment->timedate, 'DATE_FORMAT_LC2', 0);
+					$attachment->modified = EmundusHelperDate::displayDate($attachment->modified, 'DATE_FORMAT_LC2', 0);
 
 					$query->clear()
 						->select('profile_id')
@@ -2372,6 +2395,10 @@ class EmundusModelApplication extends ListModel
 
 												if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
+													if ($form_params->note == 'encrypted') {
+														$r_elt = EmundusHelperFabrik::decryptDatas($r_elt,null,'aes-128-cbc',$elements[$j]->plugin);
+													}
+
 													if (in_array($elements[$j]->plugin,['date','jdate'])) {
 														if (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00')) {
 															$elt = date(EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), strtotime($r_elt));
@@ -3074,7 +3101,7 @@ class EmundusModelApplication extends ListModel
 	}
 
 
-	public function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null, $eids = null, $attachments = true, $step_types = [1], $current_user_id = 0)
+	public function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null, $eids = null, $attachments = true, $step_types = [1], $current_user_id = 0, $display_evaluator_name = true)
 	{
 		if(empty($current_user_id))
 		{
@@ -3211,7 +3238,7 @@ class EmundusModelApplication extends ListModel
 							$page_title_inserted = true;
 						}
 
-						if(!$evaluator_inserted && !empty($evaluator_name))
+						if($display_evaluator_name && !$evaluator_inserted && !empty($evaluator_name))
 						{
 							$forms .= '<h3>' . Text::_('EVALUATOR') . ': ' . $evaluator_name . '</h3>';
 							$evaluator_inserted = true;
@@ -4678,25 +4705,17 @@ class EmundusModelApplication extends ListModel
 				->from($this->_db->quoteName('#__menu'))
 				->where($this->_db->quoteName('published') . ' = 1')
 				->where($this->_db->quoteName('menutype') . ' = ' . $this->_db->quote('application'))
-				->where($this->_db->quoteName('access') . ' IN (' . implode(',', $grUser) . ')')
-				->order($this->_db->quoteName('lft'));
+				->where($this->_db->quoteName('access') . ' IN (' . implode(',', $grUser) . ')');
+
+			$query->order($this->_db->quoteName('lft'));
 			$this->_db->setQuery($query);
 			$menus = $this->_db->loadAssocList();
 
 			if (!empty($fnum)) {
-				// get menu related to workflow steps of type evaluator
-				$query->clear()
-					->select('esp.id, esc.id as campaign_id, ecc.id as ccid')
-					->from($this->_db->quoteName('#__emundus_setup_programmes', 'esp'))
-					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
-					->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
-					->where('ecc.fnum LIKE ' . $this->_db->quote($fnum));
-
-				$this->_db->setQuery($query);
-				$file_infos = $this->_db->loadObject();
-
-				$program_id = $file_infos->id ?? 0;
-				$campaign_id = $file_infos->campaign_id ?? 0;
+				$applicationFileRepository = new ApplicationFileRepository();
+				$applicationFile = $applicationFileRepository->getByFnum($fnum);
+				$program_id = $applicationFile->getCampaign()->getProgram()->getId();
+				$campaign_id = $applicationFile->getCampaign()->getId();
 
 				if (!empty($program_id)) {
 					if(!class_exists('EmundusModelWorkflow'))
@@ -5307,6 +5326,13 @@ class EmundusModelApplication extends ListModel
 		}
 	}
 
+	/**
+	 * @deprecated use ApplicationFileRepository::getByFnum instead
+	 * @param $fnum
+	 *
+	 * @return mixed
+	 * @throws Exception
+	 */
 	public function getApplication($fnum)
 	{
 		$result = null;
@@ -7353,7 +7379,7 @@ class EmundusModelApplication extends ListModel
 		return $deleted;
 	}
 
-	public function moveToTab($fnum, $tab)
+	public function moveToTab($fnum, $tab): bool
 	{
 		$moved = false;
 

@@ -127,4 +127,27 @@ export default {
 			};
 		}
 	},
+
+	async getAccessibilityUserSettings() {
+		try {
+			return await usersClient.get('getaccessibilityusersettings');
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+			};
+		}
+	},
+
+	async saveAccessibilitySettings(data) {
+		try {
+			return await usersClient.post('saveaccessibilitysettings', data);
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+				msg: e.message,
+			};
+		}
+	},
 };

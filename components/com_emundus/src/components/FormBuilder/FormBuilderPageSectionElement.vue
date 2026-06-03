@@ -151,6 +151,13 @@
 				<span>0</span>
 			</div>
 
+			<div
+				v-else-if="element.plugin === 'emundusreadonly'"
+				class="fabrikinput fabrikElementReadOnly tw-italic tw-text-neutral-500"
+			>
+				{{ element.params?.empty_placeholder || translate('COM_EMUNDUS_ONBOARD_TYPE_EMUNDUSREADONLY_DESC') }}
+			</div>
+
 			<!-- TODO: Manage rating, file and colorpicker elements preview -->
 
 			<form-builder-element-field v-else type="field" :element="element" />

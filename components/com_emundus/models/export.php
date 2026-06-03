@@ -85,7 +85,6 @@ class EmundusModelExport extends JModelList
 			return json_encode($res);
 		}
 
-		$user_id = !empty($fnum) ? (int) substr($fnum, -7) : null;
 		$em_user = Factory::getApplication()->getSession()->get('emundusUser');
 
 		require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';

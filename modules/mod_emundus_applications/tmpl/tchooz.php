@@ -8,14 +8,20 @@
 
 // no direct access
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Router\Route;
+use Joomla\CMS\Layout\LayoutHelper;
+use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 
 defined('_JEXEC') or die;
 
 Text::script('COM_EMUNDUS_APPLICATION_SHARE_CONFIRM_DELETE');
 
+$lang = Factory::$language;
+$lang->load('com_emundus', JPATH_SITE . '/components/com_emundus');
 
 $config      = JFactory::getConfig();
 $site_offset = $config->get('offset');
@@ -245,22 +251,27 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 		<?php if (!empty(Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'))) : ?>
             <p>
 				<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'); ?>
-				<?php if (!empty($actions)) : ?>
+				<?php
+
+                $registry = new ApplicationFileActionsRegistry();
+                $applicationRepository = new ApplicationFileRepository();
+                $configuredActions = $registry->getConfiguredActions();
+
+                if (!empty($configuredActions)) : ?>
 					<?php echo '(';
-					foreach ($actions as $key => $action)
+					foreach ($configuredActions as $key => $action)
 					{
+                        $actionLabel = $action instanceof CustomApplicationFileAction ? $action->getLabel() : $action->getActionType()->getLabel();
+                        $actionLabel = strtolower($actionLabel);
+
 						if ($key == 0)
 						{
-							echo Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_' . strtoupper($action));
+							echo $actionLabel;
 						}
 						else
 						{
-							echo ', ' . Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_' . strtoupper($action));
+							echo ', ' . $actionLabel;
 						}
-					}
-					if ($show_tabs == 1)
-					{
-						echo ', ' . Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_TABS');
 					}
 					echo ').'; ?>
 				<?php else : ?>
@@ -416,27 +427,44 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 		<?php endif; ?>
 
 		<?php if (($show_show_campaigns && $applicant_can_renew) || ($show_add_application && $applicant_can_renew)) : ?>
-            <div class="hover-and-tile-container hover-and-tile-container-add" style="width: 50%; height: 300px;">
-				<?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
-                    <div id="tile-hover-offset-request"></div>
-				<?php endif; ?>
-                <div
-                    class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
-					<?php if ($mod_em_campaign_display_svg == 1) : ?>
-                        <div id="background-shapes"
-                             alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
-					<?php endif; ?>
-                    <span class="material-symbols-outlined tw-w-fit">add_circle</span>
-                    <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
+
+           <div class="tw-flex tw-flex-row tw-gap-4 tw-w-full">
+               <div class="hover-and-tile-container hover-and-tile-container-add" style="width: 50%; height: 300px;">
+                    <?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
+                        <div id="tile-hover-offset-request"></div>
+                    <?php endif; ?>
+                    <div
+                        class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
+                        <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                            <div id="background-shapes"
+                                 alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+                        <?php endif; ?>
+                        <span class="material-symbols-outlined tw-w-fit">add_circle</span>
+                        <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
+                    </div>
                 </div>
-            </div>
-		<?php elseif (empty($override_default_content)) : ?>
+           </div>
+        <?php elseif (empty($override_default_content)) : ?>
             <div class="mod_emundus_applications__list_content--default tw-mt-2 tw-mb-6">
                 <h2 class="em-applicant-title-font em-profile-color"><?php echo Text::_('MOD_EM_APPLICATIONS_NO_FILE') ?></h2>
                 <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo Text::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
             </div>
-		<?php endif; ?>
-	<?php else : ?>
+        <?php endif; ?>
+
+        <?php if ($displayImportPublicFilesAction): ?>
+            <div id="import_file" class="tw-mt-12">
+                <div class="hover-and-tile-container hover-and-tile-container-action tw-border-dashed tw-cursor-pointer" style="width: 50%; height: 300px;">
+                    <div id="tile-hover-offset-request"></div>
+                    <div class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center tw-cursor-pointer">
+                        <div id="background-shapes" class="tw-cursor-pointer" alt="Fond formes"></div>
+                        <span class="material-symbols-outlined tw-w-fit tw-cursor-pointer">download</span>
+                        <p class="tw-w-fit tw-cursor-pointer"><?= Text::_('IMPORT_FILE_FROM_PUBLIC_ACCESS_TITLE') ?></p>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
+    <?php else : ?>
         <p id="no_file_tab_message_view"
            class="em-display-none"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></p>
         <div class="em-display-none no_file_search_message_view">
@@ -494,14 +522,27 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                                                    style="color: <?php echo $color ?>;margin-bottom: 0">
 																	<?php echo $application->programme; ?>
                                                                 </p>
+
+                                                                <?php
+
+                                                                    if ($application->anonymous == 1)
+                                                                    {
+                                                                        ?>
+                                                                            <span class="material-symbols-outlined">domino_mask</span>
+                                                                        <?php
+                                                                    }
+
+                                                                ?>
+
                                                                 <div
                                                                     class="mod_emundus_applications__container text-xl!"
                                                                     id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>">
-                                                                <span
-                                                                    class="material-symbols-outlined em-text-neutral-600"
-                                                                    style="font-size: 24px;"
-                                                                    id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
-                                                                >more_vert</span>
+                                                                <?php
+                                                                    $data = [
+                                                                        'fnum' => $application->fnum,
+                                                                    ];
+                                                                    echo LayoutHelper::render('emundus.application.actions', $data, '', $data);
+                                                                ?>
                                                                 </div>
                                                             </div>
 														<?php endif; ?>
@@ -544,6 +585,18 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                                                             style="color: <?= $application->order_color; ?>"><?= Text::_(strtoupper($application->order_status)); ?></span>
                                                                     </p>
 																<?php endif; ?>
+                                                                <?php
+
+                                                                if ($application->anonymous == 1)
+                                                                {
+                                                                    ?>
+                                                                    <div class="tw-rounded-[50%] tw-bg-profile-full tw-text-white tw-p-1 tw-leading-[none] tw-flex tw-items-center tw-justify-center">
+                                                                        <span class="material-symbols-outlined">domino_mask</span>
+                                                                    </div>
+                                                                    <?php
+                                                                }
+
+                                                                ?>
 
 																<?php if ($show_nb_comments)
 																{
@@ -577,11 +630,12 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 															<?php if ($mod_emundus_applications_show_programme != 1) : ?>
                                                                 <div class="mod_emundus_applications__container"
                                                                      id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>">
-                                                                <span
-                                                                    class="material-symbols-outlined em-text-neutral-600"
-                                                                    style="font-size: 24px;"
-                                                                    id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
-                                                                >more_vert</span>
+                                                                    <?php
+                                                                    $data = [
+                                                                        'fnum' => $application->fnum,
+                                                                    ];
+                                                                    echo LayoutHelper::render('emundus.application.actions', $data, '', $data);
+                                                                    ?>
                                                                 </div>
 															<?php endif; ?>
                                                         </div>
@@ -747,113 +801,6 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                                         </div>
 													<?php endif; ?>
                                                 </div>
-
-                                                <!-- ACTIONS BLOCK -->
-                                                <div
-                                                    class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color"
-                                                    id="actions_block_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
-                                                    style="display: none"
-                                                    data-mid="<?= $module->id ?>"
-                                                >
-                                                    <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                       href="<?= JRoute::_($application->first_page_url); ?>"
-                                                       id="actions_block_open_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                        <span
-                                                            class="material-symbols-outlined em-mr-8">open_in_new</span>
-														<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
-                                                    </a>
-
-													<?php if (in_array('rename', $actions) && ($application->applicant_id === $user->id)) : ?>
-                                                        <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                           onclick="renameApplication('<?php echo $application->fnum ?>','<?php echo $application->name ?>','<?php echo $application->label ?>')"
-                                                           id="actions_button_rename_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-symbols-outlined em-mr-8">drive_file_rename_outline</span>
-															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION') ?>
-                                                        </a>
-													<?php endif; ?>
-
-													<?php if (!empty($available_campaigns) && in_array('copy', $actions) && ($application->applicant_id === $user->id)) : ?>
-                                                        <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                           onclick="copyApplication('<?php echo $application->fnum ?>')"
-                                                           id="actions_button_copy_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span
-                                                                class="material-symbols-outlined em-mr-8">file_copy</span>
-															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COPY_APPLICATION') ?>
-                                                        </a>
-													<?php endif; ?>
-
-													<?php if (in_array('collaborate', $actions) && ($application->applicant_id === $user->id)) : ?>
-                                                        <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
-                                                           onclick="shareApplication('<?php echo $application->fnum ?>','<?php echo $application->application_id ?>')"
-                                                           id="actions_button_collaborate_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span
-                                                                class="material-symbols-outlined tw-mr-2">people</span>
-															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_COLLABORATE') ?>
-                                                        </a>
-													<?php endif; ?>
-
-													<?php if ($show_tabs == 1) : ?>
-                                                        <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
-                                                           onclick="moveToTab('<?php echo $application->fnum ?>','tab<?php echo $key ?>','card')"
-                                                           id="actions_button_move_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-symbols-outlined tw-mr-2">drive_file_move</span>
-															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_MOVE_INTO_TAB') ?>
-                                                        </a>
-													<?php endif; ?>
-
-													<?php if (in_array('documents', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
-                                                        <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
-                                                           href="<?= Route::_($history_link->route . '?ccid=' . $application->application_id . '&fnum=' . $application->fnum . '&tab=attachments'); ?>"
-                                                           id="actions_button_documents_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span
-                                                                class="material-symbols-outlined tw-mr-2">description</span>
-															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_CONSULT_DOCUMENTS') ?>
-                                                        </a>
-													<?php endif; ?>
-
-													<?php if (in_array('history', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
-                                                        <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
-                                                           href="<?= Route::_($history_link->route . '?ccid=' . $application->application_id . '&fnum=' . $application->fnum); ?>"
-                                                           id="actions_button_history_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span
-                                                                class="material-symbols-outlined tw-mr-2">history</span>
-															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEW_HISTORY') ?>
-                                                        </a>
-													<?php endif; ?>
-
-													<?php if (in_array($application->status, $status_for_delete) && ($application->applicant_id === $user->id)) : ?>
-                                                        <a class="em-red-600-color em-flex-row em-pointer"
-                                                           onclick="deletefile('<?php echo $application->fnum; ?>');"
-                                                           id="actions_block_delete_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span
-                                                                class="material-symbols-outlined em-red-600-color em-mr-8">delete</span>
-															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
-                                                        </a>
-													<?php endif; ?>
-
-													<?php if (in_array('transactions', $actions) && ($application->applicant_id === $user->id)) : ?>
-                                                        <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
-                                                           href="<?= Route::_('/index.php?option=com_emundus&view=payment&layout=transactions&fnum=' . $application->fnum); ?>"
-                                                           id="actions_button_history_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-symbols-outlined tw-mr-2">paid</span>
-															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEW_TRANSACTIONS') ?>
-                                                        </a>
-													<?php endif; ?>
-
-                                                    <?php if (!empty($application->choices) && !empty($choices_link)) : ?>
-                                                        <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
-                                                           href="<?= Route::_($choices_link->route.'?fnum='.$application->fnum); ?>"
-                                                           id="actions_button_history_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-symbols-outlined tw-mr-2">fork_right</span>
-                                                            <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEW_APPLICATION_CHOICES') ?>
-                                                        </a>
-                                                    <?php endif; ?>
-
-													<?php
-													modemundusApplicationsHelper::displayCustomActions($application, $custom_actions, $key);
-													?>
-                                                </div>
-                                                <!-- END ACTIONS BLOCK -->
                                             </div>
 										<?php endif; ?>
 									<?php } ?>
@@ -875,6 +822,19 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                         </div>
                                     </div>
 								<?php endif; ?>
+
+                                <?php if ($displayImportPublicFilesAction): ?>
+                                    <div id="import_file">
+                                        <div class="hover-and-tile-container hover-and-tile-container-action tw-border-dashed tw-cursor-pointer" style="height: 300px;">
+                                            <div id="tile-hover-offset-request"></div>
+                                            <div class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center tw-cursor-pointer">
+                                                <div id="background-shapes" class="tw-cursor-pointer" alt="Fond formes"></div>
+                                                <span class="material-symbols-outlined tw-w-fit tw-cursor-pointer">download</span>
+                                                <p class="tw-w-fit tw-cursor-pointer"><?= Text::_('IMPORT_FILE_FROM_PUBLIC_ACCESS_TITLE') ?></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                             </div>
 						<?php endforeach; ?>
                     </div>
@@ -1047,93 +1007,12 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                                 <td style="width: 5%;">
                                                     <div class="mod_emundus_applications__container"
                                                          id="actions_button_<?php echo $application->fnum ?>_container_list_tab<?php echo $key ?>">
-                                                            <span class="material-symbols-outlined em-text-neutral-600"
-                                                                  style="font-size: 24px;"
-                                                                  id="actions_button_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
-                                                            >more_vert</span>
-
-                                                        <!-- ACTIONS BLOCK -->
-                                                        <div
-                                                            class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color"
-                                                            id="actions_block_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
-                                                            style="display: none"
-                                                            data-mid="<?= $module->id ?>"
-                                                        >
-                                                            <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                               href="<?= JRoute::_($application->first_page_url); ?>"
-                                                               id="actions_block_open_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                <span class="material-symbols-outlined em-mr-8">open_in_new</span>
-																<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
-                                                            </a>
-
-															<?php if (in_array('rename', $actions) && ($application->applicant_id === $user->id)) : ?>
-                                                                <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                   onclick="renameApplication('<?php echo $application->fnum ?>','<?php echo $application->name ?>','<?php echo $application->label ?>')"
-                                                                   id="actions_button_rename_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-symbols-outlined em-mr-8">drive_file_rename_outline</span>
-																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION') ?>
-                                                                </a>
-															<?php endif; ?>
-
-															<?php if (!empty($available_campaigns) && in_array('copy', $actions) && ($application->applicant_id === $user->id)) : ?>
-                                                                <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                   onclick="copyApplication('<?php echo $application->fnum ?>')"
-                                                                   id="actions_button_copy_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-symbols-outlined em-mr-8">file_copy</span>
-																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COPY_APPLICATION') ?>
-                                                                </a>
-															<?php endif; ?>
-
-															<?php if ($show_tabs == 1) : ?>
-                                                                <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                   onclick="moveToTab('<?php echo $application->fnum ?>','tab<?php echo $key ?>','list')"
-                                                                   id="actions_button_move_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-symbols-outlined em-mr-8">drive_file_move</span>
-																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_MOVE_INTO_TAB') ?>
-                                                                </a>
-															<?php endif; ?>
-
-															<?php if (in_array('collaborate', $actions) && ($application->applicant_id === $user->id)) : ?>
-                                                                <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                   onclick="shareApplication('<?php echo $application->fnum ?>','<?php echo $application->application_id ?>')"
-                                                                   id="actions_button_collaborate_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-symbols-outlined em-mr-8">people</span>
-																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_COLLABORATE') ?>
-                                                                </a>
-															<?php endif; ?>
-
-															<?php if (in_array('documents', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
-                                                                <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
-                                                                   href="<?= Route::_($history_link->route . '?ccid=' . $application->application_id . '&fnum=' . $application->fnum . '&tab=attachments'); ?>"
-                                                                   id="actions_button_documents_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                                    <span class="material-symbols-outlined tw-mr-2">description</span>
-																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_CONSULT_DOCUMENTS') ?>
-                                                                </a>
-															<?php endif; ?>
-
-															<?php if (in_array('history', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
-                                                                <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                   href="<?= Route::_($history_link->route . '?ccid=' . $application->application_id . '&fnum=' . $application->fnum); ?>"
-                                                                   id="actions_button_history_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-symbols-outlined em-mr-8">history</span>
-																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEW_HISTORY') ?>
-                                                                </a>
-															<?php endif; ?>
-
-															<?php if (in_array($application->status, $status_for_delete) && ($application->applicant_id === $user->id)) : ?>
-                                                                <a class="em-red-600-color em-flex-row em-pointer"
-                                                                   onclick="deletefile('<?php echo $application->fnum; ?>');"
-                                                                   id="actions_block_delete_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span
-                                                                        class="material-symbols-outlined em-red-600-color em-mr-8">delete</span>
-																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
-                                                                </a>
-															<?php endif; ?>
-
-															<?php
-															modemundusApplicationsHelper::displayCustomActions($application, $custom_actions, $key);
-															?>
-                                                        </div>
+                                                        <?php
+                                                        $data = [
+                                                            'fnum' => $application->fnum,
+                                                        ];
+                                                        echo LayoutHelper::render('emundus.application.actions', $data, '', $data);
+                                                    ?>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -1157,6 +1036,23 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                         <td></td>
                                     </tr>
 								<?php endif; ?>
+                                <?php if ($displayImportPublicFilesAction): ?>
+                                    <tr class="tw-cursor-pointer" id="import_file">
+                                        <td>
+                                            <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                                                <div id="background-shapes"
+                                                     alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+                                            <?php endif; ?>
+                                            <p class="tw-w-fit"><?= Text::_('IMPORT_FILE_FROM_PUBLIC_ACCESS_TITLE'); ?></p>
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <span class="material-symbols-outlined tw-w-fit">download</span>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                <?php endif; ?>
                                 </tbody>
                             </table>
 						<?php endforeach; ?>
@@ -1247,24 +1143,6 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
         });*/
     })
 
-    function deletefile(fnum) {
-        Swal.fire({
-            title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_DELETE_FILE'); ?>",
-            text: '',
-            type: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#28a745',
-            cancelButtonColor: '#dc3545',
-            reverseButtons: true,
-            confirmButtonText: "<?php echo Text::_('JYES');?>",
-            cancelButtonText: "<?php echo Text::_('JNO');?>"
-        }).then((confirm) => {
-            if (confirm.value) {
-                document.location.href = '/index.php?option=com_emundus&task=deletefile&fnum=' + fnum + "&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>"
-            }
-        })
-    }
-
     function delay(callback, ms) {
         var timer = 0
         return function() {
@@ -1315,7 +1193,11 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
     function openFile(e, url) {
         let target = e.target.id
 
-        if (target.indexOf('actions_button_') !== -1 || target.indexOf('actions_block_delete_') !== -1 || target.indexOf('copy_reference_') !== -1) {
+        if (
+            target.indexOf('actions_block_delete_') !== -1 ||
+            target.indexOf('copy_reference_') !== -1 ||
+            e.target.classList.contains('emundus-application-file-actions')
+        ) {
             //do nothing
         } else {
             window.location.href = '/' + url
@@ -1755,129 +1637,6 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 
     /** END **/
 
-    async function copyApplication(fnum) {
-        fetch('/index.php?option=com_emundus&controller=application&task=getcampaignsavailableforcopy&' + new URLSearchParams({
-            fnum: fnum
-        }), {
-            method: 'get'
-        }).then((response) => {
-            if (response.ok) {
-                return response.json()
-            }
-        }).then(async (res) => {
-            document.querySelector('.mod_emundus_applications__actions').style.display = 'none'
-
-            const { value: campaign } = await Swal.fire({
-                title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE'); ?>",
-                text: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE_CAMPAIGN'); ?>",
-                input: 'select',
-                inputOptions: res.campaigns,
-                showCancelButton: true,
-                reverseButtons: true,
-                confirmButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE_ACTION');?>",
-                cancelButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
-                customClass: {
-                    container: 'mod_emundus_application_swal_manage_tabs_container',
-                    popup: 'mod_emundus_application_swal_manage_tabs_popup',
-                    header: 'mod_emundus_application_swal_manage_tabs_header',
-                    htmlContainer: 'mod_emundus_application_swal_manage_tabs_content',
-                    confirmButton: 'mod_emundus_application_swal_manage_tabs_confirm',
-                    cancelButton: 'mod_emundus_application_swal_manage_tabs_cancel',
-                    actions: 'mod_emundus_application_swal_manage_tabs_actions'
-                },
-                inputValidator: (value) => {
-                    if (!value) {
-                        return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_SELECT_A_CAMPAIGN');?>"
-                    }
-                }
-            })
-
-            if (campaign) {
-                let formData = new FormData()
-                formData.append('fnum', fnum)
-                formData.append('campaign', campaign)
-
-                fetch('/index.php?option=com_emundus&controller=application&task=copyfile', {
-                    body: formData,
-                    method: 'post'
-                }).then((response) => {
-                    if (response.ok) {
-                        return response.json()
-                    }
-                }).then((res) => {
-                    if (res.status == true) {
-                        window.location.href = res.first_page
-                    } else {
-                        Swal.fire({
-                            title: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_AN_ERROR_OCCURED');?>",
-                            text: res.msg,
-                            type: 'error',
-                            reverseButtons: true,
-                            confirmButtonText: "<?php echo Text::_('JYES');?>",
-                            timer: 3000
-                        })
-                    }
-                })
-            }
-        })
-    }
-
-    async function renameApplication(fnum, name, campaign_label) {
-        if (name === '') {
-            name = campaign_label
-        }
-        await Swal.fire({
-            title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION'); ?>",
-            text: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION_NAME'); ?>",
-            input: 'text',
-            inputValue: name,
-            inputAttributes: {
-                maxlength: 80
-            },
-            showCancelButton: true,
-            reverseButtons: true,
-            confirmButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_RENAME_FILE_ACTION');?>",
-            cancelButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_CANCEL_BUTTON');?>",
-            customClass: {
-                container: 'mod_emundus_application_swal_manage_tabs_container',
-                popup: 'mod_emundus_application_swal_manage_tabs_popup',
-                header: 'mod_emundus_application_swal_manage_tabs_header',
-                htmlContainer: 'mod_emundus_application_swal_manage_tabs_content',
-                confirmButton: 'mod_emundus_application_swal_manage_tabs_confirm',
-                cancelButton: 'mod_emundus_application_swal_manage_tabs_cancel',
-                actions: 'mod_emundus_application_swal_manage_tabs_actions'
-            }
-        }).then((result) => {
-            if (result.value) {
-                let formData = new FormData()
-                formData.append('fnum', fnum)
-                formData.append('new_name', result.value)
-
-                fetch('/index.php?option=com_emundus&controller=application&task=renamefile', {
-                    body: formData,
-                    method: 'post'
-                }).then((response) => {
-                    if (response.ok) {
-                        return response.json()
-                    }
-                }).then((res) => {
-                    if (res.status == true) {
-                        window.location.reload()
-                    } else {
-                        Swal.fire({
-                            title: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_AN_ERROR_OCCURED');?>",
-                            text: res.msg,
-                            type: 'error',
-                            reverseButtons: true,
-                            confirmButtonText: "<?php echo Text::_('JYES');?>",
-                            timer: 3000
-                        })
-                    }
-                })
-            }
-        })
-    }
-
     async function shareApplication(fnum, ccid) {
         document.querySelector('.em-page-loader').style.display = 'block'
 
@@ -2101,51 +1860,4 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
             timer: 1500,
         });
     }
-</script>
-
-<script>
-    const customActions = document.querySelectorAll('.em-custom-action-launch-action')
-
-    if (customActions.length > 0) {
-        customActions.forEach((customAction) => {
-            const action = customAction.id.replace('actions_button_custom_', '')
-
-            customAction.addEventListener('click', function() {
-                Swal.fire({
-                    title: customAction.innerText,
-                    text: customAction.dataset.text,
-                    type: 'info',
-                    showCancelButton: true,
-                    confirmButtonColor: '#28a745',
-                    cancelButtonColor: '#dc3545',
-                    reverseButtons: true,
-                    confirmButtonText: "<?php echo Text::_('JYES');?>",
-                    cancelButtonText: "<?php echo Text::_('JNO');?>"
-                }).then((confirm) => {
-                    if (confirm.value) {
-                        const actions = customAction.closest('.mod_emundus_applications__actions')
-                        const module_id = actions.dataset.mid
-                        const fnum = customAction.dataset.fnum
-
-                        fetch('/index.php?option=com_emundus&controller=application&task=applicantcustomaction&action=' + action + '&fnum=' + fnum + '&module_id=' + module_id)
-                            .then((response) => {
-                                if (response.ok) {
-                                    return response.json()
-                                } else {
-                                    throw new Error(response.statusText)
-                                }
-                            })
-                            .then((json) => {
-                                if (json.status) {
-                                    window.location.reload()
-                                } else {
-                                    console.error(json.msg)
-                                }
-                            })
-                    }
-                })
-            })
-        })
-    }
-
 </script>

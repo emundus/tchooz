@@ -19,6 +19,10 @@ export default {
 			type: Array,
 			required: true,
 		},
+		customTargets: {
+			type: Boolean,
+			default: true,
+		},
 	},
 	mixins: [fromAutomationFieldToParameter],
 	components: { AutomationActionTargets, Parameter, ParameterForm },
@@ -38,7 +42,7 @@ export default {
 			this.$emit('remove-action', action);
 		},
 		onParameterValueUpdated(parameter, group = null, rowIndex = null) {
-			if (group.isRepeatable) {
+			if (group !== null && group.isRepeatable) {
 				if (!this.action.parameter_values[group.id]) {
 					this.action.parameter_values[group.id] = [];
 				}
@@ -111,7 +115,12 @@ export default {
 		>
 		</ParameterForm>
 
-		<AutomationActionTargets :event="event" :action="action" :target-predefinitions="targetPredefinitions" />
+		<AutomationActionTargets
+			v-if="customTargets"
+			:event="event"
+			:action="action"
+			:target-predefinitions="targetPredefinitions"
+		/>
 	</div>
 </template>
 

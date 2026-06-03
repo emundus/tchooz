@@ -5,6 +5,7 @@ namespace Emundus\Plugin\Console\Tchooz\CliCommand\Commands;
 defined('_JEXEC') or die;
 
 use Emundus\Plugin\Console\Tchooz\CliCommand\TchoozCommand;
+use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckCustomApplicationActionsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckCustomEventsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckEmundusTagsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\RegroupWorkflowsJob;
@@ -102,6 +103,11 @@ class TchoozMigrateChecklistCommand extends TchoozCommand
 
 			CheckEmundusTagsJob::getJobName() => (new JobDefinition(
 				CheckEmundusTagsJob::class,
+				[$this->databaseServiceSource, $this->databaseService]
+			)),
+
+			CheckCustomApplicationActionsJob::getJobName() => (new JobDefinition(
+				CheckCustomApplicationActionsJob::class,
 				[$this->databaseServiceSource, $this->databaseService]
 			)),
 		];

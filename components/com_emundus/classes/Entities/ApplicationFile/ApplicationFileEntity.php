@@ -32,7 +32,9 @@ class ApplicationFileEntity
 
     private array $data;
 
-    private ?\DateTime $updated_at;
+	private ?string $name = null;
+
+	private ?\DateTime $updated_at;
 
     private ?User $updated_by;
 
@@ -43,6 +45,16 @@ class ApplicationFileEntity
 
 	#[Column(length: 10)]
 	private ?string $shortReference;
+
+	/**
+	 * @var bool Indicates if the application file content is anonymous (true) or identifiable (false). If true, the application file content will not be identifiable to a specific user, even if the application file is created by a registered user.
+	 */
+	private bool $isAnonymous;
+
+	/**
+	 * @var bool Indicates if the application file has been created by a public user (true) or a registered user (false)
+	 */
+	private bool $isPublic;
 
 	public function __construct(
 		User                  $user,
@@ -56,9 +68,12 @@ class ApplicationFileEntity
 		\DateTime             $date_submitted = null,
 		int                   $formProgress = 0,
 		int                   $attachmentProgress = 0,
+		?string               $name = null,
 		\DateTime             $updated_at = null,
 		User                  $updated_by = null,
-		string                $shortReference = null
+		string                $shortReference = null,
+		bool                  $isAnonymous = false,
+		bool                  $isPublic = false
 	)
 	{
 		$this->user               = $user;
@@ -72,9 +87,12 @@ class ApplicationFileEntity
 		$this->date_submitted     = $date_submitted;
 		$this->formProgress       = $formProgress;
 		$this->attachmentProgress = $attachmentProgress;
+		$this->name               = $name;
 		$this->updated_at         = $updated_at;
 		$this->updated_by         = $updated_by;
 		$this->shortReference     = $shortReference;
+		$this->isAnonymous        = $isAnonymous;
+		$this->isPublic           = $isPublic;
 	}
 
     public function getId(): int
@@ -107,17 +125,13 @@ class ApplicationFileEntity
         $this->fnum = $fnum;
     }
 
-    public function generateFnum(int $campaign_id = 0, int $user_id = 0): string
-    {
-        if (empty($campaign_id))
-        {
-            $campaign_id = $this->getCampaignId();
-        }
-        if (empty($user_id))
-        {
-            $user_id = $this->user->id;
-        }
-        $this->fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad($user_id, 7, '0', STR_PAD_LEFT);
+	public function generateFnum(int $campaign_id = 0, int $user_id = 0): string
+	{
+		if (empty($campaign_id))
+		{
+			$campaign_id = $this->getCampaignId();
+		}
+		$this->fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad(random_int(0, 9999999), 7, '0', STR_PAD_LEFT);
 
         return $this->fnum;
     }
@@ -202,10 +216,22 @@ class ApplicationFileEntity
         $this->attachmentProgress = $attachmentProgress;
     }
 
-    public function getUpdatedAt(): \DateTime
-    {
-        return $this->updated_at;
-    }
+	public function getName(): ?string
+	{
+		return $this->name;
+	}
+
+	public function setName(?string $name): self
+	{
+		$this->name = $name;
+
+		return $this;
+	}
+
+	public function getUpdatedAt(): \DateTime
+	{
+		return $this->updated_at;
+	}
 
     public function setUpdatedAt(\DateTime $updated_at): void
     {
@@ -242,6 +268,26 @@ class ApplicationFileEntity
 		$this->shortReference = $shortReference;
 	}
 
+	public function isAnonymous(): bool
+	{
+		return $this->isAnonymous;
+	}
+
+	public function setIsAnonymous(bool $isAnonymous): void
+	{
+		$this->isAnonymous = $isAnonymous;
+	}
+
+	public function isPublic(): bool
+	{
+		return $this->isPublic;
+	}
+
+	public function setIsPublic(bool $isPublic): void
+	{
+		$this->isPublic = $isPublic;
+	}
+
 	public function __serialize(): array
 	{
 		return [
@@ -260,6 +306,8 @@ class ApplicationFileEntity
 			'updated_at'         => $this->updated_at?->format('Y-m-d H:i:s'),
 			'updated_by'         => $this->updated_by?->name,
 			'short_reference'    => $this->shortReference,
+			'anonymous'          => $this->isAnonymous ? 1 : 0,
+			'public'             => $this->isPublic ? 1 : 0,
 		];
 	}
 }
