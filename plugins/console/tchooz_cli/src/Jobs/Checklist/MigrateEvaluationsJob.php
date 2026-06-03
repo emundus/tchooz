@@ -103,20 +103,16 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 			'jos_emundus_final_grade',
 		];
 
-		$db = $this->databaseService->getDatabase();
-		$query = $db->createQuery();
+		$fabrikRepository = new FabrikRepository();
 
-		$query->delete($db->quoteName('#__fabrik_lists'))
-			->where($db->quoteName('db_table_name') . ' IN (' . implode(',', array_map([$db, 'quote'], $deprecated_tables)) . ')');
+		foreach ($deprecated_tables as $table) {
+			$deleted = $fabrikRepository->deleteList($table);
 
-		try {
-			$db->setQuery($query);
-			$db->execute();
-			$this->output->writeln('Deprecated evaluation Fabrik lists deleted successfully.');
-			Log::add('Deprecated Fabrik lists deleted successfully.', Log::INFO, self::getJobName());
-		} catch (\Exception $e) {
-			$this->output->writeln('<error>Failed to delete deprecated Fabrik lists: ' . $e->getMessage() . '</error>');
-			Log::add('Failed to delete deprecated Fabrik lists: ' . $e->getMessage(), Log::ERROR, self::getJobName());
+			if ($deleted) {
+				$this->output->writeln('Deprecated evaluation Fabrik lists deleted successfully for table ' . $table . '.');
+			} else {
+				$this->output->writeln('<error>Failed to delete deprecated Fabrik lists for table ' . $table . '.</error>');
+			}
 		}
 	}
 
