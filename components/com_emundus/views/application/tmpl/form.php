@@ -21,6 +21,9 @@ $app->getSession()->set('application_layout', 'form');
 $defaultpid     = $this->defaultpid;
 $user           = $this->userid;
 $emundus_config = ComponentHelper::getParams('com_emundus');
+
+$data['fnum'] = $this->fnum;
+$data['user'] = $this->_user->id;
 ?>
 
 <style type="text/css">
@@ -120,15 +123,7 @@ $emundus_config = ComponentHelper::getParams('com_emundus');
                     <div id="steps-timeline"
                          component="Workflows/WorkflowStepsTimeline"
                          class="com_emundus_vue"
-                         data="<?= htmlspecialchars(json_encode([
-                             'user'              => $this->_user->id,
-                             'fnum'              => $this->fnum,
-                             'currentLanguage'   => $data['current_lang'],
-                             'shortLang'         => $data['short_lang'],
-                             'coordinatorAccess' => $data['coordinator_access'],
-                             'sysadminAccess'    => $data['sysadmin_access'],
-                             'manyLanguages'     => $data['many_languages'],
-                         ]), ENT_QUOTES, 'UTF-8'); ?>"
+                         data="<?= htmlspecialchars(json_encode($data), ENT_QUOTES, 'UTF-8'); ?>"
                     >
                     </div>
 
