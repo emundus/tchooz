@@ -50,7 +50,9 @@ use Tchooz\Traits\TraitTable;
 		'pinned',
 		'alias',
 		'visible',
-		'parent_id'
+		'parent_id',
+		'public',
+		'anonymization_policy'
 	]
 )]
 class CampaignRepository extends EmundusRepository implements RepositoryInterface
@@ -226,6 +228,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 				{
 					$filterDate = $this->db->quoteName($this->alias . '.published') . ' = 0';
 				}
+
 				if (!empty($filterDate))
 				{
 					$query->where($filterDate);
@@ -844,19 +847,21 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 			if (empty($campaignEntity->getId()))
 			{
 				$insert = (object) [
-					'label'             => $campaignEntity->getLabel(),
-					'short_description' => $campaignEntity->getShortDescription(),
-					'description'       => $campaignEntity->getDescription(),
-					'start_date'        => $campaignEntity->getStartDate()->format('Y-m-d H:i:s'),
-					'end_date'          => $campaignEntity->getEndDate()->format('Y-m-d H:i:s'),
-					'profile_id'        => !empty($campaignEntity->getProfileId()) ? $campaignEntity->getProfileId() : null,
-					'training'          => $campaignEntity->getProgram()->getCode(),
-					'year'              => $campaignEntity->getYear(),
-					'published'         => $campaignEntity->isPublished() ? 1 : 0,
-					'pinned'            => $campaignEntity->isPinned() ? 1 : 0,
-					'alias'             => $campaignEntity->getAlias(),
-					'visible'           => $campaignEntity->isVisible() ? 1 : 0,
-					'parent_id'         => !empty($campaignEntity->getParent()) ? $campaignEntity->getParent()->getId() : null
+					'label'                => $campaignEntity->getLabel(),
+					'short_description'    => $campaignEntity->getShortDescription(),
+					'description'          => $campaignEntity->getDescription(),
+					'start_date'           => $campaignEntity->getStartDate()->format('Y-m-d H:i:s'),
+					'end_date'             => $campaignEntity->getEndDate()->format('Y-m-d H:i:s'),
+					'profile_id'           => !empty($campaignEntity->getProfileId()) ? $campaignEntity->getProfileId() : null,
+					'training'             => $campaignEntity->getProgram()->getCode(),
+					'year'                 => $campaignEntity->getYear(),
+					'published'            => $campaignEntity->isPublished() ? 1 : 0,
+					'pinned'               => $campaignEntity->isPinned() ? 1 : 0,
+					'alias'                => $campaignEntity->getAlias(),
+					'visible'              => $campaignEntity->isVisible() ? 1 : 0,
+					'parent_id'            => !empty($campaignEntity->getParent()) ? $campaignEntity->getParent()->getId() : null,
+					'public'               => $campaignEntity->isPublic() ? 1 : 0,
+					'anonymization_policy' => !empty($campaignEntity->getAnonymizationPolicy()) ? $campaignEntity->getAnonymizationPolicy()->value : null,
 				];
 				if ($flushed = $this->db->insertObject('#__emundus_setup_campaigns', $insert))
 				{
@@ -866,20 +871,22 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 			else
 			{
 				$update = (object) [
-					'id'                => $campaignEntity->getId(),
-					'label'             => $campaignEntity->getLabel(),
-					'short_description' => $campaignEntity->getShortDescription(),
-					'description'       => $campaignEntity->getDescription(),
-					'start_date'        => $campaignEntity->getStartDate()->format('Y-m-d H:i:s'),
-					'end_date'          => $campaignEntity->getEndDate()->format('Y-m-d H:i:s'),
-					'profile_id'        => !empty($campaignEntity->getProfileId()) ? $campaignEntity->getProfileId() : null,
-					'training'          => $campaignEntity->getProgram()->getCode(),
-					'year'              => $campaignEntity->getYear(),
-					'published'         => $campaignEntity->isPublished() ? 1 : 0,
-					'pinned'            => $campaignEntity->isPinned() ? 1 : 0,
-					'alias'             => $campaignEntity->getAlias(),
-					'visible'           => $campaignEntity->isVisible() ? 1 : 0,
-					'parent_id'         => !empty($campaignEntity->getParent()) ? $campaignEntity->getParent()->getId() : null
+					'id'                   => $campaignEntity->getId(),
+					'label'                => $campaignEntity->getLabel(),
+					'short_description'    => $campaignEntity->getShortDescription(),
+					'description'          => $campaignEntity->getDescription(),
+					'start_date'           => $campaignEntity->getStartDate()->format('Y-m-d H:i:s'),
+					'end_date'             => $campaignEntity->getEndDate()->format('Y-m-d H:i:s'),
+					'profile_id'           => !empty($campaignEntity->getProfileId()) ? $campaignEntity->getProfileId() : null,
+					'training'             => $campaignEntity->getProgram()->getCode(),
+					'year'                 => $campaignEntity->getYear(),
+					'published'            => $campaignEntity->isPublished() ? 1 : 0,
+					'pinned'               => $campaignEntity->isPinned() ? 1 : 0,
+					'alias'                => $campaignEntity->getAlias(),
+					'visible'              => $campaignEntity->isVisible() ? 1 : 0,
+					'parent_id'            => !empty($campaignEntity->getParent()) ? $campaignEntity->getParent()->getId() : null,
+					'public'               => $campaignEntity->isPublic() ? 1 : 0,
+					'anonymization_policy' => !empty($campaignEntity->getAnonymizationPolicy()) ? $campaignEntity->getAnonymizationPolicy()->value : null,
 				];
 
 				$flushed = $this->db->updateObject('#__emundus_setup_campaigns', $update, 'id');

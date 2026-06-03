@@ -12,20 +12,36 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use enshrined\svgSanitize\Sanitizer;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use \setasign\Fpdi\Fpdi;
-use \setasign\Fpdi\PdfReader;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Tchooz\EmundusResponse;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\CrudEnum;
+use Tchooz\Exception\PublicApplicationGuardException;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\ApplicationFile\StatusRepository;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Export\ExportRepository;
 use Tchooz\Services\FileSecurityService;
+use Tchooz\Services\PublicAccess\PublicApplicationGuard;
+use Tchooz\Services\Security\AntiBotChallenge;
+use Tchooz\Services\Security\ClientIpResolver;
+use Tchooz\Services\Security\RateLimiter;
+use Tchooz\Traits\TraitResponse;
 
 /**
  * eMundus Component Controller
@@ -35,6 +51,8 @@ use Tchooz\Services\FileSecurityService;
  */
 class EmundusController extends JControllerLegacy
 {
+	use TraitResponse;
+
 	private $_user;
 	private $_db;
 
@@ -2411,5 +2429,153 @@ class EmundusController extends JControllerLegacy
 		}
 
 		exit();
+	}
+
+	/**
+	 * @return EmundusResponse
+	 * @throws Exception
+	 */
+	public function applyPubliclyToCampaign(): EmundusResponse
+	{
+		$this->checkToken('post');
+		$response = EmundusResponse::denied();
+
+		// 1. Méthode POST obligatoire (un GET ne crée jamais de dossier)
+	    if (strtoupper($this->input->getMethod()) !== 'POST')
+	    {
+		    return EmundusResponse::fail(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_METHOD_NOT_ALLOWED);
+	    }
+
+		$addonRepository = new AddonRepository();
+		$publicAddon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
+
+		if (!$publicAddon->isActivated())
+		{
+			return EmundusResponse::denied();
+		}
+
+		if ($this->app->getIdentity()->guest == 1)
+		{
+			$campaignId = $this->input->getInt('cid', 0);
+			$applyAnonymously = $this->input->getBool('anonymous', false);
+
+			if (!empty($campaignId))
+			{
+				$campaignRepository = new CampaignRepository();
+				$campaign = $campaignRepository->getById($campaignId);
+
+				if (!$campaign->isPublic())
+				{
+					throw new \Symfony\Component\OptionsResolver\Exception\AccessException(Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_NOT_ALLOWED'));
+				}
+
+				$guard = new PublicApplicationGuard(
+					new AntiBotChallenge($this->input, $this->app->get('secret')),
+					new ClientIpResolver($this->input),
+					new RateLimiter()
+				);
+
+				try
+				{
+					$guard->guard($campaignId);
+				}
+				catch (PublicApplicationGuardException $e)
+				{
+					Log::add("Public application guard failed: {$e->getMessage()}", Log::ERROR, 'com_emundus');
+					if ($this->app->isClient('site'))
+					{
+						$this->app->enqueueMessage($e->getMessage(), 'error');
+						$this->app->redirect(EmundusHelperMenu::getHomepageLink('/'));
+					}
+					return EmundusResponse::fail($e->getMessage(), EmundusResponse::HTTP_FORBIDDEN);
+				}
+
+				// get system user to apply on behalf of the guest
+				$systemUserId = ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
+				if (!empty($systemUserId))
+				{
+					$systemUser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($systemUserId);
+					$applicationRepository = new ApplicationFileRepository();
+					$statusRepository = new StatusRepository();
+					$status = $statusRepository->getByStep(0);
+					$applicationEntity = new ApplicationFileEntity($systemUser, '', $status, $campaignId);
+					if ($applyAnonymously)
+					{
+						$applicationEntity->setIsAnonymous(true);
+					}
+					$applicationEntity->setIsPublic(true);
+					$applicationEntity->generateFnum($campaignId, $systemUserId);
+
+					if (!$applicationRepository->flush($applicationEntity, $systemUserId))
+					{
+						throw new \RuntimeException(Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_FAILED'));
+					}
+
+					if (empty($applicationEntity->getFnum()) || empty($applicationEntity->getShortReference()))
+					{
+						throw new \Exception(Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_FAILED'));
+					}
+
+					$fileAccessRepository = new ApplicationFileAccessRepository();
+					$token = $fileAccessRepository->generateAccessFileToken($applicationEntity);
+
+					if ($this->app->isClient('site'))
+					{
+						$session = $this->app->getSession();
+						$session->set(EmundusPublicAccess::SESSION_PUBLIC_ACCESS_KEY, true);
+						$session->set(EmundusPublicAccess::SESSION_PUBLIC_FNUM_KEY, $applicationEntity->getFnum());
+						$session->set(EmundusPublicAccess::SESSION_PUBLIC_SHORT_REF_KEY, $applicationEntity->getShortReference());
+						$session->set(EmundusPublicAccess::SESSION_PUBLIC_TOKEN_KEY, $token);
+						$session->set(EmundusPublicAccess::SESSION_PUBLIC_STORED_ACCESS_KEY, false);
+
+						$storeTokenLink = '/index.php?option=com_emundus&view=publicaccess&layout=storetoken';
+						$items = $this->app->getMenu()->getItems(['link'], [$storeTokenLink]);
+						$redirectUrl = !empty($items) ? $items[0]->route : Route::_($storeTokenLink, false);
+						$this->app->redirect($redirectUrl);
+					}
+
+					$response->code = 200;
+					$response->status = true;
+					$response->msg = Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_SUCCESS');
+					$response->data = [
+						'fnum' => $applicationEntity->getFnum(),
+						'token' => $token,
+					];
+				}
+				else
+				{
+					$this->app->enqueueMessage(Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_FAILED'), 'error');
+					$this->app->redirect(Route::_(EmundusHelperMenu::getHomepageLink('/'), false));
+				}
+			}
+		} else
+		{
+			if ($this->app->isClient('site'))
+			{
+				throw new \Exception(Text::_('ACCESS_DENIED'), 403);
+			}
+		}
+
+		return $response;
+	}
+
+	/**
+	 * @return void
+	 * @throws Exception
+	 */
+	public function markPublicAccessKeyAsStored(): void
+	{
+		$this->checkToken();
+		$response = EmundusResponse::denied();
+
+		if (EmundusPublicAccess::isPublicAccessSession())
+		{
+			$session = $this->app->getSession();
+			$session->set(EmundusPublicAccess::SESSION_PUBLIC_STORED_ACCESS_KEY, true);
+
+			$response = EmundusResponse::ok();
+		}
+
+		$this->sendJsonResponse($response);
 	}
 }

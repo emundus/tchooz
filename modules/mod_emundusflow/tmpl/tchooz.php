@@ -1,11 +1,20 @@
 <?php // no direct access
 use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Session\Session;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\UI\ButtonVariantEnum;
 use Tchooz\Enums\UI\ButtonWidthEnum;
 
 defined('_JEXEC') or die('Restricted access');
+
+if (empty($applicationFile))
+{
+    return;
+}
 
 $config      = Factory::getApplication()->getConfig();
 $site_offset = $config->get('offset');
@@ -13,6 +22,16 @@ $site_offset = $config->get('offset');
 $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 $dateTime = $dateTime->setTimezone(new DateTimeZone($site_offset));
 $now      = $dateTime->format('Y-m-d H:i:s');
+
+$document = Factory::getApplication()->getDocument();
+$wa       = $document->getWebAssetManager();
+
+if ($params->get('layout', '') != '_:tchooz')
+{
+    $wa->registerAndUseStyle("modules/mod_emundusflow/style/emundus.css");
+}
+
+assert($applicationFile instanceof ApplicationFileEntity);
 ?>
 
 <style>
@@ -130,9 +149,9 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			<?php
 			$color      = '#0A53CC';
 			$background = '#C8E1FE';
-			if (!empty($current_application->tag_color)) {
-				$color = $current_application->tag_color;
-				switch ($current_application->tag_color) {
+			if (!empty($applicationFile->getCampaign()->getProgram()->getColor())) {
+				$color = $applicationFile->getCampaign()->getProgram()->getColor();
+				switch ($applicationFile->getCampaign()->getProgram()->getColor()) {
 					case '#106949':
 						$background = '#DFF5E9';
 						break;
@@ -147,7 +166,12 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			?>
         </div>
         <div class="tw-flex tw-items-center tw-justify-end tw-gap-2 mod_emundus_flow___buttons">
-			<?php if ($show_back_button == 1) : ?>
+			<?php if ($show_back_button == 1) :
+				if (EmundusPublicAccess::isPublicAccessSession())
+				{
+					$home_link = '/index.php?option=com_users&task=user.logout&' . Session::getFormToken() . '=1';
+				}
+			?>
                 <?php
                     echo LayoutHelper::render('emundus.button', [
                         'variant' => ButtonVariantEnum::PRIMARY,
@@ -161,7 +185,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
             <?php
 
                 $data = [
-                    'fnum' => $current_application->fnum,
+                    'fnum' => $applicationFile->getFnum(),
                     'context' => 'single'
                 ];
                 echo LayoutHelper::render('emundus.application.actions', $data, '', $data);
@@ -174,15 +198,15 @@ $now      = $dateTime->format('Y-m-d H:i:s');
                 <div class="tw-flex tw-items-center em-flex-wrap">
                     <p class="em-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_REFERENCE'); ?> : </p>
                     <div class="tw-flex tw-items-end tw-gap-1"
-                         title="<?= (!empty($current_application->reference) ? $current_application->reference : '') . '#' . (!empty($current_application->short_reference) ? $current_application->short_reference : ''); ?>"
+                         title="<?= (!empty($reference) ? $reference: '') . '#' . (!empty($applicationFile->getShortReference()) ? $applicationFile->getShortReference() : ''); ?>"
                     >
-                        <?php if (!empty($current_application->reference)) : ?>
-                            <label class="tw-mb-0"><?= $current_application->reference; ?></label>
+                        <?php if (!empty($reference)) : ?>
+                            <label class="tw-mb-0"><?= $reference; ?></label>
                         <?php endif; ?>
-                        <?php if (!empty($current_application->short_reference)) : ?>
-                            <span class="<?= !empty($current_application->reference) ? 'tw-text-sm tw-text-neutral-500' : ''; ?>">#<?= $current_application->short_reference; ?></span>
+                        <?php if (!empty($applicationFile->getShortReference())) : ?>
+                            <span class="<?= !empty($reference) ? 'tw-text-sm tw-text-neutral-500' : ''; ?>">#<?= $applicationFile->getShortReference(); ?></span>
                         <?php endif; ?>
-                        <span id="copy_reference_<?php echo $current_application->id; ?>" class="material-symbols-outlined !tw-text-base tw-cursor-pointer" onclick="copyReference('<?= $current_application->reference . '#' . $current_application->short_reference; ?>')">content_copy</span>
+                        <span id="copy_reference_<?php echo $applicationFile->getId(); ?>" class="material-symbols-outlined !tw-text-base tw-cursor-pointer" onclick="copyReference('<?= $reference . '#' . $applicationFile->getShortReference(); ?>')">content_copy</span>
                     </div>
                 </div>
             <?php endif; ?>
@@ -194,11 +218,11 @@ $now      = $dateTime->format('Y-m-d H:i:s');
                 </div>
 			<?php endif; ?>
 
-			<?php if ($show_programme == 1) : ?>
+			<?php if ($params->get('show_programme', 1) == 1) : ?>
                 <div class="tw-flex tw-items-center em-flex-wrap">
                     <p class="em-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
                     <p class="em-programme-tag" style="color: <?php echo $color ?>;margin: unset;padding: 0">
-						<?php echo $current_application->prog_label; ?>
+						<?php echo $applicationFile->getCampaign()->getProgram()->getLabel(); ?>
                     </p>
                 </div>
 			<?php endif; ?>
@@ -206,16 +230,16 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			<?php if ($show_status == 1) : ?>
                 <div class="tw-flex tw-items-center">
                     <p class="em-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_STATUS'); ?> : </p>
-                    <div class="mod_emundus_flow___status_<?= $current_application->class; ?> tw-flex">
-                        <span class="label label-<?= $current_application->class; ?>"><?= $current_application->value ?></span>
+                    <div class="mod_emundus_flow___status_<?= $applicationFile->getStatus()->getColor(); ?> tw-flex">
+                        <span class="label label-<?=  $applicationFile->getStatus()->getColor() ?>"><?= $applicationFile->getStatus()->getLabel() ?></span>
                     </div>
                 </div>
 			<?php endif; ?>
 
-	        <?php if($fnumInfos['applicant_id'] !== Factory::getApplication()->getIdentity()->id) : ?>
+	        <?php if($applicationFile->getUser()->id !== Factory::getApplication()->getIdentity()->id) : ?>
                 <div class="tw-flex tw-items-center">
                     <p class="tw-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_APPLICANT'); ?></p>
-                    <p><?= $fnumInfos['name']; ?></p>
+                    <p><?= $applicationFile->getUser()->name; ?></p>
                 </div>
 	        <?php endif; ?>
         </div>
@@ -253,6 +277,13 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 		endif; ?>
     </div>
 
+    <?php
+        if ($applicationFile->isPublic())
+        {
+            require ModuleHelper::getLayoutPath($module->module, 'publicsession');
+        }
+    ?>
+
 </div>
 
 <?php
@@ -278,6 +309,8 @@ if (!empty($campaign_languages) && !in_array($current_lang_id, $campaign_languag
 
     <?php
 }
+
+
 ?>
 
 <script>

@@ -230,8 +230,6 @@ class EmundusModelProfile extends ListModel
 	 */
 	function getFullProfileByFnum($fnum): array
 	{
-
-
 		$query = $this->_db->getQuery(true);
 
 		try
@@ -1437,7 +1435,7 @@ class EmundusModelProfile extends ListModel
 	 *
 	 * @param   null  $fnum
 	 */
-	public function initEmundusSession($fnum = null,$user = null)
+	public function initEmundusSession($fnum = null, $user = null)
 	{
 		include_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 		include_once(JPATH_SITE . '/components/com_emundus/models/users.php');

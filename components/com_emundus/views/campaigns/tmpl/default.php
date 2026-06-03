@@ -13,8 +13,11 @@ defined('_JEXEC') or die('Restricted Access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
+use Tchooz\Enums\Addons\AddonEnum;
+use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Factories\LayoutFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
 
 if (!class_exists('EmundusHelperAccess'))
 {
@@ -230,6 +233,21 @@ $data['crud'] = [
         'd' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($programAction->getId(), 'd', $user->id),
     ]
 ];
+
+$addonRepository = new AddonRepository();
+$addonAnonymous = $addonRepository->getByName(AddonEnum::ANONYMOUS->value);
+if ($addonAnonymous->isActivated())
+{
+    $data['anonymizationPolicies'] = array_map(
+        fn(AnonymizationPolicyEnum $policy) => [
+            'value' => $policy->value,
+            'label' => $policy->getLabel(),
+            'description' => Text::_('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_' . strtoupper($policy->name) . '_DESC'),
+        ],
+        AnonymizationPolicyEnum::cases()
+    );
+}
+$data['publicAddonActivated'] = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value)->isActivated();
 ?>
 
 <?php echo LayoutHelper::render('emundus.vue-mount', [

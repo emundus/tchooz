@@ -22,6 +22,7 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Reference\InternalReferenceEntity;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Actions\ActionRepository;
@@ -50,7 +51,7 @@ class EmundusViewApplication extends HtmlView
 	protected int $campaign_id;
 
 	protected object $synthesis;
-	protected object $assoc_files;
+	protected ?object $assoc_files;
 
 	protected array $columns;
 	protected array $userAttachments;
@@ -88,6 +89,7 @@ class EmundusViewApplication extends HtmlView
 	protected ?InternalReferenceEntity $reference;
 	protected ?string $shortReference;
 	protected bool $showReference;
+	protected ApplicationFileEntity $applicationFile;
 
 	protected ?ApplicationFileEntity $applicationFile = null;
 
@@ -161,7 +163,8 @@ class EmundusViewApplication extends HtmlView
 					}
 					$m_users   = new EmundusModelUsers;
 					$applicant = $m_users->getUserById($this->sid);
-					if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id) && $applicant[0]->is_anonym != 1)
+
+					if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id) && $applicant[0]->is_anonym != 1 && !$this->applicationFile->isAnonymous())
 					{
 						$this->synthesis = new stdClass();
 						$program         = $m_application->getProgramSynthesis($this->applicationFile->getCampaign()->getId());
@@ -207,7 +210,8 @@ class EmundusViewApplication extends HtmlView
 
 						$show_related_files = $params->get('show_related_files', 0);
 
-						if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asManagerAccessLevel($this->user->id))
+						// Public files are associated to one single Public Account, there can be thousands of them, irrelevant to show related files
+						if (($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asManagerAccessLevel($this->user->id)) && !$this->applicationFile->isPublic())
 						{
 							$campaignInfo = $m_application->getUserCampaigns($this->sid, null, false);
 

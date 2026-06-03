@@ -1,0 +1,153 @@
+<?php
+
+/**
+ * @package         Joomla.Plugin
+ * @subpackage      Emundus.anonymization
+ *
+ * @copyright   (C) 2024 emundus.fr. All rights reserved.
+ * @license         GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
+namespace Joomla\Plugin\Emundus\Anonymization\Extension;
+
+use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\Database\DatabaseAwareTrait;
+use Joomla\Event\DispatcherInterface;
+use Joomla\Event\SubscriberInterface;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Campaigns\CampaignEntity;
+use Tchooz\Enums\Addons\AddonEnum;
+use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
+
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
+
+final class Anonymization extends CMSPlugin implements SubscriberInterface
+{
+	use DatabaseAwareTrait;
+
+	public function __construct(DispatcherInterface $dispatcher, array $config)
+	{
+		parent::__construct($dispatcher, $config);
+	}
+
+	public static function getSubscribedEvents(): array
+	{
+		return [
+			'onAfterCampaignCandidature' => 'onAfterCampaignCandidature',
+		];
+	}
+
+	/**
+	 * Apply anonymization policy when a new application file is created.
+	 *
+	 * @param   GenericEvent  $event  The event object containing:
+	 *   - user_id (int)
+	 *   - fnum (string)
+	 *   - cid (int) campaign id
+	 *
+	 * @return bool
+	 */
+	public function onAfterCampaignCandidature(GenericEvent $event): bool
+	{
+		$data = $event->getArguments();
+		if (empty($data['context']) || !($data['context'] instanceof EventContextEntity))
+		{
+			return true;
+		}
+		$fnum = $data['context']->getFiles()[0] ?? '';
+		if (empty($fnum))
+		{
+			return true;
+		}
+
+		try
+		{
+			$campaignRepository = new CampaignRepository(false);
+			$campaigns = $campaignRepository->getCampaignsByFnums([$fnum]);
+			$campaign = !empty($campaigns) ? reset($campaigns) : null;
+
+			if (empty($campaign))
+			{
+				return true;
+			}
+
+			$policy = self::getCampaignAnonymizationPolicy($campaign);
+			$anonymous = null;
+
+			switch ($policy)
+			{
+				case AnonymizationPolicyEnum::FORCED:
+					$anonymous = 1;
+					break;
+
+				case AnonymizationPolicyEnum::FORBIDDEN:
+					$anonymous = 0;
+					break;
+
+				case AnonymizationPolicyEnum::OPTIONAL:
+					// Keep the user's choice, do nothing
+					break;
+				default:
+					throw new \Exception('Unsupported policy: ' . $policy->getLabel());
+			}
+
+			if ($anonymous !== null)
+			{
+				$db = $this->getDatabase();
+				$query = $db->getQuery(true)
+					->update($db->quoteName('#__emundus_campaign_candidature'))
+					->set($db->quoteName('anonymous') . ' = ' . (int) $anonymous)
+					->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+				$db->setQuery($query);
+				$updated = $db->execute();
+
+				if ($updated && isset($data['application_file']) && $data['application_file'] instanceof ApplicationFileEntity)
+				{
+					$data['application_file']->setIsAnonymous((bool) $anonymous);
+				}
+			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error applying anonymization policy for fnum ' . $fnum . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.anonymization');
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param   CampaignEntity  $campaign
+	 *
+	 * @return AnonymizationPolicyEnum
+	 */
+	public static function getCampaignAnonymizationPolicy(CampaignEntity $campaign): AnonymizationPolicyEnum
+	{
+		$policy = AnonymizationPolicyEnum::FORBIDDEN;
+
+		$addonRepository = new AddonRepository();
+		$addon = $addonRepository->getByName(AddonEnum::ANONYMOUS->value);
+
+		if ($addon !== null && $addon->isActivated())
+		{
+			if ($campaign->getAnonymizationPolicy() === AnonymizationPolicyEnum::GLOBAL)
+			{
+				$addonPolicy = $addon->getParams()['policy'] ?? 'forbidden';
+				$policy = AnonymizationPolicyEnum::tryFrom($addonPolicy) ?? AnonymizationPolicyEnum::FORBIDDEN;
+			}
+			else
+			{
+				$policy = $campaign->getAnonymizationPolicy();
+			}
+		}
+
+		return $policy;
+	}
+}
+

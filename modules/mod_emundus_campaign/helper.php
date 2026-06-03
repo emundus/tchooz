@@ -161,7 +161,7 @@ class modEmundusCampaignHelper
 		catch (Exception $e)
 		{
 			Log::add($e->getMessage(), Log::ERROR, 'mod_emundus_campaign');
-			$this->app->enqueueMessage(Text::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_CAMPAIGNS') . $query->__toString(), 'error');
+			$this->app->enqueueMessage(Text::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_CAMPAIGNS'), 'error');
 		}
 
 		if (str_contains($order, 'label'))

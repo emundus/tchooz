@@ -5,9 +5,9 @@ import Messenger from '@/components/Settings/Addons/Messenger.vue';
 import SMSAddon from '@/components/Settings/Addons/SMSAddon.vue';
 import RankingTool from '@/components/Settings/Addons/RankingTool.vue';
 import PaymentAddon from '@/components/Settings/Addons/PaymentAddon.vue';
-import AnonymAddon from '@/components/Settings/Addons/AnonymAddon.vue';
 import Popover from '@/components/Popover.vue';
 import alerts from '@/mixins/alerts.js';
+import Addon from '@/components/Settings/Addons/Addon.vue';
 
 import { useGlobalStore } from '@/stores/global.js';
 import Tag from '@/components/Atoms/Tag.vue';
@@ -32,8 +32,8 @@ export default {
 		SMSAddon,
 		RankingTool,
 		PaymentAddon,
-		AnonymAddon,
 		Popover,
+		Addon,
 	},
 	mixins: [alerts],
 	data() {
@@ -577,14 +577,14 @@ export default {
 					"
 				></PaymentAddon>
 
-				<AnonymAddon
-					v-else-if="currentAddon.namekey === 'anonymous'"
+				<Addon
+					v-else-if="currentAddon.namekey === 'anonymous' || currentAddon.namekey === 'public_session'"
 					:addon="currentAddon"
 					@addonSaved="
 						currentAddon = null;
 						getAddons();
 					"
-				></AnonymAddon>
+				></Addon>
 
 				<CustomReference
 					v-else-if="currentAddon.namekey === 'custom_reference_format'"
