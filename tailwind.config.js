@@ -288,14 +288,14 @@ module.exports = {
                     boxShadow: 'none',
 
                     '&:hover': {
-                        backgroundColor: 'color-mix(in srgb, var(--em-primary-color), var(--neutral-900) 30%) !important',
+                        backgroundColor: 'color-mix(in srgb, var(--em-profile-color), var(--neutral-900) 30%) !important',
                         color: 'var(--neutral-0) !important',
                         border: '1px solid var(--em-profile-color) !important',
                         textDecoration: 'none',
                     },
 
                     '&:active': {
-                        backgroundColor: 'color-mix(in srgb, var(--em-primary-color), var(--neutral-900) 60%)'
+                        backgroundColor: 'color-mix(in srgb, var(--em-profile-color), var(--neutral-900) 60%)'
                     },
 
                     '&:disabled': {
@@ -309,7 +309,7 @@ module.exports = {
                     },
 
                     '&:focus-visible': {
-                        outline: '2px solid color-mix(in srgb, var(--em-primary-color), var(--neutral-900) 30%)',
+                        outline: '2px solid color-mix(in srgb, var(--em-profile-color), var(--neutral-900) 30%)',
                         outlineOffset: '2px'
                     }
                 },
