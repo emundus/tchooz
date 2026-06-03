@@ -25,6 +25,7 @@ use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
+use Tchooz\Enums\Export\ExportSettingEnum;
 use Tchooz\Enums\List\ListColumnTypesEnum;
 use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
@@ -595,6 +596,73 @@ class EmundusControllerExport extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
+	/**
+	 * Return the declarative schema of every runtime export setting so the front
+	 * can render the toggles dynamically (one block per tab). The list of
+	 * settings is the single source of truth in {@see ExportSettingEnum}.
+	 */
+	public function settings(): void
+	{
+		try
+		{
+			if (!$this->exportAction)
+			{
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
+			}
+
+			$schema = array_map(
+				static fn (ExportSettingEnum $c) => array_merge($c->toField()->toSchema(), ['default' => $c->getDefault()]),
+				ExportSettingEnum::cases()
+			);
+
+			$response = EmundusResponse::ok($schema, Text::_('COM_EMUNDUS_EXPORT_SETTINGS_RETRIEVED_SUCCESSFULLY'));
+		}
+		catch (Exception $e)
+		{
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	/**
+	 * Accept the raw `settings` POST (JSON string or array/object) and return a
+	 * sanitized array containing only known keys with the right casts applied.
+	 */
+	private function parseSettingsInput(mixed $raw): array
+	{
+		if (empty($raw))
+		{
+			return [];
+		}
+
+		if (is_string($raw))
+		{
+			$decoded = json_decode($raw, true);
+			$raw     = is_array($decoded) ? $decoded : [];
+		}
+		elseif (is_object($raw))
+		{
+			$raw = (array) $raw;
+		}
+
+		if (!is_array($raw))
+		{
+			return [];
+		}
+
+		$out = [];
+		foreach (ExportSettingEnum::cases() as $case)
+		{
+			if (array_key_exists($case->value, $raw))
+			{
+				$out[$case->value] = $case->cast($raw[$case->value]);
+			}
+		}
+
+		return $out;
+	}
+
 	public function export(): void
 	{
 		try
@@ -647,6 +715,8 @@ class EmundusControllerExport extends BaseController
 				$attachments = $this->input->getString('attachments', '');
 			}
 			$synthesis = $this->input->getString('synthesis', '');
+
+			$settings = $this->parseSettingsInput($this->input->get('settings', null, 'RAW'));
 
 			$fnums = $this->input->post->getString('fnums');
 			if (empty($fnums))
@@ -746,6 +816,7 @@ class EmundusControllerExport extends BaseController
 					'headers'        => $headers ?? [],
 					'synthesis'      => $synthesis ?? [],
 					'attachments'    => $attachments ?? [],
+					'settings'       => $settings,
 					'lang'           => $currentLang,
 				]);
 			}

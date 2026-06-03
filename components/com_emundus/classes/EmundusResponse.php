@@ -9,6 +9,8 @@
 
 namespace Tchooz;
 
+use Joomla\CMS\Language\Text;
+
 class EmundusResponse implements \JsonSerializable
 {
 	public const HTTP_CONTINUE = 100;
@@ -81,6 +83,7 @@ class EmundusResponse implements \JsonSerializable
 		public int    $code,
 		public mixed  $data = [],
 		public string $description = '',
+		public string $dataKey = 'data'
 	)
 	{
 	}
@@ -88,6 +91,11 @@ class EmundusResponse implements \JsonSerializable
 	public static function ok(mixed $data = [], string $msg = '', int $code = 200, string $description = ''): self
 	{
 		return new self(true, $msg, $code, $data, $description);
+	}
+
+	public static function denied(): self
+	{
+		return new self(false, Text::_('ACCESS_DENIED'), self::HTTP_FORBIDDEN, [], '');
 	}
 
 	public static function fail(string $msg = '', int $code = 400, mixed $data = [], string $description = ''): self
@@ -103,11 +111,11 @@ class EmundusResponse implements \JsonSerializable
 	public function jsonSerialize(): array
 	{
 		return [
-			'status'      => $this->status,
-			'msg'         => $this->msg,
-			'code'        => $this->code,
-			'data'        => $this->data,
-			'description' => $this->description,
+			'status'       => $this->status,
+			'msg'          => $this->msg,
+			'code'         => $this->code,
+			$this->dataKey => $this->data,
+			'description'  => $this->description,
 		];
 	}
 

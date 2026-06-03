@@ -55,6 +55,12 @@ class ExcelOptions extends ExportOptions
 		$excelOptions->setElements($elements);
 		$excelOptions->setLang($lang);
 
+		if (isset($options->settings))
+		{
+			$rawSettings = is_string($options->settings) ? json_decode($options->settings, true) : $options->settings;
+			$excelOptions->setSettings($rawSettings);
+		}
+
 		return $excelOptions;
 	}
 

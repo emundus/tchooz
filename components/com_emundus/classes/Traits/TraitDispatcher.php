@@ -17,8 +17,13 @@ trait TraitDispatcher
 {
 	public function dispatchJoomlaEvent(string $event, array $arguments = [], bool $dispatch_event_handler = true, $plugin_folder = 'emundus', bool $dispatch_default_event = true): void
 	{
+		//PluginHelper::importPlugin('system');
 		PluginHelper::importPlugin('emundus');
-		PluginHelper::importPlugin('actionlog');
+
+		if (Factory::getApplication()->isClient('site'))
+		{
+			PluginHelper::importPlugin('actionlog');
+		}
 
 		$dispatcher = Factory::getApplication()->getDispatcher();
 

@@ -11,8 +11,14 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+
+if (EmundusPublicAccess::isPublicAccessSession())
+{
+	return;
+}
 
 $layout = $params->get('layout', 'default');
 
@@ -171,7 +177,7 @@ if ($is_anonym_user && !$allow_anonym_files)
 
 $m_users         = new EmundusModelUsers;
 $profile_details = new stdClass();
-if (!JFactory::getUser()->guest)
+if (!Factory::getApplication()->getIdentity()->guest)
 {
 	if (!empty($user->profile))
 	{

@@ -12,6 +12,7 @@ namespace Joomla\Module\Emundusmenu\Site\Helper;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -154,6 +155,17 @@ class EmundusmenuHelper
 
 			if ($caching) {
 				$cache->store($items, $key);
+			}
+		}
+
+		if (EmundusPublicAccess::isPublicAccessSession())
+		{
+			foreach ($items as $key => $item)
+			{
+				if (!EmundusPublicAccess::isAuthorizedMenuItem($item))
+				{
+					unset($items[$key]);
+				}
 			}
 		}
 

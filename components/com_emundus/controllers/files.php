@@ -11,6 +11,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -18,21 +19,24 @@ use Joomla\CMS\Uri\Uri;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Joomla\CMS\Factory;
-use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
-use Tchooz\Enums\CrudEnum;
-use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Controller\EmundusController;
 use Tchooz\EmundusResponse;
-use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Filters\FilterEntity;
+use Tchooz\Entities\Label\LabelEntity;
+use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\Filters\FilterModeEnum;
 use Tchooz\Factories\Filters\FilterFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\ApplicationFile\TagsRepository;
 use Tchooz\Repositories\Filters\FilterRepository;
+use Tchooz\Repositories\Label\LabelRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
-use Tchooz\Enums\Export\ExportModeEnum;
-use Tchooz\Controller\EmundusController;
 
 jimport('joomla.application.component.controller');
 jimport('joomla.user.helper');
@@ -821,9 +825,14 @@ class EmundusControllerFiles extends EmundusController
 				}
 				$m_comments = new EmundusModelComments();
 
+				if (!class_exists('EmundusHelperFiles'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/controllers/files.php');
+				}
+
 				foreach ($fnums as $fnum) {
 					if (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum)) {
-						$aid = intval(substr($fnum, 21, 7));
+						$aid = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
 						$comment_content = array(
 							'applicant_id' => $aid,
 							'user_id' => $this->_user->id,
@@ -912,46 +921,71 @@ class EmundusControllerFiles extends EmundusController
 	 * Add a tag to an application.
 	 * @since 6.0
 	 */
-	public function tagfile()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function tagfile(): EmundusResponse
 	{
-		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('BAD_REQUEST')];
+		$fnums        = $this->input->getString('fnums', null);
+		$tag          = (array) $this->input->get('tag', []);
+		$newTag       = trim($this->input->getString('newTag', ''));
+		$newTagClass  = trim($this->input->getString('newTagClass', 'label-default'));
 
-		$fnums = $this->input->getString('fnums', null);
-		$tag   = (array) $this->input->get('tag', []);
-
-		if (!empty($fnums) && !empty($tag)) {
-			$m_files = $this->getModel('Files');
-			$fnums   = ($fnums == 'all') ? $m_files->getAllFnums() : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
-
-			if (!empty($fnums)) {
-				$validFnums = [];
-				foreach ($fnums as $fnum) {
-					if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
-						$validFnums[] = $fnum;
-					}
-				}
-				unset($fnums);
-				$response['status'] = $m_files->tagFile($validFnums, $tag);
-
-				if ($response['status']) {
-					$response['code']   = 200;
-					$response['msg']    = Text::_('COM_EMUNDUS_TAGS_SUCCESS');
-					$response['tagged'] = $validFnums;
-				}
-				else {
-					$response['code'] = 500;
-					$response['msg']  = Text::_('FAIL');
-				}
-			}
+		if(empty($fnums))
+		{
+			throw new \InvalidArgumentException('Missing fnums parameter');
 		}
 
-		echo json_encode((object) ($response));
-		exit;
+		if(empty($tag) && empty($newTag))
+		{
+			throw new \InvalidArgumentException('Missing tag or newTag parameter');
+		}
+
+		if ($newTag !== '')
+		{
+			$labelRepository = new LabelRepository();
+
+			if ($labelRepository->existsByLabel($newTag))
+			{
+				return EmundusResponse::fail(Text::_('COM_EMUNDUS_TAGS_TAG_ALREADY_EXISTS'), EmundusResponse::HTTP_CONFLICT);
+			}
+
+			$labelEntity = new LabelEntity($newTag, $newTagClass !== '' ? $newTagClass : 'label-default');
+			if(!$labelRepository->flush($labelEntity))
+			{
+				throw new \Exception(Text::_('COM_EMUNDUS_TAGS_CREATE_FAILED'));
+			}
+
+			$tag[] = $labelEntity->getId();
+		}
+
+		$m_files = $this->getModel('Files');
+		$fnums   = ($fnums == 'all') ? $m_files->getAllFnums() : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+
+		if(empty($fnums))
+		{
+			throw new \InvalidArgumentException('Missing fnums parameter');
+		}
+
+		$validFnums = [];
+		foreach ($fnums as $fnum) {
+			if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $fnum)) {
+				$validFnums[] = $fnum;
+			}
+		}
+		unset($fnums);
+		if(!$m_files->tagFile($validFnums, $tag))
+		{
+			throw new \RuntimeException(Text::_('COM_EMUNDUS_TAGS_ADD_FAILED'));
+		}
+
+		return new EmundusResponse(true, Text::_('COM_EMUNDUS_TAGS_SUCCESS'), EmundusResponse::HTTP_OK, $validFnums, '', 'tagged');
 	}
 
-	public function deletetags()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::TAG, 'mode' => CrudEnum::CREATE],
+		['id' => ActionEnum::TAG, 'mode' => CrudEnum::DELETE]
+	])]
+	public function deletetags(): void
 	{
-
 		$fnums = $this->input->getString('fnums', null);
 		$tags  = $this->input->getVar('tag', null);
 
@@ -964,26 +998,33 @@ class EmundusControllerFiles extends EmundusController
 			$fnums = $m_files->getAllFnums();
 		}
 
-		JPluginHelper::importPlugin('emundus');
+		PluginHelper::importPlugin('emundus');
 		$this->app->triggerEvent('onCallEventHandler', ['onBeforeTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
+
+		$deletedAll = [];
+		if (!is_array($tags))
+		{
+			$tags = [$tags];
+		}
 
 		foreach ($fnums as $fnum) {
 			if ($fnum != 'em-check-all') {
 				foreach ($tags as $tag) {
-					$hastags = $m_files->getTagsByIdFnumUser($tag, $fnum, $this->_user->id);
-					if ($hastags) {
-						$m_application->deleteTag($tag, $fnum);
+					$hasTags = $m_files->getTagsByIdFnumUser($tag, $fnum, $this->_user->id);
+
+					if ($hasTags) {
+						$deletedAll[] = $m_application->deleteTag($tag, $fnum);
 					}
 					else {
 						if (EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum)) {
-							$m_application->deleteTag($tag, $fnum);
+							$deletedAll[] = $m_application->deleteTag($tag, $fnum);
 						}
 					}
 				}
 			}
 		}
 
-		echo json_encode((object) (array('status' => true, 'msg' => Text::_('COM_EMUNDUS_TAGS_DELETE_SUCCESS'))));
+		echo json_encode((object) (array('status' => !in_array(false, $deletedAll) && !empty($deletedAll), 'msg' => Text::_('COM_EMUNDUS_TAGS_DELETE_SUCCESS'))));
 		exit;
 	}
 
@@ -1700,6 +1741,7 @@ class EmundusControllerFiles extends EmundusController
 		exit();
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getfnums()
 	{
 		$ids = $this->input->getVar('ids', null);
@@ -1737,6 +1779,7 @@ class EmundusControllerFiles extends EmundusController
 		exit();
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getallfnums()
 	{
 		$m_files = $this->getModel('Files');
@@ -2257,11 +2300,7 @@ class EmundusControllerFiles extends EmundusController
 			}
 
 			if (!empty($fnumsArray)) {
-				$encrypted_tables = $h_files->getEncryptedTables();
-				if (!empty($encrypted_tables)) {
-					$cipher         = 'aes-128-cbc';
-					$encryption_key = JFactory::getConfig()->get('secret');
-				}
+				$encrypted_tables = EmundusHelperFiles::getEncryptedTables();
 
 				$emParams = ComponentHelper::getParams('com_emundus');
 				$excel_elts_to_escape = $emParams->get('export_elements_to_escape', '');
@@ -2712,11 +2751,8 @@ class EmundusControllerFiles extends EmundusController
 	 *
 	 * @since version 1.0.0
 	 */
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function generate_pdf() {
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
-		}
-
 		$m_files = new EmundusModelFiles();
 
 		$session = $this->app->getSession();
@@ -3458,8 +3494,7 @@ class EmundusControllerFiles extends EmundusController
 	}
 
 	/**
-	 *  Create a zip file containing all documents attached to application fil number
-	 *
+	 *  Create a zip file containing all documents attached to application file number
 	 * @param   array  $fnums
 	 *
 	 * @return string
@@ -3486,9 +3521,9 @@ class EmundusControllerFiles extends EmundusController
 	function export_zip_pcl($fnums)
 	{
 		$view         = $this->input->get('view');
-		$current_user = JFactory::getUser();
+		$current_user = $this->app->getIdentity();
 
-		if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application')
+		if ((!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application')
 			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
@@ -3508,24 +3543,27 @@ class EmundusControllerFiles extends EmundusController
 			unlink($path);
 
 		$users = array();
-		foreach ($fnums as $fnum) {
-			$sid          = intval(substr($fnum, -7));
-			$users[$fnum] = JFactory::getUser($sid);
+		if (!class_exists('EmundusHelperFiles'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+		}
 
+		foreach ($fnums as $fnum) {
+			$sid          = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
 			if (!is_numeric($sid) || empty($sid))
 				continue;
 
+			$users[$fnum] = JFactory::getUser($sid);
 			$dossier = EMUNDUS_PATH_ABS . $users[$fnum]->id;
 			$dir     = $fnum . '_' . $users[$fnum]->name;
 			application_form_pdf($users[$fnum]->id, $fnum, false);
 			$application_pdf = $fnum . '_application.pdf';
 
 			$zip->add($dossier . DS . $application_pdf, PCLZIP_OPT_REMOVE_ALL_PATH, PCLZIP_OPT_ADD_PATH, $dir);
-
 		}
 
 
-		foreach ($files as $key => $file) {
+		foreach ($files as $file) {
 			$dir     = $file['fnum'] . '_' . $users[$file['fnum']]->name;
 			$dossier = EMUNDUS_PATH_ABS . $users[$file['fnum']]->id . DS;
 			$zip->add($dossier . $file['filename'], PCLZIP_OPT_REMOVE_ALL_PATH, PCLZIP_OPT_ADD_PATH, $dir);

@@ -1644,7 +1644,6 @@ label {
 }
 
 .btn {
-    display: inline-block !important;
     margin-bottom: 0 !important;
     font-weight: normal !important;
     text-align: center !important;

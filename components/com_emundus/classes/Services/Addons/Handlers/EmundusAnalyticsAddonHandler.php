@@ -43,4 +43,9 @@ class EmundusAnalyticsAddonHandler extends AbstractAddonHandler
 		$db->setQuery($query);
 		return (bool) $db->loadResult();
 	}
+
+	public function getParameters(): array
+	{
+		// TODO: Implement getParameters() method.
+	}
 }

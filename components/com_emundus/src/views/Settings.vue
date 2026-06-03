@@ -71,6 +71,7 @@ import { useSettingsStore } from '@/stores/settings.js';
 import menus from '@/assets/data/settings/menus.js';
 import settingsService from '@/services/settings.js';
 import { useMappingStore } from '@/stores/mapping.js';
+import { useAutomationStore } from '@/stores/automation.js';
 
 export default {
 	name: 'globalSettings',
@@ -103,6 +104,18 @@ export default {
 			type: String,
 			default: '',
 		},
+		operators: {
+			type: Array,
+			default: () => [],
+		},
+		operatorsFieldMapping: {
+			type: Object,
+			default: () => {},
+		},
+		actions: {
+			type: Array,
+			default: () => [],
+		},
 	},
 
 	data: () => ({
@@ -126,9 +139,11 @@ export default {
 	}),
 	setup() {
 		const settingsStore = useSettingsStore();
+		const automationStore = useAutomationStore();
 
 		return {
 			settingsStore,
+			automationStore,
 		};
 	},
 	created() {
@@ -146,6 +161,10 @@ export default {
 
 			this.menusList = menusToDisplay;
 		});
+
+		this.automationStore.setOperators(this.operators);
+		this.automationStore.setOperatorsFieldMapping(this.operatorsFieldMapping);
+		this.automationStore.setActionsList(this.actions);
 	},
 	mounted() {
 		if (sessionStorage.getItem('goToMenu')) {

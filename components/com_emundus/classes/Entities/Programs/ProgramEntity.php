@@ -151,12 +151,12 @@ class ProgramEntity
 		$this->logo = $logo;
 	}
 
-	public function getColor(): string
+	public function getColor(): ?string
 	{
 		return $this->color;
 	}
 
-	public function setColor(string $color): void
+	public function setColor(?string $color): void
 	{
 		$this->color = $color;
 	}

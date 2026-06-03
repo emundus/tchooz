@@ -75,6 +75,14 @@ function pdf_decision($user_id, $fnum = null, $output = true, $name = null, $opt
 
 	$anonymize_data = EmundusHelperAccess::isDataAnonymized($app->getIdentity()->id);
 
+	// Check file-level anonymization
+	$query_anon = $db->getQuery(true);
+	$query_anon->select('anonymous')
+		->from($db->quoteName('#__emundus_campaign_candidature'))
+		->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+	$db->setQuery($query_anon);
+	$anonymize_data = $anonymize_data || (int) $db->loadResult() === 1;
+
 	$photo_attachment_id = $eMConfig->get('photo_attachment', 10);
 
 	// Users informations
