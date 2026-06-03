@@ -74,7 +74,7 @@ class EmundusViewApplication extends HtmlView
 	protected bool|int $displayTagCategories;
 
 	protected array $pids;
-	protected mixed $defaultpid;
+	protected mixed $defaultpid = 0;
 	protected mixed $formsProgress;
 	protected string $forms;
 	protected object $applicant;
@@ -90,6 +90,8 @@ class EmundusViewApplication extends HtmlView
 	protected ?string $shortReference;
 	protected bool $showReference;
 	protected ApplicationFileEntity $applicationFile;
+
+	protected ?ApplicationFileEntity $applicationFile = null;
 
 	protected ?ApplicationFileEntity $applicationFile = null;
 

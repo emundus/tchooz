@@ -49,6 +49,7 @@ use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterAddUserToGroupDefinition;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Traits\TraitDispatcher;
 
 /**
@@ -1345,25 +1346,15 @@ class EmundusModelUsers extends ListModel
 					$fnum = EmundusHelperFiles::createFnum($campaign, $user_id);
 
 					if (!empty($fnum)) {
+						$statusRepository = new StatusRepository();
+						$statusEntity = $statusRepository->getItemByField('step', 0, true);
 						$applicationFileEntity = new ApplicationFileEntity(
 							$applicant,
 							$fnum,
-							0,
+							$statusEntity,
 							$campaign
 						);
 						$applicationFileRepository->flush($applicationFileEntity);
-
-						$this->dispatchJoomlaEvent('onAfterCampaignCandidature', [
-							'user_id' => $user_id,
-							'connected' => $this->user->id,
-							'campaign' => $campaign,
-							'fnum' => $fnum,
-							'context' => new EventContextEntity(
-								$this->app->getIdentity(),
-								[$fnum],
-								[$user_id],
-							)
-						]);
 					}
 				}
 			}

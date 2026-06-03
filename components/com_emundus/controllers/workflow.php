@@ -367,6 +367,7 @@ class EmundusControllerWorkflow extends EmundusController
 					}
 				}
 
+				$serialized_steps = [];
 				foreach ($steps as $step)
 				{
 					assert($step instanceof StepEntity);
