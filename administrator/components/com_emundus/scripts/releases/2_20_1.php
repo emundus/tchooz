@@ -8,7 +8,7 @@
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace scripts\releases;
+namespace scripts;
 
 use scripts\ReleaseInstaller;
 
