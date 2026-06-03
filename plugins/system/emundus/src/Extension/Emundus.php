@@ -33,6 +33,7 @@ use Joomla\Registry\Registry;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterRenderDefinition;
 use Tchooz\Entities\Emails\TagModifierRegistry;
+use Tchooz\Enums\User\AuthenticationModeEnum;
 use Tchooz\Providers\DbLanguageProvider;
 use Tchooz\Providers\EmundusSubscriberProvider;
 
@@ -155,8 +156,17 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$wa   = $this->getApplication()->getDocument()->getWebAssetManager();
 
 		$profile_data = [];
+		$query = $this->getDatabase()->createQuery();
 		if (!$this->getApplication()->getIdentity()->guest)
 		{
+			$query->clear()
+				->select('authProvider')
+				->from($this->getDatabase()->quoteName('#__users'))
+				->where($this->getDatabase()->quoteName('id') . ' = ' . (int) $this->getApplication()->getIdentity()->id);
+
+			$this->getDatabase()->setQuery($query);
+			$profile_data['authentication_mode'] = $this->getDatabase()->loadResult() ?? AuthenticationModeEnum::DEFAULT->value;
+
 			$e_session       = $this->getApplication()->getSession()->get('emundusUser');
 			$profile_details = null;
 
@@ -205,12 +215,14 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 			if (!empty($profile_elements))
 			{
-				$query = $this->getDatabase()->getQuery(true);
-				$query->select($profile_elements)
+				$query->clear()
+					->select($profile_elements)
 					->from($this->getDatabase()->quoteName('#__emundus_users'))
 					->where($this->getDatabase()->quoteName('user_id') . ' = ' . (int) $this->getApplication()->getIdentity()->id);
 				$this->getDatabase()->setQuery($query);
-				$profile_data = $this->getDatabase()->loadAssoc();
+				$profile_elements_data = $this->getDatabase()->loadAssoc();
+
+				$profile_data = array_merge($profile_elements_data, $profile_data);
 			}
 		}
 
@@ -377,8 +389,14 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			$plugin = PluginHelper::getPlugin('system', 'emundus');
 			$params = new Registry($plugin->params);
 			$mfaSso = $params->get('2faforSSO', 0);
+			$publicAccessUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
 
-			if ($mfaSso == 0 && ($isSamlUser || (!empty($userParams) && $userParams->OAuth2 === 'openid')))
+			if (!empty($publicAccessUserId) && $user->id === $publicAccessUserId)
+			{
+				// public access skip 2FA enforcement
+				return;
+			}
+			else if ($mfaSso == 0 && ($isSamlUser || (!empty($userParams) && $userParams->OAuth2 === 'openid')))
 			{
 				// If user logged in via SAML or OIDC we skip the 2FA enforcement
 				return;

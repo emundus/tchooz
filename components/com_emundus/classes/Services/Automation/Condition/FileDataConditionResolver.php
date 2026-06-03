@@ -9,10 +9,13 @@ use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\TableJoin;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
+use Tchooz\Entities\Fields\YesnoField;
 use Tchooz\Entities\Fields\DateField;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\ValueFormatEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Traits\TraitAutomatedTask;
 use Tchooz\Traits\TraitTable;
 
@@ -49,11 +52,26 @@ class FileDataConditionResolver implements ConditionTargetResolverInterface
 	 */
 	public function getAvailableFields(array $contextFilters): array
 	{
-		return [
+		$parameters =  [
 			new ChoiceField('status', Text::_('COM_EMUNDUS_ACCESS_STATUS'), $this->getStatusChoices(), false, true),
 			new ChoiceField('id_tag', Text::_('COM_EMUNDUS_TAGS'), $this->getTagsChoices(), false, true),
 			new DateField('date_time', Text::_('APPLICATION_CREATION_DATE'), false)
 		];
+
+		$addonRepository = new AddonRepository();
+		$publicAddon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
+		if ($publicAddon->isActivated())
+		{
+			$parameters[] = new YesnoField('public', Text::_('COM_EMUNDUS_IS_PUBLIC'));
+		}
+
+		$anonymousAddon = $addonRepository->getByName(AddonEnum::ANONYMOUS->value);
+		if ($anonymousAddon->isActivated())
+		{
+			$parameters[] = new YesnoField('anonymous', Text::_('COM_EMUNDUS_IS_ANONYMOUS'));
+		}
+
+		return $parameters;
 	}
 
 	/**

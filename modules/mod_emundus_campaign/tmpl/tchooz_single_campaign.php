@@ -6,6 +6,11 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
 use Tchooz\Enums\UI\ButtonVariantEnum;
 use Tchooz\Enums\UI\ButtonWidthEnum;
+use Joomla\CMS\Router\Route;
+use Joomla\Plugin\Emundus\Anonymization\Extension\Anonymization;
+use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 
 header('Content-Type: text/html; charset=utf-8');
 
@@ -35,17 +40,17 @@ $protocol   = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SE
 $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 $currentCampaign = is_array($allCampaign) ? $allCampaign[0] : $allCampaign;
+if (empty($currentCampaign))
+{
+    $app->enqueueMessage(Text::_('MOD_EM_CAMPAIGN_NOT_ACCESSIBLE'));
+    $app->redirect('index.php');
+}
+
 $dteStart        = new DateTime($now);
 $dteEnd          = new DateTime($currentCampaign->end_date);
 $dteDiff         = $dteStart->diff($dteEnd);
 $j               = $dteDiff->format("%a");
 $h               = $dteDiff->format("%H");
-
-if (empty($currentCampaign))
-{
-	$app->enqueueMessage(JText::_('MOD_EM_CAMPAIGN_NOT_ACCESSIBLE'));
-	$app->redirect('index.php');
-}
 
 $can_apply = 0;
 if (strtotime($now) < strtotime($currentCampaign->end_date) && strtotime($now) > strtotime($currentCampaign->start_date))
@@ -101,6 +106,15 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
 		$have_registration_steps = true;
 	}
 }
+
+$campaignRepository = new CampaignRepository();
+$campaignEntity = $campaignRepository->getById($currentCampaign->id);
+$anonymizationPolicy = Anonymization::getCampaignAnonymizationPolicy($campaignEntity);
+if ($anonymizationPolicy === AnonymizationPolicyEnum::OPTIONAL)
+{
+    $wa->registerAndUseScript('mod_emundus_campaign.anonymous', 'modules/mod_emundus_campaign/scripts/anonymous.js');
+}
+
 ?>
 
 <div class="mod_emundus_campaign__grid em-mt-24 em-mb-64" style="grid-gap: 64px">
@@ -117,7 +131,7 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
         >
             <span class="material-symbols-outlined tw-mr-1 tw-text-link-regular"
                   aria-hidden="true">navigate_before</span>
-            <span class="group-hover:tw-underline"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
+            <span class="group-hover:tw-underline"><?php echo Text::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
         </button>
 		<?php if ($mod_em_campaign_details_show_programme == 1) : ?>
 			<?php
@@ -152,7 +166,7 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
                 <div class="em-flex-row" style="white-space: nowrap;">
                     <p class="em-text-neutral-600 em-flex-row em-applicant-default-font "><span
                             class="material-symbols-outlined em-mr-8"
-                            aria-hidden="true">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?>
+                            aria-hidden="true">alarm</span> <?php echo Text::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?>
                     </p>
                     <p class="em-text-neutral-600 em-ml-4 em-camp-start em-applicant-default-font "><?php echo JFactory::getDate(new JDate($currentCampaign->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></p>
                 </div>
@@ -162,7 +176,7 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
                 <div class="em-flex-row" style="white-space: nowrap;">
                     <p class="em-text-neutral-600 em-flex-row em-applicant-default-font "><span
                             class="material-symbols-outlined em-mr-8"
-                            aria-hidden="true">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>
+                            aria-hidden="true">schedule</span> <?php echo Text::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>
                     </p>
                     <p class="em-text-neutral-600 em-ml-4 em-camp-end em-applicant-default-font "><?php echo JFactory::getDate(new JDate($currentCampaign->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></p>
                 </div>
@@ -172,7 +186,7 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
                 <div class="em-flex-row" style="white-space: nowrap;">
                     <p class="em-text-neutral-600 em-flex-row em-applicant-default-font"><span
                             class="material-symbols-outlined em-mr-8"
-                            aria-hidden="true">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>
+                            aria-hidden="true">alarm</span> <?php echo Text::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>
                         :</p>
                     <p class="em-text-neutral-600 em-ml-4 em-formation-start em-applicant-default-font "><?php echo JFactory::getDate(new JDate($currentCampaign->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></p>
                 </div>
@@ -182,7 +196,7 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
                 <div class="em-flex-row" style="white-space: nowrap;">
                     <p class="em-applicant-text-color em-flex-row"><span
                             class="material-symbols-outlined em-mr-8"
-                            aria-hidden="true">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>
+                            aria-hidden="true">schedule</span> <?php echo Text::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>
                         :</p>
                     <p class="em-ml-4 em-formation-end"><?php echo JFactory::getDate(new JDate($currentCampaign->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></p>
                 </div>
@@ -192,7 +206,7 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
                 <div class="em-flex-row" style="white-space: nowrap;">
                     <p class="em-text-neutral-600 em-flex-row"><span
                             class="material-symbols-outlined em-mr-8"
-                            aria-hidden="true">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>
+                            aria-hidden="true">alarm</span> <?php echo Text::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>
                         :</p>
                     <p class="em-text-neutral-600 em-ml-4 em-formation-start"><?php echo JFactory::getDate(new JDate($currentCampaign->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></p>
                 </div>
@@ -202,7 +216,7 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
                 <div class="em-flex-row" style="white-space: nowrap;">
                     <p class="em-text-neutral-600 em-flex-row"><span
                             class="material-symbols-outlined em-mr-8"
-                            aria-hidden="true">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>
+                            aria-hidden="true">schedule</span> <?php echo Text::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>
                         :</p>
                     <p class="em-text-neutral-600 em-ml-4 em-formation-end"><?php echo JFactory::getDate(new JDate($currentCampaign->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></p>
                 </div>
@@ -212,7 +226,7 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
             <div class="em-mt-4 em-text-neutral-600 em-flex-row em-camp-time-zone">
                 <p class="em-flex-row"><span class="material-symbols-outlined em-mr-8" aria-hidden="true">public</span>
                 </p>
-                <p class="em-text-neutral-600 em-applicant-default-font"><?php echo JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset ?></p>
+                <p class="em-text-neutral-600 em-applicant-default-font"><?php echo Text::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset ?></p>
             </div>
 		<?php endif; ?>
 
@@ -220,11 +234,11 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
             <div class="mod_emundus_campaign__tabs em-flex-row">
                 <a class="em-applicant-text-color current-tab em-mr-24" onclick="displayTab('campaign')"
                    id="campaign_tab">
-                    <span><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS') ?></span>
+                    <span><?php echo Text::_('MOD_EM_CAMPAIGN_DETAILS') ?></span>
                 </a>
 				<?php if ($mod_em_campaign_show_faq == 1 && !empty($faq_articles)) : ?>
                     <a class="em-applicant-text-color" onclick="displayTab('faq')" id="faq_tab">
-                        <span><?php echo JText::_('MOD_EM_CAMPAIGN_FAQ') ?></span>
+                        <span><?php echo Text::_('MOD_EM_CAMPAIGN_FAQ') ?></span>
                     </a>
 				<?php endif; ?>
             </div>
@@ -262,14 +276,14 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
             <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
 
 				<?php if ($mod_em_campaign_display_svg == 1) : ?>
-                    <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
+                    <div id="background-shapes" alt="<?= Text::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 				<?php endif; ?>
 
-                <h2 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h2>
+                <h2 class="em-mb-24"><?php echo Text::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h2>
 				<?php if ($can_apply == 1 && $currentCampaign->is_limited == 1 && $currentCampaign->limit > 0 && $mod_em_campaign_show_limit_files == 1) : ?>
                     <div class="flex em-flex-center em-mb-24"><p
                             class="mr-2 h-max em-p-5-12 em-font-weight-600 em-text-neutral-300 em-font-size-14 em-border-radius tw-text-center"
-                            style="background:var(--bg-3);"><?= $files_sent . ' ' . JText::_($files_sent_tag) . ' ' . $currentCampaign->limit ?></p>
+                            style="background:var(--bg-3);"><?= $files_sent . ' ' . Text::_($files_sent_tag) . ' ' . $currentCampaign->limit ?></p>
                     </div>
 				<?php endif; ?>
 				<?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
@@ -299,6 +313,7 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
 					{
 						// Parse redirect URL to ensure it is correct
 						$parsedUrl = parse_url($redirect_url);
+
 						parse_str($parsedUrl['query'] ?? '', $params);
 						if (empty($currentCampaign->parent_id))
 						{
@@ -325,8 +340,14 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
 						}
 						else
 						{
-							$register_url = $redirect_url . '?' . $newQuery;
-						}
+                            if (!str_contains($redirect_url, 'index.php?')) {
+                                $register_url = $redirect_url . '?' . $newQuery;
+                            }
+                            else
+                            {
+                                $register_url = 'index.php?' . $newQuery;
+                            }
+                        }
 					}
 					if (!empty($mod_em_campaign_itemid))
 					{
@@ -346,11 +367,22 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
                         ?>
 					<?php else : ?>
                         <?php
+							if ($anonymizationPolicy === AnonymizationPolicyEnum::OPTIONAL)
+							{
+								?>
+								<div class="tw-flex tw-flex-row tw-items-center tw-mb-4 tw-cursor-pointer" title="<?= Text::_('MOD_EM_CAMPAIGN_APPLY_ANONYMOUSLY_DESC') ?>">
+									<input type="checkbox" name="anonymous" id="anonymous" class="tw-cursor-pointer"/>
+									<label for="anonymous" class="tw-mb-0 tw-cursor-pointer"><?= Text::_('MOD_EM_CAMPAIGN_APPLY_ANONYMOUSLY') ?></label>
+								</div>
+								<?php
+							}
+
                             echo LayoutHelper::render('emundus.button', [
                                 'variant' => ButtonVariantEnum::PRIMARY,
                                 'width'   => ButtonWidthEnum::FULL,
                                 'text'    => Text::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'),
-                                'href'    => $register_url
+                                'href'    => $register_url,
+                                'id' => 'register-url'
                             ]);
                         ?>
 					<?php endif; ?>
@@ -371,10 +403,10 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
             <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
 
 				<?php if ($mod_em_campaign_display_svg == 1) : ?>
-                    <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
+                    <div id="background-shapes" alt="<?= Text::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 				<?php endif; ?>
 
-                <h2 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_DOWNLOADS') ?></h2>
+                <h2 class="em-mb-24"><?php echo Text::_('MOD_EM_CAMPAIGN_DETAILS_DOWNLOADS') ?></h2>
                 <div class="em-mt-24">
 					<?php foreach ($files as $file) : ?>
                         <div class="em-flex-row em-mb-16 mod_emundus_campaign__details_file">
@@ -392,7 +424,7 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
 
 		<?php if (!empty($contact) && $mod_em_campaign_show_contact == 1) : ?>
             <div class="mod_emundus_campaign__details_content em-border-neutral-300">
-                <h4><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_CONTACT') ?></h4>
+                <h4><?php echo Text::_('MOD_EM_CAMPAIGN_DETAILS_CONTACT') ?></h4>
             </div>
 		<?php endif; ?>
     </aside>

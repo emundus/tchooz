@@ -130,12 +130,20 @@ class EmundusViewMessage extends JViewLegacy
 					}
 
 					$formatted_fnums = [];
-					foreach ($fnums as $fnum) {
-						$tmp               = new stdClass();
-						$tmp->fnum         = $fnum;
-						$tmp->cid          = substr($fnum, 14, 7);
-						$tmp->sid          = substr($fnum, 21, 7);
-						$formatted_fnums[] = $tmp;
+					if (!empty($fnums))
+					{
+						if (!class_exists('EmundusHelperFiles'))
+						{
+							require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+						}
+
+						foreach ($fnums as $fnum) {
+							$tmp               = new stdClass();
+							$tmp->fnum         = $fnum;
+							$tmp->cid          = substr($fnum, 14, 7);
+							$tmp->sid          = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
+							$formatted_fnums[] = $tmp;
+						}
 					}
 					$fnums = $formatted_fnums;
 				}
@@ -149,7 +157,7 @@ class EmundusViewMessage extends JViewLegacy
 						$user['campaign_id'] = $fnum->cid;
 						$fnum_array[]        = $fnum->fnum;
 
-						if ($user['is_anonym'] == 1) {
+						if ($user['is_anonym'] == 1 || $fnum->anonymous) {
 							$user['name'] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . ' ' . $user['id'];
 							$user['email'] = Text::_('COM_EMUNDUS_ANONYM_EMAIL');
 							$this->atLeastOneAnonym = true;

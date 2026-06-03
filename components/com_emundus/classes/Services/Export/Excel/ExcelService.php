@@ -1472,6 +1472,11 @@ class ExcelService extends Export implements ExportInterface
 					// On traite les données du fnum
 					foreach ($fnum as $k => $v)
 					{
+						if ($k === 'anonymous')
+						{
+							continue;
+						}
+
 						if ($k != 'code' && strpos($k, 'campaign_id') === false)
 						{
 
@@ -1479,12 +1484,12 @@ class ExcelService extends Export implements ExportInterface
 							{
 								$line .= "'" . $v . "\t";
 								$line .= $status[$v]['value'] . "\t";
-								$uid  = intval(substr($v, 21, 7));
+								$uid  = $h_files::getApplicantIdFromFnum($v);
 								if (!$anonymize_data)
 								{
 									$userProfil = $this->m_users->getUserById($uid)[0];
 
-									if ($userProfil->is_anonym != 1)
+									if ($userProfil->is_anonym != 1 && !$fnum['anonymous'])
 									{
 										$line .= $userProfil->lastname . "\t";
 										$line .= $userProfil->firstname . "\t";

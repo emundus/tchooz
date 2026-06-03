@@ -3842,6 +3842,7 @@ class EmundusModelSettings extends ListModel
 				case 'sms':
 				case 'payment':
 				case 'anonymous':
+				case 'public_session':
 					$config = [
 						'enabled'   => $addon['enabled'],
 						'displayed' => $addon['displayed'],

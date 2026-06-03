@@ -101,7 +101,7 @@ class ChoiceFieldFactory
 			}
 			else
 			{
-				$label = $case->name;
+				$label = $case->value;
 			}
 
 			$options[] = new ChoiceFieldValue($case->value, $label);

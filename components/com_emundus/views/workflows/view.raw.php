@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 
 /**
  * eMundus Onboard Campaign View
@@ -32,6 +34,8 @@ class EmundusViewWorkflows extends JViewLegacy
 	public int $evaluation_row_id = 0;
 
 	public ?object $applicant = null;
+
+	protected ?ApplicationFileEntity $applicationFile = null;
 
 	function display($tpl = null)
 	{
@@ -53,42 +57,41 @@ class EmundusViewWorkflows extends JViewLegacy
 				$step_id = $jinput->getInt('step_id', 0);
 				$this->fnum = $jinput->getString('fnum', '');
 
-				$query->clear()
-					->select('applicant_id, id, campaign_id')
-					->from('#__emundus_campaign_candidature')
-					->where('fnum LIKE ' . $db->quote($this->fnum));
-				$db->setQuery($query);
-				$data = $db->loadAssoc();
+				$applicationFileRepository = new ApplicationFileRepository(false);
+				$this->applicationFile = $applicationFileRepository->getByFnum($this->fnum);
 
-				$this->ccid = (int)$data['id'];
-				$this->fnum = EmundusHelperFiles::getFnumFromId($this->ccid);
-				$this->applicant  = $m_user->getUserById($data['applicant_id'])[0];
-				if (!$this->applicant->is_anonym && !isset($this->applicant->profile_picture) || empty($this->applicant->profile_picture)) {
-					$this->applicant->profile_picture = $m_user->getIdentityPhoto($this->fnum, $data['applicant_id']);
-				}
-
-				if (!empty($step_id)) {
-					$this->step = $this->model->getStepData($step_id, $data['campaign_id']);
-
-					try {
-						$this->access = EmundusHelperAccess::getUserEvaluationStepAccess($this->ccid, $this->step, $this->user->id);
-						$evaluation_rows = $this->model->getStepEvaluationsForFile((int)$this->step->id, $this->ccid);
-						if (!empty($evaluation_rows)) {
-							if ($this->step->multiple) {
-								foreach ($evaluation_rows as $evalaution_row) {
-									if ($evalaution_row['evaluator'] == $this->user->id) {
-										$this->evaluation_row_id = $evalaution_row['id'];
-									}
-								}
-							} else {
-								$this->evaluation_row_id = $evaluation_rows[0]['id'];
-							}
-						}
-					} catch (Exception $e) {
-						$app->enqueueMessage($e->getMessage(), 'error');
+				if (!empty($this->applicationFile))
+				{
+					$this->ccid = $this->applicationFile->getId();
+					$this->fnum = $this->applicationFile->getFnum();
+					$this->applicant  = $m_user->getUserById($this->applicationFile->getUser()->id)[0];
+					if (!$this->applicationFile->isAnonymous() && !$this->applicant->is_anonym && !isset($this->applicant->profile_picture) || empty($this->applicant->profile_picture)) {
+						$this->applicant->profile_picture = $m_user->getIdentityPhoto($this->fnum, $this->applicationFile->getUser()->id);
 					}
-				} else {
-					$this->step = null;
+
+					if (!empty($step_id)) {
+						$this->step = $this->model->getStepData($step_id, $this->applicationFile->getCampaignId());
+
+						try {
+							$this->access = EmundusHelperAccess::getUserEvaluationStepAccess($this->ccid, $this->step, $this->user->id);
+							$evaluation_rows = $this->model->getStepEvaluationsForFile((int)$this->step->id, $this->ccid);
+							if (!empty($evaluation_rows)) {
+								if ($this->step->multiple) {
+									foreach ($evaluation_rows as $evalaution_row) {
+										if ($evalaution_row['evaluator'] == $this->user->id) {
+											$this->evaluation_row_id = $evalaution_row['id'];
+										}
+									}
+								} else {
+									$this->evaluation_row_id = $evaluation_rows[0]['id'];
+								}
+							}
+						} catch (Exception $e) {
+							$app->enqueueMessage($e->getMessage(), 'error');
+						}
+					} else {
+						$this->step = null;
+					}
 				}
 			}
 

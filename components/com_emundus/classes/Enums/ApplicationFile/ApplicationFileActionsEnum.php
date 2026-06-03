@@ -26,8 +26,8 @@ enum ApplicationFileActionsEnum: string
 	case OPENFILE = 'openfile';
 	case MOVE_TO_TAB = 'move_to_tab';
 	case CREATE_TAB = 'create_tab';
-
 	case PRINT = 'print';
+	case UNANONYMIZE = 'unanonymize';
 
 	public function getLabel(): string
 	{
@@ -44,6 +44,7 @@ enum ApplicationFileActionsEnum: string
 			self::TRANSACTION => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_TRANSACTION'),
 			self::MOVE_TO_TAB => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_MOVE_TO_TAB'),
 			self::CREATE_TAB => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_CREATE_TAB'),
+			self::UNANONYMIZE => Text::_('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_UNANONYMIZE'),
 			self::PRINT => Text::_('COM_EMUNDUS_APPLICATION_PRINT_APPLICATION'),
 		};
 	}
@@ -63,6 +64,7 @@ enum ApplicationFileActionsEnum: string
 			self::TRANSACTION => 'universal_currency',
 			self::MOVE_TO_TAB => 'tab_move',
 			self::CREATE_TAB => 'tab_new_right',
+			self::UNANONYMIZE => 'visibility_lock',
 			self::PRINT => 'print',
 		};
 	}
@@ -129,6 +131,7 @@ enum ApplicationFileActionsEnum: string
 			self::ANONYMOUS => 7,
 			self::TRANSACTION => 8,
 			self::CUSTOM => 9,
+			self::UNANONYMIZE => 10,
 			self::DELETE => 99,
 		};
 	}
@@ -166,10 +169,27 @@ enum ApplicationFileActionsEnum: string
 				$tabs = $applicationModel->getTabs(Factory::getApplication()->getIdentity()->id);
 				$available = !empty($tabs);
 				break;
+			case self::UNANONYMIZE:
+				$addonRepository = new AddonRepository();
+				$addon = $addonRepository->getByName(AddonEnum::ANONYMOUS->value);
+				if (!$addon->isActivated())
+				{
+					$available = false;
+				}
+				break;
 			default:
 				$available = true;
 		}
 
 		return $available;
+	}
+
+	public function getClass(): string
+	{
+		return match($this)
+		{
+			self::UNANONYMIZE, self::DELETE => 'tw-text-red-500',
+			default => ''
+		};
 	}
 }

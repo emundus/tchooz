@@ -14,8 +14,11 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
+use Tchooz\Enums\Addons\AddonEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
 
 /** @var \Joomla\Component\Users\Site\View\Login\HtmlView $cookieLogin */
 
@@ -38,6 +41,9 @@ else
 {
 	$session->clear('login_campaign_id');
 }
+
+$allowDefaultLogin = (bool)$eMConfig->get('allow_default_login', 1);
+
 ?>
 <div class="com-users-login login">
 	<?php if ($this->params->get('show_page_heading')) : ?>
@@ -211,7 +217,8 @@ else
 	<?php endif; ?>
 
 
-    <form action="<?php echo (!empty($this->redirect)) ? 'index.php?option=com_users&task=user.login&redirect=' . $this->redirect : 'index.php?option=com_users&task=user.login'; ?>"
+    <?php if ($allowDefaultLogin): ?>
+        <form action="<?php echo (!empty($this->redirect)) ? 'index.php?option=com_users&task=user.login&redirect=' . $this->redirect : 'index.php?option=com_users&task=user.login'; ?>"
           method="post" class="form-validate form-horizontal well" id="com-users-login__form">
 
 			<?php echo $this->form->renderFieldset('credentials', ['class' => 'com-users-login__input']); ?>
@@ -286,6 +293,7 @@ else
             <input type="hidden" name="return" value="<?php echo base64_encode($return); ?>">
 			<?php echo HTMLHelper::_('form.token'); ?>
     </form>
+    <?php endif; ?>
 
 	<?php if ($usersConfig->get('allowUserRegistration') && $this->displayRegistration) : ?>
         <div>
@@ -295,6 +303,23 @@ else
             </a>
         </div>
 	<?php endif; ?>
+
+    <?php
+    $addonRepository = new AddonRepository();
+    $addon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
+
+    if (!empty($addon) && $addon->isActivated())
+    {
+        $addonParams = $addon->getParams();
+
+        if (!empty($addonParams) && $addonParams['display_retrieve_public_access_file_login_page'] == 1)
+        {
+            echo LayoutHelper::render('emundus.publicaccess.login', $this);
+        }
+    }
+
+    ?>
+
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {

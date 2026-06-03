@@ -16,7 +16,6 @@ use Joomla\Component\Emundus\Administrator\Attributes\PostflightAttribute;
 use Joomla\Database\DatabaseInterface;
 use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Services\Language\DbLanguage;
-use Tchooz\Services\Reference\InternalReferenceService;
 use Tchooz\Traits\TraitVersion;
 
 class Com_EmundusInstallerScript

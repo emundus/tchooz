@@ -5,15 +5,18 @@ namespace Tchooz\Services\ApplicationFile;
 use EmundusHelperCache;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\Plugin\Emundus\Anonymization\Extension\Anonymization;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\User;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileAction;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionCreateTab;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionMoveToTab;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectToFile;
+use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionUnanonymize;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
+use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Factories\ApplicationFile\ApplicationFileActionFactory;
 
 if (!class_exists('EmundusHelperCache'))
@@ -128,6 +131,26 @@ class ApplicationFileActionsRegistry
 				$availableActions[] = new ApplicationFileActionCreateTab();
 			}
 		}
+		else
+		{
+			if (Factory::getApplication()->isClient('site'))
+			{
+				$currentMenu = Factory::getApplication()->getMenu()->getActive();
+
+				if ($currentMenu->link === 'index.php?option=com_emundus&view=application&layout=history')
+				{
+					$availableActions[] = new ApplicationFileActionRedirectToFile();
+				}
+			}
+		}
+
+		if (ApplicationFileActionsEnum::UNANONYMIZE->isAvailable() && $applicationFileEntity->isAnonymous())
+		{
+			if (Anonymization::getCampaignAnonymizationPolicy($applicationFileEntity->getCampaign()) !== AnonymizationPolicyEnum::FORCED)
+			{
+				$availableActions[] = new ApplicationFileActionUnanonymize();
+			}
+		}
 
 		$config  = ComponentHelper::getParams('com_emundus');
 
@@ -185,6 +208,21 @@ class ApplicationFileActionsRegistry
 					Log::add('Error while loading custom action: ' . $e->getMessage(), 'error', 'com_emundus.registry.custom_actions');
 				}
 			}
+		}
+
+		// Public sessions can not copy files
+		if ($applicationFileEntity->isPublic())
+		{
+			foreach ($availableActions as $key => $action)
+			{
+				if ($action->getActionType() === ApplicationFileActionsEnum::COPY)
+				{
+					unset($availableActions[$key]);
+					break;
+				}
+			}
+
+			$availableActions = array_values($availableActions);
 		}
 
 		return $availableActions;
