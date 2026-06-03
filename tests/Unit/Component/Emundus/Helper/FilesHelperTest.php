@@ -231,7 +231,7 @@ class FilesHelperTest extends UnitTestCase
 		$where = $this->helper->_moduleBuildWhere([], 'files', [], [], $menu_item);
 		$this->assertNotEmpty($where['q'], 'Build where with filters returns not empty string');
 		
-		$this->assertSame(' AND esc.published > 0 AND (jecc.applicant_id LIKE \'%test%\' OR jecc.fnum LIKE \'%test%\' OR jecc.short_reference LIKE \'%test%\' OR eir.reference LIKE \'%test%\' OR ((u.username LIKE \'%test%\' OR eu.firstname LIKE \'%test%\' OR eu.lastname LIKE \'%test%\' OR u.email LIKE \'%test%\') AND eu.is_anonym <> 1)) AND jecc.published = \'1\'', $where['q'], 'Build where with filters returns correct string');
+		$this->assertSame(' AND esc.published > 0 AND (jecc.applicant_id LIKE \'%test%\' OR jecc.fnum LIKE \'%test%\' OR jecc.short_reference LIKE \'%test%\' OR eir.reference LIKE \'%test%\' OR ((u.username LIKE \'%test%\' OR eu.firstname LIKE \'%test%\' OR eu.lastname LIKE \'%test%\' OR u.email LIKE \'%test%\') AND eu.is_anonym <> 1 AND jecc.anonymous <> 1)) AND jecc.published = \'1\'', $where['q'], 'Build where with filters returns correct string');
 
 		$session->set('em-quick-search-filters', [
 			[

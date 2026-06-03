@@ -63,6 +63,7 @@ class SignatureRequests extends CMSPlugin implements SubscriberInterface
 				SignStatusEnum::TO_SIGN->value,
 				SignStatusEnum::AWAITING->value,
 				SignStatusEnum::REMINDER_SENT->value,
+				SignStatusEnum::FINISHING->value,
 			],
 		]);
 

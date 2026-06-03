@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension
+		group="fabrik_element"
+		method="upgrade"
+		type="plugin"
+		version="4.2.9">
+	<name>plg_fabrik_element_emundusreadonly</name>
+	<author>eMundus</author>
+	<creationDate>${createdate}</creationDate>
+	<copyright>(C) 2008-${year} emundus.fr</copyright>
+	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<authorEmail>contact@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>1.0.0</version>
+	<help url="PLG_ELEMENT_EMUNDUSREADONLY_HELP_SERVER"/>
+	<description>PLG_ELEMENT_EMUNDUSREADONLY_DESCRIPTION</description>
+	<files>
+		<filename>emundusreadonly.xml</filename>
+		<filename plugin="emundusreadonly">emundusreadonly.php</filename>
+		<filename>emundusreadonly.js</filename>
+		<filename>emundusreadonly-min.js</filename>
+		<filename>index.html</filename>
+		<folder>forms</folder>
+		<folder>layouts</folder>
+		<folder>language</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_fabrik_element_emundusreadonly.ini</language>
+		<language tag="en-GB">en-GB.plg_fabrik_element_emundusreadonly.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_element_emundusreadonly.ini</language>
+		<language tag="fr-FR">fr-FR.plg_fabrik_element_emundusreadonly.sys.ini</language>
+	</languages>
+</extension>

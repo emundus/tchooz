@@ -38,11 +38,14 @@ class AddonHandlerResolver extends AbstractHandlerResolver
 			}
 		}
 
+		$addonConfigurationRegistry = new AddonConfigurationRegistry();
+		$configuration                    = $addonConfigurationRegistry->getConfiguration($addonType);
+
 		if (!$classFound) {
 			throw new RuntimeException("Handler class {$classBase} not found in file {$fileName}. Tried: " . implode(', ', $candidates));
 		}
 
-		$instance = new $classFound($addon);
+		$instance = new $classFound($addon, $configuration);
 		if (!($instance instanceof AbstractAddonHandler)) {
 			throw new RuntimeException("Handler {$classFound} must extend AbstractAddonHandler");
 		}

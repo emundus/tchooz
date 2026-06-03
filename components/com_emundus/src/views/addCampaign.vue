@@ -228,10 +228,58 @@
 							>{{ translate('COM_EMUNDUS_CAMPAIGNS_PIN') }}
 							<span
 								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
-								@click="displayPinnedCampaignTip"
+								@click="
+									displayTip('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP', 'COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP_TEXT')
+								"
 								>help_outline</span
 							>
 						</span>
+					</div>
+
+					<div v-if="publicAddonActivated" class="tw-flex tw-items-center">
+						<div class="em-toggle">
+							<input
+								type="checkbox"
+								true-value="1"
+								false-value="0"
+								class="em-toggle-check tw-mt-2"
+								id="public"
+								name="public"
+								v-model="form.public"
+								@click="onFormChange()"
+							/>
+							<strong class="b em-toggle-switch"></strong>
+							<strong class="b em-toggle-track"></strong>
+						</div>
+						<span for="public" class="tw-ml-2 tw-flex tw-items-center"
+							>{{ translate('COM_EMUNDUS_CAMPAIGNS_PUBLIC') }}
+							<span
+								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
+								@click="
+									displayTip('COM_EMUNDUS_ONBOARD_PUBLIC_CAMPAIGN_TIP', 'COM_EMUNDUS_ONBOARD_PUBLIC_CAMPAIGN_TIP_TEXT')
+								"
+								>help_outline</span
+							>
+						</span>
+					</div>
+
+					<div class="tw-flex tw-flex-col tw-gap-2" v-if="anonymizationPolicies.length > 0">
+						<div class="tw-flex tw-flex-row tw-items-center">
+							<label for="anonymization_policy" class="tw-m-0 tw-font-medium">
+								{{ translate('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_LABEL') }}
+							</label>
+							<span
+								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
+								@click="displayTip('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_LABEL', this.anonymizationPoliciesTip, true)"
+							>
+								help_outline
+							</span>
+						</div>
+						<select id="anonymization_policy" name="anonymization_policy" v-model="form.anonymization_policy">
+							<option v-for="policy in anonymizationPolicies" :key="policy.value" :value="policy.value">
+								{{ policy.label }}
+							</option>
+						</select>
 					</div>
 
 					<div v-if="userCategoryEnabled == 1">
@@ -271,7 +319,7 @@
 					</div>
 				</div>
 
-				<hr class="tw-mb-4 tw-mt-1.5" />
+				<hr class="tw-mb-4 tw-mt-4" />
 
 				<div class="tw-flex tw-flex-col tw-gap-4">
 					<h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</h2>
@@ -281,7 +329,9 @@
 							<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }}</label>
 							<span
 								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
-								@click="displayCampaignResumeTip"
+								@click="
+									displayTip('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME_TIP', 'COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME_TIP_TEXT')
+								"
 								>help_outline</span
 							>
 						</div>
@@ -302,7 +352,12 @@
 							<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
 							<span
 								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
-								@click="displayCampaignDescriptionTip"
+								@click="
+									displayTip(
+										COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP,
+										COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP_TEXT,
+									)
+								"
 								>help_outline</span
 							>
 						</div>
@@ -551,6 +606,14 @@ export default {
 	props: {
 		campaign: Number,
 		crud: Object,
+		anonymizationPolicies: {
+			type: Array,
+			default: () => [],
+		},
+		publicAddonActivated: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data: () => ({
@@ -613,6 +676,8 @@ export default {
 			visible: 1,
 			alias: '',
 			parent_id: null,
+			public: 0,
+			anonymization_policy: 'forbidden',
 		},
 		programForm: {
 			code: '',
@@ -701,10 +766,9 @@ export default {
 			throw new Error("It's not an Error, please ignore.");
 		},
 
-		displayPinnedCampaignTip() {
-			Swal.fire({
-				title: this.translate('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP'),
-				text: this.translate('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP_TEXT'),
+		displayTip(title, text, isHtml = false) {
+			let options = {
+				title: this.translate(title),
 				showCancelButton: false,
 				confirmButtonText: this.translate('COM_EMUNDUS_SWAL_OK_BUTTON'),
 				reverseButtons: true,
@@ -713,37 +777,15 @@ export default {
 					confirmButton: 'em-swal-confirm-button',
 					actions: 'em-swal-single-action',
 				},
-			});
-		},
+			};
 
-		displayCampaignResumeTip() {
-			Swal.fire({
-				title: this.translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME_TIP'),
-				text: this.translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME_TIP_TEXT'),
-				showCancelButton: false,
-				confirmButtonText: this.translate('COM_EMUNDUS_SWAL_OK_BUTTON'),
-				reverseButtons: true,
-				customClass: {
-					title: 'em-swal-title',
-					confirmButton: 'em-swal-confirm-button',
-					actions: 'em-swal-single-action',
-				},
-			});
-		},
+			if (isHtml) {
+				options.html = this.translate(text);
+			} else {
+				options.text = this.translate(text);
+			}
 
-		displayCampaignDescriptionTip() {
-			Swal.fire({
-				title: this.translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP'),
-				text: this.translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP_TEXT'),
-				showCancelButton: false,
-				confirmButtonText: this.translate('COM_EMUNDUS_SWAL_OK_BUTTON'),
-				reverseButtons: true,
-				customClass: {
-					title: 'em-swal-title',
-					confirmButton: 'em-swal-confirm-button',
-					actions: 'em-swal-single-action',
-				},
-			});
+			Swal.fire(options);
 		},
 
 		getCampaignById() {
@@ -1219,6 +1261,16 @@ export default {
 			}
 
 			return languages;
+		},
+		anonymizationPoliciesTip() {
+			let htmlTip = this.translate('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_DESC') + '<ul>';
+
+			this.anonymizationPolicies.forEach((policy) => {
+				htmlTip += '<li>' + policy.label + ' : ' + policy.description + '</li>';
+			});
+
+			htmlTip += '</ul>';
+			return htmlTip;
 		},
 	},
 

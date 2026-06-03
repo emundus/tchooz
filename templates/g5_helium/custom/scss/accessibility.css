@@ -1,0 +1,12 @@
+.a11y-monochrome {
+    filter: grayscale(100%);
+}
+
+.a11y-high-contrast {
+    filter: contrast(115%);
+}
+
+.a11y-font {
+    --em-coordinator-font-size: 1.2rem;
+    --em-applicant-font-size: 1.2rem;
+}

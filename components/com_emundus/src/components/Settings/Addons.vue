@@ -5,9 +5,9 @@ import Messenger from '@/components/Settings/Addons/Messenger.vue';
 import SMSAddon from '@/components/Settings/Addons/SMSAddon.vue';
 import RankingTool from '@/components/Settings/Addons/RankingTool.vue';
 import PaymentAddon from '@/components/Settings/Addons/PaymentAddon.vue';
-import AnonymAddon from '@/components/Settings/Addons/AnonymAddon.vue';
 import Popover from '@/components/Popover.vue';
 import alerts from '@/mixins/alerts.js';
+import Addon from '@/components/Settings/Addons/Addon.vue';
 
 import { useGlobalStore } from '@/stores/global.js';
 import Tag from '@/components/Atoms/Tag.vue';
@@ -16,10 +16,12 @@ import CustomReference from '@/components/Settings/Addons/CustomReference.vue';
 import StripeSetup from '@/components/Settings/Integration/StripeSetup.vue';
 import AmmonSetup from '@/components/Settings/Integration/AmmonSetup.vue';
 import IntegrationSetup from '@/components/Settings/Integration/IntegrationSetup.vue';
+import AddonSetup from '@/components/Settings/Addons/AddonSetup.vue';
 
 export default {
 	name: 'Addons',
 	components: {
+		AddonSetup,
 		IntegrationSetup,
 		AmmonSetup,
 		StripeSetup,
@@ -30,8 +32,8 @@ export default {
 		SMSAddon,
 		RankingTool,
 		PaymentAddon,
-		AnonymAddon,
 		Popover,
+		Addon,
 	},
 	mixins: [alerts],
 	data() {
@@ -558,7 +560,7 @@ export default {
 					"
 				/>
 				<SMSAddon
-					v-if="currentAddon.namekey === 'sms'"
+					v-else-if="currentAddon.namekey === 'sms'"
 					:addon="currentAddon"
 					@addonSaved="
 						currentAddon = null;
@@ -567,7 +569,7 @@ export default {
 				></SMSAddon>
 
 				<PaymentAddon
-					v-if="currentAddon.namekey === 'payment'"
+					v-else-if="currentAddon.namekey === 'payment'"
 					:addon="currentAddon"
 					@addonSaved="
 						currentAddon = null;
@@ -575,22 +577,24 @@ export default {
 					"
 				></PaymentAddon>
 
-				<AnonymAddon
-					v-if="currentAddon.namekey === 'anonymous'"
+				<Addon
+					v-else-if="currentAddon.namekey === 'anonymous' || currentAddon.namekey === 'public_session'"
 					:addon="currentAddon"
 					@addonSaved="
 						currentAddon = null;
 						getAddons();
 					"
-				></AnonymAddon>
+				></Addon>
 
 				<CustomReference
-					v-if="currentAddon.namekey === 'custom_reference_format'"
+					v-else-if="currentAddon.namekey === 'custom_reference_format'"
 					@addonSaved="
 						currentAddon = null;
 						getAddons();
 					"
 				></CustomReference>
+
+				<AddonSetup v-else-if="currentAddon.namekey !== ''" :addon="currentAddon" :name="currentAddon.label" />
 			</div>
 
 			<div v-if="currentApp">

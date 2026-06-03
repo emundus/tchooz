@@ -390,9 +390,12 @@ foreach ($parsed_data as $row_id => $insert_row) {
     } else {
 
         if (!empty($fnum)) {
-            $user = (int)substr($fnum, -7);
+	        if (!class_exists('EmundusHelperFiles'))
+	        {
+		        require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+	        }
+            $user = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
         }
-
     }
 
     if (empty($user)) {

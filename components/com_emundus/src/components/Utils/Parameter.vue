@@ -92,7 +92,7 @@
 							:is="parameter.addNew.component"
 							v-model="value"
 							:componentsProps="this.$props.componentsProps"
-							@saved="onAddNewValue(parameter)"
+							@saved="onAddNewValue"
 							@close="onCloseAddModal(parameter)"
 						>
 						</component>
@@ -973,10 +973,10 @@ export default {
 			this.$refs[modalName].open();
 		},
 
-		onAddNewValue(parameter) {
+		onAddNewValue(newValue) {
 			// Close the modal
-			this.onCloseAddModal(parameter);
-			this.$emit('newValueAdded', parameter);
+			this.onCloseAddModal(this.parameter);
+			this.$emit('newValueAdded', this.parameter, newValue);
 		},
 		onCloseAddModal() {
 			// Close the modal

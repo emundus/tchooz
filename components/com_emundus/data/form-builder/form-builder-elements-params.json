@@ -926,5 +926,16 @@
 		}
 	],
 	"emundus_calculation": [
+	],
+	"emundusreadonly": [
+		{
+			"label": "COM_EMUNDUS_ONBOARD_BUILDER_EMUNDUSREADONLY_EMPTY_PLACEHOLDER",
+			"name": "empty_placeholder",
+			"type": "text",
+			"helptext": "COM_EMUNDUS_ONBOARD_BUILDER_EMUNDUSREADONLY_EMPTY_PLACEHOLDER_HELPTEXT",
+			"placeholder": "",
+			"published": true,
+			"sysadmin_only": false
+		}
 	]
 }

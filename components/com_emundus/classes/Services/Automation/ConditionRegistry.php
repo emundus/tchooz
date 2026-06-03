@@ -111,6 +111,12 @@ class ConditionRegistry
 				$availableResolvers = [];
 			}
 		}
+		else
+		{
+			$availableResolvers = array_filter($availableResolvers, function($resolver) {
+				return $resolver->getTargetType() !== ConditionTargetTypeEnum::CONTEXTDATA->value;
+			});
+		}
 
 		if (!empty($contextFilters['automationId']))
 		{
@@ -143,6 +149,17 @@ class ConditionRegistry
 		}
 
 		foreach ($availableResolvers as $type => $resolver) {
+			if (isset($contextFilters['target_types'])) {
+				$resolverTargetTypes = array_map(function ($targetType) {
+					return $targetType->value;
+				}, $resolver->getAllowedActionTargetTypes());
+
+				if (!array_intersect($contextFilters['target_types'], $resolverTargetTypes))
+				{
+					continue;
+				}
+			}
+
 			$resolverFilters = $contextFilters;
 			$resolverFilters['storedValues'] = $contextFilters['storedValues'][$type] ?? [];
 

@@ -392,7 +392,12 @@ class EmundusModelChecklist extends JModelList
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
 		$m_emails = new EmundusModelEmails;
 
-		$aid            = intval(substr($fnum, 21, 7));
+		if (!class_exists('EmundusHelperFiles'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+		}
+
+		$aid            = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
 		$tags           = $m_emails->setTags($aid, $post, $fnum, '', $file);
 		$formatted_file = preg_replace($tags['patterns'], $tags['replacements'], $file);
 		$formatted_file = $m_emails->setTagsFabrik($formatted_file, array($fnum));

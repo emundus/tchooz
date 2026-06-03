@@ -4,6 +4,11 @@ defined('_JEXEC') or die('Access Deny');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Session\Session;
+use Tchooz\Enums\Addons\AddonEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 
 // INCLUDES
 require_once(dirname(__FILE__) . DS . 'helper.php');
@@ -229,7 +234,6 @@ if ($user->guest || in_array($e_user->profile, $app_prof) || $tmpl === 'tchooz_s
 	$m_progs  = new EmundusModelProgramme();
 	$programs = $m_progs->getProgrammes(1, $program_array);
 
-
 	if (in_array('category', $mod_em_campaign_show_filters_list))
 	{
 		$categories = [];
@@ -250,7 +254,6 @@ if ($user->guest || in_array($e_user->profile, $app_prof) || $tmpl === 'tchooz_s
 			3 => Text::_('MOD_EM_CAMPAIGN_BOTH_RESEAUX')
 		];
 	}
-
 
 	$programs_codes = [];
 	foreach ($programs as $program)
@@ -391,6 +394,32 @@ if ($user->guest || in_array($e_user->profile, $app_prof) || $tmpl === 'tchooz_s
 	$paginationPast    = new JPagination($helper->getTotalPast(), $session->get('limitstartPast'), $session->get('limit'));
 	$paginationFutur   = new JPagination($helper->getTotalFutur(), $session->get('limitstartFutur'), $session->get('limit'));
 	$paginationTotal   = new JPagination($helper->getTotal(), $session->get('limitstart'), $session->get('limit'));
+
+	if (!empty($cid))
+	{
+		$campaignRepository = new CampaignRepository();
+		$campaign = $campaignRepository->getById($cid);
+
+		if (!empty($campaign) && $campaign->isPublic() && $app->getIdentity()->guest === 1)
+		{
+			$addonRepository = new AddonRepository();
+			$addon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
+
+			if (!empty($addon) && $addon->isActivated())
+			{
+				$addonParams = $addon->getParams();
+
+				if (!empty($addonParams['confirm_public_application_creation']) && $addonParams['confirm_public_application_creation'] == 1)
+				{
+					$redirect_url = Route::_('index.php?option=com_users&view=login');
+				}
+				else
+				{
+					$redirect_url = Route::_('/index.php?option=com_emundus&task=applyPubliclyToCampaign&' . Session::getFormToken() . '=1');
+				}
+			}
+		}
+	}
 
 	require(ModuleHelper::getLayoutPath('mod_emundus_campaign', $params->get('mod_em_campaign_layout')));
 }
