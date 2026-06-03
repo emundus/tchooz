@@ -45,11 +45,47 @@ class AttachmentTypeRepository extends EmundusRepository
 		$this->factory = new AttachmentTypeFactory();
 	}
 
-	public function flush(): bool
+	public function flush(AttachmentType $entity): bool
 	{
 		$flushed = false;
 
-		// todo: implement flush logic
+		if (empty($entity->getId()))
+		{
+			$object = (object) [
+				'lbl'                => $entity->getLbl(),
+				'value'              => $entity->getName(),
+				'description'        => $entity->getDescription(),
+				'allowed_types'      => $entity->getAllowedTypes(),
+				'nbmax'              => $entity->getNbmax(),
+				'ordering'           => $entity->getOrdering(),
+				'published'          => $entity->isPublished() ?? 1,
+				'category'           => $entity->getCategory(),
+			];
+
+			if ($this->db->insertObject($this->tableName, $object))
+			{
+				$entity->setId((int) $this->db->insertid());
+				$flushed = true;
+			}
+		}
+		else
+		{
+			$object = (object) [
+				'id'                 => $entity->getId(),
+				'lbl'                => $entity->getLbl(),
+				'value'              => $entity->getName(),
+				'description'        => $entity->getDescription(),
+				'allowed_types'      => $entity->getAllowedTypes(),
+				'nbmax'              => $entity->getNbmax(),
+				'ordering'           => $entity->getOrdering(),
+				'published'          => $entity->isPublished() ?? 1,
+				'category'           => $entity->getCategory(),
+			];
+
+			$flushed = $this->db->updateObject($this->tableName, $object, 'id');
+		}
+
+		//TODO implement other fields
 
 		return $flushed;
 	}
@@ -76,11 +112,13 @@ class AttachmentTypeRepository extends EmundusRepository
 	}
 
 	/**
-	 * @param   array   $filters
-	 * @param   int     $limit
-	 * @param   int     $page
-	 * @param   string  $select
-	 * @param   string  $order
+	 * @param   array         $filters
+	 * @param   int           $limit
+	 * @param   int           $page
+	 * @param   string|array  $select
+	 * @param   string        $order
+	 * @param   string        $search
+	 * @param   bool          $buildEntity
 	 *
 	 * @return array<AttachmentType>
 	 */

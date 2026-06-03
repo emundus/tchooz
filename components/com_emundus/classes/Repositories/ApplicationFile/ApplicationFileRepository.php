@@ -9,10 +9,12 @@ use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\ApplicationFile\StatusEntity;
 use Tchooz\Factories\ApplicationFile\ApplicationFileFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
+use Tchooz\Traits\TraitDispatcher;
 
 #[TableAttribute(
 	table: '#__emundus_campaign_candidature',
@@ -29,11 +31,16 @@ use Tchooz\Repositories\RepositoryInterface;
 		'user_id',
 		'form_progress',
 		'attachment_progress',
-		'short_reference'
+		'short_reference',
+		'name',
+		'public',
+		'anonymous',
 	]
 )]
 class ApplicationFileRepository extends EmundusRepository implements RepositoryInterface
 {
+	use TraitDispatcher;
+
 	private QueryInterface $query;
 
 	private ApplicationFileFactory $factory;
@@ -44,6 +51,11 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 		$this->query   = $this->db->getQuery(true);
 		$this->factory = new ApplicationFileFactory();
+	}
+
+	public function getFactory(): ?object
+	{
+		return $this->factory;
 	}
 
 	/**
@@ -245,6 +257,26 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 				}
 
 				$applicationFileEntity->setId($ccid);
+				$flushed = true;
+
+				$this->dispatchJoomlaEvent('onAfterCampaignCandidature',
+					[
+						'user_id' => $applicationFileEntity->getUser()->id,
+						'fnum' => $applicationFileEntity->getFnum(),
+						'cid' => $applicationFileEntity->getCampaignId(),
+						'campaign' => $applicationFileEntity->getCampaignId(),
+						'connected' => $applicationFileEntity->getUser()->id,
+						'context' => new EventContextEntity(
+							$applicationFileEntity->getUser(),
+							[$applicationFileEntity->getFnum()],
+							[$applicationFileEntity->getUser()->id],
+							[
+								'application_file' => $applicationFileEntity,
+								'cid' => $applicationFileEntity->getCampaignId(),
+								'campaign_id' => $applicationFileEntity->getCampaignId(),
+							]
+						)
+					]);
 			}
 			else
 			{
@@ -258,7 +290,10 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 					'published'           => $applicationFileEntity->getPublished(),
 					'form_progress'       => $applicationFileEntity->getFormProgress(),
 					'attachment_progress' => $applicationFileEntity->getAttachmentProgress(),
-					'short_reference'     => $applicationFileEntity->getShortReference()
+					'short_reference'     => $applicationFileEntity->getShortReference(),
+					'name'                => $applicationFileEntity->getName(),
+					'anonymous'           => $applicationFileEntity->isAnonymous() ? 1 : 0,
+					'public'              => $applicationFileEntity->isPublic() ? 1 : 0,
 				];
 
 				if (!$this->db->updateObject('#__emundus_campaign_candidature', $data, 'id'))
@@ -295,10 +330,10 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 		$application_files = [];
 
 		$this->query->clear()
-			->select('id, fnum, status, published, campaign_id')
-			->from('#__emundus_campaign_candidature')
-			->where('applicant_id = :applicant_id')
-			->bind(':applicant_id', $applicant_id, ParameterType::INTEGER);
+			->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->where($this->db->quoteName($this->alias . '.applicant_id') . ' = ' . $this->db->quote($applicant_id));
+
 		$this->db->setQuery($this->query);
 		$results = $this->db->loadObjectList();
 
@@ -308,13 +343,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 			{
 				if (!empty($result->fnum))
 				{
-					$application_file = new ApplicationFileEntity($user);
-					$application_file->setFnum($result->fnum);
-					$application_file->setStatus($result->status);
-					$application_file->setPublished($result->published);
-					$application_file->setCampaignId($result->campaign_id);
-
-					$application_files[] = $application_file;
+					$application_files[] = $this->factory->fromDbObject($result, $this->withRelations, $this->exceptRelations);
 				}
 			}
 		}
@@ -351,7 +380,10 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 				'status'              => $status,
 				'published'           => $applicationFileEntity->getPublished(),
 				'form_progress'       => 0,
-				'attachment_progress' => 0
+				'attachment_progress' => 0,
+				'name'                => $applicationFileEntity->getName(),
+				'public'              => $applicationFileEntity->isPublic() ? 1 : 0,
+				'anonymous'           => $applicationFileEntity->isAnonymous() ? 1 : 0,
 			];
 			$campaign_candidature = (object) $campaign_candidature;
 			$this->db->insertObject('#__emundus_campaign_candidature', $campaign_candidature);

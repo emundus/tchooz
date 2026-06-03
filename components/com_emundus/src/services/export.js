@@ -80,12 +80,24 @@ export default {
 		}
 	},
 
+	async getSettingsSchema() {
+		try {
+			return await client.get('settings');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
 	async export(
 		format,
 		selectedElementsIds,
 		selectedHeadersIds,
 		selectedSynthesisIds,
 		selectedAttachmentIds,
+		settings = {},
 		async = false,
 		allowAsync = false,
 	) {
@@ -100,6 +112,7 @@ export default {
 					headers: selectedHeadersIds,
 					synthesis: selectedSynthesisIds,
 					attachments: selectedAttachmentIds,
+					settings: JSON.stringify(settings || {}),
 					async: async,
 					version: 'next',
 				},

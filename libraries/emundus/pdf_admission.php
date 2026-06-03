@@ -41,7 +41,15 @@ function pdf_admission($user_id, $fnum = null, $output = true, $name = null, $op
 	$campaign_id = $infos['campaign_id'];
 
 	try {
-		$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+		$anonymize_data = EmundusHelperAccess::isDataAnonymized(Factory::getApplication()->getIdentity()->id);
+
+		// Check file-level anonymization
+		$query_anon = $db->getQuery(true);
+		$query_anon->select('anonymous')
+			->from($db->quoteName('#__emundus_campaign_candidature'))
+			->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+		$db->setQuery($query_anon);
+		$anonymize_data = $anonymize_data || (int) $db->loadResult() === 1;
 
 		// Users informations
 		$query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted

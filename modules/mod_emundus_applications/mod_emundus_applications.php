@@ -14,11 +14,29 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
-use Tchooz\Providers\DateProvider;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Services\Reference\InternalReferenceService;
+
+if (EmundusPublicAccess::isPublicAccessSession())
+{
+	require ModuleHelper::getLayoutPath('mod_emundus_applications', 'public_access');
+	return;
+}
+else
+{
+	Text::script('IMPORT_FILE_FROM_PUBLIC_ACCESS_TITLE');
+	Text::script('IMPORT_FILE_FROM_PUBLIC_ACCESS_DESC');
+	Text::script('IMPORT_FILE_FAILURE');
+	Text::script('COM_EMUNDUS_ACCESS_KEY_LABEL');
+	Text::script('COM_EMUNDUS_ACCESS_KEY_LABEL_PLACEHOLDER');
+	Text::script('IMPORT_FILE_FROM_PUBLIC_ACCESS_BUTTON');
+	Text::script('CANCEL');
+}
 
 if (!class_exists('EmundusModelProfile'))
 {
@@ -83,6 +101,21 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	}
 	$m_application = new EmundusModelApplication();
 
+	$displayImportPublicFilesAction = false;
+	$addonRepository = new AddonRepository();
+	$publicSessionAddon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
+	if ($publicSessionAddon->isActivated())
+	{
+		if ($publicSessionAddon->getParams()['display_import_public_file_action'] == 1)
+		{
+			$wa->registerAndUseScript('mod_emundus_applications.publicaccess', 'modules/mod_emundus_applications/script/publicaccess.js');
+			$displayImportPublicFilesAction = true;
+		}
+	}
+
+	$document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->');
+	$document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->');
+
 	$Itemid = $app->input->getInt('Itemid', null, 'int');
 	$layout = $params->get('layout', 'default');
 
@@ -95,13 +128,6 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	{
 		return;
 	}
-	$internalReferenceService    = new InternalReferenceService(
-		new DateProvider(),
-		new ApplicationFileRepository()
-	);
-	$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity();
-	$isShowToApplicant           = $customReferenceFormatEntity->isShowToApplicant();
-
 	$internalReferenceService    = new InternalReferenceService(
 		new DateProvider(),
 		new ApplicationFileRepository()
@@ -199,12 +225,6 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$actions                             = $params->get('mod_emundus_applications_actions', ['rename', 'documents', 'history']);
 	$history_link                        = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=application&layout=history', true);
 	$choices_link                        = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=application_choices', true);
-
-	$payment_repository = new PaymentRepository();
-	if ($payment_repository->getAddon()->enabled === 1)
-	{
-		$actions[] = 'transactions';
-	}
 
 	// Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
 	if ($layout == '_:ccirs-drh')
@@ -349,7 +369,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 		}
 	}
 
-	$override_default_content = JText::_($params->get('override_default_content', ''));
+	$override_default_content = Text::_($params->get('override_default_content', ''));
 	if (!empty($override_default_content))
 	{
 		try
@@ -360,7 +380,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 		}
 		catch (Exception $e)
 		{
-			$override_default_content = JText::_($params->get('override_default_content', ''));
+			$override_default_content = Text::_($params->get('override_default_content', ''));
 		}
 	}
 

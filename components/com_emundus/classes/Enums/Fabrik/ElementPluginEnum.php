@@ -63,6 +63,8 @@ enum ElementPluginEnum: string
 
 	case ORDERLIST = 'orderlist';
 
+	case EMUNDUSREADONLY = 'emundusreadonly';
+
 	public static function tryFromString(?string $plugin): ?self
 	{
 		if ($plugin === null || $plugin === '')
@@ -117,6 +119,7 @@ enum ElementPluginEnum: string
 			// DEPRECATED
 			self::REFERENT => 'COM_EMUNDUS_ONBOARD_TYPE_REFERENT',
 			self::ORDERLIST => 'COM_EMUNDUS_ONBOARD_TYPE_ORDERLIST',
+			self::EMUNDUSREADONLY => 'COM_EMUNDUS_ONBOARD_TYPE_EMUNDUSREADONLY',
 
 			default => 'COM_EMUNDUS_UNKNOWN',
 		};

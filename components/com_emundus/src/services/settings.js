@@ -404,6 +404,19 @@ export default {
 		}
 	},
 
+	async setupAddon(addon_type, setup) {
+		try {
+			return await fetchClient.post('setupaddon', {
+				addon_type: addon_type,
+				setup: JSON.stringify(setup),
+			});
+		} catch (e) {
+			return {
+				status: false,
+			};
+		}
+	},
+
 	async toggleAppEnabled(app_id, enabled) {
 		try {
 			return await fetchClient.post('toggleapp', {
@@ -489,6 +502,19 @@ export default {
 			return await fetchClient.post('toggleaddonsuggest', {
 				addon_type: addon_type,
 				suggested: suggested,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async getAddonParameters(addonType) {
+		try {
+			return await fetchClient.post('getaddonparameters', {
+				addon_type: addonType,
 			});
 		} catch (e) {
 			return {
@@ -823,6 +849,49 @@ export default {
 		try {
 			return await fetchClient.post('sendcommercialinterest', {
 				addon_type: addonNamekey,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+				data: null,
+			};
+		}
+	},
+
+	async getApplicationFileCustomActions() {
+		try {
+			return await fetchClient.get('getApplicationFileCustomActions');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+				data: null,
+			};
+		}
+	},
+
+	async getAvailableConditionsForCustomActions() {
+		try {
+			return await fetchClient.get('getAvailableConditionsForCustomActions');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+				data: null,
+			};
+		}
+	},
+
+	async saveApplicationFileCustomActions(customActions) {
+		let actions = JSON.parse(JSON.stringify(customActions));
+		actions.forEach((action) => {
+			action.action.parameters = {};
+		});
+
+		try {
+			return await fetchClient.post('saveApplicationFileCustomActions', {
+				actions: JSON.stringify(actions),
 			});
 		} catch (e) {
 			return {

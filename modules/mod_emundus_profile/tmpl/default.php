@@ -7,10 +7,24 @@
  */
 
 // No direct access.
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Router\Route;
+use Tchooz\Enums\UI\ButtonVariantEnum;
+use Tchooz\Enums\UI\ButtonWidthEnum;
+
 defined('_JEXEC') or die;
-$document = JFactory::getDocument();
-$document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.css");
+
+$app = Factory::getApplication();
+$document = $app->getDocument();
+$wa = $document->getWebAssetManager();
+$wa->registerAndUseStylesheet('mod_emundus_profile', 'modules/mod_emundus_profile/style/mod_emundus_profile.css');
+
+$menu = Factory::getApplication()->getMenu();
+$accessibilityItem = $menu->getItems('link', 'index.php?option=com_emundus&view=accessibility&layout=user', true);
 ?>
+
 <div>
     <div class="em-container-profile-view-pict em-flex-row em-flex-space-between em-small-flex-column em-small-align-items-start em-mb-16">
         <div class="em-flex-row em-small-flex-column em-small-align-items-start em-w-100">
@@ -34,21 +48,35 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
                     </div>
 				<?php endif; ?>
 
-				<?php if ($show_account_edit_button == 1 && !$external) : ?>
-                    <a class="em-w-auto btn manage-account-icon"
-                       href="<?php echo JRoute::_('index.php?option=com_users&view=profile&layout=edit') ?>"
-                       title="<?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT_PROFILE_PASSWORD_TITLE') ?>">
-                        <span class="material-symbols-outlined">manage_accounts</span>
-	                    <?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT_PROFILE_PASSWORD_TITLE'); ?>
-                    </a>
-				<?php endif; ?>
+                <div class="tw-flex tw-gap-3">
+                    <?php if ($show_account_edit_button == 1 && !$external) : ?>
+                        <?php
+                        echo LayoutHelper::render('emundus.button', [
+                            'variant' => ButtonVariantEnum::PRIMARY,
+                            'icon'    => 'manage_accounts',
+                            'width'   => ButtonWidthEnum::FIT,
+                            'text'    => Text::_('MOD_EMUNDUS_PROFILE_EDIT_PROFILE_PASSWORD_TITLE'),
+                            'href'    => Route::_('index.php?option=com_users&view=profile&layout=edit'),
+                        ]);
+                        ?>
+                    <?php endif; ?>
 
+                    <?php
+                    echo LayoutHelper::render('emundus.button', [
+                        'variant' => ButtonVariantEnum::PRIMARY,
+                        'icon'    => 'accessibility_new',
+                        'width'   => ButtonWidthEnum::FIT,
+                        'text'    => Text::_('MOD_EMUNDUS_PROFILE_EDIT_PROFILE_ACCESSIBILITY_TITLE'),
+                        'href'    => $accessibilityItem->alias,
+                    ]);
+                    ?>
+                </div>
             </div>
 
         </div>
     </div>
 
-    <p class="em-neutral-700-color em-mb-8 em-font-size-16"><?php echo JText::_($intro) ?></p>
+    <p class="em-neutral-700-color em-mb-8 em-font-size-16"><?php echo Text::_($intro) ?></p>
 </div>
 
 <div class="em-page-loader" style="display: none"></div>

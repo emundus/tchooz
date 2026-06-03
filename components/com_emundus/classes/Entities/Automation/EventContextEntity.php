@@ -32,9 +32,11 @@ class EventContextEntity
 		return $this->files;
 	}
 
-	public function setFiles(array $files): void
+	public function setFiles(array $files): self
 	{
 		$this->files = $files;
+
+		return $this;
 	}
 
 	public function getUsers(): array
@@ -42,14 +44,23 @@ class EventContextEntity
 		return $this->users;
 	}
 
-	public function setUsers(array $users): void
+	public function setUsers(array $users): self
 	{
 		$this->users = $users;
+
+		return $this;
 	}
 
 	public function getParameters(): array
 	{
 		return $this->parameters;
+	}
+
+	public function setParameters(array $parameters): self
+	{
+		$this->parameters = $parameters;
+
+		return $this;
 	}
 
 	public function serialize()

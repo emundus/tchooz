@@ -19,6 +19,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Router\Route;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 
 if(!class_exists('EmundusHelperCache'))
 {
@@ -2775,14 +2777,7 @@ class EmundusHelperFiles
 		$m_users = new EmundusModelUsers();
 
 		$app = Factory::getApplication();
-		if (version_compare(JVERSION, '4.0', '>'))
-		{
-			$config = $app->getConfig();
-		}
-		else
-		{
-			$config = Factory::getConfig();
-		}
+		$config = $app->getConfig();
 
 		$menu = $app->getMenu();
 		// If no active menu, use default
@@ -2801,7 +2796,7 @@ class EmundusHelperFiles
 		asort($levels);
 
 		$key   = 'menu_items' . $params . implode(',', $levels) . '.' . $active->id;
-		$cache = JFactory::getCache('mod_menu', '');
+		$cache = Factory::getCache('mod_menu', '');
 
 		if (!($items = $cache->get($key)))
 		{
@@ -2909,11 +2904,11 @@ class EmundusHelperFiles
 
 					if (strcasecmp(substr($item->flink, 0, 4), 'http') && (strpos($item->flink, 'index.php?') !== false))
 					{
-						$item->flink = JRoute::_($item->flink, true, $item->getParams()->get('secure'));
+						$item->flink = Route::_($item->flink, true, $item->getParams()->get('secure'));
 					}
 					else
 					{
-						$item->flink = JRoute::_($item->flink);
+						$item->flink = Route::_($item->flink);
 					}
 
 					$item->title        = htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8', false);
@@ -3491,9 +3486,9 @@ class EmundusHelperFiles
 	/**
 	 * Function to create a new FNUM
 	 *
-	 * @param   integer     The id of the campaign.
-	 * @param   integer     The id of the user.
-	 *
+	 * @param   integer  $campaign_id   The id of the campaign.
+	 * @param   integer  $user_id       The id of the user.
+	 * @param   bool     $redirect
 	 * @return  string      FNUM for application.
 	 * @since   1.6
 	 */
@@ -3513,7 +3508,7 @@ class EmundusHelperFiles
 		{
 			if (!empty($campaign_id))
 			{
-				$fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad($user_id, 7, '0', STR_PAD_LEFT);
+				$fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad(random_int(0, 9999999), 7, '0', STR_PAD_LEFT);
 
 				if (!empty($fnum))
 				{
@@ -4562,8 +4557,12 @@ class EmundusHelperFiles
 	 * @param   array   $already_joined
 	 * @param   string  $caller
 	 * @param   array   $caller_params
+	 * @param   array   $filters_to_exclude
+	 * @param   null    $menu_item
+	 * @param   null    $user
 	 *
 	 * @return array containing 'q' the where clause and 'join' the join clause
+	 * @throws Exception
 	 */
 	public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = [], $filters_to_exclude = [], $menu_item = null, $user = null)
 	{
@@ -4755,7 +4754,7 @@ class EmundusHelperFiles
 
 								if($scope_index === count($scopes) && $anonymScopeFound)
 								{
-									$quick_search_where .= ') AND eu.is_anonym <> 1)';
+									$quick_search_where .= ') AND eu.is_anonym <> 1 AND jecc.anonymous <> 1)';
 								}
 							}
 							// if filter value is a concat of firstname and lastname
@@ -4768,8 +4767,8 @@ class EmundusHelperFiles
 								$quick_search_where .= ' OR ';
 								$quick_search_where .= $this->writeQueryWithOperator('CONCAT(eu.lastname, " ", eu.firstname)', $filter['value'], 'LIKE');
 
-								$quick_search_where .= ') AND eu.is_anonym <> 1)';
-							}
+							$quick_search_where .= ') AND eu.is_anonym <> 1 AND jecc.anonymous <> 1)';
+						}
 						}
 						else if (in_array($filter['scope'], $scopes))
 						{
@@ -4791,7 +4790,7 @@ class EmundusHelperFiles
 
 							if($anonymScopeFound)
 							{
-								$quick_search_where .= ' AND eu.is_anonym <> 1)';
+								$quick_search_where .= ' AND eu.is_anonym <> 1 AND jecc.anonymous <> 1)';
 							}
 						}
 					}
@@ -5377,6 +5376,21 @@ class EmundusHelperFiles
 									break;
 								case 'application_choices':
 									$where['q'] .= ' AND ' . $this->writeQueryWithOperator('eccc.campaign_id', $filter['value'], $filter['operator']);
+									break;
+								case 'access_expiration_date':
+									if (!in_array('jos_emundus_file_access', $already_joined))
+									{
+										$jecc_alias                 = array_search('jos_emundus_campaign_candidature', $already_joined);
+										$already_joined['jfaccess'] = 'jos_emundus_file_access';
+										$file_access_alias          = 'jfaccess';
+										$where['join']              .= ' LEFT JOIN #__emundus_file_access as jfaccess on jfaccess.ccid = ' . $jecc_alias . '.id ';
+									}
+									else
+									{
+										$file_access_alias = array_search('jos_emundus_file_access', $already_joined);
+									}
+
+									$where['q'] .= ' AND ' . $this->writeQueryWithOperator($file_access_alias . '.expiration_date', $filter['value'], $filter['operator'], 'date');
 									break;
 								default:
 									break;
@@ -6779,7 +6793,7 @@ class EmundusHelperFiles
 		return $q;
 	}
 
-	public function getEncryptedTables()
+	public static function getEncryptedTables()
 	{
 		$table_names = [];
 
@@ -6810,10 +6824,10 @@ class EmundusHelperFiles
 
 		if (!empty($aid))
 		{
-			$db    = JFactory::getDBO();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
-			$query->select('ecc.*, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id')
+			$query->select('ecc.*, ecc.id as application_id, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id')
 				->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id = ecc.campaign_id')
 				->where('ecc.applicant_id = ' . $aid);

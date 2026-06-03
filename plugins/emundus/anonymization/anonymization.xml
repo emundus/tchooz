@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="emundus" method="upgrade">
+    <name>plg_emundus_anonymization</name>
+    <author>emundus</author>
+    <creationDate>2024-04-10</creationDate>
+    <copyright>Copyright (C) 2024 emundus.fr. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <version>1.0.0</version>
+    <description>PLG_EMUNDUS_ANONYMIZATION_DESCRIPTION</description>
+    <namespace path="src">Joomla\Plugin\Emundus\Anonymization</namespace>
+    <files>
+        <folder plugin="anonymization">services</folder>
+        <folder>src</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">language/en-GB/en-GB.plg_emundus_anonymization.ini</language>
+        <language tag="en-GB">language/en-GB/en-GB.plg_emundus_anonymization.sys.ini</language>
+        <language tag="fr-FR">language/fr-FR/fr-FR.plg_emundus_anonymization.ini</language>
+        <language tag="fr-FR">language/fr-FR/fr-FR.plg_emundus_anonymization.sys.ini</language>
+    </languages>
+</extension>
+

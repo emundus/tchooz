@@ -9,16 +9,12 @@
 
 namespace Tchooz\Repositories\Label;
 
-use http\Exception\InvalidArgumentException;
 use Joomla\CMS\Log\Log;
-use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
-use Joomla\Database\QueryInterface;
 use Tchooz\Attributes\TableAttribute;
-use Tchooz\Entities\Export\ExportEntity;
+use Tchooz\Entities\Label\LabelAssociationEntity;
 use Tchooz\Entities\Label\LabelEntity;
-use Tchooz\Entities\List\ListResult;
-use Tchooz\Factories\Export\ExportFactory;
+use Tchooz\Factories\Label\LabelAssociationFactory;
 use Tchooz\Factories\Label\LabelFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
@@ -27,10 +23,11 @@ use Tchooz\Repositories\RepositoryInterface;
 	table: '#__emundus_setup_action_tag',
 	alias: 'esat',
 	columns: [
-		'id'         => 'id',
-		'label'         => 'label',
-		'class'         => 'class',
-		'ordering'         => 'ordering',
+		'id',
+		'label',
+		'class',
+		'category',
+		'ordering',
 	]
 )]
 class LabelRepository extends EmundusRepository implements RepositoryInterface
@@ -46,15 +43,21 @@ class LabelRepository extends EmundusRepository implements RepositoryInterface
 
 	public function flush(LabelEntity $label): bool
 	{
-		if (empty($label->getLabel()))
+		if (empty(trim($label->getLabel())))
 		{
-			throw new InvalidArgumentException('Label cannot be empty when flushing to database.');
+			throw new \InvalidArgumentException('Label cannot be empty when flushing to database.');
+		}
+
+		if ($this->existsByLabel($label->getLabel()))
+		{
+			throw new \RuntimeException('A tag with this label already exists.');
 		}
 
 		$object = (object) [
-			'label'   => $label->getLabel(),
-			'class' => $label->getClass(),
-			'ordering'    => $label->getOrdering()
+			'label'    => $label->getLabel(),
+			'class'    => $label->getClass(),
+			'ordering' => $label->getOrdering(),
+			'category' => $label->getCategory(),
 		];
 
 		if (empty($label->getId()))
@@ -102,23 +105,12 @@ class LabelRepository extends EmundusRepository implements RepositoryInterface
 
 	public function getById(int $id): ?LabelEntity
 	{
-		$labelEntity = null;
+		return $this->getItemByField('id', $id, true);
+	}
 
-		$query = $this->db->getQuery(true);
-
-		$query->select($this->columns)
-			->from($this->db->qn($this->tableName, $this->alias))
-			->where('id = :id')
-			->bind(':id', $id, ParameterType::INTEGER);
-		$this->db->setQuery($query);
-		$dbObject = $this->db->loadObject();
-
-		if ($dbObject)
-		{
-			$labelEntity = $this->factory->fromDbObject($dbObject, $this->withRelations, $this->exceptRelations, $this->db);
-		}
-
-		return $labelEntity;
+	public function existsByLabel(string $label): bool
+	{
+		return $this->getItemByField('label', $label, false, 'id') !== null;
 	}
 
 	/**
@@ -131,11 +123,12 @@ class LabelRepository extends EmundusRepository implements RepositoryInterface
 		$results = [];
 
 		$cacheKey = 'labels_fnum_' . $fnum;
-		if ($this->cache->contains($cacheKey)) {
+		if ($this->cache->contains($cacheKey))
+		{
 			$dbObjects = $this->cache->get($cacheKey);
 		}
 
-		if(empty($dbObjects))
+		if (empty($dbObjects))
 		{
 			$query = $this->db->getQuery(true);
 
@@ -148,7 +141,7 @@ class LabelRepository extends EmundusRepository implements RepositoryInterface
 			$this->db->setQuery($query);
 			$dbObjects = $this->db->loadObjectList();
 
-			if(!empty($dbObjects))
+			if (!empty($dbObjects))
 			{
 				$this->cache->store($dbObjects, $cacheKey);
 			}
@@ -160,5 +153,45 @@ class LabelRepository extends EmundusRepository implements RepositoryInterface
 		}
 
 		return $results;
+	}
+
+	/**
+	 * @param   string  $fnum
+	 *
+	 * @return array<LabelAssociationEntity>
+	 */
+	public function getLabelAssociationsByFnum(string $fnum): array
+	{
+		$results = [];
+
+		$query = $this->db->getQuery(true);
+
+		$selection = [];
+		foreach ($this->columns as $column)
+		{
+			$column_only = str_replace($this->alias . '.', '', $column);
+			$selection[] = $this->db->quoteName($column) . ' AS ' . $this->db->quoteName($this->alias . '_' . $column_only);
+		}
+
+		$query->select('eta.*' . (!empty($selection) ? ', ' . implode(', ', $selection) : ''))
+			->from($this->db->quoteName('#__emundus_tag_assoc', 'eta'))
+			->innerJoin($this->db->quoteName($this->tableName, $this->alias) . ' ON ' . $this->db->quoteName('eta.id_tag') . ' = ' . $this->db->quoteName($this->alias . '.id'))
+			->where($this->db->quoteName('eta.fnum') . ' = :fnum')
+			->bind(':fnum', $fnum);
+
+		$this->db->setQuery($query);
+		$dbObjects = $this->db->loadObjectList();
+
+		if (!empty($dbObjects))
+		{
+			$results = LabelAssociationFactory::fromDbObjects($dbObjects, $this->withRelations, $this->exceptRelations, $this->db);
+		}
+
+		return $results;
+	}
+
+	public function getFactory(): LabelFactory
+	{
+		return $this->factory;
 	}
 }

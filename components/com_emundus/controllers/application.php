@@ -19,22 +19,30 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use Joomla\Utilities\ArrayHelper;
 use Tchooz\Attributes\AccessAttribute;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\Actions\ActionEntity;
+use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectTo;
+use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnTag;
 use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\List\ListColumnTypesEnum;
 use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Label\LabelRepository;
@@ -42,11 +50,15 @@ use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Controller\EmundusController;
-use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
+use Tchooz\Services\ApplicationFile\ApplicationFileService;
+use Tchooz\Traits\TraitDispatcher;
+use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 
 class EmundusControllerApplication extends EmundusController
 {
+	use TraitDispatcher;
+
 	/**
 	 * @var User|mixed|null
 	 */
@@ -2479,8 +2491,6 @@ class EmundusControllerApplication extends EmundusController
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
-
-			return;
 		}
 
 		$id = $this->input->getInt('id', 0);
@@ -2489,8 +2499,6 @@ class EmundusControllerApplication extends EmundusController
 			$response['code']    = 400;
 			$response['message'] = 'Missing id parameter.';
 			$this->sendJsonResponse($response);
-
-			return;
 		}
 
 		$fnum = $this->input->getString('fnum', '');
@@ -2509,8 +2517,6 @@ class EmundusControllerApplication extends EmundusController
 			$response['code']    = 400;
 			$response['message'] = 'Missing fnum parameter.';
 			$this->sendJsonResponse($response);
-
-			return;
 		}
 
 		$repository = new ApplicationChoicesRepository();
@@ -2521,8 +2527,6 @@ class EmundusControllerApplication extends EmundusController
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
-
-			return;
 		}
 
 		$choice->setState(ChoicesStateEnum::REJECTED);
@@ -2535,6 +2539,28 @@ class EmundusControllerApplication extends EmundusController
 		$response['status']  = true;
 		$response['data']    = $choiceObject;
 		$response['message'] = 'Choice refused successfully.';
+		
+		// AUTOMATIONS : If we have other admitted choices, we stay here. Else we check if a status parameter is set and then update file status then redirect to homepage
+		$addonRepository = new AddonRepository();
+		$addon = $addonRepository->getByName('choices');
+		$statusWhenRefused = $addon->getParam('status_when_refused', 'configuration');
+		if(!empty($statusWhenRefused))
+		{
+			$otherAcceptedChoices = $repository->getItemsByFields(['fnum' => $current_fnum, 'state' => ChoicesStateEnum::ACCEPTED->value]);
+			if (empty($otherAcceptedChoices))
+			{
+				if(!class_exists('EmundusModelFiles'))
+				{
+					require_once JPATH_SITE . '/components/com_emundus/models/files.php';
+				}
+				$mFiles = new EmundusModelFiles();
+				
+				$mFiles->updateState([$current_fnum], $statusWhenRefused, $this->_user->id);
+
+				$response['redirect'] = EmundusHelperMenu::getHomepageLink();
+			}
+		}
+
 		$this->sendJsonResponse($response);
 	}
 
@@ -3262,6 +3288,180 @@ class EmundusControllerApplication extends EmundusController
 	}
 
 	/**
+	 * @return EmundusResponse
+	 * @throws Exception
+	 */
+	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
+	public function updateOwnerPublicAccessFile(): EmundusResponse
+	{
+		$this->checkToken();
+		$response = EmundusResponse::denied();
+
+		// token is a composite key
+		$compositeKey   = $this->app->getInput()->getString('token', '');
+		$token          = '';
+		$shortReference = '';
+		if (!empty($compositeKey) && str_contains($compositeKey, EmundusPublicAccess::COMPOSITE_KEY_SEPARATOR))
+		{
+			$parts = explode(EmundusPublicAccess::COMPOSITE_KEY_SEPARATOR, $compositeKey, 2);
+			if (count($parts) === 2)
+			{
+				$token = trim($parts[0]);
+				$shortReference  = trim($parts[1]);
+			}
+		}
+
+		$newOwnerId = $this->app->getInput()->getInt('owner', 0);
+
+		if (!empty($shortReference) && !empty($token))
+		{
+			$applicationFileRepository = new ApplicationFileRepository();
+			$applicationFile = $applicationFileRepository->getItemByField('short_reference', $shortReference, true);
+
+			if (empty($applicationFile))
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_APPLICATION_FILE_NOT_FOUND'), 404);
+			}
+
+			if (!$applicationFile->isPublic())
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_APPLICATION_FILE_NOT_PUBLIC'), 403);
+			}
+
+			$applicationFileAccessRepository = new ApplicationFileAccessRepository();
+
+			if (!$applicationFileAccessRepository->verifyAccessToken($token, $applicationFile))
+			{
+				throw new Exception(Text::_('ACCESS_DENIED'), 403);
+			}
+
+			if (empty($newOwnerId))
+			{
+				$newOwnerId = $this->user->id;
+			}
+
+			if ($newOwnerId != $this->user->id)
+			{
+				if (!EmundusHelperAccess::asAccessAction('update_owner', 'c', $this->user->id, $applicationFile->getFnum()))
+				{
+					throw new Exception(Text::_('ACCESS_DENIED'), 403);
+				}
+			}
+
+
+			$service = new ApplicationFileService();
+			if ($service->updateOwner($applicationFile, $newOwnerId, $this->user->id))
+			{
+				$response = EmundusResponse::ok();
+			}
+		}
+
+		return $response;
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
+	public function renewApplicationAccessToken(): EmundusResponse
+	{
+		$this->checkToken();
+		$response = EmundusResponse::denied();
+
+		$fnum = EmundusPublicAccess::getPublicAccessFnum();
+
+		if (empty($fnum))
+		{
+			return $response;
+		}
+
+		$applicationFileRepository = new ApplicationFileRepository();
+		$applicationFile = $applicationFileRepository->getByFnum($fnum);
+
+		if (!$applicationFile->isPublic())
+		{
+			return $response;
+		}
+
+		$applicationFileAccessRepository = new ApplicationFileAccessRepository();
+		$newPlainToken = $applicationFileAccessRepository->renewToken($applicationFile);
+
+		if (!empty($newPlainToken))
+		{
+			$session = Factory::getApplication()->getSession();
+			$session->set(EmundusPublicAccess::SESSION_PUBLIC_TOKEN_KEY, $newPlainToken);
+			$session->set(EmundusPublicAccess::SESSION_PUBLIC_STORED_ACCESS_KEY, false);
+			$session->set(EmundusPublicAccess::RENEW_TOKEN_SESSION_KEY, true);
+			$response = EmundusResponse::ok();
+		}
+
+		return $response;
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
+	public function abortPublicApplicationCreation(): EmundusResponse
+	{
+		$this->checkToken();
+		$response = EmundusResponse::denied();
+
+		$fnum = EmundusPublicAccess::getPublicAccessFnum();
+
+		if (empty($fnum))
+		{
+			return $response;
+		}
+
+		$applicationFileRepository = new ApplicationFileRepository();
+		$applicationFile = $applicationFileRepository->getByFnum($fnum);
+
+		if (!$applicationFile->isPublic())
+		{
+			return $response;
+		}
+
+		// TODO: use repository when delete method will be implemented
+		if (!class_exists('EmundusModelFiles'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+		}
+		$filesModel = new EmundusModelFiles();
+		if ($filesModel->deleteFile($applicationFile->getFnum(), $applicationFile->getUser()->id))
+		{
+			$response = EmundusResponse::ok();
+		}
+		else
+		{
+			$response = EmundusResponse::fail();
+		}
+
+		return $response;
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => 'anonymous_reveal', 'mode' => CrudEnum::CREATE]
+	])]
+	public function askForAnonymousReveal(): EmundusResponse
+	{
+		$this->checkToken();
+		$response = EmundusResponse::denied();
+
+		$fnum = $this->app->getInput()->getString('fnum', '');
+		if (!empty($fnum) && EmundusHelperAccess::asAccessAction('anonymous_reveal', CrudEnum::CREATE->value, $this->user->id, $fnum))
+		{
+			$applicationFileRepository = new ApplicationFileRepository();
+			$applicationFile = $applicationFileRepository->getByFnum($fnum);
+
+			if (!empty($applicationFile) && ($applicationFile->isAnonymous() or $applicationFile->isPublic()))
+			{
+				$this->dispatchJoomlaEvent('onAskForAnonymousReveal', [
+					'context' => new EventContextEntity($this->user, [$fnum])
+				]);
+
+				$response = EmundusResponse::ok();
+			}
+		}
+
+		return $response;
+	}
+
+	/**
 	 * @depecated Need to move this to a real feature of application files group
 	 */
     #[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
@@ -3366,4 +3566,81 @@ class EmundusControllerApplication extends EmundusController
         echo json_encode($response);
         exit;
     }
+
+	#[AccessAttribute(AccessLevelEnum::REGISTERED)]
+	public function executeApplicationAction(): EmundusResponse
+	{
+		$this->checkToken();
+		$response = new EmundusResponse(false, Text::_('ACCESS_DENIED'), 403);
+		$fnum = $this->app->getInput()->getString('fnum', '');
+
+		if (!empty($fnum) && EmundusHelperAccess::isFnumMine($this->user->id, $fnum))
+		{
+			$repository = new ApplicationFileRepository();
+			$applicationFile = $repository->getByFnum($fnum);
+
+			if (!empty($applicationFile))
+			{
+				$action = $this->app->input->getString('action');
+
+				$registry = new ApplicationFileActionsRegistry();
+				$actions = $registry->getAvailableActions(applicationFileEntity: $applicationFile, currentUser: $this->user);
+
+				$foundAction = null;
+				foreach ($actions as $availableAction)
+				{
+					if ($availableAction instanceof CustomApplicationFileAction)
+					{
+						if ($availableAction->getId() === $action)
+						{
+							$foundAction = $availableAction;
+							break;
+						}
+					}
+					else if ($availableAction->getActionType()->value === $action)
+					{
+						$foundAction = $availableAction;
+						break;
+					}
+				}
+
+				if (!empty($foundAction))
+				{
+					$parameters = [];
+					if (!empty($foundAction->getActionType()->getParameters()))
+					{
+						foreach ($foundAction->getActionType()->getParameters() as $parameter) {
+							$parameters[$parameter->getName()] = $this->app->input->getString($parameter->getName(), '');
+						}
+
+						// todo: sanitize all sent parameters and verify requirements
+					}
+
+					if ($foundAction instanceof ApplicationFileActionRedirectTo)
+					{
+						$response = EmundusResponse::ok([
+							'redirect' => $foundAction->getRedirectUrl($applicationFile, $parameters, $this->app->getIdentity()),
+						]);
+					}
+					else if ($foundAction->execute($applicationFile, $parameters, $this->app->getIdentity()))
+					{
+						$data = [];
+
+						if (method_exists($foundAction, 'getRedirectUrl'))
+						{
+							$data['redirect'] = $foundAction->getRedirectUrl($applicationFile, $parameters, $this->app->getIdentity());
+						}
+
+						$response = EmundusResponse::ok($data);
+					}
+					else
+					{
+						$response = EmundusResponse::fail(Text::_('APPLICATION_ACTION_EXECUTION_FAILED'));
+					}
+				}
+			}
+		}
+
+		return $response;
+	}
 }

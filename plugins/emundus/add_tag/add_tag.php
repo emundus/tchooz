@@ -67,7 +67,11 @@ class plgEmundusAdd_tag extends CMSPlugin
 		$this->_db->setQuery($query);
 		$schoolyear = $this->_db->loadResult();
 
-		$aid = intval(substr($fnum, 21, 7));
+		if (!class_exists('EmundusHelperFiles'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+		}
+		$aid = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
 		$query->clear()
 			->select($this->_db->quoteName('eta.id_tag'))
 			->from($this->_db->quoteName('#__emundus_tag_assoc', 'eta'))

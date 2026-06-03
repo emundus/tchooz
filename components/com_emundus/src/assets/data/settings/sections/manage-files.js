@@ -22,4 +22,13 @@ export default [
 			json_source: 'settings/sections/file-settings.js',
 		},
 	},
+	{
+		label: 'COM_EMUNDUS_SETTINGS_FILES_ACTIONS',
+		intro: 'COM_EMUNDUS_SETTINGS_FILES_ACTIONS_INTRO',
+		name: 'file_actions_settings',
+		component: 'ApplicationFileActionsSettings',
+		props: {
+			json_source: 'settings/sections/file-actions-settings.js',
+		},
+	},
 ];

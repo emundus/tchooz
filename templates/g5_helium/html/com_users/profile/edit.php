@@ -59,34 +59,6 @@ if (!$external && !empty($user->params))
     }
 }
 //
-
-// Override core fields with emundus profile fields
-/*$emundusForm       = new Form('emundus', array('control' => 'jform'));
-$emundusProfileXml = file_get_contents(JPATH_SITE . '/components/com_emundus/forms/emundus_profile.xml');
-if ($emundusProfileXml !== false)
-{
-    $emundusForm->load($emundusProfileXml);
-
-    foreach ($this->form->getFieldsets() as $group => $fieldset)
-    {
-        $fields = $this->form->getFieldset($group);
-        if (count($fields) > 0)
-        {
-            foreach ($fields as $field)
-            {
-                $name = $field->id;
-                // Remove jform_ prefix
-                $name         = str_replace('jform_', '', $name);
-                $emundusField = $emundusForm->getField($name);
-                if ($emundusField !== null && $emundusField !== false)
-                {
-                    $emundusForm->setValue($name, null, $field->value);
-                }
-            }
-        }
-    }
-}*/
-//
 ?>
 <div class="com-users-profile__edit profile-edit">
     <?php if ($this->params->get('show_page_heading')) : ?>

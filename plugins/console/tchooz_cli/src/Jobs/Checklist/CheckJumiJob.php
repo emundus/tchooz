@@ -9,7 +9,6 @@
 
 namespace Emundus\Plugin\Console\Tchooz\Jobs\Checklist;
 
-use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Joomla\CMS\Log\Log;
 use Symfony\Component\Console\Helper\QuestionHelper;

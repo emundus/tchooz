@@ -1249,6 +1249,75 @@ class EmundusControllerFormbuilder extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getElementsListOptions(): EmundusResponse
+	{
+		$search    = $this->input->getString('search_query', $this->input->getString('search', ''));
+		$currentElementId = $this->input->getInt('current_element_id', 0);
+		$currentElementFormId = !empty($currentElementId) ? EmundusHelperFabrik::getElementById($currentElementId)->form_id : 0;
+
+		// THIS CORRESPONDS TO THE ELEMENT ID THAT WE ARE READING (SOURCE)
+		$elementId = $this->input->getInt('element_id', 0);
+		$elementFormId = !empty($elementId) ? EmundusHelperFabrik::getElementById($elementId)->form_id : 0;
+
+		$formIds   = EmundusHelperFabrik::getFabrikFormsListIntendedToFiles();
+		$formIds = array_diff($formIds, [$currentElementFormId]);
+
+		$excluded  = [
+			ElementPluginEnum::DISPLAY->value,
+			ElementPluginEnum::EMUNDUSREADONLY->value,
+			ElementPluginEnum::ID->value,
+			ElementPluginEnum::USER->value,
+			ElementPluginEnum::PANEL->value,
+			ElementPluginEnum::EMUNDUS_FILEUPLOAD->value,
+			ElementPluginEnum::FILEUPLOAD->value,
+			ElementPluginEnum::CAPTCHA->value,
+			ElementPluginEnum::PASSWORD->value,
+		];
+
+		$elements = EmundusHelperFabrik::searchFabrikElements($search, $formIds, $excluded, 20);
+
+		$elementsListOptions = [];
+		$seen                = [];
+		foreach ($elements as $element)
+		{
+			$labels = [Text::_($element->form_label), Text::_($element->group_label)];
+			$labels = array_filter($labels);
+			$labels = implode(' - ', $labels);
+			$label = !empty($labels) ? Text::_($element->label) . ' (' . $labels . ')' : Text::_($element->label);
+			$elementsListOptions[] = [
+				'id'    => (int) $element->id,
+				'label' => $label,
+			];
+			$seen[(int) $element->id] = true;
+		}
+
+		// Preload the currently selected element so the multiselect can display its label on reopen
+		if ($elementId > 0 && !isset($seen[$elementId]))
+		{
+			$preloaded = EmundusHelperFabrik::searchFabrikElements('', [$elementFormId], $excluded);
+			foreach ($preloaded as $element)
+			{
+				if ((int) $element->id === $elementId)
+				{
+					$labels = [Text::_($element->form_label), Text::_($element->group_label)];
+					$labels = array_filter($labels);
+					$labels = implode(' - ', $labels);
+					$label = !empty($labels) ? Text::_($element->label) . ' (' . $labels . ')' : Text::_($element->label);
+
+					array_unshift($elementsListOptions, [
+						'id'    => (int) $element->id,
+						'label' => $label,
+					]);
+					break;
+				}
+			}
+		}
+
+		return EmundusResponse::ok($elementsListOptions);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
 	public function getEmundusCalculationParameters(): EmundusResponse
 	{

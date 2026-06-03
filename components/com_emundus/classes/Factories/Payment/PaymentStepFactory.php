@@ -104,7 +104,7 @@ class PaymentStepFactory
 					advance_amount_type: !empty($dbObject->advance_amount_type) ? DiscountType::from($dbObject->advance_amount_type) : DiscountType::FIXED,
 					installment_monthday: $dbObject->installment_monthday ?? 0,
 					installment_effect_date: $dbObject->installment_effect_date ?? '',
-					installment_rules: !empty($dbObjects->installment_rules) && is_array($dbObjects->installment_rules) ? $dbObjects->installment_rules : [],
+					installment_rules: !empty($dbObject->installment_rules) && is_array($dbObject->installment_rules) ? $dbObject->installment_rules : [],
 				);
 			}
 		}

@@ -155,4 +155,9 @@ class PaymentAddonHandler extends AbstractAddonHandler
 
 		(new GroupAccessRepository())->flush($groupAccessEntity);
 	}
+
+	public function getParameters(): array
+	{
+		// TODO: Implement getParameters() method.
+	}
 }

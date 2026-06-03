@@ -25,6 +25,7 @@ use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Entities\User\EmundusUserEntity;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
+use Tchooz\Enums\Export\ExportSettingEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
@@ -112,10 +113,9 @@ class PdfService extends Export implements ExportInterface
 				$applicationFile = $this->applicationFileRepository->getByFnum($fnum);
 				$emundusUser     = $this->emundusUserRepository->getByUserId($applicationFile->getUser()->id);
 
-				$anonymize_data = $anonymize_data || $emundusUser->isAnonym();
+				$anonymize_data = $anonymize_data || $emundusUser->isAnonym() || $applicationFile->isAnonymous();
 
-				$title = $anonymize_data ? 'Anonymized User' : (strtoupper($emundusUser->getLastname()) . ' ' . $emundusUser->getFirstname());
-
+				$title = $anonymize_data ? Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') : (strtoupper($emundusUser->getLastname()) . ' ' . $emundusUser->getFirstname());
 				$html .= $this->parser::HTML_TAG;
 				$html .= $this->parser->buildHtmlHead($title);
 				$html .= $this->parser::BODY_TAG;
@@ -279,7 +279,7 @@ class PdfService extends Export implements ExportInterface
 		$custom_page_headers = $this->options->getPageHeaders();
 		foreach ($custom_page_headers as $custom_page_header)
 		{
-			$customHeaderData = $this->getData($custom_page_header, [$applicationFile], ValueFormatEnum::FORMATTED);
+			$customHeaderData = $this->getData($custom_page_header, [$applicationFile], ValueFormatEnum::FORMATTED, $anonymize_data);
 
 			$sub_column[] = '<p>' . $this->parser->createContentBlock($customHeaderData['label'] . ' : ') . $customHeaderData['data'][$applicationFile->getFnum()] . '</p>';
 		}
@@ -327,7 +327,7 @@ class PdfService extends Export implements ExportInterface
 
 			foreach ($custom_headers as $custom_header)
 			{
-				$customHeaderData = $this->getData($custom_header, [$applicationFile], ValueFormatEnum::FORMATTED);
+				$customHeaderData = $this->getData($custom_header, [$applicationFile], ValueFormatEnum::FORMATTED, $anonymize_data);
 
 				if ($custom_header === 'stickers')
 				{
@@ -361,8 +361,8 @@ class PdfService extends Export implements ExportInterface
 
 		try
 		{
-			$forms = $this->m_application->getFormsPDF($applicationFile->getUser()->id, $applicationFile->getFnum(), null, 0, null, $elementIds, true, $stepTypes, $this->user->id);
-
+			$displayEvaluatorName = (bool) $this->options->getSetting(ExportSettingEnum::DISPLAY_EVALUATOR_NAME);
+			$forms = $this->m_application->getFormsPDF($applicationFile->getUser()->id, $applicationFile->getFnum(), null, 0, null, $elementIds, true, $stepTypes, $this->user->id, $displayEvaluatorName);
 		}
 		catch (\Exception $e)
 		{

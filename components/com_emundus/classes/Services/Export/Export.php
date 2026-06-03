@@ -140,11 +140,12 @@ class Export
 	 * @param   int|string                    $elementId
 	 * @param   array<ApplicationFileEntity>  $files
 	 * @param   ValueFormatEnum               $format
+	 * @param   bool                          $anonymize_data
 	 *
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function getData(int|string $elementId, array $files, ValueFormatEnum $format = ValueFormatEnum::RAW): array
+	public function getData(int|string $elementId, array $files, ValueFormatEnum $format = ValueFormatEnum::RAW, bool $anonymize_data = false): array
 	{
 		$result = [
 			'label' => '',

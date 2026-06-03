@@ -2,6 +2,7 @@
 
 namespace Tchooz\Entities\Automation;
 
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Automation\Comparators\ArrayComparator;
 use Tchooz\Entities\Automation\Comparators\DateComparator;
@@ -192,6 +193,7 @@ class ConditionEntity
 			new ScalarComparator(),
 		];
 
+		$supported = false;
 		foreach ($comparators as $comparator) {
 			if ($comparator->supports($transformedValue, $foundValue)) {
 				$satisfied = $comparator->compare(
@@ -200,8 +202,15 @@ class ConditionEntity
 					$this->operator,
 					$this->getMatchMode()
 				);
+				$supported = true;
 				break;
 			}
+		}
+
+		if (!$supported)
+		{
+			Log::add('No comparator found for condition target type: ' . $this->targetType->value, Log::WARNING, 'com_emundus.condition.entity');
+			throw new \Exception(Text::_('COM_EMUNDUS_CONDITION_NO_COMPARATOR_SUPPORTS_CONDITION'));
 		}
 
 		return $satisfied;

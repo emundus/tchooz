@@ -302,12 +302,15 @@ Text::script('COM_EMUNDUS_TAGS_DELETE_TAGS_CONFIRM');
 Text::script('COM_EMUNDUS_TAGS_DELETE_SUCCESS');
 Text::script('COM_EMUNDUS_FILTERS_CONFIRM_DELETE_FILTER');
 Text::script('COM_EMUNDUS_APPLICATION_ADD_TAGS');
+Text::script('COM_EMUNDUS_APPLICATION_ADD_NEW_TAG');
+Text::script('COM_EMUNDUS_APPLICATION_ADD_NEW_TAG_PLACEHOLDER');
 Text::script('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG');
 Text::script('COM_EMUNDUS_SELECT_SOME_OPTIONS');
 Text::script('COM_EMUNDUS_SELECT_AN_OPTION');
 Text::script('COM_EMUNDUS_SELECT_NO_RESULT');
 Text::script('VALID');
 Text::script('INVALID');
+Text::script('COM_EMUNDUS_OR');
 Text::script('COM_EMUNDUS_ATTACHMENTS_UNCHECKED');
 Text::script('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_FILE');
 Text::script('COM_EMUNDUS_EXPORTS_INFORMATION');
@@ -620,6 +623,7 @@ Text::script('COM_EMUNDUS_ACL_IMPORT');
 Text::script('COM_EMUNDUS_ACL_IMPORT_DESC');
 Text::script('COM_EMUNDUS_ACL_EXPORT');
 Text::script('COM_EMUNDUS_ACL_EVENT');
+Text::script('COM_EMUNDUS_ACL_ANONYMIZATION_REVEAL');
 
 
 // EXPORT EXCEL MODEL
@@ -1260,6 +1264,7 @@ Text::script('COM_EMUNDUS_APPLICATION_CHOICES_REFUSE_CHOICE_SUCCESS_TITLE');
 Text::script('COM_EMUNDUS_APPLICATION_CHOICES_DESCRIPTION');
 Text::script('COM_EMUNDUS_APPLICATION_CHOICES_DESCRIPTION_CONFIRM');
 Text::script('COM_EMUNDUS_APPLICATION_CHOICES_DESCRIPTION_REORDER');
+Text::script('COM_EMUNDUS_FORM_BUILDER_ERROR');
 
 Text::script('COM_EMUNDUS_CAMPAIGNS_CLOSE_DATE');
 Text::script('COM_EMUNDUS_CAMPAIGNS_MORE_DETAILS');
@@ -1321,6 +1326,8 @@ Text::script('COM_EMUNDUS_EXPORT_ACCESS_LOADER');
 Text::script('COM_EMUNDUS_EXPORT_RUN_LOADER');
 Text::script('COM_EMUNDUS_EXPORTS_ATTACHMENT_TAB');
 Text::script('COM_EMUNDUS_EXPORT_NO_ATTACHMENTS_SELECTED');
+Text::script('COM_EMUNDUS_EXPORTS_SETTINGS_TITLE');
+Text::script('COM_EMUNDUS_EXPORTS_DISPLAY_EVALUATOR_NAME');
 Text::script('COM_EMUNDUS_GO_TO_EXPORTS_PAGE');
 Text::script('COM_EMUNDUS_STAY_ON_PAGE');
 Text::script('COM_EMUNDUS_EXPORT_ERROR_TITLE');
@@ -1351,6 +1358,18 @@ Text::script('COM_EMUNDUS_CUSTOM_REFERENCE_ACCESS_LOADER');
 Text::script('COM_EMUNDUS_CUSTOM_REFERENCE_GENERATE_DESC');
 
 Text::script('COM_EMUNDUS_EXPORT_SELECT_COLUMNS_NO_ELEMENTS');
+Text::script('COM_EMUNDUS_APPLICATION_TAGS_PICK');
+Text::script('COM_EMUNDUS_APPLICATION_TAGS_PICK_PLACEHOLDER');
+Text::script('COM_EMUNDUS_APPLICATION_TAGS_ATTACH');
+Text::script('COM_EMUNDUS_APPLICATION_TAGS_EMPTY');
+Text::script('COM_EMUNDUS_APPLICATION_TAGS_LABEL');
+Text::script('COM_EMUNDUS_APPLICATION_TAGS_LABEL_PLACEHOLDER');
+Text::script('COM_EMUNDUS_APPLICATION_TAGS_COLOR');
+Text::script('COM_EMUNDUS_APPLICATION_TAGS_PREVIEW');
+Text::script('COM_EMUNDUS_APPLICATION_TAGS_SAVE');
+Text::script('COM_EMUNDUS_APPLICATION_TAGS_CREATE_FAILED');
+Text::script('COM_EMUNDUS_APPLICATION_TAGS_FNUM_REQUIRED');
+Text::script('COM_EMUNDUS_APPLICATION_TAGS_CATEGORY');
 
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
@@ -1428,7 +1447,7 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
 {
 	$controller->execute($task);
 }
-elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == ApplicationHelper::getHash($token)) || $task == 'getfilereferent' || $app->input->get('controller', '', 'WORD') === 'vote' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions') || in_array($task, ['yousigncallback', 'docusigncallback'])))
+elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == ApplicationHelper::getHash($token)) || $task == 'getfilereferent' || $task === 'applyPubliclyToCampaign' || $task === 'markPublicAccessKeyAsStored' || $app->input->get('controller', '', 'WORD') === 'vote' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions') || in_array($task, ['yousigncallback', 'docusigncallback'])))
 {
 	$controller->execute($task);
 }
@@ -1438,7 +1457,7 @@ else
 	{
 		$controller->execute($task);
 	}
-	elseif ($user->guest && $name !== 'accessibility' && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity' && $task != 'activation_anonym_user')
+	elseif ($user->guest && $name !== 'accessibility' && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $name != 'publicaccess' && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity' && $task != 'activation_anonym_user')
 	{
 		if ($name == 'user' && $app->input->get('emailactivation', 0) == 1)
 		{

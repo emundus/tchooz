@@ -9,16 +9,13 @@
 
 namespace Emundus\Plugin\Console\Tchooz\Jobs\Checklist;
 
-use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Gantry\Framework\Exception;
-use Joomla\CMS\Log\Log;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckFabrikListsJob extends TchoozChecklistJob
 {
-	private OutputInterface $output;
 
 	public function __construct(
 		private readonly object            $logger,

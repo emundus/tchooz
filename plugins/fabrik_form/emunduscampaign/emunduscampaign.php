@@ -77,6 +77,10 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 		$emundus_config      = ComponentHelper::getParams('com_emundus');
 		$applicant_can_renew = $emundus_config->get('applicant_can_renew', '0');
 		$cid                 = $this->app->getInput()->getInt('cid');
+		$anonymous     = $this->app->getInput()->getBool('anonymous', false);
+
+		$session = $this->app->getSession();
+		$session->set('anonymousApply', $anonymous);
 
 		if (!empty($cid))
 		{
@@ -115,6 +119,8 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 
 			$formModel->data['jos_emundus_campaign_candidature___campaign_id_raw'] = $cid;
 			$formModel->data['jos_emundus_campaign_candidature___campaign_id']     = $cid;
+			$formModel->data['jos_emundus_campaign_candidature___anonymous_raw']   = $anonymous ? 1 : 0;
+			$formModel->data['jos_emundus_campaign_candidature___anonymous']   = $anonymous ? 1 : 0;
 		}
 	}
 
@@ -143,6 +149,9 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 		$formModel = $this->getModel();
 
 		$application_choice = $this->app->getInput()->getInt('application_choice', 0);
+
+		$session = $this->app->getSession();
+		$anonymous = $session->get('anonymousApply', false);
 
 		switch ($form_type)
 		{
@@ -195,10 +204,19 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 				require_once JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php';
 				$fnum = EmundusHelperFiles::createFnum($campaign_id, $user->id);
 
+				$columns = ['date_time', 'applicant_id', 'user_id', 'campaign_id', 'fnum'];
+				$values = [$this->_db->quote($now), $user->id, $user->id, $campaign_id, $this->_db->quote($fnum)];
+
+				if ($anonymous)
+				{
+					$columns[] = 'anonymous';
+					$values[] = 1;
+				}
+
 				$query->clear()
 					->insert($this->_db->quoteName('#__emundus_campaign_candidature'))
-					->columns($this->_db->quoteName(['date_time', 'applicant_id', 'user_id', 'campaign_id', 'fnum']))
-					->values($this->_db->quote($now) . ', ' . $user->id . ', ' . $user->id . ', ' . $campaign_id . ', ' . $this->_db->quote($fnum));
+					->columns($this->_db->quoteName($columns))
+					->values(implode(', ', $values));
 				break;
 
 			case 'cc':
@@ -227,10 +245,18 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 				$query->clear()
 					->update($this->_db->quoteName('#__emundus_campaign_candidature'))
 					->set($this->_db->quoteName('fnum') . ' = ' . $this->_db->Quote($fnum))
-					->set($this->_db->quoteName('date_time') . ' = ' . $this->_db->quote($now))
-					->where($this->_db->quoteName('id') . ' = ' . $id . ' AND ' . $this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->Quote($fnum_tmp) . ' AND ' . $this->_db->quoteName('campaign_id') . '=' . $campaign_id);
+					->set($this->_db->quoteName('date_time') . ' = ' . $this->_db->quote($now));
+
+				if ($anonymous)
+				{
+					$query->set($this->_db->quoteName('anonymous') . ' = 1');
+				}
+
+				$query->where($this->_db->quoteName('id') . ' = ' . $id . ' AND ' . $this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->Quote($fnum_tmp) . ' AND ' . $this->_db->quoteName('campaign_id') . '=' . $campaign_id);
 				break;
 		}
+
+		$session->set('anonymousApply', false);
 
 		try
 		{

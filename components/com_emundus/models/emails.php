@@ -17,19 +17,16 @@ jimport('joomla.application.component.model');
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\Registry\Registry;
 use Tchooz\Entities\Emails\TagEntity;
 use Tchooz\Entities\Messages\TriggerEntity;
 use Tchooz\Enums\Emails\TagTypeEnum;
-use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Reference\InternalReferenceRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 
 class EmundusModelEmails extends JModelList
 {
@@ -810,7 +807,7 @@ class EmundusModelEmails extends JModelList
 				{
 					Log::add('Error when try to set constants for bookin module',Log::ERROR,'com_emundus.email');
 				}
-				
+
 				// Add reference tags
 				$patterns[]     = '/\[SHORT_REFERENCE\]/';
 				$replacements[] = $fnumInfos['short_reference'];
@@ -1632,6 +1629,7 @@ class EmundusModelEmails extends JModelList
 		if (!empty($fnums) && !empty($mail_to) && !empty($mail_subject) && !empty($mail_body)) {
 			require_once(JPATH_SITE . DS . 'components/com_emundus/helpers/filters.php');
 			require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
 			require_once(JPATH_SITE . DS . 'components/com_emundus/models/messages.php');
 			PluginHelper::importPlugin('emundus');
 
@@ -1656,7 +1654,7 @@ class EmundusModelEmails extends JModelList
 			$example_fnum    = $fnums[0];
 			$campaign_id     = (int) substr($example_fnum, 14, 7);
 			$campaign        = $h_filters->getCampaignByID($campaign_id);
-			$example_user_id = (int) substr($example_fnum, -7);
+			$example_user_id = EmundusHelperFiles::getApplicantIdFromFnum($example_fnum);
 			$example_user    = $app->getIdentity($example_user_id);
 
 			if (!empty($sender_id)) {
@@ -1685,7 +1683,7 @@ class EmundusModelEmails extends JModelList
 				$fnums_infos = $m_files->getFnumsInfos($fnums);
 				$fnums_html  = '<ul>';
 				foreach ($fnums_infos as $fnum) {
-					$fnums_html .= '<li>' . ($fnum['is_anonym'] == 1 ? Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') : $fnum['name']) . ' (' . $fnum['fnum'] . ')</li>';
+					$fnums_html .= '<li>' . (($fnum['is_anonym'] == 1 || !empty($fnum['anonymous'])) ? Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') : $fnum['name']) . ' (' . $fnum['fnum'] . ')</li>';
 				}
 				$fnums_html .= '</ul>';
 
@@ -2040,13 +2038,25 @@ class EmundusModelEmails extends JModelList
 					foreach ($messages as $key => $message)
 					{
 						$message->fnum_to = '';
+						$file_anonymous = false;
 						if (in_array($message->message_id, array_keys($messages_fnums_by_id)))
 						{
 							$message->fnum_to = $messages_fnums_by_id[$message->message_id]->fnum_to;
+
+							// Check file-level anonymization
+							if (!empty($message->fnum_to))
+							{
+								$query->clear()
+									->select('anonymous')
+									->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+									->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($message->fnum_to));
+								$this->_db->setQuery($query);
+								$file_anonymous = (int) $this->_db->loadResult() === 1;
+							}
 						}
 
-						// if the user is anonym, we hide the email_to field and the content, cause it could contains personal data
-						if ($is_anonym == 1)
+						// if the user is anonym or the file is anonymous, we hide the email_to field and the content, cause it could contains personal data
+						if ($is_anonym == 1 || $file_anonymous)
 						{
 							$message->email_to = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
 							$message->message  = Text::_('COM_EMUNDUS_ANONYM_EMAIL_MESSAGE');
@@ -3621,6 +3631,13 @@ class EmundusModelEmails extends JModelList
 		$sent = false;
 
 		if (!empty($fnum) && !empty($email_id)) {
+			$applicationFileRepository = new ApplicationFileRepository();
+			$applicationFile = $applicationFileRepository->getByFnum($fnum);
+			if (empty($applicationFile) || $applicationFile->isPublic())
+			{
+				return false;
+			}
+
 			if (empty($user)) {
 				$user   = JFactory::getUser();
 			}
@@ -3643,21 +3660,17 @@ class EmundusModelEmails extends JModelList
 			$m_users = new EmundusModelUsers();
 
 			$config = JFactory::getConfig();
-
-			// Get additional info for the fnums such as the user email.
-			$fnum = $m_files->getFnumInfos($fnum, 0, false);
 			$template = $m_messages->getEmail($email_id);
-			$programme = $m_campaign->getProgrammeByTraining($fnum['training']);
 
 			// In case no post value is supplied
-			$post['FNUM'] = !isset($post['FNUM']) ? $fnum['fnum'] : $post['FNUM'];
-			$post['USER_NAME'] = !isset($post['USER_NAME']) ? $fnum['name'] : $post['USER_NAME'];
-			$post['COURSE_LABEL'] = !isset($post['COURSE_LABEL']) ? $programme->label : $post['COURSE_LABEL'];
-			$post['CAMPAIGN_LABEL'] = !isset($post['CAMPAIGN_LABEL']) ? $fnum['label'] : $post['CAMPAIGN_LABEL'];
+			$post['FNUM'] = !isset($post['FNUM']) ? $applicationFile->getFnum() : $post['FNUM'];
+			$post['USER_NAME'] = !isset($post['USER_NAME']) ? $applicationFile->getUser()->name : $post['USER_NAME'];
+			$post['COURSE_LABEL'] = !isset($post['COURSE_LABEL']) ? $applicationFile->getCampaign()->getProgram()->getLabel() : $post['COURSE_LABEL'];
+			$post['CAMPAIGN_LABEL'] = !isset($post['CAMPAIGN_LABEL']) ? $applicationFile->getCampaign()->getLabel() : $post['CAMPAIGN_LABEL'];
 			$post['SITE_URL'] = !isset($post['SITE_URL']) ? JURI::base() : $post['SITE_URL'];
-			$post['USER_EMAIL'] = !isset($post['USER_EMAIL']) ? $fnum['email'] : $post['USER_EMAIL'];
+			$post['USER_EMAIL'] = !isset($post['USER_EMAIL']) ? $applicationFile->getUser()->email : $post['USER_EMAIL'];
 			$post['BUTTON_TEXT'] = !isset($post['BUTTON_TEXT']) ? $template->button : $post['BUTTON_TEXT'];
-			$tags = $this->setTags($fnum['applicant_id'], $post, $fnum['fnum'], '', $template->emailfrom.$template->name.$template->subject.$template->message);
+			$tags = $this->setTags($applicationFile->getUser()->id, $post, $applicationFile->getFnum(), '', $template->emailfrom.$template->name.$template->subject.$template->message);
 
 			// Get default mail sender info
 			$mail_from_sys = $config->get('mailfrom');
@@ -3684,8 +3697,8 @@ class EmundusModelEmails extends JModelList
 				$toAttach = is_array($attachments) ? $attachments : [$attachments];
 			}
 
-			$message = $this->setTagsFabrik($template->message, [$fnum['fnum']]);
-			$subject = $this->setTagsFabrik($template->subject, [$fnum['fnum']]);
+			$message = $this->setTagsFabrik($template->message, [$fnum]);
+			$subject = $this->setTagsFabrik($template->subject, [$fnum]);
 
 			// Tags are replaced with their corresponding values using the PHP preg_replace function.
 			$subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
@@ -3701,7 +3714,7 @@ class EmundusModelEmails extends JModelList
 
 			// Check if user defined a cc address
 			$cc = [];
-			$emundus_user = $m_users->getUserById($fnum['applicant_id'])[0];
+			$emundus_user = $m_users->getUserById($applicationFile->getUser()->id)[0];
 			if(!empty($emundus_user->email_cc)) {
 				if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
 					$cc[] = $emundus_user->email_cc;
@@ -3718,7 +3731,7 @@ class EmundusModelEmails extends JModelList
 			}
 			$mailer->setSender([$mail_from_address, $mail_from_name]);
 			$mailer->addReplyTo($reply_to, $reply_to_name);
-			$mailer->addRecipient($fnum['email']);
+			$mailer->addRecipient($applicationFile->getUser()->email);
 			$mailer->setSubject($subject);
 			$mailer->isHTML(true);
 			$mailer->Encoding = 'base64';
@@ -3735,12 +3748,12 @@ class EmundusModelEmails extends JModelList
 
 				foreach ($template->candidate_attachments as $candidate_file) {
 
-					$filename = $m_messages->get_upload($fnum['fnum'], $candidate_file);
+					$filename = $m_messages->get_upload($fnum, $candidate_file);
 
 					if ($filename) {
 
 						// Build the path to the file we are searching for on the disk.
-						$path = EMUNDUS_PATH_ABS.$fnum['applicant_id'].DS.$filename;
+						$path = EMUNDUS_PATH_ABS.$applicationFile->getUser()->id.DS.$filename;
 
 						if (file_exists($path)) {
 							$toAttach[] = $path;
@@ -3755,11 +3768,11 @@ class EmundusModelEmails extends JModelList
 				}
 				$m_evaluation = new EmundusModelEvaluation();
 				$attachments = explode(',', $template->letter_attachments);
-				$generatedLetters = $m_evaluation->generateLetters($fnum['fnum'], $attachments, 1);
+				$generatedLetters = $m_evaluation->generateLetters($fnum, $attachments, 1);
 
 				if ($generatedLetters->status && !empty($generatedLetters->files)) {
 					foreach($generatedLetters->files as $file) {
-						$toAttach[] = EMUNDUS_PATH_ABS . $fnum['applicant_id'] . DS . $file['filename'];
+						$toAttach[] = EMUNDUS_PATH_ABS . $applicationFile->getUser()->id . DS . $file['filename'];
 					}
 				}
 			}
@@ -3791,14 +3804,14 @@ class EmundusModelEmails extends JModelList
 
 				$log = [
 					'user_id_from'  => $user_id,
-					'user_id_to'    => $fnum['applicant_id'],
+					'user_id_to'    => $applicationFile->getUser()->id,
 					'subject'       => $subject,
 					'message'       => $body,
 					'type'          => $template->type,
 					'email_id'      => $email_id,
-					'email_to'      => $fnum['email']
+					'email_to'      => $applicationFile->getUser()->email
 				];
-				$this->logEmail($log, $fnum['fnum']);
+				$this->logEmail($log, $fnum);
 
 				$sent = true;
 			}

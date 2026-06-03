@@ -1,6 +1,7 @@
 <script>
 import AutomationActionTarget from './AutomationActionTarget.vue';
 import targetInstance from '@/components/Automation/targetInstance.js';
+import Button from '@/components/Atoms/Button.vue';
 
 export default {
 	name: 'AutomationActionTargets',
@@ -18,7 +19,7 @@ export default {
 			required: true,
 		},
 	},
-	components: { AutomationActionTarget },
+	components: { Button, AutomationActionTarget },
 	data() {
 		return {};
 	},
@@ -69,9 +70,9 @@ export default {
 			</AutomationActionTarget>
 
 			<div class="tw-mt-4 tw-flex tw-w-full tw-flex-row tw-justify-end">
-				<button class="tw-btn-primary-blue tw-btn-primary tw-text-white" @click="addTarget">
+				<Button @click="addTarget">
 					{{ translate('COM_EMUNDUS_AUTOMATION_ACTION_ADD_TARGET') }}
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>

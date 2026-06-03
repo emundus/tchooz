@@ -48,13 +48,13 @@
 			</select>
 		</td>
 		<td v-if="columns.includes('date')" class="date">
-			{{ formattedDate(attachment.timedate) }}
+			{{ attachment.timedate }}
 		</td>
 		<td v-if="canSee && columns.includes('user')">
 			{{ attachment.user_name }}
 		</td>
 		<td class="date" v-if="columns.includes('modified')">
-			{{ formattedDate(attachment.modified) }}
+			{{ attachment.modified }}
 		</td>
 		<td v-if="canSee && columns.includes('modified_by')">
 			{{ attachment.modified_user_name ?? '' }}

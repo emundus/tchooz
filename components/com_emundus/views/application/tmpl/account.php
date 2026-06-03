@@ -1,5 +1,6 @@
 <?php
 
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 
 if (!class_exists('EmundusModelUsers'))
@@ -8,6 +9,13 @@ if (!class_exists('EmundusModelUsers'))
 }
 $m_users   = new EmundusModelUsers;
 $applicant = $m_users->getUserById($this->sid)[0];
+
+if ($this->applicationFile->isAnonymous() || $applicant->is_anonym)
+{
+    echo '<div id="form_profile" class="tw-ml-4 tw-mt-4"><p>' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '</p></div>';
+    return;
+}
+
 $profile_form_id = $m_users->getProfileForm();
 if(empty($profile_form_id))
 {

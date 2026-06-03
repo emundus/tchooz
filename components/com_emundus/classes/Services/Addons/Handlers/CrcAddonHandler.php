@@ -49,4 +49,9 @@ class CrcAddonHandler extends AbstractAddonHandler
 
 		return !in_array(false, $tasks);
 	}
+
+	public function getParameters(): array
+	{
+		// TODO: Implement getParameters() method.
+	}
 }

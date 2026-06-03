@@ -1,47 +1,40 @@
 <?php // no direct access
 use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Session\Session;
+use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Enums\UI\ButtonVariantEnum;
+use Tchooz\Enums\UI\ButtonWidthEnum;
 
 defined('_JEXEC') or die('Restricted access');
 
-$config      = JFactory::getConfig();
+if (empty($applicationFile))
+{
+    return;
+}
+
+$config      = Factory::getApplication()->getConfig();
 $site_offset = $config->get('offset');
 
 $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 $dateTime = $dateTime->setTimezone(new DateTimeZone($site_offset));
 $now      = $dateTime->format('Y-m-d H:i:s');
+
+$document = Factory::getApplication()->getDocument();
+$wa       = $document->getWebAssetManager();
+
+if ($params->get('layout', '') != '_:tchooz')
+{
+    $wa->registerAndUseStyle("modules/mod_emundusflow/style/emundus.css");
+}
+
+assert($applicationFile instanceof ApplicationFileEntity);
 ?>
 
 <style>
-    .btn.btn-primary.mod_emundus_flow___print:hover,
-    .btn.btn-primary.mod_emundus_flow___print:active,
-    .btn.btn-primary.mod_emundus_flow___print:focus {
-        color: var(--neutral-0) !important;
-        background: var(--em-primary-color) !important;
-        border: 1px solid var(--em-primary-color) !important;
-    }
-
-    .btn.btn-primary.mod_emundus_flow___print:hover .material-symbols-outlined,
-    .btn.btn-primary.mod_emundus_flow___print:active .material-symbols-outlined,
-    .btn.btn-primary.mod_emundus_flow___print:focus .material-symbols-outlined {
-        color: var(--neutral-0) !important;
-    }
-
-    .mod_emundus_flow___print {
-        display: flex !important;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .mod_emundus_flow___print p {
-        font-family: var(--em-profile-font);
-        line-height: 20px;
-    }
-
-    .btn-primary.mod_emundus_flow___print {
-        background: white;
-    }
-
     .mod_emundus_flow___infos {
         flex-wrap: wrap;
         grid-gap: 12px;
@@ -156,9 +149,9 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			<?php
 			$color      = '#0A53CC';
 			$background = '#C8E1FE';
-			if (!empty($current_application->tag_color)) {
-				$color = $current_application->tag_color;
-				switch ($current_application->tag_color) {
+			if (!empty($applicationFile->getCampaign()->getProgram()->getColor())) {
+				$color = $applicationFile->getCampaign()->getProgram()->getColor();
+				switch ($applicationFile->getCampaign()->getProgram()->getColor()) {
 					case '#106949':
 						$background = '#DFF5E9';
 						break;
@@ -173,19 +166,30 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			?>
         </div>
         <div class="tw-flex tw-items-center tw-justify-end tw-gap-2 mod_emundus_flow___buttons">
-			<?php if ($show_back_button == 1) : ?>
-                <a href="<?php echo $home_link ?>"
-                   title="<?php echo strip_tags(JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT')) ?>">
-                    <button class="tw-btn-primary"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
-                </a>
+			<?php if ($show_back_button == 1) :
+				if (EmundusPublicAccess::isPublicAccessSession())
+				{
+					$home_link = '/index.php?option=com_users&task=user.logout&' . Session::getFormToken() . '=1';
+				}
+			?>
+                <?php
+                    echo LayoutHelper::render('emundus.button', [
+                        'variant' => ButtonVariantEnum::PRIMARY,
+                        'width'   => ButtonWidthEnum::FIT,
+                        'text'    => Text::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT'),
+                        'href'    => $home_link,
+                    ]);
+                ?>
 			<?php endif; ?>
-            <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>"
-               target="blank" title="<?php echo JText::_('PRINT') ?>">
-                <button class="tw-btn-secondary mod_emundus_flow___print">
-                    <span class="material-symbols-outlined" style="font-size: 19px">print</span>
-                    <p><?php echo JText::_('PRINT') ?></p>
-                </button>
-            </a>
+
+            <?php
+
+                $data = [
+                    'fnum' => $applicationFile->getFnum(),
+                    'context' => 'single'
+                ];
+                echo LayoutHelper::render('emundus.application.actions', $data, '', $data);
+            ?>
         </div>
     </div>
 	<?php if ($show_deadline == 1 || $show_status == 1) : ?>
@@ -194,48 +198,48 @@ $now      = $dateTime->format('Y-m-d H:i:s');
                 <div class="tw-flex tw-items-center em-flex-wrap">
                     <p class="em-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_REFERENCE'); ?> : </p>
                     <div class="tw-flex tw-items-end tw-gap-1"
-                         title="<?= (!empty($current_application->reference) ? $current_application->reference : '') . '#' . (!empty($current_application->short_reference) ? $current_application->short_reference : ''); ?>"
+                         title="<?= (!empty($reference) ? $reference: '') . '#' . (!empty($applicationFile->getShortReference()) ? $applicationFile->getShortReference() : ''); ?>"
                     >
-                        <?php if (!empty($current_application->reference)) : ?>
-                            <label class="tw-mb-0"><?= $current_application->reference; ?></label>
+                        <?php if (!empty($reference)) : ?>
+                            <label class="tw-mb-0"><?= $reference; ?></label>
                         <?php endif; ?>
-                        <?php if (!empty($current_application->short_reference)) : ?>
-                            <span class="<?= !empty($current_application->reference) ? 'tw-text-sm tw-text-neutral-500' : ''; ?>">#<?= $current_application->short_reference; ?></span>
+                        <?php if (!empty($applicationFile->getShortReference())) : ?>
+                            <span class="<?= !empty($reference) ? 'tw-text-sm tw-text-neutral-500' : ''; ?>">#<?= $applicationFile->getShortReference(); ?></span>
                         <?php endif; ?>
-                        <span id="copy_reference_<?php echo $current_application->id; ?>" class="material-symbols-outlined !tw-text-base tw-cursor-pointer" onclick="copyReference('<?= $current_application->reference . '#' . $current_application->short_reference; ?>')">content_copy</span>
+                        <span id="copy_reference_<?php echo $applicationFile->getId(); ?>" class="material-symbols-outlined !tw-text-base tw-cursor-pointer" onclick="copyReference('<?= $reference . '#' . $applicationFile->getShortReference(); ?>')">content_copy</span>
                     </div>
                 </div>
             <?php endif; ?>
 
 			<?php if ($show_deadline == 1) : ?>
                 <div class="tw-flex tw-items-center">
-                    <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
+                    <p class="em-text-neutral-600 em-font-size-16"> <?php echo Text::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
                     <span class="tw-ml-1.5" style="white-space: nowrap"><?php echo EmundusHelperDate::displayDate($deadline,'DATE_FORMAT_EMUNDUS') ?></span>
                 </div>
 			<?php endif; ?>
 
-			<?php if ($show_programme == 1) : ?>
+			<?php if ($params->get('show_programme', 1) == 1) : ?>
                 <div class="tw-flex tw-items-center em-flex-wrap">
-                    <p class="em-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
+                    <p class="em-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
                     <p class="em-programme-tag" style="color: <?php echo $color ?>;margin: unset;padding: 0">
-						<?php echo $current_application->prog_label; ?>
+						<?php echo $applicationFile->getCampaign()->getProgram()->getLabel(); ?>
                     </p>
                 </div>
 			<?php endif; ?>
 
 			<?php if ($show_status == 1) : ?>
                 <div class="tw-flex tw-items-center">
-                    <p class="em-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_STATUS'); ?> : </p>
-                    <div class="mod_emundus_flow___status_<?= $current_application->class; ?> tw-flex">
-                        <span class="label label-<?= $current_application->class; ?>"><?= $current_application->value ?></span>
+                    <p class="em-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_STATUS'); ?> : </p>
+                    <div class="mod_emundus_flow___status_<?= $applicationFile->getStatus()->getColor(); ?> tw-flex">
+                        <span class="label label-<?=  $applicationFile->getStatus()->getColor() ?>"><?= $applicationFile->getStatus()->getLabel() ?></span>
                     </div>
                 </div>
 			<?php endif; ?>
 
-	        <?php if($fnumInfos['applicant_id'] !== Factory::getApplication()->getIdentity()->id) : ?>
+	        <?php if($applicationFile->getUser()->id !== Factory::getApplication()->getIdentity()->id) : ?>
                 <div class="tw-flex tw-items-center">
-                    <p class="tw-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_APPLICANT'); ?></p>
-                    <p><?= $fnumInfos['name']; ?></p>
+                    <p class="tw-text-neutral-600 tw-mr-2"><?= Text::_('MOD_EMUNDUS_FLOW_APPLICANT'); ?></p>
+                    <p><?= $applicationFile->getUser()->name; ?></p>
                 </div>
 	        <?php endif; ?>
         </div>
@@ -247,7 +251,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 	$file_tags_display = '';
 	if (!empty($file_tags)) {
 	    $m_email = new EmundusModelEmails();
-	    $emundusUser = JFactory::getSession()->get('emundusUser');
+	    $emundusUser = Factory::getApplication()->getSession()->get('emundusUser');
 
 	    $post = array(
 		    'APPLICANT_ID'   => $user->id,
@@ -272,6 +276,13 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			echo $file_tags_display;
 		endif; ?>
     </div>
+
+    <?php
+        if ($applicationFile->isPublic())
+        {
+            require ModuleHelper::getLayoutPath($module->module, 'publicsession');
+        }
+    ?>
 
 </div>
 
@@ -298,6 +309,8 @@ if (!empty($campaign_languages) && !in_array($current_lang_id, $campaign_languag
 
     <?php
 }
+
+
 ?>
 
 <script>

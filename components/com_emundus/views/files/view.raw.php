@@ -25,6 +25,7 @@ use Tchooz\Enums\CrudEnum;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Actions\ActionRepository as AccessActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Services\Reference\InternalReferenceService;
 
@@ -66,11 +67,12 @@ class EmundusViewFiles extends JViewLegacy
 
 	protected array $code;
 	protected array $fnum_assoc;
-	protected bool $use_module_for_filters = true;
 
 	protected array $docs;
 	protected array $prgs;
 	protected string $fnums;
+
+	public bool $displayUserId = true;
 
 	/** FILTERS */
 	protected $applied_filters;
@@ -82,6 +84,7 @@ class EmundusViewFiles extends JViewLegacy
 	protected int $fnumsCount;
 
 	private ApplicationChoicesRepository $applicationChoicesRepository;
+	private ApplicationFileAccessRepository $applicationFileAccessRepository;
 
 	public function __construct($config = array())
 	{
@@ -93,6 +96,7 @@ class EmundusViewFiles extends JViewLegacy
 		require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 
 		$this->applicationChoicesRepository = new ApplicationChoicesRepository();
+		$this->applicationFileAccessRepository = new ApplicationFileAccessRepository();
 
 		$this->app  = Factory::getApplication();
 		$this->user = $this->app->getIdentity();
@@ -262,9 +266,8 @@ class EmundusViewFiles extends JViewLegacy
 
 				$Itemid = $this->app->input->getInt('Itemid', $current_menu->id);
 
-				if (isset($current_menu) && !empty($current_menu))
+				if (!empty($current_menu))
 				{
-
 					$params = $menu->getParams($Itemid);
 
 					if ($fnum === "0")
@@ -529,6 +532,10 @@ class EmundusViewFiles extends JViewLegacy
 								$data[0]['application_choices'] = Text::_('COM_EMUNDUS_APPLICATION_CHOICES');
 								$colsSup['application_choices'] = array();
 								break;
+							case 'access_expiration_date':
+								$data[0]['access_expiration_date'] = Text::_('COM_EMUNDUS_ACCESS_EXPIRATION_DATE');
+								$colsSup['access_expiration_date'] = array();
+								break;
 							case 'module':
 								// Get every module without a positon.
 								$mod_emundus_custom = array();
@@ -596,7 +603,7 @@ class EmundusViewFiles extends JViewLegacy
 								$userObj->user->name      = $user['name'];
 								$userObj->unread_messages = !empty($unread_messages) ? $unread_messages[$value] : '';
 
-								if ($user['is_anonym'])
+								if ($user['is_anonym'] || $user['anonymous'])
 								{
 									$userObj->user->name  = $value;
 									$userObj->user->email = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
@@ -730,6 +737,18 @@ class EmundusViewFiles extends JViewLegacy
 						}
 					}
 
+					if (isset($colsSup['access_expiration_date']))
+					{
+						$expirationDates = $this->applicationFileAccessRepository->getExpirationDatesByFnums($fnumArray);
+						$dateFormat      = Text::_('DATE_FORMAT_LC2');
+						foreach ($fnumArray as $fnum)
+						{
+							$colsSup['access_expiration_date'][$fnum] = isset($expirationDates[$fnum])
+								? EmundusHelperDate::displayDate($expirationDates[$fnum]->format('Y-m-d H:i:s'), $dateFormat, 0)
+								: Text::_('COM_EMUNDUS_NO_EXPIRATION_DATE');
+						}
+					}
+
 					if (!empty($mod_emundus_custom))
 					{
 						foreach ($mod_emundus_custom as $key => $module)
@@ -780,6 +799,8 @@ class EmundusViewFiles extends JViewLegacy
 				$this->delayAct   = EmundusHelperJavascript::delayAct();
 				$this->accessObj  = $objAccess;
 				$this->colsSup    = $colsSup;
+
+				$this->displayUserId = (bool) $menu_params->get('display_user_id', 1);
 				break;
 		}
 

@@ -132,8 +132,6 @@ if (!empty($this->custom_title)) :?>
         <span class="group-hover:tw-underline" name="Goback"><?php echo Text::_('GO_BACK') ?></span>
     </div>
     <div id="attachment_list" class="em-attachmentList em-repeat-card tw-p-6">
-        <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg"
-                alt="<?= Text::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
         <h2 class="after-em-border after:tw-bg-red-800 tw-mb-4"><?php echo Text::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
         <div class="alert alert-info tw-flex tw-items-center tw-gap-1 tw-mt-1">
             <span class="material-symbols-outlined">info</span>

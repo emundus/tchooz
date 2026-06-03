@@ -30,3 +30,7 @@ vulnerabilities:
       - "libraries/gantry5/composer.lock"
       - "libraries/gantry5/compat/composer.lock"
     statement: The editor does not support the latest version of the library, waiting update from the library maintainer.
+  - id: CVE-2026-24425
+    paths:
+      - "libraries/gantry5/composer.lock"
+    statement: Twig 2.16.1 is bundled and pinned by Gantry5 (Joomla template framework). The fix only exists in Twig 3.26.0, and Gantry5 has not migrated to Twig 3, so it is not patchable on our side without breaking Gantry5. Our usage does not expose Twig to untrusted template input. Temporarily ignored, waiting for an upstream Gantry5 update.

@@ -52,14 +52,43 @@ class PlgFabrik_FormEmundusencryptdatas extends plgFabrik_Form
 		foreach ($elements as $element)
 		{
 			$elt_fullname = $element->getFullName();
+			if (strpos($elt_fullname, '[]') !== false)
+			{
+				$elt_fullname = str_replace('[]', '', $elt_fullname);
+			}
 
 			$data = $datas[$elt_fullname];
-			if(empty($data) || is_array($data) && count(array_filter($data)) === 0)
+			if (empty($data) || is_array($data) && count(array_filter($data)) === 0)
 			{
 				$data = $datas[$elt_fullname . '_raw'];
 			}
 
-			$decrypted_data = EmundusHelperFabrik::decryptDatas($data, null, 'aes-128-cbc', $element->getElement()->plugin);
+			if (is_string($data))
+			{
+				$decoded_value = json_decode($data, true);
+			}
+			elseif (is_array($data))
+			{
+				$decoded_value = $data;
+			}
+			else
+			{
+				$decoded_value = null;
+			}
+
+
+			if (!empty($decoded_value)) {
+				$all_decrypted_data = [];
+				foreach ($decoded_value as $decoded_sub_value) {
+					$all_decrypted_data[] = EmundusHelperFabrik::decryptDatas($decoded_sub_value);
+				}
+
+				$decrypted_data = $all_decrypted_data;
+			}
+			else
+			{
+				$decrypted_data = EmundusHelperFabrik::decryptDatas($data, null, 'aes-128-cbc', $element->getElement()->plugin);
+			}
 
 			if(!empty($decrypted_data))
 			{
@@ -93,9 +122,16 @@ class PlgFabrik_FormEmundusencryptdatas extends plgFabrik_Form
 
 		foreach ($elements as $element) {
 			$elt_fullname = $element->getFullName();
-			if(strpos($elt_fullname,'jos_emundus') !== false && strpos($elt_fullname,'fnum') === false && strpos($elt_fullname,'id') === false && strpos($elt_fullname,'user') === false && strpos($elt_fullname,'time_date') === false){
+			if (strpos($elt_fullname, '[]') !== false)
+			{
+				$elt_fullname = str_replace('[]', '', $elt_fullname);
+			}
+
+			if (strpos($elt_fullname,'jos_emundus') !== false && strpos($elt_fullname,'fnum') === false && strpos($elt_fullname,'id') === false && strpos($elt_fullname,'user') === false && strpos($elt_fullname,'time_date') === false)
+			{
 				$data = $datas[$elt_fullname.'_raw'];
-				if(empty($data)) {
+				if (empty($data))
+				{
 					$data = $datas[$elt_fullname];
 				}
 
@@ -106,9 +142,11 @@ class PlgFabrik_FormEmundusencryptdatas extends plgFabrik_Form
 						break;
 					// Iban can be encrypted by default on any form so we don't need to encrypt it again
 					case 'iban':
-						if(!empty($element->getElement()->params)) {
+						if (!empty($element->getElement()->params))
+						{
 							$params = json_decode($element->getElement()->params);
-							if($params->encrypt_datas == 1) {
+							if ($params->encrypt_datas == 1)
+							{
 								$skip = true;
 							}
 						}
@@ -118,11 +156,33 @@ class PlgFabrik_FormEmundusencryptdatas extends plgFabrik_Form
 						break;
 				}
 
-				if($data !== '' && !$skip)
+				if ($data !== '' && !$skip)
 				{
-					$encrypted_data = EmundusHelperFabrik::encryptDatas($data, null, 'aes-128-cbc', null);
-					$formModel->updateFormData($elt_fullname, $encrypted_data);
-					$formModel->updateFormData($elt_fullname . '_raw', $encrypted_data);
+					if (!is_array($data))
+					{
+						$encrypted_data = EmundusHelperFabrik::encryptDatas($data);
+						$formModel->updateFormData($elt_fullname, $encrypted_data);
+						$formModel->updateFormData($elt_fullname . '_raw', $encrypted_data);
+					}
+					else
+					{
+						// If the data is an array, we need to encrypt each value
+						$encrypted_data = array();
+						foreach ($data as $key => $value)
+						{
+							if ($value !== '')
+							{
+								$encrypted_data[$key] = EmundusHelperFabrik::encryptDatas($value);
+							}
+							else
+							{
+								$encrypted_data[$key] = '';
+							}
+						}
+
+						$formModel->updateFormData($elt_fullname, $encrypted_data);
+						$formModel->updateFormData($elt_fullname . '_raw', $encrypted_data);
+					}
 				}
 			}
 		}

@@ -1,10 +1,11 @@
 <script>
 import AutomationCondition from '@/components/Automation/AutomationCondition.vue';
 import { newConditionGroup } from '@/components/Automation/conditionGroup.js';
+import Button from '@/components/Atoms/Button.vue';
 
 export default {
 	name: 'AutomationConditionGroup',
-	components: { AutomationCondition },
+	components: { Button, AutomationCondition },
 	props: {
 		conditionGroup: {
 			type: Object,
@@ -192,17 +193,17 @@ export default {
 			</div>
 
 			<div class="tw-flex tw-w-full tw-flex-row tw-justify-end tw-gap-2">
-				<button
+				<Button
 					v-if="canAddConditionGroup"
+					:variant="'orange'"
 					id="add-condition-group"
 					@click="addConditionGroup(conditionGroup.id)"
-					class="tw-btn-secondary-orange tw-btn-secondary tw-mt-4"
 				>
 					{{ translate('COM_EMUNDUS_AUTOMATION_ADD_CONDITION_GROUP') }}
-				</button>
-				<button class="tw-btn-primary-orange tw-btn-primary tw-mt-4" @click="addCondition">
+				</Button>
+				<Button @click="addCondition" variant="orange">
 					{{ translate('COM_EMUNDUS_AUTOMATION_ADD_CONDITION') }}
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>

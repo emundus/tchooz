@@ -12,8 +12,11 @@ defined('_JEXEC') or die('Restricted Access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\Addons\AddonEnum;
+use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Factories\LayoutFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
 
 Text::script('COM_EMUNDUS_ONBOARD_FROM');
 Text::script('COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED');
@@ -122,9 +125,12 @@ Text::script('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_END_DATE');
 Text::script('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_YEAR');
 Text::script('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_PROGRAM');
 Text::script('COM_EMUNDUS_ONBOARD_TIP');
-JText::script('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP');
-JText::script('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP_TEXT');
-JText::script('COM_EMUNDUS_SWAL_OK_BUTTON');
+Text::script('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP');
+Text::script('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP_TEXT');
+Text::script('COM_EMUNDUS_SWAL_OK_BUTTON');
+Text::script('COM_EMUNDUS_CAMPAIGNS_PUBLIC');
+Text::script('COM_EMUNDUS_ONBOARD_PUBLIC_CAMPAIGN_TIP');
+Text::script('COM_EMUNDUS_ONBOARD_PUBLIC_CAMPAIGN_TIP_TEXT');
 Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT');
 Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER');
 Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS');
@@ -276,6 +282,8 @@ Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARENT');
 Text::script('COM_EMUNDUS_ONBOARD_CHOOSE_PARENT');
 
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC_NEW');
+Text::script('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_LABEL');
+Text::script('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_DESC');
 
 $app = Factory::getApplication();
 
@@ -295,6 +303,21 @@ $data['crud']     = [
         'c' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($formAction->getId(), 'c', $user->id),
     ]
 ];
+
+$addonRepository = new AddonRepository();
+$addonAnonymous = $addonRepository->getByName(AddonEnum::ANONYMOUS->value);
+if ($addonAnonymous->isActivated())
+{
+    $data['anonymizationPolicies'] = array_map(
+        fn(AnonymizationPolicyEnum $policy) => [
+            'value' => $policy->value,
+            'label' => $policy->getLabel(),
+            'description' => Text::_('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_' . strtoupper($policy->name) . '_DESC'),
+        ],
+        AnonymizationPolicyEnum::cases()
+    );
+}
+$data['publicAddonActivated'] = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value)->isActivated();
 ?>
 
 <div id="em-component-vue"

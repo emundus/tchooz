@@ -2218,4 +2218,42 @@ class EmundusControllerUsers extends EmundusController
 
 		return EmundusResponse::ok([], Text::_('EXCEPTION_ADDED'));
 	}
+
+	public function getaccessibilityusersettings(): EmundusResponse
+	{
+		if ($this->user->guest)
+		{
+			throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
+		$data = [
+			'a11y_mono'      => $this->user->getParam('a11y_mono', false),
+			'a11y_contrast'  => $this->user->getParam('a11y_contrast', false),
+			'a11y_highlight' => $this->user->getParam('a11y_highlight', false),
+			'a11y_font'      => $this->user->getParam('a11y_font', false),
+		];
+
+		return EmundusResponse::ok($data);
+	}
+	
+	public function saveaccessibilitysettings(): EmundusResponse
+	{
+		if ($this->user->guest)
+		{
+			throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
+		$this->user->setParam('a11y_mono', $this->input->getInt('a11y_mono', 0) === 1 ? 'monochrome' : '');
+		$this->user->setParam('a11y_contrast', $this->input->getInt('a11y_contrast', 0) === 1 ? 'high_contrast' : '');
+		$this->user->setParam('a11y_highlight', $this->input->getInt('a11y_highlight', 0) === 1 ? 'highlight' : '');
+		$this->user->setParam('a11y_font', $this->input->getInt('a11y_font', 0) === 1 ? 'fontsize' : '');
+
+		$saved = $this->user->save();
+		if(!$saved)
+		{
+			throw new \RuntimeException('Failed to save accessibility settings.', 500);
+		}
+
+		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_USERS_ACCESSIBILITY_SETTINGS_SAVED_SUCCESSFULLY'));
+	}
 }

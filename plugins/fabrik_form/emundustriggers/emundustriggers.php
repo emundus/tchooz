@@ -17,6 +17,7 @@ use Fabrik\Helpers\ArrayHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Traits\TraitSyncRepeats;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -33,6 +34,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
 class PlgFabrik_FormEmundustriggers extends PlgFabrik_Form
 {
+	use TraitSyncRepeats;
 
     /**
      * Get an element name
@@ -112,6 +114,8 @@ class PlgFabrik_FormEmundustriggers extends PlgFabrik_Form
 
         PluginHelper::importPlugin('emundus','custom_event_handler');
         Factory::getApplication()->triggerEvent('onCallEventHandler', ['onLoad', ['formModel' => $formModel]]);
+
+        $this->syncReadonlyRepeats();
 
         return true;
     }

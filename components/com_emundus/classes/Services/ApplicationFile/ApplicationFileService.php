@@ -10,23 +10,33 @@
 namespace Tchooz\Services\ApplicationFile;
 
 use EmundusModelLogs;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
+use Tchooz\Traits\TraitDispatcher;
 
 class ApplicationFileService
 {
+	use TraitDispatcher;
+
 	public function __construct(private readonly UploadRepository $uploadRepository = new UploadRepository())
 	{}
 	
 	public function updateOwner(ApplicationFileEntity $applicationFile, int $newOwnerId, int $userId = 0): bool
 	{
+		if (empty($userId))
+		{
+			$userId = Factory::getApplication()->getIdentity()->id;
+		}
+
 		$applicationFileRepository = new ApplicationFileRepository();
 		$newOwner = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($newOwnerId);
 		if(empty($newOwner) || empty($newOwner->id))
@@ -101,6 +111,18 @@ class ApplicationFileService
 			]
 		];
 		$logsModel::log($userId, $applicationFile->getUser()->id, $applicationFile->getFnum(), $updateOwnerAction->getId(), CrudEnum::UPDATE->value, $updateOwnerAction->getLabel(), json_encode($params));
+
+		$this->dispatchJoomlaEvent('onAfterUpdateOwner', [
+			'context' => new EventContextEntity(
+				Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId),
+				[$applicationFile->getFnum()],
+				[$applicationFile->getUser()->id],
+				[
+					'old_owner' => $oldOwner->id,
+					'new_owner' => $applicationFile->getUser()->id
+				]
+			)
+		]);
 
 		return true;
 	}

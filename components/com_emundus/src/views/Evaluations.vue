@@ -31,7 +31,7 @@
 					v-else-if="selectedEvaluationStep.evaluations.length > 0"
 					v-show="!loading"
 					:src="'/' + currentLang + selectedEvaluationStep.evaluations[0].url"
-					class="iframe-evaluation-list tw-w-full tw-grow tw-bg-coordinator-bg tw-p-6"
+					class="iframe-evaluation-list tw-w-full tw-bg-coordinator-bg tw-p-4"
 					:key="selectedTab"
 					@load="iframeLoaded($event)"
 				>
@@ -143,10 +143,25 @@ export default {
 		},
 		iframeLoaded(event) {
 			this.loading = false;
-			let iframeDoc = event.target.contentDocument || event.target.contentWindow.document;
+			const iframeEl = event.target;
+			const iframeDoc = iframeEl.contentDocument || iframeEl.contentWindow.document;
+
 			if (iframeDoc.querySelector('.emundus-form')) {
 				iframeDoc.querySelector('.emundus-form').classList.add('eval-form-split-view');
 				iframeDoc.querySelector('body .platform-content > div').classList.add('eval-form-split-view-container');
+			}
+
+			const evaluatorStepContainer = document.querySelector('.em-container-evaluator-step');
+			if (iframeEl && evaluatorStepContainer) {
+				// Shrink iframe to 0 so scrollHeight reflects actual content, not stretched container
+				iframeEl.style.height = '0px';
+				requestAnimationFrame(() => {
+					const body = iframeDoc.body;
+					if (body) {
+						const contentHeight = body.scrollHeight;
+						iframeEl.style.height = contentHeight + 'px';
+					}
+				});
 			}
 		},
 		updateTab(evaluation) {
@@ -172,8 +187,9 @@ export default {
 <style scoped>
 .iframe-evaluation-list {
 	width: 100%;
-	min-height: 80%;
+	min-height: 500px;
 	border: unset;
 	height: 100%;
+	flex: 0 0 auto;
 }
 </style>

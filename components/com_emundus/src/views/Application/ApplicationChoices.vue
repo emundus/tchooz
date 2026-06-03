@@ -279,15 +279,26 @@ export default {
 				if (result.isConfirmed) {
 					this.loading = true;
 					applicationService.refuseChoice(choice.id, fnum).then((response) => {
-						this.alertSuccess('COM_EMUNDUS_APPLICATION_CHOICES_REFUSE_CHOICE_SUCCESS_TITLE').then(() => {
-							const choiceIndex = this.choices.findIndex((choiceOption) => choiceOption.id === choice.id);
-							if (choiceIndex !== -1) {
-								this.choices[choiceIndex].state = response.data.state;
-								this.choices[choiceIndex].state_html = response.data.state_html;
-							}
+						this.loading = false;
 
-							this.loading = false;
-						});
+						if (response.status) {
+							this.alertSuccess('COM_EMUNDUS_APPLICATION_CHOICES_REFUSE_CHOICE_SUCCESS_TITLE').then(() => {
+								const choiceIndex = this.choices.findIndex((choiceOption) => choiceOption.id === choice.id);
+								if (choiceIndex !== -1) {
+									this.choices[choiceIndex].state = response.data.state;
+									this.choices[choiceIndex].state_html = response.data.state_html;
+								}
+
+								if (response.redirect && response.redirect.length > 0) {
+									window.location.href = response.redirect;
+								}
+							});
+						} else {
+							this.alertError(
+								'COM_EMUNDUS_FORM_BUILDER_ERROR',
+								response.error || 'COM_EMUNDUS_APPLICATION_CHOICES_REFUSE_CHOICE_ERROR_TEXT',
+							);
+						}
 					});
 				}
 			});

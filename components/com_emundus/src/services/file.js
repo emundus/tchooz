@@ -1,7 +1,7 @@
 import { FetchClient } from './fetchClient.js';
 
 const client = new FetchClient('files');
-
+const labelsClient = new FetchClient('labels');
 export default {
 	async getFnums() {
 		try {
@@ -109,6 +109,55 @@ export default {
 				status: false,
 				msg: e.message,
 			};
+		}
+	},
+
+	async deleteApplicationTag(idTag, fnum) {
+		try {
+			return await client.post('deletetags', {
+				// todo: one day replace this shitty controller method, parameters make no sense
+				tag: idTag,
+				fnums: JSON.stringify({ 1: fnum }),
+			});
+		} catch (e) {
+			return {
+				status: false,
+			};
+		}
+	},
+
+	async getApplicationTags(fnum) {
+		try {
+			return await labelsClient.get('getapplicationtags', { fnum: fnum });
+		} catch (e) {
+			return { status: false, data: [] };
+		}
+	},
+
+	async getAvailableTags() {
+		try {
+			return await labelsClient.get('getavailabletags');
+		} catch (e) {
+			return { status: false, data: [] };
+		}
+	},
+
+	async addApplicationTag(fnum, tagId = 0, newTag = '', newTagClass = 'label-default') {
+		const payload = {
+			fnums: JSON.stringify([fnum]),
+		};
+
+		if (newTag) {
+			payload.newTag = newTag;
+			payload.newTagClass = newTagClass;
+		} else {
+			payload.tag = tagId;
+		}
+
+		try {
+			return await client.post('tagfile', payload);
+		} catch (e) {
+			return { status: false, msg: e.message };
 		}
 	},
 };

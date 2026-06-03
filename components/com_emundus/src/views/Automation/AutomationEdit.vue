@@ -12,10 +12,12 @@ import AutomationEvent from '@/components/Automation/AutomationEvent.vue';
 import AutomationEventsList from '@/components/Automation/AutomationEventsList.vue';
 import { newConditionGroup } from '@/components/Automation/conditionGroup.js';
 import { useAutomationStore } from '@/stores/automation.js';
+import Button from '@/components/Atoms/Button.vue';
 
 export default {
 	name: 'AutomationEdit',
 	components: {
+		Button,
 		AutomationEventsList,
 		AutomationEvent,
 		AutomationActionsList,
@@ -386,12 +388,9 @@ export default {
 		</Modal>
 
 		<div class="tw-flex tw-w-full tw-flex-row tw-justify-end">
-			<button
-				class="not-to-close-modal tw-btn-primary tw-mt-4 tw-border-yellow-600 tw-bg-yellow-600 tw-text-white"
-				@click="openModal('eventsListModal')"
-			>
+			<Button @click="openModal('eventsListModal')" :variant="'warning'" class="not-to-close-modal">
 				{{ translate('COM_EMUNDUS_AUTOMATION_SELECT_EVENT') }}
-			</button>
+			</Button>
 		</div>
 		<hr class="tw-mt-8" />
 		<h2 class="tw-mb-4 tw-text-orange-600">{{ translate('COM_EMUNDUS_AUTOMATION_CONDITIONS') }}</h2>
@@ -425,13 +424,9 @@ export default {
 			<p v-if="automation.actions.length < 1">{{ translate('COM_EMUNDUS_AUTOMATION_NO_ACTIONS') }}</p>
 
 			<div class="tw-flex tw-w-full tw-flex-row tw-justify-end">
-				<button
-					id="add-action"
-					@click="openModal('actionsListModal')"
-					class="not-to-close-modal tw-btn-primary-blue tw-btn-primary tw-text-white"
-				>
+				<Button id="add-action" @click="openModal('actionsListModal')" :variant="'info'" class="not-to-close-modal">
 					{{ translate('COM_EMUNDUS_AUTOMATION_ADD_ACTION') }}
-				</button>
+				</Button>
 			</div>
 			<Modal
 				:name="'actions-list-modal'"
@@ -453,9 +448,9 @@ export default {
 
 		<div class="tw-mt-4 tw-flex tw-w-full tw-flex-row tw-justify-between">
 			<Back :link="'index.php?option=com_emundus&view=automation'" class="tw-mb-4" />
-			<button class="tw-btn-primary" @click="saveAutomation">
+			<Button @click="saveAutomation">
 				{{ translate('COM_EMUNDUS_SAVE') }}
-			</button>
+			</Button>
 		</div>
 	</div>
 </template>

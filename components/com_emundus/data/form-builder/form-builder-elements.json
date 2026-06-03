@@ -160,5 +160,12 @@
 		"icon": "sort",
 		"name": "COM_EMUNDUS_ONBOARD_TYPE_ORDERLIST",
 		"published": true
+	},
+	{
+		"value": "emundusreadonly",
+		"icon": "visibility",
+		"name": "COM_EMUNDUS_ONBOARD_TYPE_EMUNDUSREADONLY",
+		"description": "COM_EMUNDUS_ONBOARD_TYPE_EMUNDUSREADONLY_DESC",
+		"published": true
 	}
 ]

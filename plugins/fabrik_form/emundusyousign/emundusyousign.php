@@ -19,6 +19,7 @@ defined('_JEXEC') or die('Restricted access');
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
 use GuzzleHttp\Client as GuzzleClient;
+use Joomla\CMS\Factory;
 
 /**
  * Create a Joomla user from the forms data
@@ -234,7 +235,12 @@ class PlgFabrik_FormEmundusyousign extends plgFabrik_Form {
 			include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 			$m_profile = new EmundusModelProfile();
 
-			$student = JFactory::getUser((int)substr($fnum, -7));
+			if (!class_exists('EmundusHelperFiles'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+			}
+			$applicantId = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
+			$student = Factory::getUser($applicantId);
 
 			$query->clear()
 				->select($db->quoteName('lbl'))

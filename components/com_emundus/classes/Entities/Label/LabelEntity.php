@@ -19,12 +19,15 @@ class LabelEntity
 
 	private int $ordering;
 
-	public function __construct(string $label, string $class, int $ordering, int $id = 0)
+	private string $category;
+
+	public function __construct(string $label, string $class = 'label-default', int $ordering = 0, int $id = 0, string $category = '')
 	{
 		$this->id       = $id;
 		$this->label    = $label;
 		$this->class    = $class;
 		$this->ordering = $ordering;
+		$this->category = $category;
 	}
 
 	public function getId(): int
@@ -67,6 +70,18 @@ class LabelEntity
 		$this->ordering = $ordering;
 	}
 
+	public function getCategory(): string
+	{
+		return $this->category;
+	}
+
+	public function setCategory(string $category): LabelEntity
+	{
+		$this->category = $category;
+
+		return $this;
+	}
+
 	public function __serialize(): array
 	{
 		return [
@@ -74,6 +89,7 @@ class LabelEntity
 			'label'    => $this->label,
 			'class'    => $this->class,
 			'ordering' => $this->ordering,
+			'category' => $this->category,
 		];
 	}
 }

@@ -10,7 +10,7 @@ class ScalarComparator implements ComparatorInterface
 {
 	public function supports(mixed $expected, mixed $found): bool
 	{
-		return is_scalar($expected) && is_scalar($found);
+		return (is_scalar($expected) || is_null($expected)) && (is_scalar($found) || is_null($found));
 	}
 
 	public function compare(

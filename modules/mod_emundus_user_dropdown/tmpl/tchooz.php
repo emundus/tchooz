@@ -9,6 +9,12 @@
 // No direct access.
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Session\Session;
+use Joomla\CMS\Uri\Uri;
+use Tchooz\Enums\UI\ButtonVariantEnum;
+use Tchooz\Enums\UI\ButtonWidthEnum;
 
 defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
@@ -98,11 +104,6 @@ if ($user != null)
             border-bottom: 1px solid #fff;
         }
 
-        #userDropdownMenu li > a:hover,
-        #userDropdownMenu .active > a {
-            background: #<?= $secondary_color; ?>;
-        }
-
         .select {
             text-align: left;
             width: 100%;
@@ -132,10 +133,6 @@ if ($user != null)
 
         .select .profile-select:focus {
             background-color: var(--neutral-0) !important;
-        }
-
-        .dropdown-menu > li > a {
-            padding: unset;
         }
 
         .userDropdown-tip {
@@ -331,9 +328,10 @@ if ($user != null)
 
 			if (!empty($user_profiles) && sizeof($user_profiles) > 1 && (!$only_applicant))
 			{
+                echo '<div class="tw-mb-3">';
 				echo '<p class="mb-2 em-profile-font">' . JText::_('SELECT_PROFILE') . '</p>';
 				echo '<div class="select">';
-				echo '<select class="profile-select" id="profile" name="profiles" onchange="postCProfile()"> ';
+				echo '<select class="profile-select tw-cursor-pointer" id="profile" name="profiles" onchange="postCProfile()"> ';
 				foreach ($user_profiles as $profile)
 				{
 					if ($profile->published && !$applicant_option)
@@ -346,21 +344,35 @@ if ($user != null)
 						echo '<option  value="' . $profile->id . "." . '"' . (($user->profile == $profile->id) ? 'selected="selected"' : "") . '>' . trim($profile->label) . '</option>';
 					}
 				}
-				echo '</select></div>';
+				echo '</select></div></div>';
 			}
 			?>
 
 			<?php if ($show_update == '1') : ?>
-                <li><a class="edit-button-user em-flex-row em-flex-important em-flex-center"
-                       href="<?= $link_edit_profile ?>" style="margin-top: 0"><span
-                                class="material-symbols-outlined tw-mr-2">person_outline</span><?= JText::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL') ?>
-                    </a></li>
+                <li>
+                    <?php
+                    echo LayoutHelper::render('emundus.button', [
+                        'variant' => ButtonVariantEnum::PRIMARY,
+                        'icon'    => 'person_outline',
+                        'width'   => ButtonWidthEnum::FULL,
+                        'text'    => Text::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL'),
+                        'href'    => $link_edit_profile,
+                    ]);
+                    ?>
+                </li>
 			<?php endif; ?>
             <?php if (!empty($link_exports)) : ?>
-            <li><a class="edit-button-user em-flex-row em-flex-important em-flex-center"
-                   href="<?= $link_exports ?>" style="margin-top: 0"><span
-                        class="material-symbols-outlined tw-mr-2">archive</span><?= Text::_('COM_EMUNDUS_USER_MENU_EXPORTS_LABEL') ?>
-                </a></li>
+            <li>
+                <?php
+                    echo LayoutHelper::render('emundus.button', [
+                        'variant' => ButtonVariantEnum::PRIMARY,
+                        'icon'    => 'archive',
+                        'width'   => ButtonWidthEnum::FULL,
+                        'text'    => Text::_('COM_EMUNDUS_USER_MENU_EXPORTS_LABEL'),
+                        'href'    => $link_exports,
+                    ]);
+                ?>
+            </li>
             <?php endif; ?>
 			<?php if (!empty($custom_actions))
 			{
@@ -389,7 +401,18 @@ if ($user != null)
 			} ?>
 
 			<?php if ($show_logout == '1') : ?>
-				<?= '<hr style="width: 100%" aria-hidden="true"><li><a class="logout-button-user em-profile-font em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-symbols-outlined tw-mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
+				<hr style="width: 100%" aria-hidden="true">
+                <li>
+                    <?php
+                        echo LayoutHelper::render('emundus.button', [
+                            'variant' => ButtonVariantEnum::RED,
+                            'icon'    => 'logout',
+                            'width'   => ButtonWidthEnum::FULL,
+                            'text'    => Text::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION'),
+                            'href'    => Uri::base() . 'index.php?option=com_users&task=user.logout&' . Session::getFormToken() . '=1',
+                        ]);
+                    ?>
+                </li>
 			<?php endif; ?>
 
         </ul>
@@ -532,12 +555,24 @@ if ($user != null)
         <div id="background-shapes" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></div>
 	<?php endif; ?>
     <div class="header-right" style="text-align: right;">
-		<?php if ($show_registration) { ?>
-            <a class="btn btn-danger em-profile-font" href="<?= JRoute::_($link_register); ?>"
-               data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
-		<?php } ?>
-        <a class="btn btn-danger btn-creer-compte em-profile-font" href="<?= JRoute::_($link_login); ?>"
-           data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
+		<?php if ($show_registration) : ?>
+            <?php
+                echo LayoutHelper::render('emundus.button', [
+                    'variant' => ButtonVariantEnum::SECONDARY,
+                    'width'   => ButtonWidthEnum::FIT,
+                    'text'    => Text::_('CREATE_ACCOUNT_LABEL'),
+                    'href'    => $link_register,
+                ]);
+            ?>
+		<?php endif; ?>
+        <?php
+            echo LayoutHelper::render('emundus.button', [
+                'variant' => ButtonVariantEnum::PRIMARY,
+                'width'   => ButtonWidthEnum::FIT,
+                'text'    => Text::_('CONNEXION_LABEL'),
+                'href'    => Route::_($link_login),
+            ]);
+        ?>
     </div>
     <script>
 		<?php if ($guest): ?>

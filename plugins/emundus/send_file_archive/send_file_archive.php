@@ -7,9 +7,11 @@
  * @license	GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Factory;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -37,6 +39,15 @@ class plgEmundusSend_file_archive extends CMSPlugin {
 		$email = $this->params->get('delete_email');
 		if (empty($email)) {
 			return false;
+		}
+
+		$repository = new ApplicationFileRepository(false);
+		$applicationFile = $repository->getByFnum($fnum);
+		$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
+
+		if ($applicationFile && $applicationFile->isPublic() && $applicationFile->getUser()->id === $systemUserId)
+		{
+			return true;
 		}
 
 		return $this->sendEmailArchive($fnum, $email);

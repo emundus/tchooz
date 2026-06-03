@@ -3,8 +3,11 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\UI\ButtonVariantEnum;
+use Tchooz\Enums\UI\ButtonWidthEnum;
 
 $index_form = 1;
 $index_doc  = 1;
@@ -291,24 +294,25 @@ if ($layout !== 'cart' || $paid) {
 ?>
     <div class="mod_emundus_checklist___buttons">
 		<?php if ($show_send && $details_view === false && $is_confirm_url === false) : ?>
-            <a class="btn btn-success btn-xs em-w-100"
-				<?php if ((int) ($attachments_progress) >= 100 && (int) ($forms_progress) >= 100 && ((in_array($application->status, $status_for_send) && (!$is_dead_line_passed || ($is_dead_line_passed && $can_edit_after_deadline))) || in_array($user->id, $exceptions))) : ?>
-                    href="<?php echo $confirm_form_url; ?>" style="opacity: 1"
-				<?php else: ?>
-                    style="opacity: 0.6; cursor: not-allowed"
-				<?php endif; ?>
-				<?php if ($application_fee && !$paid) : ?>
-                    title="<?php echo Text::_('MOD_EMUNDUS_CHECKLIST_PROCESS_TO_PAYMENT'); ?>"
-				<?php else : ?>
-                    title="<?php echo Text::_('MOD_EMUNDUS_CHECKLIST_SEND_APPLICATION'); ?>"
-				<?php endif ?>
-            >
-				<?php if ($application_fee && !$paid) : ?>
-					<?php echo Text::_('MOD_EMUNDUS_CHECKLIST_PROCESS_TO_PAYMENT'); ?>
-				<?php else : ?>
-					<?php echo Text::_('MOD_EMUNDUS_CHECKLIST_SEND_APPLICATION'); ?>
-				<?php endif ?>
-            </a>
+            <?php
+                $active = (int) ($attachments_progress) >= 100 && (int) ($forms_progress) >= 100 && ((in_array($application->status, $status_for_send) && (!$is_dead_line_passed || ($is_dead_line_passed && $can_edit_after_deadline))) || in_array($user->id, $exceptions));
+                $text = Text::_('MOD_EMUNDUS_CHECKLIST_SEND_APPLICATION');
+
+                if ($application_fee && !$paid) {
+                    $text = Text::_('MOD_EMUNDUS_CHECKLIST_PROCESS_TO_PAYMENT');
+                }
+
+                echo LayoutHelper::render('emundus.button', [
+                    'variant'  => ButtonVariantEnum::PRIMARY,
+                    'width'    => ButtonWidthEnum::FULL,
+                    'text'     => $text,
+                    'href'     => $confirm_form_url,
+                    'title'    => $text,
+                    'disabled' => !$active,
+                ]);
+            ?>
+
+
 		<?php endif; ?>
     </div>
 

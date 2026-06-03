@@ -1095,6 +1095,21 @@ class EmundusFiltersFiles extends EmundusFilters
 			}
 		}
 
+		if ($config['filter_access_expiration'])
+		{
+			$this->applied_filters[] = [
+				'uid'       => 'access_expiration_date',
+				'id'        => 'access_expiration_date',
+				'label'     => Text::_('MOD_EMUNDUS_FILTERS_ACCESS_EXPIRATION_DATE_STATE'),
+				'type'      => 'date',
+				'value'     => null,
+				'default'   => true,
+				'available' => true,
+				'order'     => $config['filter_access_expiration_order'],
+				'operator'  => '='
+			];
+		}
+
 		// sort applied filters array by array entry 'order'
 		usort($this->applied_filters, function ($a, $b) {
 			return intval($a['order']) <=> intval($b['order']);

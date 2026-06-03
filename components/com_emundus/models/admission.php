@@ -18,6 +18,9 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/list.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
 
+/**
+ * @deprecated
+ */
 class EmundusModelAdmission extends JModelList
 {
 	private $_total = null;
@@ -1429,8 +1432,11 @@ class EmundusModelAdmission extends JModelList
 		$user = JFactory::getUser();
 
 		// Datetime is automatically added to the DB
-
-		$student_id = (int) substr($fnum, -7);
+		if (!class_exists('EmundusHelperFiles'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+		}
+		$student_id = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
 
 		$h_files         = new EmundusHelperFiles;
 		$element_details = $h_files->getElementsDetailsByID($element_id);
