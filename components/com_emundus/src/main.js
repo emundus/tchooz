@@ -25,6 +25,7 @@ import clickOutside from '@/directives/clickOutside.js';
 
 /** STYLE **/
 import './assets/css/main.scss';
+import '@emundus/ui/style.css';
 
 /** COMPONENTS **/
 import Attachments from '@/views/Attachments.vue';
