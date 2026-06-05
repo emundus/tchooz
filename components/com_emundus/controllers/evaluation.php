@@ -18,6 +18,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
+use Tchooz\Enums\Workflow\StepStateEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 
@@ -1211,14 +1212,14 @@ class EmundusControllerEvaluation extends BaseController
 				}
 
 				// merge steps of workflow and child workflows
-				$steps = array_merge($steps, $workflow->getSteps());
+				$steps = array_merge($steps, array_filter($workflow->getSteps(), fn($s) => $s->getState() === StepStateEnum::PUBLISHED->value));
 				foreach ($workflow->getChildWorkflows() as $childWorkflow)
 				{
 					if (!empty($applicationChoicesProgram) && count(array_intersect($applicationChoicesProgram, $childWorkflow->getProgramIds())) === 0)
 					{
 						continue;
 					}
-					$steps = array_merge($steps, $childWorkflow->getSteps());
+					$steps = array_merge($steps, array_filter($childWorkflow->getSteps(), fn($s) => $s->getState() === StepStateEnum::PUBLISHED->value));
 				}
 			}
 
