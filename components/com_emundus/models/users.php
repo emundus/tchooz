@@ -1332,17 +1332,6 @@ class EmundusModelUsers extends ListModel
 				$applicationFileRepository = new ApplicationFileRepository();
 
 				foreach ($campaigns as $campaign) {
-					$this->dispatchJoomlaEvent('onBeforeCampaignCandidature', [
-						'user_id' => $user_id,
-						'connected' => $this->user->id,
-						'campaign' => $campaign,
-						'context' => new EventContextEntity(
-							$this->app->getIdentity(),
-							[],
-							[$user_id],
-						)
-					]);
-
 					$fnum = EmundusHelperFiles::createFnum($campaign, $user_id);
 
 					if (!empty($fnum)) {
@@ -1354,7 +1343,10 @@ class EmundusModelUsers extends ListModel
 							$statusEntity,
 							$campaign
 						);
-						$applicationFileRepository->flush($applicationFileEntity);
+
+						if (!$applicationFileRepository->flush($applicationFileEntity, $this->user->id)) {
+							throw new \Exception('Failed to create campaign candidature for user ' . $this->user->id);
+						}
 					}
 				}
 			}
