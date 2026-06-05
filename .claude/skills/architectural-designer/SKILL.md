@@ -140,3 +140,23 @@ If backend is in scope, describe each new table: name, columns with types, and a
 - Flag any existing domain in the codebase that overlaps with this feature. Check `classes/Entities/`, `classes/Repositories/`, and `src/components/` before finalizing. If an overlap exists, recommend whether to extend the existing code or create a new domain, and why.
 - Ask the user to confirm or adjust the plan.
 - Once confirmed, the `frontend-conventions` skill can implement the Vue files, and the `test-writer` skill can generate tests for the PHP classes.
+
+---
+
+## Step 5 — Produce the feature specification file
+
+After the plan is presented, **always** write a feature specification file to disk that follows the structure of `.claude/skills/architectural-designer/feature-template.md`. This is the deliverable the developer hands off as an issue/ticket.
+
+- **Read the template** at `.claude/skills/architectural-designer/feature-template.md` first to get the exact current section structure (it may have changed since this skill was written).
+- **Fill every section** with content derived from the feature and the architectural plan above — do not leave placeholder text like "Criterion 1" or "Item 1". Replace it with real, feature-specific content:
+  - **Summary** — one-paragraph description of the feature.
+  - **Context** — the problem it solves, grounded in the user's request.
+  - **Proposal** — the technical implementation, summarizing the layers and files from Step 3 (the file map and creation order).
+  - **Acceptance Criteria checklist** — concrete, checkable conditions derived from the CRUD operations, access rules, and business logic identified in Step 1.
+  - **Dependencies** — prerequisites, integration points (Fabrik, external APIs), and any overlapping domains flagged in Step 4.
+  - **Cybersecurity Analysis** — fill each sub-section (Access, Data Privacy, Guaranteed data integrity and consistency, Data update traceability) with items specific to this feature, e.g. the `#[AccessAttribute]` rules for Access, what personal data is stored for Data Privacy, etc.
+  - **Design Elements** — note mockups if known, otherwise state none provided.
+  - **Test Scenarios** — key test cases aligned with the acceptance criteria.
+  - **Success-story** — what success looks like and how to measure it.
+- **Where to write it**: save as `<domain>-feature.md` (lowercase domain) in the repository root, unless the user specifies another path.
+- After writing the file, tell the user its path and confirm it was generated from the agreed plan.
