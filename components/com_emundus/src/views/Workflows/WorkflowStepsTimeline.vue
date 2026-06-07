@@ -267,7 +267,11 @@ export default {
 		</div>
 
 		<div v-if="displayedSteps.length < 1">
-			<img src="../../../../../media/com_emundus_vue/assets/no-result.svg" class="no-result-image" alt="empty-list" />
+			<img
+				src="@media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg"
+				class="no-result-image"
+				alt="empty-list"
+			/>
 			<p>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TIMELINE_NO_STEP_FOUND') }}</p>
 		</div>
 	</div>
