@@ -3069,6 +3069,25 @@ class EmundusModelFormbuilder extends ListModel
 					$query->set('name = ' . $this->db->quote('e_' . $form_id . '_' . $newelementid));
 					$query->set('published = 1');
 					$query->set('params = ' . $this->db->quote(json_encode($el_params)));
+
+					if ($element->element->plugin === 'panel' && !empty($element->element->default))
+					{
+						$newDefaultKey       = 'ELEMENT_' . $group . '_' . $newelementid . '_DEFAULT';
+						$defaults_to_duplicate = array(
+							'fr' => LanguageFactory::getTranslation($element->element->default, 'fr-FR'),
+							'en' => LanguageFactory::getTranslation($element->element->default, 'en-GB')
+						);
+						if (!$defaults_to_duplicate['fr'] && !$defaults_to_duplicate['en'])
+						{
+							$defaults_to_duplicate = array(
+								'fr' => $element->element->default,
+								'en' => $element->element->default
+							);
+						}
+						LanguageFactory::translate($newDefaultKey, $defaults_to_duplicate, 'fabrik_elements', $newelementid, 'default');
+						$query->set('default = ' . $this->db->quote($newDefaultKey));
+					}
+
 					$query->where('id =' . $newelementid);
 					$this->db->setQuery($query);
 					$this->db->execute();
@@ -6078,6 +6097,22 @@ class EmundusModelFormbuilder extends ListModel
 					'published' => $element->element->published,
 					'params'    => json_encode($el_params)
 				];
+				
+				if ($element->element->plugin === 'panel' && !empty($element->element->default))
+				{
+					$newDefaultKey         = 'ELEMENT_' . $newGroupId . '_' . $newelementid . '_DEFAULT';
+					$defaults_to_duplicate = array();
+					foreach ($languages as $language)
+					{
+						$translation = LanguageFactory::getTranslation($element->element->default, $language->lang_code);
+						$defaults_to_duplicate[$language->sef] = $translation !== null
+							? str_replace($args['model_prefix'], '', $translation)
+							: $element->element->default;
+					}
+					LanguageFactory::translate($newDefaultKey, $defaults_to_duplicate, 'fabrik_elements', $newelementid, 'default');
+					$update['default'] = $newDefaultKey;
+				}
+
 				$update  = (object) $update;
 				$updated = $db->updateObject('#__fabrik_elements', $update, 'id');
 

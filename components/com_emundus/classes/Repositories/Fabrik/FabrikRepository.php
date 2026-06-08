@@ -1200,6 +1200,20 @@ class FabrikRepository
 		}
 		LanguageFactory::translate($labelKey, $labels_to_duplicate, 'fabrik_elements', $element->id, 'label', $this->user->id);
 		//
+		
+		if ($element->plugin === ElementPluginEnum::PANEL->value && !empty($element->default))
+		{
+			$newDefaultKey         = 'ELEMENT_' . $element->group_id . '_' . $element->id . '_DEFAULT';
+			$defaults_to_duplicate = array();
+			foreach ($languages as $language)
+			{
+				$translation = LanguageFactory::getTranslation($element->default, $language->lang_code);
+				$defaults_to_duplicate[$language->sef] = $translation !== null ? $translation : $element->default;
+			}
+			LanguageFactory::translate($newDefaultKey, $defaults_to_duplicate, 'fabrik_elements', $element->id, 'default', $this->user->id);
+			$element->default = $newDefaultKey;
+		}
+		//
 
 		$element->label  = $labelKey;
 		$element->params = json_encode($params);
