@@ -37,6 +37,7 @@ class JsonapiView extends BaseApiView
 		'user',
 		'order',
 		'state',
+		'moreProperties'
 	];
 
 	/**
@@ -52,6 +53,7 @@ class JsonapiView extends BaseApiView
 		'user',
 		'order',
 		'state',
+		'moreProperties'
 	];
 
 	/**
