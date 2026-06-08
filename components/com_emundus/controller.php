@@ -29,6 +29,7 @@ use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Exception\PublicApplicationGuardException;
+use Tchooz\Exception\RateLimitExceededException;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
