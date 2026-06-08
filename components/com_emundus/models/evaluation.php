@@ -10,8 +10,12 @@
 
 // No direct access
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
@@ -20,9 +24,11 @@ use Joomla\CMS\User\UserFactoryInterface;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
-use Joomla\CMS\Language\Text;
-use Dompdf\Dompdf;
-use Dompdf\Options;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Emails\TagEntity;
+use Tchooz\Enums\Emails\TagTypeEnum;
+use Tchooz\Traits\TraitDispatcher;
+use Tchooz\Transformers\PHPWord\HtmlListTransformer;
 
 defined('_JEXEC') or die('Restricted access');
 define('R_MD5_MATCH', '/^[a-f0-9]{32}$/i');
@@ -32,12 +38,6 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/list.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
-
-use Joomla\CMS\Factory;
-use Tchooz\Entities\Automation\EventContextEntity;
-use Tchooz\Entities\Emails\TagEntity;
-use Tchooz\Enums\Emails\TagTypeEnum;
-use Tchooz\Traits\TraitDispatcher;
 
 class EmundusModelEvaluation extends JModelList
 {
@@ -4073,7 +4073,9 @@ class EmundusModelEvaluation extends JModelList
 									}
 
 									if ((in_array($fabrikTagFullName, $textarea_elements) || $containsHtml) && isset($fabrikValues[$fabrikTagFullName][$fnum]['val'])) {
-										$html = $fabrikValues[$fabrikTagFullName][$fnum]['val'];
+										// Render list bullets/numbers as text: addHtml's numbering definitions are never merged
+										// into the template's numbering.xml by setComplexBlock(), so real <ul>/<ol> lose their markers.
+										$html = HtmlListTransformer::transform($fabrikValues[$fabrikTagFullName][$fnum]['val']);
 										$section = $phpWord->addSection();
 										\PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
 										$containers = $section->getElements();
@@ -4168,7 +4170,8 @@ class EmundusModelEvaluation extends JModelList
 
 										if (str_ends_with($tag->getName(), '_BLOCK'))
 										{
-											$html    = $tag->getValue();
+											// Same numbering.xml limitation as the textarea block above: render list markers as text.
+											$html    = HtmlListTransformer::transform($tag->getValue());
 											$section = $phpWord->addSection();
 
 											// TODO: Parse html with DOMDocument and build table with phpWord to avoid issues with complex tables
