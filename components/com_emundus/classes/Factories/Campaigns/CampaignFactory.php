@@ -75,6 +75,11 @@ class CampaignFactory implements DBFactory
 
 	private function buildMoreProperties(object $dbObject, array $elements): void
 	{
+		if(!class_exists('EmundusHelperFabrik'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/fabrik.php';
+		}
+
 		$dbObject->more_properties = [];
 		foreach ($elements as $element)
 		{
