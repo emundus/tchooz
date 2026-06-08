@@ -9,13 +9,16 @@
 
 namespace Joomla\Plugin\Emundus\Parcoursup\Repository;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\QueryInterface;
 use Joomla\Plugin\Emundus\Parcoursup\Entity\ParcoursupEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
@@ -31,6 +34,8 @@ class ParcoursupRepository
 
 	private int $parcoursupUserCategory = 0;
 
+	private AddonRepository $addonRepository;
+
 	public function __construct(
 		private DatabaseInterface  $db,
 		private UserRepository     $userRepository,
@@ -42,6 +47,7 @@ class ParcoursupRepository
 		$this->subQuery = $this->db->getQuery(true);
 		
 		$this->config = $this->getParcoursupConfig();
+		$this->addonRepository = new AddonRepository();
 
 		$userCategoryRepository = new UserCategoryRepository();
 		$userCategories = $userCategoryRepository->getAllCategories();
@@ -105,6 +111,10 @@ class ParcoursupRepository
 					{
 						$fnum = $application->fnum;
 						$userId = $application->applicant_id;
+
+						$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+						$datas->setUser($user);
+						$datas->setUserId($userId);
 					}
 				}
 			}
@@ -144,9 +154,11 @@ class ParcoursupRepository
 				{
 					$fnum = $this->createFile($datas->getCampaignId(), $userId);
 				}
+
+				$datas->setUserId($userId);
+				$datas->getUser()->id = $userId;
 			}
-			$datas->setUserId($userId);
-			$datas->getUser()->id = $userId;
+
 
 			// Check if we have a Parcoursup user category
 			if(!empty($this->parcoursupUserCategory))
@@ -165,14 +177,23 @@ class ParcoursupRepository
 				return false;
 			}
 
-			if ($this->fillFnum($datas, $fnum, $userId))
-			{
-				$flushed = $fnum;
-			}
-
 			// Check if we have choice_cid in applicationFile, if yes add application choices to application file via ApplicationChoicesRepository
 			if(!empty($datas->getApplicationFileKey('choice_cid')))
 			{
+				// Check if an application file for this applicant exist on this choice
+				$this->query->clear()
+					->select('fnum')
+					->from($this->db->quoteName('#__emundus_campaign_candidature'))
+					->where('campaign_id = ' . $this->db->quote($datas->getApplicationFileKey('choice_cid')))
+					->where('applicant_id = ' . $this->db->quote($userId));
+				$this->db->setQuery($this->query);
+				$applicationChoiceFnum = $this->db->loadResult();
+
+				if(!empty($applicationChoiceFnum))
+				{
+					$fnum = $applicationChoiceFnum;
+				}
+
 				// Check if not already have a choice for this campaign
 				$applicationChoiceEntity = null;
 				$applicationChoices = $this->applicationChoicesRepository->getChoicesByFnum($fnum);
@@ -183,7 +204,7 @@ class ParcoursupRepository
 						$applicationChoiceEntity = $choice;
 					}
 				}
-
+				
 				if(empty($applicationChoiceEntity)) {
 					$campaignEntity = $this->campaignRepository->getById($datas->getApplicationFileKey('choice_cid'));
 
@@ -204,6 +225,24 @@ class ParcoursupRepository
 
 				if(!empty($applicationChoiceEntity->getId()))
 				{
+					if($datas->getApplicationFileKey('jos_emundus_campaign_candidature___admission_voeu') === 1)
+					{
+						$addon = $this->addonRepository->getByName('choices');
+						$statusWhenAccepted = $addon->getParam('status_when_accepted', 'configuration');
+
+						$applicationChoiceEntity->setState(ChoicesStateEnum::CONFIRMED);
+						$this->applicationChoicesRepository->flush($applicationChoiceEntity, false, $statusWhenAccepted);
+
+						foreach ($applicationChoices as $other_choice)
+						{
+							if ($other_choice->getId() != $applicationChoiceEntity->getId() && $other_choice->getState() != ChoicesStateEnum::REJECTED)
+							{
+								$other_choice->setState(ChoicesStateEnum::REJECTED);
+								$this->applicationChoicesRepository->flush($other_choice, false);
+							}
+						}
+					}
+
 					$this->query->clear()
 						->select('*')
 						->from($this->db->quoteName('#__emundus_campaign_candidature_choices_more'))
@@ -261,6 +300,11 @@ class ParcoursupRepository
 				}
 			}
 			//
+
+			if ($this->fillFnum($datas, $fnum, $userId))
+			{
+				$flushed = $fnum;
+			}
 
 			if(!$this->updateParcoursupState($fnum, $datas->getParcourSupId(), $datas->getCampaignId()))
 			{

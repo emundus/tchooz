@@ -250,6 +250,17 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 			if (empty($applicationFileEntity->getId()))
 			{
+				$this->dispatchJoomlaEvent('onBeforeCampaignCandidature', [
+					'user_id' => $user_id,
+					'connected' => $user_id,
+					'campaign' => $applicationFileEntity->getCampaignId(),
+					'context' => new EventContextEntity(
+						$applicationFileEntity->getUser(),
+						[],
+						[$user_id],
+					)
+				]);
+
 				$ccid = $this->createCampaignCandidature($applicationFileEntity, $user_id);
 				if (empty($ccid))
 				{
@@ -258,6 +269,13 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 				$applicationFileEntity->setId($ccid);
 				$flushed = true;
+
+				// DEPRECATED: Only for backward compatibility
+				$this->dispatchJoomlaEvent('onCreateNewFile', [
+					'user_id' => $applicationFileEntity->getUser()->id,
+					'fnum'    => $applicationFileEntity->getFnum(),
+					'cid'     => $applicationFileEntity->getCampaignId(),
+				]);
 
 				$this->dispatchJoomlaEvent('onAfterCampaignCandidature',
 					[

@@ -10,8 +10,12 @@
 
 // No direct access
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
@@ -20,9 +24,11 @@ use Joomla\CMS\User\UserFactoryInterface;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
-use Joomla\CMS\Language\Text;
-use Dompdf\Dompdf;
-use Dompdf\Options;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Emails\TagEntity;
+use Tchooz\Enums\Emails\TagTypeEnum;
+use Tchooz\Traits\TraitDispatcher;
+use Tchooz\Transformers\PHPWord\HtmlListTransformer;
 
 defined('_JEXEC') or die('Restricted access');
 define('R_MD5_MATCH', '/^[a-f0-9]{32}$/i');
@@ -32,12 +38,6 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/list.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
-
-use Joomla\CMS\Factory;
-use Tchooz\Entities\Automation\EventContextEntity;
-use Tchooz\Entities\Emails\TagEntity;
-use Tchooz\Enums\Emails\TagTypeEnum;
-use Tchooz\Traits\TraitDispatcher;
 
 class EmundusModelEvaluation extends JModelList
 {
@@ -849,8 +849,8 @@ class EmundusModelEvaluation extends JModelList
 	public function _buildContentOrderBy()
 	{
         $order = ' ORDER BY jecc.date_submitted DESC, jecc.date_time DESC';
-		$filter_order     = JFactory::getSession()->get('filter_order');
-		$filter_order_Dir = JFactory::getSession()->get('filter_order_Dir');
+		$filter_order     = Factory::getApplication()->getSession()->get('filter_order');
+		$filter_order_Dir = Factory::getApplication()->getSession()->get('filter_order_Dir');
 
 		$can_be_ordering = array();
 		if (count($this->_elements) > 0)
@@ -878,7 +878,6 @@ class EmundusModelEvaluation extends JModelList
 		$can_be_ordering[] = 'jecc.status';
 		$can_be_ordering[] = 'name';
 		$can_be_ordering[] = 'eta.id_tag';
-		$can_be_ordering[] = 'overall';
 
 		if($filter_order === 'fnum') {
 			$filter_order = 'name';
@@ -1305,6 +1304,26 @@ class EmundusModelEvaluation extends JModelList
 				}
 			}
 
+			$filter_order     = Factory::getApplication()->getSession()->get('filter_order');
+			if ($filter_order === 'overall')
+			{
+				$fnums = array_column($list, 'fnum');
+				$filter_order_Dir = Factory::getApplication()->getSession()->get('filter_order_Dir');
+				$averageByFnums = $this->getEvaluationAverageByFnum($fnums, $user_id);
+
+				// sort $evaluations_list by average
+				usort($list, function ($a, $b) use ($averageByFnums, $filter_order_Dir) {
+					$avgA = $averageByFnums[$a['fnum']] ?? 0;
+					$avgB = $averageByFnums[$b['fnum']] ?? 0;
+
+					if ($filter_order_Dir === 'asc') {
+						return $avgA <=> $avgB;
+					} else {
+						return $avgB <=> $avgA;
+					}
+				});
+			}
+
 			if (!$all) {
 				$session = $this->app->getSession();
 				$limit = $session->get('limit', 0);
@@ -1316,6 +1335,26 @@ class EmundusModelEvaluation extends JModelList
 			}
 		} else {
 			$list = $this->getEvaluationsList();
+
+			$filter_order     = Factory::getApplication()->getSession()->get('filter_order');
+			if ($filter_order === 'overall')
+			{
+				$fnums = array_column($list, 'fnum');
+				$filter_order_Dir = Factory::getApplication()->getSession()->get('filter_order_Dir');
+				$averageByFnums = $this->getEvaluationAverageByFnum($fnums, $user_id);
+
+				// sort $evaluations_list by average
+				usort($list, function ($a, $b) use ($averageByFnums, $filter_order_Dir) {
+					$avgA = $averageByFnums[$a['fnum']] ?? 0;
+					$avgB = $averageByFnums[$b['fnum']] ?? 0;
+
+					if ($filter_order_Dir === 'asc') {
+						return $avgA <=> $avgB;
+					} else {
+						return $avgB <=> $avgA;
+					}
+				});
+			}
 		}
 
 		return $list;
@@ -1465,7 +1504,7 @@ class EmundusModelEvaluation extends JModelList
 		if (!empty($this->_elements_default))
 		{
 			foreach($this->_elements_default as $element) {
-				if (strpos($element, 'jos_emundus_evaluations_') !== false) {
+				if (str_starts_with($element, 'jos_emundus_evaluations_')) {
 					if (preg_match('/jos_emundus_evaluations_([0-9]+)\.id/', $element, $matches)) {
 						$evaluation_id = $matches[1];
 						$evaluation_table = 'jos_emundus_evaluations_' . $evaluation_id;
@@ -1508,7 +1547,6 @@ class EmundusModelEvaluation extends JModelList
 		$query .= $this->_buildContentOrderBy();
 		try
 		{
-			//echo '<pre>'; var_dump($query); echo '</pre>';
 			$this->db->setQuery($query);
 			$res               = $this->db->loadAssocList();
 			$this->_applicants = array_merge($this->_applicants, $res);
@@ -1531,7 +1569,6 @@ class EmundusModelEvaluation extends JModelList
 			}
 
 			$this->db->setQuery($query);
-
 			$evaluations_list = $this->db->loadAssocList();
 		}
 		catch (Exception $e)
@@ -4036,7 +4073,9 @@ class EmundusModelEvaluation extends JModelList
 									}
 
 									if ((in_array($fabrikTagFullName, $textarea_elements) || $containsHtml) && isset($fabrikValues[$fabrikTagFullName][$fnum]['val'])) {
-										$html = $fabrikValues[$fabrikTagFullName][$fnum]['val'];
+										// Render list bullets/numbers as text: addHtml's numbering definitions are never merged
+										// into the template's numbering.xml by setComplexBlock(), so real <ul>/<ol> lose their markers.
+										$html = HtmlListTransformer::transform($fabrikValues[$fabrikTagFullName][$fnum]['val']);
 										$section = $phpWord->addSection();
 										\PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
 										$containers = $section->getElements();
@@ -4131,7 +4170,8 @@ class EmundusModelEvaluation extends JModelList
 
 										if (str_ends_with($tag->getName(), '_BLOCK'))
 										{
-											$html    = $tag->getValue();
+											// Same numbering.xml limitation as the textarea block above: render list markers as text.
+											$html    = HtmlListTransformer::transform($tag->getValue());
 											$section = $phpWord->addSection();
 
 											// TODO: Parse html with DOMDocument and build table with phpWord to avoid issues with complex tables

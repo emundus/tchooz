@@ -15,6 +15,12 @@ class PlgFabrik_ElementNumeric extends PlgFabrik_Element
 		return 'DECIMAL(10,3)';
 	}
 
+	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	{
+		$data = $this->formatValue($data);
+		return parent::renderListData($data, $thisRow, $opts);
+	}
+
 	/**
 	 * @param $data
 	 * @param $repeatCounter
