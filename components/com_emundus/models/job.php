@@ -316,7 +316,7 @@ class EmundusModelJob extends JModelItem
 				$db->setQuery($query);
 				$lastjob = $db->loadAssoc();
 
-				if (count($lastjob) > 0) {
+				if (!empty($lastjob) && count($lastjob) > 0) {
 					$column = "";
 					$values = "";
 					foreach ($lastjob as $key => $value) {

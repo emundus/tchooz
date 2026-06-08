@@ -24,6 +24,7 @@ use Tchooz\Controller\EmundusController;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\Campaigns\CampaignEntity;
 use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
@@ -183,6 +184,7 @@ class EmundusControllerCampaign extends EmundusController
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'campaign', 'mode' => CrudEnum::READ]])]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PAYMENT, 'mode' => CrudEnum::READ]])]
 	public function getallcampaign(): void
 	{
 		$filter    = $this->input->getString('filter', '');
