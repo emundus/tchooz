@@ -250,7 +250,9 @@ class CartRepository
 				$cart_entity->setCustomer($contact_entity);
 
 				if (!empty($cart->payment_method_id)) {
-					$cart_entity->setSelectedPaymentMethod(new PaymentMethodEntity($cart->payment_method_id));
+					$paymentMethodRepository = new PaymentMethodRepository();
+					$paymentMethod = $paymentMethodRepository->getById($cart->payment_method_id);
+					$cart_entity->setSelectedPaymentMethod($paymentMethod);
 
 					if ($cart_entity->getSelectedPaymentMethod()->getName() === 'sepa') {
 						try {
