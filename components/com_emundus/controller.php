@@ -2469,10 +2469,19 @@ class EmundusController extends JControllerLegacy
 					throw new \Symfony\Component\OptionsResolver\Exception\AccessException(Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_NOT_ALLOWED'));
 				}
 
+				$rateLimits = [
+					'cooldown'             => $publicAddon->getParam('rate_limit_cooldown', null),
+					'per_minute'           => $publicAddon->getParam('rate_limit_per_minute', null),
+					'per_hour'             => $publicAddon->getParam('rate_limit_per_hour', null),
+					'per_day'              => $publicAddon->getParam('rate_limit_per_day', null),
+					'per_campaign_per_day' => $publicAddon->getParam('rate_limit_per_campaign_per_day', null),
+				];
+
 				$guard = new PublicApplicationGuard(
 					new AntiBotChallenge($this->input, $this->app->get('secret')),
 					new ClientIpResolver($this->input),
-					new RateLimiter()
+					new RateLimiter(),
+					$rateLimits
 				);
 
 				try
