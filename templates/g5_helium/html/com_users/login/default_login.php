@@ -204,7 +204,7 @@ $allowDefaultLogin = (bool)$eMConfig->get('allow_default_login', 1);
             <div class="tw-w-full tw-flex tw-flex-col tw-items-center tw-gap-4">
                 <a class="tw-w-full tw-flex tw-items-center tw-justify-center tw-border tw-py-3 tw-px-2 tw-rounded-applicant tw-border-profile-full tw-text-profile-full tw-gap-4 hover:tw-bg-profile-full hover:tw-text-white"
                    href="<?php echo $this->samlConfig['metadata_url']; ?>">
-	                <?php echo Text::sprintf('COM_USERS_LOGIN_WITH',$this->samlConfig['idp_name']); ?>
+	                <?php echo Text::sprintf('COM_USERS_LOGIN_WITH', Text::_('SAML_IDP_' . strtoupper($this->samlConfig['idp_name']))); ?>
                 </a>
             </div>
             <!-- SEPARATOR -->

@@ -28,9 +28,8 @@ $redirect = base64_decode($jinput->get->getBase64('redirect'));
 
 $eMConfig = ComponentHelper::getParams('com_emundus');
 
+$this->campaign            = $jinput->get('cid');
 if (!empty($cookieLogin) || $this->user->get('guest')) {
-
-	$this->campaign            = $jinput->get('cid');
 	$this->course              = $jinput->get('course');
 	$this->displayRegistration = $eMConfig->get('display_registration_link', 1);
 	$this->registrationLink    = $eMConfig->get('registration_link', '');
@@ -101,9 +100,16 @@ else {
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
 
 	$app = Factory::getApplication();
-	if(!EmundusHelperAccess::asAdministratorAccessLevel($this->user->id))
+	if (!EmundusHelperAccess::asAdministratorAccessLevel($this->user->id))
 	{
-		$app->redirect(EmundusHelperMenu::getHomepageLink());
+		if (!empty($this->campaign))
+		{
+			$app->redirect('index.php?option=com_fabrik&view=form&formid=102&cid=' . $this->campaign);
+		}
+		else
+		{
+			$app->redirect(EmundusHelperMenu::getHomepageLink());
+		}
 	} else {
 		$app->redirect(EmundusHelperMenu::getAdminLink());
 	}

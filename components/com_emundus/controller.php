@@ -2572,7 +2572,6 @@ class EmundusController extends JControllerLegacy
 		{
 			$session = $this->app->getSession();
 			$session->set(EmundusPublicAccess::SESSION_PUBLIC_STORED_ACCESS_KEY, true);
-
 			$response = EmundusResponse::ok();
 		}
 
