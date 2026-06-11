@@ -22,6 +22,7 @@ vulnerabilities:
   - id: CVE-2025-6547
   - id: CVE-2025-9287
   - id: CVE-2025-9288
+  - id: CVE-2026-9277
     paths:
       - "media/gantry5/engines/nucleus/yarn.lock"
     statement: It's dev dependency and not used in production. The library is used for development purposes only, so it is not a security risk. (cf. https://github.com/gantry/gantry5/blob/master/package.json)
