@@ -121,6 +121,8 @@ If backend is in scope, describe each new table: name, columns with types, and a
 | Vue component file | `<Name>.vue` | `InvoiceCard.vue` |
 | DOM mount point | `em-<domain>-vue` | `em-invoice-vue` |
 
+**Vocabulary**: when choosing domain, entity, property, and method names, always prefer the terms defined by [schema.org](https://schema.org) when an equivalent type or property exists there (e.g. `Invoice`, `totalPaymentDue`, `paymentStatus`, `customer` rather than ad-hoc names like `Bill`, `amountToPay`, `state`, `client`). This keeps the source code semantically consistent with an established, widely understood convention. Only deviate when schema.org has no matching concept or when an existing Tchooz domain already imposes a different name — in that case, state the deviation and its reason in the plan.
+
 ---
 
 ## Key architectural rules (mention if relevant to the feature)
