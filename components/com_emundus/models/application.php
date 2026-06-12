@@ -2964,7 +2964,7 @@ class EmundusModelApplication extends ListModel
 												else {
 													$elt = $element->content;
 												}
-												
+
 												if(!empty($params->text_input_mask)) {
 													// Remove underscores from $elt if input mask is used
 													$elt = str_replace('_', '', $elt);
@@ -8597,7 +8597,7 @@ class EmundusModelApplication extends ListModel
                 ->set('modified_by = ' . $this->_db->quote($user_id))
                 ->set('modified = ' . $this->_db->quote(date('Y-m-d H:i:s')))
                 ->where('id = ' . $this->_db->quote($id));
-            
+
             $this->_db->setQuery($query);
             $updated = $this->_db->execute();
         }
@@ -8621,7 +8621,7 @@ class EmundusModelApplication extends ListModel
         $data = file_get_contents($logo);
         $logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
         /* END LOGO */
-        
+
         $query = $this->_db->createQuery();
 
         $query->clear()
@@ -8631,32 +8631,46 @@ class EmundusModelApplication extends ListModel
         $this->_db->setQuery($query);
         $name = $this->_db->loadResult();
 
+	    $query->clear()
+		    ->select('date_time')
+		    ->from('data_lots')
+		    ->where('id = ' . $this->_db->quote($id_lot));
+	    $this->_db->setQuery($query);
+	    $date = $this->_db->loadResult();
+
+	    $formattedDate = date('d/m/Y',
+		    strtotime($date));
+
         /* We join only on evaluations_00 because the criteria_854_9071 field is only in this form */
-        $query->clear()
-            ->select('esc.label as campaign_label,ecc.fnum,ess.value as status,dtp.label as prestation,eu.firstname,eu.lastname,eu.birth_date,eu.insee,GROUP_CONCAT(esat.label) as tags,ee.criteria_854_9071 as montant, eu.affectation')
-            ->from($this->_db->quoteName('data_lots_883_repeat', 'dlr'))
-            ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quoteName('dlr.fnum'))
-            ->leftJoin($this->_db->quoteName('#__emundus_evaluations_00', 'ee') . ' ON ' . $this->_db->quoteName('ee.fnum') . ' = ' . $this->_db->quoteName('ecc.fnum'))
-            ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('ecc.campaign_id'))
-            ->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('ecc.applicant_id'))
-            ->leftJoin($this->_db->quoteName('#__emundus_tag_assoc', 'eta') . ' ON ' . $this->_db->quoteName('eta.fnum') . ' = ' . $this->_db->quoteName('ecc.fnum'))
-            ->leftJoin($this->_db->quoteName('#__emundus_setup_action_tag', 'esat') . ' ON ' . $this->_db->quoteName('esat.id') . ' = ' . $this->_db->quoteName('eta.id_tag'))
-            ->leftJoin($this->_db->quoteName('data_type_prestations', 'dtp') . ' ON ' . $this->_db->quoteName('dtp.id') . ' = ' . $this->_db->quoteName('ecc.prestation_id'))
-            ->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $this->_db->quoteName('ess.step') . ' = ' . $this->_db->quoteName('ecc.status'))
-            ->where($this->_db->quoteName('dlr.parent_id') . ' = ' . $this->_db->quote($id_lot))
-            ->group('ecc.fnum')
-            ->order('esc.id ASC, dtp.label ASC, eu.lastname ASC');
-        $this->_db->setQuery($query);
-        $datas = $this->_db->loadObjectList();
+	    $query->clear()
+		    ->select('esc.label as campaign_label,ecc.fnum,ess.value as status,dtp.label as prestation,eu.firstname,eu.lastname,eu.birth_date,eu.insee,GROUP_CONCAT(esat.label) as tags,ee.criteria_854_9071 as montant, eu.affectation, eu.matricule')
+		    ->from($this->_db->quoteName('data_lots_883_repeat', 'dlr'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quoteName('dlr.fnum'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_evaluations_00', 'ee') . ' ON ' . $this->_db->quoteName('ee.fnum') . ' = ' . $this->_db->quoteName('ecc.fnum'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('ecc.campaign_id'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('ecc.applicant_id'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_tag_assoc', 'eta') . ' ON ' . $this->_db->quoteName('eta.fnum') . ' = ' . $this->_db->quoteName('ecc.fnum'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_setup_action_tag', 'esat') . ' ON ' . $this->_db->quoteName('esat.id') . ' = ' . $this->_db->quoteName('eta.id_tag'))
+		    ->leftJoin($this->_db->quoteName('data_type_prestations', 'dtp') . ' ON ' . $this->_db->quoteName('dtp.id') . ' = ' . $this->_db->quoteName('ecc.prestation_id'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $this->_db->quoteName('ess.step') . ' = ' . $this->_db->quoteName('ecc.status'))
+		    ->where($this->_db->quoteName('dlr.parent_id') . ' = ' . $this->_db->quote($id_lot))
+		    ->group('ecc.fnum')
+		    ->order('esc.id ASC, dtp.label ASC, eu.lastname ASC');
+	    $this->_db->setQuery($query);
+	    $datas = $this->_db->loadObjectList();
 
         $htmldata = '<html>
                 <head>
-                  <title>Dossiers du lot ' . $name . '</title>
+                  <title>Tableau des prestations du lot ' .
+	        $name .
+	        ' créé le '. $formattedDate . '</title>
                   <meta name="author" content="eMundus">
                 </head>
                 <body>';
         $htmldata .= '<header><table style="width: 100%"><tr><td><img src="' . $logo_base64 . '" width="auto" height="60"/></td><td style="text-align: right">';
-        $htmldata .= '<h1>Dossiers du lot ' . $name . '</h1></td></tr></table></header>';
+	    $htmldata .= '<h1>Tableau des prestations du lot ' .
+		    $name .
+		    ' créé le '. $formattedDate . '</h1></td></tr></table></header>';
 
         $htmldata .= "
             <style>
@@ -8774,7 +8788,8 @@ class EmundusModelApplication extends ListModel
         $htmldata .= '<th class="background">Numéro de sécurité sociale</th>';
         $htmldata .= '<th class="background">Affectation</th>';
         $htmldata .= '<th class="background">Montant</th>';
-        $htmldata .= '<th class="background">N°Bdc / N°SIFAC</th>';
+	    $htmldata .= '<th class="background">N°Bdc</th>';
+	    $htmldata .= '<th class="background">N°SIFAC</th>';
         $htmldata .= '</tr></thead>';
         $htmldata .= '<tbody>';
         foreach ($datas as $data) {
@@ -8787,9 +8802,10 @@ class EmundusModelApplication extends ListModel
             $htmldata .= '<td>' . date('d/m/Y', strtotime($data->birth_date)) . '</td>';
             $htmldata .= '<td style="width: 13%">' . $data->insee . '</td>';
             $htmldata .= '<td>' . $data->affectation . '</td>';
-            $htmldata .= '<td>' . $data->montant . '</td>';
-            $htmldata .= '<td></td>';
-            $htmldata .= '</tr>';
+	        $htmldata .= '<td>' . $data->montant . '</td>';
+	        $htmldata .= '<td></td>';$htmldata
+		        .= '<td>' . $data->matricule . '</td>';
+	        $htmldata .= '</tr>';
         }
         $htmldata .= '</tbody>';
         $htmldata .= '</table>';
