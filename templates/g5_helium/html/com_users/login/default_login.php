@@ -18,6 +18,8 @@ use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Tchooz\Enums\Addons\AddonEnum;
+use Tchooz\Enums\UI\ButtonVariantEnum;
+use Tchooz\Enums\UI\ButtonWidthEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 
 /** @var \Joomla\Component\Users\Site\View\Login\HtmlView $cookieLogin */
@@ -202,10 +204,14 @@ $allowDefaultLogin = (bool)$eMConfig->get('allow_default_login', 1);
 	<?php if(!empty($this->samlConfig)) : ?>
         <div id="saml_login" class="sso-login tw-mt-8 tw-w-full tw-flex tw-flex-col tw-items-center">
             <div class="tw-w-full tw-flex tw-flex-col tw-items-center tw-gap-4">
-                <a class="tw-w-full tw-flex tw-items-center tw-justify-center tw-border tw-py-3 tw-px-2 tw-rounded-applicant tw-border-profile-full tw-text-profile-full tw-gap-4 hover:tw-bg-profile-full hover:tw-text-white"
-                   href="<?php echo $this->samlConfig['metadata_url']; ?>">
-	                <?php echo Text::sprintf('COM_USERS_LOGIN_WITH', Text::_('SAML_IDP_' . strtoupper($this->samlConfig['idp_name']))); ?>
-                </a>
+                <?php
+                    echo LayoutHelper::render('emundus.button', [
+                        'variant' => ButtonVariantEnum::PRIMARY,
+                        'width'   => ButtonWidthEnum::FULL,
+                        'text'    => Text::sprintf('COM_USERS_LOGIN_WITH', Text::_('SAML_IDP_' . strtoupper($this->samlConfig['idp_name']))),
+                        'href'    => $this->samlConfig['metadata_url']
+                    ]);
+                ?>
             </div>
             <!-- SEPARATOR -->
             <div class="tw-mt-6 tw-flex tw-items-center tw-justify-center tw-gap-2 tw-w-full">
