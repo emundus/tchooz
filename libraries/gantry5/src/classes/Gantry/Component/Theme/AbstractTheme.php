@@ -3,8 +3,8 @@
 /**
  * @package   Gantry5
  * @author    Tiger12 http://tiger12.com
- * @originalCreator  RocketTheme (Gantry Framework) 
- * @currentDeveloper  Tiger12, LLC 
+ * @originalCreator  RocketTheme (Gantry Framework)
+ * @currentDeveloper  Tiger12, LLC
  * @copyright Copyright (C) 2007 - 2022 Tiger12, LLC
  * @license   Dual License: MIT or GNU/GPLv2 and later
  *
@@ -91,7 +91,7 @@ abstract class AbstractTheme
      * @param LoaderInterface $loader
      * @return Environment
      */
-    public function extendTwig(Environment $twig, LoaderInterface $loader = null)
+    public function extendTwig(Environment $twig, ?LoaderInterface $loader = null)
     {
         if ($twig->hasExtension(TwigExtension::class)) {
             return $twig;
@@ -137,7 +137,7 @@ abstract class AbstractTheme
                     $cache = new TwigCacheFilesystem($cachePath, FilesystemCache::FORCE_BYTECODE_INVALIDATION);
                 }
             } else {
-                $cache = null;
+                $cache = false;
             }
             $debug = $gantry->debug();
             $production = (bool) $global->get('production', 1);
@@ -286,7 +286,7 @@ abstract class AbstractTheme
     /**
      * @deprecated 5.1.5
      */
-    public function add_to_twig(Environment $twig, LoaderInterface $loader = null)
+    public function add_to_twig(Environment $twig, ?LoaderInterface $loader = null)
     {
         return $this->extendTwig($twig, $loader);
     }
