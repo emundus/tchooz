@@ -413,6 +413,17 @@ class DatabaseService
 		return $this->db->updateObject('jos_extensions', $emundusExtension, 'extension_id');
 	}
 
+	public function stripForeignKeysFromSql(string $sql): string
+	{
+		// Remove CONSTRAINT ... FOREIGN KEY ... REFERENCES ... lines from a CREATE TABLE statement
+		// ON DELETE/UPDATE actions can be: CASCADE, RESTRICT, SET NULL, SET DEFAULT, NO ACTION
+		return preg_replace(
+			'/,\s*CONSTRAINT\s+`[^`]+`\s+FOREIGN KEY\s*\([^)]+\)\s*REFERENCES\s*`[^`]+`\s*\([^)]+\)(?:\s*ON\s+(?:DELETE|UPDATE)\s+(?:SET\s+\w+|NO\s+ACTION|\w+))*\s*/i',
+			'',
+			$sql
+		);
+	}
+
 	public function deleteForeignKey(string $table, string $referenceTable, string $referenceColumn, string $column): bool
 	{
 		$deleted = true;
