@@ -47,6 +47,10 @@
 
 /* GENERAL */
 
+td {
+  border: unset;
+}
+
 #g-page-surround {
   display: flex;
   flex-direction: column;
