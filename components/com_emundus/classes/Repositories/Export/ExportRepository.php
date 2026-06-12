@@ -64,6 +64,7 @@ class ExportRepository extends EmundusRepository implements RepositoryInterface
 			'hits'       => $export->getHits(),
 			'progress'   => $export->getProgress(),
 			'cancelled'  => $export->isCancelled() ? 1 : 0,
+			'failed'     => $export->isFailed() ? 1 : 0,
 			'result'     => !empty($export->getResult()) ? json_encode($export->getResult()) : null,
 		];
 
