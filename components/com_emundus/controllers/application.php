@@ -2539,7 +2539,7 @@ class EmundusControllerApplication extends EmundusController
 		$response['status']  = true;
 		$response['data']    = $choiceObject;
 		$response['message'] = 'Choice refused successfully.';
-		
+
 		// AUTOMATIONS : If we have other admitted choices, we stay here. Else we check if a status parameter is set and then update file status then redirect to homepage
 		$addonRepository = new AddonRepository();
 		$addon = $addonRepository->getByName('choices');
@@ -2554,7 +2554,7 @@ class EmundusControllerApplication extends EmundusController
 					require_once JPATH_SITE . '/components/com_emundus/models/files.php';
 				}
 				$mFiles = new EmundusModelFiles();
-				
+
 				$mFiles->updateState([$current_fnum], $statusWhenRefused, $this->_user->id);
 
 				$response['redirect'] = EmundusHelperMenu::getHomepageLink();
@@ -3493,7 +3493,7 @@ class EmundusControllerApplication extends EmundusController
                     $this->app->triggerEvent('onSyncEparapheur', [
                         [
                             'fnums'         => $fnums,
-                            'signer_email'  => 'murielle.pineau@sorbonne-universite.fr',
+                            'signer_email'  => 'jean-pierre.test@sorbonne-universite.fr',
                             'attachment_id' => 71,
                             'file'          => basename($file['filename']),
                             'filepath'      => $file['filename'],
@@ -3510,6 +3510,31 @@ class EmundusControllerApplication extends EmundusController
         echo json_encode($response);
         exit;
     }
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function updatesifac(): void
+	{
+		$response = array('status' => false, 'message' => '');
+
+		$user_id   = $this->input->getInt('user_id', 0);
+		$matricule = $this->input->getString('matricule', '');
+
+		if (!empty($user_id))
+		{
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->update($db->quoteName('#__emundus_users'))
+				->set($db->quoteName('matricule') . ' = ' . $db->quote($matricule))
+				->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+
+			$db->setQuery($query);
+			$response['status'] = $db->execute();
+		}
+
+		echo json_encode($response);
+		exit;
+	}
 
 	/**
 	 * @depecated Need to move this to a real feature of application files group
