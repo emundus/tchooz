@@ -26,6 +26,7 @@ use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Label\LabelRepository;
 use Tchooz\Repositories\Settings\ConfigurationRepository;
+use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Repositories\Workflow\StepRepository;
 
 class Export
@@ -163,9 +164,39 @@ class Export
 			if (!empty($header))
 			{
 				$result['label'] = Text::_($header->getLabel());
-				foreach ($files as $file)
+
+				$isSensitive = $header->isSensitiveData();
+
+				if (!empty($files))
 				{
-					$result['data'][$file->getFnum()] = $header->transform($file, $this->labelRepository, null, $format);
+					$emundusUsers = [];
+					$emundusUserRepository = new EmundusUserRepository();
+
+					foreach ($files as $file)
+					{
+						$emundusUser = null;
+
+						if ($isSensitive)
+						{
+							if (!array_key_exists($file->getUser()->id, $emundusUsers)) {
+								$emundusUser = $emundusUserRepository->getByUserId($file->getUser()->id);
+								$emundusUsers[$file->getUser()->id] = $emundusUser;
+							}
+							else
+							{
+								$emundusUser = $emundusUsers[$file->getUser()->id];
+							}
+
+							if ($anonymize_data || $file->isAnonymous() || (!empty($emundusUser) && $emundusUser->isAnonym()))
+							{
+								$result['data'][$file->getFnum()] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+								continue;
+							}
+						}
+
+						$result['data'][$file->getFnum()] = $header->transform($file, $this->labelRepository, $emundusUser, $format);
+					}
+					$emundusUsers = [];
 				}
 
 				return $result;
