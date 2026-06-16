@@ -38,6 +38,8 @@ use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Services\Reference\InternalReferenceService;
+use Tchooz\Entities\Language\LanguageEntity;
+use Tchooz\Repositories\Language\LanguageRepository;
 
 require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_emundus/src/Attributes/PostflightAttribute.php';
@@ -2036,5 +2038,57 @@ class Com_EmundusPostflightTasks
 				$previousSiblingId = $menuId;
 			}
 		}
+	}
+
+	#[PostflightAttribute(name: "Check default translations")]
+	public function checkDefaultTranslations(): bool
+	{
+		try
+		{
+			$jsonFile = JPATH_ADMINISTRATOR . '/components/com_emundus/data/default-translations.json';
+			if (!file_exists($jsonFile))
+			{
+				throw new \RuntimeException('default-translations.json not found at ' . $jsonFile);
+			}
+
+			$defaultTranslations = json_decode(file_get_contents($jsonFile), true);
+			if (empty($defaultTranslations))
+			{
+				throw new \RuntimeException('default-translations.json is empty or invalid');
+			}
+			$languageRepository = new LanguageRepository();
+			$platformLanguages  = $languageRepository->getPlatformLanguages();
+
+			foreach ($platformLanguages as $langCode)
+			{
+				$translations = $defaultTranslations[$langCode] ?? $defaultTranslations['en-GB'];
+				$languageRepository->setLangCode($langCode);
+
+				foreach ($translations as $tag => $text)
+				{
+					if (!empty($languageRepository->getByTag($tag)))
+					{
+						continue;
+					}
+
+					$languageRepository->flush(new LanguageEntity(
+						tag: $tag,
+						langCode: $langCode,
+						override: $text,
+						originalText: $text,
+						type: 'override',
+					));
+				}
+			}
+
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Failed to check default translations: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
+			return false;
+		}
+
+		return true;
 	}
 }
