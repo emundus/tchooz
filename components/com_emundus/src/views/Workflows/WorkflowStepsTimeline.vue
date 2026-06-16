@@ -231,7 +231,7 @@ export default {
 					</span>
 					<span
 						v-if="step.completed"
-						class="material-symbols-outlined tw-color-profile-full tw-absolute tw-right-[-4px] tw-top-[-4px] tw-rounded-full tw-bg-white !tw-text-[14px]"
+						class="material-symbols-outlined tw-color-profile-full tw-absolute tw-right-[-4px] tw-top-[-4px] tw-rounded-full tw-bg-white !tw-text-[14px] tw-text-profile-full"
 					>
 						check_circle
 					</span>
