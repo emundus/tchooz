@@ -17,7 +17,23 @@ If a mockup is provided, treat it as source of truth. Match icons, spacing, radi
 
 ### Step 2 — Reuse before building
 
-Before writing markup for a button, input, modal, popover, loader, card, tag, etc., check what already exists:
+Before writing any markup, reuse what already exists. Check sources in this priority order:
+
+**1. The `@emundus/ui` design-system library — always check first.**
+
+This is the shared eMundus / Tchooz design system. Any standard UI primitive (a `Button`, an `Alert`, a `Logo`, a `Slider`, a `Chip`, a `Tag`, etc.) must use the library component rather than being rebuilt. Import named exports:
+
+```javascript
+import { Button, Alert, Slider } from '@emundus/ui';
+```
+
+```html
+<Button label="Valider" variant="primary" size="md" @click="onClick" />
+```
+
+The stylesheet is already loaded once in `main.js` (`import '@emundus/ui/style.css'`), don't re-import it. Library utility classes use the `eui:` prefix and component classes the `eui-` prefix; don't mix them with the app's `tw-` classes.
+
+**2. Local project components — for anything the library doesn't cover.**
 
 ```
 ls components/com_emundus/src/components/Atoms/
@@ -74,7 +90,7 @@ Read the target file directly. Avoid broad directory exploration except for the 
 Before finishing, verify:
 
 - Tailwind classes prefixed with `tw-`
-- Existing components reused where possible
+- `@emundus/ui` components used for standard primitives (Button, Alert, Slider, etc.); local components reused for the rest
 - Strings go through `translate()`
 - Service files used, no direct `FetchClient` in components
 - Listeners added in `mounted` are removed in `beforeUnmount`
