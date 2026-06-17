@@ -4079,8 +4079,13 @@ class EmundusModelCampaign extends ListModel
 		return $rows_to_import;
 	}
 
+	// todo: use Import Service instead when it's out and asynchronous behaviour too
 	public function importFiles(array $file, int $campaign_id, int $send_email, int $create_new_fnum, int $user_id = 0): array
 	{
+		@set_time_limit(300);
+
+		Log::addLogger(['text_file' => 'com_emundus.campaign.import.php'], Log::ALL, array('com_emundus.import'));
+		Log::add('Starting import on ' . $campaign_id, Log::INFO, 'com_emundus.import');
 		if (empty($user_id))
 		{
 			$user_id = Factory::getApplication()->getIdentity()->id;
@@ -4189,6 +4194,7 @@ class EmundusModelCampaign extends ListModel
 
 								if (!$this->_db->insertObject('#__users', $user))
 								{
+									Log::add('Failed to insert user', Log::ERROR, 'com_emundus.import');
 									throw new Exception('Error inserting user');
 								}
 								$user->id = $this->_db->insertid();
@@ -4269,11 +4275,12 @@ class EmundusModelCampaign extends ListModel
 
 								if (empty($fnum))
 								{
+									$maxAttempts = 1500;
+									$nbAttempts  = 0;
 									$importApplicationEntity->generateFnum($campaign_id);
 
 									// avoid same fnum, todo: remove that once fnum will have a random ending (public campaigns feature)
-									$collision_attempts = 0;
-									while ($collision_attempts < 60)
+									while ($nbAttempts < $maxAttempts)
 									{
 										$collision_query = $this->_db->getQuery(true);
 										$collision_query->select('id')
@@ -4298,7 +4305,12 @@ class EmundusModelCampaign extends ListModel
 										{
 											$importApplicationEntity->generateFnum($campaign_id);
 										}
-										$collision_attempts++;
+										$nbAttempts++;
+									}
+
+									if ($nbAttempts >= $maxAttempts)
+									{
+										Log::add('Collision guard hit for campaign ' . $campaign_id . ' after ' . $nbAttempts . ' attempts, fnum ' . $importApplicationEntity->getFnum(), Log::WARNING, 'com_emundus.import');
 									}
 								}
 								else
@@ -4325,14 +4337,22 @@ class EmundusModelCampaign extends ListModel
 								$importApplicationEntity->setData($datas);
 							}
 
-							if ($applicationFileRepository->flush($importApplicationEntity, $user_id))
-							{
-								$files_imported[] = $fnum;
-								$status           = true;
+							try {
+								if ($applicationFileRepository->flush($importApplicationEntity, $user_id))
+								{
+									$files_imported[] = $fnum;
+									$status           = true;
+								}
+								else
+								{
+									$files_not_imported[] = $fnum;
+									Log::add('Failed to flush file ' . $fnum, Log::INFO, 'com_emundus.error');
+
+								}
 							}
-							else
+							catch (\Exception $e)
 							{
-								$files_not_imported[] = $fnum;
+								Log::add('Failed to flush file ' . $fnum . ' error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 							}
 
 							$onAfterImportRowEventHandler = new GenericEvent(
@@ -4393,8 +4413,11 @@ class EmundusModelCampaign extends ListModel
 		}
 		catch (Exception $e)
 		{
-			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
+
+		Log::add('Import of ' . count($files_imported) . ' files done', Log::INFO, 'com_emundus.import');
+		Log::add('Import of ' . count($files_not_imported) . ' files not done', Log::INFO, 'com_emundus.import');
 
 		return ['files_imported' => $files_imported, 'files_not_imported' => $files_not_imported];
 	}
