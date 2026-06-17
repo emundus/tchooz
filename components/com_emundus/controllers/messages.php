@@ -433,7 +433,7 @@ class EmundusControllerMessages extends BaseController
 		}
 
 
-		if ($fnum->is_anonym == 1) {
+		if ($fnum->is_anonym == 1 || $fnum->anonymous == 1) {
 			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_TO') . '</strong> ' . Text::_('COM_EMUNDUS_ANONYM_EMAIL') . ' </br>';
 
 			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_SUBJECT') . '</strong> ' . $subject . ' </br>' .
