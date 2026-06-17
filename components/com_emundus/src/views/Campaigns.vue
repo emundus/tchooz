@@ -198,7 +198,7 @@ export default {
 							acl: 'program|r',
 							actions: [
 								{
-									action: 'index.php?option=com_fabrik&view=form&formid=108',
+									action: 'index.php?option=com_emundus&view=programme&layout=add',
 									controller: 'programme',
 									label: 'COM_EMUNDUS_ONBOARD_ADD_PROGRAM',
 									name: 'add',

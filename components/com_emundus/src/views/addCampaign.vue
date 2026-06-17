@@ -935,7 +935,7 @@ export default {
 		},
 
 		createCampaignWithNoExistingProgram(programForm) {
-			programmeService.createProgram(programForm).then((response) => {
+			programmeService.saveProgram(programForm).then((response) => {
 				if (response.status) {
 					this.form.progid = response.data.programme_id;
 					this.form.training = response.data.programme_code;
