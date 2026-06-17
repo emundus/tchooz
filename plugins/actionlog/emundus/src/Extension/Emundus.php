@@ -77,6 +77,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 			'onYousignSendReminder'          => 'onYousignSendReminder',
 			'onYousignRequestCancelled'      => 'onYousignRequestCancelled',
 			'onAfterAutomationProcessed' 	 => 'onAfterAutomationProcessed',
+			'onAutomationLoopDetected'       => 'onAutomationLoopDetected',
 		];
 	}
 
@@ -443,6 +444,25 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 		$message = $this->setMessage($arguments['context']->getParameters()['automation'], 'process', 'PLG_ACTIONLOG_EMUNDUS_AUTOMATION_PROCESSED', 'done', [], [], $arguments['context']->getParameters(), $arguments['context']->getUser()->id);
 		$this->addLog([$message], 'PLG_ACTIONLOG_EMUNDUS_AUTOMATION_PROCESSED', 'com_emundus.automation', $arguments['context']->getUser()->id);
+	}
+
+	/**
+	 * Records a "possible loop detected" entry in the automation history when the re-entrancy guard
+	 * prevented an automation from re-running within the same chain (two or more automations
+	 * re-triggering each other). Surfaced to managers in the automation history with a dedicated badge.
+	 */
+	public function onAutomationLoopDetected(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+		assert($arguments['context'] instanceof EventContextEntity);
+
+		$parameters                      = $arguments['context']->getParameters();
+		$parameters['loop_detected']     = true;
+		$parameters['nb_failed_actions'] = 0;
+
+		$userId  = !empty($arguments['context']->getUser()) ? $arguments['context']->getUser()->id : 0;
+		$message = $this->setMessage($parameters['automation'] ?? 0, 'loop_detected', 'PLG_ACTIONLOG_EMUNDUS_AUTOMATION_LOOP_DETECTED', 'loop_detected', [], [], $parameters, $userId);
+		$this->addLog([$message], 'PLG_ACTIONLOG_EMUNDUS_AUTOMATION_LOOP_DETECTED', 'com_emundus.automation', $userId);
 	}
 
 	private function setMessage($id = 0, $action = 'update', $title = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CONFIGURATION_TITLE', $status = 'done', $old_data = [], $new_data = [], $more_data = [], int $userId = 0)

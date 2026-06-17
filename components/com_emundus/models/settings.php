@@ -2598,7 +2598,7 @@ class EmundusModelSettings extends ListModel
 				$query->andWhere('item_id = ' . $this->db->quote($item_id));
 			}
 
-			$query->order($this->db->quoteName('al.log_date') . ' DESC');
+			$query->order($this->db->quoteName('al.log_date') . ' DESC, ' . $this->db->quoteName('al.id') . ' ASC');
 			$this->db->setQuery($query, ($page - 1) * $limit, $limit);
 			$history = $this->db->loadObjectList();
 		}

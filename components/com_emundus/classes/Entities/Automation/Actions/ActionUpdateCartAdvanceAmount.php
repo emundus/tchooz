@@ -60,7 +60,7 @@ class ActionUpdateCartAdvanceAmount extends ActionEntity
 			$paymentStep = $modelWorkflow->getPaymentStepFromFnum($context->getFile(), true);
 
 			if (!empty($paymentStep) && !empty($paymentStep->id)) {
-				$cart = $cartRepository->getCartByFnum($context->getFile(), $paymentStep->id);
+				$cart = $cartRepository->getCartByFnum($context->getFile(), $paymentStep->id, 0, $executionContext);
 				if (!empty($cart))
 				{
 					try
