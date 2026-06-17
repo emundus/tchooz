@@ -36,7 +36,29 @@ export default {
 	},
 	methods: {
 		async mountForm() {
+			this.normalizeRepeatableGroups();
 			this.formGroups = await this.fieldsToParameterFormGroups(this.action.parameters, this.action.parameter_values);
+		},
+		normalizeRepeatableGroups() {
+			if (!this.action.parameter_values || typeof this.action.parameter_values !== 'object') {
+				return;
+			}
+
+			const repeatableGroups = new Set();
+			(this.action.parameters || []).forEach((param) => {
+				if (param.group && param.group.isRepeatable) {
+					repeatableGroups.add(param.group.name);
+				}
+			});
+
+			repeatableGroups.forEach((groupName) => {
+				const value = this.action.parameter_values[groupName];
+				// PHP serializes non-sequential numeric keys as an object ({0:..,2:..}); the form treats
+				// repeatable group values as a positional array, so normalize (and compact) back to one.
+				if (value && typeof value === 'object' && !Array.isArray(value)) {
+					this.action.parameter_values[groupName] = Object.values(value);
+				}
+			});
 		},
 		removeAction(action) {
 			this.$emit('remove-action', action);
@@ -81,6 +103,15 @@ export default {
 				}
 			}
 		},
+		onRowRemoved(group, rowIndex) {
+			if (group && group.isRepeatable && Array.isArray(this.action.parameter_values[group.id])) {
+				this.action.parameter_values[group.id].splice(rowIndex, 1);
+
+				if (this.action.parameter_values[group.id].length === 0) {
+					delete this.action.parameter_values[group.id];
+				}
+			}
+		},
 	},
 };
 </script>
@@ -112,6 +143,7 @@ export default {
 			:groups="formGroups"
 			:fields="this.action.parameters"
 			@parameterValueUpdated="onParameterValueUpdated"
+			@rowRemoved="onRowRemoved"
 		>
 		</ParameterForm>
 
