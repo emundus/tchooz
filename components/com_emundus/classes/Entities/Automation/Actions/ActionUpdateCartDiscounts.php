@@ -80,7 +80,7 @@ class ActionUpdateCartDiscounts extends ActionEntity
 			$step = $m_workflow->getPaymentStepFromFnum($fnum);
 			if (!empty($step->id))
 			{
-				$cart = $cartRepository->getCartByFnum($fnum, $step->id, $this->getAutomatedTaskUserId());
+				$cart = $cartRepository->getCartByFnum($fnum, $step->id, $this->getAutomatedTaskUserId(), $executionContext);
 
 				if (!empty($cart))
 				{

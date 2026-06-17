@@ -5,6 +5,7 @@ namespace Tchooz\Repositories\Payment;
 use EmundusHelperCache;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Plugin\PluginHelper;
+use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Payment\DiscountType;
 use Tchooz\Entities\Payment\PaymentStepEntity;
@@ -162,7 +163,7 @@ class PaymentRepository
 	 * @return PaymentStepEntity|null
 	 * @throws \Exception
 	 */
-	public function getPaymentStepById(int $step_id, ?string $fnum = null): ?PaymentStepEntity
+	public function getPaymentStepById(int $step_id, ?string $fnum = null, ?AutomationExecutionContext $executionContext = null): ?PaymentStepEntity
 	{
 		$payment_step = null;
 
@@ -202,7 +203,9 @@ class PaymentRepository
 			}
 		}
 
-		if (!empty($payment_step) && !empty($fnum)) {
+		// Do not re-fire the load event when we are inside an automation action (execution context
+		// forwarded), otherwise reloading the cart/step during an action re-triggers automations.
+		if (!empty($payment_step) && !empty($fnum) && empty($executionContext)) {
 			PluginHelper::importPlugin('emundus');
 			$dispatcher = Factory::getApplication()->getDispatcher();
 			$onAfterLoadEmundusPaymentStep = new GenericEvent(
