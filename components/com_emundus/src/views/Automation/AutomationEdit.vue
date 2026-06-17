@@ -276,7 +276,14 @@ export default {
 
 					if (param.group && param.group.isRepeatable) {
 						if (action.parameter_values[param.group.name]) {
-							action.parameter_values[param.group.name].forEach((row, rowIndex) => {
+							// May arrive as an object ({0:..,1:..}) from PHP when keys are non-sequential.
+							const repeatableRows = Array.isArray(action.parameter_values[param.group.name])
+								? action.parameter_values[param.group.name]
+								: Object.values(action.parameter_values[param.group.name]);
+							repeatableRows.forEach((row, rowIndex) => {
+								if (row === null || row === undefined) {
+									return;
+								}
 								if (
 									param.required &&
 									(row[param.name] === undefined || row[param.name] === null || row[param.name] === '')

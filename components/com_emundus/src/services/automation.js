@@ -79,7 +79,7 @@ export default {
 				return {
 					id: action.id,
 					type: action.type,
-					parameter_values: action.parameter_values,
+					parameter_values: this.sanitizeParameterValues(action.parameter_values),
 					targets: action.targets.map((target) => {
 						return {
 							id: target.id,
@@ -128,6 +128,38 @@ export default {
 		}
 	},
 
+	// Repeatable group parameters are stored as positional arrays (parameter_values[group] = [row, ...]).
+	// Drop null holes and fully-empty rows so a stale/blank entry never reaches the backend.
+	sanitizeParameterValues(parameterValues) {
+		if (!parameterValues || typeof parameterValues !== 'object') {
+			return parameterValues;
+		}
+
+		const isEmptyRow = (row) => {
+			if (row === null || row === undefined) {
+				return true;
+			}
+			if (typeof row !== 'object') {
+				return false;
+			}
+			return Object.values(row).every(
+				(value) =>
+					value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0),
+			);
+		};
+
+		const sanitized = {};
+		Object.keys(parameterValues).forEach((key) => {
+			const value = parameterValues[key];
+			if (Array.isArray(value)) {
+				sanitized[key] = value.filter((row) => !isEmptyRow(row));
+			} else {
+				sanitized[key] = value;
+			}
+		});
+
+		return sanitized;
+	},
 	transformConditionGroups(conditionGroups) {
 		let groups = [];
 
