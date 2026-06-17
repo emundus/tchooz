@@ -1054,6 +1054,15 @@
         </field>
         <field showon="delete_inactive_accounts:1" name="delete_inactive_accounts_after_delay" type="text" menu="hide"
                default="72" label="COM_EMUNDUS_DELETE_INACTIVE_ACCOUNTS_AFTER_DELAY"/>
+        <field name="restrict_login" type="list" default="0" label="COM_EMUNDUS_RESTRICT_LOGIN"
+               description="COM_EMUNDUS_RESTRICT_LOGIN_DESC">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field showon="restrict_login:1" name="restrict_login_patterns" type="textarea" rows="5" default=""
+               label="COM_EMUNDUS_RESTRICT_LOGIN_PATTERNS" description="COM_EMUNDUS_RESTRICT_LOGIN_PATTERNS_DESC"/>
+        <field showon="restrict_login:1" name="restrict_login_message" type="text" default=""
+               label="COM_EMUNDUS_RESTRICT_LOGIN_MESSAGE" description="COM_EMUNDUS_RESTRICT_LOGIN_MESSAGE_DESC"/>
     </fieldset>
 
     <fieldset label="COM_EMUNDUS_INTEGRATION" name="integration" description="COM_EMUNDUS_INTEGRATION_DESC">
