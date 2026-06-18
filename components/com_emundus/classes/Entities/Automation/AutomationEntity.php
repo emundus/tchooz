@@ -169,11 +169,6 @@ class AutomationEntity
 	{
 		Log::addLogger(['text_file' => 'com_emundus.automation.php'], Log::ALL, ['com_emundus.automation']);
 
-		if ($executionContext !== null && $executionContext->hasRun($this->getId())) {
-			Log::add('Automation [' . $this->getId() . '] has already been executed in this context. Skipping.', Log::DEBUG, 'com_emundus.automation');
-			return true;
-		}
-
 		if (empty($this->getActions()))
 		{
 			Log::add('Automation [' . $this->getId() . '] has no actions to execute.', Log::ERROR, 'com_emundus.automation');
@@ -197,6 +192,15 @@ class AutomationEntity
 		{
 			$iterationContextIdentity = !empty($subContext->getFile()) ? $subContext->getFile() : (!empty($subContext->getUserId()) ? $subContext->getUserId() : $subContext->getTriggeredBy()->id);
 
+			// Re-entrancy guard, per (automation, target): if this automation already ran for THIS
+			// file/user in the current chain, skip it to break loops — but keep running it for other
+			// targets (a same automation acting on several files/users is legitimate fan-out, not a loop).
+			if ($executionContext !== null && $executionContext->hasRun($this->getId(), (string) $iterationContextIdentity)) {
+				Log::add('Automation [' . $this->getId() . '] has already been executed for : ' . $iterationContextIdentity . ' in this context. Skipping.', Log::DEBUG, 'com_emundus.automation');
+				$this->raiseLoopDetectedAlert($context, $executionContext);
+				continue; // skip this target, not the whole automation
+			}
+
 			$parentConditionGroups = array_filter($this->conditionsGroups, fn($g) => $g->getParentId() === 0);
 			foreach ($parentConditionGroups as $group) {
 				assert($group instanceof ConditionGroupEntity);
@@ -219,7 +223,7 @@ class AutomationEntity
 			foreach ($this->actions as $action) {
 				assert($action instanceof ActionEntity);
 
-				$executionContext?->markRun($this->getId());
+				$executionContext?->markRun($this->getId(), (string) $iterationContextIdentity, $this->getName());
 				$actionContexts = $action->getExecutionTargets($subContext);
 
 				foreach($actionContexts as $actionContext) {
@@ -299,6 +303,54 @@ class AutomationEntity
 		}
 
 		return empty($failedActions);
+	}
+
+	/**
+	 * Raise a "possible loop" alert (once per chain) when this automation is skipped because it has
+	 * already run in the current execution context. This means two or more automations re-triggered
+	 * each other: the loop was prevented by the re-entrancy guard, but the configuration should be
+	 * reviewed. The alert is surfaced to managers in the automation history via the actionlog plugin.
+	 *
+	 * @param   EventContextEntity           $context
+	 * @param   AutomationExecutionContext   $executionContext
+	 *
+	 * @return void
+	 */
+	private function raiseLoopDetectedAlert(EventContextEntity $context, AutomationExecutionContext $executionContext): void
+	{
+		if ($executionContext->loopAlertWasRaised())
+		{
+			return;
+		}
+		$executionContext->markLoopAlertRaised();
+
+		$involvedLabels = $executionContext->getExecutedLabels();
+		Log::add('Possible automation loop prevented: automation [' . $this->getId() . '] was re-triggered while the chain (' . implode(', ', $involvedLabels) . ') was still running. Review the conditions of these automations.', Log::WARNING, 'com_emundus.automation');
+
+		try
+		{
+			$files                    = $context->getFiles();
+			$dispatcher               = Factory::getApplication()->getDispatcher();
+			$onAutomationLoopDetected = new GenericEvent('onAutomationLoopDetected', [
+				'context' => new EventContextEntity(
+					$context->getUser(),
+					$files,
+					[],
+					[
+						'automation'      => $this->getId(),
+						'automation_name' => $this->getName(),
+						'involved_ids'    => $executionContext->getExecutedIds(),
+						'involved_labels' => $involvedLabels,
+						'fnum'            => !empty($files) ? reset($files) : null,
+					]
+				),
+			]);
+			$dispatcher->dispatch('onAutomationLoopDetected', $onAutomationLoopDetected);
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Failed to dispatch onAutomationLoopDetected for automation [' . $this->getId() . '] : ' . $e->getMessage(), Log::ERROR, 'com_emundus.automation');
+		}
 	}
 
 	/**

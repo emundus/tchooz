@@ -159,6 +159,12 @@ class ActionGenerateSignatureRequest extends ActionEntity
 
 		foreach ($signersParameters as $signerParam)
 		{
+			// Defensive: skip blank/incomplete signer rows that may have been persisted (no type, nothing to resolve).
+			if (empty($signerParam) || empty($signerParam['signer_type']))
+			{
+				continue;
+			}
+
 			$contactRepository = new ContactRepository();
 			switch ($signerParam['signer_type'])
 			{
@@ -186,6 +192,10 @@ class ActionGenerateSignatureRequest extends ActionEntity
 
 					if ($signerParam['signer_type'] === ConditionTargetTypeEnum::FORMDATA->value)
 					{
+						if (empty($signerParam['email_element'])) {
+							break;
+						}
+
 						$email     = $resolver->resolveValue($context, $signerParam['email_element']);
 						$lastname  = $resolver->resolveValue($context, $signerParam['lastname_element']);
 						$firstname = $resolver->resolveValue($context, $signerParam['firstname_element']);
@@ -193,6 +203,9 @@ class ActionGenerateSignatureRequest extends ActionEntity
 					}
 					else
 					{
+						if (empty($signerParam['email_element_alias'])) {
+							break;
+						}
 
 						$email     = $resolver->resolveValue($context, $signerParam['email_element_alias']);
 						$lastname  = $resolver->resolveValue($context, $signerParam['lastname_element_alias']);
