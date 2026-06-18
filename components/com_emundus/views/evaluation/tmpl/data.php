@@ -151,6 +151,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                                 <label for="<?php echo $line['fnum']->val ?>_check">
                                                     <input type="checkbox"
                                                            data-evalid="<?php echo $line['evaluation_id']->val; ?>"
+                                                           data-applicant_id="<?php echo (int) ($line['fnum']->user->id ?? 0); ?>"
                                                            name="<?php echo $line['fnum']->val; ?>_check"
                                                            id="<?php echo $line['fnum']->val ?>_check" class='em-check'
                                                            style="width:20px !important;"/>
