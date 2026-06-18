@@ -480,7 +480,12 @@ function openFiles(fnum, page = 0, vue = false) {
     }, 0);
 
     var cid = parseInt(fnum.fnum.substr(14, 7));
-    var sid = parseInt(fnum.fnum.substr(21, 7));
+    // The applicant id is no longer embedded in the fnum (last part is now random),
+    // so retrieve it from the fnum object or the data-applicant_id attribute of the file checkbox.
+    var sid = parseInt(fnum.sid);
+    if (isNaN(sid)) {
+        sid = parseInt($('#' + fnum.fnum + '_check').attr('data-applicant_id'));
+    }
 
     loadAssocFilesSection(fnum.fnum);
 
@@ -781,7 +786,7 @@ function getUserCheckArray() {
                 return null;
             } else {
                 var cid = parseInt(fnum.substr(14, 7));
-                var sid = parseInt(fnum.substr(21, 7));
+                var sid = parseInt($('#' + fnum + '_check').attr('data-applicant_id'));
                 fnums.push({fnum: fnum, cid: cid, sid:sid});
             }
         } else {
@@ -790,7 +795,7 @@ function getUserCheckArray() {
             $('.em-check:checked').each(function() {
                 fnum = $(this).attr('id').split('_')[0];
                 cid = parseInt(fnum.substr(14, 7));
-                sid = parseInt(fnum.substr(21, 7));
+                sid = parseInt($(this).attr('data-applicant_id'));
                 fnums.push({fnum: fnum, cid: cid, sid:sid});
             });
         }
@@ -4640,7 +4645,7 @@ $(document).ready(function() {
             e.handle = true;
             var fnum = new Object();
             fnum.fnum = $(this).attr('title');
-            fnum.sid = parseInt(fnum.fnum.substr(21, 7));
+            fnum.sid = parseInt($('#' + fnum.fnum + '_check').attr('data-applicant_id'));
             fnum.cid = parseInt(fnum.fnum.substr(14, 7));
             $('.em-check:checked').prop('checked', false);
 
@@ -4651,7 +4656,7 @@ $(document).ready(function() {
                 url: '/index.php?option=com_emundus&controller='+$('#view').val()+'&task=getfnuminfos',
                 dataType:"json",
                 data:({
-                    fnum:fnum.fnum
+                    fnum: fnum.fnum
                 }),
                 success: function(result) {
                     if (result.status) {
@@ -4767,7 +4772,7 @@ $(document).ready(function() {
                     $('#'+fnum.fnum+'_check').prop('checked', true);
 
                     addLoader();
-                    fnum.sid = parseInt(fnum.fnum.substr(21, 7));
+                    fnum.sid = parseInt($('#' + fnum.fnum + '_check').attr('data-applicant_id'));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 
                     page = Array.from(document.querySelector('#em-appli-block .panel[class*="em-container-"]').classList).filter(
@@ -4826,7 +4831,7 @@ $(document).ready(function() {
                     $('#'+fnum.fnum+'_check').prop('checked', true);
 
                     addLoader();
-                    fnum.sid = parseInt(fnum.fnum.substr(21, 7));
+                    fnum.sid = parseInt($('#' + fnum.fnum + '_check').attr('data-applicant_id'));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 
                     if (document.querySelector('#em-appli-block .panel[class*="em-container-"]')) {
@@ -4867,7 +4872,7 @@ $(document).ready(function() {
                     var fnum = new Object();
                     fnum.fnum = $(this).parents('a').attr('href').split('-')[0];
                     fnum.fnum = fnum.fnum.substr(1, fnum.fnum.length);
-                    fnum.sid = parseInt(fnum.fnum.substr(21, 7));
+                    fnum.sid = parseInt($('#' + fnum.fnum + '_check').attr('data-applicant_id'));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
                     $('.em-check:checked').prop('checked', false);
                     $('#'+fnum.fnum+'_check').prop('checked', true);
@@ -4947,8 +4952,8 @@ $(document).ready(function() {
             var fnum = {};
             fnum.fnum = $(this).attr('id');
 
-            var sid = parseInt(fnum.fnum.substr(21, 7));
-            var cid = parseInt(fnum.fnum.substr(14, 7));
+            fnum.sid = parseInt($('#' + fnum.fnum + '_check').attr('data-applicant_id'));
+            fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 
             $('.em-check:checked').prop('checked', false);
             $('#em-check-all:checked').prop('checked', false);

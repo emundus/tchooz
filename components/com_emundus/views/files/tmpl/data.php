@@ -183,6 +183,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                         <label for="<?= $line['fnum']->val; ?>_check">
                                             <input type="checkbox" name="<?= $line['fnum']->val; ?>_check"
                                                    id="<?= $line['fnum']->val; ?>_check" class='em-check'
+                                                   data-applicant_id="<?= (int) ($line['fnum']->user->id ?? 0); ?>"
                                                    style="width:20px !important;"/>
 											<?php
 											$tab = explode('-', $key);
