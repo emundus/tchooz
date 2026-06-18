@@ -8,7 +8,7 @@ export class FetchClient {
 
 		if (params) {
 			for (let key in params) {
-				url += '&' + key + '=' + params[key];
+				url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
 			}
 		}
 
@@ -138,7 +138,7 @@ export class FetchClient {
 
 		if (params) {
 			for (let key in params) {
-				url += '&' + key + '=' + params[key];
+				url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
 			}
 		}
 

@@ -20,6 +20,7 @@ use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
 use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Repositories\Export\ExportRepository;
+use Tchooz\Repositories\Task\TaskRepository;
 use Tchooz\Services\Export\ExportRegistry;
 
 class ActionExport extends ActionEntity
@@ -194,6 +195,13 @@ class ActionExport extends ActionEntity
 		catch (\Exception $e)
 		{
 			Log::add('Export action failed: ' . $e->getMessage(), Log::ERROR, 'com_emundus.action');
+
+			if (($exportEntity ?? null) !== null && ($task ?? null) !== null
+				&& $task->getAttempts() >= TaskRepository::MAX_TASK_ATTEMPTS)
+			{
+				$exportEntity->setFailed(true);
+				$exportRepository->flush($exportEntity);
+			}
 
 			return ActionExecutionStatusEnum::FAILED;
 		}

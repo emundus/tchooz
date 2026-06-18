@@ -336,7 +336,34 @@ abstract class ActionEntity
 
 	public function getParameterValues(): array
 	{
-		return $this->parameterValues;
+		return $this->normalizeRepeatableGroupValues($this->parameterValues);
+	}
+
+	/**
+	 * Repeatable group values are stored as positional arrays. After row removals their keys can become
+	 * non-sequential, which json_encode emits as an object instead of an array (both when persisting to
+	 * the database and when serializing to the frontend). Reindex them so they always stay clean arrays.
+	 *
+	 * @param   array  $values
+	 *
+	 * @return array
+	 */
+	private function normalizeRepeatableGroupValues(array $values): array
+	{
+		foreach ($this->getParameters() as $parameter)
+		{
+			$group = $parameter->getGroup();
+			if ($group && $group->isRepeatable())
+			{
+				$groupName = $group->getName();
+				if (isset($values[$groupName]) && is_array($values[$groupName]))
+				{
+					$values[$groupName] = array_values($values[$groupName]);
+				}
+			}
+		}
+
+		return $values;
 	}
 
 	public function getParametersSchema(): array

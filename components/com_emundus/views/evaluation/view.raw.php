@@ -400,7 +400,8 @@ class EmundusViewEvaluation extends JViewLegacy
 								{
 									$userObj->photo = "";
 								}
-								$userObj->user       = JFactory::getUser((int) substr($value, -7));
+								// The applicant id is no longer embedded in the fnum (last part is now random), use the real applicant_id.
+								$userObj->user       = JFactory::getUser((int) $user['applicant_id']);
 								$userObj->unread_messages = !empty($unread_messages) ? $unread_messages[$value] : '';
 
 								if ($user['is_anonym'] == 1 || !empty($user['anonymous']))

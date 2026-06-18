@@ -2472,8 +2472,8 @@ class EmundusModelFiles extends JModelLegacy
 				$query = 'select jos_emundus_campaign_candidature.fnum, esc.label, sp.code, esc.id as campaign_id';
 			}
 			else {
-				$query = 'select jos_emundus_campaign_candidature.fnum, jos_emundus_campaign_candidature.anonymous' .
-					'CASE WHEN eu.is_anonym = 0 THEN u.email ELSE ' . $this->_db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')) . ' END as email'
+				$query = 'select jos_emundus_campaign_candidature.fnum, jos_emundus_campaign_candidature.anonymous, ' .
+					'CASE WHEN eu.is_anonym = 0 AND jos_emundus_campaign_candidature.anonymous != 1 THEN u.email ELSE ' . $this->_db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')) . ' END as email'
 				.', esc.label, sp.code, esc.id as campaign_id';
 			}
 		}
@@ -3025,7 +3025,7 @@ class EmundusModelFiles extends JModelLegacy
 			}
 			else {
 				$query = 'SELECT jecc.fnum, '.
-					'CASE WHEN eu.is_anonym != 1 THEN u.email ELSE ' . $this->_db->quote('COM_EMUNDUS_ANONYM_ACCOUNT') . ' END as email, '.
+					'CASE WHEN eu.is_anonym != 1 AND jecc.anonymous != 1 THEN u.email ELSE ' . $this->_db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')) . ' END as email, '.
 					' jecc.anonymous, esc.label, sp.code, esc.id as campaign_id';
 			}
 

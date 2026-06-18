@@ -2024,6 +2024,19 @@ class EmundusControllerFiles extends EmundusController
 				}
 			}
 			$status      = $m_files->getStatusByFnums($fnums);
+
+			// The applicant id is no longer embedded in the fnum (last part is now random),
+			// so build a fnum => applicant_id map from the candidatures in a single query.
+			$applicant_ids_by_fnum = [];
+			if (!empty($fnums)) {
+				$query->clear()
+					->select($db->quoteName(['fnum', 'applicant_id']))
+					->from($db->quoteName('#__emundus_campaign_candidature'))
+					->where($db->quoteName('fnum') . ' IN (' . implode(',', array_map([$db, 'quote'], $fnums)) . ')');
+				$db->setQuery($query);
+				$applicant_ids_by_fnum = $db->loadAssocList('fnum', 'applicant_id');
+			}
+
 			$line        = "";
 			$element_csv = array();
 			$i           = $start;
@@ -2324,7 +2337,7 @@ class EmundusControllerFiles extends EmundusController
 							if ($k === 'fnum') {
 								$line .= "'" . $v . "\t";
 								$line .= $status[$v]['value'] . "\t";
-								$uid  = intval(substr($v, 21, 7));
+								$uid  = (int) ($applicant_ids_by_fnum[$v] ?? 0);
 								if (!$anonymize_data) {
 									$userProfil = $m_users->getUserById($uid)[0];
 
@@ -3213,6 +3226,19 @@ class EmundusControllerFiles extends EmundusController
 		$fnumsArray = $m_files->getFnumArray($fnums, $elements, $methode);
 		$status     = $m_files->getStatusByFnums($fnums);
 
+		// The applicant id is no longer embedded in the fnum (last part is now random),
+		// so build a fnum => applicant_id map from the candidatures in a single query.
+		$applicant_ids_by_fnum = [];
+		if (!empty($fnums)) {
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+			$query->select($db->quoteName(['fnum', 'applicant_id']))
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where($db->quoteName('fnum') . ' IN (' . implode(',', array_map([$db, 'quote'], $fnums)) . ')');
+			$db->setQuery($query);
+			$applicant_ids_by_fnum = $db->loadAssocList('fnum', 'applicant_id');
+		}
+
 		$menu         = $this->app->getMenu();
 		$current_menu = $menu->getActive();
 		$menu_params  = $menu->getParams($current_menu->id);
@@ -3338,7 +3364,7 @@ class EmundusControllerFiles extends EmundusController
 						$col++;
 						$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $status[$v]['value']);
 						$col++;
-						$uid        = intval(substr($v, 21, 7));
+						$uid        = (int) ($applicant_ids_by_fnum[$v] ?? 0);
 						$userProfil = JUserHelper::getProfile($uid)->emundus_profile;
 						$objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, strtoupper($userProfil['lastname']));
 						$col++;

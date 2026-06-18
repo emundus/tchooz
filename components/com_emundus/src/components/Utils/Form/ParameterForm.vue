@@ -48,7 +48,11 @@ export default {
 				this.$emit('parameterValueUpdated', parameter, group, rowIndex);
 			}
 
-			if (this.initialized && oldValue !== null) {
+			// Reload the display rules whenever the value actually changed — including the first
+			// change from null to a value, so conditional (hidden) fields appear immediately.
+			// Internal calls (reloadParametersRules) pass no old/new value (both null) and are skipped here,
+			// which preserves the recursion guard.
+			if (this.initialized && oldValue !== newValue) {
 				this.reloadParametersRules();
 
 				this.fields.forEach((field) => {
@@ -256,10 +260,19 @@ export default {
 			this.reloadParametersRules();
 		},
 		removeRow(group, rowToRemove) {
-			console.log('Removing row', rowToRemove);
-			console.log('group', group);
+			const rowIndex = group.rows.findIndex((row) => row.id === rowToRemove.id);
+			if (rowIndex === -1) {
+				return;
+			}
 
-			group.rows = group.rows.filter((row) => row.id !== rowToRemove.id);
+			group.rows.splice(rowIndex, 1);
+
+			// The parent stores parameter_values[group.id] as a positional array indexed by row.
+			// A removed row must be spliced out there too, otherwise a stale/empty entry lingers
+			// and gets persisted (then breaks backend actions iterating over the rows).
+			this.$emit('rowRemoved', group, rowIndex);
+
+			this.reloadParametersRules();
 		},
 		getRowParameterValue(group, rowIndex, parameterName) {
 			const row = group.rows[rowIndex];
