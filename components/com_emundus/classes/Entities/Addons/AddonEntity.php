@@ -123,7 +123,7 @@ class AddonEntity
 		return $this->params;
 	}
 
-	public function getParam(string $key, ?string $parent): mixed
+	public function getParam(string $key, ?string $parent = null): mixed
 	{
 		if(!empty($parent)) {
 			return $this->params[$parent][$key] ?? null;

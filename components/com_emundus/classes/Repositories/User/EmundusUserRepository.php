@@ -285,13 +285,16 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 			$query->select($this->columns)
 				->from($this->db->quoteName($this->tableName, $this->alias))
 				->leftJoin($this->db->quoteName($this->getTableName(ApplicationFileRepository::class), 'af') . ' ON ' . $this->db->quoteName('af.applicant_id') . ' = ' . $this->db->quoteName($this->alias . '.user_id'))
-				->where($this->db->quoteName('af.published') . ' = 1');
+				->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName($this->alias . '.user_id'))
+				->where($this->db->quoteName('af.published') . ' = 1')
+				->group($this->db->quoteName($this->alias . '.user_id'));
 			if (!empty($search))
 			{
 				$searchEscaped = $this->db->quote('%' . $this->db->escape($search, true) . '%');
 				$query->where('(' . $this->db->quoteName($this->alias . '.firstname') . ' LIKE ' . $searchEscaped
 					. ' OR ' . $this->db->quoteName($this->alias . '.lastname') . ' LIKE ' . $searchEscaped
 					. ' OR ' . $this->db->quoteName($this->alias . '.user_id') . ' LIKE ' . $searchEscaped
+					. ' OR ' . $this->db->quoteName('u.email') . ' LIKE ' . $searchEscaped
 					. ')');
 			}
 

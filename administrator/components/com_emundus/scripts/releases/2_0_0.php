@@ -1792,16 +1792,17 @@ if(value == 1) {
 				}
 			}
 
+			$all_rights_group  = ComponentHelper::getParams('com_emundus')->get('all_rights_group', 1);
 			$insert = [
 				'parent_id'      => 1,
-				'emundus_groups' => 1
+				'emundus_groups' => $all_rights_group
 			];
 			$insert = (object) $insert;
 			$this->db->insertObject('#__emundus_setup_profiles_repeat_emundus_groups', $insert);
 
 			$insert = [
 				'parent_id'      => 2,
-				'emundus_groups' => 1
+				'emundus_groups' => $all_rights_group
 			];
 			$insert = (object) $insert;
 			$this->db->insertObject('#__emundus_setup_profiles_repeat_emundus_groups', $insert);

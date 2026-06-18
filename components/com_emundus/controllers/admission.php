@@ -679,6 +679,7 @@ class EmundusControllerAdmission extends BaseController
 	}
 
 	/**
+	 * @deprecated
 	 * Generate array to export in CSV format
 	 *
 	 * @since version 1.0.0

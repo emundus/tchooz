@@ -294,13 +294,12 @@ $(document).ready(function () {
 			e.handle = true;
 			var fnum = new Object();
 			fnum.fnum = $(this).attr('title');
-			fnum.sid = parseInt(fnum.fnum.substr(21, 7));
 			fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 			$('.em-check:checked').prop('checked', false);
 
 			$('#' + fnum.fnum + '_check').prop('checked', true);
 
-			let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=getfnuminfos&fnum=' + fnum.fnum;
+			let url = window.location.origin+'/index.php?option=com_emundus&controller=files&task=getfnuminfos&fnum=' + fnum.fnum;
 			fetch(url, {
 				method: 'GET',
 			}).then((response) => {
@@ -313,6 +312,7 @@ $(document).ready(function () {
 					var fnumInfos = result.fnumInfos;
 					fnum.name = fnumInfos.name;
 					fnum.label = fnumInfos.label;
+					fnum.sid = fnumInfos.applicant_id;
 					openFiles(fnum);
 				}
 			});
@@ -412,12 +412,11 @@ $(document).ready(function () {
 					var fnum = new Object();
 					fnum.fnum = $(this).parents('a').attr('href').split('-')[0];
 					fnum.fnum = fnum.fnum.substr(1, fnum.fnum.length);
-					fnum.sid = parseInt(fnum.fnum.substr(21, 7));
 					fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 					$('.em-check:checked').prop('checked', false);
 					$('#' + fnum.fnum + '_check').prop('checked', true);
 
-					let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=getfnuminfos&fnum=' + fnum.fnum;
+					let url = window.location.origin+'/index.php?option=com_emundus&controller=files&task=getfnuminfos&fnum=' + fnum.fnum;
 					fetch(url, {
 						method: 'GET',
 					}).then((response) => {
@@ -430,6 +429,7 @@ $(document).ready(function () {
 							var fnumInfos = result.fnumInfos;
 							fnum.name = fnumInfos.name;
 							fnum.label = fnumInfos.label;
+							fnum.sid = fnumInfos.applicant_id;
 							openFiles(fnum);
 						}
 					});

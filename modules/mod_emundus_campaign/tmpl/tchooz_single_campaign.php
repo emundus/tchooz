@@ -4,6 +4,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\UI\ButtonVariantEnum;
 use Tchooz\Enums\UI\ButtonWidthEnum;
 use Joomla\CMS\Router\Route;
@@ -109,6 +110,9 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
 
 $campaignRepository = new CampaignRepository();
 $campaignEntity = $campaignRepository->getById($currentCampaign->id);
+
+$addonRepository = new AddonRepository();
+$addonAnonymization = $addonRepository->getByName(AddonEnum::ANONYMOUS->value);
 $anonymizationPolicy = Anonymization::getCampaignAnonymizationPolicy($campaignEntity);
 if ($anonymizationPolicy === AnonymizationPolicyEnum::OPTIONAL)
 {
@@ -367,7 +371,7 @@ if ($anonymizationPolicy === AnonymizationPolicyEnum::OPTIONAL)
                         ?>
 					<?php else : ?>
                         <?php
-							if ($anonymizationPolicy === AnonymizationPolicyEnum::OPTIONAL)
+							if ($anonymizationPolicy === AnonymizationPolicyEnum::OPTIONAL && $addonAnonymization->getParam('display_option_in_campaign_apply') == 1)
 							{
 								?>
 								<div class="tw-flex tw-flex-row tw-items-center tw-mb-4 tw-cursor-pointer" title="<?= Text::_('MOD_EM_CAMPAIGN_APPLY_ANONYMOUSLY_DESC') ?>">
