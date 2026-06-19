@@ -15,6 +15,7 @@ jimport('joomla.application.component.view');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Services\Reference\InternalReferenceService;
@@ -401,7 +402,7 @@ class EmundusViewEvaluation extends JViewLegacy
 									$userObj->photo = "";
 								}
 								// The applicant id is no longer embedded in the fnum (last part is now random), use the real applicant_id.
-								$userObj->user       = JFactory::getUser((int) $user['applicant_id']);
+								$userObj->user       = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $user['applicant_id']);
 								$userObj->unread_messages = !empty($unread_messages) ? $unread_messages[$value] : '';
 
 								if ($user['is_anonym'] == 1 || !empty($user['anonymous']))
