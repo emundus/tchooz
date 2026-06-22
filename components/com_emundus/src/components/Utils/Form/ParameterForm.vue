@@ -201,12 +201,16 @@ export default {
 							});
 
 							if (everyRulesSucceed) {
-								parameter.displayed = true;
-								parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
+								if (parameter.displayed !== true) {
+									parameter.displayed = true;
+									parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
+								}
 							} else {
-								parameter.displayed = false;
-								parameter.value = null;
-								parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
+								if (parameter.displayed !== false || parameter.value !== null) {
+									parameter.displayed = false;
+									parameter.value = null;
+									parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
+								}
 							}
 						}
 					});
