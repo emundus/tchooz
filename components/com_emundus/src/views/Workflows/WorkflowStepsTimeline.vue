@@ -1,8 +1,10 @@
 <script>
 import workflowService from '@/services/workflow.js';
+import NoResults from '@/components/Utils/NoResults.vue';
 
 export default {
 	name: 'WorkflowStepsTimeline',
+	components: { NoResults },
 	props: {
 		fnum: {
 			type: String,
@@ -266,10 +268,7 @@ export default {
 			</div>
 		</div>
 
-		<div v-if="displayedSteps.length < 1">
-			<img src="../../../../../media/com_emundus_vue/assets/no-result.svg" class="no-result-image" alt="empty-list" />
-			<p>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TIMELINE_NO_STEP_FOUND') }}</p>
-		</div>
+		<NoResults v-if="displayedSteps.length < 1" message="COM_EMUNDUS_WORKFLOW_STEP_TIMELINE_NO_STEP_FOUND" />
 	</div>
 </template>
 
