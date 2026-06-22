@@ -41,7 +41,9 @@ export default {
 	},
 	methods: {
 		onParameterValueUpdated(parameter, group, rowIndex = null, oldValue = null, newValue = null) {
-			if (oldValue !== null && newValue !== null && oldValue === newValue) {
+			// Skip entirely when both sides were explicitly passed and are equivalent
+			// (covers the [] vs null hydration loop without blocking real clears like "foo" → null).
+			if (oldValue !== null && newValue !== null && this.areValuesEquivalent(oldValue, newValue)) {
 				return;
 			}
 			if (parameter) {
@@ -50,10 +52,11 @@ export default {
 
 			// Reload the display rules whenever the value actually changed — including the first
 			// change from null to a value, so conditional (hidden) fields appear immediately.
-			// Internal calls (reloadParametersRules) pass no old/new value (both null) and are skipped here,
-			// which preserves the recursion guard.
-			if (this.initialized && oldValue !== newValue) {
-				this.reloadParametersRules();
+			// Internal calls (reloadParametersRules) pass no old/new value (both null) and are
+			// filtered by areValuesEquivalent below, which preserves the recursion guard.
+			// Empty-equivalent transitions ([] ↔ null) are also filtered to stop the hydration loop.
+			if (this.initialized && !this.areValuesEquivalent(oldValue, newValue)) {
+				this.reloadParametersRules(parameter);
 
 				this.fields.forEach((field) => {
 					if (field.watchers && field.watchers.length > 0) {
@@ -102,6 +105,18 @@ export default {
 					}
 				});
 			}
+		},
+		isEmptyValue(value) {
+			return value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0);
+		},
+		areValuesEquivalent(a, b) {
+			if (this.isEmptyValue(a) && this.isEmptyValue(b)) {
+				return true;
+			}
+			if (Array.isArray(a) && Array.isArray(b)) {
+				return JSON.stringify(a) === JSON.stringify(b);
+			}
+			return a === b;
 		},
 		/**
 		 * Validate every displayed Parameter via its ref and serialize the values.
@@ -175,7 +190,7 @@ export default {
 			}
 			return null;
 		},
-		reloadParametersRules() {
+		reloadParametersRules(currentParameter = null) {
 			this.groups.forEach((group) => {
 				if (group.isRepeatable) {
 					group.rows.forEach((row, rowIndex) => {
@@ -221,7 +236,11 @@ export default {
 					});
 				} else {
 					group.parameters.forEach((parameter) => {
-						if (parameter.displayRules && parameter.displayRules.length > 0) {
+						if (
+							(currentParameter === null || (currentParameter && currentParameter.param !== parameter.param)) &&
+							parameter.displayRules &&
+							parameter.displayRules.length > 0
+						) {
 							let everyRulesSucceed = parameter.displayRules.every((rule) => {
 								const ruleParameter = this.findParameterByName(rule.field);
 
@@ -235,12 +254,16 @@ export default {
 							});
 
 							if (everyRulesSucceed) {
-								parameter.displayed = true;
-								parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
+								if (parameter.displayed !== true) {
+									parameter.displayed = true;
+									parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
+								}
 							} else {
-								parameter.displayed = false;
-								parameter.value = null;
-								parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
+								if (parameter.displayed !== false || parameter.value !== null) {
+									parameter.displayed = false;
+									parameter.value = null;
+									parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
+								}
 							}
 						}
 					});
