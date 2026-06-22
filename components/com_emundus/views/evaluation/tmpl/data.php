@@ -233,7 +233,8 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                                                     <strong> <?= $value->user->name; ?></strong>
                                                                 </span>
                                                                 <div class="em_list_email"><?= $value->user->email; ?></div>
-                                                                <div class="em_list_email"><?= $value->user->id; ?></div>
+                                                                <div class="em_list_user_id">
+                                                                    <?= $value->user->id; ?></div>
 															<?php endif; ?>
                                                         </div>
                                                     </a>
