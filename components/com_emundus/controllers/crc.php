@@ -21,7 +21,10 @@ use Joomla\CMS\User\User;
 use Joomla\Database\DatabaseInterface;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
+use Tchooz\Attributes\AccessAttribute;
+use Tchooz\EmundusResponse;
 use Tchooz\Entities\Actions\ActionEntity;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
@@ -29,11 +32,16 @@ use Tchooz\Entities\Country;
 use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnList;
 use Tchooz\Entities\List\AdditionalColumnPublished;
+use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Contacts\ContactFileRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
+use Tchooz\Repositories\Contacts\OrganizationFileRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
 use Tchooz\Repositories\CountryRepository;
 use Tchooz\Services\UploadException;
@@ -41,7 +49,7 @@ use Tchooz\Services\UploadService;
 use Tchooz\Traits\TraitDispatcher;
 use Tchooz\Traits\TraitResponse;
 
-class EmundusControllerCrc extends BaseController
+class EmundusControllerCrc extends EmundusController
 {
 	use TraitResponse;
 
@@ -100,7 +108,7 @@ class EmundusControllerCrc extends BaseController
 
 		if (EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::READ->value, $this->user->id))
 		{
-			$order_by = $this->input->getString('order_by', 't.id');
+			$order_by = $this->input->getString('order_by', 'id');
 			$sort     = $this->input->getString('sort', '');
 			$search   = $this->input->getString('recherche', '');
 			$lim      = $this->input->getInt('lim', 0);
@@ -219,6 +227,11 @@ class EmundusControllerCrc extends BaseController
 							$organizations = $this->organizationRepository->getByIds($orgIds);
 						}
 
+						// Always expose application_files as a serialized array (empty when none) so the shape stays stable.
+						$contact_reponse->application_files = array_map(
+							fn($applicationFile) => $applicationFile->__serialize(),
+							$contact->getApplicationFiles() ?? []
+						);
 
 						$org_column = new AdditionalColumnList(
 							Text::_('COM_EMUNDUS_ONBOARD_ORGS_ASSOCIATED_TITLE'),
@@ -363,6 +376,16 @@ class EmundusControllerCrc extends BaseController
 								$org_ids[]                         = $org_id;
 							}
 						}
+					}
+				}
+
+				// Always expose application_files as an array (empty when none) so the shape stays stable.
+				$contact_response->application_files = [];
+				foreach ($contact->getApplicationFiles() ?? [] as $file)
+				{
+					if ($file instanceof ApplicationFileEntity)
+					{
+						$contact_response->application_files[] = $file->__serialize();
 					}
 				}
 
@@ -676,6 +699,17 @@ class EmundusControllerCrc extends BaseController
 			$addresses = [];
 		}
 
+		// Files
+		$application_files = $this->app->getInput()->getString('application_files', '');
+		if (!empty($application_files))
+		{
+			$application_files = explode(',', $application_files);
+		}
+		else
+		{
+			$application_files = [];
+		}
+
 		if (!empty($profile_picture) && $profile_picture['error'] === 0 || $profile_picture_path === 'null' || empty($profile_picture_path))
 		{
 			// Delete old profile picture if exists
@@ -781,6 +815,20 @@ class EmundusControllerCrc extends BaseController
 				}
 			}
 
+			$applicationFilesEntities = [];
+			if (!empty($application_files))
+			{
+				$applicationFileRepository = new ApplicationFileRepository();
+				foreach ($application_files as $application_file)
+				{
+					$fileEntity = $applicationFileRepository->getById($application_file);
+					if ($fileEntity instanceof ApplicationFileEntity)
+					{
+						$applicationFilesEntities[] = $fileEntity;
+					}
+				}
+			}
+
 			if (!class_exists('ContactEntity'))
 			{
 				require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Contacts/ContactEntity.php';
@@ -801,6 +849,7 @@ class EmundusControllerCrc extends BaseController
 				service: !empty($service) ? $service : null,
 				countries: $countriesEntities,
 				organizations: $organizationsEntities,
+				application_files: $applicationFilesEntities,
 				profile_picture: !empty($profile_picture_path) && $profile_picture_path !== "null" ? $profile_picture_path : null,
 				published: $published,
 				status: $status,
@@ -911,7 +960,7 @@ class EmundusControllerCrc extends BaseController
 			$response['status']  = true;
 			$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_CRC_EXPORT_CSV_CONTACTS_SUCCESS');
 
-			$contacts = $this->contactRepository->getAllContacts('DESC', '', 0, 0, 't.id', null, $ids);
+			$contacts = $this->contactRepository->getAllContacts('DESC', '', 0, 0, 'id', null, $ids);
 
 			$excel_filename = 'export_contacts_' . date('Ymd_His') . '.csv';
 			$excel_filepath = JPATH_SITE . '/tmp/' . $excel_filename;
@@ -1233,6 +1282,16 @@ class EmundusControllerCrc extends BaseController
 					}
 				}
 
+				// Always expose application_files as an array (empty when none) so the shape stays stable.
+				$organization_response->application_files = [];
+				foreach ($organization->getApplicationFiles() ?? [] as $file)
+				{
+					if ($file instanceof ApplicationFileEntity)
+					{
+						$organization_response->application_files[] = $file->__serialize();
+					}
+				}
+
 				$response['code']    = 200;
 				$response['status']  = true;
 				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_CRC_GET_ORGANIZATION_SUCCESS');
@@ -1491,6 +1550,17 @@ class EmundusControllerCrc extends BaseController
 			$other_contacts = [];
 		}
 
+		// Files
+		$application_files = $this->app->getInput()->getString('application_files', '');
+		if (!empty($application_files))
+		{
+			$application_files = explode(',', $application_files);
+		}
+		else
+		{
+			$application_files = [];
+		}
+
 		if (!empty($url_website)) {
 			$url_website = trim($url_website);
 
@@ -1576,6 +1646,20 @@ class EmundusControllerCrc extends BaseController
 				}
 			}
 
+			$applicationFilesEntities = [];
+			if (!empty($application_files))
+			{
+				$applicationFileRepository = new ApplicationFileRepository();
+				foreach ($application_files as $application_file)
+				{
+					$fileEntity = $applicationFileRepository->getById($application_file);
+					if ($fileEntity instanceof ApplicationFileEntity)
+					{
+						$applicationFilesEntities[] = $fileEntity;
+					}
+				}
+			}
+
 			if (!class_exists('OrganizationEntity'))
 			{
 				require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Contacts/OrganizationEntity.php';
@@ -1593,6 +1677,7 @@ class EmundusControllerCrc extends BaseController
 				referent_contacts: $referent_contacts_entities,
 				other_contacts: $other_contacts_entities,
 				status: $status,
+				application_files: $applicationFilesEntities
 			);
 
 			$this->organizationRepository->flush($orgEntity);
@@ -1762,6 +1847,287 @@ class EmundusControllerCrc extends BaseController
 			$response['code']    = 400;
 			$response['status']  = false;
 			$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_CRC_EXPORT_CSV_NO_SELECTION');
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::CONTACT->value, 'mode' => CrudEnum::UPDATE],
+	])]
+	public function updatecontactfiles(): EmundusResponse
+	{
+		$contactId = $this->app->getInput()->getInt('contact_id', 0);
+		$filesIds  = $this->app->getInput()->getString('filesIds', '');
+
+		$candidatureIds = [];
+		if (!empty($filesIds))
+		{
+			$candidatureIds = explode(',', $filesIds);
+			$candidatureIds = array_map('intval', $candidatureIds);
+		}
+
+		try
+		{
+			$result = $this->contactRepository->updateContactFiles($contactId, $candidatureIds);
+
+			if ($result)
+			{
+				$response = EmundusResponse::ok([], Text::_('COM_EMUNDUS_ONBOARD_CRC_UPDATE_CONTACT_FILES_SUCCESS'));
+			}
+			else
+			{
+				$response = EmundusResponse::fail(Text::_('COM_EMUNDUS_ONBOARD_CRC_UPDATE_CONTACT_FILES_FAILED'), 500);
+			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add('updatecontactfiles failed for contact ' . $contactId . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.crc');
+			$response = EmundusResponse::fail(Text::_('COM_EMUNDUS_ONBOARD_CRC_UPDATE_CONTACT_FILES_FAILED'));
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel : AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::ORGANIZATION->value, 'mode' => CrudEnum::UPDATE],
+	])]
+	public function updateorganizationfiles(): EmundusResponse
+	{
+		$organizationId = $this->app->getInput()->getInt('organization_id', 0);
+		$fnumsRaw       = $this->app->getInput()->getString('fnums', '');
+
+		$candidatureIds = [];
+		if (!empty($fnumsRaw))
+		{
+			$candidatureIds = explode(',', $fnumsRaw);
+			$candidatureIds = array_map('intval', $candidatureIds);
+		}
+
+		try
+		{
+			$result = $this->organizationRepository->updateOrganizationFiles($organizationId, $candidatureIds);
+
+			if ($result)
+			{
+				$response = EmundusResponse::ok([], Text::_('COM_EMUNDUS_ONBOARD_CRC_UPDATE_ORGANIZATION_FILES_SUCCESS'));
+			}
+			else
+			{
+				$response = EmundusResponse::fail(Text::_('COM_EMUNDUS_ONBOARD_CRC_UPDATE_ORGANIZATION_FILES_FAILED'), 500);
+			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add('updateorganizationfiles failed for organization ' . $organizationId . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.crc');
+			$response = EmundusResponse::fail(Text::_('COM_EMUNDUS_ONBOARD_CRC_UPDATE_ORGANIZATION_FILES_FAILED'));
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel : AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::CONTACT->value, 'mode' => CrudEnum::UPDATE]
+	])]
+	public function updatefilecontacts(): EmundusResponse
+	{
+		$fnum = $this->app->getInput()->getString('fnum', '');
+
+		if (empty($fnum) || !EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::UPDATE->value, $this->user->id, $fnum))
+		{
+			return EmundusResponse::fail(Text::_('COM_EMUNDUS_FILE_FNUM_INVALID'));
+		}
+
+		$contactsInput = $this->app->getInput()->getString('contacts', '');
+		$contacts      = !empty($contactsInput) ? array_map('intval', explode(',', $contactsInput)) : [];
+
+		try
+		{
+			$contactFileRepository = new ContactFileRepository();
+			$contactFileRepository->syncContactsForFnum($fnum, $contacts);
+
+			$response = EmundusResponse::ok([], Text::_('COM_EMUNDUS_FILE_CONTACTS_UPDATED_SUCCESS'));
+		}
+		catch (Exception $e)
+		{
+			Log::add('updatefilecontacts failed for fnum ' . $fnum . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.crc');
+			$response = EmundusResponse::fail(Text::_('COM_EMUNDUS_FILE_CONTACTS_UPDATED_FAILED'));
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel : AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::CONTACT->value, 'mode' => CrudEnum::READ]
+	])]
+	public function getfilecontacts(): EmundusResponse
+	{
+		$fnum = $this->app->getInput()->getString('fnum', '');
+
+		if (empty($fnum) || !EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::READ->value, $this->user->id, $fnum))
+		{
+			return EmundusResponse::fail(Text::_('ACCESS_DENIED'));
+		}
+
+		try
+		{
+			// Only the contact relation is wanted here; instruct the repository not to load application_file.
+			$contactFileRepository = new ContactFileRepository(false);
+			$associations          = $contactFileRepository->getContactAssociationsByFnum($fnum);
+
+			// Shape expected by the Vue multiselect (trackBy 'value', label 'name').
+			$contacts = [];
+			foreach ($associations as $association)
+			{
+				$contact = $association->getContact();
+				if ($contact instanceof ContactEntity)
+				{
+					// Same label format as the search options (sign::getcontacts) for visual consistency.
+					$contacts[] = [
+						'value' => $contact->getId(),
+						'name'  => $contact->getFullName() . ' - ' . $contact->getEmail(),
+					];
+				}
+			}
+
+			$response = EmundusResponse::ok(['contacts' => $contacts]);
+		}
+		catch (Exception $e)
+		{
+			Log::add('getfilecontacts failed for fnum ' . $fnum . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.crc');
+			$response = EmundusResponse::fail(Text::_('COM_EMUNDUS_FILE_CONTACTS_RETRIEVAL_FAILED'));
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel : AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::ORGANIZATION->value, 'mode' => CrudEnum::UPDATE]
+	])]
+	public function updatefileorganizations(): EmundusResponse
+	{
+		$fnum = $this->app->getInput()->getString('fnum', '');
+
+		if (empty($fnum) || !EmundusHelperAccess::asAccessAction($this->orgAction->getId(), CrudEnum::UPDATE->value, $this->user->id, $fnum))
+		{
+			return EmundusResponse::fail(Text::_('COM_EMUNDUS_FILE_FNUM_INVALID'));
+		}
+
+		$organizationsInput = $this->app->getInput()->getString('organizations', '');
+		$organizations      = !empty($organizationsInput) ? array_map('intval', explode(',', $organizationsInput)) : [];
+
+		try
+		{
+			$organizationFileRepository = new OrganizationFileRepository();
+			$organizationFileRepository->syncOrganizationsForFnum($fnum, $organizations);
+
+			$response = EmundusResponse::ok([], Text::_('COM_EMUNDUS_FILE_ORGANIZATIONS_UPDATED_SUCCESS'));
+		}
+		catch (Exception $e)
+		{
+			Log::add('updatefileorganizations failed for fnum ' . $fnum . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.crc');
+			$response = EmundusResponse::fail(Text::_('COM_EMUNDUS_FILE_ORGANIZATIONS_UPDATED_FAILED'));
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel : AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::ORGANIZATION->value, 'mode' => CrudEnum::READ]
+	])]
+	public function getfileorganizations(): EmundusResponse
+	{
+		$fnum = $this->app->getInput()->getString('fnum', '');
+
+		if (empty($fnum) || !EmundusHelperAccess::asAccessAction($this->orgAction->getId(), CrudEnum::READ->value, $this->user->id, $fnum))
+		{
+			return EmundusResponse::fail(Text::_('ACCESS_DENIED'));
+		}
+
+		try
+		{
+			// Only the organization relation is wanted here; instruct the repository not to load application_file.
+			$organizationFileRepository = new OrganizationFileRepository(false);
+			$associations               = $organizationFileRepository->getOrganizationAssociationsByFnum($fnum);
+
+			// Shape expected by the Vue multiselect (trackBy 'value', label 'name').
+			$organizations = [];
+			foreach ($associations as $association)
+			{
+				$organization = $association->getOrganization();
+				if ($organization instanceof OrganizationEntity)
+				{
+					$organizations[] = [
+						'value' => $organization->getId(),
+						'name'  => $organization->getName(),
+					];
+				}
+			}
+
+			$response = EmundusResponse::ok(['organizations' => $organizations]);
+		}
+		catch (Exception $e)
+		{
+			Log::add('getfileorganizations failed for fnum ' . $fnum . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.crc');
+			$response = EmundusResponse::fail(Text::_('COM_EMUNDUS_FILE_ORGANIZATIONS_RETRIEVAL_FAILED'));
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel : AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::CONTACT->value, 'mode' => CrudEnum::READ]
+	])]
+	public function getcontactfiles(): EmundusResponse
+	{
+		$id = $this->app->getInput()->getInt('id', 0);
+
+		if (empty($id))
+		{
+			return EmundusResponse::fail(Text::_('COM_EMUNDUS_FILE_CONTACT_ID_INVALID'));
+		}
+
+		try
+		{
+			$contactFileRepository = new ContactFileRepository();
+
+			$fnums = $contactFileRepository->getFilesFnumByContactId($id);
+
+			$response = EmundusResponse::ok($fnums);
+		}
+		catch (Exception $e)
+		{
+			Log::add('getcontactfiles failed for contact ' . $id . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.crc');
+			$response = EmundusResponse::fail(Text::_('COM_EMUNDUS_GET_FILES_CONTACT_FAILED'));
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel : AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::ORGANIZATION->value, 'mode' => CrudEnum::READ]
+	])]
+	public function getorganizationfiles(): EmundusResponse
+	{
+		$id = $this->app->getInput()->getInt('id', 0);
+
+		if (empty($id))
+		{
+			return EmundusResponse::fail(Text::_('COM_EMUNDUS_FILE_ORGANIZATION_ID_INVALID'));
+		}
+
+		try
+		{
+			$organizationFileRepository = new OrganizationFileRepository();
+
+			$fnums = $organizationFileRepository->getFilesFnumByOrganizationId($id);
+
+			$response = EmundusResponse::ok($fnums);
+		}
+		catch (Exception $e)
+		{
+			Log::add('getorganizationfiles failed for organization ' . $id . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.crc');
+			$response = EmundusResponse::fail(Text::_('COM_EMUNDUS_GET_FILES_ORGANIZATION_FAILED'));
 		}
 
 		$this->sendJsonResponse($response);

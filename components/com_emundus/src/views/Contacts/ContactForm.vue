@@ -218,6 +218,38 @@ export default {
 					optional: true,
 				},
 				{
+					param: 'application_files',
+					type: 'multiselect',
+					multiselectOptions: {
+						noOptions: false,
+						multiple: true,
+						taggable: false,
+						searchable: true,
+						internalSearch: false,
+						asyncRoute: 'getapplicants',
+						asyncController: 'sign',
+						optionsPlaceholder: '',
+						selectLabel: '',
+						selectGroupLabel: '',
+						selectedLabel: '',
+						deselectedLabel: '',
+						deselectGroupLabel: '',
+						noOptionsText: '',
+						noResultsText: 'COM_EMUNDUS_MULTISELECT_NORESULTS',
+						tagValidations: [],
+						options: [],
+						optionsLimit: 30,
+						label: 'name',
+						trackBy: 'value',
+					},
+					value: [],
+					reload: 0,
+					label: 'COM_EMUNDUS_ONBOARD_CRC_UPDATE_CONTACT_FILES_ASSOCIATED',
+					placeholder: 'COM_EMUNDUS_ONBOARD_CRC_UPDATE_CONTACT_FILES_ASSOCIATED_PLACEHOLDER',
+					displayed: true,
+					optional: true,
+				},
+				{
 					param: 'published',
 					type: 'toggle',
 					value: '1',
@@ -464,6 +496,10 @@ export default {
 					this.setting_fields.find((field) => field.param === 'organizations').value = [];
 					for (const organization of this.contact.organizations) {
 						this.setting_fields.find((field) => field.param === 'organizations').value.push(organization.id);
+					}
+					this.setting_fields.find((field) => field.param === 'application_files').value = [];
+					for (const application_file of this.contact.application_files) {
+						this.setting_fields.find((field) => field.param === 'application_files').value.push(application_file.id);
 					}
 					if (this.contact.profile_picture) {
 						const base = window.location.origin + '/';

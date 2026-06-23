@@ -8922,6 +8922,6 @@ class EmundusModelApplication extends ListModel
 			}
 		}
 
-		return $file;
-	}
+        return $file;
+    }
 }

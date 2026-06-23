@@ -97,6 +97,14 @@ if (document) {
 	if (generateReferenceElement) {
 		elements.push(generateReferenceElement);
 	}
+	const updateAssociatedContactsElement = document.getElementById('em-update-associated-contacts');
+	if (updateAssociatedContactsElement) {
+		elements.push(updateAssociatedContactsElement);
+	}
+	const updateAssociatedOrganizationsElement = document.getElementById('em-update-associated-organizations');
+	if (updateAssociatedOrganizationsElement) {
+		elements.push(updateAssociatedOrganizationsElement);
+	}
 
 	const fabrikVueElements = document.querySelectorAll('.fabrik-vue-element');
 	fabrikVueElements.forEach((fabrikElement) => {

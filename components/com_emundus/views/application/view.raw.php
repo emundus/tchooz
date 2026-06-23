@@ -22,10 +22,13 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Reference\InternalReferenceEntity;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Contacts\ContactRepository;
+use Tchooz\Repositories\Contacts\OrganizationRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Reference\InternalReferenceRepository;
 use Tchooz\Services\Reference\InternalReferenceService;
@@ -73,7 +76,7 @@ class EmundusViewApplication extends HtmlView
 	protected bool|int $displayTagCategories;
 
 	protected array $pids;
-	protected mixed $defaultpid = 0;
+	protected mixed $defaultpid = null;
 	protected mixed $formsProgress;
 	protected string $forms;
 	protected object $applicant;
@@ -90,6 +93,21 @@ class EmundusViewApplication extends HtmlView
 	protected bool $showReference;
 
 	protected ?ApplicationFileEntity $applicationFile = null;
+
+	/**
+	 * @var array<\Tchooz\Entities\Contacts\ContactEntity>
+	 */
+	protected array $contacts;
+
+	/**
+	 * @var array<\Tchooz\Entities\Contacts\OrganizationEntity>
+	 */
+	protected array $organizations;
+
+	protected bool $canEditContacts = false;
+
+	protected bool $canEditOrganizations = false;
+
 
 	function __construct($config = array())
 	{
@@ -241,6 +259,33 @@ class EmundusViewApplication extends HtmlView
 						$this->assoc_files->fnumInfos             = $fnumInfos;
 						$this->assoc_files->fnum                  = $fnum;
 					}
+					break;
+
+				case 'assoc_contacts':
+					if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id) && (EmundusHelperAccess::asAccessAction(ActionEnum::CONTACT->value, CrudEnum::READ->value, $this->user->id, $fnum)))
+					{
+						$contactRepository     = new ContactRepository();
+						$this->contacts        = $contactRepository->getByAssociatedFnum($fnum);
+						$this->canEditContacts = EmundusHelperAccess::asAccessAction(ActionEnum::CONTACT->value, CrudEnum::UPDATE->value, $this->user->id, $fnum);
+					}
+					else
+					{
+						return;
+					}
+					break;
+
+				case 'assoc_organizations':
+					if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id) && (EmundusHelperAccess::asAccessAction(ActionEnum::ORGANIZATION->value, CrudEnum::READ->value, $this->user->id, $fnum)))
+					{
+						$organizationRepository     = new OrganizationRepository();
+						$this->organizations        = $organizationRepository->getByAssociatedFnum($fnum);
+						$this->canEditOrganizations = EmundusHelperAccess::asAccessAction(ActionEnum::ORGANIZATION->value, CrudEnum::UPDATE->value, $this->user->id, $fnum);
+					}
+					else
+					{
+						return;
+					}
+
 					break;
 
 				case 'attachment':

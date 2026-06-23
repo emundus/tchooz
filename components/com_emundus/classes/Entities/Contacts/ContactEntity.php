@@ -264,6 +264,9 @@ class ContactEntity
 		$this->organizations = $organizations;
 	}
 
+	/**
+	 * @return array<ApplicationFileEntity>|null
+	 */
 	public function getApplicationFiles(): ?array
 	{
 		return $this->application_files;
