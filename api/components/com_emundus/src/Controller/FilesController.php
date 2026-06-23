@@ -75,6 +75,16 @@ class FilesController extends ApiController
 			$this->modelState->set('filter.status', InputFilter::getInstance()->clean($filters['status'], 'INT'));
 		}
 
+		if (\array_key_exists('campaign', $filters))
+		{
+			$this->modelState->set('filter.campaign', InputFilter::getInstance()->clean($filters['campaign'], 'INT'));
+		}
+
+		if (\array_key_exists('fnum', $filters))
+		{
+			$this->modelState->set('filter.fnum', InputFilter::getInstance()->clean($filters['fnum'], 'STRING'));
+		}
+
 		return parent::displayList();
 	}
 

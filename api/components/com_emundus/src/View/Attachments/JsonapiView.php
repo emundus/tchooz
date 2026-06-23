@@ -2,13 +2,13 @@
 
 /**
  * @package     Joomla.API
- * @subpackage  com_content
+ * @subpackage  com_emundus
  *
  * @copyright   (C) 2019 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license         GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Component\Emundus\Api\View\Fileuploads;
+namespace Joomla\Component\Emundus\Api\View\Attachments;
 
 use Joomla\CMS\MVC\View\JsonApiView as BaseApiView;
 use Joomla\Component\Emundus\Api\Serializer\EmundusSerializer;
@@ -18,7 +18,7 @@ use Joomla\Component\Emundus\Api\Serializer\EmundusSerializer;
 // phpcs:enable PSR1.Files.SideEffects
 
 /**
- * The article view
+ * The attachments view
  *
  * @since  4.0.0
  */
@@ -31,14 +31,14 @@ class JsonapiView extends BaseApiView
 	 * @since  4.0.0
 	 */
 	protected $fieldsToRenderItem = [
-		'fnum',
-		'filename',
-		'local_filename',
-		'user_id',
-		'attachment_name',
+		'lbl',
+		'value',
 		'description',
-		'is_validated',
-		'download_url'
+		'allowed_types',
+		'nbmax',
+		'ordering',
+		'published',
+		'category'
 	];
 
 	/**
@@ -48,14 +48,14 @@ class JsonapiView extends BaseApiView
 	 * @since  4.0.0
 	 */
 	protected $fieldsToRenderList = [
-		'fnum',
-		'filename',
-		'local_filename',
-		'user_id',
-		'attachment_name',
+		'lbl',
+		'value',
 		'description',
-		'is_validated',
-		'download_url'
+		'allowed_types',
+		'nbmax',
+		'ordering',
+		'published',
+		'category'
 	];
 
 	/**
