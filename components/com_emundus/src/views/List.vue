@@ -466,6 +466,8 @@ import EditSlot from '@/views/Events/EditSlot.vue';
 import AssociateUser from '@/components/Events/Popup/AssociateUser.vue';
 import ContactDetails from '@/components/Contacts/ContactDetails.vue';
 import OrganizationDetails from '@/components/Organizations/OrganizationDetails.vue';
+import UpdateContactFiles from '@/components/Contacts/UpdateContactFiles.vue';
+import UpdateOrganizationFiles from '@/components/Organizations/UpdateOrganizationFiles.vue';
 import CampaignDetails from '@/components/Campaigns/CampaignDetails.vue';
 import ProgramDetails from '@/components/Campaigns/ProgramDetails.vue';
 import EventDetails from '@/components/Events/EventDetails.vue';
@@ -505,6 +507,8 @@ export default {
 		AssociateUser,
 		ContactDetails,
 		OrganizationDetails,
+		UpdateContactFiles,
+		UpdateOrganizationFiles,
 		CampaignDetails,
 		ProgramDetails,
 		GroupDetails,
@@ -567,6 +571,8 @@ export default {
 				AssociateUser,
 				ContactDetails,
 				OrganizationDetails,
+				UpdateContactFiles,
+				UpdateOrganizationFiles,
 				CampaignDetails,
 				ProgramDetails,
 				EventDetails,

@@ -6952,6 +6952,33 @@ class EmundusHelperFiles
 	}
 
 	/**
+	 * Batch resolution of candidature ids into their fnums.
+	 *
+	 * @param   int[]  $ids  Candidature ids
+	 *
+	 * @return string[] List of fnums (empty when no id provided or on error)
+	 */
+	public static function getFnumsFromIds(array $ids): array {
+		if (empty($ids)) {
+			return [];
+		}
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+		$query->select('fnum')
+			->from('#__emundus_campaign_candidature')
+			->where('id IN (' . implode(',', array_map('intval', $ids)) . ')');
+
+		try {
+			$db->setQuery($query);
+			return $db->loadColumn();
+		} catch (Exception $e) {
+			Log::add('Failed to get fnums from ids : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			return [];
+		}
+	}
+
+	/**
 	 * Get id from fnum
 	 *
 	 * @param $fnum

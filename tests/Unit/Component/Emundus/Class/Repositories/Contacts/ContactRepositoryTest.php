@@ -14,7 +14,8 @@ use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Enums\Contacts\GenderEnum;
-use Tchooz\Repositories\Contacts\AddressRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Contacts\ContactFileRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
 use Tchooz\Repositories\CountryRepository;
@@ -97,6 +98,10 @@ class ContactRepositoryTest extends UnitTestCase
 		$organizationRepository->flush($organizationEntity);
 		$this->organizationFixtures[$organizationEntity->getId()] = $organizationEntity;
 
+		$fnum                      = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$applicationFileRepository = new ApplicationFileRepository();
+		$applicationFile           = $applicationFileRepository->getByFnum($fnum);
+
 		$contactEntity2 = new ContactEntity(
 			email: 'contact2@emundus.fr',
 			lastname: 'Smith',
@@ -110,7 +115,7 @@ class ContactRepositoryTest extends UnitTestCase
 			service: 'IT',
 			countries: [$frCountry],
 			organizations: [$organizationEntity],
-			application_files: [],
+			application_files: [$applicationFile],
 			profile_picture: 'images/emundus/contacts/profile2.jpg'
 		);
 
@@ -166,7 +171,7 @@ class ContactRepositoryTest extends UnitTestCase
 		$this->assertGreaterThan(0, $contactEntitySimple->getId(), 'The contact has been created with an ID greater than 0');
 		$this->model->delete($contactEntitySimple->getId());
 		//
-		
+
 		// Valid contact
 		$contactEntity1 = $this->model->getByEmail('contact1@emundus.fr');
 		if($contactEntity1 && !empty($contactEntity1->getId())) {
@@ -307,6 +312,34 @@ class ContactRepositoryTest extends UnitTestCase
 		$this->assertGreaterThan(0, $contactEntity2->getId(), 'The contact has been created with an ID greater than 0');
 		$this->model->delete($contactEntity2->getId());
 
+		$contactEntity4 = $this->model->getByEmail('contact4@emundus.fr');
+		if ($contactEntity4 && !empty($contactEntity4->getId())) {
+			$this->model->delete($contactEntity4->getId());
+		}
+
+		$fnum                      = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$applicationFileRepository = new ApplicationFileRepository();
+		$applicationFile           = $applicationFileRepository->getByFnum($fnum);
+
+		$contactEntity4 = new ContactEntity(
+			email: 'contact4@emundus.fr',
+			lastname: 'Files',
+			firstname: 'Tester',
+			phone_1: '0123456789',
+			user_id: $this->dataset['coordinator'],
+			application_files: [$applicationFile]
+		);
+		$result = $this->model->flush($contactEntity4);
+		$this->assertTrue($result, 'The result should be true');
+		$this->assertGreaterThan(0, $contactEntity4->getId(), 'The contact has been created with an ID greater than 0');
+
+		$contactFileRepository = new ContactFileRepository();
+		$associatedFnums       = $contactFileRepository->getFilesFnumByContactId($contactEntity4->getId());
+		$this->assertContains($fnum, $associatedFnums, 'The fnum should be associated to the contact');
+
+		$this->model->delete($contactEntity4->getId());
+//
+
 		// Invalid contact (missing email)
 		$contactEntity3 = new ContactEntity(
 			email: '',
@@ -446,7 +479,7 @@ class ContactRepositoryTest extends UnitTestCase
 
 		// Unpublish contact 2 and test filter
 		$this->model->togglePublished($this->contactFixtures[1]->getId(), false);
-		$contacts = $this->model->getAllContacts('DESC', '', 0, 0, 't.id', 'false');
+		$contacts = $this->model->getAllContacts('DESC', '', 0, 0, 'id', 'false');
 		$this->assertIsArray($contacts, 'The result is an array');
 		$this->assertGreaterThan(0, $contacts['count'], 'The result count is greater than 0');
 
@@ -502,4 +535,95 @@ class ContactRepositoryTest extends UnitTestCase
 		$this->clearFixtures();
 	}
 
+	/**
+	 * @covers \Tchooz\Repositories\Contacts\ContactRepository::updateContactFilesByFnums
+	 * @return void
+	 */
+	public function testUpdateContactFilesByFnums()
+	{
+		$contactEntity = $this->model->getByEmail('contactupdatefilesbyfnums@emundus.fr');
+		if ($contactEntity && !empty($contactEntity->getId())) {
+			$this->model->delete($contactEntity->getId());
+		}
+		$contactEntity = new ContactEntity(
+			email: 'contactupdatefilesbyfnums@emundus.fr',
+			lastname: 'Update',
+			firstname: 'ByFnums',
+			phone_1: '0123456789',
+			user_id: $this->dataset['coordinator']
+		);
+		$this->model->flush($contactEntity);
+
+		$fnum1 = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$fnum2 = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+
+		$contactFileRepository = new ContactFileRepository();
+
+		$result = $this->model->updateContactFilesByFnums($contactEntity->getId(), [$fnum1, $fnum2]);
+		$this->assertTrue($result, 'updateContactFilesByFnums should return true');
+		$associatedFnums = $contactFileRepository->getFilesFnumByContactId($contactEntity->getId());
+		$this->assertCount(2, $associatedFnums, 'Two fnums should be associated');
+		$this->assertContains($fnum1, $associatedFnums);
+		$this->assertContains($fnum2, $associatedFnums);
+
+		$result = $this->model->updateContactFilesByFnums($contactEntity->getId(), [$fnum1]);
+		$this->assertTrue($result);
+		$associatedFnums = $contactFileRepository->getFilesFnumByContactId($contactEntity->getId());
+		$this->assertCount(1, $associatedFnums, 'Only one fnum should remain');
+		$this->assertContains($fnum1, $associatedFnums);
+		$this->assertNotContains($fnum2, $associatedFnums);
+
+		$result = $this->model->updateContactFilesByFnums($contactEntity->getId(), []);
+		$this->assertTrue($result);
+		$associatedFnums = $contactFileRepository->getFilesFnumByContactId($contactEntity->getId());
+		$this->assertEmpty($associatedFnums, 'No fnums should remain associated');
+
+		$result = $this->model->updateContactFilesByFnums(0, []);
+		$this->assertFalse($result, 'Should return false with empty contact id');
+
+		$this->model->delete($contactEntity->getId());
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Contacts\ContactRepository::updateContactFiles
+	 * @return void
+	 */
+	public function testUpdateContactFilesWithEmptyContactId()
+	{
+		$result = $this->model->updateContactFiles(0, []);
+		$this->assertFalse($result, 'Should return false with empty contact id');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Contacts\ContactRepository::updateContactFiles
+	 * @covers \Tchooz\Repositories\Contacts\ContactRepository::updateContactFilesByFnums
+	 * @return void
+	 */
+	public function testUpdateContactFilesEmptiesAssociations()
+	{
+		$contactEntity = $this->model->getByEmail('contactupdatefiles@emundus.fr');
+		if ($contactEntity && !empty($contactEntity->getId())) {
+			$this->model->delete($contactEntity->getId());
+		}
+		$contactEntity = new ContactEntity(
+			email: 'contactupdatefiles@emundus.fr',
+			lastname: 'Update',
+			firstname: 'Files',
+			phone_1: '0123456789',
+			user_id: $this->dataset['coordinator']
+		);
+		$this->model->flush($contactEntity);
+
+		$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$this->model->updateContactFilesByFnums($contactEntity->getId(), [$fnum]);
+
+		$contactFileRepository = new ContactFileRepository();
+		$this->assertCount(1, $contactFileRepository->getFilesFnumByContactId($contactEntity->getId()));
+
+		$result = $this->model->updateContactFiles($contactEntity->getId(), []);
+		$this->assertTrue($result);
+		$this->assertEmpty($contactFileRepository->getFilesFnumByContactId($contactEntity->getId()));
+
+		$this->model->delete($contactEntity->getId());
+	}
 }

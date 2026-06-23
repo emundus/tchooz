@@ -12,8 +12,10 @@ namespace Tchooz\Repositories\Contacts;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Attributes\TableAttribute;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Factories\Contacts\OrganizationFactory;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
 use Tchooz\Services\UploadService;
@@ -36,7 +38,17 @@ if (!class_exists('ContactOrganizationRepository'))
 
 require_once JPATH_SITE . '/components/com_emundus/classes/Traits/TraitTable.php';
 
-#[TableAttribute(table: '#__emundus_organizations')]
+#[TableAttribute(table: '#__emundus_organizations', columns: [
+	'id',
+	'name',
+	'description',
+	'url_website',
+	'published',
+	'address',
+	'identifier_code',
+	'logo',
+	'status'
+])]
 class OrganizationRepository extends EmundusRepository implements RepositoryInterface
 {
 	use TraitTable;
@@ -57,7 +69,7 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		parent::__construct($withRelations, $exceptRelations, 'organization');
+		parent::__construct($withRelations, $exceptRelations, 'organization', self::class);
 		$this->factory = new OrganizationFactory();
 	}
 
@@ -112,7 +124,54 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 				throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_ORGANIZATION_UPDATE_FAILED'), 500);
 			}
 		}
-		//
+
+		// Then, flush files if any
+		$applicationFilesRepository        = new ApplicationFileRepository();
+		$organizationtFileRepository = new OrganizationFileRepository();
+		$organizationFiles       = $organizationtFileRepository->getFilesFnumByOrganizationId($entity->getId());
+
+		if (!empty($entity->getApplicationFiles()))
+		{
+			foreach ($entity->getApplicationFiles() as $applicationFile)
+			{
+				if (!($applicationFile instanceof ApplicationFileEntity))
+				{
+					continue;
+				}
+
+				$fileInDb = $applicationFilesRepository->getByFnum($applicationFile->getFnum());
+				if ($fileInDb && !in_array($fileInDb->getFnum(), $organizationFiles))
+				{
+					if (!$organizationtFileRepository->associateOrganizationToFileFnum($entity->getId(), $fileInDb->getFnum()))
+					{
+						throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_ORGANIZATION_ASSOCIATE_TO_FILE_FNUM_FAILED'), 500);
+					}
+				}
+			}
+		}
+
+		// Detach files that are no longer associated
+		foreach ($organizationFiles as $existingFileFnum)
+		{
+			$found = false;
+			foreach ($entity->getApplicationFiles() ?? [] as $applicationFile)
+			{
+				if ($applicationFile instanceof ApplicationFileEntity && $applicationFile->getFnum() === $existingFileFnum)
+				{
+					$found = true;
+					break;
+				}
+			}
+
+			if (!$found)
+			{
+				if(!$organizationtFileRepository->detachOrganizationFromFileFnum($entity->getId(), $existingFileFnum))
+				{
+					throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_FILE_DETACH_TO_ORGANIZATION_FAILED'), 500);
+				}
+			}
+		}
+
 
 		// Finally, associate contacts if any
 		$contactOrgRepository                 = new ContactOrganizationRepository();
@@ -356,7 +415,8 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 		$query = $this->db->createQuery();
 
 		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'));
+			->from($this->db->quoteName($this->getTableName(self::class), 't'))
+			->leftJoin($this->db->quoteName('#__emundus_organizations_files', 'eof') . ' ON ' . $this->db->quoteName('eof.organization_id') . ' = ' . $this->db->quoteName('t.id'));
 
 		// Apply filters if needed
 		if (!empty($search))
@@ -410,6 +470,43 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 			{
 				$organizations[$key] = $this->factory->fromDbObject($organization, $this->withRelations, $this->exceptRelations);
 			}
+
+			if ($this->withRelations && !in_array('application_files', $this->exceptRelations))
+			{
+				$organizationIds = array_map(fn($c) => $c->getId(), $organizations);
+				if (!empty($organizationIds))
+				{
+					$filesQuery = $this->db->createQuery();
+					$filesQuery->select([
+						'eof.organization_id',
+						'ecc.id AS value',
+						'eof.fnum',
+						'CONCAT(jeu.firstname, " ", jeu.lastname, " (", u.email, ")", " - ", esc.label, " (", esc.year, ") - N°", ecc.fnum) AS name',
+					])
+						->from($this->db->quoteName('#__emundus_organizations_files', 'eof'))
+						->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quoteName('eof.fnum'))
+						->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
+						->leftJoin($this->db->quoteName('#__emundus_users', 'jeu') . ' ON ' . $this->db->quoteName('jeu.user_id') . ' = ' . $this->db->quoteName('ecc.applicant_id'))
+						->leftJoin($this->db->quoteName('#__users','u').' ON '.$this->db->quoteName('u.id').' = '.$this->db->quoteName('jeu.user_id'))
+						->where($this->db->quoteName('eof.organization_id') . ' IN (' . implode(',', array_map('intval', $organizationIds)) . ')');
+
+					$this->db->setQuery($filesQuery);
+					$allFiles = $this->db->loadObjectList();
+
+					$filesByOrganization = [];
+					foreach ($allFiles as $file)
+					{
+						$filesByOrganization[$file->organization_id][] = ['value' => $file->value, 'name' => $file->name];
+					}
+
+					foreach ($organizations as $organization)
+					{
+						$organization->setApplicationFiles($filesByOrganization[$organization->getId()] ?? []);
+					}
+				}
+			}
+
+
 
 			$result = array('datas' => $organizations, 'count' => $organizations_count);
 		}
@@ -509,6 +606,34 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 		);
 	}
 
+	/**
+	 * @param   string  $fnum
+	 *
+	 * @return array<OrganizationEntity>
+	 */
+	public function getByAssociatedFnum(string $fnum): array
+	{
+		$organizations = [];
+
+		if (!empty($fnum))
+		{
+			$query = $this->db->createQuery();
+			$query->select($this->alias . '.*')
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->leftJoin($this->db->quoteName($this->getTableName(OrganizationFileRepository::class), $this->getTableAlias(OrganizationFileRepository::class)) . ' ON ' . $this->db->quoteName($this->getTableAlias(OrganizationFileRepository::class) . '.organization_id') . ' = ' . $this->db->quoteName($this->alias . '.id'))
+				->where($this->db->quoteName($this->getTableAlias(OrganizationFileRepository::class) . '.fnum') . ' = ' . $this->db->quote($fnum));
+
+			$this->db->setQuery($query);
+			$objects = $this->db->loadObjectList();
+
+			foreach ($objects as $object)
+			{
+				$organizations[] = $this->factory->fromDbObject($object, $this->withRelations, $this->exceptRelations);
+			}
+		}
+
+		return $organizations;
+	}
 
 	public function getFilteredOrganizations(): array
 	{
@@ -578,4 +703,43 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 
 		return $identifiers;
 	}
+
+	public function updateOrganizationFiles(int $organizationId, array $candidatureIds): bool
+	{
+		if (empty($organizationId))
+		{
+			return false;
+		}
+
+		// Candidature id -> fnum resolution is owned by EmundusHelperFiles (single source of truth).
+		if (!class_exists('EmundusHelperFiles'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
+		}
+		$fnums = \EmundusHelperFiles::getFnumsFromIds($candidatureIds);
+
+		return $this->updateOrganizationFilesByFnums($organizationId, $fnums);
+	}
+
+	public function updateOrganizationFilesByFnums(int $organizationId, array $fnums): bool
+	{
+		if (empty($organizationId))
+		{
+			return false;
+		}
+
+		try
+		{
+			// #__emundus_organizations_files is owned by OrganizationFileRepository (single source of truth).
+			(new OrganizationFileRepository(false))->syncFilesForOrganization($organizationId, $fnums);
+
+			return true;
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error on updateOrganizationFilesByFnums: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.organization');
+			return false;
+		}
+	}
+
 }

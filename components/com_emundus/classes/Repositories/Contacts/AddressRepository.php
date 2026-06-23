@@ -34,7 +34,7 @@ class AddressRepository extends EmundusRepository implements RepositoryInterface
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		parent::__construct($withRelations, $exceptRelations, 'address');
+		parent::__construct($withRelations, $exceptRelations, 'address', self::class);
 		$this->factory = new AddressFactory();
 	}
 
