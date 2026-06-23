@@ -327,6 +327,16 @@ export default {
 					optional: true,
 					width: 'tw-w-1/2',
 				},
+				{
+					param: 'description',
+					type: 'textarea',
+					placeholder: '',
+					value: '',
+					label: 'COM_EMUNDUS_ONBOARD_ADD_CONTACT_ADDRESS_DESCRIPTION',
+					helptext: 'COM_EMUNDUS_ONBOARD_ADD_CONTACT_ADDRESS_DESCRIPTION_HELP',
+					displayed: true,
+					optional: true,
+				},
 			],
 
 			addresses: [],

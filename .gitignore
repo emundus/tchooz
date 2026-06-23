@@ -182,3 +182,4 @@ media/com_hikashop/upload/safe/logs/
 # CLAUDE
 .claude/settings.local.json
 .claude/worktrees
+/.ai/

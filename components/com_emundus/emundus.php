@@ -92,6 +92,7 @@ Text::script('COM_EMUNDUS_REMOVE');
 Text::script('SAVE');
 Text::script('COM_EMUNDUS_ADD_ROW');
 Text::script('COM_EMUNDUS_REMOVE_ROW');
+Text::script('COM_EMUNDUS_FOR');
 
 Text::script('COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD');
 Text::script('COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION');
@@ -1371,6 +1372,9 @@ Text::script('COM_EMUNDUS_APPLICATION_TAGS_SAVE');
 Text::script('COM_EMUNDUS_APPLICATION_TAGS_CREATE_FAILED');
 Text::script('COM_EMUNDUS_APPLICATION_TAGS_FNUM_REQUIRED');
 Text::script('COM_EMUNDUS_APPLICATION_TAGS_CATEGORY');
+
+Text::script('COM_EMUNDUS_ONBOARD_IMPORT');
+
 
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');

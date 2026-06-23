@@ -233,7 +233,7 @@ class EmundusControllerCrc extends BaseController
 							ListDisplayEnum::ALL
 						);
 
-						$email_link                          = '<a target="_blank" class="tw-cursor-pointer tw-font-semibold tw-text-profile-full tw-flex tw-items-center tw-justify-center hover:tw-underline hover:tw-font-semibold" href="mailto:' . $contact->getEmail() . '" style="line-height: unset;font-size: unset;">' . $contact->getEmail() . '</a>';
+						$email_link                          = '<a target="_blank" class="tw-cursor-pointer tw-font-semibold tw-text-profile-full tw-flex tw-items-center hover:tw-underline hover:tw-font-semibold" href="mailto:' . $contact->getEmail() . '" style="line-height: unset;font-size: unset;">' . $contact->getEmail() . '</a>';
 						$contact_reponse->additional_columns = [
 							new AdditionalColumn(
 								Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_EMAIL'),
@@ -502,7 +502,6 @@ class EmundusControllerCrc extends BaseController
 	public function deletecontact()
 	{
 		$this->checkToken();
-
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => []];
 
 		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::DELETE->value, $this->user->id))
@@ -757,6 +756,7 @@ class EmundusControllerCrc extends BaseController
 						street_address: $address['street_address'] ?? '',
 						extended_address: $address['extended_address'] ?? '',
 						postal_code: $address['postal_code'] ?? '',
+						description: $address['description'] ?? null,
 						country: !empty($address['country']) ? $address['country'] : null
 					);
 					$addressesEntities[] = $addressEntity;
@@ -1135,7 +1135,7 @@ class EmundusControllerCrc extends BaseController
 							'',
 							ListDisplayEnum::TABLE,
 							'',
-							'<a target="_blank" class="tw-cursor-pointer tw-font-semibold tw-text-profile-full tw-flex tw-items-center tw-justify-center hover:tw-underline hover:tw-font-semibold" href="' . $organization->getUrlWebsite() . '" style="line-height: unset;font-size: unset;">' . $organization->getUrlWebsite() . '</a>'
+							'<a target="_blank" class="tw-cursor-pointer tw-font-semibold tw-text-profile-full tw-flex tw-items-center hover:tw-underline hover:tw-font-semibold" href="' . $organization->getUrlWebsite() . '" style="line-height: unset;font-size: unset;">' . $organization->getUrlWebsite() . '</a>'
 
 				),
 						new AdditionalColumnPublished($organization->isPublished(), 'published'),
@@ -1460,13 +1460,14 @@ class EmundusControllerCrc extends BaseController
 		$url_website     = $this->input->getString('url_website', '');
 
 		// Address
-		$address_id       = $this->input->getInt('address_id', 0);
-		$street_address   = $this->input->getString('street_address', '');
-		$extended_address = $this->input->getString('extended_address', '');
-		$locality         = $this->input->getString('locality', '');
-		$region           = $this->input->getString('region', '');
-		$postal_code      = $this->input->getString('postal_code', '');
-		$country          = $this->input->getInt('country', '');
+		$address_id          = $this->input->getInt('address_id', 0);
+		$street_address      = $this->input->getString('street_address', '');
+		$extended_address    = $this->input->getString('extended_address', '');
+		$locality            = $this->input->getString('locality', '');
+		$region              = $this->input->getString('region', '');
+		$postal_code         = $this->input->getString('postal_code', '');
+		$address_description = $this->input->getString('address_description', '');
+		$country             = $this->input->getInt('country', '');
 		$logo             = $this->input->files->get('logo');
 		$logo_path        = $this->input->getString('logo');
 
@@ -1543,6 +1544,7 @@ class EmundusControllerCrc extends BaseController
 					street_address: $street_address ?? '',
 					extended_address: $extended_address ?? '',
 					postal_code: $postal_code ?? '',
+					description: !empty($address_description) ? $address_description : null,
 					country: $country ?? '',
 				);
 			}

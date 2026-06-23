@@ -441,6 +441,56 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 		return $organization_entity;
 	}
 
+	public function getByName(string $name): ?OrganizationEntity
+	{
+		$organization_entity = null;
+
+		if (trim($name) === '')
+		{
+			return null;
+		}
+
+		$query = $this->db->getQuery(true);
+		$query->select(self::COLUMNS)
+			->from($this->db->quoteName($this->getTableName(self::class), 't'))
+			->where($this->db->quoteName('t.name') . ' = ' . $this->db->quote($name));
+
+		$this->db->setQuery($query);
+		$organization = $this->db->loadAssoc();
+
+		if (!empty($organization))
+		{
+			$organization_entity = $this->factory->fromDbObject($organization, $this->withRelations, $this->exceptRelations);
+		}
+
+		return $organization_entity;
+	}
+
+	public function getByIdentifierCode(string $identifier_code): ?OrganizationEntity
+	{
+		$organization_entity = null;
+
+		if (trim($identifier_code) === '')
+		{
+			return null;
+		}
+
+		$query = $this->db->getQuery(true);
+		$query->select(self::COLUMNS)
+			->from($this->db->quoteName($this->getTableName(self::class), 't'))
+			->where($this->db->quoteName('t.identifier_code') . ' = ' . $this->db->quote($identifier_code));
+
+		$this->db->setQuery($query);
+		$organization = $this->db->loadAssoc();
+
+		if (!empty($organization))
+		{
+			$organization_entity = $this->factory->fromDbObject($organization, $this->withRelations, $this->exceptRelations);
+		}
+
+		return $organization_entity;
+	}
+
 	public function getByIds(array $ids): array
 	{
 		$ids = array_filter($ids, fn($id) => !empty($id));
