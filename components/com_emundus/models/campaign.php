@@ -18,6 +18,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
@@ -2042,6 +2043,7 @@ class EmundusModelCampaign extends ListModel
 			$query = $this->_db->createQuery();
 
 			require_once(JPATH_ROOT . '/components/com_emundus/models/falang.php');
+			require_once(JPATH_ROOT . '/components/com_emundus/models/translations.php');
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
 			$app = Factory::getApplication();
@@ -2051,14 +2053,21 @@ class EmundusModelCampaign extends ListModel
 			}
 
 			$m_falang       = new EmundusModelFalang;
+			$m_translations = new EmundusModelTranslations;
 			$lang           = $app->getLanguage();
 			$actualLanguage = substr($lang->getTag(), 0, 2);
 
 			$limit_status  = [];
 			$fields        = ['id' => $cid];
 			$columns       = [];
-			$keys_to_unset = ['profileLabel', 'progid', 'status', 'languages', 'usercategories', 'program_id'];
+			$keys_to_unset = ['profileLabel', 'progid', 'status', 'languages', 'usercategories', 'program_id', 'lang'];
 			$labels        = new stdClass;
+			$selectedLang  = !empty($data['lang']) ? $data['lang'] : null;
+			$primaryLang   = substr(LanguageFactory::getDefaultLanguageCode(), 0, 2);
+
+			// Convertit le code court ('fr') en code complet ('fr-FR') pour updateFalangTranslation
+			$allLanguages     = LanguageHelper::getLanguages('sef');
+			$selectedLangCode = !empty($selectedLang) && isset($allLanguages[$selectedLang]) ? $allLanguages[$selectedLang]->lang_code : null;
 
 			$app->triggerEvent('onBeforeCampaignUpdate', $data);
 			$app->triggerEvent('onCallEventHandler', ['onBeforeCampaignUpdate', ['campaign' => $cid]]);
@@ -2089,14 +2098,35 @@ class EmundusModelCampaign extends ListModel
 				{
 					case 'label':
 						$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
-						foreach ($data['label'] as $lang_code => $label)
-						{
-							$data['label'][$lang_code] = $htmlSanitizer->sanitizeNoHtml($label);
-						}
 
-						$labels        = $data['label'];
-						$data['label'] = $data['label'][$actualLanguage];
-						$fields[$key]  = $data['label'];
+						if (!empty($selectedLang))
+						{
+							$labelValue   = is_array($data['label']) ? ($data['label'][$selectedLang] ?? '') : (string) $data['label'];
+							$labelValue   = $htmlSanitizer->sanitizeNoHtml($labelValue);
+							$data['label'] = $labelValue;
+
+							$m_translations->updateFalangTranslation($labelValue, $selectedLangCode, 'emundus_setup_campaigns', $cid, 'label', $user_id);
+
+							if ($selectedLang === $primaryLang)
+							{
+								$fields[$key] = $labelValue;
+							}
+							else
+							{
+								$keys_to_unset[] = $key;
+							}
+						}
+						else
+						{
+							foreach ($data['label'] as $lang_code => $label)
+							{
+								$data['label'][$lang_code] = $htmlSanitizer->sanitizeNoHtml($label);
+							}
+
+							$labels        = $data['label'];
+							$data['label'] = $data['label'][$actualLanguage];
+							$fields[$key]  = $data['label'];
+						}
 						break;
 					case 'limit_status':
 						$limit_status = $data['limit_status'];
@@ -2164,8 +2194,23 @@ class EmundusModelCampaign extends ListModel
 						$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
 						$val           = $htmlSanitizer->sanitizeFor('section', $val);
 
-						$fields[$key] = $val;
+						if (!empty($selectedLang))
+						{
+							$m_translations->updateFalangTranslation($val, $selectedLangCode, 'emundus_setup_campaigns', $cid, $key, $user_id);
 
+							if ($selectedLang === $primaryLang)
+							{
+								$fields[$key] = $val;
+							}
+							else
+							{
+								$keys_to_unset[] = $key;
+							}
+						}
+						else
+						{
+							$fields[$key] = $val;
+						}
 						break;
 					case 'training':
 						$fields[$key] = $val;
@@ -2186,7 +2231,7 @@ class EmundusModelCampaign extends ListModel
 			$this->_db->setQuery($query);
 			$old_data = $this->_db->loadAssoc();
 
-			if (!empty($data['label']))
+			if (!empty($data['label']) && empty($selectedLang))
 			{
 				$m_falang->updateFalang($labels, $cid, 'emundus_setup_campaigns', 'label');
 			}
@@ -2400,7 +2445,7 @@ class EmundusModelCampaign extends ListModel
 	 *
 	 * @since version 1.0
 	 */
-	public function getCampaignDetailsById($id)
+	public function getCampaignDetailsById($id, $lang = null)
 	{
 		if (empty($id))
 		{
@@ -2425,6 +2470,21 @@ class EmundusModelCampaign extends ListModel
 			$this->_db->setQuery($query);
 			$results->campaign = $this->_db->loadObject();
 			$results->label    = $m_falang->getFalang($id, 'emundus_setup_campaigns', 'label');
+
+			if (!empty($lang))
+			{
+				$descriptions = $m_falang->getFalang($id, 'emundus_setup_campaigns', 'description', $results->campaign->description);
+				if (!empty($descriptions->{$lang}))
+				{
+					$results->campaign->description = $descriptions->{$lang};
+				}
+
+				$shortDescriptions = $m_falang->getFalang($id, 'emundus_setup_campaigns', 'short_description', $results->campaign->short_description);
+				if (!empty($shortDescriptions->{$lang}))
+				{
+					$results->campaign->short_description = $shortDescriptions->{$lang};
+				}
+			}
 
 			if ($results->campaign->is_limited == 1)
 			{
