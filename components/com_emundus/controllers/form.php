@@ -534,7 +534,7 @@ class EmundusControllerForm extends EmundusController
 			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'), EmundusResponse::HTTP_BAD_REQUEST);
 		}
 
-		$forms = $this->m_form->getFormsByProfileId($profile_id);
+		$forms = $this->m_form->getFormsByProfileId($profile_id, true);
 		if (empty($forms))
 		{
 			throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_FORM'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
