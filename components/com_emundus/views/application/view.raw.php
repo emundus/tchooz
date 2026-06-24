@@ -24,14 +24,11 @@ use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Reference\InternalReferenceEntity;
 use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
-use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
-use Tchooz\Repositories\Reference\InternalReferenceRepository;
-use Tchooz\Services\Reference\InternalReferenceService;
 
 /**
  * HTML View class for the Emundus Component
@@ -87,10 +84,6 @@ class EmundusViewApplication extends HtmlView
 	protected mixed $_user;
 	protected ?array $collaborators;
 	protected bool $is_applicant;
-
-	protected ?InternalReferenceEntity $reference;
-	protected ?string $shortReference;
-	protected bool $showReference;
 
 	protected ?ApplicationFileEntity $applicationFile = null;
 
@@ -698,20 +691,6 @@ class EmundusViewApplication extends HtmlView
 						$this->formsProgress = $m_application->getFormsProgress($fnum);
 						$this->forms         = $m_application->getForms($this->sid, $fnum, $this->defaultpid->pid);
 						$this->applicant     = $applicant[0];
-						$this->shortReference        = $this->applicationFile->getShortReference();
-
-						$internalReferenceService = new InternalReferenceService(
-							new DateProvider(),
-							new ApplicationFileRepository()
-						);
-						$customReferenceFormatEntity = $internalReferenceService->getCustomReferenceFormatEntity();
-
-						$this->showReference = $customReferenceFormatEntity->isShowInFiles();
-						if ($this->showReference)
-						{
-							$internalReferenceRepository = new InternalReferenceRepository();
-							$this->reference             = $internalReferenceRepository->getActiveReference($this->applicationFile->getId());
-						}
 
 					}
 					else

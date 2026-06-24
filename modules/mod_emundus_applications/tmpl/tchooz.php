@@ -946,6 +946,22 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                                             <span><?= $application->name; ?></span>
                                                         </a>
 													<?php endif; ?>
+													<?php if ($show_fnum && $isShowToApplicant) : ?>
+													    <div class="tw-flex tw-items-center tw-gap-1 em-font-size-14" onclick="event.stopPropagation()">
+													        <span class="tw-font-semibold"><?php echo Text::_('MOD_EMUNDUS_APPLICATION_REFERENCE'); ?></span>
+													        <div class="tw-flex tw-items-end tw-gap-1"
+													             title="<?= (!empty($application->reference) ? $application->reference : '') . '#' . (!empty($application->short_reference) ? $application->short_reference : ''); ?>"
+													        >
+													            <?php if (!empty($application->reference)) : ?>
+													                <label class="tw-mb-0"><?= $application->reference; ?></label>
+													            <?php endif; ?>
+													            <?php if (!empty($application->short_reference)) : ?>
+													                <span class="<?= !empty($application->reference) ? 'tw-text-sm tw-text-neutral-500' : ''; ?>">#<?= $application->short_reference; ?></span>
+													            <?php endif; ?>
+													            <span id="copy_reference_list_<?php echo $application->id; ?>" class="material-symbols-outlined !tw-text-base tw-cursor-pointer" onclick="copyReference('<?= $application->reference . '#' . $application->short_reference; ?>')">content_copy</span>
+													        </div>
+													    </div>
+													<?php endif; ?>
                                                 </td>
                                                 <td style="width: 23.75%;">
 													<?php if (!empty($application->updated) || !empty($application->submitted_date)) : ?>
