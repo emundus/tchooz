@@ -158,14 +158,16 @@
 
 			<!-- EDITOR -->
 			<tip-tap-editor
-				v-else-if="parameter.type === 'wysiwig'"
+				v-else-if="parameter.type === 'wysiwig' && editorReady"
 				v-model="value"
 				:editor-content-height="'20em'"
 				:class="'tw-mt-1 tw-w-full'"
 				:locale="actualLanguage"
-				:preset="'basic'"
+				:preset="parameter.preset ? parameter.preset : 'basic'"
 				:toolbar-classes="['tw-bg-white']"
 				:editor-content-classes="['tw-bg-white']"
+				:suggestions="suggestions"
+				:media-files="medias"
 				@focusout="checkValue(parameter)"
 			>
 			</tip-tap-editor>
@@ -439,6 +441,14 @@
 				style="top: -8px"
 			/>
 
+			<autocomplete
+				v-else-if="parameter.type === 'autocomplete'"
+				:id="paramId"
+				@searched="value = $event"
+				:items="parameter.autocompleteItems"
+				:year="value"
+			/>
+
 			<!-- INPUT IN CASE OF SPLIT -->
 			<span v-if="parameter.splitField">{{ parameter.splitChar }}</span>
 			<span v-if="parameter.endText" class="tw-ml-2">{{ translate(parameter.endText) }}</span>
@@ -481,10 +491,11 @@ import examples from 'libphonenumber-js/mobile/examples';
 import { vMaska } from 'maska/vue';
 import vueDropzone from 'vue2-dropzone-vue3';
 import ColorPicker from '@/components/ColorPicker.vue';
+import Autocomplete from '@/components/autocomplete.vue';
 
 export default {
 	name: 'Parameter',
-	components: { ColorPicker, DatePicker, Multiselect, Modal, TipTapEditor, vueDropzone },
+	components: { Autocomplete, ColorPicker, DatePicker, Multiselect, Modal, TipTapEditor, vueDropzone },
 	directives: {
 		maska: vMaska,
 	},
@@ -580,6 +591,10 @@ export default {
 				uploadMultiple: false,
 			},
 			mediaThumbnail: '',
+
+			editorReady: false,
+			suggestions: [],
+			medias: [],
 		};
 	},
 	async created() {
@@ -680,6 +695,19 @@ export default {
 			this.dropzoneOptions.acceptedFiles = this.parameter.acceptedFiles ? this.parameter.acceptedFiles : 'image/*';
 
 			this.value = this.parameter.value;
+		} else if (this.parameter.type === 'wysiwig') {
+			this.value = this.parameter.value;
+
+			const editorTasks = [];
+			if (this.parameter.displaySuggestions) {
+				editorTasks.push(this.getEditorSuggestions());
+			}
+			if (this.parameter.displayMedias) {
+				editorTasks.push(this.getEditorMedia());
+			}
+
+			await Promise.all(editorTasks);
+			this.editorReady = true;
 		} else if (this.parameter) {
 			this.value = this.parameter.value;
 		}
@@ -895,6 +923,18 @@ export default {
 					}, 500);
 				});
 			}
+		},
+
+		// Wysiwig
+		getEditorSuggestions() {
+			return settingsService.getVariables().then((response) => {
+				this.suggestions = response.data;
+			});
+		},
+		getEditorMedia() {
+			return settingsService.getMedia().then((response) => {
+				this.medias = response.data;
+			});
 		},
 
 		// VALIDATIONS

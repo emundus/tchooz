@@ -32,11 +32,29 @@ export default {
 			};
 		}
 	},
-	async createProgram(program) {
+	async saveProgram(program, formData = false) {
 		try {
-			return await client.post('createprogram', {
-				body: JSON.stringify(program),
-			});
+			return await client.post('saveprogram', formData ? program : { body: JSON.stringify(program) });
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+	async getProgramCategories() {
+		try {
+			return await client.get('getprogramcategories');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+	async getProgram(id) {
+		try {
+			return await client.get('getprogram', { id: id });
 		} catch (e) {
 			return {
 				status: false,

@@ -4,6 +4,7 @@ namespace Tchooz\Services\Addons\Handlers;
 
 use Joomla\CMS\Factory;
 use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Services\Addons\AbstractAddonHandler;
 
 class CrcAddonHandler extends AbstractAddonHandler
@@ -40,7 +41,7 @@ class CrcAddonHandler extends AbstractAddonHandler
 			$query->clear()
 				->update($db->quoteName('#__emundus_setup_actions'))
 				->set('status = ' . $db->quote($intState))
-				->where('label IN (' . $db->quote('COM_EMUNDUS_ACL_CONTACT') . ', ' . $db->quote('COM_EMUNDUS_ACL_ORGANIZATION') .')');
+				->where('name IN (' . $db->quote(ActionEnum::CONTACT->value) . ', ' . $db->quote(ActionEnum::ORGANIZATION->value)  . ')');
 			$db->setQuery($query);
 			$tasks[] = $db->execute();
 		} catch (\Exception $e) {

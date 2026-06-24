@@ -12,6 +12,12 @@ export default [
 		component: 'SecurityRules',
 	},
 	{
+		label: 'COM_EMUNDUS_ONBOARD_SETTINGS_LOGIN_RESTRICTION',
+		intro: 'COM_EMUNDUS_ONBOARD_SETTINGS_LOGIN_RESTRICTION_INTRO',
+		name: 'login_restriction',
+		component: 'LoginRestriction',
+	},
+	{
 		label: 'COM_EMUNDUS_ONBOARD_SETTINGS_USER_CATEGORIES',
 		intro: 'COM_EMUNDUS_ONBOARD_SETTINGS_USER_CATEGORIES_INTRO',
 		name: 'categories',

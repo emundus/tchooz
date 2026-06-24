@@ -18,6 +18,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
@@ -2042,6 +2043,7 @@ class EmundusModelCampaign extends ListModel
 			$query = $this->_db->createQuery();
 
 			require_once(JPATH_ROOT . '/components/com_emundus/models/falang.php');
+			require_once(JPATH_ROOT . '/components/com_emundus/models/translations.php');
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
 			$app = Factory::getApplication();
@@ -2051,14 +2053,21 @@ class EmundusModelCampaign extends ListModel
 			}
 
 			$m_falang       = new EmundusModelFalang;
+			$m_translations = new EmundusModelTranslations;
 			$lang           = $app->getLanguage();
 			$actualLanguage = substr($lang->getTag(), 0, 2);
 
 			$limit_status  = [];
 			$fields        = ['id' => $cid];
 			$columns       = [];
-			$keys_to_unset = ['profileLabel', 'progid', 'status', 'languages', 'usercategories', 'program_id'];
+			$keys_to_unset = ['profileLabel', 'progid', 'status', 'languages', 'usercategories', 'program_id', 'lang'];
 			$labels        = new stdClass;
+			$selectedLang  = !empty($data['lang']) ? $data['lang'] : null;
+			$primaryLang   = substr(LanguageFactory::getDefaultLanguageCode(), 0, 2);
+
+			// Convertit le code court ('fr') en code complet ('fr-FR') pour updateFalangTranslation
+			$allLanguages     = LanguageHelper::getLanguages('sef');
+			$selectedLangCode = !empty($selectedLang) && isset($allLanguages[$selectedLang]) ? $allLanguages[$selectedLang]->lang_code : null;
 
 			$app->triggerEvent('onBeforeCampaignUpdate', $data);
 			$app->triggerEvent('onCallEventHandler', ['onBeforeCampaignUpdate', ['campaign' => $cid]]);
@@ -2089,14 +2098,35 @@ class EmundusModelCampaign extends ListModel
 				{
 					case 'label':
 						$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
-						foreach ($data['label'] as $lang_code => $label)
-						{
-							$data['label'][$lang_code] = $htmlSanitizer->sanitizeNoHtml($label);
-						}
 
-						$labels        = $data['label'];
-						$data['label'] = $data['label'][$actualLanguage];
-						$fields[$key]  = $data['label'];
+						if (!empty($selectedLang))
+						{
+							$labelValue   = is_array($data['label']) ? ($data['label'][$selectedLang] ?? '') : (string) $data['label'];
+							$labelValue   = $htmlSanitizer->sanitizeNoHtml($labelValue);
+							$data['label'] = $labelValue;
+
+							$m_translations->updateFalangTranslation($labelValue, $selectedLangCode, 'emundus_setup_campaigns', $cid, 'label', $user_id);
+
+							if ($selectedLang === $primaryLang)
+							{
+								$fields[$key] = $labelValue;
+							}
+							else
+							{
+								$keys_to_unset[] = $key;
+							}
+						}
+						else
+						{
+							foreach ($data['label'] as $lang_code => $label)
+							{
+								$data['label'][$lang_code] = $htmlSanitizer->sanitizeNoHtml($label);
+							}
+
+							$labels        = $data['label'];
+							$data['label'] = $data['label'][$actualLanguage];
+							$fields[$key]  = $data['label'];
+						}
 						break;
 					case 'limit_status':
 						$limit_status = $data['limit_status'];
@@ -2164,8 +2194,23 @@ class EmundusModelCampaign extends ListModel
 						$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
 						$val           = $htmlSanitizer->sanitizeFor('section', $val);
 
-						$fields[$key] = $val;
+						if (!empty($selectedLang))
+						{
+							$m_translations->updateFalangTranslation($val, $selectedLangCode, 'emundus_setup_campaigns', $cid, $key, $user_id);
 
+							if ($selectedLang === $primaryLang)
+							{
+								$fields[$key] = $val;
+							}
+							else
+							{
+								$keys_to_unset[] = $key;
+							}
+						}
+						else
+						{
+							$fields[$key] = $val;
+						}
 						break;
 					case 'training':
 						$fields[$key] = $val;
@@ -2186,7 +2231,7 @@ class EmundusModelCampaign extends ListModel
 			$this->_db->setQuery($query);
 			$old_data = $this->_db->loadAssoc();
 
-			if (!empty($data['label']))
+			if (!empty($data['label']) && empty($selectedLang))
 			{
 				$m_falang->updateFalang($labels, $cid, 'emundus_setup_campaigns', 'label');
 			}
@@ -2400,7 +2445,7 @@ class EmundusModelCampaign extends ListModel
 	 *
 	 * @since version 1.0
 	 */
-	public function getCampaignDetailsById($id)
+	public function getCampaignDetailsById($id, $lang = null)
 	{
 		if (empty($id))
 		{
@@ -2425,6 +2470,21 @@ class EmundusModelCampaign extends ListModel
 			$this->_db->setQuery($query);
 			$results->campaign = $this->_db->loadObject();
 			$results->label    = $m_falang->getFalang($id, 'emundus_setup_campaigns', 'label');
+
+			if (!empty($lang))
+			{
+				$descriptions = $m_falang->getFalang($id, 'emundus_setup_campaigns', 'description', $results->campaign->description);
+				if (!empty($descriptions->{$lang}))
+				{
+					$results->campaign->description = $descriptions->{$lang};
+				}
+
+				$shortDescriptions = $m_falang->getFalang($id, 'emundus_setup_campaigns', 'short_description', $results->campaign->short_description);
+				if (!empty($shortDescriptions->{$lang}))
+				{
+					$results->campaign->short_description = $shortDescriptions->{$lang};
+				}
+			}
 
 			if ($results->campaign->is_limited == 1)
 			{
@@ -4079,8 +4139,13 @@ class EmundusModelCampaign extends ListModel
 		return $rows_to_import;
 	}
 
+	// todo: use Import Service instead when it's out and asynchronous behaviour too
 	public function importFiles(array $file, int $campaign_id, int $send_email, int $create_new_fnum, int $user_id = 0): array
 	{
+		@set_time_limit(300);
+
+		Log::addLogger(['text_file' => 'com_emundus.campaign.import.php'], Log::ALL, array('com_emundus.import'));
+		Log::add('Starting import on ' . $campaign_id, Log::INFO, 'com_emundus.import');
 		if (empty($user_id))
 		{
 			$user_id = Factory::getApplication()->getIdentity()->id;
@@ -4189,6 +4254,7 @@ class EmundusModelCampaign extends ListModel
 
 								if (!$this->_db->insertObject('#__users', $user))
 								{
+									Log::add('Failed to insert user', Log::ERROR, 'com_emundus.import');
 									throw new Exception('Error inserting user');
 								}
 								$user->id = $this->_db->insertid();
@@ -4269,11 +4335,12 @@ class EmundusModelCampaign extends ListModel
 
 								if (empty($fnum))
 								{
+									$maxAttempts = 1500;
+									$nbAttempts  = 0;
 									$importApplicationEntity->generateFnum($campaign_id);
 
 									// avoid same fnum, todo: remove that once fnum will have a random ending (public campaigns feature)
-									$collision_attempts = 0;
-									while ($collision_attempts < 60)
+									while ($nbAttempts < $maxAttempts)
 									{
 										$collision_query = $this->_db->getQuery(true);
 										$collision_query->select('id')
@@ -4298,7 +4365,12 @@ class EmundusModelCampaign extends ListModel
 										{
 											$importApplicationEntity->generateFnum($campaign_id);
 										}
-										$collision_attempts++;
+										$nbAttempts++;
+									}
+
+									if ($nbAttempts >= $maxAttempts)
+									{
+										Log::add('Collision guard hit for campaign ' . $campaign_id . ' after ' . $nbAttempts . ' attempts, fnum ' . $importApplicationEntity->getFnum(), Log::WARNING, 'com_emundus.import');
 									}
 								}
 								else
@@ -4325,14 +4397,22 @@ class EmundusModelCampaign extends ListModel
 								$importApplicationEntity->setData($datas);
 							}
 
-							if ($applicationFileRepository->flush($importApplicationEntity, $user_id))
-							{
-								$files_imported[] = $fnum;
-								$status           = true;
+							try {
+								if ($applicationFileRepository->flush($importApplicationEntity, $user_id))
+								{
+									$files_imported[] = $fnum;
+									$status           = true;
+								}
+								else
+								{
+									$files_not_imported[] = $fnum;
+									Log::add('Failed to flush file ' . $fnum, Log::INFO, 'com_emundus.error');
+
+								}
 							}
-							else
+							catch (\Exception $e)
 							{
-								$files_not_imported[] = $fnum;
+								Log::add('Failed to flush file ' . $fnum . ' error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 							}
 
 							$onAfterImportRowEventHandler = new GenericEvent(
@@ -4393,8 +4473,11 @@ class EmundusModelCampaign extends ListModel
 		}
 		catch (Exception $e)
 		{
-			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
+
+		Log::add('Import of ' . count($files_imported) . ' files done', Log::INFO, 'com_emundus.import');
+		Log::add('Import of ' . count($files_not_imported) . ' files not done', Log::INFO, 'com_emundus.import');
 
 		return ['files_imported' => $files_imported, 'files_not_imported' => $files_not_imported];
 	}

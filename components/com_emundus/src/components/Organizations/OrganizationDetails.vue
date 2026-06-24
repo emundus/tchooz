@@ -1,9 +1,9 @@
 <script>
 import Modal from '@/components/Modal.vue';
 import Chip from '@/components/Atoms/Chip.vue';
-import GridDetails from '@/components/Molecules/GridDetails.vue';
-import CountryFlag from '@/components/Atoms/CountryFlag.vue';
 import Avatar from '@/components/Atoms/Avatar.vue';
+import crcService from '@/services/crc.js';
+import settingsService from '@/services/settings.js';
 
 export default {
 	name: 'OrganizationDetails',
@@ -36,6 +36,21 @@ export default {
 			}
 			const base = window.location.origin + '/';
 			return base + profilePicture.replace(/^\//, '');
+		},
+		async openApplicationFiles() {
+			if (!this.$props.item) return;
+
+			crcService.getOrganizationFiles(this.$props.item.id).then((response) => {
+				if (response.status) {
+					settingsService.saveFilterFiles(response.data).then((response) => {
+						if (response.status) {
+							const route = response.data;
+							const baseUrl = window.location.origin;
+							window.open(`${baseUrl}/${route}`, '_blank');
+						}
+					});
+				}
+			});
 		},
 	},
 	computed: {
@@ -140,6 +155,19 @@ export default {
 				<div v-else>
 					<p>-</p>
 				</div>
+			</div>
+			<div>
+				<label class="tw-font-semibold">
+					{{ translate('COM_EMUNDUS_ONBOARD_ADD_ORG_FILES') }}
+				</label>
+				<div v-if="item.application_files.length" class="em tw-mt-2 tw-cursor-pointer">
+					<p class="items-center gap-1 hover:tw-underline" style="color: #6e7eff" @click="openApplicationFiles">
+						{{ translate('COM_EMUNDUS_ONBOARD_ADD_ORG_FILES_CONSULT') }}
+						<span class="material-symbols-outlined text-sm align-middle" style="color: #6e7eff"> open_in_new </span>
+					</p>
+				</div>
+
+				<p v-else>-</p>
 			</div>
 		</div>
 	</div>

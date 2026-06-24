@@ -14,71 +14,41 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Attributes\TableAttribute;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Contacts\ContactAddressEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Country;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 use Tchooz\Factories\Contacts\ContactFactory;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\CountryRepository;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
 use Tchooz\Services\UploadService;
-use Tchooz\Traits\TraitTable;
 
-if (!class_exists('ContactEntity'))
-{
-	require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Contacts/ContactEntity.php';
-}
-
-if (!class_exists('ContactOrganizationRepository'))
-{
-	require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/Contacts/ContactOrganizationRepository.php';
-}
-
-if (!class_exists('ContactAddressRepository'))
-{
-	require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/Contacts/ContactAddressRepository.php';
-}
-
-if (!class_exists('ContactAddressEntity'))
-{
-	require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Contacts/ContactAddressEntity.php';
-}
-
-if (!class_exists('AddressRepository'))
-{
-	require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/Contacts/AddressRepository.php';
-}
-
-require_once JPATH_SITE . '/components/com_emundus/classes/Traits/TraitTable.php';
-
-#[TableAttribute(table: '#__emundus_contacts')]
+#[TableAttribute(table: '#__emundus_contacts', alias: 'contacts', columns: [
+	'id',
+	'lastname',
+	'firstname',
+	'email',
+	'phone_1',
+	'user_id',
+	'birthdate',
+	'gender',
+	'fonction',
+	'service',
+	'published',
+	'profile_picture',
+	'status'
+])]
 class ContactRepository extends EmundusRepository implements RepositoryInterface
 {
-	use TraitTable;
-
 	private ContactFactory $factory;
-
-	private const COLUMNS = [
-		't.id',
-		't.lastname',
-		't.firstname',
-		't.email',
-		't.phone_1',
-		't.user_id',
-		't.birthdate',
-		't.gender',
-		't.fonction',
-		't.service',
-		't.published',
-		't.profile_picture',
-		't.status'
-	];
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		parent::__construct($withRelations, $exceptRelations, 'contact');
+		parent::__construct($withRelations, $exceptRelations, 'contact', self::class);
 		$this->factory = new ContactFactory();
 	}
 
@@ -254,6 +224,53 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 			}
 		}
 
+		// Then, flush files if any
+		$applicationFilesRepository        = new ApplicationFileRepository();
+		$contactFileRepository = new ContactFileRepository();
+		$contactFiles       = $contactFileRepository->getFilesFnumByContactId($entity->getId());
+
+		if (!empty($entity->getApplicationFiles()))
+		{
+			foreach ($entity->getApplicationFiles() as $applicationFile)
+			{
+				if (!($applicationFile instanceof ApplicationFileEntity))
+				{
+					continue;
+				}
+
+				$fileInDb = $applicationFilesRepository->getByFnum($applicationFile->getFnum());
+				if ($fileInDb && !in_array($fileInDb->getFnum(), $contactFiles))
+				{
+					if (!$contactFileRepository->associateContactToFileFnum($entity->getId(), $fileInDb->getFnum()))
+					{
+						throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_ASSOCIATE_TO_FILE_FNUM_FAILED'), 500);
+					}
+				}
+			}
+		}
+
+		// Detach files that are no longer associated
+		foreach ($contactFiles as $existingFileFnum)
+		{
+			$found = false;
+			foreach ($entity->getApplicationFiles() ?? [] as $applicationFile)
+			{
+				if ($applicationFile instanceof ApplicationFileEntity && $applicationFile->getFnum() === $existingFileFnum)
+				{
+					$found = true;
+					break;
+				}
+			}
+
+			if (!$found)
+			{
+				if(!$contactFileRepository->detachContactFromFileFnum($entity->getId(), $existingFileFnum))
+				{
+					throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_FILE_DETACH_TO_CONTACT_FAILED'), 500);
+				}
+			}
+		}
+
 		// Finally, flush organizations if any
 		$contactOrganizationRepository     = new ContactOrganizationRepository();
 		$alreadyAssociatedOrganizationsIds = $contactOrganizationRepository->getOrganizationsIdsByContactId($entity->getId());
@@ -411,7 +428,7 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 		$search = '',
 		$lim = 25,
 		$page = 0,
-		$order_by = 't.id',
+		$order_by = 'id',
 		$published = null,
 		$ids = [],
 		$phone_number = '',
@@ -449,21 +466,23 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 
 		$query = $this->db->createQuery();
 
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->leftJoin($this->db->quoteName('#__emundus_contacts_organizations', 'eco') . ' ON ' . $this->db->quoteName('eco.contact_id') . ' = ' . $this->db->quoteName('t.id'))
-			->leftJoin($this->db->quoteName('#__emundus_contacts_countries', 'ecc') . ' ON ' . $this->db->quoteName('ecc.contact_id') . ' = ' . $this->db->quoteName('t.id'));
+		$query->select($this->getTableColumns(self::class))
+			->from($this->db->quoteName($this->getTableName(self::class), $this->alias))
+			->leftJoin($this->db->quoteName('#__emundus_contacts_organizations', 'eco') . ' ON ' . $this->db->quoteName('eco.contact_id') . ' = ' . $this->db->quoteName($this->alias . '.id'))
+			->leftJoin($this->db->quoteName('#__emundus_contacts_countries', 'ecc') . ' ON ' . $this->db->quoteName('ecc.contact_id') . ' = ' . $this->db->quoteName($this->alias .'.id'))
+			->leftJoin($this->db->quoteName('#__emundus_contacts_files', 'ecf') . ' ON ' . $this->db->quoteName('ecf.contact_id') . ' = ' . $this->db->quoteName($this->alias .'.id'));
+
 		// Apply filters if needed
 		if (!empty($search))
 		{
 			$search     = $this->db->quote('%' . $this->db->escape($search, true) . '%', false);
 			$conditions = [
-				$this->db->quoteName('t.firstname') . ' LIKE ' . $search,
-				$this->db->quoteName('t.lastname') . ' LIKE ' . $search,
-				$this->db->quoteName('t.email') . ' LIKE ' . $search,
-				$this->db->quoteName('t.phone_1') . ' LIKE ' . $search,
-				$this->db->quoteName('t.fonction') . ' LIKE ' . $search,
-				$this->db->quoteName('t.service') . ' LIKE ' . $search,
+				$this->db->quoteName($this->alias . '.firstname') . ' LIKE ' . $search,
+				$this->db->quoteName($this->alias . '.lastname') . ' LIKE ' . $search,
+				$this->db->quoteName($this->alias . '.email') . ' LIKE ' . $search,
+				$this->db->quoteName($this->alias . '.phone_1') . ' LIKE ' . $search,
+				$this->db->quoteName($this->alias . '.fonction') . ' LIKE ' . $search,
+				$this->db->quoteName($this->alias . '.service') . ' LIKE ' . $search,
 			];
 			$query->where('(' . implode(' OR ', $conditions) . ')');
 		}
@@ -471,12 +490,12 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 		if (!empty($published) && $published !== 'all')
 		{
 			$published = $published == 'true' ? 1 : 0;
-			$query->where($this->db->quoteName('t.published') . ' = ' . $published);
+			$query->where($this->db->quoteName($this->alias . '.published') . ' = ' . $published);
 		}
 
 		if (!empty($ids) && is_array($ids))
 		{
-			$query->where($this->db->quoteName('t.id') . ' IN (' . implode(',', array_map('intval', $ids)) . ')');
+			$query->where($this->db->quoteName($this->alias . '.id') . ' IN (' . implode(',', array_map('intval', $ids)) . ')');
 		}
 
 		if (!empty($organizations) && is_array($organizations))
@@ -530,19 +549,19 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 		{
 			if ($phone_number === 'no_phone_number')
 			{
-				$query->having('(t.phone_1 IS NULL OR t.phone_1 = "")');
+				$query->having('(' . $this->alias  .'.phone_1 IS NULL OR ' . $this->alias . '.phone_1 = "")');
 			}
 			else
 			{
 				$phone_number = preg_replace('/\s+/', '', $phone_number);
 				$phone_number = $this->db->quote('%' . $phone_number . '%');
-				$query->where('REPLACE(t.phone_1, " ", "") LIKE ' . $phone_number);
+				$query->where('REPLACE(' . $this->alias . '.phone_1, " ", "") LIKE ' . $phone_number);
 			}
 		}
 
 		// Apply orders and limits if needed
-		$query->group('t.id')
-			->order($order_by . ' ' . $sort);
+		$query->group($this->alias . '.id')
+			->order($this->alias . '.' . $order_by . ' ' . $sort);
 
 		try
 		{
@@ -572,10 +591,10 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 		$contact_entity = null;
 
 		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->leftJoin($this->db->quoteName($this->getTableName(ContactAddressRepository::class), 'j1') . ' ON ' . $this->db->quoteName('j1.contact_id') . ' = ' . $this->db->quoteName('t.id'))
-			->where('t.id = ' . $this->db->quote($id));
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->leftJoin($this->db->quoteName($this->getTableName(ContactAddressRepository::class), 'j1') . ' ON ' . $this->db->quoteName('j1.contact_id') . ' = ' . $this->db->quoteName($this->alias . '.id'))
+			->where($this->alias . '.id = ' . $this->db->quote($id));
 		$this->db->setQuery($query);
 		$contact = $this->db->loadAssoc();
 
@@ -731,6 +750,7 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 	/**
 	 * @param   string  $fnum
 	 *
+	 * Returns the Contact associated to a User through one of his fnums
 	 * @return ContactEntity|null
 	 */
 	public function getByFnum(string $fnum): ?ContactEntity
@@ -756,4 +776,72 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 
 		return $contact_entity;
 	}
+
+	/**
+	 * @param   string  $fnum
+	 *
+	 * @return array<ContactEntity>
+	 */
+	public function getByAssociatedFnum(string $fnum): array
+	{
+		$contacts = [];
+
+		if (!empty($fnum))
+		{
+			$query = $this->db->createQuery();
+			$query->select($this->alias . '.*')
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->leftJoin($this->db->quoteName($this->getTableName(ContactFileRepository::class), $this->getTableAlias(ContactFileRepository::class)) . ' ON ' . $this->db->quoteName($this->getTableAlias(ContactFileRepository::class) . '.contact_id') . ' = ' . $this->db->quoteName($this->alias . '.id'))
+				->where($this->db->quoteName($this->getTableAlias(ContactFileRepository::class) . '.fnum') . ' = ' . $this->db->quote($fnum));
+
+			$this->db->setQuery($query);
+			$objects = $this->db->loadObjectList();
+
+			foreach ($objects as $object)
+			{
+				$contacts[] = $this->factory->fromDbObject($object, $this->withRelations, $this->exceptRelations);
+			}
+		}
+
+		return $contacts;
+	}
+
+	public function updateContactFiles(int $contactId, array $candidatureIds): bool
+	{
+		if (empty($contactId))
+		{
+			return false;
+		}
+
+		// Candidature id -> fnum resolution is owned by EmundusHelperFiles (single source of truth).
+		if (!class_exists('EmundusHelperFiles'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
+		}
+		$fnums = \EmundusHelperFiles::getFnumsFromIds($candidatureIds);
+
+		return $this->updateContactFilesByFnums($contactId, $fnums);
+	}
+
+	public function updateContactFilesByFnums(int $contactId, array $fnums): bool
+	{
+		if (empty($contactId))
+		{
+			return false;
+		}
+
+		try
+		{
+			// #__emundus_contacts_files is owned by ContactFileRepository (single source of truth).
+			(new ContactFileRepository(false))->syncFilesForContact($contactId, $fnums);
+
+			return true;
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error on updateContactFilesByFnums: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.contact');
+			return false;
+		}
+	}
+
 }

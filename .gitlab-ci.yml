@@ -134,6 +134,33 @@ repo_scanning:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && "hotfix" == $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && "dev" == $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
 
+playwright-a11y-job:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.43.0-jammy
+  script:
+    - git clone $PLAYWRIGHT_ACCESS
+    - cd playwright
+    - npm ci
+    - npx playwright install --with-deps chromium
+    - npx playwright test --project=chromium_a11y
+  variables:
+    PLAYWRIGHT_ACCESS: $PLAYWRIGHT_ACCESS
+    BASE_URL: $PLAYWRIGHT_RELEASE_BASE_URL
+    COORD_USERNAME: $PLAYWRIGHT_RELEASE_COORD_USERNAME
+    COORD_PASSWORD: $PLAYWRIGHT_RELEASE_COORD_PASSWORD
+    SYSADMIN_USERNAME: $PLAYWRIGHT_RELEASE_SYSADMIN_USERNAME
+    SYSADMIN_PASSWORD: $PLAYWRIGHT_RELEASE_SYSADMIN_PASSWORD
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_DEFAULT_BRANCH == $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+      when: manual
+      allow_failure: true
+  artifacts:
+    when: always
+    expose_as: 'Playwright A11y Report'
+    paths:
+      - playwright/playwright-report
+    expire_in: 4 days
+
 release-patch:
   extends: .release-template
   variables:

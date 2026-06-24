@@ -18,6 +18,7 @@ use Tchooz\Factories\EmundusFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Contacts\ContactAddressRepository;
 use Tchooz\Repositories\Contacts\ContactCountryRepository;
+use Tchooz\Repositories\Contacts\ContactFileRepository;
 use Tchooz\Repositories\Contacts\ContactOrganizationRepository;
 
 class ContactFactory extends EmundusFactory implements DBFactory
@@ -57,7 +58,6 @@ class ContactFactory extends EmundusFactory implements DBFactory
 			service: $dbObject['service'] ?? null,
 			countries: $relations[self::COUNTRIES] ?? [],
 			organizations: $relations[self::ORGANIZATIONS] ?? [],
-			// If user_id is set, we can retrieve application files via applicant_id
 			application_files: $relations[self::APPLICATION_FILES] ?? [],
 			profile_picture: $dbObject['profile_picture'] ?? null,
 			published: (bool) $dbObject['published'],
@@ -72,7 +72,7 @@ class ContactFactory extends EmundusFactory implements DBFactory
 			self::ADDRESSES => $this->loadAddresses($object['id']),
 			self::COUNTRIES => $this->loadCountries($object['id']),
 			self::ORGANIZATIONS => $this->loadOrganizations($object['id']),
-			self::APPLICATION_FILES => $this->loadApplicationFiles($object['user_id'] ?? null),
+			self::APPLICATION_FILES => $this->loadApplicationFiles($object['id'] ?? null),
 			default => [],
 		};
 	}
@@ -98,14 +98,15 @@ class ContactFactory extends EmundusFactory implements DBFactory
 		return $contactOrganizationRepository->getOrganizationsByContactId($contactId);
 	}
 
-	private function loadApplicationFiles(int|null $userId): array
+	private function loadApplicationFiles(?int $contactId): array
 	{
-		if (empty($userId))
+		if (empty($contactId))
 		{
 			return [];
 		}
-		$applicationFileRepository = new ApplicationFileRepository();
 
-		return $applicationFileRepository->getApplicationFilesByApplicantId($userId);
+		$contactFileRepository = new ContactFileRepository(false);
+
+		return $contactFileRepository->getFilesByContactId($contactId);
 	}
 }

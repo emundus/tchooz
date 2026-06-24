@@ -31,6 +31,7 @@ class EmundusRepository
 	protected string $primaryKey = 'id';
 	protected string $alias = 't';
 	protected array $columns = [];
+	protected array $columnsNoAlias = [];
 
 	protected array $searchableColumns = [];
 
@@ -54,6 +55,7 @@ class EmundusRepository
 		$this->tableName = $this->getTableName($className);
 		$this->alias 	 = $this->getTableAlias($className);
 		$this->columns   = $this->getTableColumns($className);
+		$this->columnsNoAlias = $this->getTableColumnsNoPrefix($className);
 
 		$this->withRelations   = $withRelations;
 		$this->exceptRelations = $exceptRelations;

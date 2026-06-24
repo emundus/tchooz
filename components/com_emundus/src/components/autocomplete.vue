@@ -124,23 +124,24 @@ export default {
 .autocomplete-results {
 	padding: 0;
 	margin: 0;
-	border: 1px solid #eeeeee;
+	border: 1px solid var(--neutral-200);
 	overflow: auto;
 	background-color: white;
 	position: relative;
 	z-index: 10;
+	border-radius: 4px;
 }
 
 .autocomplete-result {
 	list-style: none;
 	text-align: left;
-	padding: 16px 6px;
+	padding: 12px 8px;
 	cursor: pointer;
 }
 
 .autocomplete-result.is-active,
 .autocomplete-result:hover {
-	background-color: #ededed;
-	color: white;
+	background-color: var(--neutral-200);
+	color: var(--neutral-900);
 }
 </style>

@@ -901,4 +901,15 @@ export default {
 			};
 		}
 	},
+
+	async saveFilterFiles(fnums) {
+		try {
+			return await fetchClient.get('savefilterfiles', { fnums: fnums });
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+			};
+		}
+	},
 };

@@ -935,6 +935,27 @@ class EmundusFiltersFiles extends EmundusFilters
 			];
 		}
 
+		if (!empty($config['filter_unread_messages'])) {
+			$this->applied_filters[] = [
+				'uid'            => 'unread_messages',
+				'id'             => 'unread_messages',
+				'label'          => Text::_('MOD_EMUNDUS_FILTERS_UNREAD_MESSAGES'),
+				'type'           => 'select',
+				'values'         => [
+					['value' => 1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_WITH_UNREAD_MESSAGES')],
+					['value' => 0, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_WITHOUT_UNREAD_MESSAGES')]
+				],
+				'value'          => [],
+				'default'        => true,
+				'available'      => true,
+				'order'          => $config['filter_unread_messages_order'] ?? 0,
+				'andorOperator'  => 'OR',
+				'andorOperators' => [],
+				'operator'       => 'IN',
+				'operators'      => ['IN']
+			];
+		}
+
 		if ($config['filter_evaluators']) {
 			$evaluators = [];
 			if (!class_exists('EmundusModelWorkflow')) {
