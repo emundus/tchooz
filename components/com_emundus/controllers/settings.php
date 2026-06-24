@@ -3491,7 +3491,7 @@ class EmundusControllersettings extends EmundusController
 				'',
 				25,
 				0,
-				't.id',
+				'id',
 				true
 			);
 			$data              = [];
@@ -4022,5 +4022,35 @@ class EmundusControllersettings extends EmundusController
 		}
 
 		return $response;
+	}
+
+	#[AccessAttribute(accessLevel : AccessLevelEnum::PARTNER)]
+	public function savefilterfiles(): EmundusResponse
+	{
+		$fnums = $this->input->getString('fnums', '');
+
+		$fnums = explode(',', $fnums);
+
+		$filters = [];
+		foreach ($fnums as $fnum) {
+			$filters[] = [
+				'value' => $fnum,
+				'scope' => 'jecc.fnum'
+			];
+		}
+
+		$session = Factory::getApplication()->getSession();
+		$session->set('em-quick-search-filters', $filters);
+
+		$menu = Factory::getApplication()->getMenu();
+		$emundusUser      = $this->app->getSession()->get('emundusUser');
+		$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
+
+		if(empty($files_menu)) {
+			$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=evaluation', $emundusUser->menutype], 'true');
+		}
+
+		$response = EmundusResponse::ok($files_menu->route, Text::_('COM_EMUNDUS_FILTER_SAVED_SUCCESSFULLY'));
+		$this->sendJsonResponse($response);
 	}
 }

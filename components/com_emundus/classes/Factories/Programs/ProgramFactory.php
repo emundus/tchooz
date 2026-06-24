@@ -30,7 +30,7 @@ class ProgramFactory
 
 	public static function fromDbObject(object|array $dbObject, $withRelations = true, $exceptRelations = [], ?DatabaseDriver $db = null): ProgramEntity
 	{
-		if(is_object($dbObject))
+		if (is_object($dbObject))
 		{
 			$dbObject = (array) $dbObject;
 		}
@@ -42,11 +42,11 @@ class ProgramFactory
 			published: (bool) $dbObject['published'],
 			notes: $dbObject['notes'],
 			programmes: $dbObject['programmes'],
-			synthesis: $dbObject['synthesis'],
+			synthesis: $dbObject['synthesis'] ?? '',
 			applyOnline: (bool) $dbObject['apply_online'],
 			ordering: (int) $dbObject['ordering'],
-			logo: $dbObject['logo'],
-			color: $dbObject['color']
+			logo: !empty($dbObject['logo']) ? $dbObject['logo'] : null,
+			color: !empty($dbObject['color']) ? $dbObject['color'] : null
 		);
 	}
 }

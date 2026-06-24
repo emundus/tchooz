@@ -57,4 +57,98 @@ export default {
 			};
 		}
 	},
+
+	async updateContactFiles(contactId, filesIds) {
+		try {
+			return await fetchClient.post('updatecontactfiles', {
+				contact_id: contactId,
+				filesIds: filesIds,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+			};
+		}
+	},
+
+	async updateOrganizationFiles(organizationId, fnums) {
+		try {
+			return await fetchClient.post('updateorganizationfiles', {
+				organization_id: organizationId,
+				fnums: fnums,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+			};
+		}
+	},
+
+	async updateFileContacts(data) {
+		try {
+			return await fetchClient.post('updatefilecontacts', data);
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+			};
+		}
+	},
+
+	async getFileContacts(fnum) {
+		try {
+			return await fetchClient.get('getfilecontacts', { fnum: fnum });
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+			};
+		}
+	},
+
+	async updateFileOrganizations(data) {
+		try {
+			return await fetchClient.post('updatefileorganizations', data);
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+			};
+		}
+	},
+
+	async getFileOrganizations(fnum) {
+		try {
+			return await fetchClient.get('getfileorganizations', { fnum: fnum });
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+			};
+		}
+	},
+
+	async getContactFiles(id) {
+		try {
+			return await fetchClient.get('getcontactfiles', { id: id });
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+			};
+		}
+	},
+
+	async getOrganizationFiles(id) {
+		try {
+			return await fetchClient.get('getorganizationfiles', { id: id });
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+			};
+		}
+	},
 };

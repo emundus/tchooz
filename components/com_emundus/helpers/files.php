@@ -5395,6 +5395,24 @@ class EmundusHelperFiles
 
 									$where['q'] .= ' AND ' . $this->writeQueryWithOperator($file_access_alias . '.expiration_date', $filter['value'], $filter['operator'], 'date');
 									break;
+								case 'unread_messages':
+									// unread message = a chatroom message of the dossier with state = 0 (same definition as the "unread_messages" list column)
+									$unread_exists = ' EXISTS (SELECT 1
+                                            FROM #__emundus_chatroom AS ec_unread
+                                            JOIN #__messages AS m_unread ON m_unread.page = ec_unread.id AND m_unread.state = 0
+                                            WHERE ec_unread.fnum = jecc.fnum)';
+
+									$unread_values  = is_array($filter['value']) ? $filter['value'] : [$filter['value']];
+									$with_unread    = in_array(1, $unread_values);
+									$without_unread = in_array(0, $unread_values);
+
+									if ($with_unread && !$without_unread) {
+										$where['q'] .= ' AND' . $unread_exists;
+									}
+									elseif ($without_unread && !$with_unread) {
+										$where['q'] .= ' AND NOT' . $unread_exists;
+									}
+									break;
 								default:
 									break;
 							}
@@ -6931,6 +6949,33 @@ class EmundusHelperFiles
 		}
 
 		return $fnum;
+	}
+
+	/**
+	 * Batch resolution of candidature ids into their fnums.
+	 *
+	 * @param   int[]  $ids  Candidature ids
+	 *
+	 * @return string[] List of fnums (empty when no id provided or on error)
+	 */
+	public static function getFnumsFromIds(array $ids): array {
+		if (empty($ids)) {
+			return [];
+		}
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+		$query->select('fnum')
+			->from('#__emundus_campaign_candidature')
+			->where('id IN (' . implode(',', array_map('intval', $ids)) . ')');
+
+		try {
+			$db->setQuery($query);
+			return $db->loadColumn();
+		} catch (Exception $e) {
+			Log::add('Failed to get fnums from ids : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			return [];
+		}
 	}
 
 	/**

@@ -159,9 +159,10 @@ export default {
 			};
 		}
 	},
-	async getCampaignById(campaignId) {
+	async getCampaignById(campaignId, lang = null) {
 		try {
-			return await client.get('getcampaignbyid&id=' + campaignId);
+			const params = 'getcampaignbyid&id=' + campaignId + (lang ? '&lang=' + lang : '');
+			return await client.get(params);
 		} catch (e) {
 			return {
 				status: false,

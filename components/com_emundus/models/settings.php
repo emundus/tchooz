@@ -35,6 +35,7 @@ use Symfony\Component\Yaml\Yaml;
 use Tchooz\Entities\Fields\PasswordField;
 use Tchooz\Entities\Upload\UploadEntity;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
+use Tchooz\Services\Authentication\LoginExclusionService;
 use Tchooz\Services\Integrations\IntegrationConfigurationRegistry;
 use Web357\Plugin\System\Microsoftoutlook365mailconnect\Extension\Microsoftoutlook365mailconnect;
 use Web357\Plugin\System\Microsoftoutlook365mailconnect\Helper\MicrosoftOutlookApplicationHelper;
@@ -2017,6 +2018,9 @@ class EmundusModelSettings extends ListModel
 		$params['emundus']['enable_user_categories']                = $emundus_parameters->get('enable_user_categories', 0);
 		$params['emundus']['user_category_mandatory']               = $emundus_parameters->get('user_category_mandatory', 0);
 		$params['emundus']['custom_actions']                        = $emundus_parameters->get('custom_actions', '[]');
+		$params['emundus'][LoginExclusionService::PARAM_ENABLED]    = $emundus_parameters->get(LoginExclusionService::PARAM_ENABLED, 0);
+		$params['emundus'][LoginExclusionService::PARAM_PATTERNS]   = $emundus_parameters->get(LoginExclusionService::PARAM_PATTERNS, '');
+		$params['emundus'][LoginExclusionService::PARAM_MESSAGE]    = $emundus_parameters->get(LoginExclusionService::PARAM_MESSAGE, '');
 
 		foreach ($settings_applicants as $settings_applicant)
 		{

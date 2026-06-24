@@ -488,6 +488,9 @@ function openFiles(fnum, page = 0, vue = false) {
     }
 
     loadAssocFilesSection(fnum.fnum);
+    loadAssocContactsSection(fnum.fnum);
+    loadAssocOrganizationsSection(fnum.fnum);
+
 
     $.ajax({
         type: 'get',
@@ -692,6 +695,54 @@ function loadAssocFilesSection(fnum)
                     document.getElementById('em-assoc-files').style.display = 'none';
                 }
 
+            },
+            error: function (jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+}
+
+function loadAssocContactsSection(fnum)
+{
+    if (document.getElementById('em-assoc-contacts')) {
+        $('#em-assoc-contacts .panel-body').empty();
+
+        $.ajax({
+            type: 'get',
+            url: '/index.php?option=com_emundus&view=application&fnum=' + fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_contacts',
+            dataType: 'html',
+            success: function (result) {
+                if (result) {
+                    $('#em-assoc-contacts .panel-body').append(result);
+                    document.getElementById('em-assoc-contacts').style.display = 'block';
+                } else {
+                    document.getElementById('em-assoc-contacts').style.display = 'none';
+                }
+            },
+            error: function (jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+}
+
+function loadAssocOrganizationsSection(fnum)
+{
+    if (document.getElementById('em-assoc-organizations')) {
+        $('#em-assoc-organizations .panel-body').empty();
+
+        $.ajax({
+            type: 'get',
+            url: '/index.php?option=com_emundus&view=application&fnum=' + fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_organizations',
+            dataType: 'html',
+            success: function (result) {
+                if (result) {
+                    $('#em-assoc-organizations .panel-body').append(result);
+                    document.getElementById('em-assoc-organizations').style.display = 'block';
+                } else {
+                    document.getElementById('em-assoc-organizations').style.display = 'none';
+                }
             },
             error: function (jqXHR) {
                 console.log(jqXHR.responseText);
@@ -4384,6 +4435,55 @@ $(document).ready(function() {
                     $('#data').append(data);
                 });
                 break;
+
+            case 'contact':
+                fnums = getUserCheckArray();
+
+                swal_popup_class = 'em-w-auto';
+                swal_show_confirm_button = false;
+                swal_show_cancel_button = false;
+                title = 'COM_EMUNDUS_ACCESS_UPDATE_ASSOCIATED_CONTACTS';
+                html = '<div id="data" class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-min-w-[20vw] tw-min-h-[20vh]"><div id="update-associated-contacts-loader" class="em-loader"></div><span id="update-associated-contacts-loader-message" class="tw-mt-1">' + Joomla.Text._('COM_EMUNDUS_UPDATE_ASSOCIATED_CONTACTS_ACCESS_LOADER') + '</span></div>';
+
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({fnums: fnums}),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    cache: "no-cache"
+                }).then(response => response.text()).then(data => {
+                    document.getElementById("update-associated-contacts-loader").remove();
+                    document.getElementById("update-associated-contacts-loader-message").remove();
+                    document.getElementById("data").classList.remove('tw-justify-center');
+                    $('#data').append(data);
+                });
+                break;
+
+            case 'organization':
+                fnums = getUserCheckArray();
+
+                swal_popup_class = 'em-w-auto';
+                swal_show_confirm_button = false;
+                swal_show_cancel_button = false;
+                title = 'COM_EMUNDUS_ACCESS_UPDATE_ASSOCIATED_ORGANIZATIONS';
+                html = '<div id="data" class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-min-w-[20vw] tw-min-h-[20vh]"><div id="update-associated-organizations-loader" class="em-loader"></div><span id="update-associated-organizations-loader-message" class="tw-mt-1">' + Joomla.Text._('COM_EMUNDUS_UPDATE_ASSOCIATED_ORGANIZATIONS_ACCESS_LOADER') + '</span></div>';
+
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({fnums: fnums}),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    cache: "no-cache"
+                }).then(response => response.text()).then(data => {
+                    document.getElementById("update-associated-organizations-loader").remove();
+                    document.getElementById("update-associated-organizations-loader-message").remove();
+                    document.getElementById("data").classList.remove('tw-justify-center');
+                    $('#data').append(data);
+                });
+                break;
+
 
             case 'crm':
                 multipleSteps = true;

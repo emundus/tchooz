@@ -9,6 +9,7 @@
 
 namespace Tchooz\Entities\Contacts;
 
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 
 class OrganizationEntity
@@ -34,8 +35,9 @@ class OrganizationEntity
 
 	private ?VerifiedStatusEnum $status;
 
-	public function __construct(int $id, string $name, ?string $description = null, ?string $url_website = null, ?AddressEntity $address = null, ?string $identifier_code = null, ?string $logo = null, ?array $referent_contacts = [],  ?array $other_contacts = [], bool $published = true, ?VerifiedStatusEnum $status = VerifiedStatusEnum::VERIFIED)
-	{
+	private ?array $application_files;
+
+	public function __construct(int $id, string $name, ?string $description = null, ?string $url_website = null, ?AddressEntity $address = null, ?string $identifier_code = null, ?string $logo = null, ?array $referent_contacts = [],  ?array $other_contacts = [], bool $published = true, ?VerifiedStatusEnum $status = VerifiedStatusEnum::VERIFIED, ?array $application_files = [])	{
 		$this->name            = $name;
 		$this->description     = $description;
 		$this->url_website     = $url_website;
@@ -46,6 +48,7 @@ class OrganizationEntity
 		$this->referent_contacts = [];
 		$this->other_contacts = [];
 		$this->status = $status;
+		$this->application_files = [];
 
 		if(!empty($referent_contacts))
 		{
@@ -67,6 +70,19 @@ class OrganizationEntity
 				}
 			}
 		}
+
+
+		if(!empty($application_files))
+		{
+			foreach ($application_files as $application_file)
+			{
+				if ($application_file instanceof ApplicationFileEntity)
+				{
+					$this->application_files[] = $application_file;
+				}
+			}
+		}
+
 		$this->published       = $published;
 	}
 
@@ -184,6 +200,20 @@ class OrganizationEntity
 	public function setStatus(?VerifiedStatusEnum $status): void
 	{
 		$this->status = $status;
+	}
+
+
+	/**
+	 * @return ?ApplicationFileEntity[]
+	 */
+	public function getApplicationFiles(): ?array
+	{
+		return $this->application_files;
+	}
+
+	public function setApplicationFiles(?array $application_files): void
+	{
+		$this->application_files = $application_files;
 	}
 
 	public function __serialize(): array

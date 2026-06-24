@@ -63,11 +63,13 @@ class ContactEntity
 		$this->service  = $service;
 		$this->status = $status;
 
-		if($gender instanceof GenderEnum || is_null($gender)) {
+		if ($gender instanceof GenderEnum || is_null($gender))
+		{
 			$this->gender = $gender;
 		}
-		else {
-			$this->gender = GenderEnum::from($gender) ?? null;
+		else
+		{
+			$this->gender = GenderEnum::tryFrom($gender) ?? null;
 		}
 
 		if(!empty($countries))
@@ -262,6 +264,9 @@ class ContactEntity
 		$this->organizations = $organizations;
 	}
 
+	/**
+	 * @return array<ApplicationFileEntity>|null
+	 */
 	public function getApplicationFiles(): ?array
 	{
 		return $this->application_files;

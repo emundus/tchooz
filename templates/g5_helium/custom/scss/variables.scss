@@ -432,6 +432,17 @@
   --sx-color-surface-tint: #6750a4;
   --sx-color-neutral: var(--sx-color-outline);
   --sx-color-neutral-variant: var(--sx-color-outline-variant);
+
+  // eMundus UI override
+  --color-primary-100: hsl(from var(--color-primary-200) h s l / 15%);
+  --color-primary-200: var(--em-profile-color);
+  --color-primary-300: hsl(from var(--color-primary-200) h s l / 90%);
+  --color-primary-400: color-mix(in srgb,var(--color-primary-200),#000 15%);
+
+  --color-secondary-100: hsl(from var(--color-secondary-200) h s l / 15%);
+  --color-secondary-200: var(--em-secondary-color);
+  --color-secondary-300: hsl(from var(--color-secondary-200) h s l / 90%);
+  --color-secondary-400: color-mix(in srgb,var(--color-secondary-200),#000 15%);
 }
 
 

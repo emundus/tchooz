@@ -100,35 +100,6 @@ class EmundusControllerContacts extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
-	public function savefilteremail()
-	{
-		$email = $this->input->getString('email', 0);
-
-		$session = Factory::getApplication()->getSession();
-		$session->set('em-quick-search-filters', [
-			[
-				'value' => $email,
-				'scope' => 'u.email'
-			]
-		]);
-
-		$menu = Factory::getApplication()->getMenu();
-		$emundusUser      = $this->app->getSession()->get('emundusUser');
-		$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
-
-		if(empty($files_menu)) {
-			$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=evaluation', $emundusUser->menutype], 'true');
-		}
-
-		$response = [];
-		$response['code']    = 200 ;
-		$response['message'] = 'Filter saved successfully.';
-		$response['data']    = $files_menu->route;
-		$response['status']  = true;
-
-		$this->sendJsonResponse($response);
-	}
-
 	public function getContactOptions(): void
 	{
 		$response = ['code' => 403, 'status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];

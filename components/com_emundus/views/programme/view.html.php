@@ -14,14 +14,19 @@ jimport('joomla.application.component.view');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Entities\Programs\ProgramEntity;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Programs\ProgramRepository;
 
 /**
  * View class for a list of Emundus.
  */
 class EmundusViewProgramme extends JViewLegacy
 {
+	protected ?ProgramEntity $programEntity = null;
+
 	/**
 	 * Display the view
 	 */
@@ -40,13 +45,22 @@ class EmundusViewProgramme extends JViewLegacy
 
 		if ($layout === 'edit') {
 			$actionRepository = new ActionRepository();
-			$programAction   = $actionRepository->getByName('program');
+			$programAction   = $actionRepository->getByName(ActionEnum::PROGRAM->value);
 			if (!EmundusHelperAccess::asAccessAction($programAction->getId(), CrudEnum::UPDATE->value, $this->user->id)) {
 				$app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
 				$app->redirect('/');
 			}
 
-			$this->program_id = $jinput->getInt('id', 0);
+			$programRepository = new ProgramRepository();
+
+			$program_id = $jinput->getInt('id', 0);
+			if (!empty($program_id))
+			{
+				$this->programEntity = $programRepository->getById($program_id);
+			} else
+			{
+				$this->programEntity = new ProgramEntity('', '');
+			}
 		} else {
 			$this->com_emundus_programme_progdesc_class = '';
 			$this->com_emundus_programme_campdesc_class = '';

@@ -25,15 +25,4 @@ export default {
 			};
 		}
 	},
-
-	async saveFilterEmail(email) {
-		try {
-			return await fetchClient.get('savefilteremail', { email: email });
-		} catch (e) {
-			return {
-				status: false,
-				error: e,
-			};
-		}
-	},
 };
