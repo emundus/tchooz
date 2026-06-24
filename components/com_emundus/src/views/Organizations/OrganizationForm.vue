@@ -150,6 +150,38 @@ export default {
 					optional: true,
 				},
 				{
+					param: 'application_files',
+					type: 'multiselect',
+					multiselectOptions: {
+						noOptions: false,
+						multiple: true,
+						taggable: false,
+						searchable: true,
+						internalSearch: false,
+						asyncRoute: 'getapplicants',
+						asyncController: 'sign',
+						optionsPlaceholder: '',
+						selectLabel: '',
+						selectGroupLabel: '',
+						selectedLabel: '',
+						deselectedLabel: '',
+						deselectGroupLabel: '',
+						noOptionsText: '',
+						noResultsText: 'COM_EMUNDUS_MULTISELECT_NORESULTS',
+						tagValidations: [],
+						options: [],
+						optionsLimit: 30,
+						label: 'name',
+						trackBy: 'value',
+					},
+					value: [],
+					reload: 0,
+					label: 'COM_EMUNDUS_ONBOARD_CRC_UPDATE_CONTACT_FILES_ASSOCIATED',
+					placeholder: 'COM_EMUNDUS_ONBOARD_CRC_UPDATE_CONTACT_FILES_ASSOCIATED_PLACEHOLDER',
+					displayed: true,
+					optional: true,
+				},
+				{
 					param: 'published',
 					type: 'toggle',
 					value: '1',
@@ -195,36 +227,6 @@ export default {
 					optional: true,
 				},
 				{
-					param: 'country',
-					type: 'multiselect',
-					multiselectOptions: {
-						noOptions: false,
-						multiple: false,
-						taggable: false,
-						searchable: true,
-						internalSearch: false,
-						optionsPlaceholder: '',
-						selectLabel: '',
-						selectGroupLabel: '',
-						selectedLabel: '',
-						deselectedLabel: '',
-						deselectGroupLabel: '',
-						noOptionsText: '',
-						noResultsText: 'COM_EMUNDUS_MULTISELECT_NORESULTS',
-						tagValidations: [],
-						options: [],
-						optionsLimit: 30,
-						label: 'name',
-						trackBy: 'value',
-					},
-					value: 0,
-					label: 'COM_EMUNDUS_ONBOARD_ADD_CONTACT_ADDRESS_COUNTRY',
-					placeholder: '',
-					displayed: true,
-					optional: true,
-					width: 'tw-w-1/2',
-				},
-				{
 					param: 'postal_code',
 					type: 'text',
 					placeholder: '',
@@ -256,6 +258,46 @@ export default {
 					value: '',
 					label: 'COM_EMUNDUS_ONBOARD_ADD_CONTACT_ADDRESS_REGION',
 					helptext: '',
+					displayed: true,
+					optional: true,
+				},
+				{
+					param: 'country',
+					type: 'multiselect',
+					multiselectOptions: {
+						noOptions: false,
+						multiple: false,
+						taggable: false,
+						searchable: true,
+						internalSearch: false,
+						optionsPlaceholder: '',
+						selectLabel: '',
+						selectGroupLabel: '',
+						selectedLabel: '',
+						deselectedLabel: '',
+						deselectGroupLabel: '',
+						noOptionsText: '',
+						noResultsText: 'COM_EMUNDUS_MULTISELECT_NORESULTS',
+						tagValidations: [],
+						options: [],
+						optionsLimit: 30,
+						label: 'name',
+						trackBy: 'value',
+					},
+					value: 0,
+					label: 'COM_EMUNDUS_ONBOARD_ADD_CONTACT_ADDRESS_COUNTRY',
+					placeholder: '',
+					displayed: true,
+					optional: true,
+					width: 'tw-w-1/2',
+				},
+				{
+					param: 'address_description',
+					type: 'textarea',
+					placeholder: '',
+					value: '',
+					label: 'COM_EMUNDUS_ONBOARD_ADD_CONTACT_ADDRESS_DESCRIPTION',
+					helptext: 'COM_EMUNDUS_ONBOARD_ADD_CONTACT_ADDRESS_DESCRIPTION_HELP',
 					displayed: true,
 					optional: true,
 				},
@@ -318,8 +360,12 @@ export default {
 
 					if (this.organization.address) {
 						this.address_fields.forEach((field) => {
-							if (this.organization.address[field.param]) {
-								field.value = this.organization.address[field.param];
+							// The address entity serializes its description under `description`,
+							// but the form param is `address_description` to avoid colliding with
+							// the organization's own `description` field on save.
+							const sourceKey = field.param === 'address_description' ? 'description' : field.param;
+							if (this.organization.address[sourceKey]) {
+								field.value = this.organization.address[sourceKey];
 							}
 						});
 					}
@@ -331,6 +377,11 @@ export default {
 					this.setting_fields.find((field) => field.param === 'other_contacts').value = [];
 					for (const contact of this.organization.other_contacts) {
 						this.setting_fields.find((field) => field.param === 'other_contacts').value.push(contact.id);
+					}
+
+					this.setting_fields.find((field) => field.param === 'application_files').value = [];
+					for (const application_file of this.organization.application_files) {
+						this.setting_fields.find((field) => field.param === 'application_files').value.push(application_file.id);
 					}
 
 					if (this.organization.logo) {

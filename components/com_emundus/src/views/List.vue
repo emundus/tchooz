@@ -45,6 +45,7 @@
 				@select-tab="onCheckAllitems"
 				@action="onClickAction"
 				@exp="onClickExport"
+				@imp="onClickImport"
 				@update-items="getListItems"
 			/>
 
@@ -320,8 +321,9 @@
 													:name="'modal-component'"
 													transition="nice-modal-fade"
 													:classes="modalClasses"
-													:height="modalHeight"
-													:width="modalWidth"
+													:height="currentComponentHeight || modalHeight"
+													:max-height="currentComponentMaxHeight || ''"
+													:width="currentComponentWidth || modalWidth"
 													:delay="100"
 													:adaptive="true"
 													:clickToClose="false"
@@ -330,6 +332,7 @@
 													<component
 														:is="resolvedComponent"
 														:item="item"
+														:tab="currentTab.key"
 														@close="closePopup()"
 														@update-items="getListItems()"
 													/>
@@ -421,7 +424,9 @@
 						:name="'modal-component'"
 						transition="nice-modal-fade"
 						:classes="modalClasses"
-						:width="'600px'"
+						:width="this.currentComponentWidth || '600px'"
+						:height="this.currentComponentHeight || 'auto'"
+						:max-height="this.currentComponentMaxHeight || ''"
 						:delay="100"
 						:adaptive="true"
 						:clickToClose="false"
@@ -430,6 +435,7 @@
 						<component
 							:is="resolvedComponent"
 							:items="checkedItems"
+							:tab="currentTab.key"
 							@close="closePopup()"
 							@update-items="getListItems"
 						/>
@@ -460,6 +466,8 @@ import EditSlot from '@/views/Events/EditSlot.vue';
 import AssociateUser from '@/components/Events/Popup/AssociateUser.vue';
 import ContactDetails from '@/components/Contacts/ContactDetails.vue';
 import OrganizationDetails from '@/components/Organizations/OrganizationDetails.vue';
+import UpdateContactFiles from '@/components/Contacts/UpdateContactFiles.vue';
+import UpdateOrganizationFiles from '@/components/Organizations/UpdateOrganizationFiles.vue';
 import CampaignDetails from '@/components/Campaigns/CampaignDetails.vue';
 import ProgramDetails from '@/components/Campaigns/ProgramDetails.vue';
 import EventDetails from '@/components/Events/EventDetails.vue';
@@ -469,6 +477,7 @@ import Import from '@/components/Campaigns/Import.vue';
 import SaveRequest from '@/views/Sign/SaveRequest.vue';
 import UpdateApplicationChoiceState from '@/components/Application/UpdateApplicationChoiceState.vue';
 import AddUser from '@/components/Users/AddUser.vue';
+import ImportEntity from '@/components/Import/ImportEntity.vue';
 
 /* Services */
 import settingsService from '@/services/settings.js';
@@ -498,6 +507,8 @@ export default {
 		AssociateUser,
 		ContactDetails,
 		OrganizationDetails,
+		UpdateContactFiles,
+		UpdateOrganizationFiles,
 		CampaignDetails,
 		ProgramDetails,
 		GroupDetails,
@@ -506,6 +517,7 @@ export default {
 		SaveRequest,
 		UpdateApplicationChoiceState,
 		AddUser,
+		ImportEntity,
 	},
 	props: {
 		defaultLists: {
@@ -559,6 +571,8 @@ export default {
 				AssociateUser,
 				ContactDetails,
 				OrganizationDetails,
+				UpdateContactFiles,
+				UpdateOrganizationFiles,
 				CampaignDetails,
 				ProgramDetails,
 				EventDetails,
@@ -568,6 +582,7 @@ export default {
 				SaveRequest,
 				UpdateApplicationChoiceState,
 				AddUser,
+				ImportEntity,
 			},
 
 			lists: {},
@@ -596,6 +611,9 @@ export default {
 
 			currentComponent: null,
 			currentComponentElementId: null,
+			currentComponentWidth: null,
+			currentComponentHeight: null,
+			currentComponentMaxHeight: null,
 			currentModalClasses: null,
 			lastItemSelected: null,
 			showModal: false,
@@ -1022,6 +1040,25 @@ export default {
 				this.currentComponent = action.component;
 				this.showModal = true;
 				this.currentComponentElementId = itemId;
+
+				if (action.height) {
+					this.currentComponentHeight = action.height;
+				} else {
+					this.currentComponentHeight = null;
+				}
+
+				if (action.maxHeight) {
+					this.currentComponentMaxHeight = action.maxHeight;
+				} else {
+					this.currentComponentMaxHeight = null;
+				}
+
+				if (action.width) {
+					this.currentComponentWidth = action.width;
+				} else {
+					this.currentComponentWidth = null;
+				}
+
 				return;
 			}
 
@@ -1123,6 +1160,9 @@ export default {
 		},
 		resetLastItemSelected() {
 			this.lastItemSelected = null;
+		},
+		onClickImport(imp, event = null) {
+			this.onClickAction(imp, null, false, event);
 		},
 		onClickExport(exp, event = null) {
 			if (event !== null) {

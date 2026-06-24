@@ -39,9 +39,17 @@ export default {
 			type: String,
 			default: '100%',
 		},
+		minWidth: {
+			type: String,
+			default: '',
+		},
 		height: {
 			type: String,
 			default: 'auto',
+		},
+		maxHeight: {
+			type: String,
+			default: '',
 		},
 		transition: {
 			type: String,
@@ -112,7 +120,13 @@ export default {
 				document.body.style.overflow = 'hidden';
 			}
 			this.$refs.modal_container.style.width = this.width;
+			if (this.minWidth && this.minWidth.length > 0 && this.minWidth !== 'auto') {
+				this.$refs.modal_container.style.minWidth = this.minWidth;
+			}
 			this.$refs.modal_container.style.height = this.height;
+			if (this.maxHeight && this.maxHeight.length > 0) {
+				this.$refs.modal_container.style.maxHeight = this.maxHeight;
+			}
 			this.$refs.modal_container.style.zIndex = 999999;
 			this.$refs.modal_container.style.opacity = 1;
 			this.$refs.modal_container.style.top = this.top;

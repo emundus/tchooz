@@ -10,6 +10,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Layout\LayoutHelper;
 use phpDocumentor\Reflection\DocBlock\Tags\Reference\Reference;
 use Tchooz\Factories\LayoutFactory;
 
@@ -85,36 +86,11 @@ $data['user'] = $this->_user->id;
         <div id="application-form-container" class="tw-relative tw-flex tw-flex-row tw-bg-neutral-100">
             <div id="application-form-container-content" class="tw-w-full">
 
-                <?php if (!EmundusHelperAccess::isDataAnonymized($this->_user->id) && $this->header == 1 && !$this->applicant->is_anonym && !$this->applicationFile->isAnonymous()) : ?>
-                    <div class="em-flex-row em-mt-16">
-                        <div class="em-flex-row em-small-flex-column em-small-align-items-start">
-                            <div class="em-profile-picture-big no-hover"
-                                <?php if (empty($this->applicant->profile_picture)) : ?>
-                                    style="background-image:url(<?php echo JURI::base() ?>/media/com_emundus/images/profile/default-profile.jpg)"
-                                <?php else : ?>
-                                    style="background-image:url(<?php echo JURI::base() ?>/<?php echo $this->applicant->profile_picture ?>)"
-                                <?php endif; ?>
-                            >
-                            </div>
-                        </div>
-                        <div class="tw-ml-4">
-                            <p class="em-font-weight-500">
-                                <?php echo $this->applicant->lastname . ' ' . $this->applicant->firstname; ?>
-                            </p>
-                            <p><?php echo $this->fnum ?></p>
-                            <?php if ($this->showReference) : ?>
-                                <div class="tw-flex tw-items-end tw-gap-1">
-                                    <?php if (!empty($this->reference)) : ?>
-                                        <label class="tw-mb-0"><?= $this->reference->getReference(); ?></label>
-                                    <?php endif; ?>
-                                    <?php if (!empty($this->shortReference)) : ?>
-                                        <span class="tw-text-sm tw-text-neutral-500">#<?= $this->shortReference; ?></span>
-                                    <?php endif; ?>
-                                    <span class="material-symbols-outlined !tw-text-base tw-cursor-pointer" onclick="copyReference()">content_copy</span>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
+                <?php if ($this->header == 1) : ?>
+                    <?php echo LayoutHelper::render('emundus.application.applicant-header', [
+                        'applicant'       => $this->applicant,
+                        'applicationFile' => $this->applicationFile,
+                    ]); ?>
                 <?php endif; ?>
 
                 <div class="panel-body Marginpanel-body em-container-form-body !tw-bg-neutral-100">
@@ -235,23 +211,6 @@ $data['user'] = $this->_user->id;
 
             e.preventDefault();
             container.scrollLeft = scrollLeft - (e.clientX - startX);
-        });
-    }
-
-    function copyReference() {
-        let reference = '<?php echo !empty($this->reference) ? ($this->reference->getReference() . '#' . $this->shortReference) : $this->shortReference ; ?>';
-
-        // Copy to clipboard
-        navigator.clipboard.writeText(reference);
-        Swal.fire({
-            title: '<?php echo Text::_('COM_EMUNDUS_REFERENCE_COPIED_TO_CLIPBOARD'); ?>',
-            icon: 'success',
-            showConfirmButton: false,
-            customClass: {
-                title: 'em-swal-title',
-                actions: 'em-swal-single-action',
-            },
-            timer: 1500,
         });
     }
 </script>

@@ -670,6 +670,7 @@ class EmundusModelProgramme extends ListModel
 	 * @return false|mixed|string
 	 *
 	 * @since version 1.0
+	 * @depecated Use ProgramRepository::flush() instead
 	 */
 	public function addProgram($data, $user = null)
 	{

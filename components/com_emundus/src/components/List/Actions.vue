@@ -1,10 +1,12 @@
 <script>
 import Popover from '@/components/Popover.vue';
 import Exports from '@/components/List/Exports.vue';
+import Imports from '@/components/List/Imports.vue';
 
 export default {
 	name: 'Actions',
 	components: {
+		Imports,
 		Exports,
 		Popover,
 	},
@@ -128,6 +130,10 @@ export default {
 			this.$emit('exp', exp);
 		},
 
+		onClickImport(imp) {
+			this.$emit('imp', imp);
+		},
+
 		updateItems(page, tabKey) {
 			this.$emit('updateItems', page, tabKey);
 		},
@@ -193,6 +199,18 @@ export default {
 				v-model:view="currentView"
 				v-model:searches="currentSearches"
 				@exp="onClickExport"
+				@update-items="updateItems"
+			/>
+
+			<Imports
+				:items="items"
+				:checkedItems="checkedItems"
+				:views="views"
+				:tab="tab"
+				:tab-key="tabKey"
+				v-model:view="currentView"
+				v-model:searches="currentSearches"
+				@imp="onClickImport"
 				@update-items="updateItems"
 			/>
 

@@ -25,22 +25,19 @@ import clickOutside from '@/directives/clickOutside.js';
 
 /** STYLE **/
 import './assets/css/main.scss';
+import '@emundus/ui/style.css';
 
 /** COMPONENTS **/
 import Attachments from '@/views/Attachments.vue';
 import Comments from '@/views/Comments.vue';
-import WorkflowEdit from '@/views/Workflows/WorkflowEdit.vue';
-import ProgramEdit from '@/views/Program/ProgramEdit.vue';
 import History from '@/views/History.vue';
 import Expert from '@/views/Expert/Expert.vue';
-import Filters from '@/views/Filters.vue';
 import Dashboard from '@/views/Dashboard/Dashboard.vue';
 import SMSEdit from '@/views/SMS/SMSEdit.vue';
 import SMSAppFile from '@/views/SMS/SMSAppFile.vue';
 import SMSSend from '@/views/SMS/SMSSend.vue';
 import Rankings from '@/views/Ranking/rankings.vue';
 import CartAppFile from '@/views/Payment/CartAppFile.vue';
-import OrganizationForm from '@/views/Organizations/OrganizationForm.vue';
 import ApplicationChoices from '@/views/Application/ApplicationChoices.vue';
 import Exports from '@/views/Exports/Exports.vue';
 import ApplicationChoicesList from '@/views/Application/ApplicationChoicesList.vue';
@@ -100,6 +97,14 @@ if (document) {
 	if (generateReferenceElement) {
 		elements.push(generateReferenceElement);
 	}
+	const updateAssociatedContactsElement = document.getElementById('em-update-associated-contacts');
+	if (updateAssociatedContactsElement) {
+		elements.push(updateAssociatedContactsElement);
+	}
+	const updateAssociatedOrganizationsElement = document.getElementById('em-update-associated-organizations');
+	if (updateAssociatedOrganizationsElement) {
+		elements.push(updateAssociatedOrganizationsElement);
+	}
 
 	const fabrikVueElements = document.querySelectorAll('.fabrik-vue-element');
 	fabrikVueElements.forEach((fabrikElement) => {
@@ -118,7 +123,6 @@ if (document) {
 				const componentNames = [
 					'Attachments',
 					'Comments',
-					'Program/ProgramEdit',
 					'History',
 					'Expert/Expert',
 					'Exports/Exports',
@@ -195,12 +199,6 @@ if (document) {
 					case 'SMS/SMSAppFile':
 						app = createApp(SMSAppFile, {
 							fnum: datas.fnum,
-						});
-						break;
-					case 'Program/ProgramEdit':
-						app = createApp(ProgramEdit, {
-							programId: Number(datas.program_id),
-							crud: JSON.parse(datas.crud),
 						});
 						break;
 					case 'History':

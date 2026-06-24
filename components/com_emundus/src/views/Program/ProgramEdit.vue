@@ -3,115 +3,105 @@
 		id="program-edition-container"
 		class="em-card-shadow tw-m-4 tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6"
 	>
-		<button
-			type="button"
-			class="tw-group tw-flex tw-cursor-pointer tw-items-center tw-border-0 tw-font-semibold tw-text-link-regular"
-			@click="redirectJRoute('index.php?option=com_emundus&view=campaigns')"
-		>
-			<span class="material-symbols-outlined tw-mr-1 tw-text-link-regular">navigate_before</span>
-			<span class="group-hover:tw-underline">{{ translate('BACK') }}</span>
-		</button>
+		<Back :link="'index.php?option=com_emundus&view=campaigns'" />
 
-		<div class="tw-mt-4 tw-flex tw-items-center">
-			<h1 class="tw-mb-4">
-				{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_TITLE') }}
+		<div v-if="this.program.id">
+			<h1 class="tw-mt-4">
+				{{
+					translate('COM_EMUNDUS_PROGRAMS_EDITION_TITLE').replace('%s', this.program.label || this.program.code || '')
+				}}
 			</h1>
-		</div>
-		<h2 class="tw-mb-2">
-			{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_SUBTITLE') }}
-		</h2>
-		<p class="em-profile-font">
-			{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_INTRO') }}
-		</p>
-		<hr />
+			<p class="em-profile-font">
+				{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_INTRO') }}
+			</p>
+			<hr />
 
-		<div class="tw-mt-4">
-			<Tabs :tabs="tabs" :classes="'tw-overflow-auto tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
+			<div class="tw-mt-4">
+				<Tabs :tabs="tabs" :classes="'tw-overflow-auto tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
 
-			<div
-				class="tw-bg-(--neutral-0) tw-relative tw-w-full tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-p-6"
-			>
-				<div class="tw-w-full" v-show="selectedMenuItem.code === 'general'">
-					<iframe
-						class="hide-titles tw-w-full"
-						style="height: 100vh"
-						:src="
-							'/index.php?option=com_fabrik&view=form&formid=108&rowid=' + this.programId + '&tmpl=component&iframe=1'
-						"
-					>
-					</iframe>
-				</div>
-
-				<div class="tw-flex tw-w-full tw-flex-col tw-gap-2" v-show="selectedMenuItem.code === 'campaigns'">
-					<label class="em-profile-font tw-font-medium">{{
-						translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE')
-					}}</label>
-					<ul>
-						<li v-for="campaign in campaigns" :key="campaign.id">
-							<a
-								v-if="crud.campaign && crud.campaign.u"
-								class="em-profile-font tw-cursor-pointer"
-								@click="
-									redirectJRoute(
-										'index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + campaign.id,
-									)
-								"
-								target="_blank"
-								>{{ campaign.label }}</a
-							>
-							<span v-else class="em-profile-font">{{ campaign.label }}</span>
-						</li>
-					</ul>
-					<a @click="openCampaignsList()" class="em-profile-font tw-cursor-pointer tw-underline" target="_blank">
-						{{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS') }}
-					</a>
-				</div>
-
-				<div class="tw-flex tw-w-full tw-flex-col tw-gap-2" v-show="selectedMenuItem.code === 'workflows'">
-					<div class="tw-flex tw-flex-col">
-						<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_WORKFLOWS_ASSOCIATED_TITLE') }}</label>
-						<select v-model="workflowId">
-							<option v-for="workflow in workflowOptions" :key="workflow.id" :value="workflow.id">
-								{{ workflow.label }}
-							</option>
-						</select>
+				<div
+					class="tw-bg-(--neutral-0) tw-relative tw-w-full tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-p-6"
+				>
+					<div class="tw-w-full" v-show="selectedMenuItem.code === 'general'">
+						<ProgramForm :program="this.program" />
 					</div>
 
-					<div>
-						<a
-							@click="redirectJRoute('index.php?option=com_emundus&view=workflows')"
-							class="tw-cursor-pointer tw-underline"
-							target="_blank"
-						>
-							{{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_WORKFLOWS') }}
-						</a>
+					<div class="tw-flex tw-w-full tw-flex-col tw-gap-2" v-show="selectedMenuItem.code === 'campaigns'">
+						<label class="em-profile-font tw-font-medium">{{
+							translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE')
+						}}</label>
+						<ul>
+							<li v-for="campaign in campaigns" :key="campaign.id">
+								<Button
+									v-if="crud.campaign && crud.campaign.u"
+									variant="link"
+									@click="
+										redirectJRoute(
+											'index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + campaign.id,
+											true,
+										)
+									"
+								>
+									{{ campaign.label }}
+								</Button>
+								<span v-else class="em-profile-font">{{ campaign.label }}</span>
+							</li>
+						</ul>
+						<Button variant="link" @click="openCampaignsList()" class="tw-mt-2">
+							{{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS') }}
+						</Button>
 					</div>
 
-					<div class="tw-mt-2 tw-flex tw-justify-end">
-						<button class="tw-btn-primary" @click="updateProgramWorkflows">
-							{{ translate('SAVE') }}
-						</button>
+					<div class="tw-flex tw-w-full tw-flex-col tw-gap-2" v-show="selectedMenuItem.code === 'workflows'">
+						<div class="tw-flex tw-flex-col">
+							<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_WORKFLOWS_ASSOCIATED_TITLE') }}</label>
+							<select v-model="workflowId">
+								<option v-for="workflow in workflowOptions" :key="workflow.id" :value="workflow.id">
+									{{ workflow.label }}
+								</option>
+							</select>
+						</div>
+
+						<div>
+							<Button variant="link" @click="redirectJRoute('index.php?option=com_emundus&view=workflows', true)">
+								{{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_WORKFLOWS') }}
+							</Button>
+						</div>
+
+						<div class="tw-mt-2 tw-flex tw-justify-end">
+							<Button @click="updateProgramWorkflows">
+								{{ translate('SAVE') }}
+							</Button>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+		<Loader v-else />
 	</div>
 </template>
 
 <script>
 import campaignService from '@/services/campaign';
 import workflowService from '@/services/workflow';
+import programService from '@/services/programme';
 import Multiselect from 'vue-multiselect';
 import Tabs from '@/components/Utils/Tabs.vue';
 import settingsService from '@/services/settings.js';
 import { useGlobalStore } from '@/stores/global.js';
+import Back from '@/components/Utils/Back.vue';
+import ProgramForm from '@/views/Program/ProgramForm.vue';
+import Button from '@/components/Atoms/Button.vue';
+import alerts from '@/mixins/alerts.js';
+import Loader from '@/components/Atoms/Loader.vue';
 
 export default {
 	name: 'ProgramEdit',
-	components: { Tabs, Multiselect },
+	components: { Loader, Button, ProgramForm, Back, Tabs, Multiselect },
+	mixins: [alerts],
 	props: {
-		programId: {
-			type: Number,
+		program: {
+			type: Object,
 			required: true,
 		},
 		crud: {
@@ -121,7 +111,6 @@ export default {
 	},
 	data() {
 		return {
-			program: {},
 			campaigns: [],
 			workflowId: 0,
 			workflowOptions: [],
@@ -160,7 +149,6 @@ export default {
 
 		this.tabs[1].displayed = this.crud.campaign && this.crud.campaign.r;
 		this.tabs[2].displayed = this.crud.workflow && this.crud.workflow.r;
-		console.log(this.crud);
 	},
 	methods: {
 		getWorkflows() {
@@ -176,12 +164,12 @@ export default {
 			});
 		},
 		getAssociatedCampaigns() {
-			campaignService.getCampaignsByProgramId(this.programId).then((response) => {
+			campaignService.getCampaignsByProgramId(this.program.id).then((response) => {
 				this.campaigns = response.data;
 			});
 		},
 		getAssociatedWorkflow() {
-			workflowService.getWorkflowsByProgramId(this.programId).then((response) => {
+			workflowService.getWorkflowsByProgramId(this.program.id).then((response) => {
 				const workflows = response.data.map((workflow) => workflow.id);
 				if (workflows.length) {
 					this.workflowId = workflows[0];
@@ -189,13 +177,8 @@ export default {
 			});
 		},
 		updateProgramWorkflows() {
-			workflowService.updateProgramWorkflows(this.programId, [this.workflowId]).then((response) => {
-				Swal.fire({
-					icon: 'success',
-					title: this.translate('COM_EMUNDUS_PROGRAM_UPDATE_ASSOCIATED_WORKFLOW_SUCCESS'),
-					showConfirmButton: false,
-					timer: 1500,
-				});
+			workflowService.updateProgramWorkflows(this.program.id, [this.workflowId]).then((response) => {
+				this.alertSuccess(this.translate('COM_EMUNDUS_PROGRAM_UPDATE_ASSOCIATED_WORKFLOW_SUCCESS'));
 			});
 		},
 		openCampaignsList() {
@@ -205,8 +188,8 @@ export default {
 			}
 			this.redirectJRoute('index.php?option=com_emundus&view=campaigns');
 		},
-		redirectJRoute(link) {
-			settingsService.redirectJRoute(link, useGlobalStore().getCurrentLang);
+		redirectJRoute(link, newtab) {
+			settingsService.redirectJRoute(link, useGlobalStore().getCurrentLang, true, newtab);
 		},
 	},
 	computed: {

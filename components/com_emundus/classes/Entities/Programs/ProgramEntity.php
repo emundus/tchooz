@@ -9,14 +9,20 @@
 
 namespace Tchooz\Entities\Programs;
 
+use Tchooz\Attributes\ORM\Sanitize;
+use Tchooz\Traits\TraitSanitizable;
+
 class ProgramEntity
 {
+	use TraitSanitizable;
+
 	private int $id;
 
 	private string $code;
 
 	private string $label;
 
+	#[Sanitize]
 	private ?string $notes;
 
 	private bool $published;
@@ -36,19 +42,19 @@ class ProgramEntity
 
 	private ?string $color;
 
-	public function __construct(string $code, string $label, int $id = 0, bool $published = true, ?string $notes = '', ?string $programmes = '', ?string $synthesis = '', bool $applyOnline = false, ?int $ordering = 0, ?string $logo = '', ?string $color = '')
+	public function __construct(string $code, string $label, int $id = 0, bool $published = true, ?string $notes = '', ?string $programmes = '', ?string $synthesis = '', bool $applyOnline = false, ?int $ordering = 0, ?string $logo = null, ?string $color = '')
 	{
-		$this->id = $id;
-		$this->code = $code;
-		$this->label = $label;
-		$this->published = $published;
-		$this->notes = $notes;
-		$this->programmes = $programmes;
-		$this->synthesis = $synthesis;
+		$this->id          = $id;
+		$this->code        = $code;
+		$this->label       = $label;
+		$this->published   = $published;
+		$this->notes       = $notes;
+		$this->programmes  = $programmes;
+		$this->synthesis   = $synthesis;
 		$this->applyOnline = $applyOnline;
-		$this->ordering = $ordering;
-		$this->logo = $logo;
-		$this->color = $color;
+		$this->ordering    = $ordering;
+		$this->logo        = $logo;
+		$this->color       = $color;
 	}
 
 	public function getId(): int
@@ -69,6 +75,24 @@ class ProgramEntity
 	public function setCode(string $code): void
 	{
 		$this->code = $code;
+	}
+	
+	public function getSlug(): string
+	{
+		$code = $this->code;
+		if(empty($code))
+		{
+			$code = $this->label;
+
+			$code = preg_replace('/[^A-Za-z0-9]/', '', $code);
+			$code = str_replace(' ', '_', $code);
+			$code = substr($code, 0, 20);
+			$code = strtolower($code);
+
+			$code = uniqid($code . '-');
+		}
+
+		return $code;
 	}
 
 	public function getLabel(): string
@@ -141,12 +165,12 @@ class ProgramEntity
 		$this->ordering = $ordering;
 	}
 
-	public function getLogo(): string
+	public function getLogo(): ?string
 	{
 		return $this->logo;
 	}
 
-	public function setLogo(string $logo): void
+	public function setLogo(?string $logo): void
 	{
 		$this->logo = $logo;
 	}

@@ -61,6 +61,7 @@ images/emundus/photo/*
 images/emundus/contacts/*
 images/emundus/organizations/*
 images/emundus/exports/*
+images/emundus/programs/*
 images/stories/*
 /images/emundus/carriere/*
 /images/emundus/files/*
@@ -181,3 +182,4 @@ media/com_hikashop/upload/safe/logs/
 # CLAUDE
 .claude/settings.local.json
 .claude/worktrees
+/.ai/

@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => {
         },
         build: {
             target: 'es2018',
-            minify: 'esbuild',
+            minify: 'oxc',
             outDir: path.resolve(__dirname, '../../media/com_emundus_vue'),
             emptyOutDir: true,
             rollupOptions: {

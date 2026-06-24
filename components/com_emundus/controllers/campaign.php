@@ -682,13 +682,14 @@ class EmundusControllerCampaign extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'campaign', 'mode' => CrudEnum::READ]])]
 	public function getcampaignbyid(): EmundusResponse
 	{
-		$id = $this->input->getInt('id', 0);
+		$id   = $this->input->getInt('id', 0);
+		$lang = $this->input->getString('lang', null);
 		if (empty($id))
 		{
 			throw new \InvalidArgumentException(Text::_('MISSING_PARAMETERS'), EmundusResponse::HTTP_BAD_REQUEST);
 		}
 
-		$campaign = $this->m_campaign->getCampaignDetailsById($id);
+		$campaign = $this->m_campaign->getCampaignDetailsById($id, $lang);
 		if (empty($campaign))
 		{
 			throw new \RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_CAMPAIGN'), EmundusResponse::HTTP_NOT_FOUND);

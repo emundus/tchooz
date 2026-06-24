@@ -4,8 +4,8 @@ import Chip from '@/components/Atoms/Chip.vue';
 import GridDetails from '@/components/Molecules/GridDetails.vue';
 import CountryFlag from '@/components/Atoms/CountryFlag.vue';
 import Avatar from '@/components/Atoms/Avatar.vue';
-import contactsService from '@/services/contacts.js';
-import userService from '@/services/user.js';
+import crcService from '@/services/crc.js';
+import settingsService from '@/services/settings.js';
 
 export default {
 	name: 'ContactDetails',
@@ -31,12 +31,9 @@ export default {
 			this.$emit('close');
 		},
 		openApplicationFiles() {
-			let user_email = null;
-
-			userService.getUserById(this.$props.item.user_id).then((response) => {
+			crcService.getContactFiles(this.$props.item.id).then((response) => {
 				if (response.status) {
-					user_email = response.user[0].email;
-					contactsService.saveFilterEmail(user_email).then((response) => {
+					settingsService.saveFilterFiles(response.data).then((response) => {
 						if (response.status) {
 							const route = response.data;
 							const baseUrl = window.location.origin;

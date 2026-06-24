@@ -21,6 +21,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Actions\ActionRepository as AccessActionRepository;
@@ -392,7 +393,49 @@ class EmundusViewFiles extends JViewLegacy
 
 				break;
 
+			case 'updateassociatedcontacts':
+				$actionRepository = new AccessActionRepository();
+				$contactAction    = $actionRepository->getByName(ActionEnum::CONTACT->value);
 
+				$post  = file_get_contents("php://input");
+				$post  = json_decode($post, true);
+				$fnums = !empty($post['fnums']) ? (array) json_decode(stripslashes($post['fnums']), false, 512, JSON_BIGINT_AS_STRING) : [];
+
+				// There should be only one file selected for this action, so we just select index 0 of the array
+				if (empty($fnums) || empty($fnums[0]->fnum))
+				{
+					$this->app->enqueueMessage(Text::_('COM_EMUNDUS_FILE_FNUM_INVALID'), 'error');
+					return;
+				}
+				$this->fnum = $fnums[0]->fnum;
+				if (!EmundusHelperAccess::asAccessAction($contactAction->getId(), CrudEnum::UPDATE->value, $this->user->id, $this->fnum))
+				{
+					$this->app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+					return;
+				}
+				break;
+
+			case 'updateassociatedorganizations':
+				$actionRepository = new AccessActionRepository();
+				$orgAction        = $actionRepository->getByName(ActionEnum::ORGANIZATION->value);
+
+				$post  = file_get_contents("php://input");
+				$post  = json_decode($post, true);
+				$fnums = !empty($post['fnums']) ? (array) json_decode(stripslashes($post['fnums']), false, 512, JSON_BIGINT_AS_STRING) : [];
+
+				// There should be only one file selected for this action, so we just select index 0 of the array
+				if (empty($fnums) || empty($fnums[0]->fnum))
+				{
+					$this->app->enqueueMessage(Text::_('COM_EMUNDUS_FILE_FNUM_INVALID'), 'error');
+					return;
+				}
+				$this->fnum = $fnums[0]->fnum;
+				if (!EmundusHelperAccess::asAccessAction($orgAction->getId(), CrudEnum::UPDATE->value, $this->user->id, $this->fnum))
+				{
+					$this->app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+					return;
+				}
+				break;
 			// Get list of application files
 			default:
 				$e_user       = $this->app->getSession()->get('emundusUser');

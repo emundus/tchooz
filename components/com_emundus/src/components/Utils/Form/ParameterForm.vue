@@ -30,6 +30,7 @@ export default {
 		Parameter,
 	},
 	mixins: [transformIntoParameterField],
+	emits: ['parameterValueUpdated'],
 	data() {
 		return {
 			initialized: false,
@@ -116,6 +117,58 @@ export default {
 				return JSON.stringify(a) === JSON.stringify(b);
 			}
 			return a === b;
+		},
+		/**
+		 * Validate every displayed Parameter via its ref and serialize the values.
+		 *
+		 * - Skips fields where `displayed === false`.
+		 * - Calls `validate()` on each Parameter ref (`field_<param>`); aborts on the first failure
+		 *   and scrolls the invalid field into view.
+		 * - For `multiselect` fields, flattens via `multiselectOptions.trackBy`.
+		 *
+		 * @returns {{ isValid: boolean, form: Object }} `form` is empty when `isValid` is false.
+		 */
+		validate() {
+			const form = {};
+
+			for (const group of this.groups) {
+				for (const field of group.parameters) {
+					if (!field.displayed) continue;
+
+					const fieldRef = this.$refs['field_' + field.param];
+					if (fieldRef && fieldRef[0] && !fieldRef[0].validate()) {
+						this.scrollToField(fieldRef[0]);
+						return { isValid: false, form: {} };
+					}
+
+					if (field.type === 'multiselect') {
+						if (field.multiselectOptions.multiple) {
+							form[field.param] = (field.value || []).map((element) => element[field.multiselectOptions.trackBy]);
+						} else {
+							form[field.param] = field.value ? field.value[field.multiselectOptions.trackBy] : null;
+						}
+					} else {
+						form[field.param] = field.value;
+					}
+				}
+			}
+
+			return { isValid: true, form };
+		},
+		/**
+		 * Smooth-scroll an invalid Parameter component into the viewport.
+		 *
+		 * Wait for nextTick so the Parameter has rendered its error state before measuring.
+		 *
+		 * @param {{ $el?: HTMLElement }} fieldComponent
+		 */
+		scrollToField(fieldComponent) {
+			this.$nextTick(() => {
+				const el = fieldComponent && fieldComponent.$el;
+				if (el && typeof el.scrollIntoView === 'function') {
+					el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				}
+			});
 		},
 		findParameterByName(name) {
 			for (const group of this.groups) {

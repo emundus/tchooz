@@ -23,7 +23,7 @@ class ContactOrganizationRepository extends EmundusRepository implements Reposit
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		parent::__construct($withRelations, $exceptRelations, 'contact_organization');
+		parent::__construct($withRelations, $exceptRelations, 'contact_organization', self::class);
 	}
 
 	public function getContactsIdsByOrganizationId(int $organizationId, ?int $isReferent = null): array
