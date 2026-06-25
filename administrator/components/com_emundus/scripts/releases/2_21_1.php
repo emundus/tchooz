@@ -10,6 +10,9 @@
 
 namespace scripts;
 
+use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Repositories\Addons\AddonRepository;
+
 class Release2_21_1Installer extends ReleaseInstaller
 {
 	private array $tasks = [];
@@ -65,6 +68,20 @@ class Release2_21_1Installer extends ReleaseInstaller
 					$custom_event_handler->params = json_encode($params);
 					$this->db->updateObject('#__extensions', $custom_event_handler, 'extension_id');
 				}
+			}
+
+			$addonRepository = new AddonRepository();
+			$customReferenceAddon = $addonRepository->getItemByField('namekey', 'custom_reference_format', true);
+			assert($customReferenceAddon instanceof AddonEntity);
+			if(!$customReferenceAddon->isActivated())
+			{
+				// Unpublish generate referernce menu
+				$query->clear()
+					->update($this->db->quoteName('#__menu'))
+					->set($this->db->quoteName('published') . ' = 0')
+					->where($this->db->quoteName('link') . ' = ' . $this->db->quote('index.php?option=com_emundus&view=files&layout=generatereference&format=raw'));
+				$this->db->setQuery($query);
+				$this->tasks[] = $this->db->execute();
 			}
 
 			$result['status'] = !in_array(false, $this->tasks);
