@@ -83,11 +83,6 @@ export default {
 									confirm: 'COM_EMUNDUS_ONBOARD_CAMPDELETE',
 									showon: [
 										{
-											key: 'nb_files',
-											operator: '<',
-											value: '1',
-										},
-										{
 											key: 'can_edit',
 											operator: '=',
 											value: true,
