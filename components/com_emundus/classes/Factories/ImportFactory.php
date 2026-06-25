@@ -388,7 +388,7 @@ class ImportFactory
 					case 'radiobutton':
 					case 'dropdown':
 					case 'checkbox':
-						$params = json_decode($element->element_attribs, true);
+						$params = !empty($element->element_attribs) ? json_decode($element->element_attribs, true) : [];
 
 						if (!empty($params['sub_options']))
 						{
@@ -406,7 +406,7 @@ class ImportFactory
 						}
 						break;
 					case 'databasejoin':
-						$params = json_decode($element->element_attribs, true);
+						$params = !empty($element->element_attribs) ? json_decode($element->element_attribs, true) : [];
 
 						$query->clear()
 							->select([$this->db->quoteName($params['join_key_column'], 'value'), $this->db->quoteName($params['join_val_column'], 'label')])

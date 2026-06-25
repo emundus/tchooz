@@ -708,7 +708,6 @@ class EmundusHelperFiles
 			$plist = $m_profile->getProfileIDByCourse($code, $camps);
 		}
 
-
 		if (!is_null($profile))
 		{
 			/// get profile id from $profile --> using split
@@ -793,18 +792,19 @@ class EmundusHelperFiles
 					}
 				}
 
-				if($evaluation_elements) {
+				if ($evaluation_elements) {
 					require_once JPATH_SITE.DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php';
 					$m_evaluation = new EmundusModelEvaluation();
 					$eval_elements = $m_evaluation->getEvaluationElementsName(0,0,$code,true);
 
-					if(!empty($eval_elements)) {
+					if (!empty($eval_elements)) {
 						// Merge the evaluation elements with the existing elements
 						foreach ($eval_elements as $key => $value) {
 							$value->form_label    = Text::_($value->form_label);
 							$value->table_label   = Text::_($value->table_label);
 							$value->group_label   = Text::_($value->group_label);
 							$value->element_label = Text::_($value->element_label);
+							$value->element_attribs = $value->params;
 							$elts[]               = $value;
 						}
 					}
@@ -917,9 +917,14 @@ class EmundusHelperFiles
 						$elts[]               = $value;
 					}
 				}
+				
 
-				if($evaluation_elements) {
-					require_once JPATH_SITE.DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php';
+				if ($evaluation_elements)
+				{
+					if (!class_exists('EmundusModelEvaluation'))
+					{
+						require_once(JPATH_SITE . '/components/com_emundus/models/evaluation.php');
+					}
 					$m_evaluation = new EmundusModelEvaluation();
 					$eval_elements = $m_evaluation->getEvaluationElementsName(0,0,$code,true);
 
@@ -939,7 +944,7 @@ class EmundusHelperFiles
 			}
 			catch (Exception $e)
 			{
-				echo $e->getMessage();
+				Log::add('getElements failed ' . $e->getMessage(), Log::ERROR, 'com_emundus.helper.files');
 
 				return array();
 			}
