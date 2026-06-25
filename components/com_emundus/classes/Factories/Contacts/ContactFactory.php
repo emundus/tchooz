@@ -65,7 +65,7 @@ class ContactFactory extends EmundusFactory implements DBFactory
 		);
 	}
 
-	protected function loadRelation(string $relation, array $object): array
+	protected function loadRelationFromArray(string $relation, array $object): array
 	{
 		return match ($relation)
 		{

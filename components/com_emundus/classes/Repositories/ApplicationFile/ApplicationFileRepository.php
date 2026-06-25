@@ -41,6 +41,8 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 {
 	use TraitDispatcher;
 
+	const NAME = 'application_file';
+
 	private QueryInterface $query;
 
 	private ApplicationFileFactory $factory;
@@ -77,7 +79,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 			if (!empty($dbObjects))
 			{
-				$results = $this->factory->fromDbObjects($dbObjects, $this->withRelations);
+				$results = $this->factory->fromDbObjects($dbObjects, $this->withRelations, $this->exceptRelations);
 			}
 		}
 		catch (\Exception $e)

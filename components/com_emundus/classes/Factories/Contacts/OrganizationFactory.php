@@ -57,7 +57,7 @@ class OrganizationFactory extends EmundusFactory implements DBFactory
 		);
 	}
 
-	protected function loadRelation(string $relation, array $object): array|AddressEntity|null
+	protected function loadRelationFromArray(string $relation, array $object): array|AddressEntity|null
 	{
 		return match ($relation)
 		{
