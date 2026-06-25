@@ -13,13 +13,14 @@ use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 use Tchooz\Attributes\TableAttribute;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Campaigns\CampaignEntity;
 use Tchooz\Entities\List\ListResult;
-use Tchooz\Entities\Programs\ProgramEntity;
 use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Factories\Campaigns\CampaignFactory;
@@ -29,7 +30,6 @@ use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\RepositoryInterface;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
-use Tchooz\Traits\TraitTable;
 
 #[TableAttribute(
 	table: '#__emundus_setup_campaigns',
@@ -362,7 +362,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	public function getCampaignMoreElements(): array
 	{
 		$elements = [];
-		if(!$this->withRelations)
+		if (!$this->withRelations)
 		{
 			return $elements;
 		}
@@ -409,7 +409,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 				$elements = $this->getCampaignMoreElements();
 			}
 
-			if(!empty($elements))
+			if (!empty($elements))
 			{
 				$query->clear()
 					->select('*')
@@ -902,9 +902,146 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		return $flushed;
 	}
 
+	public function deleteBatch(array $data): array
+	{
+		$this->dispatchJoomlaEvent('onBeforeCampaignsDelete',[
+			'campaign' => $data
+		]);
+
+		$deletedCampaigns = [];
+		foreach ($data as $id)
+		{
+			$id = (int)$id;
+
+			try {
+				if ($this->delete($id))
+				{
+					$deletedCampaigns[] = $id;
+				}
+			} catch (\Exception $e) {
+				// catch the exception and continue with the next campaign
+			}
+		}
+
+		if (!empty($deletedCampaigns))
+		{
+			$this->dispatchJoomlaEvent('onAfterCampaignsDelete',[
+				'campaign' => $deletedCampaigns
+			]);
+		}
+
+		return $deletedCampaigns;
+	}
+
 	public function delete(int $id): bool
 	{
-		// TODO: Implement delete() method.
+		$campaign = $this->getById($id);
+		if (empty($campaign))
+		{
+			throw new \InvalidArgumentException(Text::_('COM_EMUNDUS_CAMPAIGN_NOT_FOUND'));
+		}
+
+		$this->dispatchJoomlaEvent('onBeforeCampaignDelete',[
+			'campaign_id' => $id
+		]);
+
+		if (!class_exists('EmundusModelFalang'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/models/falang.php');
+		}
+		$mFalang = new \EmundusModelFalang();
+
+		$query = $this->db->getQuery(true);
+
+		// 1. De-associate events linked
+		$query->delete($this->db->quoteName('#__emundus_setup_events_repeat_campaign'))
+			->where($this->db->quoteName('campaign') . ' = ' . $this->db->quote($id));
+		$this->db->setQuery($query);
+		$this->db->execute();
+
+		// 2. De-associate letters linked
+		$query->clear()
+			->delete($this->db->quoteName('#__emundus_setup_letters_repeat_campaign'))
+			->where($this->db->quoteName('campaign') . ' = ' . $this->db->quote($id));
+		$this->db->setQuery($query);
+		$this->db->execute();
+
+		$query->clear()
+			->select('count(*)')
+			->from($this->db->quoteName('#__emundus_campaign_candidature'))
+			->where($this->db->quoteName('campaign_id') . ' = ' . $this->db->quote($id));
+		$this->db->setQuery($query);
+		$nb_files = $this->db->loadResult();
+
+		// Delete only if there are no application files attached to the campaign
+		if ((int)$nb_files === 0)
+		{
+			// 3. Delete translations
+			$mFalang->deleteFalang($id, 'emundus_setup_campaigns', 'label');
+
+			// 4. Delete linked menus
+			$details_menu = $this->getCampaignDetailsMenu($id);
+			if (!empty($details_menu))
+			{
+				$query->clear()
+					->delete($this->db->quoteName('#__menu'))
+					->where($this->db->quoteName('id') . ' = ' . $details_menu->id);
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+
+			// Finally delete campaign
+			$query->clear()
+				->delete($this->db->quoteName('#__emundus_setup_campaigns'))
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($id));
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+		else
+		{
+			$query->clear()
+				->update($this->db->quoteName('#__emundus_setup_campaigns'))
+				->set($this->db->quoteName('published') . ' = 0')
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($id));
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		if ($deleted)
+		{
+			$this->cleanCache();
+		}
+
+		$this->dispatchJoomlaEvent('onAfterCampaignDelete',[
+			'campaign_id' => $id,
+			'result' => $deleted
+		]);
+
+		return $deleted;
+	}
+
+	public function getCampaignDetailsMenu(int $campaignId): ?object
+	{
+		$details_menu = null;
+		
+		if(!class_exists('EmundusHelperMenu'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+		}
+		$menus = \EmundusHelperMenu::getMenus('campaigns');
+
+		foreach ($menus as $menu)
+		{
+			$params = json_decode($menu->params);
+			if (!empty($params->com_emundus_programme_campaign_id) && $params->com_emundus_programme_campaign_id == $campaignId)
+			{
+				$details_menu = $menu;
+				break;
+			}
+		}
+
+		return $details_menu;
 	}
 
 	public function getParameters(): array

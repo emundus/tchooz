@@ -433,6 +433,20 @@ class EmundusHelperMenu
 	{
 		return array('=', '&', ',', '#', '_', '*', ';', '!', '?', ':', '+', '$', '\'', ' ', '£', ')', '(', '@', '%');
 	}
+
+	public static function getMenus(string $menutype): ?array
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->clear()
+			->select('*')
+			->from($db->quoteName('#__menu'))
+			->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype));
+		$db->setQuery($query);
+		return $db->loadObjectList();
+	}
+
 }
 
 ?>
