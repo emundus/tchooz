@@ -13,6 +13,7 @@ use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
@@ -57,6 +58,8 @@ use Tchooz\Traits\TraitTable;
 )]
 class CampaignRepository extends EmundusRepository implements RepositoryInterface
 {
+	const NAME = 'campaign';
+
 	private CampaignFactory $factory;
 
 	public function __construct($withRelations = true, $exceptRelations = [])
@@ -66,6 +69,11 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 		$this->cache = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
 			->createCacheController('output', ['defaultgroup' => 'com_emundus.campaigns']);
+	}
+
+	public function getFactory(): ?object
+	{
+		return $this->factory;
 	}
 
 	public function getAllCampaigns(
@@ -844,6 +852,16 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 		try
 		{
+			if (empty($campaignEntity->getProgram()))
+			{
+				throw new \Exception(Text::_('COM_EMUNDUS_ERROR_PROGRAM_REQUIRED'));
+			}
+
+			if (empty(trim($campaignEntity->getLabel())))
+			{
+				throw new \Exception(Text::_('COM_EMUNDUS_ERROR_LABEL_REQUIRED'));
+			}
+
 			if (empty($campaignEntity->getId()))
 			{
 				$insert = (object) [
@@ -863,6 +881,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 					'public'               => $campaignEntity->isPublic() ? 1 : 0,
 					'anonymization_policy' => !empty($campaignEntity->getAnonymizationPolicy()) ? $campaignEntity->getAnonymizationPolicy()->value : null,
 				];
+
 				if ($flushed = $this->db->insertObject('#__emundus_setup_campaigns', $insert))
 				{
 					$campaignEntity->setId((int) $this->db->insertid());

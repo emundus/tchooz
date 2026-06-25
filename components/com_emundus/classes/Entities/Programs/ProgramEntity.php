@@ -23,16 +23,16 @@ class ProgramEntity
 	private string $label;
 
 	#[Sanitize]
-	private ?string $notes;
+	private string $notes;
 
 	private bool $published;
 
 	/**
 	 * Deprecated: Need to use the category entity relation
 	 */
-	private ?string $programmes;
+	private string $programmes;
 
-	private ?string $synthesis;
+	private string $synthesis;
 
 	private bool $applyOnline;
 
@@ -42,15 +42,15 @@ class ProgramEntity
 
 	private ?string $color;
 
-	public function __construct(string $code, string $label, int $id = 0, bool $published = true, ?string $notes = '', ?string $programmes = '', ?string $synthesis = '', bool $applyOnline = false, ?int $ordering = 0, ?string $logo = null, ?string $color = '')
+	public function __construct(string $code, string $label, int $id = 0, bool $published = true, ?string $notes = '', ?string $programmes = '', ?string $synthesis = '', bool $applyOnline = false, ?int $ordering = 0, ?string $logo = '', ?string $color = '')
 	{
 		$this->id          = $id;
 		$this->code        = $code;
 		$this->label       = $label;
 		$this->published   = $published;
-		$this->notes       = $notes;
-		$this->programmes  = $programmes;
-		$this->synthesis   = $synthesis;
+		$this->notes       = $notes ?? '';
+		$this->programmes  = $programmes ?? '';
+		$this->synthesis   = $synthesis ?? '';
 		$this->applyOnline = $applyOnline;
 		$this->ordering    = $ordering;
 		$this->logo        = $logo;

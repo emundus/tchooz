@@ -36,11 +36,13 @@ use Tchooz\Repositories\RepositoryInterface;
 ]
 class ActionRepository extends EmundusRepository implements RepositoryInterface
 {
+	const NAME = 'action';
+
 	private ActionFactory $factory;
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		parent::__construct($withRelations, $exceptRelations, 'action', self::class);
+		parent::__construct($withRelations, $exceptRelations, self::NAME, self::class);
 
 		$this->factory = new ActionFactory();
 	}

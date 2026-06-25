@@ -43,11 +43,13 @@ use Tchooz\Traits\TraitDispatcher;
 class ProgramRepository extends EmundusRepository
 {
 	use TraitDispatcher;
+	const NAME = 'program';
+
 	private ProgramFactory $factory;
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		parent::__construct($withRelations, $exceptRelations, 'programme', self::class);
+		parent::__construct($withRelations, $exceptRelations, self::NAME, self::class);
 		$this->factory = new ProgramFactory();
 	}
 
@@ -118,7 +120,7 @@ class ProgramRepository extends EmundusRepository
 
 		if (!empty($program))
 		{
-			$program_entity = $this->factory::fromDbObject($program);
+			$program_entity = $this->factory->fromDbObject($program);
 		}
 
 		return $program_entity;
@@ -129,6 +131,7 @@ class ProgramRepository extends EmundusRepository
 		$program_entity = null;
 
 		$query = $this->db->getQuery(true);
+
 		$query->select($this->columns)
 			->from($this->db->quoteName($this->tableName, $this->alias))
 			->where('code = ' . $this->db->quote($code));
@@ -137,7 +140,7 @@ class ProgramRepository extends EmundusRepository
 
 		if (!empty($program))
 		{
-			$program_entity = $this->factory::fromDbObject($program);
+			$program_entity = $this->factory->fromDbObject($program);
 		}
 
 		return $program_entity;
