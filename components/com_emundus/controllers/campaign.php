@@ -982,7 +982,7 @@ class EmundusControllerCampaign extends EmundusController
 			throw new \InvalidArgumentException(Text::_('MISSING_PARAMETERS'), EmundusResponse::HTTP_BAD_REQUEST);
 		}
 
-		$campaigns = $this->m_campaign->getCampaignsByProgramId($program_id);
+		$campaigns = $this->campaignRepository->getItemsByField('program_id', $program_id);
 
 		return EmundusResponse::ok($campaigns, Text::_('CAMPAIGNS_RETRIEVED'));
 	}
