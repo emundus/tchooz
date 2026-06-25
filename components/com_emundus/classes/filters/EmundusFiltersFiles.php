@@ -6,6 +6,9 @@ require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\Programs\ProgramRepository;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
 
 class EmundusFiltersFiles extends EmundusFilters
 {
@@ -311,7 +314,7 @@ class EmundusFiltersFiles extends EmundusFilters
 		$this->filters = $this->createFiltersFromFabrikElements($elements);
 	}
 
-	public function getFilters(string $search = ''): array
+	public function getFilters(string $search = '', array $campaignsIds = [], array $programsIds = []): array
 	{
 		if (!empty($this->filters))
 		{
@@ -336,7 +339,24 @@ class EmundusFiltersFiles extends EmundusFilters
 		}
 		else
 		{
-			$formIds = \EmundusHelperFabrik::getFabrikFormsListIntendedToFiles();
+			$campaignRepository = new CampaignRepository();
+
+			$filteredWorkflows = [];
+			if(!empty($campaignsIds))
+			{
+				$programsIds = array_merge($programsIds, $campaignRepository->getProgramsIds($campaignsIds));
+			}
+			if(!empty($programsIds))
+			{
+				if(empty($campaignsIds))
+				{
+					$campaignsIds = $campaignRepository->getCampaignIdsByPrograms($programsIds);
+				}
+				$workflowRepository = new WorkflowRepository();
+				$filteredWorkflows  = $workflowRepository->getWorkflows($programsIds);
+			}
+
+			$formIds = \EmundusHelperFabrik::getFabrikFormsListIntendedToFiles($filteredWorkflows, $campaignsIds);
 			$fabrikElements = \EmundusHelperFabrik::searchFabrikElements($search, $formIds, ['panel', 'display']);
 
 			$elements = [];
