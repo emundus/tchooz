@@ -70,6 +70,7 @@ class CampaignControllerTest extends TestCase
 		$this->controller->setUser($this->mockUser);
 
 		$this->mockCampaignRepository->method('getById')->willReturn($mockCampaign);
+		$this->mockCampaignRepository->method('getItemsByField')->with('program_id', 123)->willReturn(['foo']);
 	}
 
 	/**
@@ -535,7 +536,6 @@ class CampaignControllerTest extends TestCase
 	public function testGetCampaignsByProgramIdReturnsOk(): void
 	{
 		$this->mockInput->method('getInt')->with('program_id', 0)->willReturn(123);
-		$this->mockCampaignModel->method('getCampaignsByProgramId')->with(123)->willReturn(['foo']);
 
 		$response = $this->controller->getCampaignsByProgramId();
 
