@@ -33,12 +33,15 @@
 						<input id="search-model" class="tw-mt-4" type="text" v-model="search" placeholder="Rechercher" />
 						<span class="reset-search material-symbols-outlined tw-cursor-pointer" @click="search = ''">close</span>
 					</div>
-					<section id="structure-options">
+					<section
+						id="structure-options"
+						:class="{ 'tw-opacity-0': selected <= 0 || (selected > 0 && canUseInitialStructure) }"
+					>
 						<div class="tw-flex tw-items-center">
 							<input type="radio" id="new-structure" name="structure" value="new" v-model="structure" />
 							<label for="new-structure">{{ translate('COM_EMUNDUS_FORM_BUILDER_NEW_STRUCTURE') }}</label>
 						</div>
-						<div class="tw-flex tw-items-center" :class="{ disabled: !canUseInitialStructure }">
+						<div class="tw-flex tw-items-center">
 							<input type="radio" id="initial-structure" name="structure" value="initial" v-model="structure" />
 							<label for="initial-structure">{{ translate('COM_EMUNDUS_FORM_BUILDER_INITIAL_STRUCTURE') }}</label>
 						</div>
@@ -187,10 +190,6 @@ export default {
 					this.page.label = found_model.label;
 					this.page.intro = found_model.intro;
 				}
-
-				if (this.structure !== 'new' && !this.canUseInitialStructure) {
-					this.structure = 'new';
-				}
 			}
 
 			const data = {
@@ -242,6 +241,7 @@ export default {
 								this.structure = 'new';
 								this.canUseInitialStructure = false;
 							} else {
+								this.structure = 'initial';
 								this.canUseInitialStructure = true;
 							}
 
