@@ -27,6 +27,7 @@ use Tchooz\Factories\Campaigns\CampaignFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\EmundusRepository;
+use Tchooz\Repositories\Profile\ProfileRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\RepositoryInterface;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
@@ -674,6 +675,23 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		return $campaigns;
 	}
 
+	public function getProgramsIds(array $campaignIds): array
+	{
+		if (empty($campaignIds))
+		{
+			return [];
+		}
+
+		$query = $this->db->getQuery(true);
+
+		$query->select('DISTINCT ' . $this->alias . '.program_id')
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->whereIn($this->db->quoteName($this->alias . '.id'), $campaignIds);
+
+		$this->db->setQuery($query);
+		return $this->db->loadColumn();
+	}
+
 	public function getLinkedProgramsIds(int $campaign_id, string $fnum = ''): array
 	{
 		$programs_ids = [];
@@ -754,6 +772,24 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		}
 
 		return $step;
+	}
+
+	public function getMenuTypesByCampaigns(array $campaignsIds): array
+	{
+		if (empty($campaignsIds))
+		{
+			return [];
+		}
+
+		$query = $this->db->getQuery(true);
+
+		$query->select('esp.menutype')
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->leftJoin($this->db->quoteName($this->getTableName(ProfileRepository::class), 'esp') . ' ON esp.id = ' . $this->alias . '.profile_id')
+			->where($this->db->quoteName($this->alias.'.profile_id') . ' IS NOT NULL')
+			->whereIn($this->db->quoteName($this->alias . '.id'), $campaignsIds);
+		$this->db->setQuery($query);
+		return $this->db->loadColumn();
 	}
 
 	public function getDbTablesByCampaignId(int $campaignId): array
