@@ -717,6 +717,11 @@ class EmundusModelEmails extends JModelList
 			);
 
 			if (!empty($fnum)) {
+				if (!class_exists('EmundusHelperFiles'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+				}
+
 				$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
 
 				require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
