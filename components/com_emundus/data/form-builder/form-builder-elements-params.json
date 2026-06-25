@@ -937,5 +937,6 @@
 			"published": true,
 			"sysadmin_only": false
 		}
-	]
+	],
+	"emundus_fileupload": []
 }
