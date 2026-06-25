@@ -257,6 +257,15 @@ class MigrateJoomlaJob extends TchoozJob
 		$this->databaseService->getDatabase()->setQuery('SET AUTOCOMMIT = 1')->execute();
 	}
 
+	const EXCLUDED_EXTENSIONS = [
+		'com_miniorange_saml',
+		'miniorangesaml',
+		'pkg_miniorangesamlsso',
+		'miniorangesamlplugin',
+		'samlredirect',
+		'samllogout'
+	];
+
 	private function mergeExtensions(OutputInterface $outputSection): bool
 	{
 		$merged = true;
@@ -268,6 +277,10 @@ class MigrateJoomlaJob extends TchoozJob
 			->from($this->databaseServiceSource->getDatabase()->quoteName('jos_extensions'));
 		$this->databaseServiceSource->getDatabase()->setQuery($query_source);
 		$extensions = $this->databaseServiceSource->getDatabase()->loadAssocList();
+
+		$extensions = array_filter($extensions, function ($extension) {
+			return !in_array($extension['element'], self::EXCLUDED_EXTENSIONS);
+		});
 
 		$progressBarExtensions = new EmundusProgressBar($outputSection, count($extensions));
 		$progressBarExtensions->setMessage('Migrating extensions');
