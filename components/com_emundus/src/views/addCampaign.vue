@@ -680,7 +680,7 @@ export default {
 			start_date: '',
 			end_date: '',
 			short_description: '',
-			description: null,
+			description: '',
 			training: '',
 			year: '',
 			published: 1,
