@@ -274,13 +274,10 @@ class MigrateJoomlaJob extends TchoozJob
 		$query        = $this->databaseService->getDatabase()->getQuery(true);
 
 		$query_source->select('*')
-			->from($this->databaseServiceSource->getDatabase()->quoteName('jos_extensions'));
+			->from($this->databaseServiceSource->getDatabase()->quoteName('jos_extensions'))
+			->where($this->databaseServiceSource->getDatabase()->quoteName('element') . ' NOT IN (' . implode(',', (array) $this->databaseServiceSource->getDatabase()->quote(self::EXCLUDED_EXTENSIONS)) . ')');
 		$this->databaseServiceSource->getDatabase()->setQuery($query_source);
 		$extensions = $this->databaseServiceSource->getDatabase()->loadAssocList();
-
-		$extensions = array_filter($extensions, function ($extension) {
-			return !in_array($extension['element'], self::EXCLUDED_EXTENSIONS);
-		});
 
 		$progressBarExtensions = new EmundusProgressBar($outputSection, count($extensions));
 		$progressBarExtensions->setMessage('Migrating extensions');
