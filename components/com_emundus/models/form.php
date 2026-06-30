@@ -2146,14 +2146,11 @@ class EmundusModelForm extends ListModel
 	}
 
 
-	public function getFormsByProfileId($profile_id)
+	public function getFormsByProfileId($profile_id, bool $submittionPage = false)
 	{
 		if (empty($profile_id)) {
 			return false;
 		}
-
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'formbuilder.php');
-		$formbuilder = new EmundusModelFormbuilder;
 
 		$query = $this->db->getQuery(true);
 
@@ -2162,11 +2159,14 @@ class EmundusModelForm extends ListModel
 			->leftJoin($this->db->quoteName('#__menu_types', 'mt') . ' ON ' . $this->db->quoteName('mt.menutype') . ' = ' . $this->db->quoteName('menu.menutype'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_profiles', 'sp') . ' ON ' . $this->db->quoteName('sp.menutype') . ' = ' . $this->db->quoteName('mt.menutype'))
 			->where($this->db->quoteName('sp.id') . ' = ' . $profile_id)
-			->where($this->db->quoteName('menu.parent_id') . ' != 1')
 			->where($this->db->quoteName('menu.published') . ' = 1')
 			->where($this->db->quoteName('menu.link') . ' LIKE ' . $this->db->quote('%option=com_fabrik%'))
 			->group('menu.rgt')
 			->order('menu.rgt ASC');
+		if(!$submittionPage)
+		{
+			$query->where($this->db->quoteName('menu.parent_id') . ' != 1');
+		}
 
 
 		try {

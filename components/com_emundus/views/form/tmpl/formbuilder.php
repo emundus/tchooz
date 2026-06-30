@@ -26,6 +26,7 @@ if (empty($user->id))
 }
 
 ## MENU ##
+Text::script('COM_EMUNDUS_ONBOARD_TYPE_EMUNDUS_FILEUPLOAD');
 Text::script('COM_EMUNDUS_ONBOARD_SIDEMENUHELP');
 Text::script('COM_EMUNDUS_ONBOARD_BUILDMENU');
 Text::script('COM_EMUNDUS_ONBOARD_PREVIEW');

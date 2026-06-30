@@ -9,7 +9,6 @@
 
 namespace Tchooz\Services\Export;
 
-use EmundusModelEvaluation;
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
@@ -221,7 +220,7 @@ class Export
 					{
 						require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
 					}
-					$evaluation = new EmundusModelEvaluation();
+					$evaluation = new \EmundusModelEvaluation();
 					$averageScoresByFnums = $evaluation->getEvaluationAverageBySteps($fnums, 0, [$stepId]);
 
 					foreach ($files as $file)

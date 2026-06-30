@@ -145,6 +145,19 @@ class ConditionRegistry
 					}
 					$contextFilters['storedValues'][$condition->getTargetType()->value][] = $condition->getField();
 				}
+
+				// In some cases we have only subGroups of conditions
+				foreach ($conditionGroup->getSubGroups() as $subGroup)
+				{
+					foreach ($subGroup->getConditions() as $subCondition)
+					{
+						if (!isset($contextFilters['storedValues'][$subCondition->getTargetType()->value])) {
+							$contextFilters['storedValues'][$subCondition->getTargetType()->value] = [];
+						}
+
+						$contextFilters['storedValues'][$subCondition->getTargetType()->value][] = $subCondition->getField();
+					}
+				}
 			}
 		}
 

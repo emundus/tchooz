@@ -1169,6 +1169,7 @@ class EmundusModelCampaign extends ListModel
 	 * @param $program
 	 *
 	 * @return array|mixed|stdClass
+	 * @deprecated Use CampaignRepository instead
 	 *
 	 * @since version 1.0
 	 */

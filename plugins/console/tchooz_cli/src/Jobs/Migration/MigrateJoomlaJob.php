@@ -257,6 +257,15 @@ class MigrateJoomlaJob extends TchoozJob
 		$this->databaseService->getDatabase()->setQuery('SET AUTOCOMMIT = 1')->execute();
 	}
 
+	const EXCLUDED_EXTENSIONS = [
+		'com_miniorange_saml',
+		'miniorangesaml',
+		'pkg_miniorangesamlsso',
+		'miniorangesamlplugin',
+		'samlredirect',
+		'samllogout'
+	];
+
 	private function mergeExtensions(OutputInterface $outputSection): bool
 	{
 		$merged = true;
@@ -265,7 +274,8 @@ class MigrateJoomlaJob extends TchoozJob
 		$query        = $this->databaseService->getDatabase()->getQuery(true);
 
 		$query_source->select('*')
-			->from($this->databaseServiceSource->getDatabase()->quoteName('jos_extensions'));
+			->from($this->databaseServiceSource->getDatabase()->quoteName('jos_extensions'))
+			->where($this->databaseServiceSource->getDatabase()->quoteName('element') . ' NOT IN (' . implode(',', (array) $this->databaseServiceSource->getDatabase()->quote(self::EXCLUDED_EXTENSIONS)) . ')');
 		$this->databaseServiceSource->getDatabase()->setQuery($query_source);
 		$extensions = $this->databaseServiceSource->getDatabase()->loadAssocList();
 

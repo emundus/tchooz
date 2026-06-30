@@ -4588,6 +4588,30 @@ class EmundusControllerFiles extends EmundusController
 		$user = $app->getIdentity();
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+
+			$session              = $app->getSession();
+			$session_filters      = $session->get('em-applied-filters', []);
+
+			$campaignFilter = null;
+			$programFilter = null;
+			foreach ($session_filters as $sessionFilter)
+			{
+				if($sessionFilter['id'] === 'programs')
+				{
+					$programFilter = $sessionFilter;
+				}
+				if($sessionFilter['id'] === 'campaigns')
+				{
+					$campaignFilter = $sessionFilter;
+				}
+			}
+			$campaignsIdsFiltered = array_filter($campaignFilter['value'] ?? [], function ($value) {
+				return !empty($value) && $value !== 'all';
+			});
+			$programsIdsFiltered = array_filter($programFilter['value'] ?? [], function ($value) {
+				return !empty($value) && $value !== 'all';
+			});
+
 			$response['msg'] = Text::_('MISSING_PARAMS');
 			$menu_id = $app->input->getInt('menu_id', 0);
 			$search_query = $app->input->getString('search_query', '');
@@ -4611,7 +4635,7 @@ class EmundusControllerFiles extends EmundusController
 						require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php');
 					}
 					$m_filters = new EmundusFiltersFiles($menu_params, true, true);
-					$filters = $m_filters->getFilters($search_query);
+					$filters = $m_filters->getFilters($search_query, $campaignsIdsFiltered, $programsIdsFiltered);
 
 					$response['data'] = $filters;
 					$response['status'] = true;
