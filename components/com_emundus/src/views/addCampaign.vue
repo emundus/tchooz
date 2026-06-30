@@ -24,7 +24,10 @@
 
 		<div>
 			<form @submit.prevent="submit" v-if="ready" class="emundus-form fabrikForm">
-				<div v-if="languages.length > 1" class="tw-mb-4 tw-flex tw-items-center tw-gap-3">
+				<div
+					v-if="languages.length > 1 && typeof campaignId !== 'undefined' && campaignId != 0"
+					class="tw-mb-4 tw-flex tw-items-center tw-gap-3"
+				>
 					<label class="tw-mb-0 tw-whitespace-nowrap tw-font-medium">
 						{{ translate('COM_EMUNDUS_CAMPAIGN_TRANSLATION') }}
 					</label>
@@ -677,7 +680,7 @@ export default {
 			start_date: '',
 			end_date: '',
 			short_description: '',
-			description: null,
+			description: '',
 			training: '',
 			year: '',
 			published: 1,

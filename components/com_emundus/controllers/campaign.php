@@ -14,6 +14,7 @@
 
 use Http\Discovery\Exception\NotFoundException;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -457,9 +458,14 @@ class EmundusControllerCampaign extends EmundusController
 			throw new \InvalidArgumentException(Text::_('MISSING_PARAMETERS'), EmundusResponse::HTTP_BAD_REQUEST);
 		}
 
-		if (!$this->m_campaign->deleteCampaign($data, true))
+		$data = !is_array($data) ? [$data] : $data;
+
+		$deletedCampaigns = $this->campaignRepository->deleteBatch($data);
+
+		if (sizeof($deletedCampaigns) !== sizeof($data))
 		{
-			throw new \RuntimeException(Text::_('ERROR_CANNOT_DELETE_CAMPAIGN'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
+			$failedCampaigns = array_diff(array_map('intval', $data), $deletedCampaigns);
+			throw new \RuntimeException(Text::sprintf('ERROR_CANNOT_DELETE_CAMPAIGN', implode(', ', $failedCampaigns)), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 		}
 
 		return EmundusResponse::ok(true);
@@ -976,7 +982,7 @@ class EmundusControllerCampaign extends EmundusController
 			throw new \InvalidArgumentException(Text::_('MISSING_PARAMETERS'), EmundusResponse::HTTP_BAD_REQUEST);
 		}
 
-		$campaigns = $this->m_campaign->getCampaignsByProgramId($program_id);
+		$campaigns = $this->campaignRepository->getItemsByField('program_id', $program_id);
 
 		return EmundusResponse::ok($campaigns, Text::_('CAMPAIGNS_RETRIEVED'));
 	}

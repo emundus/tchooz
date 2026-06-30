@@ -23,6 +23,7 @@ use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Database\ParameterType;
 
 class EmundusHelperMenu
 {
@@ -150,7 +151,7 @@ class EmundusHelperMenu
 	}
 
 
-	public static function getApplicantFormsInMenus(?string $menutype = null): array
+	public static function getApplicantFormsInMenus(string|array|null $menutype = null): array
 	{
 		$formIds = [];
 
@@ -168,7 +169,14 @@ class EmundusHelperMenu
 			->order('lft');
 		if(!empty($menutype))
 		{
-			$query->andWhere($db->quoteName('menutype') . ' LIKE ' . $db->quote($menutype));
+			if(is_string($menutype))
+			{
+				$query->andWhere($db->quoteName('menutype') . ' LIKE ' . $db->quote($menutype));
+			}
+			elseif (is_array($menutype))
+			{
+				$query->whereIn($db->quoteName('menutype'), $menutype, ParameterType::STRING);
+			}
 		}
 		else {
 			$query->andWhere($db->quoteName('menutype') . ' LIKE ' . $db->quote('menu-profile%'));
@@ -433,6 +441,20 @@ class EmundusHelperMenu
 	{
 		return array('=', '&', ',', '#', '_', '*', ';', '!', '?', ':', '+', '$', '\'', ' ', '£', ')', '(', '@', '%');
 	}
+
+	public static function getMenus(string $menutype): ?array
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->clear()
+			->select('*')
+			->from($db->quoteName('#__menu'))
+			->where($db->quoteName('menutype') . ' = ' . $db->quote($menutype));
+		$db->setQuery($query);
+		return $db->loadObjectList();
+	}
+
 }
 
 ?>

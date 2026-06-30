@@ -9,7 +9,6 @@
 
 namespace Tchooz\Services\Export;
 
-use EmundusModelEvaluation;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -253,7 +252,11 @@ enum HeadersEnum: string
 				$activeReference = $internalReferenceRepository->getActiveReference($file->getId());
 				return $activeReference ? $activeReference->getReference() : '';
 			case self::OVERALL_AVERAGE_SCORE:
-				$evaluationModel = new EmundusModelEvaluation();
+				if (!class_exists('EmundusModelEvaluation'))
+				{
+					require_once JPATH_SITE . '/components/com_emundus/models/evaluation.php';
+				}
+				$evaluationModel = new \EmundusModelEvaluation();
 				if (!$currentUser)
 				{
 					$currentUser = Factory::getApplication()->getIdentity();

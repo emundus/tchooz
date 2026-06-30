@@ -16,11 +16,14 @@ use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\QueryInterface;
 use Tchooz\Entities\List\ListResult;
+use Tchooz\Traits\TraitDispatcher;
 use Tchooz\Traits\TraitTable;
 
 class EmundusRepository
 {
 	use TraitTable;
+
+	use TraitDispatcher;
 
 	protected bool $withRelations;
 	protected array $exceptRelations = [];

@@ -97,6 +97,10 @@ class ProgramRepository extends EmundusRepository
 			}
 		}
 
+		// Clear cache
+		$hCache = new \EmundusHelperCache();
+		$hCache->clean(false);
+
 		if ($isNew)
 		{
 			$this->dispatchJoomlaEvent('onAfterProgramCreate', ['programme' => $data, 'user_id' => $user->id, 'context' => new EventContextEntity($user, [],[],[])]);

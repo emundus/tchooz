@@ -310,7 +310,8 @@ class Release2_20_0Installer extends ReleaseInstaller
 			\EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FILE_SUBMITTED_PUBLIC_ACCESS_MESSAGE', 'Your application has been successfully submitted.', 'override', 0, null, null, 'en-GB');
 
 			$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
-			if (empty($systemUserId))
+			$systemUserExist = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($systemUserId);
+			if (empty($systemUserExist->id))
 			{
 				require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 				require_once(JPATH_SITE . '/components/com_emundus/helpers/users.php');
@@ -350,16 +351,20 @@ class Release2_20_0Installer extends ReleaseInstaller
 				$usertype       = $m_users->found_usertype($acl_aro_groups[0]);
 				$user->usertype = $usertype;
 
-				$systemUserId = $m_users->adduser($user, $other_param);
-				if (!empty($systemUserId))
+				$systemUserIdCreated = $m_users->adduser($user, $other_param);
+				if (!empty($systemUserIdCreated))
 				{
-					\EmundusHelperUpdate::updateComponentParameter('com_emundus', 'system_public_user_id', $systemUserId);
+					\EmundusHelperUpdate::updateComponentParameter('com_emundus', 'system_public_user_id', $systemUserIdCreated);
 				}
 				else
 				{
 					$this->tasks[]     = false;
 					$result['message'] .= 'Failed to create system public user. ';
 				}
+			}
+			elseif (empty($systemUserId))
+			{
+				\EmundusHelperUpdate::updateComponentParameter('com_emundus', 'system_public_user_id', $systemUserExist->id);
 			}
 
 			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_emundus_anonymization', 'anonymization', null, 'plugin', 0, 'emundus');
