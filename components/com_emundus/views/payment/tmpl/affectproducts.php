@@ -21,7 +21,7 @@ $datas = [
 ];
 ?>
 
-<div id="em-component-vue"
+<div id="em-affect-products"
      component="Payment/AlterFilesProducts"
      data="<?= htmlspecialchars(json_encode($datas), ENT_QUOTES, 'UTF-8'); ?>"
 >
