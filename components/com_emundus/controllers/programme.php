@@ -292,6 +292,7 @@ class EmundusControllerProgramme extends EmundusController
 			$code        = $this->input->getString('code');
 			$programmes  = $this->input->getString('programmes');
 			$description = $this->input->getRaw('notes');
+			$description = (is_null($description) || $description === 'null') ? '' : $description;
 			$synthesis   = $this->input->getRaw('synthesis');
 			$logo        = $this->input->files->get('logo');
 			$logoPath    = $this->input->getString('logo');
