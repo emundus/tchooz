@@ -166,12 +166,14 @@ release-patch:
   variables:
     MERGE_MESSAGE: "Merge branch 'hotfix' into 'master'"
     RELEASE_TYPE: "patch"
+    JIRA_RELEASE_TRANSITION_ID: 6
 
 release-minor:
   extends: .release-template
   variables:
     MERGE_MESSAGE: "Merge branch 'dev' into 'master'"
     RELEASE_TYPE: "minor"
+    JIRA_RELEASE_TRANSITION_ID: 6
 
 #test_playwright:
 #  image: mcr.microsoft.com/playwright:v1.43.0-jammy
