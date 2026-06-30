@@ -58,52 +58,54 @@ export default {
 			if (this.initialized && !this.areValuesEquivalent(oldValue, newValue)) {
 				this.reloadParametersRules(parameter);
 
-				this.fields.forEach((field) => {
-					if (field.watchers && field.watchers.length > 0) {
-						field.watchers.forEach(async (watcher) => {
-							if (watcher.field === parameter.param && watcher.events.includes('onChange')) {
-								let values = {};
-								let fieldParameter = this.findParameterByName(field.name);
+				if (oldValue !== null) {
+					this.fields.forEach((field) => {
+						if (field.watchers && field.watchers.length > 0) {
+							field.watchers.forEach(async (watcher) => {
+								if (watcher.field === parameter.param && watcher.events.includes('onChange')) {
+									let values = {};
+									let fieldParameter = this.findParameterByName(field.name);
 
-								if (rowIndex === null) {
-									group.parameters.forEach(function (param) {
-										// key is the parameter name, value is the parameter value
-										values[param.param] = param.value;
-									});
-								} else {
-									// if the parameter is in a repeatable group, we need to get the values of the parameters in the same row
-									group.rows[rowIndex].parameters.forEach(function (param) {
-										// key is the parameter name, value is the parameter value
-										values[param.param] = param.value;
-									});
-								}
-
-								if (fieldParameter.type === 'select') {
-									fieldParameter.options = await this.provideParameterOptions(field, values);
-
-									// force reload of the multiselect, if NaN,
-									if (isNaN(fieldParameter.reload)) {
-										fieldParameter.reload = 1;
+									if (rowIndex === null) {
+										group.parameters.forEach(function (param) {
+											// key is the parameter name, value is the parameter value
+											values[param.param] = param.value;
+										});
 									} else {
-										fieldParameter.reload += 1;
+										// if the parameter is in a repeatable group, we need to get the values of the parameters in the same row
+										group.rows[rowIndex].parameters.forEach(function (param) {
+											// key is the parameter name, value is the parameter value
+											values[param.param] = param.value;
+										});
 									}
-								} else if (fieldParameter.type === 'multiselect' && field.optionsProvider) {
-									fieldParameter.multiselectOptions.options = await this.provideParameterOptions(field, values);
-									fieldParameter.multiselectOptions.optionsProvider = field.optionsProvider;
-									fieldParameter.multiselectOptions.optionsProvider.dependenciesValues =
-										this.getParamDependenciesValues(field, values);
 
-									// force reload of the multiselect, if NaN,
-									if (isNaN(fieldParameter.reload)) {
-										fieldParameter.reload = 1;
-									} else {
-										fieldParameter.reload += 1;
+									if (fieldParameter.type === 'select') {
+										fieldParameter.options = await this.provideParameterOptions(field, values);
+
+										// force reload of the multiselect, if NaN,
+										if (isNaN(fieldParameter.reload)) {
+											fieldParameter.reload = 1;
+										} else {
+											fieldParameter.reload += 1;
+										}
+									} else if (fieldParameter.type === 'multiselect' && field.optionsProvider) {
+										fieldParameter.multiselectOptions.options = await this.provideParameterOptions(field, values);
+										fieldParameter.multiselectOptions.optionsProvider = field.optionsProvider;
+										fieldParameter.multiselectOptions.optionsProvider.dependenciesValues =
+											this.getParamDependenciesValues(field, values);
+
+										// force reload of the multiselect, if NaN,
+										if (isNaN(fieldParameter.reload)) {
+											fieldParameter.reload = 1;
+										} else {
+											fieldParameter.reload += 1;
+										}
 									}
 								}
-							}
-						});
-					}
-				});
+							});
+						}
+					});
+				}
 			}
 		},
 		isEmptyValue(value) {

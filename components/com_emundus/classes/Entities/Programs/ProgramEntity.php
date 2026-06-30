@@ -42,7 +42,7 @@ class ProgramEntity
 
 	private ?string $color;
 
-	public function __construct(string $code, string $label, int $id = 0, bool $published = true, ?string $notes = '', ?string $programmes = '', ?string $synthesis = '', bool $applyOnline = false, ?int $ordering = 0, ?string $logo = '', ?string $color = '')
+	public function __construct(string $code, string $label, int $id = 0, bool $published = true, ?string $notes = '', ?string $programmes = '', ?string $synthesis = '', bool $applyOnline = false, ?int $ordering = 0, ?string $logo = null, ?string $color = '')
 	{
 		$this->id          = $id;
 		$this->code        = $code;
@@ -76,7 +76,7 @@ class ProgramEntity
 	{
 		$this->code = $code;
 	}
-	
+
 	public function getSlug(): string
 	{
 		$code = $this->code;
