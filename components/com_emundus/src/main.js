@@ -105,6 +105,10 @@ if (document) {
 	if (updateAssociatedOrganizationsElement) {
 		elements.push(updateAssociatedOrganizationsElement);
 	}
+	const affectProductsElement = document.getElementById('em-affect-products');
+	if (affectProductsElement) {
+		elements.push(affectProductsElement);
+	}
 
 	const fabrikVueElements = document.querySelectorAll('.fabrik-vue-element');
 	fabrikVueElements.forEach((fabrikElement) => {
