@@ -17,8 +17,6 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
@@ -57,10 +55,6 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 	{
 		$cid                 = $this->app->getInput()->getInt('cid');
 		$app = Factory::getApplication();
-		if ($app->getIdentity()->guest)
-		{
-			$app->redirect(Route::_('index.php?option=com_users&view=login&cid=' . $cid));
-		}
 
 		if(!class_exists('EmundusHelperMenu'))
 		{
