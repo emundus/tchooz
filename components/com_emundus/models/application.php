@@ -5933,7 +5933,9 @@ class EmundusModelApplication extends ListModel
 									foreach ($stored as $rowvalues) {
 										unset($rowvalues['id']);
 										$rowvalues['parent_id'] = $id;
-										$arrayValue[]           = '(' . implode(',', $this->_db->quote($rowvalues)) . ')';
+										$arrayValue[]           = implode(',', array_map(function ($value) {
+											return $value === null ? 'NULL' : $this->_db->quote($value);
+										}, $rowvalues));
 									}
 									unset($stored[0]['id']);
 									$q = 4;
@@ -5942,7 +5944,7 @@ class EmundusModelApplication extends ListModel
                                     $query->clear()
                                         ->insert($this->_db->quoteName($d['table']))
                                         ->columns(implode(',', $this->_db->quoteName(array_keys($stored[0]))))
-                                        ->values(implode(',', $arrayValue));
+                                        ->values($arrayValue);
 									$this->_db->setQuery($query);
 									$this->_db->execute();
 								}
@@ -5991,11 +5993,15 @@ class EmundusModelApplication extends ListModel
 						unset($document['id']);
 						unset($document['lbl']);
 
+						$documentValues           = implode(',', array_map(function ($value) {
+							return $value === null ? 'NULL' : $this->_db->quote($value);
+						}, $document));
+
 						try {
 							$query->clear();
 							$query->insert($this->_db->quoteName('#__emundus_uploads'))
 								->columns(array_keys($document))
-								->values(implode(", ", $this->_db->quote($document)));
+								->values($documentValues);
 
 							$this->_db->setQuery($query);
 							$this->_db->execute();
