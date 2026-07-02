@@ -7,5 +7,11 @@
     </layout>
 
     <fields name="params">
+        <fieldset addfieldpath="/administrator/components/com_emundus/models/fields" name="basic">
+            <field name="old_program_form" value="0" type="list" label="Utiliser l'ancien formulaire de programme">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+        </fieldset>
     </fields>
 </metadata>
