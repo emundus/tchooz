@@ -23,6 +23,10 @@ export default {
 			type: Object,
 			default: [],
 		},
+		useOldProgramForm: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	components: {
 		list,
@@ -244,6 +248,10 @@ export default {
 	},
 	created() {
 		const promises = [];
+
+		if (this.useOldProgramForm) {
+			this.config.campaigns.tabs[1].actions[0].action = 'index.php?option=com_fabrik&view=form&formid=108';
+		}
 
 		if (useCampaignStore().getActivated === null) {
 			promises.push(

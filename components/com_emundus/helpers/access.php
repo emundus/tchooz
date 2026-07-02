@@ -988,12 +988,8 @@ class EmundusHelperAccess
 				{
 					$query->clear()
 						->select('DISTINCT ' . $db->quoteName('eg.user_id'))
-						->from($db->quoteName('#__emundus_groups', 'eg'));
-
-					if (!empty($filter_group_ids))
-					{
-						$query->where('eg.group_id IN (' . implode(',', $db->quote($group_ids)) . ')');
-					}
+						->from($db->quoteName('#__emundus_groups', 'eg'))
+						->where('eg.group_id IN (' . implode(',', $db->quote($group_ids)) . ')');
 
 					$db->setQuery($query);
 					$user_ids = $db->loadColumn();

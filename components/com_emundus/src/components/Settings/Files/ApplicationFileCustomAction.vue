@@ -86,8 +86,6 @@ export default {
 			}
 		},
 		openModal(refName) {
-			console.log(this.$refs[refName]);
-
 			if (this.$refs[refName]) {
 				this.$refs[refName].open();
 

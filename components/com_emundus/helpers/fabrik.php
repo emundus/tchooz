@@ -3237,7 +3237,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					}
 					elseif (!$isRaw)
 					{
-						$formatted_values[] = $transformer->transform($_value);
+						// Dates are already transformed
+						$formatted_values[] = !$plugin->isDateField() ? $transformer->transform($_value) : $_value;
 					}
 				}
 
