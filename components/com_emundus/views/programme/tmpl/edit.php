@@ -60,6 +60,7 @@ $data['crud'] = [
 ];
 
 $data['program'] = $this->programEntity->__serialize();
+$data['useOldProgramForm'] = $this->useOldProgramForm;
 ?>
 
 <div id="em-component-vue" component="Program/ProgramEdit"

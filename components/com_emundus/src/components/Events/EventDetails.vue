@@ -27,8 +27,6 @@ export default {
 		}
 
 		this.shortLang = useGlobalStore().getShortLang;
-
-		console.log(this.$props.item);
 	},
 	methods: {
 		beforeClose() {
