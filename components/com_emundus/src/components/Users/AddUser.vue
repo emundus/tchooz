@@ -70,7 +70,6 @@ export default {
 			}
 
 			userService.addException(user.value).then((response) => {
-				console.log(response);
 				if (!response.status) {
 					this.alertError(response.msg);
 					return;

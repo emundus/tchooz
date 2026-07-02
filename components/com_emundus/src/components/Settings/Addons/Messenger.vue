@@ -188,7 +188,6 @@ export default {
 	created() {
 		let configuration = typeof this.addon.params === 'string' ? JSON.parse(this.addon.params) : this.addon.params;
 
-		console.log(configuration);
 		this.fields.forEach((field) => {
 			field.value = configuration[field.param] || '';
 		});

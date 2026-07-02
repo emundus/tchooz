@@ -73,7 +73,6 @@ export default {
 
 			usersService.getAccessibilityUserSettings().then((response) => {
 				if (response.status) {
-					console.log(response);
 					Object.entries(response.data).forEach(([key, value]) => {
 						const param = this.formGroups[0].parameters.find((p) => p.param === key);
 						if (param) {

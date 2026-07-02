@@ -27,6 +27,8 @@ class EmundusViewProgramme extends JViewLegacy
 {
 	protected ?ProgramEntity $programEntity = null;
 
+	protected bool $useOldProgramForm = false;
+
 	/**
 	 * Display the view
 	 */
@@ -60,6 +62,11 @@ class EmundusViewProgramme extends JViewLegacy
 			} else
 			{
 				$this->programEntity = new ProgramEntity('', '');
+			}
+
+			if($menu_params->get('old_program_form'))
+			{
+				$this->useOldProgramForm = $menu_params->get('old_program_form', 0) == 1;
 			}
 		} else {
 			$this->com_emundus_programme_progdesc_class = '';
