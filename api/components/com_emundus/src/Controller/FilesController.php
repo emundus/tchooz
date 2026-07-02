@@ -238,6 +238,22 @@ class FilesController extends ApiController
 			}
 		}
 		//
+		
+		// Maybe campaign has been updated
+		if(!empty($campaign) && ($campaign->getId() !== $applicationFileEntity->getCampaignId()))
+		{
+			// Move file of campaign
+			if (!class_exists('EmundusModelApplication'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+			}
+			$m_application = new \EmundusModelApplication();
+			if(!$m_application->moveApplication($applicationFileEntity->getFnum(), $applicationFileEntity->getFnum(), $campaign->getId()))
+			{
+				throw new \RuntimeException('Error when try to move file of ' . $applicationFileEntity->getUser()->name . ' from campaign ' . $applicationFileEntity->getCampaign()->getLabel() . ' to ' . $campaign->getLabel());
+			}
+		}
+		//
 
 		// Fill data
 		$db_tables = $campaignRepository->getDbTablesByCampaignId($applicationFileEntity->getCampaignId());

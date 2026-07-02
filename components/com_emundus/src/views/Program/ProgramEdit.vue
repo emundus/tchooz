@@ -23,7 +23,19 @@
 					class="tw-bg-(--neutral-0) tw-relative tw-w-full tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-p-6"
 				>
 					<div class="tw-w-full" v-show="selectedMenuItem.code === 'general'">
-						<ProgramForm :program="this.program" />
+						<ProgramForm v-if="!this.useOldProgramForm" :program="this.program" />
+
+						<iframe
+							v-else
+							class="hide-titles tw-w-full"
+							style="height: 100vh"
+							:src="
+								'/index.php?option=com_fabrik&view=form&formid=108&rowid=' +
+								this.program.id +
+								'&tmpl=component&iframe=1'
+							"
+						>
+						</iframe>
 					</div>
 
 					<div class="tw-flex tw-w-full tw-flex-col tw-gap-2" v-show="selectedMenuItem.code === 'campaigns'">
@@ -107,6 +119,10 @@ export default {
 		crud: {
 			type: Object,
 			default: () => ({}),
+		},
+		useOldProgramForm: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	data() {

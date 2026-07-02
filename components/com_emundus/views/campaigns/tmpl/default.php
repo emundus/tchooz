@@ -248,6 +248,7 @@ if ($addonAnonymous->isActivated())
     );
 }
 $data['publicAddonActivated'] = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value)->isActivated();
+$data['useOldProgramForm'] = $this->useOldProgramForm;
 ?>
 
 <?php echo LayoutHelper::render('emundus.vue-mount', [

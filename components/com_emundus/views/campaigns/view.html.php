@@ -21,6 +21,8 @@ class EmundusViewCampaigns extends HtmlView
 {
 	protected string $tabs_to_display = 'global,more,steps,attachments,emails,history';
 
+	protected bool $useOldProgramForm = false;
+
 	function display($tpl = null): void
 	{
 		$app    = Factory::getApplication();
@@ -62,6 +64,10 @@ class EmundusViewCampaigns extends HtmlView
 			{
 				$this->tabs_to_display = implode(',', $menu_params->get('tabs_to_display'));
 			}
+		}
+		if($menu_params->get('old_program_form'))
+		{
+			$this->useOldProgramForm = $menu_params->get('old_program_form', 0) == 1;
 		}
 
 		parent::display($tpl);
