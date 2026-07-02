@@ -101,6 +101,10 @@ class TargetEntity
 		$predefinedTargets = [];
 		if ($this->predefinition !== null) {
 			$predefinedTargets = $this->predefinition->resolve($context);
+
+			if (empty($predefinedTargets)) {
+				return $finalTargets;
+			}
 		}
 
 		if (!empty($this->conditions))

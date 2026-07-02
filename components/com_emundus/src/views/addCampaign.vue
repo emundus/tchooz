@@ -1271,7 +1271,6 @@ export default {
 		},
 		campaignsOptions() {
 			return this.otherCampaigns.map((campaign) => {
-				console.log(campaign.label[this.actualLanguage]);
 				return {
 					label: campaign.label[this.actualLanguage] || campaign.label['fr'] || campaign.label['en'] || 'No title',
 					value: campaign.id,
