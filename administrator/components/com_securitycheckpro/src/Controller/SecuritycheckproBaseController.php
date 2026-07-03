@@ -50,11 +50,14 @@ class SecuritycheckproBaseController extends DisplayController
 	 * Acciones a ejecutar cuando se pulsa el botón 'Purge sessions'
 	 * @return  void
 	*/
-    function purgeSessions() {		
-		
+    function purgeSessions() {
+		if (!Session::checkToken('request')) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
         $model = $this->getModel('Base');
 
-        if (!$model) {
+        if (!($model instanceof BaseModel)) {
             $this->setMessage(Text::_('COM_SECURITYCHECKPRO_ERROR_BASE_MODEL_NOT_FOUND'), 'error');
             $this->setRedirect(Route::_('index.php?option=com_securitycheckpro', false));
             return;
@@ -100,6 +103,10 @@ class SecuritycheckproBaseController extends DisplayController
 	 */
 	public function Export_config(): void
 	{
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
 		/** @var \Joomla\CMS\Application\CMSApplication $app */
 		$app = Factory::getApplication();
 

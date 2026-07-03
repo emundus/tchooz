@@ -14,24 +14,17 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\SysinfoModel;
 
 
 class HtmlView extends BaseHtmlView {
     
-	/**
-	 * Los items a mostrar
-	 *
-	 * @var array<string, mixed>
-	 */
-    public $system_info = [];
+	 /** @var array<string, mixed> */
+    public array $system_info = [];
 	
-	/**
-	 * El modelo
-	 *
-	 * @var SysinfoModel
-	 */
-    public $model = null;
+	/** @var BaseDatabaseModel|null */
+    public ?BaseDatabaseModel $model = null;
 	
     /**
      * Display the main view
@@ -39,7 +32,7 @@ class HtmlView extends BaseHtmlView {
      * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
      * @return  void
      */
-    function display($tpl = null) {
+    function display($tpl = null): void {
 		   
 		ToolbarHelper::title(Text::_('Securitycheck Pro').' | '.Text::_('COM_SECURITYCHECKPRO_SYSTEM_INFORMATION'), 'securitycheckpro');
 		
@@ -49,11 +42,14 @@ class HtmlView extends BaseHtmlView {
 		  ->useScript('bootstrap.tab')		  
 		  ->useScript('com_securitycheckpro.Sysinfo');
                         
-        // Obtenemos el modelo de esta vista (Sysinfo)
-		/** @var SysinfoModel $model */
-       	$this->model= $this->getModel();
-        
-		$this->system_info = $this->model->getInfo(); 
+        $m = $this->getModel();
+        $this->model = $m;
+
+        if ($m instanceof SysinfoModel) {
+            $this->system_info = $m->getInfo();
+        } else {
+            $this->system_info = [];
+        }
                             
         parent::display($tpl);
     }

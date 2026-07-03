@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model;
 
-// Chequeamos si el archivo est· incluÌdo en Joomla!
+// Chequeamos si el archivo esta incluido en Joomla!
 defined('_JEXEC') or die();
 
 use Joomla\CMS\Factory;
@@ -35,7 +35,7 @@ if (!defined('SCP_CACERT_PEM')) define('SCP_CACERT_PEM', __DIR__ . '/cacert.pem'
 class DatabaseupdatesModel extends BaseModel
 {
 	/**
-     * Variable que contendr· el tipo de componente de securitycheck instalado 
+     * Variable que contendra el tipo de componente de securitycheck instalado 
      *
      @var string
      */
@@ -47,7 +47,7 @@ class DatabaseupdatesModel extends BaseModel
      */    
     public $vuln_table = 'Not_defined';
     /**
-     * Variable que contiene la versiÛn de la bbdd local (contendr· el mayor valor del campo 'dbversion' del archivo xml leÌdo)
+     * Variable que contiene la version de la bbdd local (contendra el mayor valor del campo 'dbversion' del archivo xml leido)
      *
      @var string
      */  
@@ -67,33 +67,33 @@ class DatabaseupdatesModel extends BaseModel
     }
 
 	/**
-	 * Detecta quÈ ediciÛn de Securitycheck (Pro/Free) est· instalada y habilitada.
+	 * Detecta que edici√≥n de Securitycheck (Pro/Free) est√° instalada y habilitada.
 	 */
 	private function checkSecuritycheckType(): void
 	{
-		// Primero comprobamos la ediciÛn Pro
+		// Primero comprobamos la edici√≥n Pro
 		if (ComponentHelper::isEnabled('com_securitycheckpro')) {
 			$this->securitycheck_type = 'com_securitycheckpro';
 			$this->vuln_table         = '#__securitycheckpro_db';
 			return;
 		}
 
-		// DespuÈs la ediciÛn Free
+		// Despu√©s la edicion Free
 		if (ComponentHelper::isEnabled('com_securitycheck')) {
 			$this->securitycheck_type = 'com_securitycheck';
 			$this->vuln_table         = '#__securitycheck_db';
 			return;
 		}
 
-		// Si llegamos aquÌ, no hay ninguna instalada o est·n deshabilitadas
+		// Si llegamos aqu√≠, no hay ninguna instalada o est√°n deshabilitadas
 	}
 
 	/**
-	 * AÒade o elimina vulnerabilidades en la BBDD de Securitycheck (Pro/Free) seg˙n
-	 * registros recibidos y la versiÛn local de la base de datos.
+	 * A√±ade o elimina vulnerabilidades en la BBDD de Securitycheck (Pro/Free) seg√∫n
+	 * registros recibidos y la versi√≥n local de la base de datos.
 	 *
 	 * Reglas:
-	 *  - SÛlo procesa registros con dbversion > $localDatabaseVersion
+	 *  - S√≥lo procesa registros con dbversion > $localDatabaseVersion
 	 *  - Filtra por rama mayor de Joomla (jversion vs JVERSION)
 	 *  - method=add (por defecto) ? upsert por (Product,published)
 	 *  - method=delete ? borrado por (Product,published)
@@ -107,7 +107,7 @@ class DatabaseupdatesModel extends BaseModel
 		/** @var DatabaseInterface $db */
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
-		// Asegura detecciÛn de ediciÛn (establece $this->securitycheck_type y $this->vuln_table)
+		// Asegura detecci√≥n de edici√≥n (establece $this->securitycheck_type y $this->vuln_table)
 		if ($this->securitycheck_type === 'Not_defined' || $this->vuln_table === 'Not_defined') {
 			$this->checkSecuritycheckType();
 			if ($this->securitycheck_type === 'Not_defined' || $this->vuln_table === 'Not_defined') {
@@ -115,7 +115,7 @@ class DatabaseupdatesModel extends BaseModel
 			}
 		}
 
-		// Columnas permitidas por ediciÛn (evita mass-assignment)
+		// Columnas permitidas por edici√≥n (evita mass-assignment)
 		$allowedColsPro  = [
 			'Product','vuln_type','Vulnerableversion','modvulnversion',
 			'Joomlaversion','modvulnjoomla','description','vuln_class',
@@ -156,10 +156,10 @@ class DatabaseupdatesModel extends BaseModel
 			$localMajor = $this->getMajorVersion((string) \JVERSION);
 
 			foreach ($vulns as $row) {
-				// No aÒadimos limpieza adicional: asumimos $row viene ya normalizado/limpio.
+				// No a√±adimos limpieza adicional: asumimos $row viene ya normalizado/limpio.
 				$v = $row;
 
-				// SÛlo procesa si dbversion > local
+				// S√≥lo procesa si dbversion > local
 				if (!isset($v['dbversion']) || version_compare($v['dbversion'], $localDatabaseVersion, 'le')) {
 					continue;
 				}
@@ -170,7 +170,7 @@ class DatabaseupdatesModel extends BaseModel
 					continue;
 				}
 
-				// Actualiza highest db version leÌda
+				// Actualiza highest db version le√≠da
 				$this->higher_database_version = $v['dbversion'];
 
 				$method      = $v['method']   ?? 'add';
@@ -178,7 +178,7 @@ class DatabaseupdatesModel extends BaseModel
 				$published   = trim((string)($v['published'] ?? ''));
 
 				if ($product === '' || $published === '') {
-					continue; // claves mÌnimas para identificar
+					continue; // claves m√≠nimas para identificar
 				}
 
 				$productVar   = $product;   // variables separadas para bind
@@ -199,7 +199,7 @@ class DatabaseupdatesModel extends BaseModel
 					continue;
 				}
 
-				// øExiste ya por (Product,published)?
+				// Existe ya por (Product,published)?
 				$existsQ = $db->getQuery(true)
 					->select('id')
 					->from($db->quoteName($this->vuln_table))
@@ -219,7 +219,7 @@ class DatabaseupdatesModel extends BaseModel
 						$payload[$dbCol] = (string) $v[$feedKey];
 					}
 				}
-				// Aplica allow-list de columnas seg˙n ediciÛn
+				// Aplica allow-list de columnas seg√∫n edici√≥n
 				$payload = array_intersect_key($payload, array_flip($allowedMap));
 
 				if ($existingId) {
@@ -236,10 +236,10 @@ class DatabaseupdatesModel extends BaseModel
 
 					// Si no hay nada que actualizar, salimos
 					if (count(get_object_vars($rowObj)) <= 1) {
-						// sÛlo trae 'id'
+						// s√≥lo trae 'id'
 						// no marcamos cambios
 					} else {
-						// UPDATE cl·sico de Joomla
+						// UPDATE cl√°sico de Joomla
 						$db->updateObject($this->vuln_table, $rowObj, 'id');
 						$madeChanges = true;
 					}
@@ -252,7 +252,7 @@ class DatabaseupdatesModel extends BaseModel
 					// Convierte el payload a stdClass para insertObject()
 					$rowObj = new \stdClass();
 					foreach ($payload as $col => $val) {
-						// MantÈn sÛlo columnas permitidas (ya aplicaste allow-list arriba,
+						// Mant√©n s√≥lo columnas permitidas (ya aplicaste allow-list arriba,
 						// esto es redundante pero seguro)
 						if (in_array($col, $allowedMap, true)) {
 							$rowObj->$col = (string) $val;
@@ -278,15 +278,15 @@ class DatabaseupdatesModel extends BaseModel
 	}
 	
 	/**
-	 * Extrae la versiÛn mayor (primer n˙mero) de una cadena de versiÛn sem·ntica.
+	 * Extrae la versi√≥n mayor (primer n√∫mero) de una cadena de versi√≥n sem√°ntica.
 	 *
 	 * @param  string  $version  Ej: "5.4.3" -> 5, "4.0.0-beta" -> 4
 	 *
-	 * @return int  N˙mero de versiÛn mayor, o 0 si no se puede determinar
+	 * @return int  n√∫mero de versi√≥n mayor, o 0 si no se puede determinar
 	 */
 	private function getMajorVersion(string $version): int
 	{
-		// Usa regex para obtener el primer grupo de dÌgitos
+		// Usa regex para obtener el primer grupo de d√≠gitos
 		if (preg_match('/^(\d+)/', $version, $matches) === 1) {
 			return (int) $matches[1];
 		}
@@ -295,7 +295,7 @@ class DatabaseupdatesModel extends BaseModel
 	}
 
 	/**
-     * FunciÛn que realiza todo el proceso de comprobaciÛn de nuevas vulnerabilidades
+     * Funci√≥n que realiza todo el proceso de comprobaci√≥n de nuevas vulnerabilidades
      *
      *
      * @return  void
@@ -306,7 +306,7 @@ class DatabaseupdatesModel extends BaseModel
         
         // Inicializamos las variables
         $result = true;
-        $downloadid = null;
+        $downloadid = '';
         $xml = null;
     
         // Chequeamos el tipo de componente instalado
@@ -315,29 +315,23 @@ class DatabaseupdatesModel extends BaseModel
         $mainframe = Factory::getApplication();
     
         if ($this->securitycheck_type == 'Not_defined') {
-            // No hay ninguna versiÛn de Securitycheck instalada!
+            // No hay ninguna versi√≥n de Securitycheck instalada!
             $result = false;
         } else
         {    
-            // Buscamos el Download ID 
-            $downloadid = $downloadid ?? '';
+            // 1) Obtener desde el update site del paquete
+			$downloadData = $this->get_extra_query_update_sites_table('pkg_securitycheckpro');
 
-			// 1) Intentar obtener desde el plugin de sistema (si est· habilitado)
-			if (PluginHelper::isEnabled('system', 'securitycheckpro_update_database')) {
-				$downloadData = $this->get_extra_query_update_sites_table('securitycheckpro_update_database');
+			if ($downloadData !== 'error' && $downloadData !== null) {
+				$remoteDlid = $downloadData->extra_query ?? null;
 
-				if ($downloadData !== 'error') {
-					$remoteDlid = $downloadData->extra_query ?? null;
-
-					// Si hay un DLID remoto v·lido, ˙salo
-					if ($remoteDlid !== null && $remoteDlid !== '') {
-						$downloadid = trim((string) $remoteDlid);
-					}
+				if ($remoteDlid !== null && $remoteDlid !== '') {
+					$downloadid = trim((string) $remoteDlid);
 				}
 			}
 
-			// 2) Fallback al par·metro del componente si sigue vacÌo
-			if ($downloadid === '' || $downloadid === null) {
+			// 2) Fallback al componente (instalaciones anteriores a la migracion)
+			if ($downloadid === '') {
 				$appParams  = ComponentHelper::getParams('com_securitycheckpro');
 				$componentDlid = trim((string) $appParams->get('downloadid', ''));
 				if ($componentDlid !== '') {
@@ -345,19 +339,41 @@ class DatabaseupdatesModel extends BaseModel
 				}
 			}
 
-			// 3) ValidaciÛn final
-			if ($downloadid === '' || $downloadid === null) {
+			// 3) Fallback al update site del plugin Update Database
+			if ($downloadid === '') {
+				$updateDbData = $this->get_extra_query_update_sites_table('securitycheckpro_update_database');
+				if ($updateDbData !== 'error' && $updateDbData !== null) {
+					$remoteDlid = $updateDbData->extra_query ?? null;
+					if ($remoteDlid !== null && $remoteDlid !== '') {
+						$downloadid = trim((string) $remoteDlid);
+					}
+				}
+			}
+
+			// 4) Fallback al update site del paquete Track Actions
+			if ($downloadid === '') {
+				$trackData = $this->get_extra_query_update_sites_table('pkg_trackactions');
+				if ($trackData !== 'error' && $trackData !== null) {
+					$remoteDlid = $trackData->extra_query ?? null;
+					if ($remoteDlid !== null && $remoteDlid !== '') {
+						$downloadid = trim((string) $remoteDlid);
+					}
+				}
+			}
+
+			// Validaci√≥n final
+			if ($downloadid === '') {
 				// No hay DLID: dejar mensaje y no continuar
 				$this->set_campo_bbdd('message', 'COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY');
 				$result = false;
 			} else {       
-                // Url que contendr· el fichero xml (debe contener el Download ID del usuario para poder acceder a ella)
+                // Url que contendr√° el fichero xml (debe contener el Download ID del usuario para poder acceder a ella)
                 $xmlfile = "https://securitycheck.protegetuordenador.com/index.php/downloads/securitycheck-pro-database-updates-xml/securitycheck-pro-database-updates-xml-1-0-0/databases-xml?dlid=" . $downloadid;
                         
-                // Array que contendr· todo el archivo xml 
+                // Array que contendr√° todo el archivo xml 
                 $array_complete = array();
             
-                // Leemos el contenido del archivo xml (si existe la funciÛn curl_init)
+                // Leemos el contenido del archivo xml (si existe la funci√≥n curl_init)
 				if (function_exists('curl_init')) {
 					$xml = null;
 
@@ -378,7 +394,7 @@ class DatabaseupdatesModel extends BaseModel
 					];
 
 					// Si existe el .pem definido en SCP_CACERT_PEM lo usamos
-					if (defined('SCP_CACERT_PEM') && SCP_CACERT_PEM && is_file(SCP_CACERT_PEM)) {
+					if (is_file(SCP_CACERT_PEM)) {
 						$opts[CURLOPT_CAINFO] = SCP_CACERT_PEM;
 					}
 
@@ -386,15 +402,7 @@ class DatabaseupdatesModel extends BaseModel
 
 					$xmlresponse = curl_exec($ch);
 					$err         = curl_error($ch);
-
-					if ($xmlresponse === false) {
-						// Reintento sin CAINFO: lo eliminamos
-						curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-						curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-						$xmlresponse = curl_exec($ch);
-						$err = curl_error($ch);
-					}
-
+					
 					if ($xmlresponse === false) {
 						$result  = false;
 						$message = $err ?: 'curl_exec returned false';
@@ -425,7 +433,7 @@ class DatabaseupdatesModel extends BaseModel
 					$xml = false;
 				}
             
-                // Comprobamos que hemos leido el archivo xml (esta variable ser· FALSE, por ejemplo, si no puede conectar con el servidor)
+                // Comprobamos que hemos leido el archivo xml (esta variable ser√° FALSE, por ejemplo, si no puede conectar con el servidor)
                 if ($xml instanceof \SimpleXMLElement) {                                        
                     // Itera solo por los nodos <vulnerability>
 					foreach ($xml->xpath('//vulnerability') as $vulnNode) {
@@ -452,7 +460,7 @@ class DatabaseupdatesModel extends BaseModel
 							$element[$k] = $v;
 						}
 
-						// Asegura claves mÌnimas aunque falten en el XML
+						// Asegura claves m√≠nimas aunque falten en el XML
 						$element += [
 							'dbversion'         => '',
 							'jversion'          => '',
@@ -473,10 +481,10 @@ class DatabaseupdatesModel extends BaseModel
 						$array_complete[] = $element;
 					}
                 
-                    //Extraemos la versiÛn de la bbdd local
+                    //Extraemos la versi√≥n de la bbdd local
                     $local_database_version = $this->getDatabaseVersion();
                 
-                    // AÒadimos las nuevas vulnerabilidades a la BBDD
+                    // A√±adimos las nuevas vulnerabilidades a la BBDD
                     $this->addVuln($array_complete, $local_database_version);    
                 } else
                 {
@@ -491,11 +499,11 @@ class DatabaseupdatesModel extends BaseModel
                 // Si el proceso ha sido correcto, actualizamos la bbdd
 				$timestamp = $this->get_Joomla_timestamp();
                 if ($result) {					
-                    // Actualizamos la fecha de la ˙ltima comprobaciÛn y la versiÛn de la bbdd local					
+                    // Actualizamos la fecha de la √∫ltima comprobaci√≥n y la versi√≥n de la bbdd local					
                     $this->set_campo_bbdd('last_check', $timestamp);
                     $this->set_campo_bbdd('version', $this->higher_database_version);
                     $this->set_campo_bbdd('message', 'PLG_SECURITYCHECKPRO_UPDATE_DATABASE_DATABASE_UPDATED');
-				// Si no lo hacemos actualizamos la bbdd para hacer la peticiÛn en la siguiente ventana
+				// Si no lo hacemos actualizamos la bbdd para hacer la petici√≥n en la siguiente ventana
                 } else {					
                     $this->set_campo_bbdd('last_check', $timestamp);
 				}
@@ -504,7 +512,7 @@ class DatabaseupdatesModel extends BaseModel
     }
 	
 	/**
-     * FunciÛn que actualiza un campo de la bbdd '#_securitycheckpro_update_database' con el valor pasado como argumento
+     * Funci√≥n que actualiza un campo de la bbdd '#_securitycheckpro_update_database' con el valor pasado como argumento
      *
 	 * @param   string             $campo    The name of field to update
 	 * @param   string             $valor    The value of the field to update
@@ -527,7 +535,7 @@ class DatabaseupdatesModel extends BaseModel
 		try {
 			$db->transactionStart();
 
-			// 1) Obtener id m·ximo (si no hay filas, creamos una)
+			// 1) Obtener id m√°ximo (si no hay filas, creamos una)
 			$query = $db->getQuery(true)
 				->select('MAX(' . $db->quoteName('id') . ')')
 				->from($db->quoteName($table));
@@ -535,7 +543,7 @@ class DatabaseupdatesModel extends BaseModel
 			$maxId = (int) $db->loadResult();
 
 			if ($maxId <= 0) {
-				// Tabla vacÌa: insertar fila ìsingletonî con el campo ya establecido
+				// Tabla vac√≠a: insertar fila 'singleton' con el campo ya establecido
 				$query = $db->getQuery(true)
 					->insert($db->quoteName($table))
 					->columns($db->quoteName($campo))
@@ -544,7 +552,7 @@ class DatabaseupdatesModel extends BaseModel
 				$db->execute();
 
 				$db->transactionCommit();
-				return; // <-- IMPORTANTE: salimos para no borrar lo reciÈn insertado
+				return; // <-- IMPORTANTE: salimos para no borrar lo reci√©n insertado
 			}
 
 			// 2) Eliminar duplicados, dejando solo la fila con id = $maxId
@@ -572,10 +580,10 @@ class DatabaseupdatesModel extends BaseModel
 	}
 	
 	/**
-	 * Devuelve la fecha/hora de la ˙ltima comprobaciÛn de actualizaciones.
+	 * Devuelve la fecha/hora de la √∫ltima comprobaci√≥n de actualizaciones.
 	 *
 	 *
-	 * @return string|null Fecha/hora de la ˙ltima comprobaciÛn o null si no existe.
+	 * @return string|null Fecha/hora de la √∫ltima comprobaci√≥n o null si no existe.
 	 */
 	public function lastCheck(): ?string
 	{
@@ -600,10 +608,10 @@ class DatabaseupdatesModel extends BaseModel
 	}
 	
 	/**
-	 * Devuelve la versiÛn de la base de datos local de Securitycheck Pro.
+	 * Devuelve la versi√≥n de la base de datos local de Securitycheck Pro.
 	 *
 	 *
-	 * @return string VersiÛn de la BBDD local o '0.0.0' si no existe.
+	 * @return string versi√≥n de la BBDD local o '0.0.0' si no existe.
 	 */
 	public function getDatabaseVersion(): string
 	{
@@ -628,14 +636,14 @@ class DatabaseupdatesModel extends BaseModel
 	}
 
     /**
-	 * Chequea si es necesario lanzar una tarea de comprobaciÛn de vulnerabilidades.
+	 * Chequea si es necesario lanzar una tarea de comprobaci√≥n de vulnerabilidades.
 	 *
 	 */
 	public function check_for_updates(): void
 	{
 		$interval = 0;
 
-		// ⁄ltimo chequeo realizado (puede ser null)
+		// √öltimo chequeo realizado (puede ser null)
 		$lastCheck = $this->lastCheck();
 
 		if ($lastCheck === null || $lastCheck === '') {
@@ -643,7 +651,7 @@ class DatabaseupdatesModel extends BaseModel
 			$interval = 20;
 		} else {
 			try {
-				$now = $this->get_Joomla_timestamp(); // deberÌa devolver string con fecha/hora
+				$now = $this->get_Joomla_timestamp(); // deber√≠a devolver string con fecha/hora
 
 				$nowDt  = new \DateTimeImmutable($now);
 				$lastDt = new \DateTimeImmutable($lastCheck);
@@ -651,12 +659,12 @@ class DatabaseupdatesModel extends BaseModel
 				$secondsDiff = $nowDt->getTimestamp() - $lastDt->getTimestamp();
 				$interval    = (int) floor($secondsDiff / 3600);
 			} catch (\Exception $e) {
-				// En caso de fallo (ej: formato de fecha inv·lido), tratamos como si no hubiera chequeo previo
+				// En caso de fallo (ej: formato de fecha inv√°lido), tratamos como si no hubiera chequeo previo
 				$interval = 20;
 			}
 		}
 
-		// Si han pasado m·s de 12h desde el ˙ltimo chequeo, lanzamos la tarea
+		// Si han pasado m√°s de 12h desde el √∫ltimo chequeo, lanzamos la tarea
 		if ($interval > 12) {
 			$this->tarea_comprobacion();
 		}
@@ -674,7 +682,7 @@ class DatabaseupdatesModel extends BaseModel
 		// Normaliza y asegura el directorio base
 		$base = Path::clean((string) $this->scan_path);
 		if ($base === '' || $base === '/') {
-			return; // nunca escribimos fuera o con path inv·lido
+			return; // nunca escribimos fuera o con path inv√°lido
 		}
 
 		// Asegura que existe el directorio (0755 por defecto)
@@ -692,7 +700,7 @@ class DatabaseupdatesModel extends BaseModel
 		$filename   = 'update_vuln_table.php';
 		$targetPath = Path::clean($base . '/' . $filename);
 
-		// Comprueba que $targetPath est· dentro de $base
+		// Comprueba que $targetPath est√° dentro de $base
 		$realBase  = realpath($base);
 		$realTarget = $this->safeRealpath($targetPath);
 
@@ -701,7 +709,7 @@ class DatabaseupdatesModel extends BaseModel
 		}
 
 		// Escribe de forma segura (crea el archivo si no existe, no borra contenido previo)
-		// Contenido mÌnimo para "bandera"
+		// Contenido m√≠nimo para "bandera"
 		$content = "<?php // marker file for vulnerabilities DB update\n";
 
 		try {
@@ -734,11 +742,11 @@ class DatabaseupdatesModel extends BaseModel
 		$dir = dirname($path);
 
 		if (!is_dir($dir)) {
-			// No creamos aquÌ; sÛlo intentamos resolver si existe
+			// No creamos aqu√≠; s√≥lo intentamos resolver si existe
 			return false;
 		}
 
-		return realpath($path) ?: $path; // si no existe el archivo, devolvemos la versiÛn limpia
+		return realpath($path) ?: $path; // si no existe el archivo, devolvemos la versi√≥n limpia
 	}
 
 }

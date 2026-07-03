@@ -36,7 +36,7 @@ class LogcreatorField extends ListField
     /**
      * Cached array of the category items.
      *
-     * @var   array
+     * @var    array<int, \stdClass>
      * @since __DEPLOY_VERSION__
      */
     protected static $options = array();
@@ -44,7 +44,7 @@ class LogcreatorField extends ListField
     /**
      * Method to get the options to populate list
      *
-     * @return array  The field option objects.
+     * @return array<int, \stdClass> The field option objects.
      *
      * @since __DEPLOY_VERSION__
      */

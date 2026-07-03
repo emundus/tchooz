@@ -134,7 +134,7 @@
       return;
     }
 
-    if (contentEl) contentEl.innerHTML = payload.content ?? ''; // ya pides HTML saneado en servidor
+    if (contentEl) contentEl.innerHTML = payload.content ?? '';
     const meta = [];
     if (payload.path)    meta.push('Path: ' + payload.path);
     if (payload.size_h)  meta.push('Size: ' + payload.size_h);
@@ -232,6 +232,11 @@
   function init() {
     wireSelectionListeners();
     updateViewBtnState();
+
+    const tooltipEl = document.getElementById('more_info_submission_type');
+    if (tooltipEl && window.bootstrap?.Tooltip) {
+      new bootstrap.Tooltip(tooltipEl);
+    }
   }
 
   if (document.readyState === 'loading') {

@@ -14,7 +14,6 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Table\Table;
 use Joomla\Input\Input;
@@ -22,11 +21,14 @@ use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
 use Joomla\CMS\Session\Session;
 use Joomla\Utilities\IpHelper;
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Application\CMSWebApplicationInterface;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 
 if (!defined('SCP_CACERT_PEM')) define('SCP_CACERT_PEM', __DIR__ . '/cacert.pem');
 if (!defined('SCP_USER_AGENT')) define('SCP_USER_AGENT', 'Securitycheck Pro User agent');
@@ -60,14 +62,14 @@ class BaseModel extends BaseDatabaseModel
     var $_dbrows = null;
 	
 	/**
-     Configuración aplicada
+     Configuraciï¿½n aplicada
      *
      @var \Joomla\Registry\Registry
      */
     private ?Registry $config = null;
 	
 	/**
-     Configuración por defecto
+     Configuraciï¿½n por defecto
      *
      @var array<string, int|list<string>|string>
      */
@@ -80,7 +82,6 @@ class BaseModel extends BaseDatabaseModel
 		'priority2'        => 'DynamicBlacklist',
 		'priority3'        => 'Blacklist',
 		'methods'            => 'GET,POST,REQUEST',
-		'mode'            => 1,
 		'logs_attacks'            => 1,
 		'scp_delete_period'            => 60,    
 		'log_limits_per_ip_and_day'            => 0,
@@ -102,7 +103,7 @@ class BaseModel extends BaseDatabaseModel
 		'email_subject'            => 'Securitycheck Pro alert!',
 		'email_body'            => 'Securitycheck Pro has generated a new alert. Please, check your logs.',
 		'email_add_applied_rule'            => 1,
-		'email_to'            => 'youremail@yourdomain.com',
+		'email_to'            => '',
 		'email_from_domain'            => 'me@mydomain.com',
 		'email_from_name'            => 'Your name',
 		'email_max_number'            => 20,
@@ -162,39 +163,46 @@ class BaseModel extends BaseDatabaseModel
 		'send_email_inspector'    =>    0,
 		'delete_period'    => 0,
 		'ip_logging'    =>    0,
-		'loggable_extensions'    => ['0' => 'com_banners','1' => 'com_cache','2' => 'com_categories','3' => 'com_config','4' => 'com_contact','5' => 'com_content','6' => 'com_installer','7' => 'com_media','8' => 'com_menus','9' => 'com_messages','10' => 'com_modules','11' => 'com_newsfeeds','12' => 'com_plugins','13' => 'com_redirect','14' => 'com_tags','15' => 'com_templates','16' => 'com_users']
+		'loggable_extensions'    => ['0' => 'com_banners','1' => 'com_cache','2' => 'com_categories','3' => 'com_config','4' => 'com_contact','5' => 'com_content','6' => 'com_installer','7' => 'com_media','8' => 'com_menus','9' => 'com_messages','10' => 'com_modules','11' => 'com_newsfeeds','12' => 'com_plugins','13' => 'com_redirect','14' => 'com_tags','15' => 'com_templates','16' => 'com_users','17' => 'com_akeebabackup','18' => 'com_acym','19' => 'com_securitycheckpro','20' => 'com_securitycheckprocontrolcenter']
     ];
 
+	
+	protected function populateState()
+	{
+		parent::populateState();
 
-    function __construct()
-    {
-        parent::__construct();
+		$app = Factory::getApplication();
 
-        global $mainframe, $option;
-        
-		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
-        $mainframe = Factory::getApplication();
-				
-		// This is needed to avoid errors getting the file from cli
-		if ( $mainframe instanceof \Joomla\CMS\Application\CMSWebApplicationInterface ) {
-			// Obtenemos las variables de paginación de la petición
-			$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getConfig()->get('list_limit',20), 'int');
-			$limitstart = $mainframe->getInput()->getInt('limitstart', 0);
-								
-			// En el caso de que los límites hayan cambiado, los volvemos a ajustar
-			$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
-		
-			$this->setState('limit', $limit);
-			$this->setState('limitstart', $limitstart);     
+		if (!($app instanceof CMSWebApplicationInterface)) {
+			return;
 		}
-    }
+
+		$defaultLimit = $app->get('list_limit', 20);
+
+		$limit = (int) $app->getUserStateFromRequest(
+			'global.list.limit',
+			'limit',
+			$defaultLimit,
+			'int'
+		);
+
+		$limitstart = $app->getInput()->getInt('limitstart', 0);
+		$limitstart = ($limit > 0) ? (int) (floor($limitstart / $limit) * $limit) : 0;
+
+		$this->setState('list.limit', $limit);
+		$this->setState('list.start', $limitstart);
+
+		// Si tu cï¿½digo antiguo esperaba 'limit'/'limitstart', puedes duplicarlo:
+		$this->setState('limit', $limit);
+		$this->setState('limitstart', $limitstart);
+	}
 	
 	/**
 	 * Obtiene los elementos de una tabla pasada como argumento
 	 *
 	 * @param   string  $table  Nombre corto de la tabla (sin prefijo)
 	 *
-	 * @return  array<string>   Lista de valores de la columna 'ip'. Vacío si no hay datos o en caso de error.
+	 * @return  array<string>   Lista de valores de la columna 'ip'. Vacï¿½o si no hay datos o en caso de error.
 	 */
 	function getTableData(string $table): array
 	{
@@ -220,7 +228,7 @@ class BaseModel extends BaseDatabaseModel
 	}
 	
 	/**
-     * Función que determina el número de logs marcados como "no leido"
+     * Funciï¿½n que determina el nï¿½mero de logs marcados como "no leido"
      *
      * @return  int
      *     
@@ -250,9 +258,57 @@ class BaseModel extends BaseDatabaseModel
 
 		return $date->format('Y-m-d H:i:s');
 	}
-	
+
 	/**
-     * Función que obtiene el download id de la tabla update_sites
+     * Convierte una fecha 'Y-m-d H:i:s' (mismo offset que get_Joomla_timestamp()) en un texto
+     * relativo tipo "5 minutes ago". Pasados 30 dÃ­as, devuelve la fecha absoluta tal cual, porque
+     * a partir de ahÃ­ lo relevante es la fecha exacta, no la antigÃ¼edad aproximada.
+     *
+     * @param   string|null  $timestamp  Fecha en formato 'Y-m-d H:i:s', o '' / null si nunca se ha ejecutado
+     *
+     * @return  string
+     */
+	public function relativeTime(?string $timestamp): string
+	{
+		if ($timestamp === null || $timestamp === '') {
+			return '';
+		}
+
+		$tz = Factory::getConfig()->get('offset');
+
+		try {
+			$now  = new Date('now', $tz);
+			$then = new Date($timestamp, $tz);
+		} catch (\Throwable $e) {
+			return $timestamp;
+		}
+
+		$diffSeconds = max(0, $now->getTimestamp() - $then->getTimestamp());
+
+		if ($diffSeconds < 60) {
+			return Text::_('COM_SECURITYCHECKPRO_TIME_AGO_JUST_NOW');
+		}
+
+		$minutes = (int) floor($diffSeconds / 60);
+		if ($minutes < 60) {
+			return Text::sprintf($minutes === 1 ? 'COM_SECURITYCHECKPRO_TIME_AGO_MINUTE' : 'COM_SECURITYCHECKPRO_TIME_AGO_MINUTES', $minutes);
+		}
+
+		$hours = (int) floor($diffSeconds / 3600);
+		if ($hours < 24) {
+			return Text::sprintf($hours === 1 ? 'COM_SECURITYCHECKPRO_TIME_AGO_HOUR' : 'COM_SECURITYCHECKPRO_TIME_AGO_HOURS', $hours);
+		}
+
+		$days = (int) floor($diffSeconds / 86400);
+		if ($days <= 30) {
+			return Text::sprintf($days === 1 ? 'COM_SECURITYCHECKPRO_TIME_AGO_DAY' : 'COM_SECURITYCHECKPRO_TIME_AGO_DAYS', $days);
+		}
+
+		return $timestamp;
+	}
+
+	/**
+     * Funciï¿½n que obtiene el download id de la tabla update_sites
      *
      * @param   string             $element    The name of the element
      *
@@ -287,7 +343,7 @@ class BaseModel extends BaseDatabaseModel
 			$update_site_id = $db->loadResult();
 
 			if ($update_site_id === null) {
-				return null; // Sin sitio de actualización enlazado
+				return null; // Sin sitio de actualizaciï¿½n enlazado
 			}
 
 			// 3) Cargar extra_query + update_site_id
@@ -302,7 +358,7 @@ class BaseModel extends BaseDatabaseModel
 				return null;
 			}
 
-			// 4) Limpiar solo si extra_query es string no vacío
+			// 4) Limpiar solo si extra_query es string no vacï¿½o
 			if (isset($update_site_data->extra_query)) {
 				if ($update_site_data->extra_query === null) {
 					// Mantener NULL tal cual (evita deprecation y el cambio a "")
@@ -313,7 +369,7 @@ class BaseModel extends BaseDatabaseModel
 						'',
 						$update_site_data->extra_query
 					);
-					// Opcional: normalizar a null si queda vacío después de limpiar
+					// Opcional: normalizar a null si queda vacï¿½o despuï¿½s de limpiar
 					if ($update_site_data->extra_query === '') {
 						$update_site_data->extra_query = null;
 					}
@@ -329,7 +385,7 @@ class BaseModel extends BaseDatabaseModel
 	}
 	
 	/**
-     * Obtiene el valor de una opción de configuración
+     * Obtiene el valor de una opciï¿½n de configuraciï¿½n
      *
      *
 	 * @param   string        		  				 $key   	 The key of the element
@@ -350,7 +406,7 @@ class BaseModel extends BaseDatabaseModel
     }
 	
 	/**
-     * Establece el valor de una opción de configuración
+     * Establece el valor de una opciï¿½n de configuraciï¿½n
      *
      *
 	 * @param   string             $key   		The key of the element
@@ -376,7 +432,7 @@ class BaseModel extends BaseDatabaseModel
     }
 	
 	/**
-     * Obtiene la configuración de los parámetros del Firewall Web
+     * Obtiene la configuraciï¿½n de los parï¿½metros del Firewall Web
      *
      *
 	 * 	 
@@ -394,7 +450,7 @@ class BaseModel extends BaseDatabaseModel
     }
 	
 	/**
-     * Hace una consulta a la tabla espacificada como parámetro
+     * Hace una consulta a la tabla especificada como parï¿½metro
      *
      *
 	 * @param   string             $key_name    The name of the key to get the data for
@@ -421,7 +477,7 @@ class BaseModel extends BaseDatabaseModel
     }
 	
 	/**
-	 * Guarda la configuración en la tabla #__securitycheckpro_storage
+	 * Guarda la configuraciï¿½n en la tabla #__securitycheckpro_storage
 	 *
 	 * @param  string  $keyName  Clave de almacenamiento (columna storage_key)
 	 * @return bool              true si guarda OK, false si hubo error (y se encola mensaje)
@@ -438,7 +494,7 @@ class BaseModel extends BaseDatabaseModel
 
 		$app = Factory::getApplication();
 
-		// Validación
+		// Validaciï¿½n
 		if (!preg_match('/^[a-z0-9_.\-]{1,128}$/', $keyName)) {
 			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_INVALID_STORAGE_KEY'), 'error');
 			return false;
@@ -471,13 +527,13 @@ class BaseModel extends BaseDatabaseModel
 				return false;
 			}
 
-			// Quita legacy sólo en no-inspector (o hazlo también en inspector si quieres)
+			// Quita legacy sï¿½lo en no-inspector (o hazlo tambiï¿½n en inspector si quieres)
 			if (array_key_exists('priority', $data)) {
 				unset($data['priority']);
 			}
 		}
 
-		// JSON robusto (lanzará JsonException si falla)
+		// JSON robusto (lanzarï¿½ JsonException si falla)
 		try {
 			$json = json_encode(
 				$data,
@@ -491,11 +547,11 @@ class BaseModel extends BaseDatabaseModel
 		/** @var \Joomla\Database\DatabaseInterface $db */
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
-		// Transacción: si algo falla, rollback
+		// Transacciï¿½n: si algo falla, rollback
 		$db->transactionStart();
 
 		try {
-			// 1) UPDATE (puede devolver 0 si no existe O si el valor es idéntico)
+			// 1) UPDATE (puede devolver 0 si no existe O si el valor es idï¿½ntico)
 			$update = $db->getQuery(true)
 				->update($db->quoteName('#__securitycheckpro_storage'))
 				->set($db->quoteName('storage_value') . ' = ' . $db->quote($json))
@@ -504,7 +560,7 @@ class BaseModel extends BaseDatabaseModel
 			$db->setQuery($update)->execute();
 
 			if ($db->getAffectedRows() === 0) {
-				// 2) Diferenciar: ¿no existe fila o simplemente no cambió nada?
+				// 2) Diferenciar: ï¿½no existe fila o simplemente no cambiï¿½ nada?
 				$existsQuery = $db->getQuery(true)
 					->select('1')
 					->from($db->quoteName('#__securitycheckpro_storage'))
@@ -541,11 +597,11 @@ class BaseModel extends BaseDatabaseModel
      * - Valida los identificadores (tabla/columnas de WHERE/ORDER BY).
      * - Usa quoteName() para nombres y quote() para valores.
      * - Reemplaza el prefijo con replacePrefix().
-     * - LIMIT 1 por defecto (evita ambigüedades si hay múltiples filas).
+     * - LIMIT 1 por defecto (evita ambigï¿½edades si hay mï¿½ltiples filas).
      *
      * @param string      $table     Nombre de tabla SIN prefijo (ej.: "scptest_cfg")
      * @param string      $column    Nombre de la columna a devolver (ej.: "valor")
-     * @param array       $where     Filtros opcionales: ['col' => 'valor', ...]
+     * @param array<string, scalar|null> $where  Filtros opcionales: ['col' => 'valor', ...]
      * @param string|null $orderBy   Columna para ordenar (ej.: "id DESC" o "id")
      *
      * @return string|null           Valor escalar o null si no existe / error
@@ -593,13 +649,13 @@ class BaseModel extends BaseDatabaseModel
     }
 
     /**
-     * Valida un identificador SQL sencillo: letras, números y '_' y no comenzar por número.
+     * Valida un identificador SQL sencillo: letras, nï¿½meros y '_' y no comenzar por nï¿½mero.
      * Lanza \InvalidArgumentException si no cumple.
      */
     private function assertIdentifier(string $identifier): void
     {
         if (!preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $identifier)) {
-            throw new \InvalidArgumentException('Identificador SQL no válido: ' . $identifier);
+            throw new \InvalidArgumentException('Identificador SQL no vï¿½lido: ' . $identifier);
         }
     }
 	
@@ -607,26 +663,26 @@ class BaseModel extends BaseDatabaseModel
 	 * Determina estados de plugins/tareas de Securitycheck.
 	 *
 	 * Opciones:
-	 *   1 -> ¿Habilitado?  System / securitycheckpro
-	 *   2 -> ¿Existe tarea programada activa?  type=securitycheckpro.cron (state=1)
-	 *   3 -> ¿Habilitado?  System / securitycheckpro_update_database
-	 *   4 -> ¿Instalado?   System / securitycheckpro_update_database
-	 *   5 -> ¿Habilitado?  System / securitycheck_spam_protection
-	 *   6 -> ¿Instalado?   System / securitycheck_spam_protection
-	 *   7 -> ¿Habilitado?  System / url_inspector
-	 *   8 -> ¿Instalado?   System / trackactions
-	 *   9 -> ¿Habilitado?  System / securitycheckpro_task_checker
+	 *   1 -> ï¿½Habilitado?  System / securitycheckpro
+	 *   2 -> ï¿½Existe tarea programada activa?  type=securitycheckpro.cron (state=1)
+	 *   3 -> ï¿½Habilitado?  System / securitycheckpro_update_database
+	 *   4 -> ï¿½Instalado?   System / securitycheckpro_update_database
+	 *   5 -> ï¿½Habilitado?  System / securitycheck_spam_protection
+	 *   6 -> ï¿½Instalado?   System / securitycheck_spam_protection
+	 *   7 -> ï¿½Habilitado?  System / url_inspector
+	 *   8 -> ï¿½Instalado?   System / trackactions
+	 *   9 -> ï¿½Habilitado?  System / securitycheckpro_task_checker
 	 *
-	 * @return int 1/0
+	 * @return bool
 	 */
-	public function PluginStatus(int $opcion): int
+	public function PluginStatus(int $opcion): bool
 	{
 		/** @var DatabaseInterface $db */
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
-		// Mapa por opción -> acción
+		// Mapa por opciï¿½n -> acciï¿½n
 		// action: enabled|installed|scheduler
-		$map = [
+		 $map = [
 			1 => ['action' => 'enabled',   'folder' => 'system', 'element' => 'securitycheckpro'],
 			2 => ['action' => 'scheduler', 'type'   => 'securitycheckpro.cron'],
 			3 => ['action' => 'enabled',   'folder' => 'system', 'element' => 'securitycheckpro_update_database'],
@@ -634,73 +690,79 @@ class BaseModel extends BaseDatabaseModel
 			5 => ['action' => 'enabled',   'folder' => 'system', 'element' => 'securitycheck_spam_protection'],
 			6 => ['action' => 'installed', 'folder' => 'system', 'element' => 'securitycheck_spam_protection'],
 			7 => ['action' => 'enabled',   'folder' => 'system', 'element' => 'url_inspector'],
-			8 => ['action' => 'installed', 'folder' => 'system', 'element' => 'trackactions'],
+			8 => ['action' => 'installed', 'folder' => ['system', 'actionlog'], 'element' => 'trackactions'],
 			9 => ['action' => 'enabled',   'folder' => 'system', 'element' => 'securitycheckpro_task_checker'],
 		];
 
 		$conf = $map[$opcion] ?? null;
 		if ($conf === null) {
-			return 0;
+			return false;
 		}
-		
+
 		try {
 			switch ($conf['action']) {
 				case 'enabled':
-					// Usa la API oficial de Joomla para plugins
-					$enabled = PluginHelper::isEnabled((string) $conf['folder'], (string) $conf['element']);
-					return $enabled ? 1 : 0;
+					$folder  = (string) $conf['folder'];
+					$element = (string) $conf['element'];
+
+					$enabled = 1;
+
+					$q = $db->getQuery(true)
+						->select($db->quoteName('enabled'))
+						->from($db->quoteName('#__extensions'))
+						->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+						->where($db->quoteName('folder') . ' = :folder')
+						->where($db->quoteName('element') . ' = :element')
+						->bind(':folder', $folder, ParameterType::STRING)
+						->bind(':element', $element, ParameterType::STRING)
+						->setLimit(1);
+
+					$db->setQuery($q);
+
+					return ((int) $db->loadResult()) === $enabled;
 
 				case 'installed':
-					// ¿Existe en #__extensions? type=plugin + folder + element
-					$folder = (string) ($conf['folder'] ?? '');
-					$element = (string) ($conf['element'] ?? '');
+					$folders = (array) $conf['folder'];
+					$element = (string) $conf['element'];
+
 					$q = $db->getQuery(true)
 						->select('COUNT(*)')
 						->from($db->quoteName('#__extensions'))
-						->where($db->quoteName('type')   . ' = ' . $db->quote('plugin'))
-						->where($db->quoteName('folder') . ' = :folder')
-						->where($db->quoteName('element'). ' = :element')
+						->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+						->whereIn($db->quoteName('folder'), $folders)
+						->where($db->quoteName('element') . ' = :element')
 						->setLimit(1)
-						->bind(':folder',  $folder,  ParameterType::STRING)
 						->bind(':element', $element, ParameterType::STRING);
 
 					$db->setQuery($q);
-					
-					$count = (int) $db->loadResult();
-					return $count > 0 ? 1 : 0;
+					return ((int) $db->loadResult()) > 0;
 
 				case 'scheduler':
-					// ¿Hay tarea activa (state=1) del tipo indicado?
-					$type = (string) ($conf['type'] ?? '');
-					$state = 1; 
-					if ($type === '') {
-						return 0;
-					}
+					$type  = (string) $conf['type'];
+					$state = 1;
 
 					$q = $db->getQuery(true)
 						->select('COUNT(*)')
 						->from($db->quoteName('#__scheduler_tasks'))
-						->where($db->quoteName('type')  . ' = :type')
+						->where($db->quoteName('type') . ' = :type')
 						->where($db->quoteName('state') . ' = :state')
-						->bind(':type',  $type, ParameterType::STRING)
-						->bind(':state', $state,     ParameterType::INTEGER)
-						->setLimit(1);						
+						->bind(':type', $type, ParameterType::STRING)
+						->bind(':state', $state, ParameterType::INTEGER)
+						->setLimit(1);
 
 					$db->setQuery($q);
-					$count = (int) $db->loadResult();
-					return $count > 0 ? 1 : 0;
+					return ((int) $db->loadResult()) > 0;
 			}
 		} catch (\Throwable $e) {
-			Log::add('BaseModel. PluginStatus function error: ' . $e->getMessage(), Log::ERROR, 'com_securitycheckpro');
-			return 0;
+			Log::add('BaseModel. pluginStatus error: ' . $e->getMessage(), Log::ERROR, 'com_securitycheckpro');
 		}
 
-		return 0;
+		return false;
 	}
 		
 		
 	/**
-     * Función obtener el estado de una subscripción
+     * Funciï¿½n obtener el estado de una subscripciï¿½n
      *
      * 	 
      * @return  void
@@ -712,38 +774,57 @@ class BaseModel extends BaseDatabaseModel
 		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
         $mainframe = Factory::getApplication();
         
-        // Chequeamos si el plugin 'update database' está instalado
+        // Chequeamos si el plugin 'update database' estï¿½ instalado
         $updateDbPluginExists    = $this->PluginStatus(4);    
         $trackActionsPluginExists  = $this->PluginStatus(8);
+		$updateDbPluginEnabled    = $this->PluginStatus(3);
     
-        // Buscamos el Download ID 
+        // Buscamos el Download ID desde el update site del paquete
         $downloadid = '';
-		
-		// 1) Intentar obtener desde el plugin de sistema (si está habilitado)
-		if (PluginHelper::isEnabled('system', 'securitycheckpro_update_database')) {
-			$downloadData = $this->get_extra_query_update_sites_table('securitycheckpro_update_database');
 
-			if ($downloadData !== 'error') {
-				$remoteDlid = $downloadData?->extra_query ?? null;
+		$downloadData = $this->get_extra_query_update_sites_table('pkg_securitycheckpro');
 
-				// Si hay un DLID remoto válido, úsalo
+		if ($downloadData !== 'error' && $downloadData !== null) {
+			$remoteDlid = $downloadData->extra_query;
+
+			if ($remoteDlid !== null && $remoteDlid !== '') {
+				$downloadid = trim((string) $remoteDlid);
+			}
+		}
+
+		// Fallback al componente (instalaciones anteriores a la migracion)
+		if ($downloadid === '') {
+			$appParams  = ComponentHelper::getParams('com_securitycheckpro');
+			$componentDlid = trim((string) $appParams->get('downloadid', ''));
+			if ($componentDlid !== '') {
+				$downloadid = $componentDlid;
+			}
+		}
+
+		// Fallback al update site del plugin Update Database
+		if ($downloadid === '') {
+			$updateDbData = $this->get_extra_query_update_sites_table('securitycheckpro_update_database');
+			if ($updateDbData !== 'error' && $updateDbData !== null) {
+				$remoteDlid = $updateDbData->extra_query;
 				if ($remoteDlid !== null && $remoteDlid !== '') {
 					$downloadid = trim((string) $remoteDlid);
 				}
 			}
 		}
 
-		// 2) Fallback al parámetro del componente si sigue vacío
-		if ($downloadid === '' || $downloadid === null) {
-			$appParams  = ComponentHelper::getParams('com_securitycheckpro');
-			$componentDlid = trim((string) $appParams->get('downloadid', ''));
-			if ($componentDlid !== '') {
-				$downloadid = $componentDlid;
+		// Fallback al update site del paquete Track Actions
+		if ($downloadid === '') {
+			$trackData = $this->get_extra_query_update_sites_table('pkg_trackactions');
+			if ($trackData !== 'error' && $trackData !== null) {
+				$remoteDlid = $trackData->extra_query;
+				if ($remoteDlid !== null && $remoteDlid !== '') {
+					$downloadid = trim((string) $remoteDlid);
+				}
 			}
-		}	
+		}
 
-		// 3) Validación final
-		if ($downloadid === '' || $downloadid === null) {
+		// Validacion final
+		if ($downloadid === '') {
 			$mainframe->setUserState("scp_update_database_subscription_status", Text::_('COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY'));        
             $mainframe->setUserState("scp_subscription_status", Text::_('COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY'));
             $mainframe->setUserState("trackactions_subscription_status", Text::_('COM_SECURITYCHECKPRO_UPDATE_DATABASE_DOWNLOAD_ID_EMPTY'));
@@ -775,7 +856,7 @@ class BaseModel extends BaseDatabaseModel
 				$mainframe->setUserState("trackactions_subscription_status", Text::_('COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED'));
 			}
 		} catch (\Throwable $e) {
-			// Mensaje genérico ante error de red/timeout/etc.
+			// Mensaje genï¿½rico ante error de red/timeout/etc.
 			$errorMsg = Text::_('COM_SECURITYCHECKPRO_SUBSCRIPTION_CHECK_FAILED');
 			Log::add("Subscription check failed. Error: " . $e->getMessage(), Log::ERROR, 'com_securitycheckpro');
 			$mainframe->setUserState('scp_update_database_subscription_status', $errorMsg);
@@ -785,7 +866,7 @@ class BaseModel extends BaseDatabaseModel
     }
 	
 	/**
-     * Función obtener el estado de una subscripción
+     * Funciï¿½n obtener el estado de una subscripciï¿½n
      *
      * @param   string             $product    The name of the product
 	 * @param   string             $downloadid    The download id
@@ -796,6 +877,11 @@ class BaseModel extends BaseDatabaseModel
     function GetResponse(string $product, string $downloadid): void
 	{
 		$app = Factory::getApplication();
+		
+		if (!($app instanceof CMSWebApplicationInterface)) {
+			// Si por algï¿½n motivo esto se ejecuta en CLI, salimos limpio.
+			return;
+		}
 
 		$map = [
 			'update'       => ['plan_id' => 14, 'name' => 'Update Database',   'stateKey' => 'scp_update_database_subscription_status'],
@@ -846,24 +932,24 @@ class BaseModel extends BaseDatabaseModel
 			if ($response === false) {
 				Log::add("Subscription POST error ($prodName): [$errNo] $errStr", Log::ERROR, 'com_securitycheckpro');
 				$app->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_UNABLE_TO_RETRIEVE_STATUS', $prodName), 'error');
-				$this->setUserStateCompat($app, $stateKey, Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR'));
+				$app->setUserState($stateKey, Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR'));
 				return;
 			}
 
 			$body = (string) $response;
 
-			// Detección bloque SiteGround (403/406 o 'well-known' en HTML)
+			// Detecciï¿½n bloque SiteGround (403/406 o 'well-known' en HTML)
 			if ($httpCode === 403 || $httpCode === 406 || stripos($body, 'well-known') !== false) {
 				$blockedIp = self::extractIpFromHtml($body); // puede devolver null
 				if ($blockedIp) {
 					$msg = Text::_('COM_SECURITYCHECKPRO_IP_BLOCKED') . ': ' . $blockedIp;
 					$app->enqueueMessage('Your server IP seems blocked by SiteGround WAF. ' . $msg, 'error');
-					$this->setUserStateCompat($app, $stateKey, $msg);
+					$app->setUserState($stateKey, $msg);
 				} else {
 					$app->enqueueMessage('Your server IP seems blocked by SiteGround WAF. Please contact support to whitelist it.', 'error');
-					$this->setUserStateCompat($app, $stateKey, Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR'));
+					$app->setUserState($stateKey, Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR'));
 				}
-				// Log técnico
+				// Log tï¿½cnico
 				Log::add("SiteGround block detected ($prodName) HTTP $httpCode. Snippet: " . substr(trim($body), 0, 256), Log::WARNING, 'com_securitycheckpro');
 				return;
 			}
@@ -872,34 +958,34 @@ class BaseModel extends BaseDatabaseModel
 			if ($httpCode < 200 || $httpCode >= 300) {
 				Log::add("Subscription POST HTTP $httpCode ($prodName): " . substr(trim($body), 0, 256), Log::WARNING, 'com_securitycheckpro');
 				$app->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_UNABLE_TO_RETRIEVE_STATUS', $prodName), 'error');
-				$this->setUserStateCompat($app, $stateKey, Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR'));
+				$app->setUserState($stateKey, Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR'));
 				return;
 			}
 
-			// Sólo aceptamos '5' (Active) o '4' (Expired)
+			// Sï¿½lo aceptamos '5' (Active) o '4' (Expired)
 			$payload = trim($body);
 
 			if ($payload === '5') {
-				$this->setUserStateCompat($app, $stateKey, Text::_('COM_SECURITYCHECKPRO_ACTIVE'));
+				$app->setUserState($stateKey, Text::_('COM_SECURITYCHECKPRO_ACTIVE'));
 			} elseif ($payload === '4') {
-				$this->setUserStateCompat($app, $stateKey, Text::_('COM_SECURITYCHECKPRO_EXPIRED'));
+				$app->setUserState($stateKey, Text::_('COM_SECURITYCHECKPRO_EXPIRED'));
 			} else {
 				Log::add("Subscription POST unexpected payload ($prodName): '" . substr($payload, 0, 128) . "'", Log::NOTICE, 'com_securitycheckpro');
-				$this->setUserStateCompat($app, $stateKey, Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR'));
+				$app->setUserState($stateKey, Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR'));
 			}
 		} finally {			
 		}
 	}
 	
 	/**
-	 * Extrae una IP válida (IPv4/IPv6) del HTML bloque de SiteGround, si aparece.
+	 * Extrae una IP vï¿½lida (IPv4/IPv6) del HTML bloque de SiteGround, si aparece.
 	 * Devuelve string con la IP o null si no se encuentra.
 	 */
 	public static function extractIpFromHtml(string $html): ?string
 	{
 		$src = html_entity_decode($html, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
-		// 1) Meta refresh típico de SiteGround: content="0;...y=ipc:IP:TS"
+		// 1) Meta refresh tï¿½pico de SiteGround: content="0;...y=ipc:IP:TS"
 		if (preg_match('/<meta[^>]+http-equiv=["\']?refresh["\']?[^>]*content=["\']?([^"\'>]+)["\']?/i', $src, $m)) {
 			$content = $m[1];
 			$target  = (strpos($content, ';') !== false) ? substr($content, strpos($content, ';') + 1) : $content;
@@ -918,7 +1004,7 @@ class BaseModel extends BaseDatabaseModel
 			if (isset($params['y'])) {
 				$y = (string) $params['y'];
 				
-				// Normaliza prefijo específico de SiteGround: y=ipc:<IP>[:<timestamp>]
+				// Normaliza prefijo especï¿½fico de SiteGround: y=ipc:<IP>[:<timestamp>]
 				if (stripos($y, 'ipc:') === 0) {
 					$y = substr($y, 4); // quita "ipc:"
 				}
@@ -933,18 +1019,18 @@ class BaseModel extends BaseDatabaseModel
 				}
 			}
 
-			// IPv6 después (ignorando scope-id)
+			// IPv6 despuï¿½s (ignorando scope-id)
 			if (preg_match_all('/[0-9A-Fa-f:\[\]%]{2,}/', $y, $mm)) { // incluye '%'
 				foreach ($mm[0] as $raw) {
-					// descarta tokens con scope-id -> ahora sí entra en $raw
+					// descarta tokens con scope-id -> ahora sï¿½ entra en $raw
 					if (strpos($raw, '%') !== false) {
 						continue;
 					}
 
-					// limpia brackets/puntuación liviana pero NO los ':'
+					// limpia brackets/puntuaciï¿½n liviana pero NO los ':'
 					$cand = trim($raw, "[](){}<>;,\" \t\r\n");
 
-					// si quedó algún prefijo alfabético (p.ej. 'c:' por 'ipc:')
+					// si quedï¿½ algï¿½n prefijo alfabï¿½tico (p.ej. 'c:' por 'ipc:')
 					$cand = preg_replace('/^[A-Za-z]+:/', '', $cand);
 
 					// normaliza posibles ':' iniciales sueltos
@@ -973,7 +1059,7 @@ class BaseModel extends BaseDatabaseModel
 
 	public static function extractIpFromHtml_scanCandidates(string $text): ?string
 	{
-		// IPv4 — octet-aware, sin lookarounds
+		// IPv4 ï¿½ octet-aware, sin lookarounds
 		$ipv4Pattern = '/\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b/';
 		if (preg_match_all($ipv4Pattern, $text, $m)) {
 			foreach ($m[0] as $cand) {
@@ -983,13 +1069,13 @@ class BaseModel extends BaseDatabaseModel
 			}
 		}
 
-		// IPv6 — tokens amplios (no recortar ':') y descartar scope-id
+		// IPv6 ï¿½ tokens amplios (no recortar ':') y descartar scope-id
 		if (preg_match_all('/[0-9A-Fa-f:\.\[\]%]{2,}/', $text, $m)) {
 			foreach ($m[0] as $raw) {
 				if (strpos($raw, '%') !== false) {
 					continue; // descarta direcciones con scope-id (p.ej. fe80::1%lo0)
 				}
-				$cand = trim($raw, "[](){}<>,;\"' \t\r\n"); // ¡no incluir ':' en el charlist!
+				$cand = trim($raw, "[](){}<>,;\"' \t\r\n"); // ï¿½no incluir ':' en el charlist!
 				if (strpos($cand, ':') !== false && filter_var($cand, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
 					return $cand;
 				}
@@ -997,18 +1083,6 @@ class BaseModel extends BaseDatabaseModel
 		}
 
 		return null;
-	}
-
-	/**
-	 * Compat: setUserState puede no existir según interfaz en algunas versiones.
-	 */
-	function setUserStateCompat($app, string $key, $value): void
-	{
-		if (method_exists($app, 'setUserState')) {
-			$app->setUserState($key, $value);
-		} else {
-			$app->getSession()->set($key, $value);
-		}
 	}
 	
 	/**
@@ -1125,7 +1199,7 @@ class BaseModel extends BaseDatabaseModel
 	}
 	
 	/**
-	 * Comprueba si una IP está en una lista (blacklist/whitelist) almacenada en BD.
+	 * Comprueba si una IP estï¿½ en una lista (blacklist/whitelist) almacenada en BD.
 	 * - Usa IpHelper::IPinList para cubrir IPv4/IPv6, rangos, CIDR, etc.
 	 * - Normaliza comodines IPv4 estilo 192.168.*.* -> CIDR equivalente
 	 * @param  string $ip    IP a buscar.
@@ -1134,7 +1208,7 @@ class BaseModel extends BaseDatabaseModel
 	 */
 	function ChequearIpEnLista(string $ip, string $lista): bool
 	{
-		// 1) Validación de IP
+		// 1) Validaciï¿½n de IP
 		$isV4 = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false;
 		$isV6 = !$isV4 && filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false;
 		if (!$isV4 && !$isV6) {
@@ -1179,7 +1253,7 @@ class BaseModel extends BaseDatabaseModel
 			}
 			$octs = explode('.', $pattern);
 			if (count($octs) !== 4) {
-				// Si el formato es raro (p.ej. "192.168.*"), no lo tocamos; IpHelper lo ignorará.
+				// Si el formato es raro (p.ej. "192.168.*"), no lo tocamos; IpHelper lo ignorarï¿½.
 				return $pattern;
 			}
 
@@ -1237,14 +1311,14 @@ class BaseModel extends BaseDatabaseModel
 	function chequear_ip_en_lista(string $ip, string $lista): bool
 	{
 		/*@trigger_error(
-			__FUNCTION__ . '() está obsoleto, usa ChequearIpEnLista() en su lugar.',
+			__FUNCTION__ . '() estï¿½ obsoleto, usa ChequearIpEnLista() en su lugar.',
 			E_USER_DEPRECATED
 		);*/
 		return $this->ChequearIpEnLista($ip, $lista);
 	}
 	
 	/**
-     * Obtiene la configuración de los parámetros del Cron
+     * Obtiene la configuraciï¿½n de los parï¿½metros del Cron
      *
      * 	 
      * @return  array<string, array<string>>|null
@@ -1261,7 +1335,7 @@ class BaseModel extends BaseDatabaseModel
     }
 
     /**
-     * Obtiene la configuración de los parámetros del Control Center
+     * Obtiene la configuraciï¿½n de los parï¿½metros del Control Center
      *
      * 	 
      * @return  array<string, int>| array<string, string>|array<string, array<string>>
@@ -1279,7 +1353,7 @@ class BaseModel extends BaseDatabaseModel
     }
 	
 	/**
-     * Guarda la modificación de los parámetros de la opción 'Mode'
+     * Guarda la modificaciï¿½n de los parï¿½metros de la opciï¿½n 'Mode'
      *
 	 * @param    array<string>       $newParams    Array with the values to add
 	 * @param    string       		 $key_name     The key of the storage table to insert the data
@@ -1301,7 +1375,7 @@ class BaseModel extends BaseDatabaseModel
     }
 	
 	/**
-	 * Limpia un string de caracteres no válidos según la opción especificada
+	 * Limpia un string de caracteres no vï¿½lidos segï¿½n la opciï¿½n especificada
 	 *
 	 * option=1: trata la entrada como lista separada por comas y aplica
 	 *           saneado por token + deduplicado.
@@ -1309,19 +1383,19 @@ class BaseModel extends BaseDatabaseModel
 	 *
 	 * Seguridad:
 	 *  - Quita bytes nulos y controles (ASCII y varios invisibles Unicode)
-	 *  - Normaliza a UTF-8 válido; elimina bytes inválidos
-	 *  - Aplica listas de permitidos (ajusta el patrón si necesitas otros símbolos)
+	 *  - Normaliza a UTF-8 vï¿½lido; elimina bytes invï¿½lidos
+	 *  - Aplica listas de permitidos (ajusta el patrï¿½n si necesitas otros sï¿½mbolos)
 	 */
 	function clearstring(string $string_to_clear, int $option = 1): string
 	{
-		// --- Parámetros de seguridad (ajusta a tu caso) ---
-		$MAX_TOTAL_LEN  = 8192;   // límite duro total
-		$MAX_TOKEN_LEN  = 256;    // límite por token en opción 1
-		// Caracteres permitidos básicos (Ajusta si necesitas más símbolos):
-		// letras, dígitos, punto, coma, guion, guion_bajo, dos puntos, barra y arroba
-		$ALLOWED_CHARS_REGEX = '/[^A-Za-z0-9.,_:@\-\/]/u';
+		// --- Parï¿½metros de seguridad (ajusta a tu caso) ---
+		$MAX_TOTAL_LEN  = 8192;   // lï¿½mite duro total
+		$MAX_TOKEN_LEN  = 256;    // lï¿½mite por token en opciï¿½n 1
+		// Caracteres permitidos bï¿½sicos (Ajusta si necesitas mï¿½s sï¿½mbolos):
+		// letras, dï¿½gitos, punto, coma, guion, guion_bajo, dos puntos, barra y arroba
+		$ALLOWED_CHARS_REGEX = '/[^A-Za-z0-9.,_*:@\-\/]/u';
 
-		// --- Normaliza UTF-8 y elimina caracteres problemáticos ---
+		// --- Normaliza UTF-8 y elimina caracteres problemï¿½ticos ---
 		$s = $this->ensure_valid_utf8($string_to_clear);
 		$s = $this->normalize_unicode_nfkc_if_available($s);
 		$s = $this->strip_invisible_chars($s);
@@ -1358,14 +1432,14 @@ class BaseModel extends BaseDatabaseModel
 			$out = trim($out, ',');
 
 		} else {
-			// Opción 2: cadena plana ? quita todo tipo de espacio/control
+			// Opciï¿½n 2: cadena plana ? quita todo tipo de espacio/control
 			// (incluye \s y separadores Unicode comunes)
 			$s = preg_replace('/[ \t\r\n\0\x0B\x0C\p{Z}]+/u', '', $s) ?? '';
 			// Aplica whitelist sobre la cadena resultante
 			$out = preg_replace($ALLOWED_CHARS_REGEX, '', $s) ?? '';
 		}
 
-		// Límite total defensivo
+		// Lï¿½mite total defensivo
 		if (mb_strlen($out, 'UTF-8') > $MAX_TOTAL_LEN) {
 			$out = mb_substr($out, 0, $MAX_TOTAL_LEN, 'UTF-8');
 		}
@@ -1373,11 +1447,11 @@ class BaseModel extends BaseDatabaseModel
 		return $out;
 	}
 
-	/** Garantiza UTF-8 válido eliminando bytes inválidos (sin lanzar warnings). */
+	/** Garantiza UTF-8 vï¿½lido eliminando bytes invï¿½lidos (sin lanzar warnings). */
 	function ensure_valid_utf8(string $s): string
 	{
 		if (function_exists('mb_convert_encoding')) {
-			// Convierte a UTF-8 y filtra bytes inválidos
+			// Convierte a UTF-8 y filtra bytes invï¿½lidos
 			$s = mb_convert_encoding($s, 'UTF-8', 'UTF-8');
 		}
 		return $s;
@@ -1395,12 +1469,12 @@ class BaseModel extends BaseDatabaseModel
 	/**
 	 * Elimina caracteres invisibles / de control:
 	 *  - ASCII C0/C1, NULL
-	 *  - Separadores de línea no imprimibles
+	 *  - Separadores de lï¿½nea no imprimibles
 	 *  - ZWSP, ZWNJ, ZWJ, LRM, RLM, LRE/RLE/PDF/LRI/RLI/FSI/PDI
 	 */
 	function strip_invisible_chars(string $s): string
 	{
-		// Quita bytes nulos rápido
+		// Quita bytes nulos rï¿½pido
 		$s = str_replace("\0", '', $s);
 
 		// Controles ASCII (excepto \n, \r, \t si quisieras conservarlos)
@@ -1430,106 +1504,138 @@ class BaseModel extends BaseDatabaseModel
 	}
 	
 	/**
-	 * Encrypt data using OpenSSL (AES-256-CBC)
-	 * Based on code from: https://stackoverflow.com/questions/3422759/php-aes-encrypt-decrypt
+	 * Encrypt data using OpenSSL (AES-256-CBC) with PBKDF2 key derivation.
 	 *
-	 * @param    string       $plaindata    		The string in plain data format
-	 * @param    string       $encryption_key       The encrypton key
-     * 	 
-     * @return  string|empty
-     *     
-     */
+	 * @param string $plaindata       The string in plain data format
+	 * @param string $encryption_key  The encryption key
+	 *
+	 * @return string|null "v2:" + Base64(salt + iv + hmac + ciphertext), or null if key is empty.
+	 *
+	 * @throws \Exception If openssl_encrypt() fails.
+	 */
     function encrypt($plaindata, $encryption_key)
 	{
-		$method = "AES-256-CBC";
-		
-		if (empty($encryption_key))
-		{
-			return;
+		$method = 'AES-256-CBC';
+
+		if (empty($encryption_key)) {
+			return null;
 		}
-			
-		$iv = openssl_random_pseudo_bytes(16);
-			
-		$hash_pbkdf2 = hash_pbkdf2("sha512", $encryption_key, "", 5000);
-		$key = substr($hash_pbkdf2, 0, 256);
-		$hashkey = substr($hash_pbkdf2, 256, 512);
-			
+
+		$salt = random_bytes(16);
+		$iv   = random_bytes(16);
+
+		$derived = hash_pbkdf2('sha512', $encryption_key, $salt, 210000, 64, true);
+		$key     = substr($derived, 0, 32);
+		$hashkey = substr($derived, 32, 32);
+
 		$cipherdata = openssl_encrypt($plaindata, $method, $key, OPENSSL_RAW_DATA, $iv);
 
-		if ($cipherdata === false)
-		{
-			$cryptokey = "**REMOVED**";
-			$hashkey = "**REMOVED**";
-			throw new \Exception("Internal error: openssl_encrypt() failed:".openssl_error_string());
+		if ($cipherdata === false) {
+			throw new \Exception('Internal error: Encryption failed');
 		}
 
-		$hash = hash_hmac('sha256', $cipherdata.$iv, $hashkey, true);
+		$hash = hash_hmac('sha256', $cipherdata . $iv, $hashkey, true);
 
-		if ($hash === false)
-		{
-			$cryptokey = "**REMOVED**";
-			$hashkey = "**REMOVED**";
-			throw new \Exception("Internal error: hash_hmac() failed");
-		}
-
-		return base64_encode($iv.$hash.$cipherdata);
+		return 'v2:' . base64_encode($salt . $iv . $hash . $cipherdata);
 	}
-	
-	/**
-	 * Decrypt data using OpenSSL (AES-256-CBC)
-	 * Based on code from: https://stackoverflow.com/questions/3422759/php-aes-encrypt-decrypt
-	 *
-	 * @param    string       $encrypteddata    	The string encrypted
-	 * @param    string       $encryption_key       The encrypton key
-     * 	 
-     * @return  string|empty
-     *     
-     */
-	function decrypt($encrypteddata, $encryption_key)
+
+	function encryptLegacy(string $plaindata, string $encryption_key): ?string
 	{
-		$method = "AES-256-CBC";
-			
-		$encrypteddata = base64_decode($encrypteddata);
-			
-		$iv = substr($encrypteddata, 0, 16);
-		$hash = substr($encrypteddata, 16, 32);
-		$cipherdata = substr($encrypteddata, 48);
-							
-		$hash_pbkdf2 = hash_pbkdf2("sha512", $encryption_key, "", 5000);
-		$key = substr($hash_pbkdf2, 0, 256);
+		$method = 'AES-256-CBC';
+
+		if (empty($encryption_key)) {
+			return null;
+		}
+
+		$iv = random_bytes(16);
+
+		$hash_pbkdf2 = hash_pbkdf2('sha512', $encryption_key, '', 5000);
+		$key     = substr($hash_pbkdf2, 0, 256);
 		$hashkey = substr($hash_pbkdf2, 256, 512);
-			
-		if (!hash_equals(hash_hmac('sha256', $cipherdata.$iv, $hashkey, true), $hash))
-		{
-			/*$cryptokey = "**REMOVED**";
-			$hashkey = "**REMOVED**";
-			throw new \Exception("Internal error: Hash verification failed");*/
-			return "Internal error: Hash verification failed";
+
+		$cipherdata = openssl_encrypt($plaindata, $method, $key, OPENSSL_RAW_DATA, $iv);
+
+		if ($cipherdata === false) {
+			throw new \Exception('Internal error: Encryption failed');
+		}
+
+		$hash = hash_hmac('sha256', $cipherdata . $iv, $hashkey, true);
+
+		return base64_encode($iv . $hash . $cipherdata);
+	}
+
+	function decrypt(string $encrypteddata, string $encryption_key): string
+	{
+		if (str_starts_with($encrypteddata, 'v2:')) {
+			return $this->decryptV2(substr($encrypteddata, 3), $encryption_key);
+		}
+
+		return $this->decryptLegacy($encrypteddata, $encryption_key);
+	}
+
+	private function decryptV2(string $encrypteddata, string $encryption_key): string
+	{
+		$method = 'AES-256-CBC';
+
+		$data = base64_decode($encrypteddata, true);
+
+		if ($data === false || strlen($data) < 64) {
+			return 'Internal error: Decryption failed';
+		}
+
+		$salt       = substr($data, 0, 16);
+		$iv         = substr($data, 16, 16);
+		$hash       = substr($data, 32, 32);
+		$cipherdata = substr($data, 64);
+
+		$derived = hash_pbkdf2('sha512', $encryption_key, $salt, 210000, 64, true);
+		$key     = substr($derived, 0, 32);
+		$hashkey = substr($derived, 32, 32);
+
+		if (!hash_equals(hash_hmac('sha256', $cipherdata . $iv, $hashkey, true), $hash)) {
+			return 'Internal error: Decryption failed';
 		}
 
 		$plaindata = openssl_decrypt($cipherdata, $method, $key, OPENSSL_RAW_DATA, $iv);
 
-		if ($plaindata === false)
-		{
-			/*$cryptokey = "**REMOVED**";
-			$hashkey = "**REMOVED**";
-			throw new \Exception("Internal error: openssl_decrypt() failed:".openssl_error_string());*/
-			return "Internal error: openssl_decrypt() failed";
+		if ($plaindata === false) {
+			return 'Internal error: Decryption failed';
+		}
+
+		return $plaindata;
+	}
+
+	private function decryptLegacy(string $encrypteddata, string $encryption_key): string
+	{
+		$method = 'AES-256-CBC';
+
+		$encrypteddata = base64_decode($encrypteddata);
+
+		$iv         = substr($encrypteddata, 0, 16);
+		$hash       = substr($encrypteddata, 16, 32);
+		$cipherdata = substr($encrypteddata, 48);
+
+		$hash_pbkdf2 = hash_pbkdf2('sha512', $encryption_key, '', 5000);
+		$key     = substr($hash_pbkdf2, 0, 256);
+		$hashkey = substr($hash_pbkdf2, 256, 512);
+
+		if (!hash_equals(hash_hmac('sha256', $cipherdata . $iv, $hashkey, true), $hash)) {
+			return 'Internal error: Decryption failed';
+		}
+
+		$plaindata = openssl_decrypt($cipherdata, $method, $key, OPENSSL_RAW_DATA, $iv);
+
+		if ($plaindata === false) {
+			return 'Internal error: Decryption failed';
 		}
 
 		return $plaindata;
 	}
 	
 	/**
-	 * Modifica de forma segura un valor (add/delete) en un parámetro tipo lista del componente.
-	 *
-	 * Seguridad:
-	 *  - Allow-list de nombres de parámetro
-	 *  - Normalización/validación de valores
-	 *  - Coincidencias exactas (sin strstr)
-	 *  - Almacén en array JSON (no CSV)
+	 * @param array<int, string> $allowedParams
 	 */
-	function modifyComponentValue(
+	public function modifyComponentValue(
 		string $paramName,
 		string $value,
 		string $option,
@@ -1564,7 +1670,7 @@ class BaseModel extends BaseDatabaseModel
 			return false;
 		}
 
-		/** @var \Joomla\Database\DatabaseInterface $db */
+		/** @var \Joomla\Database\DatabaseInterface&\Joomla\Database\DatabaseDriver $db */
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		$component   = ComponentHelper::getComponent('com_securitycheckpro');
@@ -1610,17 +1716,17 @@ class BaseModel extends BaseDatabaseModel
 		// --- Si no hay cambios: NO persistimos ---
 		if (!$changed) { 
 			if ($option === 'add' && $duplicateDetected) {
-				// único warning (no repetimos por cada duplicado)
+				// ï¿½nico warning (no repetimos por cada duplicado)
 				$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_ALREADY_EXISTS'), 'warning');
 			}
 			return false;
 		}
 
-		// --- Persistencia (sólo si hubo cambios) ---
+		// --- Persistencia (sï¿½lo si hubo cambios) ---
 		// Guardamos ya normalizado (como lista) y dejamos que Registry lo serialice a JSON
 		/** @var string $csv */
 		$csv = implode(',', $current);           // "ruta1,ruta2,ruta3"
-		$params->set($paramName, $csv);          // se guardará como string en el JSON de params		
+		$params->set($paramName, $csv);          // se guardarï¿½ como string en el JSON de params		
 
 		if (!$table->bind(['params' => $params->toString('JSON')])) {
 			$app->enqueueMessage($table->getError(), 'error');
@@ -1635,14 +1741,29 @@ class BaseModel extends BaseDatabaseModel
 			return false;
 		}
 
-		\Joomla\CMS\Cache\CacheController::getInstance('callback', ['defaultgroup' => 'com_securitycheckpro'])->clean();
-
+		// Limpiamos la cachï¿½ para reflejar los cambios. Esto es importante.
+		$this->cleanSystemCache();
+		
 		return true; 
 	}
+	
+	private function cleanSystemCache(): void
+	{
+		/** @var CacheControllerFactoryInterface $cacheFactory */
+		$cacheFactory = Factory::getContainer()->get(CacheControllerFactoryInterface::class);
 
+		$cache = $cacheFactory->createCacheController(
+			'callback',
+			[
+				'defaultgroup' => '_system',
+			]
+		);
+
+		$cache->clean();
+	}
 	
 	/**
-	 * Añade o elimina rutas en las listas de excepciones de forma segura.
+	 * Aï¿½ade o elimina rutas en las listas de excepciones de forma segura.
 	 *
 	 * @param  string $type    'malwarescan' | 'permissions' | 'integrity'
 	 * @param  string $action  'add' | 'delete'
@@ -1655,22 +1776,22 @@ class BaseModel extends BaseDatabaseModel
 		/** @var Input $jinput */
 		$jinput = $app->getInput();
 
-		// --- CSRF (requiere que el formulario envíe el token) ---
+		// --- CSRF (requiere que el formulario envï¿½e el token) ---
 		if (!Session::checkToken('post')) {
 			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
 		}
 		
-		// --- Allow-lists de tipo y acción ---
+		// --- Allow-lists de tipo y acciï¿½n ---
 		$allowedTypes  = ['malwarescan', 'permissions', 'integrity'];
 		$allowedAction = ['add', 'delete'];
 		if (!in_array($type, $allowedTypes, true) || !in_array($action, $allowedAction, true)) {
 			throw new \InvalidArgumentException('Invalid type or action.');
 		}
 
-		// --- Parámetros del componente ---
-		$params = ComponentHelper::getParams('com_securitycheckpro');
+		// --- Parï¿½metros del componente ---
+		$params = $this->loadComponentParamsFromDatabase('com_securitycheckpro');
 
-		// --- Selección segura de origen de datos e "option" destino ---
+		// --- Selecciï¿½n segura de origen de datos e "option" destino ---
 		$inputKey = null;
 		$option   = 'file_integrity_path_exceptions';
 
@@ -1695,13 +1816,13 @@ class BaseModel extends BaseDatabaseModel
 		// --- Recogida como array estrictamente tipado ---
 		$paths = (array) $jinput->get($inputKey, [], 'array');
 		
-		// --- Normalización y saneado defensivo ---
+		// --- Normalizaciï¿½n y saneado defensivo ---
 		$normalize = static function ($path): ?string {
 			if (!is_string($path)) {
 				return null;
 			}
 
-			// recorte tamaño máximo y espacios
+			// recorte tamaï¿½o mï¿½ximo y espacios
 			$p = trim(mb_substr($path, 0, 2048));
 
 			// elimina bytes nulos y controles
@@ -1716,7 +1837,7 @@ class BaseModel extends BaseDatabaseModel
 				return null;
 			}
 
-			// evita valores vacíos o sospechosos
+			// evita valores vacï¿½os o sospechosos
 			if ($p === '' || $p === '/' || $p === '.' ) {
 				return null;
 			}
@@ -1737,7 +1858,7 @@ class BaseModel extends BaseDatabaseModel
 		$deleted = 0;
 
 		foreach ($cleanPaths as $p) {
-			// Delegamos en un método endurecido que:
+			// Delegamos en un mï¿½todo endurecido que:
 			//  - valida $option con allow-list
 			//  - normaliza/valida valores
 			//  - trabaja con almacenamiento en JSON
@@ -1756,7 +1877,7 @@ class BaseModel extends BaseDatabaseModel
 			}
 		}
 
-		// --- Mensajes coherentes con la acción ---
+		// --- Mensajes coherentes con la acciï¿½n ---
 		if ($action === 'add') {
 			$app->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_ADDED_TO_LIST', $added));
 			if ($added > 0) {
@@ -1774,10 +1895,10 @@ class BaseModel extends BaseDatabaseModel
 	}
 	
 	/**
-	 * Genera una clave aleatoria segura usando sólo [a-zA-Z0-9].
-	 * @param int    $length   Longitud de la clave (sin extensión).
+	 * Genera una clave aleatoria segura usando sï¿½lo [a-zA-Z0-9].
+	 * @param int    $length   Longitud de la clave (sin extensiï¿½n).
 	 * @param string $alphabet Conjunto de caracteres permitidos.
-	 * @param string $suffix   Sufijo a añadir (por defecto ".php").
+	 * @param string $suffix   Sufijo a aï¿½adir (por defecto ".php").
 	 *
      * @return  string
 	 */
@@ -1785,7 +1906,7 @@ class BaseModel extends BaseDatabaseModel
 	{
 		$alphabetLength = strlen($alphabet) - 1;
 		if ($length < 1 || $alphabetLength < 0) {
-			throw new \InvalidArgumentException('Parámetros inválidos.');
+			throw new \InvalidArgumentException('Parï¿½metros invï¿½lidos.');
 		}
 
 		$key = '';
@@ -1826,31 +1947,18 @@ class BaseModel extends BaseDatabaseModel
     }
 	
 	/**
-	 * Renderiza un <select> genérico.
-	 *
-	 * - $options puede ser:
-	 *    - 'boolean' => genera Sí/No
-	 *    - array asociativo [value => label]
-	 *    - array de items ya traducidos [ ['value' => 'x', 'text' => 'Label'], ... ]
-	 *
-	 * @param string                       $name
-	 * @param 'boolean'|array              $options
-	 * @param array<string,string>         $attribs   Atributos HTML (ej. ['class'=>'form-select','onchange'=>'Disable()'])
-	 * @param bool|int|string|null         $selected  Valor seleccionado
-	 * @param string|false                 $id        ID o false para omitir
-	 * @param bool                         $translate Si true, pasa las etiquetas por Text::_()
-	 *
-	 * @return string HTML del <select>
+	 * @param 'boolean'|array<string,string>|array<int,array{value:string, text:string}> $options
+	 * @param array<string,string> $attribs
 	 */
-	function renderSelect(
+	public function renderSelect(
 		string $name,
-		$options,
+		array|string $options,
 		array $attribs = ['class' => 'form-select'],
 		bool|int|string|null $selected = null,
 		string|false $id = false,
 		bool $translate = false
 	): string {
-		// 1) Normaliza opciones a objetos de option
+		/** @var array<int, \stdClass> $opts */
 		$opts = [];
 
 		if ($options === 'boolean') {
@@ -1858,45 +1966,71 @@ class BaseModel extends BaseDatabaseModel
 				HTMLHelper::_('select.option', '0', Text::_('COM_SECURITYCHECKPRO_NO')),
 				HTMLHelper::_('select.option', '1', Text::_('COM_SECURITYCHECKPRO_YES')),
 			];
-		} elseif (is_array($options)) {
-			// Permite formatos: [ ['value'=>'x','text'=>'Y'], ... ] o ['x'=>'Y', ...]
-			$isAssoc = array_keys($options) !== range(0, count($options) - 1);
+		} else {
+			// $options es array aquï¿½
+			$isAssoc = $options !== [] && array_keys($options) !== range(0, count($options) - 1);
+
 			if ($isAssoc) {
 				foreach ($options as $value => $label) {
 					$label = (string) $label;
-					$opts[] = HTMLHelper::_('select.option', (string)$value, $translate ? Text::_($label) : $label);
+					$opts[] = HTMLHelper::_('select.option', (string) $value, $translate ? Text::_($label) : $label);
 				}
 			} else {
+				/** @var array<int, array{value:string, text:string}> $options */
 				foreach ($options as $item) {
-					if (is_array($item) && isset($item['value'], $item['text'])) {
-						$label = (string) $item['text'];
-						$opts[] = HTMLHelper::_('select.option', (string)$item['value'], $translate ? Text::_($label) : $label);
-					} else {
-						// Si solo viene un valor suelto, úsalo como value y text
-						$opts[] = HTMLHelper::_('select.option', (string)$item, (string)$item);
-					}
+					$label = (string) $item['text'];
+					$opts[] = HTMLHelper::_('select.option', (string) $item['value'], $translate ? Text::_($label) : $label);
 				}
 			}
-		} else {
-			// Fallback por si llega algo raro
-			$opts = [];
 		}
 
-		// 2) Construye atributos HTML
 		$attrs = '';
 		foreach ($attribs as $k => $v) {
-			$attrs .= ' ' . htmlspecialchars((string)$k, ENT_QUOTES) . '="' . htmlspecialchars((string)$v, ENT_QUOTES) . '"';
+			$attrs .= ' ' . htmlspecialchars((string) $k, ENT_QUOTES, 'UTF-8')
+				. '="' . htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8') . '"';
 		}
 		$attrs = ltrim($attrs) ?: 'class="form-select"';
 
-		// 3) Valor seleccionado normalizado
-		$selectedNorm = $selected;
-		// Para boolean, fuerza 0/1
-		if ($options === 'boolean') {
-			$selectedNorm = (int)((bool)$selected);
-		}
+		$selectedNorm = $options === 'boolean' ? (int) ((bool) $selected) : $selected;
 
 		return HTMLHelper::_('select.genericlist', $opts, $name, $attrs, 'value', 'text', $selectedNorm, $id);
+	}
+	
+	
+	/**
+	 * Carga los params reales del componente desde #__extensions.
+	 */
+	protected function loadComponentParamsFromDatabase(string $componentOption = 'com_securitycheckpro'): Registry
+	{
+		$componentOption = trim($componentOption);
+
+		if ($componentOption === '') {
+			return new Registry();
+		}
+
+		/** @var DatabaseInterface $db */
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
+
+		$component = ComponentHelper::getComponent($componentOption, true);
+		$componentId = (int) $component->id;
+
+		if ($componentId <= 0) {
+			return new Registry();
+		}
+
+		$table = new \Joomla\CMS\Table\Extension($db);
+
+		if (!$table->load($componentId)) {
+			return new Registry();
+		}
+
+		$paramsRaw = $table->params;
+
+		if (!is_string($paramsRaw) || trim($paramsRaw) === '') {
+			return new Registry();
+		}
+
+		return new Registry($paramsRaw);
 	}
 	
 }

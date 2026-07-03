@@ -22,7 +22,7 @@ use Joomla\CMS\Application\CMSApplication;
 class UploadModel extends BaseDatabaseModel
 {    
 	/**
-     * Función que sube un fichero de configuración de la extensión Securitycheck Pro (previamente exportado) y establece esa configuración sobreescribiendo la actual
+     * Funciï¿½n que sube un fichero de configuraciï¿½n de la extensiï¿½n Securitycheck Pro (previamente exportado) y establece esa configuraciï¿½n sobreescribiendo la actual
      *
      * @return  bool
      *     
@@ -66,7 +66,7 @@ class UploadModel extends BaseDatabaseModel
 		}
 
 		$tmpDir = rtrim((string)$app->getConfig()->get('tmp_path'), DIRECTORY_SEPARATOR);
-		$dest   = $tmpDir . DIRECTORY_SEPARATOR . (uniqid('scpro_import_', true) . '_' . $safeName);
+		$dest   = $tmpDir . DIRECTORY_SEPARATOR . ('scpro_import_' . bin2hex(random_bytes(16)) . '_' . $safeName);
 
 		try {
 			if (!File::upload($userfile['tmp_name'], $dest)) {
@@ -92,7 +92,7 @@ class UploadModel extends BaseDatabaseModel
 			return false;
 		}
 
-		// Validación básica
+		// Validaciï¿½n bï¿½sica
 		$storage         = $json['storage']          ?? null;
 		$componentParams = $json['component_params'] ?? null;
 		$meta            = $json['meta']             ?? [];
@@ -137,7 +137,7 @@ class UploadModel extends BaseDatabaseModel
 
 				// DB guarda JSON; aseguramos string JSON:
 				if (is_string($value)) {
-					// ¿ya viene como JSON válido?
+					// ï¿½ya viene como JSON vï¿½lido?
 					$test = json_decode($value, true);
 					if (json_last_error() === JSON_ERROR_NONE) {
 						$jsonValue = $value; // ya es JSON
