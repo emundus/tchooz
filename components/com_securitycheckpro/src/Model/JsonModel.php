@@ -45,680 +45,758 @@ use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\Firew
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Application\CMSApplication;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Helper\OverallScoreHelper;
 
 if (!defined('SCP_USER_AGENT')) define('SCP_USER_AGENT', 'Securitycheck Pro User agent');
 
 class JsonModel extends BaseModel
 {
-	const    STATUS_OK                    = 200;    // Normal reply
-	const    STATUS_NOT_AUTH                = 401;    // Invalid credentials
-	const    STATUS_NOT_ALLOWED            = 403;    // Not enough privileges
-	const    STATUS_NOT_FOUND            = 404;  // Requested resource not found
-	const    STATUS_INVALID_METHOD        = 405;    // Unknown JSON method
-	const    STATUS_ERROR                = 500;    // An error occurred
-	const    STATUS_NOT_IMPLEMENTED        = 501;    // Not implemented feature
-	const    STATUS_NOT_AVAILABLE        = 503;    // Remote service not activated
-	const    CIPHER_RAW            = 1;    // Data in plain-text JSON
-	const    CIPHER_AESCBC256        = 2;    // Data in AES-256 standard (CBC) mode encrypted JSON
-	
-	// Inicializamos las variables
-	/**
-     * Estado de la petición
-     *
-     * @var int
-     */
-	private $status = 200;
-	
-	/**
-     * Método usado para cifrar los datos
-     *
-     * @var int
-     */
-	private $cipher = 2; 
-	
-	/**
-     * Datos enviados en la petición del cliente (ya en claro)
-     *
-     * @var string
-     */
-	private $clear_data = '';
-	
-	/**
-     * Datos devueltos al cliente
-     *
-     * @var array<string,mixed>|string
-     */
-	public $data = []; 
-	
-	/**
-     * Password
-     *
-     * @var string
-     */	 
-	private $password = '';
-		
-	/**
-     * Información sobre el backup
-     *
-     * @var array<strig,string>
-     */	
-	private $backupinfo = [
-		'product' => '',
-		'latest' => '', 
-		'latest_status' => '',
-		'latest_type' => ''
-	];
-	
-	/**
-     * Indica si el plugin 'Update Database' necesita actualizarse
-     *
-     * @var int
-     */	
-	private $update_database_plugin_needs_update = 0; 
-	
-	/**
-     * Contendrá información sobre el sistema: versión de php, mysql y servidor
-     *
-     * @var array<string,mixed>
-     */	
-	private $info = [];
-	
-	/**
-     * Contendrá la url a la que hemos de devolver el callback
-     *
-     * @var string
-     */		 
-	private $site = '';
-	
-	/**
-     * Contendrá la id de la web en Control Center
-     *
-     * @var string
-     */
-	private $site_id = '';
-	
-	/**
-     * Nombre del fichero de logs
-     *
-     * @var string|null
-     */
-	public $log_filename = '';    // Nombre del fichero de logs
-	
-	/**
-     * Establecemos la ruta donde se almacenarán los escaneos
-     *
-     * @var string
-     */
-    private $folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans';
-	
-	/**
-     * Contendrá el resultado de las actualizaciones
-     *
-     * @var array<string,mixed>
-     */
-	private $array_result = [];
-	
-	/**
-     * Función que registra una tarea
-     *
-     *
-	 * @param   string             $json    The task in json format	
-	 * 	 
-     * @return  string
-     *     
-     */
-	public function register_task($json)
-	{
-		$task_checker_enabled = $this->PluginStatus(9);
-		
-		if ($task_checker_enabled == 0)
-		{
-			return "Error: task checker plugin is disabled"; 
-		} else
-		{
-		
-			$db = Factory::getContainer()->get(DatabaseInterface::class);	
-					
-			$object = (object)array(
-			'storage_key'        => 'remote_task',
-			'storage_value'        => $json
-			);				
-			
-			try 
-			{
-				$result = $db->insertObject('#__securitycheckpro_storage', $object);            
-			} catch (\Throwable $e)
-			{    			
-				$this->log_filename = "error.php";
-				$message = $e->getMessage();
-				$this->write_log($message,"ERROR");
-				return "Error:" . $message; 
-			}
-			
-			// Launch the 'onSCPTaskAdded', observed by the Securitycheckpro_task_checker plugin
-            $event = AbstractEvent::create(
-                'onSCPTaskAdded',
-                [
-					'subject'   => $this,
-                ]
-            );
+	public const STATUS_OK            = 200;
+    public const STATUS_NOT_AUTH      = 401;
+    public const STATUS_NOT_ALLOWED   = 403;
+    public const STATUS_NOT_FOUND     = 404;
+    public const STATUS_INVALID_METHOD= 405;
+    public const STATUS_ERROR         = 500;
+    public const STATUS_NOT_IMPLEMENTED = 501;
+    public const STATUS_NOT_AVAILABLE = 503;
 
-            Factory::getApplication()->getDispatcher()->dispatch('onSCPTaskAdded', $event);
-			
-			return "Task added";
-		}
-	}
-	
-	/**
-     * Función que realiza una determinada función según los parámetros especificados en la variable pasada como argumento
-     *
-     *
-	 * @param   string             $json    The task in json format	
-	 * 	 
-     * @return  array<string,mixed>|void|string|null
-	 *     
-     */
-	public function execute($json)
-	{
-		$db = Factory::getContainer()->get(DatabaseInterface::class);
-		$query = "DELETE FROM #__securitycheckpro_storage WHERE storage_key='remote_task'";
-		$db->setQuery($query);
-		$db->execute();
-						
-		// Decodificamos el string json
-		$json_trimmed = rtrim($json, chr(0));
-		
-		// Comprobamos que el string JSON es válido y que tiene al menos 12 caracteres (longitud mínima de un mensaje válido)
-		if ((strlen($json_trimmed) < 12) || (substr($json_trimmed, 0, 1) != '{') || (substr($json_trimmed, -1) != '}'))
-		{
-			// El string JSON no es válido, no podemos hacer nada ya que no sabemos a qué dirección devolver la petición
-			$this->log_filename = "error.php";
-			$message = "Function Execute. JSON not valid.";
-			$this->write_log($message,"ERROR");
-			return;
-		}
-		else
-		{
-			// Decodificamos la petición
-			$request = json_decode($json, true);
-		}	
-								
-		if (is_null($request))
-		{
-			// El string JSON no es válido, no podemos hacer nada ya que no sabemos a qué dirección devolver la petición
-			$this->log_filename = "error.php";
-			$message = "Function Execute. JSON is null.";
-			$this->write_log($message,"ERROR");
-			return;
-		}
-		
-		// Extraemos los parámetros necesarios para mandar las peticiones en caso de error		
-		$this->cipher = $request['cipher'];
-		// Site id
-		$this->site_id = $request['body']['id'];
-		if ( empty($this->site_id) )
-		{
-			// El site_id no es válido, no podemos hacer nada ya que no sabemos a qué sitio devolver la petición
-			return;
-		}
-		
-		// Comprobamos si el frontend está habilitado
-		$config = $this->Config('controlcenter');
-		
-		if (is_null($config))
-		{
-			// Vamos a usar el referrer como url a la que devolver la petición
-			$this->site = $request['referrer'];
-			$this->data = "Can't get configuration";
-			$this->status = self::STATUS_ERROR;
-			$this->cipher = self::CIPHER_RAW;
-			
-			$this->log_filename = "error.php";
-			$message = "Function Execute. Can't get configuration.";
-			$this->write_log($message,"ERROR");
+    public const CIPHER_RAW      = 1;
+    public const CIPHER_AESCBC256= 2;
 
-			$this->sendResponse();
-		}
+    /** @var int */
+    private int $status = self::STATUS_OK;
 
-		if (!array_key_exists('control_center_enabled', $config))
-		{
-			$enabled = false;
-		}
-		else
-		{
-			$enabled = $config['control_center_enabled'];
-		}
+    /** @var int */
+    private int $cipher = self::CIPHER_AESCBC256;
 
-		if (array_key_exists('secret_key', $config))
-		{
-			$this->password = $config['secret_key'];
-		}
-		else
-		{
-			// Vamos a usar el referrer como url a la que devolver la petición
-			$this->site = $request['referrer'];
-			$this->data = 'Remote password not configured';
-			$this->status = self::STATUS_NOT_AUTH;
-			$this->cipher = self::CIPHER_RAW;
-			
-			$this->log_filename = "error.php";
-			$message = "Function Execute. Remote password not configured.";
-			$this->write_log($message,"ERROR");
+    /** @var array<string,mixed>|string */
+    public array|string $data = [];
 
-			$this->sendResponse();
-		}
-				
-		// Si el frontend no está habilitado, devolvemos un error 503
-		if (!$enabled)
-		{
-			// Vamos a usar el referrer como url a la que devolver la petición
-			$this->site = $request['referrer'];
-			$this->data = 'Access denied';
-			$this->status = self::STATUS_NOT_AVAILABLE;
-			$this->cipher = self::CIPHER_RAW;
-						
-			$this->log_filename = "error.php";
-			$message = "Function Execute. Frontend disabled.";
-			$this->write_log($message,"ERROR");
+    /** @var string */
+    private string $password = '';
 
-			$this->sendResponse();
-		}
-		
-		
-		// Site to return the callback to; let's decypher it
-		if ( !empty($request['body']['site']) )
-		{
-			$this->site = $request['body']['site'];				
-			$this->site = $this->decrypt($this->site, $this->password);
-									
-			if ( (empty($this->site)) || (strstr($this->site,"Internal") !== false ) )
-			{
-				if ( empty($this->site) ){
-					$this->data = 'Error decrypting data. Are both secret keys equals?';
-				} else 
-				{
-					$this->data = $this->site . '. Are both secret keys equals?';
-					$this->log_filename = "error.php";
-					$message = "Getting site error. Error decrypting data. Are both secret keys equals?";
-					$this->write_log($message,"ERROR");
-				}
-				// Vamos a usar el referrer como url a la que devolver la petición
-				if ( (array_key_exists('referrer',$request)) && (!empty($request['referrer'])) ) 
-				{
-					$this->site = $request['referrer'];
-					$this->status = self::STATUS_ERROR;
-					$this->cipher = self::CIPHER_RAW;				
-										
-					$this->sendResponse();
-				}
-			}
-				
-		} else
-		{
-			$this->log_filename = "error.php";
-			$message = "Function Execute. Error decrypting data. Are both secret keys equals?";
-			$this->write_log($message,"ERROR");
-			
-			if ( (array_key_exists('referrer',$request)) && (!empty($request['referrer'])) ) 
-			{
-				// Vamos a usar el referrer como url a la que devolver la petición
-				$this->site = $request['referrer'];
-				
-				$this->data = 'Error decrypting data. Are both secret keys equals?';
-				$this->status = self::STATUS_ERROR;
-				$this->cipher = self::CIPHER_RAW;				
-										
-				$this->sendResponse();
-			}
-		}			
-		
-		
-					
-		// Decodificamos el 'body' de la petición
-		if (isset($request['cipher']) && isset($request['body']))
-		{
-			switch ($request['cipher'])
-			{
-				case self::CIPHER_RAW:
-					if (($request['body']['task'] == "getStatus") || ($request['body']['task'] == "checkVuln") || ($request['body']['task'] == "checkLogs") || ($request['body']['task'] == "checkPermissions") || ($request['body']['task'] == "checkIntegrity") || ($request['body']['task'] == "deleteBlocked") || ($request['body']['task'] == "checkmalware") || ($request['body']['task'] == "UpdateExtension") || ($request['body']['task'] == "Backup") || ($request['body']['task'] == "unlocktables") || ($request['body']['task'] == "locktables") || ($request['body']['task'] == "server_statistics") || ($request['body']['task'] == "enable_analytics") || ($request['body']['task'] == "disable_analytics"))
-					{
-						/* Los resultados de todas las tareas se devuelven cifrados; si recibimos una petición para devolverlos sin cifrar, la rechazamos
-						porque será fraudulenta */
-						$this->data = 'Go away, hacker!';
-						$this->status = self::STATUS_NOT_ALLOWED;
-						$this->cipher = self::CIPHER_RAW;
+    /** @var array{product:string,latest:string,latest_status:string,latest_type:string} */
+    private array $backupinfo = [
+        'product' => '',
+        'latest' => '',
+        'latest_status' => '',
+        'latest_type' => '',
+    ];
 
-						$this->sendResponse();
-					}
-				break;				
+    /** @var int */
+    private int $update_database_plugin_needs_update = 0;
 
-				case self::CIPHER_AESCBC256:
-					if (!is_null($request['body']['data']))
-					{
-						// $this->clear_data = $this->mc_decrypt_256($request->body->data, $this->password);
-					}
-				break;
-			}	
-				
-			// Let's update the url from which we have received the task and prepare the log file
-			try
-			{
-				$params = ComponentHelper::getParams('com_securitycheckpro');
-				$max_log_size = $params->get('controlcenter_log_size', 2048);
-				$cc_config = $this->Config('controlcenter');
-				$cc_config['control_center_url'] = $this->site;
-				$this->SaveStorageParams($cc_config,'controlcenter');			
-								
-				$filemanager_model = new FilemanagerModel();
-				$this->log_filename = $filemanager_model->get_log_filename("controlcenter_log", true);
-				if (empty($this->log_filename)) {
-					$this->log_filename = $filemanager_model->prepareLog("controlcenter");					
-				} else if ( (file_exists($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename)) && (filesize($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename) > ($max_log_size * 1024)) ) {
-					//Rotate log file
-					File::delete($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename);
-					$this->log_filename = $filemanager_model->prepareLog("controlcenter");
-				}	
-				
-			} catch (\Exception $e)
-			{
-				$this->log_filename = "error.php";
-				$message = "Function Execute. " . $e->getMessage();
-				$this->write_log($message,"ERROR");				
-			} 			
-			
-						
-			switch ($request['body']['task'])
-			{
-				case "getStatus":
-					$this->getStatus();
-					break;
+    /** @var array<string,mixed> */
+    private array $info = [];
 
-				case "checkVuln":
-					$this->checkVuln();
-					break;
+    /** @var string URL base del CC (descifrada) */
+    private string $site = '';
+    private string $storedCcUrl = '';
 
-				case "checkLogs":
-					$this->checkLogs();
-					break;
+    /** @var string */
+    private string $site_id = '';
 
-				case "checkPermissions":
-					$this->checkPermissions();
-					break;
+    /** @var string|null */
+    public ?string $log_filename = null;
 
-				case "checkIntegrity":
-					$this->checkIntegrity();
-					break;
+    /** @var string */
+    private string $folder_path;
 
-				case "deleteBlocked":
-					$this->deleteBlocked();
-					break;
+    /** @var array<int,mixed> */
+    private array $array_result = [];
 
-				case "checkmalware":
-					$this->checkMalware();
-					break;
-
-				case "UpdateComponent":
-					$this->UpdateComponent();
-					break;
-
-				case "UpdateExtension":
-					$this->UpdateExtension($request['body']['data']);
-					break;
-
-				case "Backup":
-					$this->Backup($request['body']['data']);
-					break;
-
-				case "Uploadinstall":
-					$this->Upload_install($request['body']['data']);
-					break;
-
-				case "Connect":
-					$this->Connect();
-					break;
-
-				case "UpdateConnect":					
-					$this->UpdateConnect($request['body']['data']);
-					break;
-
-				case "unlocktables":
-					$this->write_log("UNLOCKTABLES task received");
-					$this->unlocktables();
-					break;
-
-				case "locktables":
-					$this->locktables();
-					break;
-
-				case "server_statistics":
-					$this->server_statistics();
-					break;
-					
-				case "enable_analytics":
-					$this->write_log("ENABLE_ANALYTICS task received");
-					$this->enable_analytics($request['body']['data']);
-					break;
-					
-				case "disable_analytics":
-					$this->write_log("DISABLE_ANALYTICS task received");
-					$this->disable_analytics($request['body']['data']);
-					break;
-
-				case self::CIPHER_AESCBC256:
-					break;
-					
-				default:
-					$this->data = 'Method not configured';
-					$this->status = self::STATUS_NOT_FOUND;
-					$this->cipher = self::CIPHER_RAW;
-					$this->sendResponse();
-			}
-
-			$this->sendResponse();
-		}
-	}
-
-	/**
-     * Función que empaqueta una respuesta en formato JSON codificado, cifrando los datos si es necesario
-     *
-	 * @param   string|null         $connect_back_url    The url to connect back to	
-	 * 	 
-     * @return  void
-	 *     
-     */
-	public function sendResponse($connect_back_url=null)
-	{
-		
-		if ( !is_null($connect_back_url) ) {
-			$this->cipher = self::CIPHER_RAW;			
-		}
-		
-		// Inicializamos la respuesta
-		$response = array(
-			'cipher'    => $this->cipher,
-			'body'        => array(
-				'status'        => $this->status,
-				'data'            => null,
-				'id'            => $this->site_id
-			)
-		);
-		
-		
-		// Codificamos los datos enviados en formato JSON
-		$data = json_encode($this->data);
-		
-		$this->write_log("Sending response. Data: " . $data);		
-				
-		// Ciframos o no los datos según el método establecido en la petición
-		switch ($this->cipher)
-		{
-			case self::CIPHER_RAW:
-				break;
-			case self::CIPHER_AESCBC256:
-				$data = $this->encrypt($data, $this->password);
-			break;
-		}
-
-		// Guardamos los datos...
-		$response['body']['data'] = $data;
-		
-		$response = json_encode($response);
-		
-		// If 'connect_back_url' is not empty will contain the url to which return the result. Used in the "Connect" task
-		if (!empty($connect_back_url)) {
-			$this->site = $connect_back_url;
-		}
-		
-		//Get the token
-		$token = '';
-			
-		$cc_config = $this->getControlCenterConfig();
-		if ( (is_array($cc_config)) && (array_key_exists('token',$cc_config)) ) {
-			$token = $cc_config['token'];
-		}
-		
-		if (empty($token)) {
-			$this->log_filename = "error.php";
-			$message = "Can't send the reply to the Control Center. Token is empty or doesn't match with Control Center.";
-			$this->write_log($message,"ERROR");
-			return;
-		}
-		
-		$headers = [
-			'Token: ' . $token
-		];
-								
-		// ... y los devolvemos al cliente
-		$ch = curl_init($this->site . "index.php?option=com_securitycheckprocontrolcenter&view=json&format=raw&json=" . urlencode($response));
-		
-		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-		curl_setopt($ch, CURLOPT_FAILONERROR, true);
-		curl_setopt($ch, CURLOPT_HEADER, true);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Esto es importante para seguir las redirecciones; si está a false no podremos seguirlas
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);	
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);	
-			
-		$response = curl_exec($ch);
-		
-		$this->write_log("Response sent to " . $this->site);
-		if ($response === false) {
-			$message = curl_error($ch);
-			$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);		
-			$this->write_log("RESPONSE: Error " . $httpcode . " " . $message);	
-		} else {
-			$this->write_log("Curl reply " . $response);
-		}
-	}
-
-	/**
-     * Extraemos los parámetros del componente
-     *
-	 * @param   string             $key_name    The name of the securitycheckpro_storage key
-	 * 	 
-     * @return  array<string,mixed>
-	 *     
-     */
-	private function Config($key_name)
-	{
-		$db = Factory::getContainer()->get(DatabaseInterface::class);
-		$query = $db->getQuery(true);
-		$query
-			->select($db->quoteName('storage_value'))
-			->from($db->quoteName('#__securitycheckpro_storage'))
-			->where($db->quoteName('storage_key') . ' = ' . $db->quote($key_name));
-		$db->setQuery($query);
-		$res = $db->loadResult();
-		$res = json_decode($res, true);
-
-		return $res;
-	}
-	
-	/**
-     * Guardamos los parámetros del componente
-     *
-	 * @param   array<string, mixed>     $params   		The string to convert to json
-	 * @param   string            		 $key_name   	The name of the securitycheckpro_storage key
-	 * 	 
-     * @return  void
-	 *     
-     */
-	private function SaveStorageParams($params,$key_name)
-	{
-		$db = Factory::getContainer()->get(DatabaseInterface::class);
-		
-		$storage_value = json_encode($params);
-		// Instanciamos un objeto para almacenar los datos que serán sobreescritos/añadidos
-        $object = new \StdClass();                    
-        $object->storage_key = $key_name;
-        $object->storage_value = $storage_value;
-		
-		try {
-			$db->updateObject('#__securitycheckpro_storage', $object, 'storage_key');
-		} catch (\Exception $e)
-		{
-			$this->log_filename = "error.php";
-			$message = "Function SaveStorageParams. " . $e->getMessage();
-			$this->write_log($message,"ERROR");
-		} 		
-	}
-	
-	/**
-     * Devuelve una fecha datetime usando el offset establecido en Joomla
-     *
-	 *
-     * @return  string
-	 *     
-     */
-	public function get_Joomla_timestamp()
-	{
-		// Obtenemos el timezone de Joomla y sobre esa información calculamos el timestamp
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
-		$app       = Factory::getApplication();
-		$config = $app->getConfig();
-		$offset = $config->get('offset');
-						
-		if (empty($offset))
-		{
-			$offset = 'UTC';
-		}
-		
-		$date = new \DateTime("now", new \DateTimeZone($offset) );
-		$timestamp_joomla_timezone = $date->format('Y-m-d H:i:s');
-			
-		return $timestamp_joomla_timezone;
-	}
-	
-	/**
-     * Crea un log de una tarea lanzada
-     *
-	 * @param   string             $message   	The message
-	 * @param   string             $level    	The level of the message
-	 * 	 
-     * @return  void
-	 *     
-     */
-    function write_log($message,$level="INFO")
+    public function __construct()
     {
-		$fp2 = @fopen($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename, 'ab');		
-		
-		if (empty($fp2)) {
+        parent::__construct();
+
+        $this->folder_path = JPATH_ADMINISTRATOR
+            . DIRECTORY_SEPARATOR . 'components'
+            . DIRECTORY_SEPARATOR . 'com_securitycheckpro'
+            . DIRECTORY_SEPARATOR . 'scans';
+    }
+
+    /**
+     * Registra tarea (igual que tu lï¿½gica actual)
+     *
+     * @param  string $json
+     * @return string
+     */
+    public function register_task(string $json): string
+    {
+        $task_checker_enabled = (int) $this->PluginStatus(9);
+
+        if ($task_checker_enabled === 0) {
+            return 'Error: task checker plugin is disabled';
+        }
+
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+
+        $object = (object) [
+            'storage_key'   => 'remote_task',
+            'storage_value' => $json,
+        ];
+
+        try {
+            $db->insertObject('#__securitycheckpro_storage', $object);
+        } catch (\Throwable $e) {
+            $this->log_filename = 'error.php';
+            $this->write_log($e->getMessage(), 'ERROR');
+            return 'Error: Operation failed';
+        }
+
+        // Evento observado por Securitycheckpro_task_checker
+        $event = AbstractEvent::create('onSCPTaskAdded', ['subject' => $this]);
+        Factory::getApplication()->getDispatcher()->dispatch('onSCPTaskAdded', $event);
+
+        return 'Task added';
+    }
+
+    /**
+     * Ejecuta una tarea (entrada: JSON guardado)
+     *
+     * @param  string $json
+     * @return void
+     */
+    public function execute(string $json): void
+    {
+        // 1) Limpia remote_task (como en tu cï¿½digo)
+        try {
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
+            $db->setQuery("DELETE FROM #__securitycheckpro_storage WHERE storage_key='remote_task'");
+            $db->execute();
+        } catch (\Throwable $e) {
+            // No abortamos por esto
+            $this->log_filename = 'error.php';
+            $this->write_log('execute: cleanup remote_task failed: ' . $e->getMessage(), 'ERROR');
+        }
+
+        // 2) Parseo robusto del JSON
+        $request = $this->decodeRequestJson($json);
+
+        if ($request === null) {
+            $this->log_filename = 'error.php';
+            $this->write_log('execute: JSON not valid', 'ERROR');
             return;
         }
-	
-		$string = $level . "    |   ";
-		$timestamp = $this->get_Joomla_timestamp();
-		$string .= $timestamp . "   |   $message |\r\n";	
 
-		@fwrite($fp2, $string);
-		@fclose($fp2);
+        // 3) Extraer campos mï¿½nimos (con validaciï¿½n)
+        $this->cipher  = isset($request['cipher']) ? (int) $request['cipher'] : self::CIPHER_RAW;
+
+        $body = $request['body'] ?? null;
+        if (!is_array($body)) {
+            $this->failRaw('Method not configured', self::STATUS_NOT_FOUND, $request);
+            return;
+        }
+
+        $this->site_id = isset($body['id']) ? (string) $body['id'] : '';
+        if ($this->site_id === '') {
+            // No sabemos a quiï¿½n responder
+            return;
+        }
+
+        $task = isset($body['task']) ? (string) $body['task'] : '';
+        if ($task === '') {
+            $this->failRaw('Method not configured', self::STATUS_NOT_FOUND, $request);
+            return;
+        }
+
+        // 4) Config + secret
+        $config = $this->Config('controlcenter');
+
+        if (!is_array($config)) {
+            $this->failRaw("Can't get configuration", self::STATUS_ERROR, $request);
+            return;
+        }
+
+        $enabled = !empty($config['control_center_enabled']);
+
+        $this->password = isset($config['secret_key']) && is_string($config['secret_key']) ? $config['secret_key'] : '';
+        $this->storedCcUrl = isset($config['control_center_url']) && is_string($config['control_center_url']) ? $config['control_center_url'] : '';
+        if ($this->password === '') {
+            $this->failRaw('Remote password not configured', self::STATUS_NOT_AUTH, $request);
+            return;
+        }
+
+        if (!$enabled) {
+            $this->failRaw('Access denied', self::STATUS_NOT_AVAILABLE, $request);
+            return;
+        }
+
+        // 5) Resolver callback base URL (site cifrado o referrer)
+        $callbackBase = $this->resolveCallbackBaseUrl($request);
+        if ($callbackBase === null) {
+            // No podemos responder
+            $this->log_filename = 'error.php';
+            $this->write_log('execute: cannot resolve callback base url. Are both secret keys equal?', 'ERROR');
+            return;
+        }
+
+        // Guardamos siempre control_center_url normalizada (tu requisito)
+        $this->site = $callbackBase;
+        $this->updateControlCenterUrlInStorage($callbackBase);
+
+        // 6) Protege contra peticiones RAW fraudulentas (tu lï¿½gica original)
+        if ($this->cipher === self::CIPHER_RAW) {
+            $rawForbidden = [
+                'getStatus', 'checkVuln', 'checkLogs', 'checkPermissions', 'checkIntegrity', 'deleteBlocked',
+                'checkmalware', 'UpdateExtension', 'Backup', 'unlocktables', 'locktables', 'enable_analytics', 'disable_analytics',
+            ];
+
+            if (in_array($task, $rawForbidden, true)) {
+                $this->data   = 'Go away, hacker!';
+                $this->status = self::STATUS_NOT_ALLOWED;
+                $this->cipher = self::CIPHER_RAW;
+                $this->sendResponsePostPrefer();
+                return;
+            }
+        }
+
+        // 7) Preparar logs (si tu cï¿½digo ya lo hace, puedes mantenerlo o pegarlo aquï¿½)
+        $this->prepareControlCenterLogfile($callbackBase);
+
+        // 8) Ejecutar tarea
+        switch ($task) {
+            case 'getStatus':
+                $this->getStatus();
+                break;
+            case 'checkVuln':
+                $this->checkVuln();
+                break;
+            case 'checkLogs':
+                $this->checkLogs();
+                break;
+            case 'checkPermissions':
+                $this->checkPermissions();
+                break;
+            case 'checkIntegrity':
+                $this->checkIntegrity();
+                break;
+            case 'deleteBlocked':
+                $this->deleteBlocked();
+                break;
+            case 'checkmalware':
+                $this->checkMalware();
+                break;
+            case 'UpdateExtension':
+                /** @var mixed $arg */
+                $arg = $body['data'] ?? null;
+                $this->UpdateExtension($arg);
+                break;
+            case 'Backup':
+                /** @var mixed $arg */
+                $arg = $body['data'] ?? null;
+                $this->Backup($arg);
+                break;
+            case 'Uploadinstall':
+                /** @var mixed $arg */
+                $arg = $body['data'] ?? null;
+                $this->Upload_install($arg);
+                break;
+            case 'Connect':
+                $this->Connect();
+                break;
+            case 'UpdateConnect':
+                /** @var mixed $arg */
+                $arg = $body['data'] ?? null;
+                $this->UpdateConnect($arg);
+                break;
+            case 'unlocktables':
+                $this->write_log('UNLOCKTABLES task received');
+                $this->unlocktables();
+                break;
+            case 'locktables':
+                $this->locktables();
+                break;           
+            case 'enable_analytics':
+                /** @var mixed $arg */
+                $arg = $body['data'] ?? null;
+                $this->enable_analytics($arg);
+                break;
+            case 'disable_analytics':
+                /** @var mixed $arg */
+                $arg = $body['data'] ?? null;
+                $this->disable_analytics($arg);
+                break;
+
+            default:
+                $this->data   = 'Method not configured';
+                $this->status = self::STATUS_NOT_FOUND;
+                $this->cipher = self::CIPHER_RAW;
+                $this->sendResponsePostPrefer();
+                return;
+        }
+
+        // 9) Enviar respuesta al Control Center
+        $this->sendResponsePostPrefer();
+    }
+
+    /**
+     * SEND RESPONSE: POST preferente + fallback GET legacy.
+     * Sin redirects.
+     *
+     * @param string|null $connect_back_url
+     * @return void
+     */
+    public function sendResponsePostPrefer(?string $connect_back_url = null): void
+    {
+        if ($connect_back_url !== null) {
+            $this->cipher = self::CIPHER_RAW;
+			// Vamos a establecer una id para el sitio o el controlador del controlcenter rechazarÃ¡ la llamada
+			$this->site_id = '1';
+        }
+
+        if (is_string($connect_back_url) && $connect_back_url !== '') {
+            $this->site = $connect_back_url;
+        }
+
+        $baseUrl = $this->normalizeBaseUrl((string) $this->site);
+        if ($baseUrl === null) {
+            $this->log_filename = 'error.php';
+            $this->write_log('sendResponse: invalid callback base url', 'ERROR');
+            return;
+        }
+
+        $response = [
+            'cipher' => $this->cipher,
+            'body'   => [
+                'status' => $this->status,
+                'data'   => null,
+                'id'     => $this->site_id,
+            ],
+        ];
+
+        $dataJson = json_encode($this->data, JSON_UNESCAPED_UNICODE);
+        if ($dataJson === false) {
+            $dataJson = 'null';
+        }
+
+        $this->write_log('Sending response. Data: ' . $dataJson);
+
+        if ($this->cipher === self::CIPHER_AESCBC256) {
+            $enc = $this->encryptLegacy($dataJson, $this->password);
+            if ($enc === null) {
+                $this->log_filename = 'error.php';
+                $this->write_log('sendResponse: encrypt failed', 'ERROR');
+                return;
+            }
+            $dataJson = $enc;
+        }
+
+        $response['body']['data'] = $dataJson;
+
+        $responseJson = json_encode($response, JSON_UNESCAPED_SLASHES);
+        if ($responseJson === false) {
+            $this->log_filename = 'error.php';
+            $this->write_log('sendResponse: json_encode response failed', 'ERROR');
+            return;
+        }
+
+        // Token (mantener trazabilidad si falta/no coincide)
+        $token = $this->getTokenFromConfig();
+        if ($token === '') {
+            $this->log_filename = 'error.php';
+            $this->write_log("Can't send the reply to the Control Center. Token is empty or doesn't match with Control Center.", 'ERROR');
+            return;
+        }
+
+        /** @var list<string> $headers */
+        $headers = [
+            'Token: ' . $token,
+        ];
+
+        // 1) Intento POST (nuevo)
+        $postUrl = $baseUrl . 'index.php?option=com_securitycheckprocontrolcenter&view=json&format=raw';
+        $postOk  = $this->curlPostNoFollow($postUrl, $headers, ['json' => $responseJson]);
+		
+        if ($postOk === true) {
+            $this->write_log('Response sent to ' . $baseUrl . ' (POST)');
+            return;
+        }
+
+        // 2) Fallback GET legacy (mientras CC sea viejo)
+        $this->write_log('WARNING: Using insecure GET fallback. Update Control Center to support POST.', 'WARNING');
+
+        $encodedResponse = urlencode($responseJson);
+        $maxGetLength = 8000;
+        if (strlen($encodedResponse) > $maxGetLength) {
+            $this->write_log('Response too large for GET fallback (' . strlen($encodedResponse) . ' bytes). Aborting.', 'ERROR');
+            return;
+        }
+
+        $getUrl = $baseUrl
+            . 'index.php?option=com_securitycheckprocontrolcenter&view=json&format=raw&json='
+            . $encodedResponse;
+
+        $raw = $this->curlGetNoFollow($getUrl, $headers);
+
+        $this->write_log('Response sent to ' . $baseUrl . ' (GET fallback)');
+        if ($raw !== null) {
+            $this->write_log('Curl reply ' . $raw);
+        }
+    }
+
+    /**
+     * --- Helpers crï¿½ticos / seguridad ---
+     */
+
+    /**
+     * @param string $json
+     * @return array<string,mixed>|null
+     */
+    private function decodeRequestJson(string $json): ?array
+    {
+        $trim = rtrim($json, "\0 \t\r\n");
+
+        if ($trim === '' || $trim[0] !== '{') {
+            // Intento urldecode por compatibilidad con {%22...}
+            $trim = urldecode($trim);
+        }
+
+        $req = json_decode($trim, true);
+        return is_array($req) ? $req : null;
+    }
+
+    /**
+     * Resuelve callback base URL:
+     * - primero body.site (cifrado) -> decrypt()
+     * - si falla o estï¿½ vacï¿½o, usa referrer si existe
+     *
+     * @param array<string,mixed> $request
+     * @return string|null Base URL normalizada con trailing slash
+     */
+    private function resolveCallbackBaseUrl(array $request): ?string
+    {
+        $ref = '';
+        if (isset($request['referrer']) && is_string($request['referrer'])) {
+            $ref = $request['referrer'];
+        }
+
+        $body = $request['body'] ?? null;
+        if (!is_array($body)) {
+            return $this->normalizeBaseUrl($ref);
+        }
+
+        $siteEnc = $body['site'] ?? '';
+        if (is_string($siteEnc) && $siteEnc !== '') {
+            $siteDec = $this->decrypt($siteEnc, $this->password); // legacy
+            if ($siteDec !== '' && strpos($siteDec, 'Internal') === false) {
+                $norm = $this->normalizeBaseUrl($siteDec);
+                if ($norm !== null) {
+                    return $norm;
+                }
+            }
+        }
+
+        // fallback a referrer
+        return $this->normalizeBaseUrl($ref);
+    }
+
+    /**
+     * Guarda control_center_url siempre (normalizado).
+     *
+     * @param string $baseUrl
+     * @return void
+     */
+    private function updateControlCenterUrlInStorage(string $baseUrl): void
+    {
+        try {
+            $cc = $this->Config('controlcenter');
+            if (!is_array($cc)) {
+                $cc = [];
+            }
+            $cc['control_center_url'] = $baseUrl;
+            $this->SaveStorageParams($cc, 'controlcenter');
+        } catch (\Throwable $e) {
+            $this->log_filename = 'error.php';
+            $this->write_log('updateControlCenterUrlInStorage: ' . $e->getMessage(), 'ERROR');
+        }
+    }
+
+    /**
+     * Prepara logfile controlcenter (rotaciï¿½n etc.)
+     * Puedes mantener tu implementaciï¿½n original si prefieres.
+     *
+     * @param string $baseUrl
+     * @return void
+     */
+    private function prepareControlCenterLogfile(string $baseUrl): void
+    {
+        try {
+            $params = ComponentHelper::getParams('com_securitycheckpro');
+            $maxKb = (int) $params->get('controlcenter_log_size', 2048);
+
+            $filemanager_model = new FilemanagerModel();
+			$this->log_filename = $filemanager_model->get_log_filename("controlcenter_log", true);
+			if (empty($this->log_filename)) {
+				$this->log_filename = $filemanager_model->prepareLog("controlcenter");					
+			} else if ( (file_exists($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename)) && (filesize($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename) > ($maxKb * 1024)) ) {
+				//Rotate log file
+				File::delete($this->folder_path.DIRECTORY_SEPARATOR.$this->log_filename);
+				$this->log_filename = $filemanager_model->prepareLog("controlcenter");
+			}	
+        } catch (\Throwable $e) {
+            $this->log_filename = 'error.php';
+            $this->write_log('prepareControlCenterLog: ' . $e->getMessage(), 'ERROR');
+        }
+    }
+
+    /**
+     * @param string $msg
+     * @param int $status
+     * @param array<string,mixed> $request
+     * @return void
+     */
+    private function failRaw(string $msg, int $status, array $request): void
+    {
+        $this->data   = $msg;
+        $this->status = $status;
+        $this->cipher = self::CIPHER_RAW;
+
+        // Intentamos devolver al referrer si estï¿½
+        $ref = isset($request['referrer']) && is_string($request['referrer']) ? $request['referrer'] : '';
+        $this->site = $ref;
+
+        $this->log_filename = 'error.php';
+        $this->write_log('execute: ' . $msg, 'ERROR');
+
+        if ($this->normalizeBaseUrl($ref) !== null) {
+            $this->sendResponsePostPrefer();
+        }
+    }
+
+    /**
+     * Normaliza base url: solo http/https, sin credenciales, con trailing slash.
+     * No bloquea rangos privados (tu requisito).
+     *
+     * @param string $url
+     * @return string|null
+     */
+    private function normalizeBaseUrl(string $url): ?string
+    {
+        $url = trim($url);
+        if ($url === '') {
+            return null;
+        }
+
+        // Acepta URLs tipo "https://host/path" y se queda con base (path hasta /)
+        $parts = parse_url($url);
+        if (!is_array($parts)) {
+            return null;
+        }
+
+        $scheme = isset($parts['scheme']) ? strtolower((string) $parts['scheme']) : '';
+        if ($scheme !== 'http' && $scheme !== 'https') {
+            return null;
+        }
+
+        $host = isset($parts['host']) ? (string) $parts['host'] : '';
+        if ($host === '') {
+            return null;
+        }
+
+        // No permitir user:pass@
+        if (isset($parts['user']) || isset($parts['pass'])) {
+            return null;
+        }
+
+        $port = isset($parts['port']) ? (int) $parts['port'] : 0;
+        $portPart = $port > 0 ? ':' . $port : '';
+
+        // Queremos base URL: scheme://host[:port]/
+        return $scheme . '://' . $host . $portPart . '/';
+    }
+
+    /**
+     * @return string
+     */
+    private function getTokenFromConfig(): string
+    {
+        $token = '';
+        $ccConfig = $this->getControlCenterConfig();
+        if (isset($ccConfig['token']) && is_string($ccConfig['token'])) {
+            $token = $ccConfig['token'];
+        }
+        return $token;
+    }
+
+    /**
+     * GET sin seguir redirects.
+     *
+     * @param string $url
+     * @param list<string> $headers
+     * @return string|null
+     */
+    private function curlGetNoFollow(string $url, array $headers): ?string
+    {
+        $ch = curl_init($url);
+        if ($ch === false) {
+            return null;
+        }
+
+        curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+        curl_setopt($ch, CURLOPT_FAILONERROR, false);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $raw = curl_exec($ch);
+        if ($raw === false) {
+            $this->write_log('curlGetNoFollow error: ' . curl_error($ch), 'ERROR');
+            return null;
+        }
+
+        return (string) $raw;
+    }
+
+    /**
+     * POST sin redirects. Devuelve true si HTTP 2xx.
+     *
+     * @param string $url
+     * @param list<string> $headers
+     * @param array<string,string> $fields
+     * @return bool
+     */
+    private function curlPostNoFollow(string $url, array $headers, array $fields): bool
+    {
+        $ch = curl_init($url);
+        if ($ch === false) {
+            return false;
+        }
+
+        curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+        curl_setopt($ch, CURLOPT_FAILONERROR, false);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields, '', '&'));
+
+        $raw = curl_exec($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if ($raw === false) {
+            $this->write_log('curlPostNoFollow error: ' . curl_error($ch), 'ERROR');            
+            return false;
+        }
+
+        return ($code >= 200 && $code <= 299);
+    }
+
+    /**
+     * --- Storage helpers (tu cï¿½digo original) ---
+     */
+
+    /**
+     * @param string $key_name
+     * @return array<string,mixed>|null
+     */
+    private function Config(string $key_name): ?array
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('storage_value'))
+            ->from($db->quoteName('#__securitycheckpro_storage'))
+            ->where($db->quoteName('storage_key') . ' = ' . $db->quote($key_name));
+
+        $db->setQuery($query);
+        $res = $db->loadResult();
+        if (!is_string($res) || $res === '') {
+            return null;
+        }
+
+        $decoded = json_decode($res, true);
+        return is_array($decoded) ? $decoded : null;
+    }
+
+    /**
+     * @param array<string,mixed> $params
+     * @param string $key_name
+     * @return void
+     */
+    private function SaveStorageParams(array $params, string $key_name): void
+    {
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+
+        $storage_value = json_encode($params);
+        if ($storage_value === false) {
+            $storage_value = '{}';
+        }
+
+        $object = new \stdClass();
+        $object->storage_key = $key_name;
+        $object->storage_value = $storage_value;
+
+        try {
+            $db->updateObject('#__securitycheckpro_storage', $object, 'storage_key');
+        } catch (\Throwable $e) {
+            $this->log_filename = 'error.php';
+            $this->write_log('SaveStorageParams: ' . $e->getMessage(), 'ERROR');
+        }
+    }
+
+    /**
+     * Log simple
+     *
+     * @param string $message
+     * @param string $level
+     * @return void
+     */
+    public function write_log(string $message, string $level = 'INFO'): void
+    {
+        if ($this->log_filename === '') {
+            $this->log_filename = 'error.php';
+        }
+
+        $fp = @fopen($this->folder_path . DIRECTORY_SEPARATOR . $this->log_filename, 'ab');
+        if ($fp === false) {
+            return;
+        }
+
+        if (strlen($message) > 4096) {
+            $message = substr($message, 0, 4096) . '...[truncated]';
+        }
+
+        $timestamp = $this->get_Joomla_timestamp();
+        $line = $level . "    |   " . $timestamp . "   |   " . $message . " |\r\n";
+
+        @fwrite($fp, $line);
+        @fclose($fp);
+    }
+
+    /**
+     * @return string
+     */
+    public function get_Joomla_timestamp(): string
+    {
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+        $app = Factory::getApplication();
+        $config = $app->getConfig();
+        $offset = (string) $config->get('offset', 'UTC');
+
+        try {
+            $date = new \DateTime('now', new \DateTimeZone($offset !== '' ? $offset : 'UTC'));
+        } catch (\Throwable) {
+            $date = new \DateTime('now', new \DateTimeZone('UTC'));
+        }
+
+        return $date->format('Y-m-d H:i:s');
     }
 	
 	/**
-     * Función que verifica una fecha
+     * Funciï¿½n que verifica una fecha
      *
 	 * @param   string             $date   	The date to check
 	 * @param   bool             $strict  
@@ -744,7 +822,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Función que devuelve el estado de la extensión remota
+     * Funciï¿½n que devuelve el estado de la extensiï¿½n remota
      *
 	 * @param   bool             $opcion   	The option
 	 * 	 
@@ -766,7 +844,7 @@ class JsonModel extends BaseModel
 
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
-		// Buscamos la versión de SCP instalada
+		// Buscamos la versiï¿½n de SCP instalada
 		$query = $db->getQuery(true)
 			->select($db->quoteName('manifest_cache'))
 			->from($db->quoteName('#__extensions'))
@@ -831,7 +909,7 @@ class JsonModel extends BaseModel
 		// Get suspicious files
 		$suspicious_files = $filemanager_model->loadStack("malwarescan_resume", "suspicious_files");
 
-		// Última optimización bbdd
+		// ï¿½ltima optimizaciï¿½n bbdd
 		$last_check_database_optimization = $this->GetCampoFilemanager('last_check_database');
 
 		// If malwarescan has not been launched, we set a '0' value.
@@ -844,7 +922,7 @@ class JsonModel extends BaseModel
 		// Comprobamos el estado del backup
 		$this->getBackupInfo();
 
-		// Verificamos si el core está actualizado (obviando la caché)
+		// Verificamos si el core estï¿½ actualizado (obviando la cachï¿½)
 		// Boot del componente
 		/** @var \Joomla\CMS\Application\CMSApplication $app */
 		$app       = Factory::getApplication();
@@ -859,9 +937,10 @@ class JsonModel extends BaseModel
 			$this->status = self::STATUS_ERROR;
 			$this->cipher = self::CIPHER_RAW;
 						
-			$this->sendResponse();
+			$this->sendResponsePostPrefer();
 		}
-
+		
+		// @phpstan-ignore-next-line
 		$factory = $component->getMVCFactory();
 		/** @var \Joomla\Component\Joomlaupdate\Administrator\Model\UpdateModel $updateModel */ 
 		$updateModel = $factory->createModel('Update', 'Administrator', ['ignore_request' => true]); 
@@ -869,7 +948,7 @@ class JsonModel extends BaseModel
 		$updateModel->refreshUpdates(true);
 		$coreInformation = $updateModel->getUpdateInformation();
 				
-		// Si el plugin 'Update Batabase' está instalado, comprobamos si está actualizado
+		// Si el plugin 'Update Batabase' estï¿½ instalado, comprobamos si estï¿½ actualizado
 		if ($update_database_plugin_installed)
 		{
 			$this->update_database_plugin_needs_update = $this->checkforUpdate();
@@ -880,15 +959,15 @@ class JsonModel extends BaseModel
 		}
 		
 		$this->write_log("Getting system info...");
-		// Añadimos la información del sistema
+		// Aï¿½adimos la informaciï¿½n del sistema
 		$this->getInfo();
 		
 		$this->write_log("Getting htaccess protection config...");
-		// Obtenemos las opciones de protección .htaccess
+		// Obtenemos las opciones de protecciï¿½n .htaccess
 		$ConfigApplied = new ProtectionModel();
 		$ConfigApplied = $ConfigApplied->GetConfigApplied();
 
-		// Si el directorio de administración está protegido con contraseña, marcamos la opción de protección del backend como habilitada
+		// Si el directorio de administraciï¿½n estï¿½ protegido con contraseï¿½a, marcamos la opciï¿½n de protecciï¿½n del backend como habilitada
 		if (!$ConfigApplied['hide_backend_url'])
 		{
 			if (file_exists(JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . '.htpasswd'))
@@ -897,14 +976,15 @@ class JsonModel extends BaseModel
 			}
 		}
 
-		// Si se ha seleccionado la opción de "backend protected using other options" ponemos "hide_backend_url" como enable porque esta opción marca si el backend está habilitado
-		if ($ConfigApplied['backend_protection_applied'] == 1)
+		// Si se ha seleccionado la opciï¿½n de "backend protected using other options" ponemos "hide_backend_url" como enable porque esta opciï¿½n marca si el backend estï¿½ habilitado
+
+		if ($ConfigApplied['backend_protection_applied'])
 		{
 			$ConfigApplied['hide_backend_url'] = '1';
 		}
 		
 		$this->write_log("Getting firewall config...");
-		// Obtenemos los parámetros del Firewall
+		// Obtenemos los parï¿½metros del Firewall
 		$FirewallOptions = new BaseModel;
 		$FirewallOptions = $FirewallOptions->getConfig();
 				
@@ -913,11 +993,11 @@ class JsonModel extends BaseModel
 		$kickstart = $this->check_kickstart();
 
 		$this->write_log("Getting 2FA status...");
-		// Chequeamos si el segundo factor de autenticación está habilitado
+		// Chequeamos si el segundo factor de autenticaciï¿½n estï¿½ habilitado
 		(int) $two_factor = $this->get_two_factor_status();
 				
 		$this->write_log("Getting info about outdated extensions...");
-		// Añadimos la información sobre las extensiones no actualizadas. Esta opción no es necesaria cuando escogemos la opción 'System Info'
+		// Aï¿½adimos la informaciï¿½n sobre las extensiones no actualizadas. Esta opciï¿½n no es necesaria cuando escogemos la opciï¿½n 'System Info'
 		if ($opcion)
 		{
 			$extension_updates = $this->getNotUpdatedExtensions();
@@ -941,11 +1021,11 @@ class JsonModel extends BaseModel
 		}
 		
 		$this->write_log("Getting lock tables status...");
-		// Chequeamos si las tablas están bloqueadas
+		// Chequeamos si las tablas estï¿½n bloqueadas
 		$tables_locked = $this->check_locked_tables();
 		
 		$this->write_log("Getting attacks stopped today...");
-		// Información sobre el número de logs del día
+		// Informaciï¿½n sobre el nï¿½mero de logs del dï¿½a
 		try 
         {
             $query = "SELECT COUNT(*) from #__securitycheckpro_logs WHERE DATE(time) = CURDATE()";            
@@ -956,7 +1036,7 @@ class JsonModel extends BaseModel
         }  
 		
 		$this->write_log("Getting info about updates...");
-		// Información sobre las extensiones/core actualizadas
+		// Informaciï¿½n sobre las extensiones/core actualizadas
 		try 
         {
 			$query = 'SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key="installs_remote"';
@@ -972,8 +1052,10 @@ class JsonModel extends BaseModel
 				$remote_data['logs'] = $today_logs;
 			}
 			if (!empty($updates_to_send)){
+				// Decodificamos updates_to_send, que ya estï¿½ codificado en json
+				$updates_to_send_decoded = json_decode($updates_to_send, true);
 				$remote_data['updates'] = $updates_to_send;
-				// Borramos la información de la tabla "installs_remote"
+				// Borramos la informaciï¿½n de la tabla "installs_remote"
 				try 
 				{
 					$query = "DELETE FROM #__securitycheckpro_storage WHERE storage_key='installs_remote'";
@@ -1004,7 +1086,7 @@ class JsonModel extends BaseModel
 			'corelatest'    => $coreInformation['latest'],
 			'last_check_malwarescan' => $last_check_malwarescan,
 			'suspicious_files'        => $suspicious_files,
-			'update_database_plugin_installed'    => $update_database_plugin_installed,
+			'update_database_plugin_installed'    => (int) $update_database_plugin_installed,
 			'update_database_plugin_version'    => $update_database_plugin_version,
 			'update_database_plugin_last_check'    => $update_database_plugin_last_check,
 			'update_database_plugin_needs_update'    => $this->update_database_plugin_needs_update,
@@ -1035,7 +1117,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Chequea si la opción "Lock tables" está habilitada
+     * Chequea si la opciï¿½n "Lock tables" estï¿½ habilitada
      *
 	 * 	 
      * @return  bool
@@ -1065,7 +1147,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Chequea si el fichero kickstart.php existe en la raíz del sitio. Esto sucede cuando se restaura un sitio y se olvida (junto con algún backup) eliminarlo.
+     * Chequea si el fichero kickstart.php existe en la raï¿½z del sitio. Esto sucede cuando se restaura un sitio y se olvida (junto con algï¿½n backup) eliminarlo.
      *
 	 * 	 
      * @return  bool
@@ -1087,21 +1169,21 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Obtiene el estado del segundo factor de autenticación de Joomla (Google y Yubikey)
+     * Obtiene el estado del segundo factor de autenticaciï¿½n de Joomla (Google y Yubikey)
      *
-	 * @param   bool     $overall    Si la variable "overall" es false utilizamos el método getTwoFactorMethods para obtener la información de los plugins; si es true no podemos usar ese método ya
-	 * que necesitamos que el usuario esté logado DEPRECATED
+	 * @param   bool     $overall    Si la variable "overall" es false utilizamos el mï¿½todo getTwoFactorMethods para obtener la informaciï¿½n de los plugins; si es true no podemos usar ese mï¿½todo ya
+	 * que necesitamos que el usuario estï¿½ logado DEPRECATED
 	 * 	 
      * @return  int
 	 *     
      */
 	function get_two_factor_status(bool $overall = false): int
 	{
-		// Ignoramos $overall en J5/J6: con consultas directas no hace falta sesión.
+		// Ignoramos $overall en J5/J6: con consultas directas no hace falta sesiï¿½n.
 		try {
 			$db = Factory::getContainer()->get(DatabaseInterface::class);
 
-			// 1) ¿Hay plugins TOTP/YubiKey habilitados? (carpeta multifactorauth)
+			// 1) ï¿½Hay plugins TOTP/YubiKey habilitados? (carpeta multifactorauth)
 			//    Preferimos PluginHelper::isEnabled por claridad; si falla, caemos a SQL.
 			$totpEnabled    = PluginHelper::isEnabled('multifactorauth', 'totp');
 			$yubiKeyEnabled = PluginHelper::isEnabled('multifactorauth', 'yubikey');
@@ -1136,7 +1218,7 @@ class JsonModel extends BaseModel
 				return 1;
 			}
 
-			// 3) ¿Algún superusuario tiene TOTP o YubiKey configurado?
+			// 3) ï¿½Algï¿½n superusuario tiene TOTP o YubiKey configurado?
 			//    Consultamos #__user_mfa (tabla nueva de MFA en J4+).
 			//    Hacemos IN de forma segura.
 			$inList = implode(',', $superUserIds);
@@ -1160,71 +1242,18 @@ class JsonModel extends BaseModel
 	/**
      * Obtiene el porcentaje general de cada una de las barras de progreso
      *
-	 * @param   array<string,mixed>     $info    El array con la información
+	 * @param   array<string,mixed>     $info    El array con la informaciï¿½n
 	 * 	 
      * @return  int
 	 *     
      */
-	function getOverall($info)
+	function getOverall(array $info): int
 	{
-		// Inicializamos variables
-		$overall = 0;
-
-		if ($info['kickstart_exists'])
-		{
-			return 2;
-		}
-
-		if (version_compare($info['coreinstalled'], $info['corelatest'], '=='))
-		{
-			$overall = $overall + 10;
-		}
-		
-		if ($info['logs_pending'] <= 10)
-		{
-			$overall = $overall + 5;
-		}
-
-		if ($info['files_with_incorrect_permissions'] == 0)
-		{
-			$overall = $overall + 5;
-		}
-
-		if ($info['files_with_bad_integrity'] == 0)
-		{
-			$overall = $overall + 10;
-		}
-
-		if ($info['vuln_extensions'] == 0)
-		{
-			$overall = $overall + 30;
-		}
-
-		if ($info['suspicious_files'] == 0)
-		{
-			$overall = $overall + 15;
-		}
-
-		if ($info['backend_protection'])
-		{
-			$overall = $overall + 10;
-		}
-
-		if ($info['forbid_new_admins'] == 1)
-		{
-			$overall = $overall + 5;
-		}
-
-		if ($info['twofactor_enabled'] >= 1)
-		{
-			$overall = $overall + 10;
-		}
-
-		return $overall;
+		return OverallScoreHelper::score($info, 1);
 	}
 
 	/**
-     * Función que comprueba si existen extensiones vulnerables
+     * Funciï¿½n que comprueba si existen extensiones vulnerables
      * 	 
      * @return  void
 	 *     
@@ -1248,7 +1277,7 @@ class JsonModel extends BaseModel
 		$update_database_plugin_last_check = $update_model->lastCheck();
 		
 		$this->write_log("Looking for vulnerable extensions...");
-		// Hacemos una nueva comprobación de extensiones vulnerables
+		// Hacemos una nueva comprobaciï¿½n de extensiones vulnerables
 		$securitycheckpros_model->chequear_vulnerabilidades();
 
 		// Vulnerable components
@@ -1269,7 +1298,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Función que comprueba si existen logs por leer
+     * Funciï¿½n que comprueba si existen logs por leer
      * 	 
      * @return  void
 	 *     
@@ -1295,7 +1324,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Función que lanza un chequeo de permisos
+     * Funciï¿½n que lanza un chequeo de permisos
      * 	 
      * @return  void
 	 *     
@@ -1340,7 +1369,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Función que lanza un chequeo de integridad
+     * Funciï¿½n que lanza un chequeo de integridad
      * 	 
      * @return  void
 	 *     
@@ -1416,7 +1445,7 @@ class JsonModel extends BaseModel
 	}
 		
 	/**
-     * Función que actualiza el Core de Joomla a la última versión disponible. Basado en /libraries/src/Console/UpdateCoreCommand.php
+     * Funciï¿½n que actualiza el Core de Joomla a la ï¿½ltima versiï¿½n disponible. Basado en /libraries/src/Console/UpdateCoreCommand.php
      * 	 
      * @return  array<int,mixed>
 	 *     
@@ -1434,7 +1463,7 @@ class JsonModel extends BaseModel
 		$lang = $app->getLanguage();
 		$lang->load('com_installer', JPATH_ADMINISTRATOR);
 
-		// Inicializamos la variable $result, que será un array con el resultado y el mensaje devuelto en el proceso
+		// Inicializamos la variable $result, que serï¿½ un array con el resultado y el mensaje devuelto en el proceso
 		$result = array();
 
 		// Instanciamos el modelo
@@ -1449,7 +1478,7 @@ class JsonModel extends BaseModel
 		/** @var \Joomla\Component\Joomlaupdate\Administrator\Model\UpdateModel $model */
 		$model = $factory->createModel('Update', 'Administrator', ['ignore_request' => true]);
 		
-		// Refrescamos la información de las actualizaciones ignorando la caché
+		// Refrescamos la informaciï¿½n de las actualizaciones ignorando la cachï¿½
 		$model->refreshUpdates(true);
 		$this->write_log("Refreshing info...");
 
@@ -1536,9 +1565,10 @@ class JsonModel extends BaseModel
 		// Load installer plugins for assistance if required:
 		PluginHelper::importPlugin('installer');
 		
+		/** @var array<string, mixed>|null $package */
 		$package = null;
 
-		// This event allows an input pre-treatment, a custom pre-packing or custom installation (e.g. from a JSON description)
+		// This event allows an input pre-treatment, a custom pre-packing or custom installation (e.g. from a JSONï¿½description)
 		$results = $app->triggerEvent('onInstallerBeforeInstallation', array($this, &$package));
 
 		if (in_array(true, $results, true))
@@ -1636,7 +1666,7 @@ class JsonModel extends BaseModel
 	}	
 
 	/**
-     * Función que lanza un chequeo en busca de malware
+     * Funciï¿½n que lanza un chequeo en busca de malware
      *
      * @return  void
      *     
@@ -1681,7 +1711,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Función que obtiene información del estado del backup
+     * Funciï¿½n que obtiene informaciï¿½n del estado del backup
      *
      * @return  void
      *     
@@ -1692,16 +1722,11 @@ class JsonModel extends BaseModel
 		// Instanciamos la consulta
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		
-		$joomla_version = "3";
-		$query = "SELECT COUNT(*) FROM #__extensions WHERE element='com_akeeba'";		
-		if (version_compare(JVERSION, '4.0', 'gt'))
-		{
-			$joomla_version = "4";
-			$query = "SELECT COUNT(*) FROM #__extensions WHERE element='com_akeebabackup'";
-		}		
-		
+		$joomla_version = "4";
+		$query = "SELECT COUNT(*) FROM #__extensions WHERE element='com_akeebabackup'";
+				
 		try {
-			// Consultamos si Akeeba Backup está instalado
+			// Consultamos si Akeeba Backup estï¿½ instalado
 			$db->setQuery($query);
 			$db->execute();
 			$akeeba_installed = $db->loadResult();			
@@ -1716,43 +1741,10 @@ class JsonModel extends BaseModel
 			$this->backupinfo['product'] = 'Akeeba Backup';
 			$this->AkeebaBackupInfo($joomla_version);
 		}
-		else
-		{
-			try {
-				// Consultamos si Xcloner Backup and Restore está instalado
-				$query = 'SELECT COUNT(*) FROM #__extensions WHERE element="com_xcloner-backupandrestore"';
-				$db->setQuery($query);
-				$db->execute();
-				$xcloner_installed = $db->loadResult();
-			} catch (\Exception $e)
-			{    			
-				$xcloner_installed = 0;
-			} 			
-
-			if ($xcloner_installed == 1)
-			{
-				$this->backupinfo['product'] = 'Xcloner - Backup and Restore';
-				$this->XclonerbackupInfo();
-			}
-			else
-			{
-				// Consultamos si Easy Joomla Backup está instalado
-				$query = "SELECT COUNT(*) FROM #__extensions WHERE element='com_easyjoomlabackup'";
-				$db->setQuery($query);
-				$db->execute();
-				$ejb_installed = $db->loadResult();
-
-				if ($ejb_installed == 1)
-				{
-					$this->backupinfo['product'] = 'Easy Joomla Backup';
-					$this->EjbInfo();
-				}
-			}
-		}
 	}
 
 	/**
-     * Función que obtiene información del estado del último backup creado por Akeeba Backup
+     * Funciï¿½n que obtiene informaciï¿½n del estado del ï¿½ltimo backup creado por Akeeba Backup
      *
 	 * @param   string             $joomla_version    The joomla version
 	 *
@@ -1802,75 +1794,10 @@ class JsonModel extends BaseModel
 			$this->backupinfo['latest_status'] = $backup_statistics[0]['status'];
 			$this->backupinfo['latest_type'] = $backup_statistics[0]['type'];
 		}		
-	}
+	}	
 
 	/**
-     * Función que obtiene información del estado del último backup creado por Xcloner - Backup and Restore
-     *
-	 *
-     * @return  void
-     *     
-     */
-	private function XclonerbackupInfo()
-	{
-		if (file_exists(JPATH_ADMINISTRATOR . "/components/com_xcloner-backupandrestore/cloner.config.php")) {
-			// Incluimos el fichero de configuración de la extensión
-			include JPATH_ADMINISTRATOR . "/components/com_xcloner-backupandrestore/cloner.config.php";
-		}
-		
-		// Extraemos el directorio donde se encuentran almacenados los backups...
-		$backup_dir = $_CONFIG['clonerPath'];
-
-		// ... y buscamos dentro los ficheros existentes, ordenándolos por fecha
-		$files_name = Folder::files($backup_dir, '.', true, true);
-		$files_name = array_combine($files_name, array_map("filemtime", $files_name));
-		arsort($files_name);
-
-		// El primer elemento del array será el que se ha creado el último. Formateamos la fecha para guardarlo en la BBDD.
-		$latest_backup = date("Y-m-d H:i:s", filemtime(key($files_name)));
-
-		// Almacenamos el resultado
-		$this->backupinfo['latest'] = $latest_backup;
-		$this->backupinfo['latest_status'] = 'complete';
-
-	}
-
-	/**
-     * Función que obtiene información del estado del último backup creado por Easy Joomla Backup
-     *
-	 *
-     * @return  void
-     *     
-     */
-	private function EjbInfo()
-	{
-		// Instanciamos la consulta
-		$db = Factory::getContainer()->get(DatabaseInterface::class);
-		$query = $db->getQuery(true)
-			->select('MAX(' . $db->qn('id') . ')')
-			->from($db->qn('#__easyjoomlabackup'));
-		$db->setQuery($query);
-		$id = $db->loadResult();
-
-		// Hay al menos un backup creado
-		if (!empty($id))
-		{
-			$query = $db->getQuery(true)
-				->select(array('*'))
-				->from($db->quoteName('#__easyjoomlabackup'))
-				->where('id = ' . $id);
-			$db->setQuery($query);
-			$backup_statistics = $db->loadAssocList();
-
-									// Almacenamos el resultado
-			$this->backupinfo['latest'] = $backup_statistics[0]['date'];
-			$this->backupinfo['latest_status'] = 'complete';
-			$this->backupinfo['latest_type'] = $backup_statistics[0]['type'];
-		}
-	}
-
-	/**
-     * Función que indica si el plugin 'Update Database' está actualizado
+     * Funciï¿½n que indica si el plugin 'Update Database' estï¿½ actualizado
 	 *
      * @return  int
      *     
@@ -1883,18 +1810,22 @@ class JsonModel extends BaseModel
 
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
-		// Extraemos el id de la extensión..
-		$query = 'SELECT extension_id FROM #__extensions WHERE name="System - Securitycheck Pro Update Database"';
+		// Extraemos el id de la extension..
+		$query = $db->getQuery(true)
+			->select($db->quoteName('extension_id'))
+			->from($db->quoteName('#__extensions'))
+			->where($db->quoteName('name') . ' = ' . $db->quote('System - Securitycheck Pro Update Database'));
 		$db->setQuery($query);
-		$db->execute();
 		(int) $extension_id = $db->loadResult();
 
-				// ... y hacemos una consulta a la tabla 'updates' para ver si el 'extension_id' figura como actualizable
+		// ... y hacemos una consulta a la tabla 'updates' para ver si el 'extension_id' figura como actualizable
 		if (!empty($extension_id))
 		{
-			$query = "SELECT COUNT(*) FROM #__updates WHERE extension_id={$extension_id}";
+			$query = $db->getQuery(true)
+				->select('COUNT(*)')
+				->from($db->quoteName('#__updates'))
+				->where($db->quoteName('extension_id') . ' = ' . (int) $extension_id);
 			$db->setQuery($query);
-			$db->execute();
 			$result = $db->loadResult();
 
 			if ($result == '1')
@@ -1908,57 +1839,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Función que actualiza el plugin 'Update Database'
-	 *
-     * @return  void
-     *     
-     */
-	private function UpdateComponent()
-	{
-		
-		$this->write_log("Launching UPDATECOMPONENT task");
-		
-		$this->write_log("Getting Securitycheck Pro Update Database update info");
-		
-		// Inicializamos las variables
-		$needs_update = 1;
-		
-		$db = Factory::getContainer()->get(DatabaseInterface::class);
-
-		// Extraemos el id de la extensión..
-		$query = 'SELECT extension_id FROM #__extensions WHERE name="System - Securitycheck Pro Update Database"';
-		$db->setQuery($query);
-		$db->execute();
-		(int) $extension_id = $db->loadResult();
-
-		$query = "SELECT detailsurl FROM #__updates WHERE extension_id={$extension_id}";
-		$db->setQuery($query);
-		$db->execute();
-		$detailsurl = $db->loadResult();
-
-		// Instanciamos el objeto Update y cargamos los detalles de la actualización
-		$update = new Update;
-		$update->loadFromXML($detailsurl);
-		
-		$this->write_log("Passing data to the 'install_update method...");
-		
-		// Le pasamos a la función de actualización el objeto con los detalles de la actualización
-		$this->install_update($update);
-
-		// Si la actualización ha tenido éxito, actualizamos la variable 'needs_update', que indica si el plugin necesita actualizarse.
-		if ($this->array_result)
-		{
-			$needs_update = 0;
-		}
-
-		// Devolvemos el resultado
-		$this->data = [
-			'update_plugin_needs_update' => $needs_update
-		];
-	}
-
-	/**
-     * Función para actualizar los componentes. Extraída del core de Joomla (administrator/components/com_installer/models/update.php |
+     * Funciï¿½n para actualizar los componentes. Extraï¿½da del core de Joomla (administrator/components/com_installer/models/update.php |
 	 * administrator\components\com_installer\src\Model\UpdateModel.php)
 	 *
 	 * @param   \Joomla\CMS\Updater\Update             $update    The update info
@@ -1977,7 +1858,7 @@ class JsonModel extends BaseModel
 		$lang = $app->getLanguage();
 		$lang->load('com_installer',JPATH_ADMINISTRATOR);
 									
-		// Inicializamos la variable $update_result, que será un array con el resultado y el mensaje devuelto en el proceso
+		// Inicializamos la variable $update_result, que serï¿½ un array con el resultado y el mensaje devuelto en el proceso
 		$update_result = array();
 		$extension_name = '';
 		$p_file = false;
@@ -1994,7 +1875,8 @@ class JsonModel extends BaseModel
 					foreach($dlid as $key => $value) {
 						$url .= (strpos($url, '?') === false) ? '?' : '&amp;';
 						$url .= $key . '=' . $value;
-						$this->write_log("Url: " . $url);
+				
+				$this->write_log("Url: " . $url);
 					}
 				} else {
 					$url .= (strpos($url, '?') === false) ? '?' : '&amp;';
@@ -2096,7 +1978,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Función que obtiene información del sistema (extraída del core)
+     * Funciï¿½n que obtiene informaciï¿½n del sistema (extraï¿½da del core)
 	 *
      * @return  void
      *     
@@ -2131,7 +2013,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Función que devuelve información sobre las extensiones no actualizadas
+     * Funciï¿½n que devuelve informaciï¿½n sobre las extensiones no actualizadas
 	 *
      * @return  string
      *     
@@ -2142,7 +2024,7 @@ class JsonModel extends BaseModel
 		// Habilitamos los sitios deshabilitados
 		//$enable = $this->enableSites();
 
-		// Purgamos la caché y lanzamos la tarea
+		// Purgamos la cachï¿½ y lanzamos la tarea
 		$find = $this->findUpdates();
 		
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
@@ -2157,7 +2039,7 @@ class JsonModel extends BaseModel
 		$db->setQuery($query);
 		$result = $db->loadObjectList();
 
-		// Creamos un nuevo array que contendrá arrays con a información requerida
+		// Creamos un nuevo array que contendrï¿½ arrays con a informaciï¿½n requerida
 		$extensions = array();
 
 		foreach ($result as $i => $item)
@@ -2244,7 +2126,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Función que busca si una extensión pasada como argumento utiliza una versión de pago
+     * Funciï¿½n que busca si una extensiï¿½n pasada como argumento utiliza una versiï¿½n de pago
 	 *
 	 * @param   string|int             			$extension_id    	The id ot the extension
 	 * @param   string             				$extension_name    	The name of the extension
@@ -2258,7 +2140,7 @@ class JsonModel extends BaseModel
 		// Inicializamos las variables
 		$dlid = '';
 		
-		// Según el campo buscamos el campo 'dlid'
+		// Segï¿½n el campo buscamos el campo 'dlid'
 		switch($extension_name)
 		{
 			case "pkg_akeeba":
@@ -2302,7 +2184,7 @@ class JsonModel extends BaseModel
 			$msg = "Found Pro version of " . $extension_name . " with a valid dlid.";
 			$this->write_log($msg);
 			$update_result = $this->install_update($update,$dlid);
-			// Guardamos el id de la extensión junto con el resultado
+			// Guardamos el id de la extensiï¿½n junto con el resultado
 			array_push($this->array_result, array($extension_id,$extension_name,$update_result));
 		} else {
 			$msg = "Found Pro version of " . $extension_name . " but not a valid dlid. Is the extension/plugin enabled and have a valid download id?";
@@ -2310,13 +2192,13 @@ class JsonModel extends BaseModel
 			$update_result = array();
 			$update_result[0][1] = $msg;
 			$update_result[0][0] = 2;
-			// Guardamos el id de la extensión junto con el resultado
+			// Guardamos el id de la extensiï¿½n junto con el resultado
 			array_push($this->array_result, array($extension_id,$extension_name,$update_result));			
 		}	
 	}	
 
 	/**
-     * Función que actualiza un array de extensiones (en formato json) pasado como argumento
+     * Funciï¿½n que actualiza un array de extensiones (en formato json) pasado como argumento
 	 *
 	 * @param   array<int>             $extension_id_array    The array with the ids of the extensions to update
 	 *
@@ -2331,7 +2213,7 @@ class JsonModel extends BaseModel
 		
 		$extension_data = '';
 		
-		// Si las tablas están bloqueadas abortamos la instalación
+		// Si las tablas estï¿½n bloqueadas abortamos la instalaciï¿½n
 		$locked_tables = $this->check_locked_tables();
 
 		if ($locked_tables)
@@ -2347,20 +2229,22 @@ class JsonModel extends BaseModel
 		}
 		else
 		{
-			// Para cada extensión, realizamos su actualización
+			// Para cada extensiï¿½n, realizamos su actualizaciï¿½n
 			foreach ($extension_id_array as $extension_id)
 			{
-				// Extraemos los datos la extensión, que contendrán la información de actualización
-				try{		
-					$query = "SELECT name,detailsurl,element,extra_query FROM #__updates WHERE extension_id={$extension_id}";
+				// Extraemos los datos la extensiï¿½n, que contendrï¿½n la informaciï¿½n de actualizaciï¿½n
+				try{
+					$query = $db->getQuery(true)
+						->select($db->quoteName(['name', 'detailsurl', 'element', 'extra_query']))
+						->from($db->quoteName('#__updates'))
+						->where($db->quoteName('extension_id') . ' = ' . (int) $extension_id);
 					$db->setQuery($query);
-					$db->execute();
-					$extension_data = $db->loadAssoc();					
+					$extension_data = $db->loadAssoc();
 				} catch (\Exception $e)
 				{
-					
+
 				}			
-														
+																		
 				if ( is_array($extension_data) ) {					
 					$extension_name = $extension_data['name'];
 					$detailsurl = $extension_data['detailsurl'];
@@ -2374,11 +2258,11 @@ class JsonModel extends BaseModel
 						array_push($this->array_result, array($extension_id,'Core',$result_core));
 					}else
 					{	
-						// Instanciamos el objeto Update y cargamos los detalles de la actualización
+						// Instanciamos el objeto Update y cargamos los detalles de la actualizaciï¿½n
 						$update = new Update;
 						$update->loadFromXML($detailsurl);					
 
-						// Le pasamos a la función de actualización el objeto con los detalles de la actualización
+						// Le pasamos a la funciï¿½n de actualizaciï¿½n el objeto con los detalles de la actualizaciï¿½n
 						if (!empty($extra_query)) {
 							// Quitamos el texto "dlid="
 							$extra_query = str_replace("dlid=", "",$extra_query);
@@ -2393,18 +2277,18 @@ class JsonModel extends BaseModel
 							$pro_versions_to_look_for = array('pkg_akeeba','pkg_admintools','com_rstbox','com_jch_optimize','pkg_jchoptimize','com_sppagebuilder');
 							
 							if (in_array($extension_element, $pro_versions_to_look_for)) {
-								// Se ha producido un error y la extensión puede ser de pago. Intentamos actualizarla buscando su dlid
+								// Se ha producido un error y la extensiï¿½n puede ser de pago. Intentamos actualizarla buscando su dlid
 								$this->LookForPro($extension_id,$extension_element,$update);
 							}												
 						}
 						else
 						{
-							// Guardamos el id de la extensión junto con el resultado
+							// Guardamos el id de la extensiï¿½n junto con el resultado
 							array_push($this->array_result, array($extension_id,$extension_name,$update_result));
 						}
 					}
 				} else {
-					// Guardamos el id de la extensión junto con el resultado
+					// Guardamos el id de la extensiï¿½n junto con el resultado
 					array_push($this->array_result, array($extension_id,"","Error retrieving extension data"));
 				}				
 			}
@@ -2418,7 +2302,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Función que realiza una copia de seguridad usando Akeeba y su función de copias de seguridad vía frontend. La clave usada se pasa como argumento
+     * Funciï¿½n que realiza una copia de seguridad usando Akeeba y su funciï¿½n de copias de seguridad vï¿½a frontend. La clave usada se pasa como argumento
 	 *
 	 * @param   string             $data    The key of Akeeba
 	 *
@@ -2433,16 +2317,25 @@ class JsonModel extends BaseModel
 		$uri = Uri::root();
 		
 		$this->write_log("Decrypting Akeeba public key...");
-		
-		// Desencriptamos los datos recibidos, que vendrán como un array (véase data[0]) y en formato json
+
 		$response = $this->decrypt($data, $this->password);
+
+		if (strpos($response, 'Internal error') === 0) {
+			$this->write_log("Decryption failed for backup task");
+			$this->data = ['result' => false, 'msg' => 'Decryption failed'];
+			return;
+		}
+
 		$response = json_decode($response, true);
 
-		// Extraemos la clave pública de Akeeba, que vendrá en el elemento 'akeeba_key' del array
-		$akeeba_key = $response['frontend_key'];
+		if (!is_array($response) || !isset($response['frontend_key']) || !isset($response['akeeba_profile'])) {
+			$this->write_log("Invalid payload structure for backup task");
+			$this->data = ['result' => false, 'msg' => 'Invalid payload'];
+			return;
+		}
 
-		// Extraemos el perfil, que por defecto será 1
-		$akeeba_profile = $response['akeeba_profile'];
+		$akeeba_key = $response['frontend_key'];
+		$akeeba_profile = (int) $response['akeeba_profile'];
 		
 		// Componente (com_akeeba para J3 y com_akeebackup para J4)
 		$akeeba_component = "com_akeebabackup";
@@ -2452,11 +2345,13 @@ class JsonModel extends BaseModel
 		// Inicializamos la tarea
 		$ch = curl_init($uri . "?option=" . $akeeba_component . "&view=backup&key=" . $akeeba_key . "&profile=" . $akeeba_profile);
 		
-		// Configuración extraída de https://www.akeebabackup.com/documentation/akeeba-backup-documentation/automating-your-backup.html
-		curl_setopt($ch, CURLOPT_HEADER, false);  // Este valor es false para que no incluya en la respuesta la cabecera HTTP
+		// Configuraciï¿½n extraï¿½da de https://www.akeebabackup.com/documentation/akeeba-backup-documentation/automating-your-backup.html
+		curl_setopt($ch, CURLOPT_HEADER, false);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_MAXREDIRS, 10000); // Fix by Nicholas
+		curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 300);
 
 		$response = curl_exec($ch);
 		
@@ -2469,7 +2364,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Función que instala una extensión desde una url. La url se pasa como argumento
+     * Funciï¿½n que instala una extensiï¿½n desde una url. La url se pasa como argumento
 	 *
 	 * @param   string             $data    The path to the file
 	 *
@@ -2492,18 +2387,56 @@ class JsonModel extends BaseModel
 		
 		$this->write_log("Decrypting data...");
 
-		// Desencriptamos los datos recibidos, que vendrán como un array (véase data[0]) y en formato json
+		// Desencriptamos los datos recibidos, que vendran como un array (vease data[0]) y en formato json
 		$response = $this->decrypt($data[0], $this->password);
+
+		// Validate decryption result
+		if (strpos($response, 'Internal error') === 0) {
+			$this->write_log("Decryption failed");
+			$this->data = ['result' => false, 'msg' => 'Decryption failed'];
+			return;
+		}
+
 		$response = json_decode($response, true);
+
+		// Validate JSON structure
+		if (!is_array($response) || !isset($response['path_to_file'])) {
+			$this->write_log("Invalid payload structure");
+			$this->data = ['result' => false, 'msg' => 'Invalid payload'];
+			return;
+		}
 
 		// Url del paquete a instalar
 		$url = $response['path_to_file'];
-		
-		$this->write_log("Url: " . $url);
-		
+
+		// Validate URL format and protocol (only allow http/https)
+		if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('/^https?:\/\//i', $url)) {
+			$this->write_log("Invalid URL rejected: " . $url);
+			$this->data = ['result' => false, 'msg' => 'Invalid URL'];
+			return;
+		}
+
+		// Security: installation file must be hosted on the known Control Center
+		if ($this->storedCcUrl === '') {
+			$this->write_log('Upload_install: ALERT - control_center_url not set. Run a site refresh first.', 'WARNING');
+			$this->data = ['result' => false, 'msg' => 'Security alert: Control Center identity not established. Run a site refresh task first.'];
+			return;
+		}
+		$ccHost   = strtolower((string) parse_url($this->storedCcUrl, PHP_URL_HOST));
+		$fileHost = strtolower((string) parse_url($url, PHP_URL_HOST));
+		if ($ccHost === '' || $fileHost === '' || $ccHost !== $fileHost) {
+			$this->write_log('Upload_install: SECURITY ALERT - file host [' . $fileHost . '] does not match Control Center host [' . $ccHost . ']. REJECTED.', 'ERROR');
+			$this->data = ['result' => false, 'msg' => 'Security alert: installation file must be hosted on the Control Center.'];
+			$this->status = self::STATUS_NOT_ALLOWED;
+			return;
+		}
+		$this->write_log("Upload_install: file host [" . $fileHost . "] matches Control Center - OK");
+
+				$this->write_log("Url: " . $url);
+
 		$package = null;
-		
-		// Si las tablas están bloqueadas abortamos la instalación
+
+		// Si las tablas estan bloqueadas abortamos la instalacion
 		$locked_tables = $this->check_locked_tables();
 
 		if ($locked_tables)
@@ -2542,7 +2475,7 @@ class JsonModel extends BaseModel
 				$this->write_log($msg);
 			}
 
-			// Recogemos los mensajes encolados para mostrar más información
+			// Recogemos los mensajes encolados para mostrar mï¿½s informaciï¿½n
 			$enqueued_messages = $app->getMessageQueue();
 		}
 		
@@ -2676,14 +2609,15 @@ class JsonModel extends BaseModel
 		{			
 			return false;
 		}
+		
+		$statusCode = $result->getStatusCode();
 
-		if (!$result || ($result->code != 200 && $result->code != 310))
-		{
+		if ($statusCode !== 200 && $statusCode !== 310) {
 			return false;
 		}
 
 		// Fix Indirect Modification of Overloaded Property
-        $body = $result->body;
+        $body = $result->getBody();
 
         // Write the file to disk
         File::write($target, $body);
@@ -2692,7 +2626,7 @@ class JsonModel extends BaseModel
 	}		
 
 	/**
-     * Función que devuelve información sobre ips a añadir y ataques detenidos para el plugin "Connect"
+     * Funciï¿½n que devuelve informaciï¿½n sobre ips a aï¿½adir y ataques detenidos para el plugin "Connect"
      *
      * @param   string             $url    The url to send the reply
      *
@@ -2721,38 +2655,38 @@ class JsonModel extends BaseModel
 			'last_year'        => $attacks_last_year
 		];
 
-		// Ruta al fichero de información
+		// Ruta al fichero de informaciï¿½n
 		$file_path = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'scans' . DIRECTORY_SEPARATOR . 'cc_info.php';
 
-		// Hay información que consumir
+		// Hay informaciï¿½n que consumir
 		if (file_exists($file_path))
 		{
-			$str = file_get_contents($file_path);
+			$str = (string) file_get_contents($file_path);
 
 			// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 			$ips = str_replace("#<?php die('Forbidden.'); ?>", '', $str);
 
-			// Una vez extraida la información eliminamos el fichero
+			// Una vez extraida la informaciï¿½n eliminamos el fichero
 			unlink($file_path);
 		}
 		else
 		{
 			$ips = null;
 		}
-
+		
 		$this->data = [
 			'ips'        => $ips,
 			'attacks'    => $attacks
 		];
 		
 		if (!empty($url)) {
-			$this->sendResponse($url);
+			$this->sendResponsePostPrefer($url);
 		}		
 		
 	}
 	
 	/**
-     * Función que añade una IP a la lista negra dinámica
+     * Funciï¿½n que aï¿½ade una IP a la lista negra dinï¿½mica
      *
      * @param   string             $attack_ip    The IP address to add to the list
      *
@@ -2766,18 +2700,19 @@ class JsonModel extends BaseModel
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true);
 
-		// Chequeamos si la IP tiene un formato válido
+		// Chequeamos si la IP tiene un formato vï¿½lido
 		$ip_valid = filter_var($attack_ip, FILTER_VALIDATE_IP);
 
-		// Sanitizamos la entrada
-		$attack_ip = $db->escape($attack_ip);
-
-		// Validamos si el valor devuelto es una dirección IP válida
+		// Validamos si el valor devuelto es una direccion IP valida
 		if ((!empty($attack_ip)) && ($ip_valid))
 		{
 			try
 			{
-				$query = "INSERT INTO `#__securitycheckpro_dynamic_blacklist` (`ip`, `timeattempt`) VALUES ('{$attack_ip}', NOW()) ON DUPLICATE KEY UPDATE `timeattempt` = NOW(), `counter` = `counter` + 1;";
+				$query = $db->getQuery(true)
+					->insert($db->quoteName('#__securitycheckpro_dynamic_blacklist'))
+					->columns($db->quoteName(['ip', 'timeattempt']))
+					->values($db->quote($attack_ip) . ', NOW()');
+				$query .= ' ON DUPLICATE KEY UPDATE ' . $db->quoteName('timeattempt') . ' = NOW(), ' . $db->quoteName('counter') . ' = ' . $db->quoteName('counter') . ' + 1';
 
 				$db->setQuery($query);
 				$result = $db->execute();
@@ -2793,7 +2728,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Función que añade ips a la listas pasados por el plugin "Connect"
+     * Funciï¿½n que aï¿½ade ips a la listas pasados por el plugin "Connect"
      *
      * @param   string             $data    The data to add
      *
@@ -2802,14 +2737,17 @@ class JsonModel extends BaseModel
      */
 	private function UpdateConnect($data)
 	{
-		// Desencriptamos los datos recibidos, que vendrán en formato json
-		$response = $this->decrypt($data, $this->password);				
-		$ips_passed = json_decode($response, true);	
-				
+		$response = $this->decrypt($data, $this->password);
+		if (strpos($response, 'Internal error') === 0) {
+			$this->write_log("Decryption failed for UpdateConnect");
+			$this->data = ['result' => false]; return;
+		}
+		$ips_passed = json_decode($response, true);
+
 		$message = "";
-		
+
 		$firewall_config_model = new FirewallconfigModel();
-		
+
 		try {
 			if ( is_array($ips_passed) )
 			{
@@ -2889,7 +2827,7 @@ class JsonModel extends BaseModel
 	}		
 
 	/**
-     * Función para desbloquear las tablas (Lock tables feature)
+     * Funciï¿½n para desbloquear las tablas (Lock tables feature)
      *
      *
      * @return  void
@@ -2911,7 +2849,7 @@ class JsonModel extends BaseModel
 	}
 
 	/**
-     * Función para bloquear las tablas (Lock tables feature)
+     * Funciï¿½n para bloquear las tablas (Lock tables feature)
      *
      *
      * @return  void
@@ -2934,7 +2872,7 @@ class JsonModel extends BaseModel
 	}
 	
 	/**
-     * Función para formatear un entero en unidades de almacenamiento
+     * Funciï¿½n para formatear un entero en unidades de almacenamiento
      *
 	 * @param   int             $size    	The size
 	 * @param   int             $precision  The precision
@@ -2951,7 +2889,7 @@ class JsonModel extends BaseModel
 	}
 	
 	/**
-     * Función para devolver un color según el número pasado como argumento
+     * Funciï¿½n para devolver un color segï¿½n el nï¿½mero pasado como argumento
      *
 	 * @param   float             $p    	The percentage
      *
@@ -2965,156 +2903,9 @@ class JsonModel extends BaseModel
 		if($p < 75) return 'warning';
 		return 'danger';
 	}
-	
+		
 	/**
-     * Get memory usage - https://www.php.net/manual/es/function.memory-get-usage.php
-     *
-     *
-     * @return  void
-     *     
-     */
-	private function server_statistics()
-    {
-        $memoryTotal = null;
-        $memoryFree = null;
-		$memory_array = array();
-		$uptime = null;
-		// Inicializamos la variable $result, que será un array con el resultado y el mensaje devuelto en el proceso
-		$result = array();
-		
-		// Memory usage
-        if (stristr(PHP_OS, "win")) {
-            // Get total physical memory (this is in bytes)
-            $cmd = "wmic ComputerSystem get TotalPhysicalMemory";
-            @exec($cmd, $outputTotalPhysicalMemory);
-
-            // Get free physical memory (this is in kibibytes!)
-            $cmd = "wmic OS get FreePhysicalMemory";
-            @exec($cmd, $outputFreePhysicalMemory);
-
-            if ($outputTotalPhysicalMemory && $outputFreePhysicalMemory) {
-                // Find total value
-                foreach ($outputTotalPhysicalMemory as $line) {
-                    if ($line && preg_match("/^[0-9]+\$/", $line)) {
-                        $memoryTotal = $line;
-                        break;
-                    }
-                }
-
-                // Find free value
-                foreach ($outputFreePhysicalMemory as $line) {
-                    if ($line && preg_match("/^[0-9]+\$/", $line)) {
-                        $memoryFree = $line;
-                        $memoryFree *= 1024;  // convert from kibibytes to bytes
-                        break;
-                    }
-                }
-            }
-        }
-        else
-        {
-            if (is_readable("/proc/meminfo"))
-            {
-                $stats = @file_get_contents("/proc/meminfo");
-
-                if ($stats !== false) {
-                    // Separate lines
-                    $stats = str_replace(array("\r\n", "\n\r", "\r"), "\n", $stats);
-                    $stats = explode("\n", $stats);
-
-                    // Separate values and find correct lines for total and free mem
-                    foreach ($stats as $statLine) {
-                        $statLineData = explode(":", trim($statLine));
-
-                        //
-                        // Extract size (TODO: It seems that (at least) the two values for total and free memory have the unit "kB" always. Is this correct?
-                        //
-
-                        // Total memory
-                        if (count($statLineData) == 2 && trim($statLineData[0]) == "MemTotal") {
-                            $memoryTotal = trim($statLineData[1]);
-                            $memoryTotal = explode(" ", $memoryTotal);
-                            $memoryTotal = $memoryTotal[0];
-                            $memoryTotal *= 1024;  // convert from kibibytes to bytes
-                        }
-
-                        // Free memory
-                        if (count($statLineData) == 2 && trim($statLineData[0]) == "MemFree") {
-                            $memoryFree = trim($statLineData[1]);
-                            $memoryFree = explode(" ", $memoryFree);
-                            $memoryFree = $memoryFree[0];
-                            $memoryFree *= 1024;  // convert from kibibytes to bytes
-                        }
-                    }
-                }
-            }
-        }
-
-        if (is_null($memoryTotal) || is_null($memoryFree)) {
-            $memory_array = null;
-        } else {
-			$used = $this->formatBytes( $memoryTotal - $memoryFree);
-			$used_raw = $memoryTotal - $memoryFree;
-			$total = $this->formatBytes($memoryTotal);
-			$memory_percentage = round(($used_raw/$memoryTotal)*100,2);
-			$memory_color = $this->percent_to_color($memory_percentage);
-			
-			$memory_array = array(
-				"memory_total" => $total,
-				"memory_used" => $used,
-				"memory_percentage" => $memory_percentage,
-				"memory_color" => $memory_color,
-			);			
-        }
-		
-		if ( (empty($memory_array["memory_total"])) && (empty($memory_array["memory_used"])) )
-		{
-			$memory_array = null;
-		}
-		
-		$result['memory_array'] = $memory_array;
-		
-		// Uptime
-		if (function_exists('system')) {
-			try
-			{
-				$uptime = @system('uptime');
-				$uptime_array = explode(",",$uptime);
-				if ( (empty($uptime_array[0])) && (empty($uptime_array[1])) )
-				{
-					$result['uptime'] = null;
-				}else
-				{
-					$result['uptime'] = $uptime_array[0] . "," . $uptime_array[1];	
-				}		
-						
-				$pos = strpos($uptime_array[2],":");
-				$load_average = substr($uptime_array[2],$pos+1,strlen($uptime_array[2])-$pos);
-				if ( (empty($load_average)) && (empty($uptime_array[3])) && (empty($uptime_array[4])) )
-				{
-					$result['server_load'] = null;
-				}else
-				{
-					$result['server_load'] = $load_average . "," . $uptime_array[3] . "," . $uptime_array[4];
-				}
-				
-			}catch (\Exception $e)	
-			{
-				$result['uptime'] = null;
-				$result['server_load'] = null;			
-			}
-		} else
-		{
-			$result['uptime'] = null;
-			$result['server_load'] = null;
-		}
-		
-		// Devolvemos el resultado
-		$this->data = $result;
-    }
-	
-	/**
-     * Función para habilitar las estadísticas
+     * Funciï¿½n para habilitar las estadï¿½sticas
      *
      * @param   string             $data    The data of analytics
      *
@@ -3132,12 +2923,18 @@ class JsonModel extends BaseModel
 			$this->status = self::STATUS_ERROR;
 			$this->cipher = self::CIPHER_RAW;
 		} else {
-			// Desencriptamos los datos recibidos, que vendrán en formato json
-			$response = $this->decrypt($data, $this->password);				
+			$response = $this->decrypt($data, $this->password);
+			if (strpos($response, 'Internal error') === 0) {
+				$this->write_log("Decryption failed for enable_analytics");
+				$this->data = ['result' => false]; return;
+			}
 			$response = json_decode($response, true);
-			
-			// Extraemos el código de la web
-			$website_code = $response['website_code'];			
+			if (!is_array($response) || !isset($response['website_code'])) {
+				$this->write_log("Invalid payload for enable_analytics");
+				$this->data = ['result' => false]; return;
+			}
+
+			$website_code = $response['website_code'];
 			$cpanel_model = new CpanelModel();
 
 			$success = $cpanel_model->enable_analytics($website_code,$this->site);
@@ -3150,7 +2947,7 @@ class JsonModel extends BaseModel
 	}
 	
 	/**
-     * Función para deshabilitar las estadísticas
+     * Funciï¿½n para deshabilitar las estadï¿½sticas
      *
      * @param   string             $data    The data of analytics
      *
@@ -3161,11 +2958,17 @@ class JsonModel extends BaseModel
 	{		
 		$this->write_log("Launching DISABLE_ANALYTICS task");
 		
-		// Desencriptamos los datos recibidos, que vendrán en formato json
-		$response = $this->decrypt($data, $this->password);				
+		$response = $this->decrypt($data, $this->password);
+		if (strpos($response, 'Internal error') === 0) {
+			$this->write_log("Decryption failed for disable_analytics");
+			$this->data = ['result' => false]; return;
+		}
 		$response = json_decode($response, true);
-		
-		// Extraemos el código de la web
+		if (!is_array($response) || !isset($response['website_code'])) {
+			$this->write_log("Invalid payload for disable_analytics");
+			$this->data = ['result' => false]; return;
+		}
+
 		$website_code = $response['website_code'];
 		$cpanel_model = new CpanelModel();
 

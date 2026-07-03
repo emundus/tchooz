@@ -90,7 +90,11 @@ class FilemanagerController extends SecuritycheckproBaseController
     /* Acciones al pulsar el escaneo de archivos manual */
     function acciones():void
     {
-        $model = $this->getModel('Filemanager');
+		if (!Session::checkToken('request')) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
+		$model = $this->getModel('Filemanager');
 		if (!$model instanceof FilemanagerModel) {
 			Factory::getApplication()->enqueueMessage('Filemanager model not found', 'error');
 			return;
@@ -106,14 +110,28 @@ class FilemanagerController extends SecuritycheckproBaseController
 		$timestamp = $base_model->get_Joomla_timestamp();
         $model->setCampoFilemanager('last_check', $timestamp);
         $message = Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS');
-        echo $message; 
-        $model->setCampoFilemanager('estado', 'IN_PROGRESS'); 
+        echo $message;
+        $model->setCampoFilemanager('estado', 'IN_PROGRESS');
+
+        register_shutdown_function(static function () use ($model): void {
+            try {
+                if ($model->GetCampoFilemanager('estado') === 'IN_PROGRESS') {
+                    $model->setCampoFilemanager('estado', 'ENDED');
+                    $model->setCampoFilemanager('files_scanned', 100);
+                }
+            } catch (\Throwable) {}
+        });
+
         $model->scan("permissions");
     }
 
     /* Acciones al pulsar el chequeo manual de integridad */
     function acciones_integrity():void
     {
+		if (!Session::checkToken('request')) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
         $model = $this->getModel('Filemanager');
 		if (!$model instanceof FilemanagerModel) {
 			Factory::getApplication()->enqueueMessage('Filemanager model not found', 'error');
@@ -125,14 +143,28 @@ class FilemanagerController extends SecuritycheckproBaseController
 		$timestamp = $base_model->get_Joomla_timestamp();
         $model->setCampoFilemanager('last_check_integrity', $timestamp);
         $message = Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS');
-        echo $message; 
-        $model->setCampoFilemanager('estado_integrity', 'IN_PROGRESS'); 
+        echo $message;
+        $model->setCampoFilemanager('estado_integrity', 'IN_PROGRESS');
+
+        register_shutdown_function(static function () use ($model): void {
+            try {
+                if ($model->GetCampoFilemanager('estado_integrity') === 'IN_PROGRESS') {
+                    $model->setCampoFilemanager('estado_integrity', 'ENDED');
+                    $model->setCampoFilemanager('files_scanned_integrity', 100);
+                }
+            } catch (\Throwable) {}
+        });
+
         $model->scan("integrity");
     }
 
     /* Acciones al pulsar el chequeo manual de malware */
     function acciones_malwarescan():void
     {
+		if (!Session::checkToken('request')) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
         $model = $this->getModel('Filemanager');
 		if (!$model instanceof FilemanagerModel) {
 			Factory::getApplication()->enqueueMessage('Filemanager model not found', 'error');
@@ -144,15 +176,30 @@ class FilemanagerController extends SecuritycheckproBaseController
 		$timestamp = $base_model->get_Joomla_timestamp();
         $model->setCampoFilemanager('last_check_malwarescan', $timestamp);
         $message = Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS');
-        echo $message; 
-        $model->setCampoFilemanager('estado_malwarescan', 'IN_PROGRESS'); 
-        $model->scan("malwarescan");    
+        echo $message;
+        $model->setCampoFilemanager('estado_malwarescan', 'IN_PROGRESS');
+
+        // If the PHP process dies unexpectedly (fatal error, timeout), ensure the
+        // scan state is reset so the UI does not stay permanently blocked.
+        register_shutdown_function(static function () use ($model): void {
+            try {
+                if ($model->GetCampoFilemanager('estado_malwarescan') === 'IN_PROGRESS') {
+                    $model->setCampoFilemanager('estado_malwarescan', 'ENDED');
+                    $model->setCampoFilemanager('files_scanned_malwarescan', 100);
+                }
+            } catch (\Throwable) {}
+        });
+
+        $model->scan("malwarescan");
     }
 
     /* Acciones al pulsar el borrado de la información de la BBDD */
     function acciones_clear_data():void
     {
-    
+		if (!Session::checkToken('request')) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
         $message = Text::_('COM_SECURITYCHECKPRO_CLEAR_DATA_DELETING_ENTRIES');
         echo $message;  
 		$this->initialize_database();		
@@ -166,7 +213,7 @@ class FilemanagerController extends SecuritycheckproBaseController
 
     /* Borra los datos de la tabla '#__securitycheckpro_file_permissions' */
     function initialize_database():void
-    {
+    {		
         $model = $this->getModel('Filemanager');
 		if (!$model instanceof FilemanagerModel) {
 			Factory::getApplication()->enqueueMessage('Filemanager model not found', 'error');
@@ -373,7 +420,7 @@ class FilemanagerController extends SecuritycheckproBaseController
 
     /* Redirecciona al segundo nivel del firewall */
     function GoToFirewallSecondLevel():void {
-        $this->setRedirect('index.php?option=com_securitycheckpro&controller=firewallsecond&view=firewallsecond&'. Session::getFormToken() .'=1');
+        $this->setRedirect('index.php?option=com_securitycheckpro&controller=firewallconfig&view=firewallconfig&activeTab_WafConfigurationTabs=li_second_tab&'. Session::getFormToken() .'=1');
     }
 
     /* Redirecciona a las excepciones del firewall */
@@ -403,6 +450,10 @@ class FilemanagerController extends SecuritycheckproBaseController
 
     /* Establece correctamente los permisos de archivos y/o carpetas */
     function repair():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
        $model = $this->getModel('Filemanager');
 		if (!$model instanceof FilemanagerModel) {
 			Factory::getApplication()->enqueueMessage('Filemanager model not found', 'error');
@@ -431,6 +482,10 @@ class FilemanagerController extends SecuritycheckproBaseController
      */
     public function manageExceptions(): void
     {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         /** @var FilemanagerModel|null $model */
         $model = $this->getModel('Filemanager');
 
@@ -482,6 +537,10 @@ class FilemanagerController extends SecuritycheckproBaseController
 
     /* Marca como seguros todos los archivos de la BBDD que aparecen como inseguros. Esto es útil cuando hay actualizaciones o la primera vez que lanzamos 'File Integrity' */
     function mark_all_unsafe_files_as_safe():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
 		$model = $this->getModel('Filemanager');
 		if (!$model instanceof FilemanagerModel) {
 			Factory::getApplication()->enqueueMessage('Filemanager model not found', 'error');
@@ -494,7 +553,11 @@ class FilemanagerController extends SecuritycheckproBaseController
 
     /* Marca como seguros todos los archivos de la BBDD seleccionados */
     function mark_checked_files_as_safe():void {    
-       $model = $this->getModel('Filemanager');
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
+        $model = $this->getModel('Filemanager');
 		if (!$model instanceof FilemanagerModel) {
 			Factory::getApplication()->enqueueMessage('Filemanager model not found', 'error');
 			return;
@@ -507,6 +570,10 @@ class FilemanagerController extends SecuritycheckproBaseController
     /* Acciones al pulsar el botón para exportar la información */
    public function export_logs_integrity(): void
 	{
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
 		/** @var \Joomla\CMS\Application\CMSApplication $app */
 		$app = Factory::getApplication();
 
@@ -571,7 +638,7 @@ class FilemanagerController extends SecuritycheckproBaseController
 			$path  = isset($row['path'])  ? (string) $row['path']  : '';
 			$notes = isset($row['notes']) ? (string) $row['notes'] : '';
 
-			$isFile = is_string($path) && is_file($path);
+			$isFile = $path !== '' && is_file($path);
 			$size = $isFile ? (int) @filesize($path) : 0;
 			$mtime = $isFile ? @filemtime($path) : false;
 			$lastModified = $mtime ? date('Y-m-d H:i:s', $mtime) : '';
@@ -585,7 +652,7 @@ class FilemanagerController extends SecuritycheckproBaseController
 
 		// 4) Preparamos nombre del archivo
 		$config = $app->getConfig();
-		$sitename = preg_replace('/\s+/', '', (string) $config->get('sitename'));
+		$sitename = preg_replace('/[^a-zA-Z0-9_-]+/', '', (string) $config->get('sitename')) ?: 'site';
 		$timestamp = date('Ymd_His');
 		$filename = "securitycheckpro_fileintegrity_{$sitename}_{$timestamp}.csv";
 
@@ -614,6 +681,10 @@ class FilemanagerController extends SecuritycheckproBaseController
 	}
 
     function online_check_files():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
         $model = $this->getModel('Filemanager');
 		if (!$model instanceof FilemanagerModel) {
 			Factory::getApplication()->enqueueMessage('Filemanager model not found', 'error');
@@ -634,6 +705,10 @@ class FilemanagerController extends SecuritycheckproBaseController
 
     /* Chequea hashes contra el servicio OPWAST Metadefender Cloud */
     function online_check_hashes():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
         $model = $this->getModel('Filemanager');
 		if (!$model instanceof FilemanagerModel) {
 			Factory::getApplication()->enqueueMessage('Filemanager model not found', 'error');
@@ -657,6 +732,10 @@ class FilemanagerController extends SecuritycheckproBaseController
 
     /* Restaura archivos movidos a la carpeta 'quarantine' */
     function restore_quarantined_file():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Filemanager');
 		if (!$model instanceof FilemanagerModel) {
 			Factory::getApplication()->enqueueMessage('Filemanager model not found', 'error');
@@ -671,6 +750,10 @@ class FilemanagerController extends SecuritycheckproBaseController
 
     /* Borra archivos movidos a la carpeta 'quarantine' */
     function delete_quarantined_file():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Filemanager');
 		if (!$model instanceof FilemanagerModel) {
 			Factory::getApplication()->enqueueMessage('Filemanager model not found', 'error');
@@ -687,6 +770,10 @@ class FilemanagerController extends SecuritycheckproBaseController
      * Exportar logs en formato csv
      */
     function csv_export_malware():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
 		/** @var \Joomla\CMS\Application\CMSApplication $app */
 		$app = Factory::getApplication();
 
@@ -733,7 +820,7 @@ class FilemanagerController extends SecuritycheckproBaseController
 
 		// 4) Preparamos nombre del archivo
 		$config = $app->getConfig();
-		$sitename = preg_replace('/\s+/', '', (string) $config->get('sitename'));
+		$sitename = preg_replace('/[^a-zA-Z0-9_-]+/', '', (string) $config->get('sitename')) ?: 'site';
 		$timestamp = date('Ymd_His');
 		$filename = "securitycheckpro_malwarescan_results_{$sitename}_{$timestamp}.csv";
 
@@ -763,6 +850,10 @@ class FilemanagerController extends SecuritycheckproBaseController
 
     /* Función para borrar archivos sospechosos */
     function delete_file():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Filemanager');
 		if (!$model instanceof FilemanagerModel) {
 			Factory::getApplication()->enqueueMessage('Filemanager model not found', 'error');
@@ -780,6 +871,11 @@ class FilemanagerController extends SecuritycheckproBaseController
 
     /* Borra los archivos y directorios de la carpeta temporal */
     function acciones_clean_tmp_dir():void {
+
+		if (!Session::checkToken('request')) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
 		/** @var \Joomla\CMS\Application\CMSApplication $app */
 		$app = Factory::getApplication();
         $app->setUserState("clean_tmp_dir_result", "");
@@ -793,48 +889,28 @@ class FilemanagerController extends SecuritycheckproBaseController
 
     /* Obtiene el estado del proceso de borrado del directorio temporal */
     public function getEstadocleantmpdir():void {
-        error_reporting(0);
-		
-		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
-        $mainframe = Factory::getApplication();
-        $message = $mainframe->getUserState("clean_tmp_dir_state", Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ENDED'));
-        echo $message;
+		try {
+			/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
+			$mainframe = Factory::getApplication();
+			$message = $mainframe->getUserState("clean_tmp_dir_state", Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ENDED'));
+			echo $message;
+		} catch (\Throwable $e) {
+			echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ENDED');
+		}
     }
 
     /* Obtiene el estado del proceso de borrado del directorio temporal */
     public function getcleantmpdirmessage():void {
-        error_reporting(0);
-		
-		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
-        $mainframe = Factory::getApplication();
-        $message = $mainframe->getUserState("clean_tmp_dir_result", "");
-        
-        echo $message;
-        $mainframe->setUserState("clean_tmp_dir_result", "");
+		try {
+			/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
+			$mainframe = Factory::getApplication();
+			$message = $mainframe->getUserState("clean_tmp_dir_result", "");
+			echo $message;
+			$mainframe->setUserState("clean_tmp_dir_result", "");
+		} catch (\Throwable $e) {
+			echo "";
+		}
     }
-	
-	 /* Sanitiza un string para mostrarlo en una ventana modal */
-	private function sanitizeHtmlForModal(string $html): string
-	{
-		// 1) Elimina etiquetas peligrosas completas
-		$html = preg_replace(
-			'#<\s*(script|style|iframe|object|embed|link|meta|base)[^>]*>.*?<\s*/\s*\1\s*>#is',
-			'',
-			$html
-		);
-
-		// 2) Quita eventos inline on*
-		$html = preg_replace('#\son\w+\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+)#iu', '', $html);
-
-		// 3) Quita javascript: en href/src
-		$html = preg_replace('#\b(href|src)\s*=\s*(["\'])\s*javascript\s*:#iu', '$1="#"', $html);
-
-		// 5) Permite solo etiquetas seguras
-		$allowed = '<p><br><h1><h2><h3><h4><h5><h6><ul><ol><li><strong><em><b><i><code><pre><blockquote><span><table><thead><td><th><tr><font>';
-		$html = strip_tags($html, $allowed);
-		
-		return $html;
-	}
 	
 	/** Obtiene el contenido de un fichero de escaneos (integridad, permisos o malware) para mostrar al usuario en la opción "Ver log". También cuando vemos un log de escaneos de malware online contra OPSWAT
 	*/
@@ -879,9 +955,8 @@ class FilemanagerController extends SecuritycheckproBaseController
 				throw new \RuntimeException('file_get_contents failed');
 			}
 
-			// Si quieres forzar siempre “texto” y evitar sorpresas:
-			// Sustituye NULs que a veces vienen en logs y rompen cosas en clientes
 			$content = str_replace("\0", "\u{FFFD}", $content);
+			$content = preg_replace('/^#<\?php\s+die\s*\(\s*[\'”]Forbidden\.[\'”]\s*\)\s*;\s*\?>\s*/i', '', $content);
 
 			$payload = [
 				'success' => true,
@@ -917,35 +992,77 @@ class FilemanagerController extends SecuritycheckproBaseController
 		$app->close();
 	}
 
-    /**
-     * Devuelve las últimas N líneas de un fichero grande sin cargarlo entero en memoria.
-     */
-    private function tailFile(string $file, int $lines = 2000): string
-    {
-        $f = @fopen($file, 'rb');
-        if (!$f) return '';
+	/**
+	 * Descarga el contenido del log mostrado en el modal "View log" (escaneo de permisos,
+	 * integridad o malware) como fichero de texto, con la misma validación de ruta que fetchLog().
+	 */
+	public function downloadLog(): void
+	{
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		$app   = Factory::getApplication();
+		$input = $app->getInput();
 
-        $buffer = '';
-        $chunkSize = 4096;
-        $pos = -1;
-        $lineCount = 0;
+		if (!Session::checkToken('get')) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
 
-        fseek($f, 0, SEEK_END);
-        $fileSize = ftell($f);
+		$requested = $input->getString('logfilename', '');
 
-        while ($lineCount <= $lines && -$pos < $fileSize) {
-            $step = min($chunkSize, $fileSize + $pos);
-            $pos -= $step;
-            fseek($f, $pos, SEEK_END);
-            $chunk = fread($f, $step);
-            $buffer = $chunk . $buffer;
-            $lineCount = substr_count($buffer, "\n");
-        }
-        fclose($f);
+		$baseDirReal = realpath(JPATH_ADMINISTRATOR . '/components/com_securitycheckpro/scans');
+		if ($baseDirReal === false) {
+			throw new \RuntimeException('Base dir not found', 404);
+		}
 
-        $parts = explode("\n", $buffer);
-        $tail  = array_slice($parts, -$lines);
-        return implode("\n", $tail);
-    }
-	    
+		$safeName = basename($requested);
+		if ($safeName === '' || $safeName === '.' || $safeName === '..') {
+			throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 404);
+		}
+
+		$fullPath = realpath($baseDirReal . DIRECTORY_SEPARATOR . $safeName);
+		if ($fullPath === false || strncmp($fullPath, $baseDirReal, strlen($baseDirReal)) !== 0 || !is_file($fullPath) || !is_readable($fullPath)) {
+			throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 404);
+		}
+
+		$content = file_get_contents($fullPath);
+		if ($content === false) {
+			throw new \RuntimeException('file_get_contents failed', 500);
+		}
+
+		$content = str_replace("\0", '', $content);
+		$content = preg_replace('/^#<\?php\s+die\s*\(\s*[\'"]Forbidden\.[\'"]\s*\)\s*;\s*\?>\s*/i', '', $content) ?? $content;
+
+		// Nombre de descarga legible: quitamos la extensión .php para que el navegador/SO
+		// no lo trate nunca como ejecutable, solo como texto.
+		$downloadName = preg_replace('/\.php$/i', '', $safeName) . '.txt';
+
+		while (ob_get_level()) {
+			@ob_end_clean();
+		}
+		if (ini_get('zlib.output_compression')) {
+			@ini_set('zlib.output_compression', 'Off');
+		}
+		if (session_status() === PHP_SESSION_ACTIVE) {
+			@session_write_close();
+		}
+		if (function_exists('header_remove')) {
+			@header_remove();
+		}
+
+		$fallback = preg_replace('/[^A-Za-z0-9._-]/', '_', $downloadName) ?? 'log.txt';
+		$disposition = 'attachment; filename="' . $fallback . '"; filename*=UTF-8\'\'' . rawurlencode($downloadName);
+
+		http_response_code(200);
+		header('Content-Description: File Transfer');
+		header('Content-Type: text/plain; charset=utf-8');
+		header('X-Content-Type-Options: nosniff');
+		header('Content-Disposition: ' . $disposition);
+		header('Content-Transfer-Encoding: binary');
+		header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+		header('Pragma: no-cache');
+		header('Expires: 0');
+		header('Content-Length: ' . (string) strlen($content));
+
+		echo $content;
+		$app->close();
+	}
 }

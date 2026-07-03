@@ -14,8 +14,30 @@ const byId = (id) => document.getElementById(id);
 
 const hide = (id) => { const el = byId(id); if (el) el.style.display = "none"; };
 const show = (id, display = "block") => { const el = byId(id); if (el) el.style.display = display; };
-const setHTML = (id, html = "") => { const el = byId(id); if (el) el.innerHTML = html; };
+const setText = (id, text = "") => { const el = byId(id); if (el) el.textContent = text; };
+const setHTML = (id, html = "") => { const el = byId(id); if (el) el.innerHTML = html; }; // only for trusted server HTML
 const setClass = (id, className = "") => { const el = byId(id); if (el) el.className = className; };
+
+/* ── Scan progress line via CSS custom properties ── */
+function scanLineSet(pct) {
+  const ab = document.querySelector('.scp-actionbar');
+  if (ab) ab.style.setProperty('--scp-scan-pct', pct + '%');
+}
+function scanLineState(state) {
+  const ab = document.querySelector('.scp-actionbar');
+  if (!ab) return;
+  if (state === 'scanning') {
+    ab.style.setProperty('--scp-scan-opacity', '1');
+    ab.style.setProperty('--scp-scan-color', 'var(--bs-info, #0dcaf0)');
+  } else if (state === 'done') {
+    ab.style.setProperty('--scp-scan-color', 'var(--bs-success, #198754)');
+    setTimeout(() => ab.style.setProperty('--scp-scan-opacity', '0'), 1500);
+  } else if (state === 'error') {
+    ab.style.setProperty('--scp-scan-color', 'var(--bs-danger, #dc3545)');
+  } else {
+    ab.style.setProperty('--scp-scan-opacity', '0');
+  }
+}
 
 async function httpGet(url, as = "text") {
   const res = await fetch(url, {
@@ -38,15 +60,11 @@ function getOption(key, fallback = "") {
 let cont = 0;
 let percent = 0;
 
-const repair_log_view_header = getOption("securitycheckpro.Filemanager.repairviewlogheader");
 const ended_string2          = getOption("securitycheckpro.Filemanager.end");
 const in_progress_string     = getOption("securitycheckpro.Filemanager.inprogress");
 const updating_stats         = getOption("securitycheckpro.Filemanager.updatingstats");
 const url_to_redirect        = getOption("securitycheckpro.Filemanager.urltoredirect");
 const error_button_html      = getOption("securitycheckpro.Filemanager.errorbutton");
-const repair_launched        = !!getOption("securitycheckpro.Filemanager.repairlaunched", false);
-const launch_new_task        = getOption("securitycheckpro.Filemanager.launchnewtask");
-const div_view_log_button    = getOption("securitycheckpro.Filemanager.divviewlogbutton");
 
 // Variables globales que el código original daba por existentes.
 // Les ponemos fallback para evitar errores si no están definidas fuera.
@@ -65,10 +83,12 @@ async function get_percent() {
     const value = parseInt(responseText, 10);
     if (!Number.isNaN(value) && value < 100) {
       setHTML("task_status", in_progress_string);
-      setHTML("warning_message2", "");
+      setText("warning_message2", "");
       setClass("error_message", "alert alert-info");
       setHTML("error_message", active_task);
       hide("button_start_scan");
+      scanLineSet(value);
+      scanLineState("scanning");
       cont = 3;
       boton_filenamager();
     }
@@ -85,47 +105,43 @@ async function estado_timediff() {
     const estado = json[0];
     const timediff = parseFloat(json[1]);
 
-    if (((estado !== "ENDED") && (estado !== error_string)) && (timediff < 3)) {
+    if (((estado !== "ENDED") && (estado !== error_string)) && (timediff < 1)) {
       get_percent();
-    } else if (((estado !== "ENDED") && (estado !== error_string)) && (timediff > 3)) {
-      hide("button_start_scan");
+    } else if (((estado !== "ENDED") && (estado !== error_string)) && (timediff > 1)) {
+      show("button_start_scan");
       hide("task_status");
       show("task_error", "block");
+      scanLineState("error");
       setClass("error_message", "alert alert-error");
-       setHTML("error_message", error_string);
+      setHTML("error_message", error_string);
     }
   } catch (e) {
     // Silencio
   }
 }
 
-function showLog() {
-  setHTML("completed_message2", "");
-  setHTML("div_view_log_button", "");
-  setHTML("log-container_header", repair_log_view_header);
-  const el = byId("log-text");
-  if (el) el.style.display = "block";
-}
-
 async function date_time(id) {
   const url = "index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=currentDateTime";
   try {
     const responseText = await httpGet(url, "text");
-    setHTML(id, responseText);
+    setText(id, responseText);
   } catch (e) {
     // Silencio
   }
 }
 
 async function boton_filenamager() {
+  const csrfToken = Joomla.getOptions("csrf.token");
+
   if (cont === 0) {
-    show("backup-progress", "flex");
-    setHTML("warning_message2", "");
+    scanLineSet(0);
+    scanLineState("scanning");
+    setText("warning_message2", "");
     date_time("start_time");
     percent = 0;
   } else if (cont === 1) {
     setHTML("task_status", in_progress_string);
-    const url = "index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=acciones";
+    const url = "index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=acciones" + "&" + encodeURIComponent(csrfToken) + "=1";
     // Llamada "fire & forget", sin usar la respuesta
     httpGet(url, "text").catch(() => {});
   } else {
@@ -135,14 +151,13 @@ async function boton_filenamager() {
       const p = parseInt(responseText, 10);
       percent = Number.isNaN(p) ? 0 : p;
 
-      const bar = byId("bar");
-      if (bar) bar.style.width = percent + "%";
+      scanLineSet(percent);
 
       if (percent === 100) {
         await date_time("end_time");
         hide("error_message");
         setHTML("task_status", ended_string2);
-        if (bar) bar.style.width = "100%";
+        scanLineState("done");
         setHTML("completed_message2", process_completed);
         setHTML("warning_message2", updating_stats);
         // Redirección inmediata (como en el original, que comentaba el reload y hacía redirect)
@@ -150,12 +165,12 @@ async function boton_filenamager() {
       }
     } catch (e) {
       show("task_error", "block");
-      hide("backup-progress");
+      scanLineState("error");
       hide("task_status");
-      setHTML("warning_message2", "");
+      setText("warning_message2", "");
       setClass("error_message", "alert alert-error");
       setHTML("error_message", failure);
-      setHTML("error_button", error_button_html);
+      setHTML("error_button", error_button_html); // trusted server HTML (button markup)
     }
   }
 
@@ -172,9 +187,8 @@ async function boton_filenamager() {
 
 function repair() {
   hide("container_resultado");
-  show("backup-progress", "block");
-  const bar = byId("bar");
-  if (bar) bar.style.width = "100%";
+  scanLineSet(100);
+  scanLineState("done");
   setHTML("completed_message2", process_completed);
   setHTML("warning_message2", updatingstats);
 }
@@ -188,6 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnStart) {
     btnStart.addEventListener("click", () => {
       hide("button_start_scan");
+      hide("view_log_button");
       hide("container_resultado");
       hide("container_repair");
       hide("completed_message2");
@@ -217,19 +232,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const delExceptionBtn = byId("delete_exception_button");
   if (delExceptionBtn) delExceptionBtn.addEventListener("click", () => Joomla.submitbutton("manageExceptionsDelete"));
 
-  // Estado inicial
-  hide("container_repair");
-
-  if (repair_launched) {
-    hide("container_resultado");
-    show("container_repair", "block");
-    setHTML("completed_message2", process_completed);
-    setHTML("log-container_remember_text", launch_new_task);
-    setHTML("div_view_log_button", div_view_log_button);
-    hide("log-text");
-  }
-
-  hide("backup-progress");
   estado_timediff();
 
   // Botón cerrar (modal initialize data) → recarga
@@ -244,6 +246,5 @@ document.addEventListener("DOMContentLoaded", () => {
 /* =======================
    Expose functions used elsewhere
    ======================= */
-window.showLog = showLog;
 window.boton_filenamager = boton_filenamager;
 window.repair = repair;

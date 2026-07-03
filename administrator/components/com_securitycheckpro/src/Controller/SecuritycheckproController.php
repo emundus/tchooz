@@ -40,19 +40,19 @@ class SecuritycheckproController extends SecuritycheckproBaseController
     }
 
     /**
-     * Handler único para mark_read / mark_unread.
+     * Handler ï¿½nico para mark_read / mark_unread.
      */
     public function markLogsTask(): void
     {
         
         $task    = $this->getTask();               // 'mark_read' | 'mark_unread'
-        $setRead = ($task === 'mark_read');        // true -> leído; false -> no leído
+        $setRead = ($task === 'mark_read');        // true -> leï¿½do; false -> no leï¿½do
 
         /** @var LogsModel $model */
         $model = $this->getModel('Logs');         
         $model->markLogs($setRead, null);          // null => toma 'cid' del input
 
-        // Redirección estándar a la vista de logs 
+        // Redirecciï¿½n estï¿½ndar a la vista de logs 
         $this->view_logs();
     }
 	
@@ -118,11 +118,11 @@ class SecuritycheckproController extends SecuritycheckproBaseController
     
     
     /**
-     * Cancelar una acción
+     * Cancelar una acciï¿½n
 	 * @return  void
      */
     function cancel() {
-        $msg = Text::_('Operación cancelada');
+        $msg = Text::_('Operaciï¿½n cancelada');
         $this->setRedirect('index.php?option=com_securitycheckpro&controller=securitycheckpro', $msg);
     }
  
@@ -132,16 +132,23 @@ class SecuritycheckproController extends SecuritycheckproBaseController
      */
     function csv_export(): void
 	{
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
+		/** @var \Joomla\CMS\Application\CMSApplication $app */
 		$app = Factory::getApplication();
 		/** @var DatabaseInterface $db */
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		try {
-			$query = 'SELECT * FROM ' . $db->replacePrefix('#__securitycheckpro_logs');
+			$query = $db->getQuery(true)
+				->select('*')
+				->from($db->quoteName('#__securitycheckpro_logs'));
 			$db->setQuery($query);
 			$rows = $db->loadRowList(); // array<array<int, mixed>>
 		} catch (\Throwable $e) {
-			$app->enqueueMessage($e->getMessage(), 'error');
+			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_NO_DATA_TO_EXPORT'), 'error');
 			parent::display();
 			return;
 		}
@@ -171,7 +178,7 @@ class SecuritycheckproController extends SecuritycheckproBaseController
 		// Prepara nombre de archivo
 		$config   = $app->getConfig();
 		$sitename = (string) $config->get('sitename', 'site');
-		$sitename = preg_replace('/\s+/', '', $sitename); // sin espacios
+		$sitename = preg_replace('/[^a-zA-Z0-9_-]+/', '', $sitename) ?: 'site';
 		$timestamp = date('Ymd_His');
 		$filename  = "securitycheckpro_logs_{$sitename}_{$timestamp}.csv";
 
@@ -193,7 +200,7 @@ class SecuritycheckproController extends SecuritycheckproBaseController
 		// Volcamos el CSV directamente al output
 		$out = fopen('php://output', 'w');
 		if ($out === false) {
-			// Si fallara (muy raro), volvemos al flujo de la página
+			// Si fallara (muy raro), volvemos al flujo de la pï¿½gina
 			$app->enqueueMessage('Unable to open output stream for CSV export', 'error');
 			parent::display();
 			return;
@@ -215,19 +222,19 @@ class SecuritycheckproController extends SecuritycheckproBaseController
 				$row[7] = Text::_('COM_SECURITYCHECKPRO_TITLE_' . $row[7]);
 			}
 
-			// $row[10] -> LOG_READ (0/1 a NO/SÍ)
+			// $row[10] -> LOG_READ (0/1 a NO/Sï¿½)
 			if (isset($row[10])) {
 				$row[10] = ((string)$row[10] === '0')
 					? Text::_('COM_SECURITYCHECKPRO_NO')
 					: Text::_('COM_SECURITYCHECKPRO_YES');
 			}
 
-			// Escribir la fila; fputcsv se encarga de escapado (comillas, comas, saltos de línea)
+			// Escribir la fila; fputcsv se encarga de escapado (comillas, comas, saltos de lï¿½nea)
 			fputcsv($out, $row);
 		}
 
 		fclose($out);
-		// Terminamos aquí para que Joomla no añada HTML después del CSV
+		// Terminamos aquï¿½ para que Joomla no aï¿½ada HTML despuï¿½s del CSV
 		$app->close();
 	}    
 
@@ -236,6 +243,10 @@ class SecuritycheckproController extends SecuritycheckproBaseController
 	 * @return  void
      */
     function delete() {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Logs');
 		if (!$model instanceof LogsModel) {
 			Factory::getApplication()->enqueueMessage('Logs model not found', 'error');
@@ -246,10 +257,15 @@ class SecuritycheckproController extends SecuritycheckproBaseController
     }
 
     /**
-     * Añadir Ip(s)  a la lista negra
+     * Aï¿½adir Ip(s)  a la lista negra
 	 * @return  void
      */
     function add_to_blacklist() {
+		
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Logs');
 		if (!$model instanceof LogsModel) {
 			Factory::getApplication()->enqueueMessage('Logs model not found', 'error');
@@ -272,6 +288,10 @@ class SecuritycheckproController extends SecuritycheckproBaseController
 	 * @return  void
      */
     function delete_all() {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Logs');
 		if (!$model instanceof LogsModel) {
 			Factory::getApplication()->enqueueMessage('Logs model not found', 'error');
@@ -282,10 +302,15 @@ class SecuritycheckproController extends SecuritycheckproBaseController
     }
 
     /**
-     * Añadir Ip(s) a la lista blanca
+     * Aï¿½adir Ip(s) a la lista blanca
 	 * @return  void
      */
     function add_to_whitelist() {
+		
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Logs');
 		if (!$model instanceof LogsModel) {
 			Factory::getApplication()->enqueueMessage('Logs model not found', 'error');
@@ -316,10 +341,14 @@ class SecuritycheckproController extends SecuritycheckproBaseController
     }
 	
 	/**
-     * Añadir componente como excepcion
+     * Aï¿½adir componente como excepcion
 	 * @return  void
      */
     function add_exception() {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Logs');
 		if (!$model instanceof LogsModel) {
 			Factory::getApplication()->enqueueMessage('Logs model not found', 'error');

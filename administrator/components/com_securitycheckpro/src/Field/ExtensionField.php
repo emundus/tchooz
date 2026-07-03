@@ -13,7 +13,7 @@ namespace SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Field
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Form\Field\ListField;
-use Joomla\Plugin\System\Trackactions\Model\TrackActionsHelperModel;
+use Joomla\Plugin\Actionlog\Trackactions\Model\TrackActionsHelperModel;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 
@@ -37,9 +37,9 @@ class ExtensionField extends ListField
     protected $type = 'extension';
 
     /**
-     * Method to get the options to populate list
+     * Method to get the options to populate list.
      *
-     * @return array  The field option objects.
+     * @return array<int, \stdClass> The field option objects.
      *
      * @since __DEPLOY_VERSION__
      */
@@ -55,10 +55,18 @@ class ExtensionField extends ListField
         $extensions = $db->loadObjectList();
 
         $options = [];
-						
+
+        // El plugin Track Actions instalado puede ser una version antigua que no tenga esta clase todavia
+        $trackActionsHelperAvailable = class_exists(TrackActionsHelperModel::class);
+
 		foreach ($extensions as $extension)
-        {			
-            $text = TrackActionsHelperModel::translateExtensionName(strtoupper(strtok($extension->extension, '.')));
+        {
+            if ($trackActionsHelperAvailable) {
+                // @phpstan-ignore-next-line
+                $text = TrackActionsHelperModel::translateExtensionName(strtoupper(strtok($extension->extension, '.')));
+            } else {
+                $text = $extension->extension;
+            }
 			$options[] = HTMLHelper::_('select.option', $extension->extension, $text);
         }
 

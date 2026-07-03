@@ -21,6 +21,7 @@ use Joomla\Database\DatabaseInterface;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\ProtectionModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Site\Model\JsonModel;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Helper\OverallScoreHelper;
 
 class SysinfoModel extends BaseModel
 {    
@@ -86,10 +87,10 @@ class SysinfoModel extends BaseModel
 			return rtrim(rtrim($s, '0'), '.');
 		};
 
-		// max_allowed_packet (sólo MySQL/MariaDB)
+		// max_allowed_packet (sï¿½lo MySQL/MariaDB)
 		$maxAllowedPacketMB = 0;
 		try {
-			$driverName = strtolower((string) ($db->getName() ?? ''));
+			$driverName = strtolower($db->getName());
 			if (strpos($driverName, 'mysql') !== false) {
 				$db->setQuery('SELECT @@max_allowed_packet AS map');
 				/** @var object|null $row */
@@ -139,7 +140,7 @@ class SysinfoModel extends BaseModel
 			/** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Site\Model\JsonModel $values */
 			$values = new JsonModel();
 			$values->getStatus(false);
-			$data = (array) ($values->data ?? []);
+			$data = is_array($values->data) ? $values->data : [];
 			foreach ($core as $k => $_) {
 				$core[$k] = $data[$k] ?? null;
 			}
@@ -169,7 +170,7 @@ class SysinfoModel extends BaseModel
 			$firewallOptions = [];
 		}
 
-		// Protección .htaccess
+		// Protecciï¿½n .htaccess
 		$htaccessProtection = [];
 		try {
 			$pm = new ProtectionModel();
@@ -189,7 +190,7 @@ class SysinfoModel extends BaseModel
 			$unreadLogs = 0;
 		}
 
-		// Montamos $info para getOverall() evitando índices indefinidos
+		// Montamos $info para getOverall() evitando ï¿½ndices indefinidos
 		$overallInput = [
 			'phpversion'                    => PHP_VERSION,
 			'version'                       => (new Version())->getLongVersion(),
@@ -219,7 +220,7 @@ class SysinfoModel extends BaseModel
 			$overallWebFirewall = null;
 		}
 
-		// Resultado final (sin índices indefinidos)
+		// Resultado final (sin ï¿½ndices indefinidos)
 		$this->info = [
 			'authorized'                    => true,
 			'phpversion'                    => PHP_VERSION,
@@ -252,7 +253,7 @@ class SysinfoModel extends BaseModel
 	}
 
 	/**
-	 * Calcula un “overall” robusto sin depender de índices indefinidos.
+	 * Calcula un ï¿½overallï¿½ robusto sin depender de ï¿½ndices indefinidos.
 	 *
 	 * @param array<string,mixed> $info
 	 * @param int                 $opcion
@@ -260,169 +261,7 @@ class SysinfoModel extends BaseModel
 	 */
 	public function getOverall(array $info, int $opcion): int
 	{
-			
-		// Helpers seguros
-		$safeGetInt = static function (array $a, string $k, int $def = 0): int {
-			$v = $a[$k] ?? $def;
-			return is_numeric($v) ? (int) $v : $def;
-		};
-		$safeGetBool = static function (array $a, string $k, bool $def = false): bool {
-			$v = $a[$k] ?? $def;
-			return (bool) $v;
-		};
-		$safeGetStr = static function (array $a, string $k, string $def = ''): string {
-			$v = $a[$k] ?? $def;
-			return is_string($v) ? $v : (string) $v;
-		};
-		$safeGetArr = static function (array $a, string $k): array {
-			$v = $a[$k] ?? [];
-			return is_array($v) ? $v : (array) $v;
-		};
-		$getNestedBool = static function (array $a, string $k, bool $def = false): bool {
-			// permite htaccess_protection['xframe_options'] == 1/true/"1"
-			$v = $a[$k] ?? $def;
-			if (is_bool($v)) return $v;
-			if (is_numeric($v)) return ((int) $v) === 1;
-			if (is_string($v)) return in_array(strtolower($v), ['1','true','yes','on'], true);
-			return $def;
-		};
-		$daysSince = static function (string $dateStr): ?int {
-			if ($dateStr === '') {
-				return null;
-			}
-			$ts = strtotime($dateStr);
-			if ($ts === false) {
-				return null;
-			}
-			$now = time();
-			return (int) floor(($now - $ts) / 86400);
-		};
-
-		// Normalizaciones
-		$fwOptions = $safeGetArr($info, 'firewall_options');
-		// Algunas claves pueden venir como array o string; normalizamos a string
-		$asString = static function ($v): string {
-			if (is_array($v)) {
-				return implode(',', array_map('strval', $v));
-			}
-			return (string) $v;
-		};
-		$stripTagsExceptions = $asString($fwOptions['strip_tags_exceptions'] ?? '');
-		$sqlPatternExceptions = $asString($fwOptions['sql_pattern_exceptions'] ?? '');
-		$lfiExceptions        = $asString($fwOptions['lfi_exceptions'] ?? '');
-
-		$ht = $safeGetArr($info, 'htaccess_protection');
-
-		$overall = 0;
-
-		switch ($opcion) {
-			// Joomla Configuration
-			case 1:
-				if ($safeGetBool($info, 'kickstart_exists', false)) {
-					return 2;
-				}
-
-				$coreInstalled = $safeGetStr($info, 'coreinstalled', '');
-				$coreLatest    = $safeGetStr($info, 'corelatest', '');
-				if ($coreInstalled !== '' && $coreLatest !== '' && version_compare($coreInstalled, $coreLatest, '==')) {
-					$overall += 4;
-				}
-
-				if ($safeGetInt($info, 'unread_logs', PHP_INT_MAX) <= 10) {
-					$overall += 5;
-				}
-
-				if ($safeGetInt($info, 'files_with_incorrect_permissions', -1) === 0) {
-					$overall += 5;
-				}
-				if ($safeGetInt($info, 'files_with_bad_integrity', -1) === 0) {
-					$overall += 10;
-				}
-				if ($safeGetInt($info, 'vuln_extensions', -1) === 0) {
-					$overall += 30;
-				}
-				if ($safeGetInt($info, 'suspicious_files', -1) === 0) {
-					$overall += 15;
-				}
-				if ($safeGetBool($info, 'backend_protection', false)) {
-					$overall += 10;
-				}
-
-				if (($fwOptions['forbid_new_admins'] ?? 0) == 1) {
-					$overall += 5;
-				}
-
-				if ($safeGetInt($info, 'twofactor_enabled', 0) >= 1) {
-					$overall += 10;
-				}
-
-				// Señales htaccess (tratan 1/true/"1" como activado)
-				foreach ([
-					'xframe_options', 'sts_options', 'xss_options', 'csp_policy',
-					'referrer_policy', 'prevent_mime_attacks'
-				] as $k) {
-					if ($getNestedBool($ht, $k, false)) {
-						$overall += 1;
-					}
-				}
-				
-				break;
-
-			// Web Firewall
-			case 2:
-				if (!$safeGetBool($info, 'firewall_plugin_enabled', false)) {
-					return 2;
-				}
-
-				$overall += 10;
-
-				if (!empty($fwOptions['dynamic_blacklist']))      { $overall += 10; }
-				if (!empty($fwOptions['logs_attacks']))           { $overall += 2;  }
-				if (!empty($fwOptions['second_level']))           { $overall += 2;  }
-				if (!str_contains($stripTagsExceptions, '*'))     { $overall += 4;  }
-				if (!str_contains($sqlPatternExceptions, '*'))    { $overall += 4;  }
-				if (!str_contains($lfiExceptions, '*'))           { $overall += 4;  }
-				if (!empty($fwOptions['session_protection_active']))   { $overall += 2; }
-				if (!empty($fwOptions['session_hijack_protection']))   { $overall += 2; }
-				if (!empty($fwOptions['upload_scanner_enabled']))      { $overall += 4; }
-				if ($safeGetBool($info, 'spam_protection_plugin_enabled', false)) { $overall += 2; }
-
-				// Cron: last_check, last_check_integrity
-				$d1 = $daysSince($safeGetStr($info, 'last_check', ''));
-				if ($d1 !== null && $d1 < 2) {
-					$overall += 10;
-				}
-				$d2 = $daysSince($safeGetStr($info, 'last_check_integrity', ''));
-				if ($d2 !== null && $d2 < 2) {
-					$overall += 10;
-				}
-
-				// htaccess protection
-				$map = [
-					'prevent_access'                  => 6,
-					'prevent_unauthorized_browsing'   => 4,
-					'file_injection_protection'       => 4,
-					'self_environ'                    => 4,
-					'xframe_options'                  => 2,
-					'prevent_mime_attacks'            => 2,
-					'default_banned_list'             => 3,
-					'disable_server_signature'        => 3,
-					'disallow_php_eggs'               => 3,
-					'disallow_sensible_files_access'  => 3,
-				];
-				foreach ($map as $k => $pts) {
-					if ($getNestedBool($ht, $k, false)) {
-						$overall += $pts;
-					}
-				}
-				break;
-
-			default:
-				// opción no reconocida ? 0
-				break;
-		}
-
-		return $overall;
+		return OverallScoreHelper::score($info, $opcion);
 	}
 
 	
@@ -455,12 +294,17 @@ class SysinfoModel extends BaseModel
         $modalId     = $cfg['modalId'] ?? null;
         $modalText   = $cfg['modalText'] ?? null;
 		$headerItemClass = $cfg['headerItemClass'] ?? 'list-group-item-primary';
-		$valueBadgeClass = $cfg['valueBadgeClass'] ?? 'bg-danger';
+		// Si no se especifica un color explÃ­cito para el badge de valor, lo atamos al estado
+		// (ok=verde, problema=rojo) en vez de forzar siempre rojo, que inducÃ­a a error cuando
+		// $ok era true (p.ej. la versiÃ³n de Joomla instalada se veÃ­a en rojo estando actualizada).
+		$valueBadgeClass = $cfg['valueBadgeClass'] ?? ($ok ? 'bg-success' : 'bg-danger');
+		$statusAttr      = $ok ? 'ok' : 'problem';
+		$borderClass     = $ok ? 'border-success' : 'border-danger';
 
         ob_start();
         ?>
-        <div class="<?php echo htmlspecialchars($colClass, ENT_QUOTES, 'UTF-8'); ?>">
-            <ul class="list-group h-100">
+        <div class="<?php echo htmlspecialchars($colClass, ENT_QUOTES, 'UTF-8'); ?>" data-status="<?php echo $statusAttr; ?>">
+            <ul class="list-group h-100 border-start border-3 <?php echo $borderClass; ?>">
                <li class="list-group-item <?php echo htmlspecialchars($headerItemClass, ENT_QUOTES, 'UTF-8'); ?>">
                     <?php echo $title; ?>
                 </li>
@@ -473,9 +317,10 @@ class SysinfoModel extends BaseModel
 						<?php endif; ?>
 
                         <?php if ($ok): ?>
-                            <span class="badge bg-success">OK</span>
+                            <span class="badge bg-success"><i class="fa fa-check" aria-hidden="true"></i> OK</span>
                         <?php else: ?>
                             <span class="badge bg-danger">
+                                <i class="fa fa-triangle-exclamation" aria-hidden="true"></i>
                                 <?php echo Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', $problems > 0 ? $problems : 1); ?>
                             </span>
 
@@ -504,7 +349,7 @@ class SysinfoModel extends BaseModel
                                         </h2>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php echo Text::_('JCLOSE'); ?>"></button>
                                     </div>
-                                    <div class="modal-body">
+                                    <div class="modal-body p-3">
                                         <p class="fs-6 mb-0"><?php echo $modalText; ?></p>
                                     </div>
                                     <div class="modal-footer">
@@ -523,7 +368,7 @@ class SysinfoModel extends BaseModel
     }
 	
 	/**
-	 * Devuelve el HTML de un ítem de información.
+	 * Devuelve el HTML de un ï¿½tem de informaciï¿½n.
 	 *
 	 * @phpstan-param array{
 	 *   colClass?: string,
