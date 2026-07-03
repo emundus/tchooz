@@ -44,7 +44,7 @@ class ProgramEntityTest extends UnitTestCase
 		$this->assertSame('', $entity->getSynthesis());
 		$this->assertFalse($entity->isApplyOnline());
 		$this->assertSame(0, $entity->getOrdering());
-		$this->assertSame('', $entity->getLogo());
+		$this->assertEmpty($entity->getLogo());
 		$this->assertSame('', $entity->getColor());
 	}
 
