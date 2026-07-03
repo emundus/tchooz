@@ -7,6 +7,7 @@ use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Plugin\PluginHelper;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Enums\Payment\PaymentGatewayEnum;
 use Tchooz\Entities\Payment\DiscountType;
 use Tchooz\Entities\Payment\PaymentStepEntity;
 use Tchooz\Entities\Payment\ProductCategoryEntity;
@@ -452,7 +453,7 @@ class PaymentRepository
 		$payment_services = [];
 
 		try {
-			$types = ['sogecommerce', 'stripe'];
+			$types = array_map(static fn(PaymentGatewayEnum $gateway): string => $gateway->value, PaymentGatewayEnum::cases());
 
 			$query = $this->db->createQuery();
 			$query->select('id, name, description')
