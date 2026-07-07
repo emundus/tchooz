@@ -37,6 +37,7 @@ use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\List\ListDisplayEnum;
+use Tchooz\Factories\Contacts\ContactFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Contacts\ContactFileRepository;
@@ -109,7 +110,7 @@ class EmundusControllerCrc extends EmundusController
 		if (EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::READ->value, $this->user->id))
 		{
 			$order_by = $this->input->getString('order_by', 'id');
-			$sort     = $this->input->getString('sort', '');
+			$sort     = $this->input->getString('sort', 'DESC');
 			$search   = $this->input->getString('recherche', '');
 			$lim      = $this->input->getInt('lim', 0);
 			$page     = $this->input->getInt('page', 0);
@@ -129,7 +130,10 @@ class EmundusControllerCrc extends EmundusController
 				$organizationsFilter = $organization ? [$organization] : [];
 				$nationalitiesFilter = $nationality ? [$nationality] : [];
 
-				$contacts = $this->contactRepository->getAllContacts($sort, $search, $lim, $page, $order_by, $published, $contactsFilter, $phone_number, $organizationsFilter, $nationalitiesFilter);
+				// Comments are excluded from the list: they are only shown in the preview modal,
+				// where CrcComments lazy-loads them on demand. Loading them here would bloat every list call.
+				$contactRepository = new ContactRepository(true, ['comments']);
+				$contacts = $contactRepository->getAllContacts($sort, $search, $lim, $page, $order_by, $published, $contactsFilter, $phone_number, $organizationsFilter, $nationalitiesFilter, $this->user->id);
 				if ($contacts['count'] > 0)
 				{
 					if (!class_exists('CountryRepository'))
@@ -388,6 +392,10 @@ class EmundusControllerCrc extends EmundusController
 						$contact_response->application_files[] = $file->__serialize();
 					}
 				}
+
+				$contact_response->comments = array_map(function ($comment) {
+					return $comment->__serialize();
+				}, $contact->getComments() ?? []);
 
 				$response['code']    = 200;
 				$response['status']  = true;
@@ -1066,7 +1074,8 @@ class EmundusControllerCrc extends EmundusController
 
 			$organizationsFilter = $organization ? [$organization] : [];
 
-			$organizations = $this->organizationRepository->getAllOrganizations($sort, $search, $lim, $page, $order_by, $published, $organizationsFilter, $identifier_code);
+			$organizationRepository = new OrganizationRepository(true, ['comments']);
+			$organizations = $organizationRepository->getAllOrganizations($sort, $search, $lim, $page, $order_by, $published, $organizationsFilter, $identifier_code);
 			if ($organizations['count'] > 0)
 			{
 				if (!class_exists('CountryRepository'))

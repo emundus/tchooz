@@ -10,12 +10,16 @@
 namespace Unit\Component\Emundus\Class\Repositories\Contacts;
 
 use Joomla\Tests\Unit\UnitTestCase;
+use Tchooz\Entities\Comments\CommentEntity;
 use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
+use Tchooz\Enums\Comments\CommentTargetTypeEnum;
 use Tchooz\Enums\Contacts\GenderEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Contacts\ContactFileRepository;
+use Tchooz\Repositories\Comments\CommentRepository;
+use Tchooz\Repositories\Contacts\AddressRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
 use Tchooz\Repositories\CountryRepository;
@@ -32,12 +36,15 @@ class ContactRepositoryTest extends UnitTestCase
 
 	private array $organizationFixtures = [];
 
+	private CommentRepository $commentRepository;
+
 	public function setUp(): void
 	{
 		parent::setUp();
 		$this->initDataSet();
 
 		$this->model = new ContactRepository();
+		$this->commentRepository = new CommentRepository();
 	}
 
 	public function createFixtures(): void
@@ -479,9 +486,89 @@ class ContactRepositoryTest extends UnitTestCase
 
 		// Unpublish contact 2 and test filter
 		$this->model->togglePublished($this->contactFixtures[1]->getId(), false);
-		$contacts = $this->model->getAllContacts('DESC', '', 0, 0, 'id', 'false');
+		$contacts = $this->model->getAllContacts('DESC', '', 0, 0, 'id', 'false', currentUserId: $this->dataset['coordinator']);
 		$this->assertIsArray($contacts, 'The result is an array');
 		$this->assertGreaterThan(0, $contacts['count'], 'The result count is greater than 0');
+
+		// Republish contact 2 for following assertions
+		$this->model->togglePublished($this->contactFixtures[1]->getId(), true);
+
+		$contact1Id = $this->contactFixtures[0]->getId();
+		$contact2Id = $this->contactFixtures[1]->getId();
+
+		$publicComment = new CommentEntity(
+			id: 0,
+			targetType: CommentTargetTypeEnum::CONTACT,
+			targetId: $contact1Id,
+			content: 'Public comment on contact 1',
+			createdBy: $this->dataset['coordinator'],
+			createdAt: new \DateTime(),
+			isPublic: 1
+		);
+		$this->commentRepository->flush($publicComment);
+
+		$otherUserPrivateComment = new CommentEntity(
+			id: 0,
+			targetType: CommentTargetTypeEnum::CONTACT,
+			targetId: $contact1Id,
+			content: 'Private comment by another user',
+			createdBy: $this->dataset['applicant'],
+			createdAt: new \DateTime(),
+			isPublic: 0
+		);
+		$this->commentRepository->flush($otherUserPrivateComment);
+
+		// Comments are excluded by default (lazy-loaded on demand), so use a repository that loads them.
+		$contactRepositoryWithComments = new ContactRepository(true, []);
+		$contacts = $contactRepositoryWithComments->getAllContacts(currentUserId: $this->dataset['coordinator']);
+		$this->assertIsArray($contacts);
+		$this->assertNotEmpty($contacts['datas']);
+
+		$contact1Loaded = null;
+		$contact2Loaded = null;
+		foreach ($contacts['datas'] as $contact)
+		{
+			if ($contact->getId() === $contact1Id)
+			{
+				$contact1Loaded = $contact;
+			}
+			if ($contact->getId() === $contact2Id)
+			{
+				$contact2Loaded = $contact;
+			}
+		}
+
+		$this->assertNotNull($contact1Loaded, 'Contact 1 should be in the results');
+		$this->assertNotNull($contact2Loaded, 'Contact 2 should be in the results');
+
+		$contact1Comments = $contact1Loaded->getComments();
+		$this->assertIsArray($contact1Comments, 'Comments should be an array');
+		$this->assertNotEmpty($contact1Comments, 'Contact 1 should have at least one comment loaded');
+
+		$publicCommentFound = false;
+		$privateCommentFound = false;
+		foreach ($contact1Comments as $comment)
+		{
+			$this->assertInstanceOf(CommentEntity::class, $comment, 'Each loaded comment should be a CommentEntity');
+			if ($comment->getId() === $publicComment->getId())
+			{
+				$publicCommentFound = true;
+				$this->assertEquals('Public comment on contact 1', $comment->getContent(), 'Comment content should be loaded');
+				$this->assertInstanceOf(\DateTime::class, $comment->getCreatedAt(), 'Comment date should be set');
+			}
+			if ($comment->getId() === $otherUserPrivateComment->getId())
+			{
+				$privateCommentFound = true;
+			}
+		}
+
+		$this->assertTrue($publicCommentFound, 'Public comment should be loaded for contact 1');
+		$this->assertFalse($privateCommentFound, 'Private comment from another user should not be loaded');
+
+		$this->assertEmpty($contact2Loaded->getComments(), 'Contact 2 should have no comments');
+
+		$this->commentRepository->delete($publicComment->getId());
+		$this->commentRepository->delete($otherUserPrivateComment->getId());
 
 		$this->clearFixtures();
 	}
