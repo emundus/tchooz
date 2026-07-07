@@ -3494,9 +3494,13 @@ class EmundusControllerFiles extends EmundusController
 			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
-		$name = $this->input->getString('name', null);
-
-		$file = JPATH_SITE . DS . 'tmp' . DS . $name;
+		$name = basename($this->input->getString('name', '')); // supprime tout composant de chemin (e.g. : "../")
+		$base = realpath(JPATH_SITE . '/tmp');
+		$file = realpath($base . '/' . $name);
+		if ($file === false || !str_starts_with($file, $base . DIRECTORY_SEPARATOR))
+		{
+			die(Text::_('ACCESS_DENIED'));
+		}
 
 		if (file_exists($file)) {
 			$mime_type = $this->get_mime_type($file);
@@ -3515,7 +3519,8 @@ class EmundusControllerFiles extends EmundusController
 			exit;
 		}
 		else {
-			echo Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND') . ' : ' . $file;
+			Log::add('File not found: ' . $file, Log::ERROR, 'com_emundus');
+			echo Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND');
 		}
 	}
 
