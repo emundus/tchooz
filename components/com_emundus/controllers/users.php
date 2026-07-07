@@ -35,6 +35,7 @@ use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\EmundusResponse;
 use Tchooz\Services\UploadService;
 use Tchooz\Controller\EmundusController;
+use Tchooz\Enums\Actions\ActionEnum;
 
 /**
  * Emundus Component Users Controller
@@ -539,8 +540,13 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER, [
+		['id' => ActionEnum::ADD_GROUP, 'mode' => CrudEnum::CREATE]
+	])]
 	public function addgroup()
 	{
+		$this->checkToken();
+
 		$gname   = $this->input->getString('gname', null);
 		$actions = $this->input->getString('actions', null);
 		$progs   = $this->input->getString('gprog', null);
