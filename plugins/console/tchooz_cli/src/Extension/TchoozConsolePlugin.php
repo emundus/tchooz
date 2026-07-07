@@ -6,6 +6,7 @@ namespace Emundus\Plugin\Console\Tchooz\Extension;
 
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozApiTokenCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozFixCollations;
+use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozFixEvaluationsDataCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozLanguage;
 use Joomla\Application\ApplicationEvents;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -47,6 +48,7 @@ class TchoozConsolePlugin extends CMSPlugin implements SubscriberInterface
 		$app->addCommand(new TchoozMigrateChecklistCommand($db));
 		$app->addCommand(new TchoozApiTokenCommand($db));
 		$app->addCommand(new TchoozFixCollations($db));
+		$app->addCommand(new TchoozFixEvaluationsDataCommand($db));
 		$app->addCommand(new TchoozLanguage($db));
 	}
 }
