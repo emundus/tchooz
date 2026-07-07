@@ -110,8 +110,6 @@ class ContactOrganizationRepository extends EmundusRepository implements Reposit
 				$contact = $contactRepository->getById($contact_id);
 				if ($contact !== null)
 				{
-					$contact->value = $contact->getId();
-					$contact->name  = $contact->getFullName();
 					$contacts[]     = $contact;
 				}
 			}

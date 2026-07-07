@@ -9,6 +9,7 @@
 
 namespace Tchooz\Entities\Contacts;
 
+use Tchooz\Entities\Comments\CommentEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 
@@ -37,7 +38,9 @@ class OrganizationEntity
 
 	private ?array $application_files;
 
-	public function __construct(int $id, string $name, ?string $description = null, ?string $url_website = null, ?AddressEntity $address = null, ?string $identifier_code = null, ?string $logo = null, ?array $referent_contacts = [],  ?array $other_contacts = [], bool $published = true, ?VerifiedStatusEnum $status = VerifiedStatusEnum::VERIFIED, ?array $application_files = [])	{
+	private ?array $comments = [];
+
+	public function __construct(int $id, string $name, ?string $description = null, ?string $url_website = null, ?AddressEntity $address = null, ?string $identifier_code = null, ?string $logo = null, ?array $referent_contacts = [],  ?array $other_contacts = [], bool $published = true, ?VerifiedStatusEnum $status = VerifiedStatusEnum::VERIFIED, ?array $application_files = [],  ?array $comments = null)	{
 		$this->name            = $name;
 		$this->description     = $description;
 		$this->url_website     = $url_website;
@@ -72,13 +75,24 @@ class OrganizationEntity
 		}
 
 
-		if(!empty($application_files))
+		if (!empty($application_files))
 		{
 			foreach ($application_files as $application_file)
 			{
 				if ($application_file instanceof ApplicationFileEntity)
 				{
 					$this->application_files[] = $application_file;
+				}
+			}
+		}
+
+		if (!empty($comments))
+		{
+			foreach ($comments as $comment)
+			{
+				if ($comment instanceof CommentEntity)
+				{
+					$this->comments[] = $comment;
 				}
 			}
 		}
@@ -215,6 +229,20 @@ class OrganizationEntity
 	{
 		$this->application_files = $application_files;
 	}
+
+	/**
+	 * @return ?CommentEntity[]
+	 */
+	public function getComments(): ?array
+	{
+		return $this->comments;
+	}
+
+	public function setComments(?array $comments): void
+	{
+		$this->comments = $comments;
+	}
+
 
 	public function __serialize(): array
 	{

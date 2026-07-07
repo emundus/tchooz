@@ -9,12 +9,15 @@
 
 namespace Tchooz\Repositories\Contacts;
 
+use DateTime;
+use EmundusHelperDate;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Comments\CommentEntity;
 use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Contacts\ContactAddressEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
@@ -424,16 +427,17 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 	}
 
 	public function getAllContacts(
-		$sort = 'DESC',
-		$search = '',
-		$lim = 25,
-		$page = 0,
-		$order_by = 'id',
-		$published = null,
-		$ids = [],
-		$phone_number = '',
-		$organizations = [],
-		$nationalities = []
+		string $sort = 'DESC',
+		string $search = '',
+		int $lim = 25,
+		int $page = 0,
+		string $order_by = 'id',
+		mixed $published = null, // todo: change that, should be a boolean
+		array $ids = [],
+		string $phone_number = '',
+		array $organizations = [],
+		array $nationalities = [],
+		int $currentUserId = 0,
 	): array
 	{
 		$result = [
@@ -459,7 +463,7 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 			$offset = ($page - 1) * $limit;
 		}
 
-		if (empty($sort))
+		if (empty($sort) || ($sort !== 'ASC' && $sort !== 'DESC'))
 		{
 			$sort = 'DESC';
 		}
@@ -570,6 +574,9 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 
 			$this->db->setQuery($query, $offset, $limit);
 			$contacts = $this->db->loadObjectList();
+
+			// Transmit the requesting user so the factory can filter visible comments (public + own).
+			$this->factory->setCurrentUserId($currentUserId);
 
 			foreach ($contacts as $key => $contact)
 			{

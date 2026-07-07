@@ -66,6 +66,11 @@ class Release2_22_0Installer extends ReleaseInstaller
 				$this->tasks[] = $this->associatePaymentMethod('CB', $paybox->getId());
 			}
 
+			$this->tasks[] = \EmundusHelperUpdate::addColumn('jos_emundus_comments', 'pinned', 'TINYINT', 1, 0, 0)['status'];
+			$this->tasks[] = \EmundusHelperUpdate::addColumn('jos_emundus_comments', 'is_public', 'TINYINT', 1, 0, 1)['status'];
+			$this->tasks[] = \EmundusHelperUpdate::alterColumn('jos_emundus_comments', 'applicant_id', 'INT', 1)['status'];
+			$this->tasks[] = \EmundusHelperUpdate::alterColumn('jos_emundus_comments', 'fnum', 'VARCHAR', 28)['status'];
+
 			$result['status'] = !in_array(false, $this->tasks, true);
 		}
 		catch (\Exception $e)

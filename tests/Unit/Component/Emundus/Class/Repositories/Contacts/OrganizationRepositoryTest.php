@@ -10,10 +10,13 @@
 namespace Unit\Component\Emundus\Class\Repositories\Contacts;
 
 use Joomla\Tests\Unit\UnitTestCase;
+use Tchooz\Entities\Comments\CommentEntity;
 use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Enums\Comments\CommentTargetTypeEnum;
+use Tchooz\Repositories\Comments\CommentRepository;
 use Tchooz\Repositories\Contacts\AddressRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationFileRepository;
@@ -29,10 +32,13 @@ class OrganizationRepositoryTest extends UnitTestCase
 {
 	private array $organizationsFixtures = [];
 
+	private CommentRepository $commentRepository;
+
 	public function setUp(): void
 	{
 		parent::setUp();
 		$this->model = new OrganizationRepository();
+		$this->commentRepository = new CommentRepository();
 		$this->initDataSet();
 	}
 
@@ -97,11 +103,76 @@ class OrganizationRepositoryTest extends UnitTestCase
 		$organizations = $this->model->getAllOrganizations();
 
 		$this->assertIsArray($organizations, 'The result is an array');
-		$this->assertNotEmpty($organizations, 'The result is not empty');
+		$this->assertNotEmpty($organizations['datas'], 'The result is not empty');
+
+		$organization1Id = $this->organizationsFixtures[0]->getId();
+
+		$publicComment = new CommentEntity(
+			id: 0,
+			targetType: CommentTargetTypeEnum::ORGANIZATION,
+			targetId: $organization1Id,
+			content: 'Public comment on organization 1',
+			createdBy: $this->dataset['coordinator'],
+			createdAt: new \DateTime(),
+			isPublic: 1
+		);
+		$this->commentRepository->flush($publicComment);
+
+		$otherUserPrivateComment = new CommentEntity(
+			id: 0,
+			targetType: CommentTargetTypeEnum::ORGANIZATION,
+			targetId: $organization1Id,
+			content: 'Private comment by another user',
+			createdBy: $this->dataset['applicant'],
+			createdAt: new \DateTime(),
+			isPublic: 0
+		);
+		$this->commentRepository->flush($otherUserPrivateComment);
+
+		$organizations = $this->model->getAllOrganizations();
+		$this->assertIsArray($organizations);
+		$this->assertNotEmpty($organizations['datas']);
+
+		$organization1Loaded = null;
+		foreach ($organizations['datas'] as $organization)
+		{
+			if ($organization->getId() === $organization1Id)
+			{
+				$organization1Loaded = $organization;
+				break;
+			}
+		}
+
+		$this->assertNotNull($organization1Loaded, 'Organization 1 should be in the results');
+
+		$organization1Comments = $organization1Loaded->getComments();
+		$this->assertIsArray($organization1Comments, 'Comments should be an array');
+		$this->assertNotEmpty($organization1Comments, 'Organization 1 should have at least one comment loaded');
+
+		$publicCommentFound = false;
+		$privateCommentFound = false;
+		foreach ($organization1Comments as $comment)
+		{
+			if ($comment->id === $publicComment->getId())
+			{
+				$publicCommentFound = true;
+				$this->assertObjectHasProperty('name', $comment, 'Comment should have user name from JOIN');
+				$this->assertNotEmpty($comment->date, 'Comment date should be formatted');
+			}
+			if ($comment->id === $otherUserPrivateComment->getId())
+			{
+				$privateCommentFound = true;
+			}
+		}
+
+		$this->assertTrue($publicCommentFound, 'Public comment should be loaded for organization 1');
+		$this->assertFalse($privateCommentFound, 'Private comment from another user should not be loaded');
+
+		$this->commentRepository->delete($publicComment->getId());
+		$this->commentRepository->delete($otherUserPrivateComment->getId());
 
 		$this->clearFixtures();
 	}
-
 	/**
 	 * @covers \Tchooz\Repositories\Contacts\OrganizationRepository::getById
 	 * @return void

@@ -10,6 +10,7 @@
 namespace Tchooz\Entities\Contacts;
 
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Comments\CommentEntity;
 use Tchooz\Entities\Country;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 use Tchooz\Enums\Contacts\GenderEnum;
@@ -21,6 +22,8 @@ class ContactEntity
 	private string $lastname;
 
 	private string $firstname;
+
+	private string $fullname;
 
 	private string $email;
 
@@ -50,7 +53,9 @@ class ContactEntity
 
 	private ?string $service;
 
-	public function __construct(string $email, string $lastname, string $firstname, ?string $phone_1 = null, ?int $id = 0, ?int $user_id = 0, ?array $addresses = null, ?string $birth = null, GenderEnum|string|null $gender = null, ?string $fonction = null, ?string $service = null, ?array $countries = null, ?array $organizations = null, ?array $application_files = null, ?string $profile_picture = null, bool $published = true, ?VerifiedStatusEnum $status = VerifiedStatusEnum::VERIFIED)
+	private ?array $comments = [];
+
+	public function __construct(string $email, string $lastname, string $firstname, ?string $phone_1 = null, ?int $id = 0, ?int $user_id = 0, ?array $addresses = null, ?string $birth = null, GenderEnum|string|null $gender = null, ?string $fonction = null, ?string $service = null, ?array $countries = null, ?array $organizations = null, ?array $application_files = null, ?string $profile_picture = null, bool $published = true, ?VerifiedStatusEnum $status = VerifiedStatusEnum::VERIFIED, ?array $comments = null)
 	{
 		$this->email     = $email;
 		$this->lastname  = $lastname;
@@ -116,8 +121,20 @@ class ContactEntity
 			}
 		}
 
+		if(!empty($comments))
+		{
+			foreach ($comments as $comment)
+			{
+				if ($comment instanceof CommentEntity)
+				{
+					$this->comments[] = $comment;
+				}
+			}
+		}
+
 		$this->profile_picture = $profile_picture;
 		$this->published       = $published;
+		$this->fullname = $this->getFullName();
 	}
 
 	public function getId(): int
@@ -211,6 +228,24 @@ class ContactEntity
 	public function getGender(): ?GenderEnum
 	{
 		return $this->gender;
+	}
+
+	/**
+	 * @return ?CommentEntity[]
+	 */
+	public function getComments(): ?array
+	{
+		return $this->comments;
+	}
+
+	/**
+	 * @param   array<CommentEntity>|null  $comments
+	 *
+	 * @return void
+	 */
+	public function setComments(?array $comments): void
+	{
+		$this->comments = $comments;
 	}
 
 	public function setGender(?GenderEnum $gender): void
