@@ -1286,23 +1286,16 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::REGISTERED)]
 	public function deleteprofileattachment()
 	{
 		$user = $this->user;
 
-
 		$id       = $this->input->getInt('id', null);
-		$filename = $this->input->getString('filename');
-
 		if (!empty($id))
 		{
 			$m_users = $this->getModel('Users');
 			$deleted = $m_users->deleteProfileAttachment($id, $user->id);
-
-			if ($deleted && !empty($filename))
-			{
-				unlink(JPATH_SITE . DS . $filename);
-			}
 		}
 		else
 		{
