@@ -22,6 +22,8 @@ class SignatureRequests extends CMSPlugin implements SubscriberInterface
 
 	private RequestRepository $repository;
 
+	private const MAX_FAILED_ATTEMPTS = 3;
+
 	protected const TASKS_MAP = [
 		'numeric_sign.api' => [
 			'langConstPrefix' => 'PLG_TASK_SIGNATURE_REQUESTS',
@@ -82,10 +84,22 @@ class SignatureRequests extends CMSPlugin implements SubscriberInterface
 						{
 							Log::add('Failed to manage signature request with ID ' . $request->getId(), Log::WARNING, 'plg_emundus_signature_requests');
 							$failed = true;
+
+							$failedAttempts = $this->repository->incrementFailedAttempts($request->getId());
+							if ($failedAttempts >= self::MAX_FAILED_ATTEMPTS)
+							{
+								$this->repository->updateStatus($request->getId(), SignStatusEnum::FAILED);
+								Log::add('Signature request with ID ' . $request->getId() . ' reached ' . $failedAttempts . ' failed attempts, status set to ' . SignStatusEnum::FAILED->value, Log::ERROR, 'plg_emundus_signature_requests');
+							}
 						}
 						else
 						{
 							Log::add('Successfully managed signature request with ID ' . $request->getId(), Log::INFO, 'plg_emundus_signature_requests');
+
+							if ($request->getFailedAttempts() > 0)
+							{
+								$this->repository->resetFailedAttempts($request->getId());
+							}
 						}
 					} else {
 						throw new Exception(Text::_('COM_EMUNDUS_MANAGES_REQUEST_METHOD_NOT_IMPLEMENTED'));

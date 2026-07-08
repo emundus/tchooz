@@ -75,7 +75,7 @@ export default {
 									controller: 'sign',
 									name: 'delete',
 									multiple: true,
-									method: 'delete',
+									method: 'post',
 									confirm: 'COM_EMUNDUS_ONBOARD_REQUEST_CANCEL_CONFIRM',
 									input: 'textarea',
 									inputLabel: 'COM_EMUNDUS_ONBOARD_REQUEST_CANCEL_REASON',
