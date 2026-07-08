@@ -65,17 +65,18 @@ class YousignService
 		}
 
 		$config = (!empty($api) && !empty($api->config)) ? json_decode($api->config) : null;
-		if (!empty($config) && !empty($config->signature_level))
+		$configGroup = (!empty($config) && !empty($config->configuration)) ? $config->configuration : null;
+		if (!empty($configGroup) && !empty($configGroup->signature_level))
 		{
-			$this->global_signature_level = $config->signature_level;
+			$this->global_signature_level = $configGroup->signature_level;
 		}
-		if (!empty($config) && !empty($config->signature_authentication_mode))
+		if (!empty($configGroup) && !empty($configGroup->signature_authentication_mode))
 		{
-			$this->global_signature_authentication_mode = $config->signature_authentication_mode;
+			$this->global_signature_authentication_mode = $configGroup->signature_authentication_mode;
 		}
-		if( !empty($config) && !empty($config->signature_display_mode))
+		if (!empty($configGroup) && !empty($configGroup->signature_display_mode))
 		{
-			$this->signature_display_mode = $config->signature_display_mode;
+			$this->signature_display_mode = $configGroup->signature_display_mode;
 		}
 
 		try
@@ -95,8 +96,8 @@ class YousignService
 			$yousign_request = $this->yousign_repository->loadYousignRequestByRequestId($request);
 			if (empty($yousign_request))
 			{
-				$expiration_date = (!empty($config) && !empty($config->expiration_date)) ? $config->expiration_date : '';
-				$request_name    = (!empty($config) && !empty($config->request_name)) ? $config->request_name : '';
+				$expiration_date = (!empty($configGroup) && !empty($configGroup->expiration_date)) ? $configGroup->expiration_date : '';
+				$request_name    = (!empty($configGroup) && !empty($configGroup->request_name)) ? $configGroup->request_name : '';
 				$yousign_request = $this->flushYousignRequest($application_file, $request, $this->user, $expiration_date, $request_name);
 			}
 

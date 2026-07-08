@@ -3,6 +3,7 @@ import fromAutomationFieldToParameter from '@/mixins/transformIntoParameterField
 import Parameter from '@/components/Utils/Parameter.vue';
 import AutomationActionTargets from '@/components/Automation/AutomationActionTargets.vue';
 import ParameterForm from '@/components/Utils/Form/ParameterForm.vue';
+import { Icon } from '@emundus/ui';
 
 export default {
 	name: 'AutomationAction',
@@ -25,7 +26,7 @@ export default {
 		},
 	},
 	mixins: [fromAutomationFieldToParameter],
-	components: { AutomationActionTargets, Parameter, ParameterForm },
+	components: { AutomationActionTargets, Parameter, ParameterForm, Icon },
 	data() {
 		return {
 			formGroups: [],
@@ -130,9 +131,18 @@ export default {
 				</div>
 				<h3 class="tw-text-lg tw-font-medium">{{ translate(action.label) }}</h3>
 			</div>
-			<span class="material-symbols-outlined tw-cursor-pointer tw-text-red-500" @click="removeAction(action)">
-				close
-			</span>
+			<div class="tw-mb-4 tw-flex tw-flex-row tw-items-center tw-gap-2">
+				<Icon
+					v-if="action.is_asynchronous"
+					name="pending_actions"
+					:size="20"
+					:title="translate('COM_EMUNDUS_AUTOMATION_ACTION_ASYNCHRONOUS')"
+					class="tw-text-neutral-500"
+				/>
+				<span class="material-symbols-outlined tw-cursor-pointer tw-text-red-500" @click="removeAction(action)">
+					close
+				</span>
+			</div>
 		</div>
 		<p class="tw-mb-2">{{ translate(action.description) }}</p>
 

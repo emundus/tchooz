@@ -12,6 +12,7 @@ namespace scripts;
 
 use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 
 class Release2_21_1Installer extends ReleaseInstaller
 {
@@ -69,6 +70,9 @@ class Release2_21_1Installer extends ReleaseInstaller
 					$this->db->updateObject('#__extensions', $custom_event_handler, 'extension_id');
 				}
 			}
+
+
+
 
 			$addonRepository = new AddonRepository();
 			$customReferenceAddon = $addonRepository->getItemByField('namekey', 'custom_reference_format', true);
