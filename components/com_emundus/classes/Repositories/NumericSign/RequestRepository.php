@@ -145,6 +145,7 @@ class RequestRepository
 				$request->setSubject($request_db['subject'] ?? '');
 				$ordered = $request_db['ordered'] == 1;
 				$request->setOrdered($ordered);
+				$request->setFailedAttempts($request_db['failed_attempts'] ?? 0);
 				$request->setExternalReference($request_db['reference'] ?? null);
 
 				return $request;
@@ -479,6 +480,52 @@ class RequestRepository
 		catch (\Exception $e)
 		{
 			throw new \Exception('Failed to update request last reminder at : ' . $e->getMessage(), $e->getCode());
+		}
+	}
+
+	public function incrementFailedAttempts(int $id): int
+	{
+		try
+		{
+			$query = $this->db->createQuery();
+
+			$query->update($this->getTableName(self::class))
+				->set($this->db->quoteName('failed_attempts') . ' = ' . $this->db->quoteName('failed_attempts') . ' + 1')
+				->where($this->db->quoteName('id') . ' = :id')
+				->bind(':id', $id, ParameterType::INTEGER);
+			$this->db->setQuery($query)->execute();
+
+			$query->clear()
+				->select($this->db->quoteName('failed_attempts'))
+				->from($this->db->quoteName($this->getTableName(self::class)))
+				->where($this->db->quoteName('id') . ' = :id')
+				->bind(':id', $id, ParameterType::INTEGER);
+			$this->db->setQuery($query);
+
+			return (int) $this->db->loadResult();
+		}
+		catch (\Exception $e)
+		{
+			throw new \Exception('Failed to increment request failed attempts : ' . $e->getMessage(), $e->getCode());
+		}
+	}
+
+	public function resetFailedAttempts(int $id): bool
+	{
+		try
+		{
+			$query = $this->db->createQuery();
+
+			$query->update($this->getTableName(self::class))
+				->set($this->db->quoteName('failed_attempts') . ' = 0')
+				->where($this->db->quoteName('id') . ' = :id')
+				->bind(':id', $id, ParameterType::INTEGER);
+
+			return $this->db->setQuery($query)->execute();
+		}
+		catch (\Exception $e)
+		{
+			throw new \Exception('Failed to reset request failed attempts : ' . $e->getMessage(), $e->getCode());
 		}
 	}
 

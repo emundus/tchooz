@@ -53,6 +53,8 @@ class Request
 
 	private bool $ordered = false;
 
+	private int $failedAttempts = 0;
+
 	private ?string $externalReference = null;
 
 	public function __construct($createdBy)
@@ -292,6 +294,16 @@ class Request
 		$this->ordered = $ordered;
 	}
 
+	public function getFailedAttempts(): int
+	{
+		return $this->failedAttempts;
+	}
+
+	public function setFailedAttempts(int $failedAttempts): void
+	{
+		$this->failedAttempts = $failedAttempts;
+	}
+
 	public function setExternalReference(?string $externalReference): void
 	{
 		$this->externalReference = $externalReference;
@@ -323,6 +335,7 @@ class Request
 			'created_at'       => $this->createdAt,
 			'created_by'       => $this->createdBy,
 			'ordered'          => $this->ordered ? 1 : 0,
+			'failed_attempts'  => $this->failedAttempts,
 			'external_reference' => $this->externalReference,
 		];
 	}

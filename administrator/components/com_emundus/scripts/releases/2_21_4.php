@@ -62,6 +62,8 @@ class Release2_21_4Installer extends ReleaseInstaller
 				}
 			}
 
+			$this->tasks[] = \EmundusHelperUpdate::addColumn('jos_emundus_sign_requests', 'failed_attempts', 'INT', 11, 0, 0)['status'];
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
