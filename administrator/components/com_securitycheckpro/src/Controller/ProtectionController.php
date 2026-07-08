@@ -25,6 +25,9 @@ class ProtectionController extends SecuritycheckproBaseController
     
     /* Guarda los cambios y redirige al cPanel */
     public function apply():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
 		$model = $this->getModel('Protection');
 		if (!$model instanceof ProtectionModel) {
 			Factory::getApplication()->enqueueMessage('Protection model not found', 'error');
@@ -61,7 +64,7 @@ class ProtectionController extends SecuritycheckproBaseController
             'redirect_to_non_www'    =>    1,
             'compress_content'    =>    1,
             'backend_protection_applied'    =>    0,
-            'hide_backend_url_redirection'    =>    'not_found',
+            'hide_backend_url_redirection'    =>    '',
             'sts_options'    =>    0,
             'xss_options'    =>    0,
             'csp_policy'    =>    $csp_policy,
@@ -78,6 +81,9 @@ class ProtectionController extends SecuritycheckproBaseController
 
     /* Modifica o crear el archivo .htaccess con las configuraciones seleccionadas por el usuario */
     function protect():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
         $model = $this->getModel('Protection');
 		if (!$model instanceof ProtectionModel) {
 			Factory::getApplication()->enqueueMessage('Protection model not found', 'error');
@@ -97,6 +103,9 @@ class ProtectionController extends SecuritycheckproBaseController
 
     /* Borra el archivo .htaccess */
     function delete_htaccess():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
         $model = $this->getModel('Protection');
 		if (!$model instanceof ProtectionModel) {
 			Factory::getApplication()->enqueueMessage('Protection model not found', 'error');
@@ -116,6 +125,9 @@ class ProtectionController extends SecuritycheckproBaseController
 
     /* Restaura el archivo .htaccess.original */
     function restore_htaccess():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
         $model = $this->getModel('Protection');
 		if (!$model instanceof ProtectionModel) {
 			Factory::getApplication()->enqueueMessage('Protection model not found', 'error');
@@ -135,9 +147,12 @@ class ProtectionController extends SecuritycheckproBaseController
 
     /* Muestra las configuraciones escogidas en una ventana, en lugar de aplicarlas mediante un archivo .htaccess.  Esto es necesario en servidores NGINX*/
     function generate_rules():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
         // Inicializamos las variables
         $txt_content = '';
-    
+
         $model = $this->getModel('Protection');
 		if (!$model instanceof ProtectionModel) {
 			Factory::getApplication()->enqueueMessage('Protection model not found', 'error');
@@ -164,7 +179,9 @@ class ProtectionController extends SecuritycheckproBaseController
 
     /* Guarda las modificaciones a los user-agents por defecto */
     function save_default_user_agent():void {
-          
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
         $app   = Factory::getApplication();
 		/** @var Input $jinput */
 		$jinput = $app->getInput();

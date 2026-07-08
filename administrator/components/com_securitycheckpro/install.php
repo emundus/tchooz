@@ -18,6 +18,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Component\Scheduler\Administrator\Model\TaskModel;
 
 class com_SecuritycheckproInstallerScript
 {
@@ -29,26 +30,10 @@ class com_SecuritycheckproInstallerScript
      */
     protected $fromVersion = null;
 	
-	/**
-     * Default execution time
-     *
-     * @var    string
-     */
-	protected $exec_time = '02:00';
-	
-	/**
-     * Default task of the old plugin
-     *
-     * @var    string
-     */
-	protected $old_task_set = 'integrity';
-	
-	/**
-     * Timeout
-     *
-     * @var    int
-     */
-	protected $cachetimeout = 1;
+	private int $cachetimeout = 1;
+	private string $exec_time = '02:00';
+	/** @var string */
+	private string $old_task_set = 'integrity';
 	
 	/**
      * 
@@ -111,6 +96,36 @@ class com_SecuritycheckproInstallerScript
 		'media/com_securitycheckpro/images/row_bkg.png',
 		'media/com_securitycheckpro/images/header_bkg.png',
 		'media/com_securitycheckpro/images/arrows.png',
+		// Remove log-type and read/unread icons replaced by Bootstrap badges
+		'media/com_securitycheckpro/images/xss.png',
+		'media/com_securitycheckpro/images/xss_base64.png',
+		'media/com_securitycheckpro/images/sql_injection.png',
+		'media/com_securitycheckpro/images/sql_injection_base64.png',
+		'media/com_securitycheckpro/images/local_file_inclusion.png',
+		'media/com_securitycheckpro/images/local_file_inclusion_base64.png',
+		'media/com_securitycheckpro/images/permitted.png',
+		'media/com_securitycheckpro/images/blocked.png',
+		'media/com_securitycheckpro/images/dinamically_blocked.png',
+		'media/com_securitycheckpro/images/second_level.png',
+		'media/com_securitycheckpro/images/http.png',
+		'media/com_securitycheckpro/images/session_protection.png',
+		'media/com_securitycheckpro/images/session_hijack.png',
+		'media/com_securitycheckpro/images/upload_scanner.png',
+		'media/com_securitycheckpro/images/spam_protection.png',
+		'media/com_securitycheckpro/images/url_inspector.png',
+		'media/com_securitycheckpro/images/injection.png',
+		'media/com_securitycheckpro/images/read.png',
+		'media/com_securitycheckpro/images/no_read.png',
+		'media/com_securitycheckpro/images/logs.png',
+		'media/com_securitycheckpro/images/tick_16x16.png',
+		// Remove mode (alert/strict) feature â€” only strict mode remains
+		'administrator/components/com_securitycheckpro/helpers/firewall_config_mode_tab.php',
+		// Remove DB optimization feature (InnoDB always reports no need to optimize)
+		'administrator/components/com_securitycheckpro/src/Controller/DbcheckController.php',
+		'administrator/components/com_securitycheckpro/src/Model/DbcheckModel.php',
+		'administrator/components/com_securitycheckpro/src/View/Dbcheck/HtmlView.php',
+		'administrator/components/com_securitycheckpro/tmpl/dbcheck/default.php',
+		'media/com_securitycheckpro/js/Dbcheck.js',
 		),
 		'folders'    => array
 		(
@@ -118,6 +133,9 @@ class com_SecuritycheckproInstallerScript
 		'media/com_securitycheckpro/new',
 		'media/com_securitycheckpro/stylesheets',
 		'media/com_securitycheckpro/fonts',
+		// Remove DB optimization feature
+		'administrator/components/com_securitycheckpro/src/View/Dbcheck',
+		'administrator/components/com_securitycheckpro/tmpl/dbcheck',
 		)
     );
             
@@ -173,7 +191,7 @@ class com_SecuritycheckproInstallerScript
     private function _4_version_changes()
     {
     
-		// Extraemos la información necesario de la tabla #_extensions sobre el paquete trackactions       
+		// Extraemos la informaciï¿½n necesario de la tabla #_extensions sobre el paquete trackactions       
         $db = Factory::getContainer()->get(DatabaseInterface::class);
 		$installer = new Installer();
 		$installer->setDatabase($db);
@@ -191,16 +209,20 @@ class com_SecuritycheckproInstallerScript
 			$result = null;
         }
 		        
-        // Si no existe versión previa no es necesario hacer ninguna acción
+        // Si no existe versiï¿½n previa no es necesario hacer ninguna acciï¿½n
         if (!empty($result)) {
         
-            // Decodificamos la información de la versión, que está en formato json en la entrada 'manifest_cache'
+            // Decodificamos la informaciï¿½n de la versiï¿½n, que estï¿½ en formato json en la entrada 'manifest_cache'
             $stack = json_decode($result[0]["manifest_cache"], true);
-            
-            // Versión de Securitycheck Pro instalada
+
+            if (!is_array($stack) || !isset($stack["version"])) {
+                return;
+            }
+
+            // Versiï¿½n de Securitycheck Pro instalada
             $trackactions_version = $stack["version"];
-            
-            // Si la versión instalada es menor a la 2.0, la desinstalamos
+
+            // Si la versiï¿½n instalada es menor a la 2.0, la desinstalamos
             if (version_compare($trackactions_version, "2.0", "lt")) {
                     
 				$columnName      = $db->quoteName("extension_id");
@@ -229,7 +251,7 @@ class com_SecuritycheckproInstallerScript
 			}
         }
 		
-		// Extraemos la información necesario de la tabla #_extensions sobre el plugin trackactions_k2 (no debería existir!)    
+		// Extraemos la informaciï¿½n necesario de la tabla #_extensions sobre el plugin trackactions_k2 (no deberï¿½a existir!)    
         $db = Factory::getContainer()->get(DatabaseInterface::class);
 		try {
 			$query = $db->getQuery(true);
@@ -244,7 +266,7 @@ class com_SecuritycheckproInstallerScript
 			$result_trackactions_k2 = null;
         }
 		        
-        // Si no existe versión previa no es necesario hacer ninguna acción
+        // Si no existe versiï¿½n previa no es necesario hacer ninguna acciï¿½n
         if (!empty($result_trackactions_k2)) {
                 
 			$columnName      = $db->quoteName("extension_id");
@@ -272,7 +294,7 @@ class com_SecuritycheckproInstallerScript
 			}			
         }
 		
-		// Extraemos la información necesario de la tabla #_extensions sobre el plugin "update database"       
+		// Extraemos la informaciï¿½n necesario de la tabla #_extensions sobre el plugin "update database"       
         $db = Factory::getContainer()->get(DatabaseInterface::class);
 		try {
 			$query = $db->getQuery(true);
@@ -287,16 +309,20 @@ class com_SecuritycheckproInstallerScript
 			$result = null;
         }
 		        
-        // Si no existe versión previa no es necesario hacer ninguna acción
+        // Si no existe versiï¿½n previa no es necesario hacer ninguna acciï¿½n
         if (!empty($result)) {
         
-            // Decodificamos la información de la versión, que está en formato json en la entrada 'manifest_cache'
+            // Decodificamos la informaciï¿½n de la versiï¿½n, que estï¿½ en formato json en la entrada 'manifest_cache'
             $stack = json_decode($result[0]["manifest_cache"], true);
-            
-            // Versión de Securitycheck Pro instalada
+
+            if (!is_array($stack) || !isset($stack["version"])) {
+                return;
+            }
+
+            // Versiï¿½n de Securitycheck Pro instalada
             $update_database_version = $stack["version"];
-            
-            // Si la versión instalada es menor a la 2.0, la desinstalamos
+
+            // Si la versiï¿½n instalada es menor a la 2.0, la desinstalamos
             if (version_compare($update_database_version, "2.0", "lt")) {
                // Disable update database plugin
 				$tableExtensions = $db->quoteName("#__extensions");
@@ -334,14 +360,15 @@ class com_SecuritycheckproInstallerScript
     public function preflight($action, $installer)
     {
 		if ($action === 'uninstall') {
-            // Si NO se está desinstalando el paquete, impedimos desinstalar este sub-elemento.
+            // Si NO se estï¿½ desinstalando el paquete, impedimos desinstalar este sub-elemento.
             if (!\defined('SCP_PKG_UNINSTALLING')) {
                 Factory::getApplication()->enqueueMessage(
                     Text::_('COM_SECURITYCHECKPRO_UNINSTALL_BLOCKED'),
                     'warning'
                 );
-                return false; // Abortamos la desinstalación de este elemento.
+                return false; // Abortamos la desinstalaciï¿½n de este elemento.
             }
+			$this->deleteSchedulerTasksByType('securitycheckpro.cron');
         }
 		
 		if ($action === 'update') {
@@ -349,19 +376,19 @@ class com_SecuritycheckproInstallerScript
             if (!empty($installer->extension->manifest_cache)) {
                 $manifestValues = json_decode($installer->extension->manifest_cache, true);
 
-                if (\array_key_exists('version', $manifestValues)) {
+                if (is_array($manifestValues) && \array_key_exists('version', $manifestValues)) {
                     $this->fromVersion = $manifestValues['version'];					
                 }
             }
         }
-		
-        // Only allow to install on PHP 5.3.0 or later
-        if (!version_compare(PHP_VERSION, '5.3.0', 'ge')) {        
-            Factory::getApplication()->enqueueMessage('Securitycheck Pro requires, at least, PHP 5.3.0', 'error');
+		// Only allow to install on PHP 8.1.0 or later
+        if (!version_compare(PHP_VERSION, '8.1.0', 'ge')) {        
+            Factory::getApplication()->enqueueMessage('Securitycheck Pro requires, at least, PHP 8.1.0', 'error');
             return false;
-        } else if (version_compare(JVERSION, '4.0.0', 'lt')) {
-            // Only allow to install on Joomla! 4.0.0 or later
-            Factory::getApplication()->enqueueMessage("This version only works in Joomla! 4 or higher", 'error');
+		// @phpstan-ignore-next-line
+        }  else if (version_compare(JVERSION, '5.0.0', 'lt')) {
+            // Only allow to install on Joomla! 5.0.0 or later
+            Factory::getApplication()->enqueueMessage("This version only works in Joomla! 5 or higher", 'error');
             return false;
         }
         
@@ -397,7 +424,7 @@ class com_SecuritycheckproInstallerScript
 			// Do this only during installs
 			if ($type == "install")
 			{			
-				// Establecemos la configuración 'Easy config' para la configuración inicial
+				// Establecemos la configuraciï¿½n 'Easy config' para la configuraciï¿½n inicial
 				try
 				{
 					$filePath = JPATH_ADMINISTRATOR . '/components/com_securitycheckpro/helpers/installerhelper.php';
@@ -438,8 +465,8 @@ class com_SecuritycheckproInstallerScript
 			$this->create_scheduled_task();        
         }
 	}
-    
-    
+	
+	  
     /**
      * Method to update the component
      *
@@ -459,158 +486,269 @@ class com_SecuritycheckproInstallerScript
 		       
     }
 	
+	private function schedulerTaskExists(string $type): bool
+	{
+		/** @var \Joomla\Database\DatabaseInterface $db */
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
+
+		$id = $db->setQuery(
+			$db->getQuery(true)
+				->select($db->quoteName('id'))
+				->from($db->quoteName('#__scheduler_tasks'))
+				->where($db->quoteName('type') . ' = ' . $db->quote($type))
+		)->loadResult();
+
+		return (int) $id > 0;
+	}
+	
 	/**
-     * Uninstall old cron plugin
-     *
-     * @return  void
-     *
-     * @since   5.0.0
-     */
-    protected function uninstallExtensions()
-    {
+	 * Borra tareas del Scheduler (y logs) por type.
+	 *
+	 * @param string $type
+	 * @return void
+	 */
+	private function deleteSchedulerTasksByType(string $type): void
+	{
+		/** @var \Joomla\Database\DatabaseInterface $db */
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
+
+		$ids = $db->setQuery(
+			$db->getQuery(true)
+				->select($db->quoteName('id'))
+				->from($db->quoteName('#__scheduler_tasks'))
+				->where($db->quoteName('type') . ' = ' . $db->quote($type))
+		)->loadColumn();
+
+		if (!is_array($ids) || $ids === []) {
+			return;
+		}
+
+		$taskIds = array_values(array_filter(array_map('intval', $ids), static fn (int $v): bool => $v > 0));
+		if ($taskIds === []) {
+			return;
+		}
+
+		// Logs
+		$db->setQuery(
+			$db->getQuery(true)
+				->delete($db->quoteName('#__scheduler_logs'))
+				->where($db->quoteName('id') . ' IN (' . implode(',', $taskIds) . ')')
+		)->execute();
+
+		// Tasks
+		$db->setQuery(
+			$db->getQuery(true)
+				->delete($db->quoteName('#__scheduler_tasks'))
+				->where($db->quoteName('id') . ' IN (' . implode(',', $taskIds) . ')')
+		)->execute();
+	}
+	
+	/**
+	 * @return void
+	 */
+	protected function uninstallExtensions(): void
+	{
+		/** @var \Joomla\Database\DatabaseInterface $db */
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
+
+		/** @var array<int, array{
+		 *   type: string,
+		 *   element: string,
+		 *   folder: string,
+		 *   client_id: int,
+		 *   pre: (callable(object): void)|null
+		 * }> $extensions
+		 */
 		$extensions = [
-            /**
-             * Define here the extensions to be uninstalled and optionally migrated on update.
-             * For each extension, specify an associative array with following elements (key => value):
-             * 'type'         => Field `type` in the `#__extensions` table
-             * 'element'      => Field `element` in the `#__extensions` table
-             * 'folder'       => Field `folder` in the `#__extensions` table
-             * 'client_id'    => Field `client_id` in the `#__extensions` table
-             * 'pre_function' => Name of an optional migration function to be called before
-             *                   uninstalling, `null` if not used.
-             */
-            ['type' => 'plugin', 'element' => 'securitycheckpro_cron', 'folder' => 'system', 'client_id' => 0, 'pre_function' => 'migrateoldCronPlugin'],   
-			['type' => 'package', 'element' => 'pkg_securitycheck', 'folder' => '', 'client_id' => 0, 'pre_function' => ''],
-			['type' => 'component', 'element' => 'com_securitycheck', 'folder' => '', 'client_id' => 1, 'pre_function' => ''],
-			['type' => 'plugin', 'element' => 'securitycheck', 'folder' => 'system', 'client_id' => 0, 'pre_function' => ''],
-			
-        ];
-		
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
+			[
+				'type' => 'plugin',
+				'element' => 'securitycheckpro_cron',
+				'folder' => 'system',
+				'client_id' => 0,
+				'pre' => [$this, 'migrateoldCronPlugin'],
+			],
+			[
+				'type' => 'package',
+				'element' => 'pkg_securitycheck',
+				'folder' => '',
+				'client_id' => 0,
+				'pre' => null,
+			],
+			[
+				'type' => 'component',
+				'element' => 'com_securitycheck',
+				'folder' => '',
+				'client_id' => 1,
+				'pre' => null,
+			],
+			[
+				'type' => 'plugin',
+				'element' => 'securitycheck',
+				'folder' => 'system',
+				'client_id' => 0,
+				'pre' => null,
+			],
+		];
 
-        foreach ($extensions as $extension) {
-            $row = $db->setQuery(
-                $db->getQuery(true)
-                    ->select('*')
-                    ->from($db->quoteName('#__extensions'))
-                    ->where($db->quoteName('type') . ' = ' . $db->quote($extension['type']))
-                    ->where($db->quoteName('element') . ' = ' . $db->quote($extension['element']))
-                    ->where($db->quoteName('folder') . ' = ' . $db->quote($extension['folder']))
-                    ->where($db->quoteName('client_id') . ' = ' . $db->quote($extension['client_id']))
-            )->loadObject();
-						
-            // Skip migrating and uninstalling if the extension doesn't exist
-            if (!$row) {
-                continue;
-            }
+		foreach ($extensions as $extension) {
+			$query = $db->getQuery(true)
+				->select('*')
+				->from($db->quoteName('#__extensions'))
+				->where($db->quoteName('type') . ' = ' . $db->quote($extension['type']))
+				->where($db->quoteName('element') . ' = ' . $db->quote($extension['element']))
+				->where($db->quoteName('folder') . ' = ' . $db->quote($extension['folder']))
+				->where($db->quoteName('client_id') . ' = ' . (int) $extension['client_id']);
 
-            // If there is a function for migration to be called before uninstalling, call it
-            if ($extension['pre_function'] && method_exists($this, $extension['pre_function'])) {
-                $this->{$extension['pre_function']}($row);
-            }
-			
+			$row = $db->setQuery($query)->loadObject();
 
-            try {
-                $db->transactionStart();				
+			if ($row === null) {
+				continue;
+			}
 
-                // Unlock and unprotect the plugin so we can uninstall it
-                $db->setQuery(
-                    $db->getQuery(true)
-                        ->update($db->quoteName('#__extensions'))
-                        ->set($db->quoteName('locked') . ' = 0')
-                        ->set($db->quoteName('protected') . ' = 0')
-                        ->where($db->quoteName('extension_id') . ' = :extension_id')
-                        ->bind(':extension_id', $row->extension_id, ParameterType::INTEGER)
-                )->execute();
+			if ($extension['pre'] !== null) {
+				($extension['pre'])($row);
+			}
+
+			try {
+				$db->transactionStart();
 				
-                // Uninstall the plugin
-                $installer = new Installer();
-                $installer->setDatabase($db);
-                $installer->uninstall($extension['type'], $row->extension_id);
+				$extension_id = (int) $row->extension_id;
 
-                $db->transactionCommit();
-            } catch (\Throwable $e) {			
-                $db->transactionRollback();
-                throw $e;
-            }
-        }
-    }
+				$db->setQuery(
+					$db->getQuery(true)
+						->update($db->quoteName('#__extensions'))
+						->set($db->quoteName('locked') . ' = 0')
+						->set($db->quoteName('protected') . ' = 0')
+						->where($db->quoteName('extension_id') . ' = :extension_id')
+						->bind(':extension_id', $extension_id, ParameterType::INTEGER)
+				)->execute();
+
+				$installer = new Installer();
+				$installer->setDatabase($db);
+				$installer->uninstall($extension['type'], (int) $row->extension_id);
+
+				$db->transactionCommit();
+			} catch (\Throwable $e) {
+				$db->transactionRollback();
+				throw $e;
+			}
+		}
+	}
 	
 	/**
 	 * Crea las tareas programadas
 	 *
 	 * @return void
 	 */
-	private function create_scheduled_task(){
-				
-		$task = [];
-		
-        /** @var \Joomla\CMS\Extension\ComponentInterface $component */
-        $component = Factory::getApplication()->bootComponent('com_scheduler');
+	private function create_scheduled_task(): void
+	{
+		 // No sobrescribir configuraciï¿½n del usuario
+		if ($this->schedulerTaskExists('securitycheckpro.cron')) {
+			return;
+		}
+	
+		// Valida cachetimeout (interval-days) como int > 0
+		$intervalDays = (int) ($this->cachetimeout ?? 0);
+		if ($intervalDays <= 0) {
+			// Si prefieres no lanzar, puedes return; pero en instalaciï¿½n suele ser mejor fallar claro
+			throw new \RuntimeException('Invalid cachetimeout (interval-days) value.');
+		}
 
-        /** @var \Joomla\Component\Scheduler\Administrator\Model\TaskModel $model */
-        $model = $component->getMVCFactory()->createModel('Task', 'Administrator', ['ignore_request' => true]);
-		
-		try {
-			$task = [
-				'title'           => 'SCP Cron',
-				'type'            => 'securitycheckpro.cron',
-				'execution_rules' => [
-					'rule-type'     => 'interval-days',
-					'interval-days' => $this->cachetimeout,
-					'exec-time'     => $this->exec_time,
-					'exec-day'      => gmdate('d'),
-				],
-				'state'  => 1,
-				'params' => [
-					'task_to_be_launched' => $this->old_task_set,
-				],
-			];	
-		} catch (\Exception $e) { 
-			
-        }	
-					
-        $model->save($task);
-	}	
+		// Valida exec_time como "HH:MM"
+		$execTime = (string) ($this->exec_time ?? '');
+		if (!preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d$/', $execTime)) {
+			throw new \RuntimeException('Invalid exec_time. Expected HH:MM.');
+		}
+
+		/** @var \Joomla\CMS\Extension\ComponentInterface $component */
+		$component = Factory::getApplication()->bootComponent('com_scheduler');
+
+		/** @var \Joomla\Component\Scheduler\Administrator\Model\TaskModel $model */
+		// @phpstan-ignore-next-line
+		$model = $component->getMVCFactory()->createModel('Task', 'Administrator', ['ignore_request' => true]);
+
+		/** @var array<string, mixed> $task */
+		$task = [
+			'title' => 'SCP Cron',
+			'type'  => 'securitycheckpro.cron',
+			'execution_rules' => [
+				'rule-type'     => 'interval-days',
+				'interval-days' => $intervalDays,
+				'exec-time'     => $execTime,
+				// Si realmente lo necesitas; si no, quï¿½talo para evitar ï¿½reglasï¿½ ambiguas
+				'exec-day'      => (int) gmdate('d'),
+			],
+			'state'  => 1,
+			'params' => [
+				'task_to_be_launched' => $this->old_task_set,
+			],
+		];
+		$result = $model->save($task);
+
+		// En Joomla, save() puede devolver false en error (o un valor truthy). Lo tratamos de forma segura.
+		if ($result === false) {
+			throw new \RuntimeException('Failed to create scheduled task (model->save returned false).');
+		}
+	}
 	
 	/**
-     * Migrate plugin parameters of obsolete system plugin to simulate cron
-     *
-	 * @param   string             $data    The data of the old plugin
-     *
-     * @return  void
-     *
-     * @since   5.0.0
-     */
-    private function migrateoldCronPlugin($data)
-    {
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-						
+	 * Migrate plugin parameters of obsolete system plugin to simulate cron.
+	 *
+	 * @return void
+	 *
+	 * @since 5.0.0
+	 */
+	private function migrateoldCronPlugin(): void
+	{
+		/** @var \Joomla\Database\DatabaseInterface $db */
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
+
+		/** @var object{storage_value?: mixed}|null $oldPluginConfig */
+		$oldPluginConfig = null;
+
 		try {
-			$old_plugin_config = $db->setQuery(
+			$oldPluginConfig = $db->setQuery(
 				$db->getQuery(true)
-					->select('storage_value')
+					->select($db->quoteName('storage_value'))
 					->from($db->quoteName('#__securitycheckpro_storage'))
-					->where($db->quoteName('storage_key') . ' = "cron_plugin"')
+					->where($db->quoteName('storage_key') . ' = ' . $db->quote('cron_plugin'))
 			)->loadObject();
-		} catch (\Exception $e) { 
-			$old_plugin_config = null;
-        }
-				
-		if (!empty($old_plugin_config)){
-			$old_plugin_params = json_decode($old_plugin_config->storage_value,true);
-			if ((int) $old_plugin_params['launch_time'] < 10) {
-				$this->exec_time = '0' . $old_plugin_params['launch_time'] . ':00';
-			} else {
-				$this->exec_time = $old_plugin_params['launch_time'] . ':00';
+		} catch (\Throwable $e) {
+			$oldPluginConfig = null;
+		}
+
+		if ($oldPluginConfig === null) {
+			return;
+		}
+
+		$raw = $oldPluginConfig->storage_value ?? null;
+		if (!is_string($raw) || $raw === '') {
+			return;
+		}
+
+		$decoded = json_decode($raw, true);
+
+		if (!is_array($decoded)) {
+			return;
+		}
+
+		// launch_time
+		$launchTime = $decoded['launch_time'] ?? null;
+		if (is_int($launchTime) || (is_string($launchTime) && ctype_digit($launchTime))) {
+			$hour = (int) $launchTime;
+			if ($hour >= 0 && $hour <= 23) {
+				$this->exec_time = str_pad((string) $hour, 2, '0', STR_PAD_LEFT) . ':00';
 			}
-			$this->old_task_set = $old_plugin_params['tasks'];
-		} 		
-		
-		//Create the scheduled task
-		$this->create_scheduled_task();
-    }
-    
+		}
+
+		// tasks
+		$this->old_task_set = $decoded['tasks'] ?? 'integrity';
+
+		// Solo crear si no existe ya una task configurada por el usuario
+		if (!$this->schedulerTaskExists('securitycheckpro.cron')) {
+			$this->create_scheduled_task();
+		}
+	}   
     
 }
 ?>

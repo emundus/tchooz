@@ -300,11 +300,10 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 			}
 			else
 			{
-				$status = $applicationFileEntity->getStatus() instanceof StatusEntity ? $applicationFileEntity->getStatus()->getStep() : $applicationFileEntity->getStatus();
 				$data = (object) [
 					'id'                  => $applicationFileEntity->getId(),
 					'applicant_id'        => $applicationFileEntity->getUser()->id,
-					'status'              => $status,
+					'status'              => $applicationFileEntity->getStatusStep(),
 					'campaign_id'         => $applicationFileEntity->getCampaignId(),
 					'date_submitted'      => $applicationFileEntity->getDateSubmitted()?->format('Y-m-d H:i:s'),
 					'published'           => $applicationFileEntity->getPublished(),
@@ -390,14 +389,13 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 		if (empty($ccid))
 		{
-			$status = $applicationFileEntity->getStatus() instanceof StatusEntity ? $applicationFileEntity->getStatus()->getStep() : $applicationFileEntity->getStatus();
 			$campaign_candidature = [
 				'date_time'           => date('Y-m-d H:i:s'),
 				'applicant_id'        => $applicationFileEntity->getUser()->id,
 				'user_id'             => $user_id,
 				'campaign_id'         => $applicationFileEntity->getCampaignId(),
 				'fnum'                => $applicationFileEntity->getFnum(),
-				'status'              => $status,
+				'status'              => $applicationFileEntity->getStatusStep(),
 				'published'           => $applicationFileEntity->getPublished(),
 				'form_progress'       => 0,
 				'attachment_progress' => 0,

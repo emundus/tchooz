@@ -7,14 +7,14 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Session\Session;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\Filesystem\Path;
 
 /** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\View\Rules\HtmlView $this */
+
+HTMLHelper::_('bootstrap.tooltip', '.hasTooltip');
 
 // Estado de búsqueda actual
 $search = (string) $this->escape($this->state->get('filter.acl_search', ''));
@@ -44,6 +44,16 @@ if (!$canView) {
         require $navFile;
     }
     ?>
+
+	<!-- Action bar -->
+	<div class="scp-actionbar">
+		<div>
+			<p class="scp-actionbar__title">
+				<i class="fa fa-users-cog" aria-hidden="true"></i>
+				<?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_RULES_TEXT'); ?>
+			</p>
+		</div>
+	</div>
 
 	<div class="card mb-4">
 		<div class="card-body">
@@ -82,7 +92,8 @@ if (!$canView) {
 				<?php endif; ?>
 			</div>
 
-			<div class="alert alert-info mt-3" role="alert">
+			<div class="scp-callout scp-callout--info mt-3">
+				<i class="fa fa-info-circle me-1" aria-hidden="true"></i>
 				<?php echo Text::_('COM_SECURITYCHECKPRO_RULES_GUEST_USERS'); ?>
 			</div>
 
@@ -118,12 +129,11 @@ if (!$canView) {
 										<?php echo HTMLHelper::_('grid.id', $i, (int) $row->id); ?>
 									</td>
 
-									<td>
-										<?php echo str_repeat('<span class="gi">|&mdash;</span>', (int) $row->level); ?>
+									<td style="padding-left: calc(.75rem + <?php echo (int) $row->level; ?>rem);">
 										<?php echo $this->escape((string) $row->title); ?>
 									</td>
 
-									<td class="rules-logs">
+									<td class="text-center">
 										<?php echo HTMLHelper::_(
 											'jgrid.state',
 											[
@@ -154,11 +164,11 @@ if (!$canView) {
 
 									</td>
 
-									<td class="rules-logs">
+									<td class="text-center">
 										<?php echo (int) $row->id; ?>
 									</td>
 
-									<td class="rules-logs">
+									<td class="text-center">
 										<?php
 										echo $row->last_change
 											? HTMLHelper::_('date', $row->last_change, Text::_('DATE_FORMAT_LC2'))

@@ -17,7 +17,7 @@ use Joomla\Filesystem\Path;
 /** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel $basemodel */
 $basemodel = $this->basemodel;
 
-HTMLHelper::_('bootstrap.tooltip');
+HTMLHelper::_('bootstrap.tooltip', '[data-bs-toggle="tooltip"]');
 
 $esc = static function ($v): string {
 	return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
@@ -43,21 +43,6 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
     }
     ?>
 
-	<?php if ($this->server === 'apache' || $this->server === 'iis'): ?>
-		<div class="alert alert-warning" role="alert">
-			<?= Text::_('COM_SECURITYCHECKPRO_USER_AGENT_INTRO'); ?>
-		</div>
-		<div class="alert alert-danger" role="alert">
-			<?= Text::_('COM_SECURITYCHECKPRO_USER_AGENT_WARN'); ?>
-		</div>
-		<div class="alert alert-info" role="alert">
-			<?= $this->ExistsHtaccess ? Text::_('COM_SECURITYCHECKPRO_USER_AGENT_HTACCESS') : Text::_('COM_SECURITYCHECKPRO_USER_AGENT_NO_HTACCESS'); ?>
-		</div>
-	<?php elseif ($this->server === 'nginx'): ?>
-		<div class="alert alert-danger" role="alert">
-			<?= Text::_('COM_SECURITYCHECKPRO_NGINX_SERVER'); ?>
-		</div>
-	<?php endif; ?>
 
 	<!-- Toast (si usas toasts en otros flujos; no se usan aquí para help) -->
 	<div id="toast" class="col-12 toast align-items-center margin-bottom-10" role="alert" aria-live="assertive" aria-atomic="true">
@@ -67,6 +52,58 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 		</div>
 		<div id="toast-body" class="toast-body"></div>
 	</div>
+
+	<!-- Action bar -->
+	<div class="scp-actionbar">
+		<div>
+			<p class="scp-actionbar__title">
+				<i class="fa fa-lock" aria-hidden="true"></i>
+				<?= Text::_('COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT'); ?>
+			</p>
+			<?php if ($this->server === 'apache' || $this->server === 'iis'): ?>
+			<p class="scp-actionbar__subtitle d-flex flex-wrap gap-2 align-items-center mt-1">
+				<span class="scp-chip scp-chip--outline">
+					<i class="fa fa-server" aria-hidden="true"></i>
+					<?= $esc(strtoupper($this->server)); ?>
+				</span>
+				<?php if ($this->ExistsHtaccess): ?>
+					<span class="scp-chip scp-chip--ok">
+						<i class="fa fa-check-circle" aria-hidden="true"></i>
+						.htaccess
+					</span>
+				<?php else: ?>
+					<span class="scp-chip scp-chip--ko">
+						<i class="fa fa-times-circle" aria-hidden="true"></i>
+						.htaccess
+					</span>
+				<?php endif; ?>
+			</p>
+			<?php elseif ($this->server === 'nginx'): ?>
+			<p class="scp-actionbar__subtitle d-flex flex-wrap gap-2 align-items-center mt-1">
+				<span class="scp-chip scp-chip--ko">
+					<i class="fa fa-server" aria-hidden="true"></i>
+					Nginx
+				</span>
+			</p>
+			<?php endif; ?>
+		</div>
+	</div>
+
+	<?php if ($this->server === 'apache' || $this->server === 'iis'): ?>
+		<div class="scp-callout scp-callout--warning">
+			<i class="fa fa-exclamation-triangle me-1" aria-hidden="true"></i>
+			<?= Text::_('COM_SECURITYCHECKPRO_USER_AGENT_WARN'); ?>
+			<div class="scp-callout__detail">
+				<i class="fa fa-file-alt me-1" aria-hidden="true"></i>
+				<?= $this->ExistsHtaccess ? Text::_('COM_SECURITYCHECKPRO_USER_AGENT_HTACCESS') : Text::_('COM_SECURITYCHECKPRO_USER_AGENT_NO_HTACCESS'); ?>
+			</div>
+		</div>
+	<?php elseif ($this->server === 'nginx'): ?>
+		<div class="scp-callout scp-callout--danger">
+			<i class="fa fa-exclamation-circle me-1" aria-hidden="true"></i>
+			<?= Text::_('COM_SECURITYCHECKPRO_NGINX_SERVER'); ?>
+		</div>
+	<?php endif; ?>
 
 	<!-- Contenido -->
 	<div class="card mb-3">
@@ -99,7 +136,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 					<div class="tab-pane show active" id="autoprotection" role="tabpanel">
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-placement="top"
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" data-bs-placement="top"
 									 title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_PREVENT_ACCESS_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_PREVENT_ACCESS_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['prevent_access'])); ?>
@@ -112,7 +149,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-placement="top"
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" data-bs-placement="top"
 									 title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_PREVENT_UNAUTHORIZED_BROWSING_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_PREVENT_UNAUTHORIZED_BROWSING_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['prevent_unauthorized_browsing'])); ?>
@@ -125,7 +162,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-placement="top"
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" data-bs-placement="top"
 									 title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_FILE_INJECTION_PROTECTION_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_FILE_INJECTION_PROTECTION_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['file_injection_protection'])); ?>
@@ -138,7 +175,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-placement="top"
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" data-bs-placement="top"
 									 title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_SELF_ENVIRON_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_SELF_ENVIRON_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['self_environ'])); ?>
@@ -157,7 +194,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['xframe_options'])); ?>
 								</div>
@@ -175,7 +212,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['prevent_mime_attacks'])); ?>
 								</div>
@@ -187,7 +224,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_STS_OPTIONS_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_STS_OPTIONS_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_STS_OPTIONS_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['sts_options'])); ?>
 								</div>
@@ -199,7 +236,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_XSS_OPTIONS_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_XSS_OPTIONS_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_XSS_OPTIONS_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['xss_options'])); ?>
 								</div>
@@ -211,7 +248,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['csp_policy'])); ?>
 								</div>
@@ -225,7 +262,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['referrer_policy'])); ?>
 								</div>
@@ -239,7 +276,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_PERMISSIONS_POLICY_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_PERMISSIONS_POLICY_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_PERMISSIONS_POLICY_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['permissions_policy'])); ?>
 								</div>
@@ -256,7 +293,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 					<div class="tab-pane" id="user_agents_protection" role="tabpanel">
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['default_banned_list'])); ?>
 								</div>
@@ -273,7 +310,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_OWN_BANNED_LIST_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_OWN_BANNED_LIST_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_OWN_BANNED_LIST_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['own_banned_list'])); ?>
 								</div>
@@ -288,7 +325,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_OWN_CODE_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_OWN_CODE_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_OWN_CODE_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['own_code'])); ?>
 								</div>
@@ -331,7 +368,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_DISABLE_SERVER_SIGNATURE_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_DISABLE_SERVER_SIGNATURE_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_DISABLE_SERVER_SIGNATURE_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['disable_server_signature'])); ?>
 								</div>
@@ -343,7 +380,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['disallow_php_eggs'])); ?>
 								</div>
@@ -361,13 +398,13 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 						?>
 						<div class="scp-field row g-3">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_DISALLOW_SENSIBLE_FILES_ACCESS_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_DISALLOW_SENSIBLE_FILES_ACCESS_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_DISALLOW_SENSIBLE_FILES_ACCESS_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['disallow_sensible_files_access'])); ?>
 								</div>
 							</div>
 							<div class="col-md-8 position-relative">
-								<textarea class="form-control form-control-sm scp-textarea" name="disallow_sensible_files_access" id="disallow_sensible_files_access"><?= $esc($this->protection_config['disallow_sensible_files_access'] ?? '') ?></textarea>
+								<textarea class="form-control form-control-sm scp-textarea" name="disallow_sensible_files_access" id="disallow_sensible_files_access"><?= $esc($this->protection_config['disallow_sensible_files_access']) ?></textarea>
 								<button type="button" class="btn btn-outline-secondary btn-sm scp-expander" data-expand-target="#disallow_sensible_files_access">Expand</button>
 							</div>
 						</div>
@@ -377,7 +414,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 					<div class="tab-pane" id="backend_protection" role="tabpanel">
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_FEATURE_APPLIED_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_FEATURE_APPLIED_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_FEATURE_APPLIED_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->protection_config['backend_protection_applied'])); ?>
 								</div>
@@ -390,41 +427,47 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 							</div>
 						</div>
 
-						<div id="menu_hide_backend_1" class="alert alert-danger my-3"><?= Text::_('COM_SECURITYCHECKPRO_BACKEND_PROTECTION_EXPLAIN'); ?></div>
+						<div id="menu_hide_backend_1" class="scp-callout scp-callout--danger my-3">
+							<i class="fa fa-exclamation-circle me-1" aria-hidden="true"></i>
+							<?= Text::_('COM_SECURITYCHECKPRO_BACKEND_PROTECTION_EXPLAIN'); ?>
+						</div>
 
 						<div id="menu_hide_backend_2" class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['hide_backend_url'])); ?>
 								</div>
 							</div>
-							<div class="col-md-8 d-flex gap-2 align-items-center">
-								<span class="badge text-dark" style="background:#FFBF60;"><?= $esc($siteUrl) ?>?</span>
-								<input type="text" class="form-control form-control-sm" name="hide_backend_url" id="hide_backend_url"
-									value="<?= $esc($this->protection_config['hide_backend_url'] ?? '') ?>"
-									placeholder="<?= $esc($this->protection_config['hide_backend_url'] ?? '') ?>">
-								<button type="button" id="hide_backend_url_button" class="btn btn-primary btn-sm"><?= Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT'); ?></button>
+							<div class="col-md-8">
+								<div class="input-group input-group-sm">
+									<span class="input-group-text text-dark fw-semibold" style="background:#FFBF60;"><?= $esc($siteUrl) ?>?</span>
+									<input type="text" class="form-control" name="hide_backend_url" id="hide_backend_url"
+										value="<?= $esc($this->protection_config['hide_backend_url'] ?? '') ?>">
+									<button type="button" id="hide_backend_url_button" class="btn btn-primary"><?= Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT'); ?></button>
+								</div>
 							</div>
 						</div>
 
 						<div id="menu_hide_backend_3" class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_REDIRECTION_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_REDIRECTION_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_URL_REDIRECTION_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['hide_backend_url_redirection'])); ?>
 								</div>
 							</div>
-							<div class="col-md-8 d-flex gap-2 align-items-center">
-								<span class="badge text-dark" style="background:#D0F5A9;">/</span>
-								<input type="text" class="form-control form-control-sm" name="hide_backend_url_redirection" id="hide_backend_url_redirection"
-									value="<?= $esc($this->protection_config['hide_backend_url_redirection'] ?? '') ?>" placeholder="not_found">
+							<div class="col-md-8">
+								<div class="input-group input-group-sm">
+									<span class="input-group-text" style="background:#D0F5A9; color:#155724;">/</span>
+									<input type="text" class="form-control" name="hide_backend_url_redirection" id="hide_backend_url_redirection"
+										value="<?= $esc($this->protection_config['hide_backend_url_redirection'] ?? '') ?>">
+								</div>
 							</div>
 						</div>
 
 						<div id="menu_hide_backend_4" class="scp-field row g-3">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_ADD_EXCEPTION_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_ADD_EXCEPTION_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_EXCEPTIONS'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['backend_exceptions'])); ?>
 								</div>
@@ -455,7 +498,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 					<div class="tab-pane" id="performance_tab" role="tabpanel">
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_OPTIMAL_EXPIRATION_TIME_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_OPTIMAL_EXPIRATION_TIME_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_OPTIMAL_EXPIRATION_TIME_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['optimal_expiration_time'])); ?>
 								</div>
@@ -467,7 +510,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_COMPRESS_CONTENT_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_COMPRESS_CONTENT_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_COMPRESS_CONTENT_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['compress_content'])); ?>
 								</div>
@@ -479,7 +522,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_REDIRECT_TO_WWW_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_REDIRECT_TO_WWW_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_REDIRECT_TO_WWW_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['redirect_to_www'])); ?>
 								</div>
@@ -491,7 +534,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 
 						<div class="scp-field row g-3 align-items-center">
 							<div class="col-md-4">
-								<div class="fw-semibold" data-bs-toggle="tooltip" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_REDIRECT_TO_NON_WWW_EXPLAIN')) ?>">
+								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_REDIRECT_TO_NON_WWW_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_REDIRECT_TO_NON_WWW_TEXT'); ?>
 									<?= $appliedIcon(!empty($this->config_applied['redirect_to_non_www'])); ?>
 								</div>

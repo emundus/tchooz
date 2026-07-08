@@ -153,6 +153,11 @@ class ApplicationFileEntity
         return $this->status;
     }
 
+	public function getStatusStep(): int
+	{
+		return $this->status instanceof StatusEntity ? $this->status->getStep() : (int)$this->status;
+	}
+
     public function setStatus(StatusEntity|int|null $status): void
     {
         $this->status = $status;

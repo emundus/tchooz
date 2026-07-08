@@ -11,8 +11,10 @@ namespace SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Contr
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Session\Session;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\SecuritycheckproBaseController;
-use Joomla\Plugin\System\Trackactions\Model\TrackActionsHelperModel;
+use Joomla\Plugin\Actionlog\Trackactions\Model\TrackActionsHelperModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\Trackactions_logsModel;
 
 /**
@@ -36,15 +38,26 @@ class Trackactions_logsController extends SecuritycheckproBaseController
      * @return void
      */
     public function exportLogs():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
         // Get the logs data
 		$model = $this->getModel('Trackactions_logs');
 		if (!$model instanceof Trackactions_logsModel) {
 			Factory::getApplication()->enqueueMessage('Trackactions_logs model not found', 'error');
 			return;
 		}
-        $data = $model->getLogsData();		
-    
+        $data = $model->getLogsData();
+
+        // El plugin Track Actions instalado puede ser una version antigua que no tenga esta clase todavia
+        if (!class_exists(TrackActionsHelperModel::class)) {
+            Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_TRACKACTIONS_NEEDS_UPDATE'), 'warning');
+            return;
+        }
+
         // Export data to CSV file
+		// @phpstan-ignore-next-line
         TrackActionsHelperModel::dataToCsv($data);
     }
     
@@ -54,7 +67,11 @@ class Trackactions_logsController extends SecuritycheckproBaseController
 	 *
 	 * @return void
      */
-    function delete():void {       
+    function delete():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
 		$model = $this->getModel('Trackactions_logs');
 		if (!$model instanceof Trackactions_logsModel) {
 			Factory::getApplication()->enqueueMessage('Trackactions_logs model not found', 'error');
@@ -71,6 +88,10 @@ class Trackactions_logsController extends SecuritycheckproBaseController
 	 * @return void
      */
     function delete_all():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
         $model = $this->getModel('Trackactions_logs');
 		if (!$model instanceof Trackactions_logsModel) {
 			Factory::getApplication()->enqueueMessage('Trackactions_logs model not found', 'error');

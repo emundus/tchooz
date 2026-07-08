@@ -48,7 +48,10 @@ class EmundusControllerReference extends EmundusController
 
 		return EmundusResponse::ok($referencesSerialized, Text::_('COM_EMUNDUS_CUSTOM_REFERENCES_GENERATED_SUCCESSFULLY'));
 	}
-	
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::CUSTOM_REFERENCE, 'mode' => CrudEnum::CREATE]
+	])]
 	public function save(): EmundusResponse
 	{
 		$fnums = Factory::getApplication()->getUserState('com_emundus.files.generatereference.fnums');

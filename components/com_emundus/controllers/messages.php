@@ -25,6 +25,7 @@ use Joomla\CMS\Mail;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
+use Tchooz\Services\FileSecurityService;
 
 /**
  * eMundus Component Controller
@@ -124,6 +125,12 @@ class EmundusControllerMessages extends BaseController
 	{
 		$result = ['status' => false, 'file_name' => '', 'file_path' => '', 'msg' => ''];
 
+		if (empty($this->_user->id)) {
+			$result['msg'] = Text::_('ACCESS_DENIED');
+			echo json_encode($result);
+			exit;
+		}
+
 		$filetype = $this->input->post->get('filetype', null);
 		$file = $this->input->files->get('file');
 		$user = $this->input->post->get('user');
@@ -154,8 +161,7 @@ class EmundusControllerMessages extends BaseController
 				throw new Exception(Text::_('COM_EMUNDUS_ERROR_INVALID_FILETYPE'));
 			}
 
-			// Check file extension and remove any dengerous ones.
-			if (preg_match("/.exe$|.com$|.bat$|.zip$|.php$|.sh$/i", $file['name'])) {
+			if (!FileSecurityService::isAllowedUploadExtension($file['name'])) {
 				throw new Exception(Text::_('COM_EMUNDUS_ERROR_INVALID_FILETYPE'));
 			}
 			// Check if the message attachments directory exists.

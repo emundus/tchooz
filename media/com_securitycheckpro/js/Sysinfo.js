@@ -14,6 +14,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Filtro "Solo problemas": oculta las tarjetas marcadas como data-status="ok"
+  // (las pestañas sin ese atributo, como configuración global/MySQL/PHP, no se ven afectadas)
+  var onlyProblemsToggle = document.getElementById("filter_only_problems");
+  if (onlyProblemsToggle) {
+    onlyProblemsToggle.addEventListener("change", function () {
+      var hideOk = onlyProblemsToggle.checked;
+      document.querySelectorAll('[data-status="ok"]').forEach(function (el) {
+        el.style.display = hideOk ? "none" : "";
+      });
+    });
+  }
+
   // Go to Joomla Update page
   function GoToJoomlaUpdate() {
     window.location.href = "index.php?option=com_joomlaupdate";

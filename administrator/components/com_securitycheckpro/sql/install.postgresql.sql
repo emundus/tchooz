@@ -618,7 +618,7 @@ INSERT INTO "#__securitycheckpro_storage" ("storage_key","storage_value") VALUES
 CREATE TABLE IF NOT EXISTS "#__securitycheckpro_rules" (
 "id" serial NOT NULL,
 "group_id" integer,
-"rules_applied" smallint DEFAULT 0,
+"rules_applied" smallint DEFAULT 1,
 "last_change" timestamp without time zone,
 PRIMARY KEY ("id")
 );
@@ -704,7 +704,11 @@ INSERT INTO "#__securitycheckpro_trackactions_extensions" ("id", "extension") VA
 (14, 'com_redirect'),
 (15, 'com_tags'),
 (16, 'com_templates'),
-(17, 'com_users') ON CONFLICT DO NOTHING;
+(17, 'com_users'),
+(18, 'com_akeebabackup'),
+(19, 'com_acym'),
+(20, 'com_securitycheckpro'),
+(21, 'com_securitycheckprocontrolcenter') ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS "#__securitycheckpro_trackactions_tables_data" (
 "id" serial NOT NULL,

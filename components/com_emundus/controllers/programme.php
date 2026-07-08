@@ -304,6 +304,14 @@ class EmundusControllerProgramme extends EmundusController
 			$data        = json_decode($data, true);
 			$label       = $data['label'];
 			$code        = $data['code'];
+			if(empty($code) && !empty($label))
+			{
+				$code = preg_replace('/[^A-Za-z0-9]/', '', $label);
+				$code = str_replace(' ', '_', $code);
+				$code = substr($code, 0, 10);
+				$code = strtolower($code);
+				$code = uniqid($code . '-');
+			}
 			$programmes  = $data['programmes'] ?? '';
 			$description = $data['notes'] ?? '';
 			$synthesis   = $data['synthesis'] ?? '';

@@ -41,11 +41,12 @@ use Joomla\Component\Users\Administrator\Helper\Mfa;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FirewallconfigModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\IpModel;
+use Joomla\Plugin\System\Securitycheckpro\Helper\SecuritycheckProHelper;
 
 class Securitycheckpro extends CMSPlugin 
 {
 	/**
-     * Contendrá los parámetros del plugin
+     * Contendrï¿½ los parÃ¡metros del plugin
      *
      * @var BaseModel|null
      */
@@ -108,14 +109,14 @@ class Securitycheckpro extends CMSPlugin
 	}	
         
     /**
-     * Función para borrar logs
+     * FunciÃ³n para borrar logs
      *
      * @return  void
      *     
      */    
     function delete_logs()
     {
-		// Si la variable "pro_plugin" está vacía la instanciamos
+		// Si la variable "pro_plugin" estÃ¡ vacÃ­a la instanciamos
 		if (empty($this->pro_plugin)) {
 			$this->pro_plugin = new BaseModel();
 		}
@@ -127,7 +128,7 @@ class Securitycheckpro extends CMSPlugin
         (int) $track_actions_delete_period = $this->pro_plugin->getValue('delete_period', 0, 'pro_plugin');
         (int) $scp_delete_period = $this->pro_plugin->getValue('scp_delete_period', 60, 'pro_plugin');
         
-        // Borramos los logs de Track Actions si el parámetro está establecido así
+        // Borramos los logs de Track Actions si el parÃ¡metro estÃ¡ establecido asÃ­
         if ($track_actions_delete_period > 0) {
             try
             {
@@ -166,7 +167,7 @@ class Securitycheckpro extends CMSPlugin
     }
     
    /**
-     * Función para grabar los logs en la BBDD
+     * FunciÃ³n para grabar los logs en la BBDD
      *
      * @param   string|bool        $logs_attacks    	Tells if logs must be stored
 	 * @param   string             $ip    				The IP of the attacker
@@ -192,221 +193,12 @@ class Securitycheckpro extends CMSPlugin
 		$username,
 		$component
 	) {
-		if (!$logs_attacks) {
-			return;
-		}
-
-		$this->pro_plugin = new BaseModel();
-				
-		/** @var DatabaseInterface $db */
-		$db = Factory::getContainer()->get(DatabaseInterface::class);
-
-		// --- Normalización y validaciones ---
-		$ip = filter_var((string)$ip, FILTER_VALIDATE_IP) ?: '0.0.0.0';
-
-		$allowedTagKeys = [
-			'TAGS_STRIPPED','DUPLICATE_BACKSLASHES','LINE_COMMENTS','SQL_PATTERN','IF_STATEMENT',
-			'INTEGERS','BACKSLASHES_ADDED','LFI','IP_BLOCKED','IP_BLOCKED_DINAMIC','IP_PERMITTED',
-			'FORBIDDEN_WORDS','SESSION_PROTECTION','UPLOAD_SCANNER','FAILED_LOGIN_ATTEMPT_LABEL','HEURISTIC_SQL',
-			'SPAM_PROTECTION','URL_FORBIDDEN_WORDS'
-		];
-		$tag_description = strtoupper(trim((string)$tag_description));		
-		if (!in_array($tag_description, $allowedTagKeys, true)) {
-			$tag_description = 'UNKNOWN_EVENT';
-		}
-
-		$stripCtl = static function (?string $s): string {
-			$s = (string) $s;
-			$s = preg_replace('/[\x00-\x1F\x7F]+/u', ' ', $s) ?? '';
-			return trim($s);
-		};
-		$clip = static function (string $s, int $max): string {
-			return mb_substr($s, 0, $max, 'UTF-8');
-		};
-
-		$username = $clip($stripCtl((string) $username), 150);
-		$description = $clip($stripCtl((string) $description), 255);
-		$type        = $clip($stripCtl((string) $type), 50);
-		$uri         = $clip($stripCtl((string) $uri), 1000);
-		$component   = $clip($stripCtl((string) $component), 150);
-
-		// original_string limitado + base64
-		$rawOriginal = (string) $original_string;
-		$MAX_ORIGINAL_BYTES = 16384; // 16 KiB (ajusta si quieres)
-		if (strlen($rawOriginal) > $MAX_ORIGINAL_BYTES) {
-			$rawOriginal = substr($rawOriginal, 0, $MAX_ORIGINAL_BYTES);
-		}
-		$original_b64 = base64_encode($rawOriginal);
-
-		// --- Parámetros de control ---
-		$logs_per_ip = (int) $this->pro_plugin->getValue('log_limits_per_ip_and_day', 30, 'pro_plugin');
-		
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
-		$app       = Factory::getApplication();
-		$config = $app->getConfig();
-		$offset = $config->get('offset') ?: 'UTC';
-		$tz     = new \DateTimeZone($offset);
-		$now    = (new \DateTime('now', $tz))->format('Y-m-d H:i:s');
-		$start  = (new \DateTime('today', $tz))->format('Y-m-d H:i:s');
-		$end    = (new \DateTime('tomorrow', $tz))->format('Y-m-d H:i:s');
-
-		// --- Límite diario por IP (rango) ---
-		try {
-			$q = $db->getQuery(true)
-				->select('COUNT(*)')
-				->from($db->quoteName('#__securitycheckpro_logs'))
-				->where($db->quoteName('ip')   . ' = ' . $db->quote($ip))
-				->where($db->quoteName('time') . ' >= ' . $db->quote($start))
-				->where($db->quoteName('time') . ' < '  . $db->quote($end));
-			$db->setQuery($q);
-			$logs_recorded = (int) $db->loadResult();
-		} catch (\Throwable $e) {
-			$logs_recorded = 0;
-		}
-		if ($logs_per_ip > 0 && $logs_recorded >= $logs_per_ip) {
-			return;
-		}
-
-		// --- Deduplicación hoy por ip+tag+original_string ---
-		$q = $db->getQuery(true)
-			->select('1')
-			->from($db->quoteName('#__securitycheckpro_logs'))
-			->where($db->quoteName('ip')              . ' = ' . $db->quote($ip))
-			->where($db->quoteName('tag_description') . ' = ' . $db->quote($tag_description))
-			->where($db->quoteName('original_string') . ' = ' . $db->quote($original_b64))
-			->where($db->quoteName('time')            . ' >= ' . $db->quote($start))
-			->where($db->quoteName('time')            . ' < '  . $db->quote($end))
-			->setLimit(1);
-		$db->setQuery($q);
-		if ($db->loadResult()) {
-			return;
-		}
-
-		// --- límites ---
-		$limits = [
-			'ip'              => 255,
-			'username'        => 150,
-			'time'            => 19,   // 'Y-m-d H:i:s'
-			'tag_description' => 50,
-			'description'     => 300,
-			'type'            => 50,
-			'uri'             => 100,
-			'component'       => 150,
-			// 'original_string' es MEDIUMTEXT
-		];
-
-		// helper multibyte-safe
-		$fit = static function (?string $value, ?int $max) : string {
-			$value = (string) ($value ?? '');
-			if ($max !== null && $max > 0 && mb_strlen($value, 'UTF-8') > $max) {
-				return mb_substr($value, 0, $max, 'UTF-8'); // sin puntos para no exceder
-			}
-			return $value;
-		};
-		
-		// URI completo cuando excede
-		$uri_original_completo = (string) $uri;
-
-		// datos de entrada
-		$ip              = $fit((string) $ip,              $limits['ip']);
-		$username        = $fit((string) $username,        $limits['username']);
-		$now             = Factory::getDate()->toSql(); // siempre 'Y-m-d H:i:s'
-		$now             = $fit($now,                   $limits['time']); // por si acaso
-		$tag_description = $fit((string) $tag_description, $limits['tag_description']);
-		$description     = $fit((string) $description,     $limits['description']);
-		$type            = $fit((string) $type,            $limits['type']);
-		$uri             = $fit((string) $uri,             $limits['uri']);
-		$component       = $fit((string) $component,       $limits['component']);
-
-		
-		if (!empty($uri_original_completo) && $uri_original_completo !== $uri) {
-			$original_string .= "\n[full_uri]: " . $uri_original_completo;
-			$original_b64 = base64_encode($original_string);
-		}
-		// Si ya lo llevas en base64, úsalo tal cual:
-		$original_b64 = (string) $original_b64;
-		
-		// --- Insert seguro con quote() ---
-		$q = $db->getQuery(true)
-			->insert($db->quoteName('#__securitycheckpro_logs'))
-			->columns([
-				$db->quoteName('ip'),
-				$db->quoteName('username'),
-				$db->quoteName('time'),
-				$db->quoteName('tag_description'),
-				$db->quoteName('description'),
-				$db->quoteName('type'),
-				$db->quoteName('uri'),
-				$db->quoteName('component'),
-				$db->quoteName('original_string'),
-			])
-			->values(implode(', ', [
-				$db->quote($ip),
-				$db->quote($username),
-				$db->quote($now),
-				$db->quote($tag_description),
-				$db->quote($description),
-				$db->quote($type),
-				$db->quote($uri),
-				$db->quote($component),
-				$db->quote($original_b64),
-			]));
-
-		try {
-			$db->setQuery($q);
-			$db->execute();
-		} catch (\Throwable $e) {
-			Log::add(
-				'Función grabar_log: error al insertar entrada. ' . $e->getMessage(),
-				Log::ERROR,
-				'com_securitycheckpro',
-				null,
-				['uri_len' => mb_strlen((string) $uri, 'UTF-8')]
-			);			
-		}
-
-		// --- Emails (texto plano, sin CR/LF en subject) ---
-		$blacklist_email      = 1;
-		$send_email_inspector = 0;
-
-		if ($tag_description === 'IP_BLOCKED' || $tag_description === 'IP_BLOCKED_DINAMIC') {
-			$blacklist_email = (int) $this->pro_plugin->getValue('blacklist_email', 0, 'pro_plugin');
-		}
-		$send_email_inspector = (int) $this->pro_plugin->getValue('send_email_inspector', 0, 'pro_plugin');
-
-		$email_active = (int) $this->pro_plugin->getValue('email_active', 0, 'pro_plugin');
-
-		if ($email_active) {
-			$shouldSend =
-				(
-					$tag_description !== 'IP_BLOCKED' &&
-					$tag_description !== 'URL_FORBIDDEN_WORDS'
-				)
-				|| ($tag_description === 'IP_BLOCKED' && $blacklist_email)
-				|| ($tag_description === 'URL_FORBIDDEN_WORDS' && $send_email_inspector);
-
-			if ($shouldSend) {
-				$lang = $app->getLanguage();
-				$lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
-
-				$subject = sprintf(
-					'%s %s | %s %s | IP: %s',
-					$lang->_('COM_SECURITYCHECKPRO_RULE'),
-					$lang->_('COM_SECURITYCHECKPRO_' . $tag_description),
-					$lang->_('COM_SECURITYCHECKPRO_USERNAME'),
-					($username !== '' ? $username : '-'),
-					$ip
-				);
-				$subject = preg_replace("/[\r\n]+/", ' ', $subject) ?: 'SecuritycheckPro alert';
-
-				$this->mandar_correo($subject);
-			}
-		}
+		SecuritycheckProHelper::grabarLog($logs_attacks, $ip, $tag_description, $description, $type, $uri, $original_string, $username, $component);
 	}
 
    
 	/**
-     * Determina si un valor está codificado en base64
+     * Determina si un valor esta codificado en base64
      *
      * @param   string       $value    	The string to check
 	 *
@@ -418,31 +210,36 @@ class Securitycheckpro extends CMSPlugin
         $res = false; // Determines if any character of the decoded string is between 32 and 126, which should indicate a non valid european ASCII character
     
         $min_len = mb_strlen($value)>7;
-                
+
         if ($min_len) {
-            
+
+            // Verify the string contains only valid base64 characters before attempting decode
+            if (!preg_match('/^[A-Za-z0-9+\/=]+$/', $value)) {
+                return false;
+            }
+
             $decoded = base64_decode(chunk_split($value));
             $string_caracteres = str_split($decoded); 
             if (empty($string_caracteres)) {
-                return false;  // It´s not a base64 string!
+                return false;  // It is not a base64 string!
             }else
             {
                 foreach ($string_caracteres as $caracter)
                 {
                     if ((empty($caracter)) || (ord($caracter)<32) || (ord($caracter)>126)) { // Non-valid ASCII value
-                        return false; // It´s not a base64 string!
+                        return false; // It is not a base64 string!
                     }
                 }
             }
             
-            $res = true; // It´s a base64 string!
+            $res = true; // It is a base64 string!
         }
         
         return $res;
     }
     
     /**
-     * Función que realiza la misma función que mysql_real_escape_string() pero sin necesidad de una conexión a la BBDD
+     * Funcion que realiza la misma funcion que mysql_real_escape_string() pero sin necesidad de una conexion a la BBDD
      *
      * @param   string       $value    	The string to check
 	 *
@@ -467,11 +264,11 @@ class Securitycheckpro extends CMSPlugin
      *     
      */ 
 	function isHTML($string){
-	 return $string != strip_tags($string) ? true:false;
+		return $string != strip_tags($string) ? true:false;
 	}
     
     /**
-     * Chequea si la extensión pasada como argumento es vulnerable
+     * Chequea si la extensiÃ³n pasada como argumento es vulnerable
      *
      * @param   string       $option    	The extension to check
 	 *
@@ -518,7 +315,7 @@ class Securitycheckpro extends CMSPlugin
 
 	private function isLikelyHtml(string $s): bool
 	{
-		// más robusto que buscar "<" a pelo
+		// mas robusto que buscar "<" a pelo
 		return $s !== strip_tags($s);
 	}
 
@@ -534,19 +331,19 @@ class Securitycheckpro extends CMSPlugin
 	}
 
 	/**
-	 * Señal de “contexto SQL” (palabras clave cercanas a operadores o comillas)
+	 * SeÃ±al de 'contexto SQL' (palabras clave cercanas a operadores o comillas)
 	 */
 	private function sqlContextScore(string $s): int
 	{
 		$score = 0;
 		$low = mb_strtolower($s);
 
-		// palabras clave con límites de palabra
+		// palabras clave con limites de palabra
 		$kw = ['select','union','update','insert','delete','drop','where','and','or','sleep','benchmark','waitfor','case','when'];
 		foreach ($kw as $w) {
 			if (preg_match('~\b' . preg_quote($w, '~') . '\b~i', $s)) $score++;
 		}
-		// operadores/comillas frecuentes en inyección
+		// operadores/comillas frecuentes en inyeccion
 		if (preg_match("~['\"`]=|=['\"`]|\b(or|and)\b\s+['\"]|--\s|/\*|\*/|;~i", $s)) $score++;
 		// presencia de () + palabra clave
 		if (preg_match('~\b(select|concat|substring|ascii|char|md5|sha1)\s*\(~i', $s)) $score++;
@@ -560,18 +357,18 @@ class Securitycheckpro extends CMSPlugin
 	private function shouldInspectForSql(string $s): bool
 	{
 		if ($this->isLikelyJson($s)) return false;
-		if ($this->isLikelyHtml($s)) return true; // HTML sí interesa para XSS, pero no para SQL débil
+		if ($this->isLikelyHtml($s)) return true; // HTML sÃ­ interesa para XSS, pero no para SQL dÃ©bil
 		if ($this->looksLikeUrlOrEmail($s)) return false;
 
-		// No tiene sentido si es corto y alfanumérico
+		// No tiene sentido si es corto y alfanumÃ©rico
 		if (preg_match('~^[a-z0-9 _.-]{1,20}$~i', $s)) return false;
 
-		// Sólo pasa si hay cierta "pinta SQL"
+		// SÃ³lo pasa si hay cierta "pinta SQL"
 		return $this->sqlContextScore($s) >= 1;
 	}
 	
 	/**
-	 * Señales “fuertes” y combinación de “débiles”.
+	 * SeÃ±ales 'fuertes' y combinaciÃ³n de 'dÃ©biles'.
 	 * Solo si esto devuelve true aplicaremos escapa_string() y bloqueo.
 	 */
 	private function isLikelySQLi(string $s): bool
@@ -582,7 +379,7 @@ class Securitycheckpro extends CMSPlugin
 		
 		// ------- FUERTES (1 match basta) -------
 
-		// Tautología clásica OR/AND 1=1 (muy tolerante en bordes)
+		// TautologÃ­a clÃ¡sica OR/AND 1=1 (muy tolerante en bordes)
 		if (preg_match('/(?:^|\W)(?:or|and)\s*1\s*=\s*1(?:\W|$)/ui', $sNorm)) {	
 			return true;
 		}
@@ -592,17 +389,7 @@ class Securitycheckpro extends CMSPlugin
 			return true;
 		}
 
-		// Alternativa aún más robusta: 2 comprobaciones separadas (sin lookaheads)
-		// Si prefieres, descomenta esto y comenta el bloque anterior combinado:
-		/*
-		$hasHex   = (bool) preg_match('/\b0x[0-9a-f]{2,}\b/ui', $sNorm);
-		$hasOrEq1 = (bool) preg_match('/(?:^|\W)(?:or|and)\s*1\s*=\s*1(?:\W|$)/ui', $sNorm);
-		if ($hasHex && $hasOrEq1) {
-			return true;
-		}
-		*/
-
-		// Resto de “fuertes” estándar
+		// Resto de 'fuertes' estÃ¡ndar
 		$strong = [
 			'/\bunion\s+all\s+select\b/ui',
 			'/\bunion\s+select\b/ui',
@@ -615,7 +402,6 @@ class Securitycheckpro extends CMSPlugin
 			'/\bupdate\b.+\bset\b/ui',
 			'/\binsert\b.+\binto\b/ui',
 			'/\bdelete\b.+\bfrom\b/ui',
-			'/--|#|\/\*|\*\/|;/u',
 			'/\bwaitfor\s+delay\b/ui',
 			'/\bxp_cmdshell\b/ui',
 			'/\bcast\s*\(.+?\bas\s*char\b/ui',
@@ -627,7 +413,7 @@ class Securitycheckpro extends CMSPlugin
 			}
 		}
 
-		// ------- DÉBILES (requiere combinación) -------
+		// ------- DÃ‰BILES (requiere combinaciÃ³n) -------
 		$weak = 0;
 		if (preg_match('/(?<!\w)(?:or|and)\s+[^\s]{1,30}\s*=\s*[^\s]{1,30}/ui', $sNorm)) $weak++;
 		if (preg_match('/[\'"]\s*(?:or|and)\s+/ui', $sNorm)) $weak++;
@@ -682,11 +468,11 @@ class Securitycheckpro extends CMSPlugin
 
 		$pageoption = $option;
 
-		// Heurística: acumuladores
-		$signals  = 0;  // señales “débiles”
+		// HeurÃ­stica: acumuladores
+		$signals  = 0;  // seÃ±ales 'dÃ©biles'
 		$hardHits = 0;  // golpes fuertes
 
-		// Política de excepciones/flags
+		// PolÃ­tica de excepciones/flags
 		$exclude_exceptions_if_vulnerable = $this->pro_plugin->getValue('exclude_exceptions_if_vulnerable', 1, 'pro_plugin');
 
 		if ((!empty($option)) && ($exclude_exceptions_if_vulnerable)) {
@@ -707,7 +493,7 @@ class Securitycheckpro extends CMSPlugin
 		$strip_all_tags                   = $this->pro_plugin->getValue('strip_all_tags', 1, 'pro_plugin');
 		$tags_to_filter                   = $this->pro_plugin->getValue('tags_to_filter', 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,id,iframe,ilayer,layer,link,meta,name,object,script,style,title,xml,svg,input,a', 'pro_plugin');
 
-		// Patterns “fuertes”
+		// Patterns 'fuertes'
 		$sqlpatterns = array(
 			"/delete(?=(\s|\+|%20|%u0020|%uff00))(.\b){1,3}(from)\b(?=(\s|\+|%20|%u0020|%uff00))/i",
 			"/update(?=(\s|\+|%20|%u0020|%uff00)).+\b(set)\b(?=(\s|\+|%20|%u0020|%uff00))/i",
@@ -715,19 +501,58 @@ class Securitycheckpro extends CMSPlugin
 			"/insert((\s|\+|%20|%u0020|%uff00|\/|%2f))+(values|set|select)\b((\s|\+|%20|%u0020|%uff00))*/i",
 			"/union(?=(\s|\+|%20|%u0020|%uff00|\/|%2f)).+(select)\b((\s|\+|%20|%u0020|%uff00))*/i",
 			"/select(?=(\s|\+|%20|%u0020|%uff00))(.\b|.\B){1,3}(from|ascii|char|concat|case)\b(?=(\s|\+|%20|%u0020|%uff00))/i",
-			"/benchmark\(.*\)/i",
-			"/md5\(.*\)/i","/sha1\(.*\)/i","/ascii\(.*\)/i","/concat\(.*\)/i","/char\(.*\)/i",
-			"/substring\(.*\)/i",
+			"/benchmark\(.{1,200}?\)/i",
+			"/(?:select|union|where|and|or)\b.{0,40}?\bmd5\(.{1,100}?\)/i",
+			"/(?:select|union|where|and|or)\b.{0,40}?\bsha1\(.{1,100}?\)/i",
+			"/ascii\(.{1,100}?\)/i",
+			"/concat\(.{1,200}?\)/i",
+			"/char\((?:\d+|0x[0-9a-f]+)[\d,\s0x a-f]*\)/i",
+			"/substring\(.{1,200}?\)/i",
 			"/where(\s|\+|%20|%u0020|%uff00)(or|and)(\s|\+|%20|%u0020|%uff00)(\w+)(=|<|>|<=|>=)(\w+)/i",
-			"/(or|and)(\s|\+|%20|%u0020|%uff00)(sleep)/i",
-			"/(\s|\+|%20|%u0020|%uff00)(pg_sleep)/i",
+			"/\b(?:or|and)(?:\s|\+|%20|%u0020|%uff00)+sleep\s*\(/i",
+			"/(?:\s|\+|%20|%u0020|%uff00)+pg_sleep\s*\(/i",
 			"/waitfor(\s|\+|%20|%u0020|%uff00)(delay)/i",
 			"/(\s|\+|%20|%u0020|%uff00)(or|and)(\s|\+|%20|%u0020|%uff00)(\()?((\'|%27)+(\d+)(\'|%27)+(=|%3d)(\'|%27)*\d+|((\')+(\D+)(\')+=(\')*\D+))/i",
 			"/=dbms_pipe\.receive_message/i",
-			"/order by \d+/i"
+			"/\border\s+by\s+\d+(?:\s*,\s*\d+)*\s*(?:--|;|$|\b)/i",
+			"/\bxp_cmdshell\b/i",
+			"/\binto\s+(?:outfile|dumpfile)\b/i",
+			"/\bload_file\s*\(/i",
+			"/\binformation_schema\b/i",
+			"/\bcast\s*\(.{1,200}?\bas\s+char\b/i",
+			"/\bconvert\s*\(.{1,200}?\bchar\b/i",
+			"/(?:^|\W)(?:or|and)\s+\d+\s*=\s*\d+(?:\W|$)/i",
+			// DDL / DCL
+			"/\balter\s+table\b/i",
+			"/\bcreate\s+(?:table|user|database|function|procedure)\b/i",
+			"/\btruncate\s+table\b/i",
+			"/\bgrant\s+.*\bon\b/i",
+			"/\brevoke\s+.*\bfrom\b/i",
+			"/\brename\s+table\b/i",
+			// Error-based SQLi (MySQL)
+			"/\bextractvalue\s*\(/i",
+			"/\bupdatexml\s*\(/i",
+			"/\bexp\s*\(\s*~\s*\(/i",
+			// Exfiltracion
+			"/\bgroup_concat\s*\(/i",
+			// MSSQL avanzado
+			"/\bdeclare\s+@/i",
+			"/\bexec\s*\(/i",
+			"/\bexec(?:ute)?\s+(?:sp_|xp_)/i",
+			"/\bopenrowset\s*\(/i",
+			// HAVING
+			"/\bhaving\s+\d+\s*=\s*\d+/i",
+			"/\bgroup\s+by\s+.{1,100}\bhaving\b/i"
 		);
-		$ifStatements   = array("/if\(.*,.*,.*\)/i");
-		$lfiStatements  = array("/\.\.\//","/\?\?\?/");
+		$ifStatements   = array("/\bif\s*\(.{1,100},.{1,100},.{1,100}\)/i");
+		$lfiStatements  = array(
+			"/\.\.\//",
+			"/\.\.\\\\/",
+			"/\?\?\?/",
+			"/(?:php|expect|data|phar|zip|zlib|glob|ssh2|rar|ogg):\/\//i",
+			"/php:\/\/(?:filter|input|stdin|memory|temp)/i",
+			"/%00/"
+		);
 
 		/* Base64 check */
 		if ($check) {
@@ -735,7 +560,7 @@ class Securitycheckpro extends CMSPlugin
 				$is_base64 = $this->is_base64($string);
 				if ($is_base64) {
 					$decoded = base64_decode(chunk_split($string));
-					// Sanidad básica: exige alta proporción ASCII imprimible
+					// Sanidad bÃ¡sica: exige alta proporciÃ³n ASCII imprimible
 					$printables = preg_match_all('/[[:print:]\s]/', (string) $decoded);
 					if ($printables !== false && $printables >= (int)(strlen($decoded) * 0.8)) {
 						$base64 = true;
@@ -763,10 +588,10 @@ class Securitycheckpro extends CMSPlugin
 
 			if ($is_admin) {
 				$strip_all_tags = 2;
-				$tags_to_filter = 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,id,iframe,ilayer,layer,link,meta,name,object,script,xml,svg';
+				$tags_to_filter = 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,id,ilayer,layer,link,meta,name,object,script,xml,svg';
 			}
 
-			if ($strip_all_tags == 1) {
+			if ((int) $strip_all_tags === 1) {
 				$string_sanitized = strip_tags($string);
 			} else {
 				$string = html_entity_decode($string);
@@ -780,7 +605,17 @@ class Securitycheckpro extends CMSPlugin
 				$string_sanitized = str_ireplace($tags_to_filter_final, "", $string);
 			}
 
-			if (strcmp($string_sanitized, $string) !== 0) {
+			// In admin context, exclude {source}...{/source} blocks from comparison.
+			// Content inside these blocks is intentional raw HTML from trusted editors.
+			$compareString    = $string;
+			$compareSanitized = $string_sanitized;
+			if ($is_admin) {
+				$srcPattern       = '/\{source\}[\s\S]*?\{\/source\}/si';
+				$compareString    = preg_replace($srcPattern, '', $compareString);
+				$compareSanitized = preg_replace($srcPattern, '', $compareSanitized);
+			}
+
+			if (strcmp($compareSanitized, $compareString) !== 0) {
 				if ($base64) {
 					$this->grabar_log($logs_attacks, $ip, 'TAGS_STRIPPED', '[' .$methods_options .':' .$a .']', 'XSS_BASE64', $request_uri, $string, $username, $pageoption);
 				} else {
@@ -797,7 +632,7 @@ class Securitycheckpro extends CMSPlugin
 				$this->redirection(403, "", true);
 			} else {
 				$xss_forbidden_words_array = array(
-					"onload","onfocus","autofocus","javascript:","onmouseover","onerror","FSCommand",
+					"onload","onfocus","autofocus","javascript:","vbscript:","data:text/html","onmouseover","onerror","FSCommand",
 					"onAbort","onActivate","onAfterPrint","onAfterUpdate","onBeforeActivate","onBeforeCopy","onBeforeCut",
 					"onBeforeDeactivate","onBeforeEditFocus","onBeforePaste","onBeforePrint","onBeforeUnload","onBeforeUpdate",
 					"onBegin","onBlur","onBounce","onCellChange","onChange","onClick","onContextMenu","onControlSelect","onCopy",
@@ -813,18 +648,28 @@ class Securitycheckpro extends CMSPlugin
 					"onUnload","onURLFlip","seekSegmentTime"
 				);
 				foreach($xss_forbidden_words_array as $word) {
-					if (is_string($string) && substr_count(strtolower($string), strtolower($word))) {
-						$this->grabar_log($logs_attacks, $ip, 'TAGS_STRIPPED', '[' .$methods_options .':' .$a .']', 'XSS', $request_uri, $string, $username, $pageoption);
-						$modified = true;
-						$hardHits++;
-						$this->actualizar_lista_dinamica($ip);
-						$this->redirection(403, "", true);
+					if (is_string($string)) {
+						if (str_contains($word, ':')) {
+							// Protocol-based entries like "javascript:" â€” match as substring
+							$matched = (stripos($string, $word) !== false);
+						} else {
+							// Event handler attributes â€” require attribute context (word followed by '=')
+							$pattern = '/' . preg_quote($word, '/') . '\s*=/i';
+							$matched = (bool) preg_match($pattern, $string);
+						}
+						if ($matched) {
+							$this->grabar_log($logs_attacks, $ip, 'TAGS_STRIPPED', '[' .$methods_options .':' .$a .']', 'XSS', $request_uri, $string, $username, $pageoption);
+							$modified = true;
+							$hardHits++;
+							$this->actualizar_lista_dinamica($ip);
+							$this->redirection(403, "", true);
+						}
 					}
 				}
 			}
 		}
 
-		/* ========= SQLi / Heurística débil ========= */
+		/* ========= SQLi / HeurÃ­stica dÃ©bil ========= */
 		if (!$modified) {
 			if ($is_admin) {
 				$duplicate_backslashes_exceptions = "*";
@@ -833,10 +678,10 @@ class Securitycheckpro extends CMSPlugin
 				$using_integers_exceptions        = "*";
 			}
 
-			// Nuevo gating para reglas “débiles”
+			// Nuevo gating para reglas 'dÃ©biles'
 			$inspectSql = $this->shouldInspectForSql($string);
 
-			// Duplicate backslashes (detección, no modificar)
+			// Duplicate backslashes (detecciÃ³n, no modificar)
 			if ($inspectSql && !(str_contains($duplicate_backslashes_exceptions, $pageoption)) && !(str_contains($duplicate_backslashes_exceptions, '*'))) {
 				$dupBackslashes = (bool) preg_match('/\\\\{2,}(?=.*([\'"]|\\bselect\\b|\\binsert\\b|\\bupdate\\b|\\bwhere\\b))/i', $string);
 				if ($dupBackslashes) {
@@ -844,16 +689,15 @@ class Securitycheckpro extends CMSPlugin
 				}
 			}
 
-			// Line comments (contextual, sólo señal)
+			// Line comments (contextual, sÃ³lo seÃ±al)
 			if (
 				$inspectSql
-				&& $pageoption !== 'com_users'				
-				&& $line_comments_exceptions !== ''
+				&& $pageoption !== 'com_users'
 				&& !str_contains($line_comments_exceptions, $pageoption)
 				&& !str_contains($line_comments_exceptions, '*')
 			) {
 				$lineComments = [
-					'~--(?=\s|$)~',                              // "-- " o fin de línea
+					'~--(?=\s|$)~',                              // "-- " o fin de lÃ­nea
 					'~(?<!://)#(?=\s|$)~',                       // "#" que no sigue a "://"
 					'~/\*.*?\*/~s',                              // /* ... */ (flag s)
 				];
@@ -864,11 +708,10 @@ class Securitycheckpro extends CMSPlugin
 				}
 			}
 
-			// SQL pattern “fuerte” (se mantiene como antes: modifica y bloquea)
+			// SQL pattern 'fuerte' (modifica y bloquea)
 			if (
 				($extension_vulnerable || !str_contains($sql_pattern_exceptions, $pageoption))
-				&& $sql_pattern_exceptions !== ''
-				&& !str_contains($sql_pattern_exceptions, '*')				
+				&& !str_contains($sql_pattern_exceptions, '*')
 			) {
 				try {
 					$string_sanitized = preg_replace($sqlpatterns, "", $string);
@@ -889,7 +732,7 @@ class Securitycheckpro extends CMSPlugin
 				}
 			}
 
-			// IF(...) (fuerte: mantiene tu comportamiento)
+			// IF(...) (fuerte)
 			if ((!(str_contains($if_statement_exceptions, $pageoption)) || $extension_vulnerable) && !(str_contains($if_statement_exceptions, '*')) && (!$modified)) {
 				try {
 					$string_sanitized = preg_replace($ifStatements, "", $string);
@@ -908,7 +751,7 @@ class Securitycheckpro extends CMSPlugin
 				}
 			}
 
-			// Using integers (contextual, sólo señal)
+			// Using integers (contextual, sÃ³lo seÃ±al)
 			if ($inspectSql && !(str_contains($using_integers_exceptions, $pageoption)) && !(str_contains($using_integers_exceptions, '*')) && (!$modified)) {
 				$usingIntegers = [
 					// 0xHEX contextual (sin lookbehind)
@@ -916,9 +759,9 @@ class Securitycheckpro extends CMSPlugin
 					// @@var contextual
 					'~@@[a-z_]+\b(?=[^#&;]{0,40}\b(select|and|or|where|union|version)\b)~i',
 					// operador OR "||" evitando esquemas tipo "http://"
-					// Opción A (lookbehind fijo, válido):
+					// OpciÃ³n A (lookbehind fijo, vÃ¡lido):
 					'~(?<!://)\|\|~',
-					// Opción B (sin lookbehind, un poco más permisiva):
+					// OpciÃ³n B (sin lookbehind, un poco mÃ¡s permisiva):
 					// '~(?:^|[^:])\|\|~'
 					'/(?:^|\W)(?:or|and)\s*1\s*=\s*1(?:\W|$)/ui',
 				];
@@ -952,13 +795,13 @@ class Securitycheckpro extends CMSPlugin
 							$string = $string_sanitized;
 						}
 						$modified = true;
-						$hardHits++; // lo consideramos hit “fuerte” por decisión final
+						$hardHits++; // lo consideramos hit 'fuerte' por decisiÃ³n final
 					}
 				}
 			}
 		}
 
-			// Decisión por umbral de señales “débiles” si aún no hubo golpe fuerte ni modificación
+			// DecisiÃ³n por umbral de seÃ±ales dÃ©biles si aÃºn no hubo golpe fuerte ni modificaciÃ³n
 			if (!$modified && $hardHits === 0 && $signals >= 2) {
 				$this->grabar_log($logs_attacks, $ip, 'HEURISTIC_SQL', '[' .$methods_options .':' .$a .']', 'SQL_INJECTION', $request_uri, $string, $username, $pageoption);
 				$this->actualizar_lista_dinamica($ip);
@@ -984,6 +827,41 @@ class Securitycheckpro extends CMSPlugin
 			}
 		}
 
+		/* ========= Command Injection ========= */
+		if (!$modified && !$is_admin) {
+			$cmdPatterns = [
+				'/(?:^|[;&|`])\s*(?:cat|ls|dir|whoami|id|uname|wget|curl|nc|ncat|bash|sh|cmd|powershell|ping|nslookup|traceroute|netstat|ifconfig|ipconfig)\b/i',
+				'/\$\([^)]+\)/',                    // $(command)
+				'/`\s*(?:cat|ls|dir|whoami|id|uname|wget|curl|nc|ncat|bash|sh|cmd|powershell|ping|nslookup|traceroute|netstat|ifconfig|ipconfig)\b[^`]*`/i', // `command`
+				'/\|\s*(?:cat|ls|dir|whoami|id|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
+				'/;\s*(?:cat|ls|dir|whoami|id|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
+				'/&&\s*(?:cat|ls|dir|whoami|id|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
+				'/\|\|\s*(?:cat|ls|dir|whoami|id|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
+			];
+			foreach ($cmdPatterns as $cmdRx) {
+				if (preg_match($cmdRx, $string)) {
+					$this->grabar_log($logs_attacks, $ip, 'CMD_INJECTION', '[' .$methods_options .':' .$a .']', 'CMD_INJECTION', $request_uri, $string, $username, $pageoption);
+					$modified = true;
+					$hardHits++;
+					$this->actualizar_lista_dinamica($ip);
+					$this->redirection(403, "", true);
+				}
+			}
+		}
+
+		/* ========= CRLF Injection ========= */
+		if (!$modified) {
+			if (preg_match('/%0[da]|\\r|\\n/i', $string)) {
+				if (preg_match('/%0[da].{0,20}(?:Set-Cookie|Location|Content-Type|HTTP\/)/i', $string)) {
+					$this->grabar_log($logs_attacks, $ip, 'CRLF_INJECTION', '[' .$methods_options .':' .$a .']', 'CRLF_INJECTION', $request_uri, $string, $username, $pageoption);
+					$modified = true;
+					$hardHits++;
+					$this->actualizar_lista_dinamica($ip);
+					$this->redirection(403, "", true);
+				}
+			}
+		}
+
 		/* ========= Cabeceras ========= */
 		if ((!$modified) && ($check_header_referer)) {
 			$modified = $this->check_header_and_user_agent(
@@ -999,7 +877,7 @@ class Securitycheckpro extends CMSPlugin
 
     
 	/**
-     * Función para 'sanitizar' un string. Devolvemos el string "sanitizado" y modificamos la variable "modified" si se ha modificado el string
+     * FunciÃ³n para 'sanitizar' un string. Devolvemos el string "sanitizado" y modificamos la variable "modified" si se ha modificado el string
      *
      * @param   string             							$ip    				The IP of the attacker
 	 * @param 	string|array<string>|array<array<mixed>>	$string     		The string to check
@@ -1021,8 +899,8 @@ class Securitycheckpro extends CMSPlugin
         $is_admin = $app->isClient('administrator');
                 
         $pageoption = $option;
-            
-        if (is_array($string)) {                
+		
+		if (is_array($string)) {                
             // Get all values of the array
 			$strings_in_array = array();			
 			foreach ($string as $item) {				
@@ -1049,7 +927,7 @@ class Securitycheckpro extends CMSPlugin
     }
     
    /**
-     * Función que chequea el 'Header' y el 'user-agent' en busca de ataques
+     * FunciÃ³n que chequea el 'Header' y el 'user-agent' en busca de ataques
      *
      * @param   bool        					      $logs_attacks   		Tells if a log must be stored
 	 * @param   \Joomla\CMS\User\User|null            $user   				User
@@ -1079,7 +957,7 @@ class Securitycheckpro extends CMSPlugin
 		$a,
 		$request_uri,
 		$sqlpatterns,     // patrones "fuertes"
-		$ifStatements,    // patrón fuerte IF(...)
+		$ifStatements,    // patrÃ³n fuerte IF(...)
 		$usingIntegers,   // no usado directamente
 		$lfiStatements,   // LFI fuerte
 		$username,
@@ -1095,14 +973,14 @@ class Securitycheckpro extends CMSPlugin
 
 		$enableSqlWeakSignals = !$is_admin;
 
-		// Comentarios en línea (señales débiles)
+		// Comentarios en lÃ­nea (seÃ±ales dÃ©biles)
 		$lineComments = [
 			'~--(?=\s|$)~',
 			'~(?<!://)#(?=\s|$)~',
 			'~/\*.*?\*/~s',
 		];
 
-		// Patrones “using integers” contextuales (señales débiles)
+		// Patrones 'using integers' contextuales (seÃ±ales dÃ©biles)
 		$usingIntegersCtx = [
 			'~(?:^|[=,(])\s*0x[0-9a-f]{2,}\b(?=[^#&;]{0,40}\b(select|and|or|where|union)\b)~i',
 			'~@@[a-z_]+\b(?=[^#&;]{0,40}\b(select|and|or|where|union|version)\b)~i',
@@ -1115,7 +993,7 @@ class Securitycheckpro extends CMSPlugin
 			if (empty($patterns)) {
 				return $subject;
 			}
-			// Acepta string o array; si es array, filtra vacíos
+			// Acepta string o array; si es array, filtra vacÃ­os
 			if (is_array($patterns)) {
 				$patterns = array_values(array_filter($patterns, static function ($p) {
 					return is_string($p) && $p !== '';
@@ -1130,7 +1008,7 @@ class Securitycheckpro extends CMSPlugin
 			try {
 				return preg_replace($patterns, '', $subject, -1, $countOut);
 			} catch (\Throwable $e) {
-				// Si algún patrón es inválido, no contamos nada
+				// Si algÃºn patrÃ³n es invÃ¡lido, no contamos nada
 				$countOut = 0;
 				return $subject;
 			}
@@ -1188,7 +1066,7 @@ class Securitycheckpro extends CMSPlugin
 				return true;
 			}
 
-			// 5) SQL “débil”: sólo si pasa el gating
+			// 5) SQL 'dÃ©bil': sÃ³lo si pasa el gating
 			if ($enableSqlWeakSignals && $this->shouldInspectForSql($value)) {
 				$safePregReplaceCount($lineComments, $value, $lcCount);
 				if (!empty($lcCount)) {
@@ -1203,7 +1081,7 @@ class Securitycheckpro extends CMSPlugin
 			return false;
 		};
 
-		// Sólo para invitados (tu lógica)
+		// SÃ³lo para invitados (tu lï¿½gica)
 		if ($user && $user->guest) {
 			if (isset($_SERVER['HTTP_USER_AGENT'])) {
 				if ($scanHeader('USER_AGENT', $user_agent)) {
@@ -1229,7 +1107,7 @@ class Securitycheckpro extends CMSPlugin
 
     
     /**
-     * Función para contar el número de palabras "prohibidas" de un string
+     * FunciÃ³n para contar el nÃºmero de palabras "prohibidas" de un string
      *
      * @param   string             $request_uri   		The uri of the query
 	 * @param   string|array<mixed>		       $string   			The string
@@ -1254,7 +1132,7 @@ class Securitycheckpro extends CMSPlugin
         
         $is_admin = $application->isClient('administrator');
         
-        // Consultamos si hemos de aplicar las reglas al usuario en función de su pertenencia a grupos.
+        // Consultamos si hemos de aplicar las reglas al usuario en FunciÃ³n de su pertenencia a grupos.
         $apply_rules_to_user = $this->check_rules($user);
         
         $pageoption = $option;
@@ -1273,7 +1151,7 @@ class Securitycheckpro extends CMSPlugin
         /* Lista de palabras sospechosas */
         $second_level_words = $this->pro_plugin->getValue('second_level_words', '', 'pro_plugin');
         
-        // Desde la versión 3.1.6 la lista de palabras sospechosas se codifica en base64 para evitar problemas con una regla de mod_security.
+        // Desde la versiï¿½n 3.1.6 la lista de palabras sospechosas se codifica en base64 para evitar problemas con una regla de mod_security.
         if (substr_count($second_level_words, ",") < 2) {    
             $second_level_words = base64_decode($second_level_words);
         }
@@ -1313,7 +1191,7 @@ class Securitycheckpro extends CMSPlugin
     }
         
     /**
-     * Función para chequear si una ip pertenece a una lista dinámica almacenada en una BBDD
+     * FunciÃ³n para chequear si una ip pertenece a una lista dinï¿½mica almacenada en una BBDD
      *
      * @param   string             $ip   				The IP
 	 * @param   int		      	   $blacklist_counter   The number of occurences
@@ -1327,13 +1205,13 @@ class Securitycheckpro extends CMSPlugin
         $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
     
-        // Chequeamos si la IP tiene un formato válido
+        // Chequeamos si la IP tiene un formato vï¿½lido
         $ip_valid = filter_var($ip, FILTER_VALIDATE_IP);
         
         // Sanitizamos las entradas
         $ip = $db->escape($ip);
                         
-        // Validamos si el valor devuelto es una dirección válida
+        // Validamos si el valor devuelto es una direcciï¿½n vï¿½lida
         if ((!empty($ip)) && ($ip_valid)) {
             // Construimos la consulta
             try 
@@ -1357,7 +1235,7 @@ class Securitycheckpro extends CMSPlugin
     }
     
     /**
-     * Si el tiempo transcurrido desde que se grabó la entrada supera el establecido en el plugin, eliminamos esa entrada de la base de datos
+     * Si el tiempo transcurrido desde que se grabï¿½ la entrada supera el establecido en el plugin, eliminamos esa entrada de la base de datos
      *
      * @param   int		      	   $counter_time   The time set in the counter
      *
@@ -1387,7 +1265,7 @@ class Securitycheckpro extends CMSPlugin
     }
    
    /**
-     * Función que añade una IP a la lista negra dinámica
+     * FunciÃ³n que aï¿½ade una IP a la lista negra dinï¿½mica
      *
      * @param   string	   $attack_ip   The IP to add
      *
@@ -1396,55 +1274,11 @@ class Securitycheckpro extends CMSPlugin
      */
     function actualizar_lista_dinamica($attack_ip)
     {
-		// Creamos el nuevo objeto query
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true);
-		
-		if (empty($this->pro_plugin)) {
-			$this->pro_plugin = new BaseModel();
-		}
-        
-        $dynamic_blacklist = $this->pro_plugin->getValue('dynamic_blacklist', 1, 'pro_plugin');
-        
-        // Chequeamos si la IP tiene un formato válido
-        $ip_valid = filter_var($attack_ip, FILTER_VALIDATE_IP);
-        
-        // Sanitizamos la entrada
-        $attack_ip = $db->escape($attack_ip);
-                
-        // Validamos si el valor devuelto es una dirección IP válida y la lista negra dinámica está habilitada
-        if ((!empty($attack_ip)) && ($ip_valid) && ($dynamic_blacklist)) {
-            try 
-            {     
-				if (strstr($this->dbtype,"mysql")) {
-					 $query = "INSERT INTO #__securitycheckpro_dynamic_blacklist (ip, timeattempt) VALUES ('{$attack_ip}', NOW()) ON DUPLICATE KEY UPDATE timeattempt = NOW(), counter = counter + 1;";
-				} else if (strstr($this->dbtype,"pgsql")) {
-					$query = "INSERT INTO #__securitycheckpro_dynamic_blacklist (ip, timeattempt) VALUES ('{$attack_ip}', NOW()) ON CONFLICT (ip) DO UPDATE SET timeattempt = NOW(), counter = #__securitycheckpro_dynamic_blacklist.counter + 1;";
-				}              
-                
-                $db->setQuery($query);        
-                $result = $db->execute();
-                
-                $firewall_model = new FirewallconfigModel();
-                
-                // Chequeamos si hemos de añadir la ip al fichero que será consumido por el plugin 'connect'
-                $control_center_enabled = $firewall_model->control_center_enabled();
-            
-                if ($control_center_enabled) {
-                    $firewall_model->añadir_info_control_center($attack_ip, 'dynamic_blacklist');
-                }
-            } catch (\Exception $e)
-            {                
-            }            
-            
-        } else
-        {
-            return false;
-        }
+		SecuritycheckProHelper::actualizarListaDinamica((string) $attack_ip);
     }
     
     /**
-     * Función que chequea la sesión para usar la funcionalidad otp de Securitycheck Pro
+     * FunciÃ³n que chequea la sesiï¿½n para usar la funcionalidad otp de Securitycheck Pro
      *
      * @param   string	   $session_username   The username of the session
      *
@@ -1462,7 +1296,7 @@ class Securitycheckpro extends CMSPlugin
             $is_ok = false;
         }
         
-        // El usuario logado debe coincidir con el almacenado en la sesión o ser el invitado (antes de logarse en el backend)
+        // El usuario logado debe coincidir con el almacenado en la sesiï¿½n o ser el invitado (antes de logarse en el backend)
         $currentUser = $app->getIdentity();
                 
         if (!$currentUser->guest && (strtoupper($currentUser->username) != strtoupper($session_username))) {
@@ -1473,7 +1307,7 @@ class Securitycheckpro extends CMSPlugin
     }
     
    /**
-     * Función que obtiene el id de un usuario a través de la variable pasada como argumento. El usuario no puede estar bloqueado.
+     * FunciÃ³n que obtiene el id de un usuario a travï¿½s de la variable pasada como argumento. El usuario no puede estar bloqueado.
      *
      * @param   string	   $username   The username
      *
@@ -1522,7 +1356,7 @@ class Securitycheckpro extends CMSPlugin
 			return false;
 		}
 
-		// Asegura que los plugins MFA estén cargados (totp, yubikey, webauthn, …)
+		// Asegura que los plugins MFA estÃ¡n cargados (totp, yubikey, webauthn, ï¿½)
 		PluginHelper::importPlugin('multifactorauth');
 
 		$app        = Factory::getApplication();
@@ -1530,8 +1364,11 @@ class Securitycheckpro extends CMSPlugin
 		$user       = Factory::getUser($userId);
 
 		// Registros MFA del usuario (cada uno es un MfaTable)
+		/** @var list<object> $userMethods */
+		// @phpstan-ignore-next-line
 		$userMethods = Mfa::getUserMfaRecords($userId);
-		if (empty($userMethods)) {
+
+		if ($userMethods === []) {
 			return false;
 		}
 
@@ -1553,7 +1390,7 @@ class Securitycheckpro extends CMSPlugin
 	}
     
    /**
-     * Función que chequea si la url usa la función otp de Securitycheck Pro para desbloquear el acceso
+     * FunciÃ³n que chequea si la url usa la FunciÃ³n otp de Securitycheck Pro para desbloquear el acceso
      *
      *
      * @return bool
@@ -1569,7 +1406,7 @@ class Securitycheckpro extends CMSPlugin
         $params = ComponentHelper::getParams('com_securitycheckpro');
         $otp_enabled = $params->get('otp', 1);
         
-        // Si la funcionalidad OTP está habilitada realizamos las secuencia
+        // Si la funcionalidad OTP estÃ¡ habilitada realizamos las secuencia
         if ($otp_enabled) {        
             $session = $app->getSession();               
             $session_username = $session->get('otp_username', '');
@@ -1610,7 +1447,7 @@ class Securitycheckpro extends CMSPlugin
     }
             
     /**
-     * Acciones a realizar si la IP está en la lista negra dinámica
+     * Acciones a realizar si la IP estÃ¡ en la lista negra dinï¿½mica
      *
      * @param   string|int             $dynamic_blacklist_time   	 The time to dinamically block an IP
 	 * @param   string	               $attack_ip				 	 The IP
@@ -1630,7 +1467,7 @@ class Securitycheckpro extends CMSPlugin
         $lang = $app->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
         
-        /* Actualizamos la lista dinámica */
+        /* Actualizamos la lista dinï¿½mica */
         $this->pasar_a_historico($dynamic_blacklist_time);
         
         $aparece_lista_negra_dinamica = $this->chequear_ip_en_lista_dinamica($attack_ip, $dynamic_blacklist_counter);
@@ -1648,7 +1485,7 @@ class Securitycheckpro extends CMSPlugin
                     $this->grabar_log($logs_attacks, $attack_ip, 'IP_BLOCKED_DINAMIC', $access_attempt, 'IP_BLOCKED_DINAMIC', $request_uri, $not_applicable, '---', '---');
                 }
                                 
-                // Redirección a nuestra página de "Prohibido" 
+                // Redirecciï¿½n a nuestra pï¿½gina de "Prohibido" 
                 $error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
                 $this->redirection(403, $error_403, true, $attack_ip, $dynamic_blacklist_time);
             }
@@ -1656,7 +1493,7 @@ class Securitycheckpro extends CMSPlugin
     }
     
    /**
-     * Acciones a realizar si la IP está en la lista negra
+     * Acciones a realizar si la IP estÃ¡ en la lista negra
      *
      * @param   string	               $logs_attacks				 Tell us if a log must be stored
 	 * @param   string	               $attack_ip				 	 The IP
@@ -1682,21 +1519,21 @@ class Securitycheckpro extends CMSPlugin
         $is_otp = self::check_otp_params();
                 
         if (!$is_otp) {                
-            // Grabamos una entrada en el log con el intento de acceso de la ip prohibida si está seleccionada la opción para ello
+            // Grabamos una entrada en el log con el intento de acceso de la ip prohibida si estÃ¡ seleccionada la opciï¿½n para ello
             if ($add_access_attempts_logs) {
                 $access_attempt = $lang->_('COM_SECURITYCHECKPRO_ACCESS_ATTEMPT');
                 $this->grabar_log($logs_attacks, $attack_ip, 'IP_BLOCKED', $access_attempt, 'IP_BLOCKED', $request_uri, $not_applicable, '---', '---');
             }
                 
-            // Redirección a nuestra página de "Prohibido"
+            // Redirecciï¿½n a nuestra pï¿½gina de "Prohibido"
             $error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
             $this->redirection(403, $error_403, true, $attack_ip);    
         }
     }
     
 	/**
-     * Opciones de redirección: página de error (de Joomla o personalizada) o rechazar la conexión. El parámetro blacklist indica si venimos de una lista negra; en ese caso, no podemos hacer la 
-	 * redirección ya que entraríamos en un bucle infinito. Lo que hacemos es mostrar el código que haya establecido el administrador
+     * Opciones de redirecciï¿½n: pï¿½gina de error (de Joomla o personalizada) o rechazar la conexiï¿½n. El parÃ¡metro blacklist indica si venimos de una lista negra; en ese caso, no podemos hacer la 
+	 * redirecciï¿½n ya que entrarï¿½amos en un bucle infinito. Lo que hacemos es mostrar el cï¿½digo que haya establecido el administrador
      *
      * @param   int	     	           $code				 The code to show
 	 * @param   string	               $message				 The message to show
@@ -1709,67 +1546,11 @@ class Securitycheckpro extends CMSPlugin
      */
     function redirection($code,$message,$blacklist=false,$ip=null,$time=null)
     {
-		// Si la variable "pro_plugin" está vacía la instanciamos
-		if (empty($this->pro_plugin)) {
-			$this->pro_plugin = new BaseModel();
-		}
-		
-        $redirect_after_attack = $this->pro_plugin->getValue('redirect_after_attack', 0, 'pro_plugin');
-        $redirect_options = $this->pro_plugin->getValue('redirect_options', 1, 'pro_plugin');
-        $redirect_url = $this->pro_plugin->getValue('redirect_url', '', 'pro_plugin');
-        $custom_code = $this->pro_plugin->getValue('custom_code', 'The webmaster has forbidden your access to this site', 'pro_plugin');
-		$dynamic_blacklist = $this->pro_plugin->getValue('dynamic_blacklist', 1, 'pro_plugin');
-				
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
-		$app       = Factory::getApplication();
-		$lang = $app->getLanguage();
-        $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
-		
-		if (!is_null($ip)) {
-			// Let's add the IP to the message shown
-			$custom_code .= "<br/>" . Text::sprintf($lang->_('COM_SECURITYCHECKPRO_YOUR_IP'),$ip);			
-		}
-		
-		if (!is_null($time)) {
-			// Let's add the time to be unblocked of dynamic blacklist to the message shown
-			$custom_code .= "<br/>" . Text::sprintf($lang->_('COM_SECURITYCHECKPRO_COME_BACK_IN'),$time/60);			
-		}
-        
-        $is_admin = $app->isClient('administrator');
-		                
-        if ($redirect_after_attack) {            
-            // Tenemos que redigir
-            if (!$blacklist ) {
-                // Si estamos en la parte administrativa nunca hemos de hacer la redirección para evitar vulnerabilidades. Si la opción annadir a la lista negra dinámica está deshabilitada, también tenemos que cortar la conexión para evitar que el ataque siga adelante.
-                if (($is_admin) || !($dynamic_blacklist) ) {				
-                    // Mostramos el código establecido por el administrador, una cabecera de Forbidden y salimos 					
-                    header('HTTP/1.1 403 Forbidden');
-					die($custom_code);
-                }                
-                if ($redirect_options == 1) {
-                    // Redirigimos a la página de error de Joomla
-                    $app->enqueueMessage($message, 'error');
-                } else if ($redirect_options == 2) {
-                    // Redirigimos a la página establecida por el administrador
-                    $app->redirect(Uri::root() . $redirect_url);    
-                }
-                    
-            } else 
-            {
-                // Mostramos el código establecido por el administrador, una cabecera de Forbidden y salimos                    
-                header('HTTP/1.1 403 Forbidden');
-				die($custom_code);
-            }            
-        } else 
-        { // Rechazamos la conexión mostrando el código establecido por el administrador, una cabecera de Forbidden y salimos
-            header('HTTP/1.1 403 Forbidden');
-			die($custom_code);
-        }
-    
+		SecuritycheckProHelper::redirection((int) $code, (string) $message, (bool) $blacklist, $ip !== null ? (string) $ip : null, $time !== null ? (int) $time : null);
     }
     
    /**
-     * Acciones a realizar si la ip está no está en ninguna de las listas
+     * Acciones a realizar si la ip estÃ¡ no estÃ¡ en ninguna de las listas
      *
      * @param   string		           $methods				 The methods to inspect
 	 * @param   string	               $attack_ip			 The IP
@@ -1778,12 +1559,11 @@ class Securitycheckpro extends CMSPlugin
 	 * @param   bool	  	           $check_base_64		 Check is the string is base64
 	 * @param   bool	  	           $logs_attacks		 Tell us if it has to write a log entry
 	 * @param   bool	  	           $secondlevel			 Apply the second level filter
-	 * @param   int		  	           $mode				 The mode (strict or alert)
      *
      * @return  void
-     *     
+     *
      */
-    function acciones_no_listas($methods,$attack_ip,$methods_options,$request_uri,$check_base_64,$logs_attacks,$secondlevel,$mode)
+    function acciones_no_listas($methods,$attack_ip,$methods_options,$request_uri,$check_base_64,$logs_attacks,$secondlevel)
     {
         /* Cargamos el lenguaje del sitio */
 		/** @var \Joomla\CMS\Application\CMSApplication $app */
@@ -1791,20 +1571,30 @@ class Securitycheckpro extends CMSPlugin
         $lang = $app->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
 		
-		// Si la variable "pro_plugin" está vacía la instanciamos
+		// Si la variable "pro_plugin" estÃ¡ vacï¿½a la instanciamos
 		if (empty($this->pro_plugin)) {
 			$this->pro_plugin = new BaseModel();
 		}
+
+		// Registramos en el log de Joomla las peticiones con mÃ©todos HTTP no inspeccionados por el firewall
+		$request_method = strtoupper($_SERVER['REQUEST_METHOD'] ?? '');
+		if (in_array($request_method, ['PUT', 'PATCH', 'DELETE', 'HEAD', 'TRACE'], true)) {
+			Log::add(
+				'SecurityCheck Pro: mÃ©todo HTTP ' . $request_method . ' recibido desde ' . $attack_ip . ' â€” URI: ' . $request_uri,
+				Log::WARNING,
+				'securitycheckpro'
+			);
+		}
         
-        // Obtenemos los valores del plugin para la protección de sesión del usuario
+        // Obtenemos los valores del plugin para la protecciÃ³n de sesiÃ³n del usuario
         $session_hijack_protection = $this->pro_plugin->getValue('session_hijack_protection', 1, 'pro_plugin');
         $session_protection_active = $this->pro_plugin->getValue('session_protection_active', 1, 'pro_plugin');
                 
-        /* Protección de la sesión del usuario y contra secuestros de sesión */
+        /* ProtecciÃ³n de la sesiÃ³n del usuario y contra secuestros de sesiÃ³n */
         if ($session_protection_active || $session_hijack_protection) {
             $this->sesiones_activas($logs_attacks, $attack_ip, $request_uri, $session_protection_active, $session_hijack_protection);
         }
-        // Consultamos si hemos de aplicar las reglas al usuario en función de su pertenencia a grupos.
+        // Consultamos si hemos de aplicar las reglas al usuario en FunciÃ³n de su pertenencia a grupos.
         $user = $app->getIdentity();
         $apply_rules_to_user = $this->check_rules($user);
                 
@@ -1835,26 +1625,30 @@ class Securitycheckpro extends CMSPlugin
                     $modified = false;
                     
 					$entradas = $app->getInput();
-					$option = $entradas->get('option','com_notfound');					
-					                  
+					$option = $entradas->get('option','com_notfound');
+
+					// Config-save POST for this component legitimately contains SQL-like patterns
+					// (e.g. second_level_words). CSRF token protects the form; GET requests
+					// (e.g. a malicious link) are still inspected.
+					if ($app->isClient('administrator')
+						&& $option === 'com_securitycheckpro'
+						&& strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? '')) === 'POST') {
+						continue;
+					}
+
                     $req = $this->cleanQuery($attack_ip, $req, $methods_options, $a, $request_uri, $modified, $check_base_64, $logs_attacks, $option);
 					                    
                     if ($modified) {
-                        /* Actualizamos la lista negra dinámica */
                         $this->actualizar_lista_dinamica($attack_ip);
-						                            
-                        if ($mode) { // Modo estricto: redireccion
-                            /* Redirección a nuestra página de "Hacking Attempt" */                            
-                            $error_400 = $lang->_('COM_SECURITYCHECKPRO_400_ERROR');
-                            $this->redirection(400, $error_400);                                            
-                        } // Modo alerta: no hacemos redirección
+                        $error_400 = $lang->_('COM_SECURITYCHECKPRO_400_ERROR');
+                        $this->redirection(400, $error_400);
                     } else if ($secondlevel) {  // Second level protection
-                        // Nº máximo de palabras sospechosas
+                        // Nï¿½ mï¿½ximo de palabras sospechosas
                         $second_level_limit_words = intval($this->pro_plugin->getValue('second_level_limit_words', 3, 'pro_plugin'));
                         $words_found='';
                         $num_keywords = $this->second_level($request_uri, $req, $a, $words_found, $option);
                         if ($num_keywords >= $second_level_limit_words) {
-                              /* Actualizamos la lista negra dinámica */
+                              /* Actualizamos la lista negra dinï¿½mica */
                               $this->actualizar_lista_dinamica($attack_ip);                        
                               $this->grabar_log($logs_attacks, $attack_ip, 'FORBIDDEN_WORDS', $words_found, 'SECOND_LEVEL', $request_uri, $req, $user->username, $option);
                                 
@@ -1868,7 +1662,7 @@ class Securitycheckpro extends CMSPlugin
     }
     
    /**
-     * Función para mandar correos electrónicos
+     * FunciÃ³n para mandar correos electrï¿½nicos
      *
      * @param   string	               $alerta			 	 The message to send in the body
      *
@@ -1877,82 +1671,11 @@ class Securitycheckpro extends CMSPlugin
      */
     function mandar_correo($alerta)
     {
-		// Si la variable "pro_plugin" está vacía la instanciamos
-		if (empty($this->pro_plugin)) {
-			$this->pro_plugin = new BaseModel();
-		}
-		
-        // Variables del correo electrónico  y límite de correos a enviar cada día
-        $subject = $this->pro_plugin->getValue('email_subject', '', 'pro_plugin');
-        $body = $this->pro_plugin->getValue('email_body', '', 'pro_plugin');
-        $email_add_applied_rule = $this->pro_plugin->getValue('email_add_applied_rule', 1, 'pro_plugin');
-        $email_to = $this->pro_plugin->getValue('email_to', '', 'pro_plugin');
-        $to = explode(',', $email_to);
-        $email_from_domain = $this->pro_plugin->getValue('email_from_domain', '', 'pro_plugin');
-        $email_from_name = $this->pro_plugin->getValue('email_from_name', '', 'pro_plugin');
-        $from = array($email_from_domain,$email_from_name);
-        $email_limit = $this->pro_plugin->getValue('email_max_number', 20, 'pro_plugin');
-        $today = date("Y-m-d");
-        $send = true;
-        
-        // Consultamos el número de correos mandados
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-        
-        $query = "UPDATE #__securitycheckpro_emails SET envoys=0, send_date='{$today}' WHERE (send_date < '{$today}')";
-        $db->setQuery($query);
-        $db->execute();
-        
-        
-        $query = "SELECT envoys FROM #__securitycheckpro_emails WHERE (send_date = '{$today}')";
-        $db->setQuery($query);
-        (int) $envoys = $db->loadResult();
-        
-        if ($envoys < $email_limit) {  // No se ha alcanzado el límite máximo de emails por día
-            /* Cargamos el lenguaje del sitio */
-			/** @var \Joomla\CMS\Application\CMSApplication $app */
-			$app       = Factory::getApplication();
-            $lang = $app->getLanguage();
-            $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
-                            
-            // Añadimos la regla aplicada al cuerpo del correo
-            if ($email_add_applied_rule) {
-                $body = $body . '<br />' . $alerta;
-            }
-        
-            try 
-            {
-                $mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
-                // Emisor
-                $mailer->setSender($from);
-                // Destinatario -- es una array de direcciones
-                $mailer->addRecipient($to);
-                // Asunto
-                $mailer->setSubject($subject);
-                // Cuerpo
-                $mailer->setBody($body);
-                // Opciones del correo
-                $mailer->isHTML(true);
-                $mailer->Encoding = 'base64';
-                // Enviamos el mensaje
-                $send = $mailer->Send();
-            } catch (\Throwable $e)
-            {
-                $send = false;
-            }
-                        
-            if ($send !== true) {              
-            }else
-            {
-                $db = Factory::getContainer()->get(DatabaseInterface::class);
-                $query = "UPDATE `#__securitycheckpro_emails` SET envoys=envoys+1 WHERE (send_date = '{$today}')";
-                $db->setQuery($query);
-                $db->execute();
-            }
-        }
+		SecuritycheckProHelper::mandarCorreo((string) $alerta);
     }
     
     /**
-     * Chequea la dirección ip y el user-agent de una sesión activa para comprobar que no ha habido ninguna modificación
+     * Chequea la direcciï¿½n ip y el user-agent de una sesiï¿½n activa para comprobar que no ha habido ninguna modificaciï¿½n
      *
      * @param   int	               $user_id			 	 The user id
      *
@@ -1978,21 +1701,21 @@ class Securitycheckpro extends CMSPlugin
         $user_data = $db->loadRow();        
                                 
         if (!is_null($user_data)) {
-			if ( $session_hijack_protection_what_to_check == 1 )
+			if ( (int) $session_hijack_protection_what_to_check === 1 )
 			{
 				if ((strcmp($user_data[3], $ip) !== 0) || (strcmp($user_data[4], $user_agent) !== 0)) {
-					 // Han cambiado la dirección IP o el User-agent
+					 // Han cambiado la direcciï¿½n IP o el User-agent
 					$changed = true;
 				}
-			} else if ( $session_hijack_protection_what_to_check == 2 )
+			} else if ( (int) $session_hijack_protection_what_to_check === 2 )
 			{
 				if ((strcmp($user_data[3], $ip) !== 0) && (strcmp($user_data[4], $user_agent) !== 0)) {
-					 // Han cambiado tanto la dirección IP como el User-agent                
+					 // Han cambiado tanto la direcciï¿½n IP como el User-agent                
 					$changed = true;
 				}
 			}	
             
-        } else { //No hay datos (esto, en teoría, no debería ser posible); devolvemos el valor 'false' para evitar falsos positivos
+        } else { //No hay datos (esto, en teorï¿½a, no deberï¿½a ser posible); devolvemos el valor 'false' para evitar falsos positivos
             $changed = false;
         }
         
@@ -2001,7 +1724,7 @@ class Securitycheckpro extends CMSPlugin
     }
     
    /**
-     * Función que chequea el número de sesiones activas del usuario y, si existe más de una, toma el comportamiento pasado como argumento
+     * FunciÃ³n que chequea el nï¿½mero de sesiones activas del usuario y, si existe mï¿½s de una, toma el comportamiento pasado como argumento
      *
      * @param   bool		           $logs_attacks				 Tells if store the log
 	 * @param   string	               $attack_ip			 		 The IP
@@ -2025,12 +1748,12 @@ class Securitycheckpro extends CMSPlugin
         $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
 		
-		// Si la variable "pro_plugin" está vacía la instanciamos
+		// Si la variable "pro_plugin" estÃ¡ vacï¿½a la instanciamos
 		if (empty($this->pro_plugin)) {
 			$this->pro_plugin = new BaseModel();
 		}
         
-        // Chequeamos si la opción de compartir sesiones está activa; en este caso no aplicaremos esta opción para evitar una denegación de entrada
+        // Chequeamos si la opciï¿½n de compartir sesiones estÃ¡ activa; en este caso no aplicaremos esta opciï¿½n para evitar una denegaciï¿½n de entrada
         $params = $app->getConfig();        
         $shared_session_enabled = $params->get('shared_session');
         
@@ -2038,11 +1761,11 @@ class Securitycheckpro extends CMSPlugin
             return;
         }
         
-        // Cargamos los grupos a los que se ha de aplicar la protección; por defecto se aplica al grupo Super Users, con un id igual a 8 (el valor por defecto debe estar en un array)
+        // Cargamos los grupos a los que se ha de aplicar la protecciï¿½n; por defecto se aplica al grupo Super Users, con un id igual a 8 (el valor por defecto debe estar en un array)
         $session_protection_groups = $this->pro_plugin->getValue('session_protection_groups', array('0' => '8'), 'pro_plugin');
 		$dynamic_blacklist_on = $this->pro_plugin->getValue('dynamic_blacklist', 1, 'pro_plugin');
                 
-        // Variable que indicará si el usuario logado pertenece a un grupo al que haya que aplicar la protección
+        // Variable que indicarï¿½ si el usuario logado pertenece a un grupo al que haya que aplicar la protecciï¿½n
         $apply_to_user = false;
 		
 		$user = $app->getIdentity();
@@ -2053,14 +1776,13 @@ class Securitycheckpro extends CMSPlugin
 
 		$user_id = (int) $user->id;
 
-		// Mejor usar la API que ya tipa array de grupos
 		/** @var int[] $user_groups */
 		$user_groups = $user->getAuthorisedGroups();  // alternativo: $user->get('groups', [])
         
                 
-        // Si no se pudieron determinar grupos, el array estará vacío
-		if ($user_groups === []) {
-            // Chequeamos si el usuario pertenece a un grupo al que haya que aplicar la protección
+        // Si se pudieron determinar grupos, continuamos. Si el array estÃ¡ vacï¿½o no
+		if ($user_groups !== []) {
+            // Chequeamos si el usuario pertenece a un grupo al que haya que aplicar la protecciï¿½n
             foreach ($session_protection_groups as $group)
             {
                 $included = in_array($group, $user_groups);
@@ -2076,9 +1798,9 @@ class Securitycheckpro extends CMSPlugin
         $db->setQuery($query);
         $result = $db->loadResult();
                         
-        if (($result > 1) && ($apply_to_user)) {  // Ya existe más de una sesión activa del usuario y el usuario está incluido en un grupo al que hay que aplicar la protección                
+        if (($result > 1) && ($apply_to_user)) {  // Ya existe mï¿½s de una sesiï¿½n activa del usuario y el usuario estÃ¡ incluido en un grupo al que hay que aplicar la protecciï¿½n                
             if ($session_protection_active) {
-                /*Cerramos todas las sesiones activas del usuario, tanto del frontend (clientid->0) como del backend (clientid->1); este código es necesario porque no queremos modificar los archivos de Joomla , pero esta comprobación podría incluirse en la función onUserLogin*/
+                /*Cerramos todas las sesiones activas del usuario, tanto del frontend (clientid->0) como del backend (clientid->1); este cï¿½digo es necesario porque no queremos modificar los archivos de Joomla , pero esta comprobaciï¿½n podrï¿½a incluirse en la FunciÃ³n onUserLogin*/
                 $app->logout($user_id, array("clientid" => 0));
                 $app->logout($user_id, array("clientid" => 1));
                     
@@ -2092,12 +1814,12 @@ class Securitycheckpro extends CMSPlugin
                 // Grabamos el log correspondiente...
                 $this->grabar_log($logs_attacks, $attack_ip, 'SESSION_PROTECTION', $session_protection_description, 'SESSION_PROTECTION', $request_uri, $username .$user->username, $user->username, '---');
                     
-                // ... y redirigimos la petición para realizar las acciones correspondientes
+                // ... y redirigimos la peticiï¿½n para realizar las acciones correspondientes
                 $session_protection_error = $lang->_('COM_SECURITYCHECKPRO_SESSION_PROTECTION_ERROR');
                 $this->redirection(403, $session_protection_error);
             }    
-        } else if (($result == 1) && ($apply_to_user)) {
-            //Existe una sesión activa del usuario; comprobamos que no ha sido suplantada
+        } else if (((int) $result === 1) && ($apply_to_user)) {
+            //Existe una sesiï¿½n activa del usuario; comprobamos que no ha sido suplantada
             if ($session_hijack_protection) {
                 $session_hijacked = $this->chequeo_suplantacion($user_id);                    
                 if ($session_hijacked) {                        
@@ -2111,7 +1833,7 @@ class Securitycheckpro extends CMSPlugin
                     // Grabamos el log correspondiente...
                     $this->grabar_log($logs_attacks, $attack_ip, 'SESSION_PROTECTION', $session_hijack_attempt_description, 'SESSION_HIJACK_ATTEMPT', $request_uri, $username .$user->username, $user->username, '---');
                     
-                    // ... y redirigimos la petición para realizar las acciones correspondientes
+                    // ... y redirigimos la peticiï¿½n para realizar las acciones correspondientes
                     $session_protection_error = $lang->_('COM_SECURITYCHECKPRO_SESSION_PROTECTION_ERROR');
                     $this->redirection(403, $session_protection_error);
                 }
@@ -2121,7 +1843,7 @@ class Securitycheckpro extends CMSPlugin
     }
     
    /**
-     * Complementa la función original de Joomla añadiendo a la tabla `#__securitycheckpro_sessions` información sobre la sesión del usuario
+     * Complementa la FunciÃ³n original de Joomla aï¿½adiendo a la tabla `#__securitycheckpro_sessions` informaciï¿½n sobre la sesiï¿½n del usuario
      *
      * @param   array<string,mixed>      $user				 The user info
 	 * @param   array<string,mixed>	     $options			 The options
@@ -2137,7 +1859,7 @@ class Securitycheckpro extends CMSPlugin
 		/** @var \Joomla\CMS\Application\CMSApplication $app */
 		$app       = Factory::getApplication();
 		
-		// Si la variable "pro_plugin" está vacía la instanciamos
+		// Si la variable "pro_plugin" estÃ¡ vacï¿½a la instanciamos
 		if (empty($this->pro_plugin)) {
 			$this->pro_plugin = new BaseModel();
 		}
@@ -2145,17 +1867,17 @@ class Securitycheckpro extends CMSPlugin
 		// Chequeamos los ids de los grupos 'Public' y 'Guest'
         $query = "SELECT id FROM #__usergroups WHERE title='Public'";
         $db->setQuery($query);
-        (int) $public_group_id = $db->loadResult();
+        $public_group_id = (int) $db->loadResult();
         
         $query = "SELECT id FROM #__usergroups WHERE title='Guest'";
         $db->setQuery($query);
-        (int) $guest_acl_security = $db->loadResult();        
+        $guest_acl_security = (int) $db->loadResult();        
         
         // Obtenemos la longitud de la clave que tenemos que generar
         $params = ComponentHelper::getParams('com_securitycheckpro');
         $check_acl_security = $params->get('check_acl_security', 1);
 
-        if ($check_acl_security == 1) {            
+        if ((int) $check_acl_security === 1) {
             //core.login.site, core.login.admin, core.login.offline, core.admin, core.manage, core.create, core.delete, core.edit, core.edit.state, core.edit.own
             $permissions_to_check = array (
             'core.login.site'    => 'JACTION_LOGIN_SITE',
@@ -2178,43 +1900,88 @@ class Securitycheckpro extends CMSPlugin
                 }
                 
                 $guest_acl = Access::checkGroup($guest_acl_security, $key);
-                if ($guest_acl) {
-                    if (in_array($app->getName(), array('administrator','admin'))) {
-                        $app->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_INSECURE_ACL_CONFIG_DETECTED', Text::_('COM_SECURITYCHECKPRO_GUEST'), Text::_($value)), 'error');
-                    }
+                if (
+					$guest_acl
+					&& in_array($app->getName(), ['administrator', 'admin'], true)
+				){
+                    $app->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_INSECURE_ACL_CONFIG_DETECTED', Text::_('COM_SECURITYCHECKPRO_GUEST'), Text::_($value)), 'error');                   
                 }
             }            
         }                
         
-        // Limpiamos las sesiones no válidas
+        // Limpiamos las sesiones no vï¿½lidas
         $this->chequeo_sesiones();
         
-        // Obtenemos las entradas
-        $username = $db->Quote($db->escape($user['username']));
-        $name = $user['username'];
-		// La variable session_name estará vacia enlas peticiones a la API
-        if (!empty($_COOKIE[session_name()])) {
-			$session_id = $db->Quote($db->escape($_COOKIE[session_name()]));
-		} else {
-			$session_id = $db->Quote($db->escape($app->getSession()->getId()));			
+        // NormalizaciÃ³n de datos
+		$username = isset($user['username']) && is_string($user['username'])
+			? $user['username']
+			: '';
+
+		$name = $username;
+		
+		$session_id = (string) $app->getSession()->getId();
+
+		$ip = (string) $this->ipmodel->getClientIpForSecuritycheckPro();
+        $user_agent = '';
+		
+		if (isset($_SERVER['HTTP_USER_AGENT']) && is_string($_SERVER['HTTP_USER_AGENT'])) {
+			$user_agent = $_SERVER['HTTP_USER_AGENT'];
 		}
-        $ip = $this->ipmodel->getClientIpForSecuritycheckPro();
-        $user_agent = $db->Quote($db->escape($_SERVER['HTTP_USER_AGENT']));
-        
-        // Obtenemos el id del usuario logado
-        $query = "SELECT id FROM #__users WHERE (username = {$username})";
-        $db->setQuery($query);
-        $userid = $db->loadResult();
-        
-        // Insertamos los datos en la tabla 'securitycheckpro_sessions' ignorando los errores de entradas duplicadas
-		if (strstr($this->dbtype,"mysql")) {
-			$query = "INSERT IGNORE INTO #__securitycheckpro_sessions (userid,  session_id, username, ip, user_agent) VALUES ('{$userid}', {$session_id}, {$username}, '{$ip}', {$user_agent})";
-		} else if (strstr($this->dbtype,"pgsql")) {
-			$query = "INSERT INTO #__securitycheckpro_sessions (userid,  session_id, username, ip, user_agent) VALUES ('{$userid}', {$session_id}, {$username}, '{$ip}', {$user_agent}) ON CONFLICT DO NOTHING";
+
+		// Obtenemos el ID del usuario logado
+		$query = $db->getQuery(true)
+			->select($db->quoteName('id'))
+			->from($db->quoteName('#__users'))
+			->where($db->quoteName('username') . ' = ' . $db->quote($username));
+
+		$db->setQuery($query);
+		$userid = (int) $db->loadResult();
+
+		if ($userid > 0) {
+			// Comprobamos si ya existe fila para este userid
+			$query = $db->getQuery(true)
+				->select('1')
+				->from($db->quoteName('#__securitycheckpro_sessions'))
+				->where($db->quoteName('userid') . ' = ' . $userid);
+
+			$db->setQuery($query);
+			$exists = (int) $db->loadResult() === 1;
+
+			if ($exists) {
+				// UPDATE: mantenemos la fila del usuario actualizada
+				$query = $db->getQuery(true)
+					->update($db->quoteName('#__securitycheckpro_sessions'))
+					->set($db->quoteName('session_id') . ' = ' . $db->quote($session_id))
+					->set($db->quoteName('username') . ' = ' . $db->quote($username))
+					->set($db->quoteName('ip') . ' = ' . $db->quote($ip))
+					->set($db->quoteName('user_agent') . ' = ' . $db->quote($user_agent))
+					->where($db->quoteName('userid') . ' = ' . $userid);
+
+				$db->setQuery($query);
+				$db->execute();
+			} else {
+				// INSERT: primera sesiï¿½n registrada para este usuario
+				$query = $db->getQuery(true)
+					->insert($db->quoteName('#__securitycheckpro_sessions'))
+					->columns([
+						$db->quoteName('userid'),
+						$db->quoteName('session_id'),
+						$db->quoteName('username'),
+						$db->quoteName('ip'),
+						$db->quoteName('user_agent'),
+					])
+					->values(implode(', ', [
+						(string) $userid,
+						$db->quote($session_id),
+						$db->quote($username),
+						$db->quote($ip),
+						$db->quote($user_agent),
+					]));
+
+				$db->setQuery($query);
+				$db->execute();
+			}
 		}
-        
-        $db->setQuery($query);
-        $db->execute();
         
         /* Controlamos el acceso de los administradores al backend */        
         /* Cargamos el lenguaje del sitio */
@@ -2232,7 +1999,7 @@ class Securitycheckpro extends CMSPlugin
             $this->delete_logs();
             
             if ($email_on_admin_login) {            
-                // Extraemos los datos que se mandarán por correo
+                // Extraemos los datos que se mandarï¿½n por correo
                 $ip = $this->ipmodel->getClientIpForSecuritycheckPro();                               
                 $email_subject = $lang->_('COM_SECURITYCHECKPRO_RULE') . $lang->_('COM_SECURITYCHECKPRO_ADMIN_LOGIN_TO_BACKEND') . "<br />" . $lang->_('COM_SECURITYCHECKPRO_USERNAME') . $username . "<br />" . "IP: " . $ip;
                 $this->mandar_correo($email_subject);                                        
@@ -2250,7 +2017,7 @@ class Securitycheckpro extends CMSPlugin
                 $user = $app->getIdentity();
                 $user_groups = $user->groups;
                                 
-                // Chequeamos si el usuario pertenece a un grupo al que haya que aplicar la protección
+                // Chequeamos si el usuario pertenece a un grupo al que haya que aplicar la protecciï¿½n
                 foreach ($user_groups as $group)
                 {
                     $included = in_array($group, $forbidden_groups);
@@ -2268,13 +2035,13 @@ class Securitycheckpro extends CMSPlugin
                     $fordib_frontend_login_description = $lang->_('COM_SECURITYCHECKPRO_FRONTEND_LOGIN_FORBIDDEN');
                     $username_string = $lang->_('COM_SECURITYCHECKPRO_USERNAME');
                     
-                    // Cerramos la sesión del frontend
+                    // Cerramos la sesiï¿½n del frontend
                     $app->logout($userid, array("clientid" => 0));                    
                     
                     // Grabamos el log correspondiente...
                     $this->grabar_log($logs_attacks, $attack_ip, 'SESSION_PROTECTION', $fordib_frontend_login_description, 'SESSION_PROTECTION', $request_uri, $username_string .$name, $name, '---');
                                                             
-                    // ... y redirigimos la petición para realizar las acciones correspondientes
+                    // ... y redirigimos la peticiï¿½n para realizar las acciones correspondientes
                     $this->redirection(403, $fordib_frontend_login_description);
                     
                 }                
@@ -2284,7 +2051,7 @@ class Securitycheckpro extends CMSPlugin
     }
     
     /**
-     * Complementa la función original de Joomla eliminando a la tabla `#__securitycheckpro_sessions` información sobre la sesión del usuario
+     * Complementa la FunciÃ³n original de Joomla eliminando a la tabla `#__securitycheckpro_sessions` informaciï¿½n sobre la sesiï¿½n del usuario
      *
      * @param   array<string,mixed>      $user				 The user info
 	 * @param   array<string,mixed>	     $options			 The options
@@ -2306,84 +2073,83 @@ class Securitycheckpro extends CMSPlugin
         $db->setQuery($query);
         $db->execute();
         
-        // Limpiamos las sesiones no válidas
+        // Limpiamos las sesiones no vï¿½lidas
         $this->chequeo_sesiones();
     }
     
    	/**
-     * Función que chequea si existen sesiones de usuario en la tabla `#__securitycheckpro_sessions` que ya no son válidas. Esto sucede, por ejemplo, cuando la sesión del usuario se cierra por
-	 * inactividad
-     *
-     *
-     * @return  void
-     *     
-     */
-    protected function chequeo_sesiones()
-    {
-        // Variables que usamos en la función
+	 * Comprueba la validez de la sesiï¿½n actual del usuario autenticado y
+	 * elimina sesiones huï¿½rfanas de #__securitycheckpro_sessions.
+	 *
+	 * @return void
+	 */
+	protected function chequeo_sesiones(): void
+	{
 		/** @var \Joomla\CMS\Application\CMSApplication $app */
-		$app       = Factory::getApplication();
-        $user = $app->getIdentity();
-        $user_id = (int) $user->id;
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-        
-        if (!$user->guest) {
-        
-            $session_id = $db->Quote($db->escape($_COOKIE[session_name()]));
-                            
-            // Consultamos si existe alguna sesión en `#__session` con el mismo 'session_id' que las de la cookie. Eso significa que la sesión está activa
-            $query = "SELECT session_id FROM #__session WHERE (session_id = {$session_id})";
-            $db->setQuery($query);
-            $result = $db->loadResult();
-                        
-            // Si la cookie ya no existe en la tabla  `#__session, significa que no es válida. Borramos la entrada en la tabla `#__securitycheckpro_sessions`
-            if (is_null($result)) {
-				if (strstr($this->dbtype,"mysql")) {
-					$query = "DELETE IGNORE FROM #__securitycheckpro_sessions WHERE (session_id = {$session_id})";
-				} else if (strstr($this->dbtype,"pgsql")) {
-					$query = "DELETE FROM #__securitycheckpro_sessions WHERE (session_id = {$session_id})";					
+		$app = Factory::getApplication();
+
+		$user = $app->getIdentity();
+
+		/** @var DatabaseInterface $db */
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
+
+		// 1) Si el usuario autenticado tiene cookie de sesiï¿½n, comprobamos
+		//    que esa sesiï¿½n siga existiendo en #__session.
+		if (!$user->guest && (int) $user->id > 0) {
+			$cookieSessionName = session_name();
+			$sessionId = '';
+
+			if ($cookieSessionName !== false) {
+				$cookieValue = $_COOKIE[$cookieSessionName] ?? null;
+
+				if (is_string($cookieValue) && $cookieValue !== '') {
+					$sessionId = $cookieValue;
 				}
-                
-                $db->setQuery($query);
-                $db->execute();
-            } else
-            { 
-                /* La cookie existe, por lo que la sesión es válida. Debemos chequear si la ip de origen y el user-agent de la petición actual son los mismos que los almacenados al iniciar la sesión.  Lo hacemos en la función sesiones_activas() para evitar lanzarlo cuando no se ha iniciado ninguna sesión*/
-                
-            }
-        }
-        
-        /* Sessions garbage collector */
-        // Consultamos todas las sesiones creadas por el plugin.
-        $query = "SELECT userid FROM #__securitycheckpro_sessions";
-        $db->setQuery($query);
-        $userids_array = $db->loadColumn();
-        
-        // Existen sesiones en la tabla `#__securitycheckpro_sessions`. Comprobamos si están activas en la tabla `#__sessions`
-        if (!(is_null($userids_array))) {
-            foreach ($userids_array as $id)
-            {
-                // Consultamos si existe alguna sesión del usuario activa en `#__session`.
-                $query = "SELECT session_id FROM #__session WHERE (userid = {$id})";
-                $db->setQuery($query);
-                $result = $db->loadResult();
-                // Si no existen sesiones, significa que las existentes en la tabla `#__securitycheckpro_sessions` no son válidas. Las borramos.
-                if (is_null($result)) {
-					if (strstr($this->dbtype,"mysql")) {
-						$query = "DELETE IGNORE FROM #__securitycheckpro_sessions WHERE (userid = {$id})";
-					} else if (strstr($this->dbtype,"pgsql")) {
-						$query = "DELETE FROM #__securitycheckpro_sessions WHERE (userid = {$id})";					
-					}
-                    
-                    $db->setQuery($query);
-                    $db->execute();
-                }                
-            }
-        }
-    }
+			}
+
+			if ($sessionId !== '') {
+				$query = $db->getQuery(true)
+					->select($db->quoteName('session_id'))
+					->from($db->quoteName('#__session'))
+					->where($db->quoteName('session_id') . ' = ' . $db->quote($sessionId));
+
+				$db->setQuery($query);
+				$existingSessionId = $db->loadResult();
+
+				// Si la sesiï¿½n de la cookie ya no existe en #__session,
+				// eliminamos su rastro en #__securitycheckpro_sessions.
+				if ($existingSessionId === null) {
+					$query = $db->getQuery(true)
+						->delete($db->quoteName('#__securitycheckpro_sessions'))
+						->where($db->quoteName('session_id') . ' = ' . $db->quote($sessionId));
+
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+		}
+
+		// 2) Garbage collector:
+		//    eliminamos de #__securitycheckpro_sessions todos los usuarios que
+		//    ya no tengan ninguna sesiï¿½n activa en #__session.
+		$subQuery = $db->getQuery(true)
+			->select('1')
+			->from($db->quoteName('#__session', 's'))
+			->where(
+				's.' . $db->quoteName('userid') . ' = ' .
+				$db->quoteName('#__securitycheckpro_sessions') . '.' . $db->quoteName('userid')
+			);
+
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__securitycheckpro_sessions'))
+			->where('NOT EXISTS (' . (string) $subQuery . ')');
+
+		$db->setQuery($query);
+		$db->execute();
+	}
     
    	/**
-     * Función que chequea si las reglas han de aplicarse al usuario pasado como argumento. Se comprobará la pertenencia a grupos y se aplicará la configuración de la tabla "#__securitycheckpro_rules"
+     * FunciÃ³n que chequea si las reglas han de aplicarse al usuario pasado como argumento. Se comprobarï¿½ la pertenencia a grupos y se aplicarï¿½ la configuraciï¿½n de la tabla "#__securitycheckpro_rules"
      *
      *
 	 * @param   User       $user_object    The user object
@@ -2399,14 +2165,14 @@ class Securitycheckpro extends CMSPlugin
         if ($user_object->guest) {
             $apply = true;
         } else {
-            // Consultamos la variable de sesión "apply_rules", que nos indicará si hay que aplicar las reglas al usuario.
+            // Consultamos la variable de sesiï¿½n "apply_rules", que nos indicarï¿½ si hay que aplicar las reglas al usuario.
 			/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
             $mainframe = Factory::getApplication();
             $apply_rules = $mainframe->getUserState("apply_rules", 'not_set');        
             
             switch ($apply_rules)
             {
-            case "not_set": // Si no se ha establecido la variable, lanzamos el procedimiento "set_session_rules", que se encargará de establecerla.                
+            case "not_set": // Si no se ha establecido la variable, lanzamos el procedimiento "set_session_rules", que se encargarï¿½ de establecerla.                
                 $this->set_session_rules();
                 $apply_rules = $mainframe->getUserState("apply_rules", 'not_set');                    
                 switch ($apply_rules)
@@ -2431,7 +2197,7 @@ class Securitycheckpro extends CMSPlugin
     }
     
     /**
-     * Función para establecer en la sesión del usuario si hay que aplicarle las reglas del firewall
+     * FunciÃ³n para establecer en la sesiï¿½n del usuario si hay que aplicarle las reglas del firewall
      *
      *
      * @return  void
@@ -2454,7 +2220,7 @@ class Securitycheckpro extends CMSPlugin
             $apply_rule_to_group = $db->loadResult();
                                     
             // Si hay que aplicar la regla, actualizamos la variable '$apply' y abandonamos el bucle
-             if ( !is_null($apply_rule_to_group) && ($apply_rule_to_group == 0) ) {
+             if ( !is_null($apply_rule_to_group) && ((int) $apply_rule_to_group === 0) ) {
                 $apply = "no";
                 $this->actualizar_rules_log($user, $grupo);
                 break;
@@ -2466,7 +2232,7 @@ class Securitycheckpro extends CMSPlugin
     }
     
     /**
-     * Función para actualizar los logs de las reglas del firewall
+     * FunciÃ³n para actualizar los logs de las reglas del firewall
      *
      * @param   \Joomla\CMS\User\User|null     $user    The user object
 	 * @param   int           				  $grupo   The group id
@@ -2484,7 +2250,7 @@ class Securitycheckpro extends CMSPlugin
         $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         
-        // Obtenemos el título del grupo al que se le aplica la excepción
+        // Obtenemos el tï¿½tulo del grupo al que se le aplica la excepciï¿½n
         $query = "SELECT title FROM #__usergroups WHERE (id = {$grupo})";
         $db->setQuery($query);
         $group_title = $db->loadResult();
@@ -2504,7 +2270,7 @@ class Securitycheckpro extends CMSPlugin
                     );
         $insert_result = $db->insertObject('#__securitycheckpro_rules_logs', $valor, 'id');
         
-        // Borramos las entradas con más de un mes de antigüedad
+        // Borramos las entradas con mï¿½s de un mes de antigï¿½edad
 		if (strstr($this->dbtype,"mysql")) {
 			$sql = "DELETE FROM #__securitycheckpro_rules_logs WHERE (DATE_ADD(last_entry, INTERVAL 1 MONTH)) < NOW();";
 		} else if (strstr($this->dbtype,"pgsql")) {
@@ -2540,7 +2306,7 @@ class Securitycheckpro extends CMSPlugin
         
         // Is the plugin enabled?
         if ($plugin_enabled) {	
-			/* Chequeamos los archivos subidos al servidor usando cabeceras HTTP y método POST. Los archivos son arrays con el siguiente formato:
+			/* Chequeamos los archivos subidos al servidor usando cabeceras HTTP y mï¿½todo POST. Los archivos son arrays con el siguiente formato:
 			[integer] error = 0
 			[string] name = "k.txt"
 			[integer] size = 4674
@@ -2550,22 +2316,22 @@ class Securitycheckpro extends CMSPlugin
 			
 			$this->pro_plugin = new BaseModel();
 			
-			// Extraemos la configuración del escaner de subidas
+			// Extraemos la configuraciÃ³n del escaner de subidas
 			$upload_scanner_enabled = $this->pro_plugin->getValue('upload_scanner_enabled', 1, 'pro_plugin');
 			$check_multiple_extensions = $this->pro_plugin->getValue('check_multiple_extensions', 1, 'pro_plugin');
-			$extensions_blacklist = $this->pro_plugin->getValue('extensions_blacklist', 'php,js,exe,xml', 'pro_plugin');
+			$extensions_blacklist = $this->pro_plugin->getValue('extensions_blacklist', 'php,phtml,phar,shtml,htaccess,js,exe,xml', 'pro_plugin');
 			$delete_files = $this->pro_plugin->getValue('delete_files', 1, 'pro_plugin');
 			$actions_upload_scanner = $this->pro_plugin->getValue('actions_upload_scanner', 0, 'pro_plugin');
-			
-			// Si el escáner está habilitado y existen archivos subidos, los comprobamos
+
+			// Si el escÃ¡ner estÃ¡ habilitado y existen archivos subidos, los comprobamos
 			if (($upload_scanner_enabled) && ($_FILES)) {
-				foreach ($_FILES as $file)
-				{ 
-					$this->check_file($check_multiple_extensions, $extensions_blacklist, $delete_files, $file, $actions_upload_scanner);            
+				foreach ($_FILES as $entry) {
+					foreach ($this->normalise_files($entry) as $file) {
+						$this->check_file($check_multiple_extensions, $extensions_blacklist, $delete_files, $file, $actions_upload_scanner);
+					}
 				}
-				
 			}
-    
+
             // Cargamos el lenguaje del sitio
 			/** @var \Joomla\CMS\Application\CMSApplication $app */
 			$app       = Factory::getApplication();
@@ -2576,7 +2342,6 @@ class Securitycheckpro extends CMSPlugin
 						
             $methods = $this->pro_plugin->getValue('methods', 'GET,POST,REQUEST', 'pro_plugin');
             $logs_attacks = $this->pro_plugin->getValue('logs_attacks', 1, 'pro_plugin');
-            $mode = $this->pro_plugin->getValue('mode', 1, 'pro_plugin');
             $blacklist_ips = $this->pro_plugin->getValue('blacklist', 'pro_plugin');
             $dynamic_blacklist_on = $this->pro_plugin->getValue('dynamic_blacklist', 1, 'pro_plugin');
             $dynamic_blacklist_time = $this->pro_plugin->getValue('dynamic_blacklist_time', 60000, 'pro_plugin');
@@ -2614,7 +2379,7 @@ class Securitycheckpro extends CMSPlugin
                     return;
                 }            
             } else if ($priority1 == "DynamicBlacklist") {
-                // Chequeamos si la ip remota se encuentra en la lista negra dinámica
+                // Chequeamos si la ip remota se encuentra en la lista negra dinï¿½mica
                 if ($dynamic_blacklist_on) {
                     $this->acciones_lista_negra_dinamica($dynamic_blacklist_time, $attack_ip, $dynamic_blacklist_counter, $logs_attacks, $request_uri, $not_applicable);
                 }
@@ -2631,7 +2396,7 @@ class Securitycheckpro extends CMSPlugin
                     return;
                 }
             }  else if ($priority2 == "DynamicBlacklist") {
-                // Chequeamos si la ip remota se encuentra en la lista negra dinámica
+                // Chequeamos si la ip remota se encuentra en la lista negra dinï¿½mica
                 if ($dynamic_blacklist_on) {
                     $this->acciones_lista_negra_dinamica($dynamic_blacklist_time, $attack_ip, $dynamic_blacklist_counter, $logs_attacks, $request_uri, $not_applicable);
                 }
@@ -2647,7 +2412,7 @@ class Securitycheckpro extends CMSPlugin
                     return;
                 }
             }  else if ($priority3 == "DynamicBlacklist") {
-                // Chequeamos si la ip remota se encuentra en la lista negra dinámica
+                // Chequeamos si la ip remota se encuentra en la lista negra dinï¿½mica
                 if ($dynamic_blacklist_on) {
                     $this->acciones_lista_negra_dinamica($dynamic_blacklist_time, $attack_ip, $dynamic_blacklist_counter, $logs_attacks, $request_uri, $not_applicable);
                 }
@@ -2662,7 +2427,7 @@ class Securitycheckpro extends CMSPlugin
 	}
 	
 	/**
-     * Sobreescribe la función original
+     * Sobreescribe la FunciÃ³n original
      *
      * @return  void
      *     
@@ -2671,81 +2436,80 @@ class Securitycheckpro extends CMSPlugin
     {
 		$plugin_enabled = false;
         $tables_locked = false;
-        
+
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-		
+
 		/** @var \Joomla\CMS\Application\CMSApplication $app */
 		$app       = Factory::getApplication();
-        
-        try 
+
+        try
         {
-            $query = "SELECT enabled from #__extensions WHERE element='Securitycheckpro' and type='plugin'";            
+            $query = "SELECT enabled from #__extensions WHERE element='Securitycheckpro' and type='plugin'";
             $db->setQuery($query);
             $plugin_enabled= $db->loadResult();
         } catch (\Exception $e)
         {
-            
-        }            
 
-        try 
+        }
+
+        try
         {
-            $query = "SELECT storage_value from #__securitycheckpro_storage WHERE storage_key = 'locked'";        
+            $query = "SELECT storage_value from #__securitycheckpro_storage WHERE storage_key = 'locked'";
             $db->setQuery($query);
             $tables_locked= $db->loadResult();
         } catch (\Exception $e)
         {
-            
-        }        
-        
+
+        }
+
         // Is the plugin enabled?
-        if ($plugin_enabled) {	
-		
-			/* Chequeamos los archivos subidos al servidor usando cabeceras HTTP y método POST. Los archivos son arrays con el siguiente formato:
+        if ($plugin_enabled) {
+
+			/* Chequeamos los archivos subidos al servidor usando cabeceras HTTP y mï¿½todo POST. Los archivos son arrays con el siguiente formato:
 			[integer] error = 0
 			[string] name = "k.txt"
 			[integer] size = 4674
 			[string] tmp_name = "/tmp/phpkhm2Jz"
 			[string] type = "text/plain"
 			*/
-			
+
 			$this->pro_plugin = new BaseModel();
-			
-			// Extraemos la configuración del escaner de subidas
+
+			// Extraemos la configuraciï¿½n del escaner de subidas
 			$upload_scanner_enabled = $this->pro_plugin->getValue('upload_scanner_enabled', 1, 'pro_plugin');
 			$check_multiple_extensions = $this->pro_plugin->getValue('check_multiple_extensions', 1, 'pro_plugin');
-			$extensions_blacklist = $this->pro_plugin->getValue('extensions_blacklist', 'php,js,exe,xml', 'pro_plugin');
+			$extensions_blacklist = $this->pro_plugin->getValue('extensions_blacklist', 'php,phtml,phar,shtml,htaccess,js,exe,xml', 'pro_plugin');
 			$delete_files = $this->pro_plugin->getValue('delete_files', 1, 'pro_plugin');
 			$actions_upload_scanner = $this->pro_plugin->getValue('actions_upload_scanner', 0, 'pro_plugin');
-			
-			// Si el escáner está habilitado y existen archivos subidos, los comprobamos
+
+			// Si el escï¿½ner estÃ¡ habilitado y existen archivos subidos, los comprobamos
 			if (($upload_scanner_enabled) && ($_FILES)) {
-				foreach ($_FILES as $file)
-				{ 
-					$this->check_file($check_multiple_extensions, $extensions_blacklist, $delete_files, $file, $actions_upload_scanner);            
+				foreach ($_FILES as $entry) {
+					foreach ($this->normalise_files($entry) as $file) {
+						$this->check_file($check_multiple_extensions, $extensions_blacklist, $delete_files, $file, $actions_upload_scanner);
+					}
 				}
-				
-			}           
-						
+			}
+
             $methods = $this->pro_plugin->getValue('methods', 'GET,POST,REQUEST', 'pro_plugin');
             $logs_attacks = $this->pro_plugin->getValue('logs_attacks', 1, 'pro_plugin');
-            $mode = $this->pro_plugin->getValue('mode', 1, 'pro_plugin');
             $secondlevel = $this->pro_plugin->getValue('second_level', 1, 'pro_plugin');
-            $check_base_64 = $this->pro_plugin->getValue('check_base_64', 1, 'pro_plugin');           
-                       
-            $attack_ip = $this->ipmodel->getClientIpForSecuritycheckPro();        
+            $check_base_64 = $this->pro_plugin->getValue('check_base_64', 1, 'pro_plugin');
+
+            $attack_ip = $this->ipmodel->getClientIpForSecuritycheckPro();
             $request_uri = $_SERVER['REQUEST_URI'];
-			                       
+
             // Cargamos las librerias necesarias para realizar comprobaciones
             $model = $this->pro_plugin;
-          
-			$aparece_lista_blanca = $model->chequear_ip_en_lista($attack_ip, "whitelist");                      
-            
+
+			$aparece_lista_blanca = $model->chequear_ip_en_lista($attack_ip, "whitelist");
+
             if (!$aparece_lista_blanca) {
                 // La IP no se encuentra en ninguna lista
-                $this->acciones_no_listas($methods, $attack_ip, $methods, $request_uri, $check_base_64, $logs_attacks, $secondlevel, $mode);
-            }       
+                $this->acciones_no_listas($methods, $attack_ip, $methods, $request_uri, $check_base_64, $logs_attacks, $secondlevel);
+            }
         }
-        // Si las tablas están bloqueadas prohibimos el acceso a 'com_installer'
+        // Si las tablas estÃ¡n bloqueadas prohibimos el acceso a 'com_installer'
         if ($tables_locked) {           
             $is_admin = $app->isClient('administrator');
             
@@ -2753,7 +2517,7 @@ class Securitycheckpro extends CMSPlugin
                 $option = $app->getInput()->get('option');
                 if (($option == "com_installer") || ($option == "com_joomlaupdate")) {
                     $app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_INSTALLER_ACCESS_FORBIDDEN'), 'error');
-                    // Redirigimos a la página establecida por el administrador
+                    // Redirigimos a la pï¿½gina establecida por el administrador
                     $app->redirect(Uri::base());    
                 }
             }
@@ -2772,14 +2536,14 @@ class Securitycheckpro extends CMSPlugin
     } 
 
     /**
-     * Sobreescribe la función original para eliminar el meta-tag
+     * Sobreescribe la FunciÃ³n original para eliminar el meta-tag
      *
      * @return  void
      *     
      */
     public function onAfterDispatch()
     {
-        // ¿Tenemos que eliminar el meta tag?
+        // ï¿½Tenemos que eliminar el meta tag?
         $params = ComponentHelper::getParams('com_securitycheckpro');
         $remove_meta_tag = $params->get('remove_meta_tag', 1);
 		
@@ -2794,20 +2558,77 @@ class Securitycheckpro extends CMSPlugin
     }
     
     /**
-     * Función que chequea si un fichero tiene múltiples extensiones o pertenece a una lista de extensiones prohibidas. Según el valor de la variable $delete_files, el fichero será borrado
+     * Normalises a single $_FILES field entry into a flat list of single-file records.
+     * Handles scalar (single file), parallel-array (multiple files, <input multiple>),
+     * and nested-array (name="a[b][]") shapes. Entries with UPLOAD_ERR_NO_FILE are skipped.
+     *
+     * @param   array<string,mixed>  $entry  One $_FILES field entry
+     *
+     * @return  array<int,array{name:string,tmp_name:string,size:int,type:string,error:int}>
+     */
+    protected function normalise_files(array $entry): array
+    {
+        $records = [];
+
+        if (!is_array($entry['tmp_name'])) {
+            $error = (int) ($entry['error'] ?? UPLOAD_ERR_NO_FILE);
+            if ($error !== UPLOAD_ERR_NO_FILE) {
+                $records[] = [
+                    'name'     => (string) ($entry['name'] ?? ''),
+                    'tmp_name' => (string) ($entry['tmp_name'] ?? ''),
+                    'size'     => (int)    ($entry['size'] ?? 0),
+                    'type'     => (string) ($entry['type'] ?? ''),
+                    'error'    => $error,
+                ];
+            }
+            return $records;
+        }
+
+        foreach (array_keys($entry['tmp_name']) as $i) {
+            $sub = [
+                'name'     => $entry['name'][$i] ?? '',
+                'tmp_name' => $entry['tmp_name'][$i] ?? '',
+                'size'     => $entry['size'][$i] ?? 0,
+                'type'     => $entry['type'][$i] ?? '',
+                'error'    => $entry['error'][$i] ?? UPLOAD_ERR_NO_FILE,
+            ];
+
+            if (is_array($sub['tmp_name'])) {
+                foreach ($this->normalise_files($sub) as $record) {
+                    $records[] = $record;
+                }
+            } else {
+                $error = (int) $sub['error'];
+                if ($error !== UPLOAD_ERR_NO_FILE) {
+                    $records[] = [
+                        'name'     => (string) $sub['name'],
+                        'tmp_name' => (string) $sub['tmp_name'],
+                        'size'     => (int)    $sub['size'],
+                        'type'     => (string) $sub['type'],
+                        'error'    => $error,
+                    ];
+                }
+            }
+        }
+
+        return $records;
+    }
+
+    /**
+     * FunciÃ³n que chequea si un fichero tiene mï¿½ltiples extensiones o pertenece a una lista de extensiones prohibidas. Segï¿½n el valor de la variable $delete_files, el fichero serï¿½ borrado
      *
 	 * @param   int|bool        		 $check_multiple_extensions  	Check multiple extensions?
 	 * @param   string          		 $extensions_blacklist    		String with the extensions forbidden
 	 * @param   int|bool       			 $delete_files   				Delete uploaded files
-	 * @param   array<string,mixed>      $file   						The file info
+	 * @param   array{name:string,tmp_name:string,size:int,type:string,error:int}  $file  The file info (scalar values)
 	 * @param   int          			 $actions_upload_scanner   		Actions
 	 *
      * @return  void
-     *     
-     */	
+     *
+     */
     protected function check_file($check_multiple_extensions,$extensions_blacklist,$delete_files,$file,$actions_upload_scanner)
     {
-		// Si la variable "pro_plugin" está vacía la instanciamos
+		// Si la variable "pro_plugin" estÃ¡ vacï¿½a la instanciamos
 		if (empty($this->pro_plugin)) {
 			$this->pro_plugin = new BaseModel();
 		}
@@ -2833,25 +2654,9 @@ class Securitycheckpro extends CMSPlugin
         $action = $lang->_('COM_SECURITYCHECKPRO_FILE_DELETED');
 		$custom_code = $this->pro_plugin->getValue('custom_code', 'The webmaster has forbidden your access to this site', 'pro_plugin');
 		
-		// Check file properties. If it's an array, let's convert it.
-		$tmp_name = $file['tmp_name'];
-		$file_name = $file['name'];
-		$file_size = $file['size'];
-		
-		if (is_array($file['tmp_name'])) {
-			if (!array_key_exists(0,$file['tmp_name'])) {
-				return;	
-			}
-			$tmp_name = $file['tmp_name'][0];
-		} 
-		
-		if (is_array($file['name'])) {
-			$file_name = $file['name'][0];
-		} 
-		
-		if (is_array($file['size'])) {
-			$file_size = $file['size'][0];
-		} 
+		$tmp_name  = (string) $file['tmp_name'];
+		$file_name = (string) $file['name'];
+		$file_size = (int)    $file['size'];
 		
 		// Obtenemos el mime-type del archivo temporal
 		if ( (function_exists('mime_content_type')) && (file_exists($tmp_name)) )  {
@@ -2860,7 +2665,7 @@ class Securitycheckpro extends CMSPlugin
 			$mime_type = false;
 		}		
 		
-		// Obtenemos el componente de la petición
+		// Obtenemos el componente de la peticiï¿½n
 		$component = $app->getInput()->get('option','com_notfound');
 		
 		// Obtenemos el usuario
@@ -2868,7 +2673,7 @@ class Securitycheckpro extends CMSPlugin
 		
 		if ($mime_type) {
 			$mimetypes_blacklist_array = explode(",",$mimetypes_blacklist);
-			// Convertimos los valores del array a minúsculas para hacer la comparación 'in_array'
+			// Convertimos los valores del array a minï¿½sculas para hacer la comparaciï¿½n 'in_array'
 			$mimetypes_blacklist_array = array_map('strtolower', $mimetypes_blacklist_array);			
 			
 			if ( in_array($mime_type,$mimetypes_blacklist_array) ) {
@@ -2880,8 +2685,8 @@ class Securitycheckpro extends CMSPlugin
                     $action = $lang->_('COM_SECURITYCHECKPRO_FILE_NOT_DELETED');
                 }
                 
-                // Si está marcada la opción, añadimos la IP a la lista negra dinámica
-                if ($actions_upload_scanner == 1) {
+                // Si estÃ¡ marcada la opciï¿½n, aï¿½adimos la IP a la lista negra dinï¿½mica
+                if ((int) $actions_upload_scanner === 1) {
                     $this->actualizar_lista_dinamica($attack_ip);                    
                 }
 				$this->grabar_log($logs_attacks, $attack_ip, 'UPLOAD_SCANNER', $action, $type, $request_uri, $file_name . PHP_EOL . $malware_description, $user->username, $component);
@@ -2889,37 +2694,62 @@ class Securitycheckpro extends CMSPlugin
 				header('HTTP/1.1 403 Forbidden');
 				die($custom_code);
 			}
-		}		       
-                
-        // Extensiones de ficheros que serán analizadas
-        // Eliminamos los espacios en blanco
+		}
+
+		// Capa adicional: detectar cï¿½digo PHP dentro de archivos con extensiï¿½n de imagen
+		$imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
+		$fileExtLower = strtolower((string) pathinfo((string) $file_name, PATHINFO_EXTENSION));
+		if (in_array($fileExtLower, $imageExtensions, true) && file_exists($tmp_name)) {
+			$fh = @fopen($tmp_name, 'rb');
+			if ($fh !== false) {
+				$header = (string) fread($fh, 512);
+				fclose($fh);
+				if (strpos($header, '<?') !== false || strpos($header, '<%') !== false) {
+					$malware_description = $lang->_('COM_SECURITYCHECKPRO_FILE_MIMETYPE_NOT_ALLOWED') . 'PHP/script content in image file';
+					$type = 'FORBIDDEN_EXTENSION';
+					if ($delete_files) {
+						@unlink($tmp_name);
+					} else {
+						$action = $lang->_('COM_SECURITYCHECKPRO_FILE_NOT_DELETED');
+					}
+					if ((int) $actions_upload_scanner === 1) {
+						$this->actualizar_lista_dinamica($attack_ip);
+					}
+					$this->grabar_log($logs_attacks, $attack_ip, 'UPLOAD_SCANNER', $action, $type, $request_uri, $file_name . PHP_EOL . $malware_description, $user->username, $component);
+					header('HTTP/1.1 403 Forbidden');
+					die($custom_code);
+				}
+			}
+		}
+
+        // Extensiones de ficheros que serï¿½n analizadas
+        // Eliminamos los espacios en blanco y normalizamos a minï¿½sculas para comparaciï¿½n case-insensitive
         $extensions_blacklist = str_ireplace(' ', '', $extensions_blacklist);
-        $ext = explode(',', $extensions_blacklist);           
-                   
-        if ((!empty($file_name)) && (is_string($file_name))) {
-            
-            // Buscamos extensiones múltiples
-            if ($check_multiple_extensions) {        
-                
-                // Buscamos la verdadera extensión del fichero (esto es, buscamos archivos tipo .php.xxx o .php.xxx.yyy)
+        $ext = array_map('strtolower', explode(',', $extensions_blacklist));
+
+        if ($file_name !== '') {
+
+            // Buscamos extensiones mï¿½ltiples: cualquier segmento intermedio que sea extensiï¿½n prohibida
+            if ($check_multiple_extensions) {
+
                 $explodedName = explode('.', $file_name);
                 $explodedName = array_reverse($explodedName);
-                                                
-                if((count($explodedName) > 3) && (strtolower($explodedName[1]) == 'php')) {  // Archivo tipo .php.xxx.yyy
-                    $malware_description = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_EXTENSION') . $explodedName[2] . "." . $explodedName[3] ;
-                    $tag_description = 'MULTIPLE_EXTENSIONS';
-                    $safe = false;
-                } else if ((count($explodedName) > 2) && (strtolower($explodedName[1]) == 'php')) {  // Archivo tipo .php.xxx
-                    $malware_description = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_EXTENSION') . $explodedName[2];
-                    $type = 'MULTIPLE_EXTENSIONS';
-                    $safe = false;                    
-                } 
+
+                // Comprobamos segmentos intermedios (saltamos [0]=extensiï¿½n final y el ï¿½ltimo=nombre base)
+                for ($i = 1; $i < count($explodedName) - 1; $i++) {
+                    if (in_array(strtolower($explodedName[$i]), $ext, true)) {
+                        $malware_description = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_EXTENSION') . $explodedName[$i];
+                        $type = 'MULTIPLE_EXTENSIONS';
+                        $safe = false;
+                        break;
+                    }
+                }
             }
-            
-            // Buscamos si la extensión está en la lista de las extensiones prohibidas
+
+            // Buscamos si la extensiÃ³n estÃ¡ en la lista de las extensiones prohibidas (comparaciï¿½n case-insensitive)
             if ((!empty($extensions_blacklist)) && ($safe)) {
-                            
-                if (in_array(pathinfo($file_name, PATHINFO_EXTENSION), $ext) && ($file_size > 0)) {
+
+                if (in_array(strtolower((string) pathinfo($file_name, PATHINFO_EXTENSION)), $ext, true) && ($file_size > 0)) {
                     // Archivo en la lista de extensiones prohibidas
                     $type = 'FORBIDDEN_EXTENSION';
                     $malware_description = $lang->_('COM_SECURITYCHECKPRO_TITLE_FORBIDDEN_EXTENSION');
@@ -2927,7 +2757,7 @@ class Securitycheckpro extends CMSPlugin
                 }
             }
             
-            // Si alguna de las dos comprobaciones es positiva, borramos el fichero subido (si así está marcado)
+            // Si alguna de las dos comprobaciones es positiva, borramos el fichero subido (si asÃ­ estÃ¡ marcado)
             if (!$safe) {
                 if ($delete_files) {                    
                     @unlink($tmp_name);                    
@@ -2935,8 +2765,8 @@ class Securitycheckpro extends CMSPlugin
                     $action = $lang->_('COM_SECURITYCHECKPRO_FILE_NOT_DELETED');
                 }
                 
-                // Si está marcada la opción, añadimos la IP a la lista negra dinámica
-                if ($actions_upload_scanner == 1) {
+                // Si estÃ¡ marcada la opciï¿½n, aï¿½adimos la IP a la lista negra dinï¿½mica
+                if ((int) $actions_upload_scanner === 1) {
                     $this->actualizar_lista_dinamica($attack_ip);                    
                 }
                         
@@ -2958,12 +2788,12 @@ class Securitycheckpro extends CMSPlugin
      */	
     public function onUserLoginFailure($response)
     {
-		// Si la variable "pro_plugin" está vacía la instanciamos
+		// Si la variable "pro_plugin" estÃ¡ vacï¿½a la instanciamos
 		if (empty($this->pro_plugin)) {
 			$this->pro_plugin = new BaseModel();
 		}
 		
-        // Extraemos la configuración del plugin
+        // Extraemos la configuraciï¿½n del plugin
         $track_failed_logins = $this->pro_plugin->getValue('track_failed_logins', 1, 'pro_plugin');
         $write_log = $this->pro_plugin->getValue('write_log', 1, 'pro_plugin');
         $logins_to_monitorize = $this->pro_plugin->getValue('logins_to_monitorize', 2, 'pro_plugin');
@@ -2990,8 +2820,8 @@ class Securitycheckpro extends CMSPlugin
                     if($write_log) {
                         $this->grabar_log($write_log, $attack_ip, 'FAILED_LOGIN_ATTEMPT_LABEL', $lang->_('COM_SECURITYCHECKPRO_FAILED_ADMINISTRATOR_LOGIN_ATTEMPT_LABEL'), 'SESSION_PROTECTION', $request_uri, $description, $login_info[0], '---');                        
                     }
-                    // Si está marcada la opción, añadimos la IP a la lista negra dinámica
-                    if ($actions_failed_login == 1) {
+                    // Si estÃ¡ marcada la opciï¿½n, aï¿½adimos la IP a la lista negra dinï¿½mica
+                    if ((int) $actions_failed_login === 1) {
                         $this->actualizar_lista_dinamica($attack_ip);                    
                     }
                 }                                        
@@ -3003,20 +2833,20 @@ class Securitycheckpro extends CMSPlugin
                     if($write_log) {
                         $this->grabar_log($write_log, $attack_ip, 'FAILED_LOGIN_ATTEMPT_LABEL', $lang->_('COM_SECURITYCHECKPRO_FAILED_LOGIN_ATTEMPT_LABEL'), 'SESSION_PROTECTION', $request_uri, $description, $login_info[0], '---');
                     }
-                    // Si está marcada la opción, añadimos la IP a la lista negra dinámica
-                    if ($actions_failed_login == 1) {
+                    // Si estÃ¡ marcada la opciï¿½n, aï¿½adimos la IP a la lista negra dinï¿½mica
+                    if ((int) $actions_failed_login === 1) {
                         $this->actualizar_lista_dinamica($attack_ip);                    
                     }
                 }
             }    
             
         }        
-        // Limpiamos las sesiones no válidas
+        // Limpiamos las sesiones no vï¿½lidas
         $this->chequeo_sesiones();
     }
     
     /**
-     * Función que recoje los datos de los intentos de acceso fallidos
+     * FunciÃ³n que recoje los datos de los intentos de acceso fallidos
      *
 	 * @return  array<mixed,mixed>
      *     
@@ -3045,7 +2875,7 @@ class Securitycheckpro extends CMSPlugin
      */	
     private function forbid_new_admins()
     {
-		// Si la variable "pro_plugin" está vacía la instanciamos
+		// Si la variable "pro_plugin" estÃ¡ vacï¿½a la instanciamos
 		if (empty($this->pro_plugin)) {
 			$this->pro_plugin = new BaseModel();
 		}
@@ -3067,20 +2897,20 @@ class Securitycheckpro extends CMSPlugin
             $db->setQuery($query);
             $groups = $db->loadColumn();
             
-            // ... y chequeamos los que tienen permisos de administración, ya sean propios o heredados
+            // ... y chequeamos los que tienen permisos de administraciï¿½n, ya sean propios o heredados
             if(!empty($groups)) { foreach($groups as $group)
                 {
                     // First try to see if the group has explicit backend login privileges
                     $backend = Access::checkGroup($group, 'core.login.admin') || Access::checkGroup($group, 'core.admin');
                                 
-                    // Si el grupo tiene privilegios de administración, lo añadimos al array 
+                    // Si el grupo tiene privilegios de administraciï¿½n, lo aï¿½adimos al array 
                     if ($backend) {
                         $admin_groups[] = $group;
                     }                
             }
             }
                         
-            // Consultamos el número actual de usuarios con permisos de administración
+            // Consultamos el nï¿½mero actual de usuarios con permisos de administraciï¿½n
 			try 
             {
 				$query = "SELECT COUNT(*) from #__user_usergroup_map WHERE group_id IN (" . implode(',', array_map('intval', $admin_groups)) . ")" ;
@@ -3091,7 +2921,7 @@ class Securitycheckpro extends CMSPlugin
                 return;
             }
                         
-            // Consultamos el número previo de usuarios pertenencientes al grupo super-users
+            // Consultamos el nï¿½mero previo de usuarios pertenencientes al grupo super-users
             try
             {
                 $query = "SELECT contador from #__securitycheckpro_users_control WHERE id='1'" ;
@@ -3104,8 +2934,8 @@ class Securitycheckpro extends CMSPlugin
                 }
             }
                             
-            if (is_null($previous_admins)) { // No hay datos almacenados (o es la primera vez que se lanza o se ha desactivado esta opción y ahora está activa)
-                // Extraemos los ids de los usuarios con permisos de administración
+            if (is_null($previous_admins)) { // No hay datos almacenados (o es la primera vez que se lanza o se ha desactivado esta opciï¿½n y ahora estÃ¡ activa)
+                // Extraemos los ids de los usuarios con permisos de administraciï¿½n
 				try 
 				{
 					$query = "SELECT user_id from #__user_usergroup_map WHERE group_id IN (" . implode(',', array_map('intval', $admin_groups)) . ")" ;
@@ -3116,7 +2946,7 @@ class Securitycheckpro extends CMSPlugin
 					return;
 				}
                 
-                // Instanciamos un objeto para almacenar los datos que serán sobreescritos
+                // Instanciamos un objeto para almacenar los datos que serï¿½n sobreescritos
                 $object = new \StdClass();                    
                 $object->id = 1;
                 $object->users = json_encode($actual_admins);
@@ -3124,20 +2954,20 @@ class Securitycheckpro extends CMSPlugin
                 
                 try 
                 {
-                    // Añadimos los datos a la BBDD
+                    // Aï¿½adimos los datos a la BBDD
                     $res = $db->insertObject('#__securitycheckpro_users_control', $object);    
                         
                 } catch (\Exception $e) {    
                     
                 }
             } else if ($actual_admins > $previous_admins) {
-                // Se ha añadido un nuevo usuario con permisos de administración
-                // Extraemos los ids de los usuarios con permisos de administración
+                // Se ha aÃ±adido un nuevo usuario con permisos de administraciï¿½n
+                // Extraemos los ids de los usuarios con permisos de administraciï¿½n
                 $query = "SELECT user_id from `#__user_usergroup_map` WHERE group_id IN (" . implode(',', array_map('intval', $admin_groups)) . ")" ;
                 $db->setQuery($query);
                 $actual_admins = $db->loadColumn();
                                 
-                // Extraemos los ids de los usuarios con permisos de administración anteriores
+                // Extraemos los ids de los usuarios con permisos de administraciï¿½n anteriores
                 try
                 {
                     $query = "SELECT users from #__securitycheckpro_users_control" ;
@@ -3152,7 +2982,7 @@ class Securitycheckpro extends CMSPlugin
                     }
                 }
                 
-                // Decodificamos el array, que vendrá en formato json
+                // Decodificamos el array, que vendrï¿½ en formato json
                 $previous_admins = json_decode($previous_admins, true);
 				
 				if (!is_null($previous_admins)) {
@@ -3161,7 +2991,7 @@ class Securitycheckpro extends CMSPlugin
 				} else {
 					// Something went wrong decoding the json to extract previous admins. Let's create an empty array
 					$new_user_added = array();
-					// Instanciamos un objeto para almacenar los datos que serán sobreescritos
+					// Instanciamos un objeto para almacenar los datos que serï¿½n sobreescritos
 					$object = new \StdClass();                    
 					$object->id = 1;
 					$object->users = json_encode($actual_admins);
@@ -3169,7 +2999,7 @@ class Securitycheckpro extends CMSPlugin
 					
 					try 
 					{
-						// Añadimos los datos a la BBDD
+						// Aï¿½adimos los datos a la BBDD
 						$db->updateObject('#__securitycheckpro_users_control', $object, 'id');    
 							
 					} catch (\Exception $e) {    
@@ -3179,19 +3009,21 @@ class Securitycheckpro extends CMSPlugin
                                             
                 foreach ($new_user_added as $new_user)
                 {                        
-                    // Creamos una instancia del usuario. Siempre devuelve un objeto Joomla\CMS\User\User, aunque el $new_user no exista en la base de datos
+                    // Creamos una instancia del usuario. Si $new_user no existe en la base de datos, getInstance() devuelve un objeto User "guest" con id=0
                     $instance = User::getInstance($new_user);
                     $username = $instance->username;
-                                
-                    // Borramos el usuario
-                    $instance->delete();
-                    $this->grabar_log($logs_attacks, '---', 'SESSION_PROTECTION', Text::_('COM_SECURITYCHECKPRO_FORBID_NEW_ADMINS_LABEL'), 'SESSION_PROTECTION', Text::_('COM_SECURITYCHECKPRO_NOT_APPLICABLE'), Text::_('COM_SECURITYCHECKPRO_USER_DELETED'), $username, '---');
-                    // Si hay alguien logado al backend, mostramos un mensaje de error
-					/** @var \Joomla\CMS\Application\CMSApplication $app */
-                    $app = Factory::getApplication();
-                    if (in_array($app->getName(), array('administrator','admin'))) {                    
-                        $app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_USER_DELETED_EXPLAINED'), 'error');                        
-                    }                 
+
+                    if ($instance->id) {
+                        // Borramos el usuario
+                        $instance->delete();
+                        $this->grabar_log($logs_attacks, '---', 'SESSION_PROTECTION', Text::_('COM_SECURITYCHECKPRO_FORBID_NEW_ADMINS_LABEL'), 'SESSION_PROTECTION', Text::_('COM_SECURITYCHECKPRO_NOT_APPLICABLE'), Text::_('COM_SECURITYCHECKPRO_USER_DELETED'), $username, '---');
+                        // Si hay alguien logado al backend, mostramos un mensaje de error
+                        /** @var \Joomla\CMS\Application\CMSApplication $app */
+                        $app = Factory::getApplication();
+                        if (in_array($app->getName(), array('administrator','admin'))) {
+                            $app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_USER_DELETED_EXPLAINED'), 'error');
+                        }
+                    }
                 }
                 
                 
@@ -3200,7 +3032,7 @@ class Securitycheckpro extends CMSPlugin
         } else
         {
             // Borramos los datos de la tabla
-            // Consultamos el número de logs para ver si se supera el límite establecido en el apartado 'log_limits_per_ip_and_day'
+            // Consultamos el nï¿½mero de logs para ver si se supera el LÃ­mite establecido en el apartado 'log_limits_per_ip_and_day'
             try 
             {
                 $query = "DELETE from #__securitycheckpro_users_control WHERE id='1'" ;
@@ -3320,7 +3152,7 @@ class Securitycheckpro extends CMSPlugin
 		if ($table == "installs_remote") {
 			// Check if controlcenter is enabled
 			try {                        
-				// Comprobamos si hay algún dato añadido o la tabla es null; dependiendo del resultado haremos un 'update' o un 'insert'
+				// Comprobamos si hay algÃºn dato aÃ±adido o la tabla es null; dependiendo del resultado haremos un 'update' o un 'insert'
 				$query = $db->getQuery(true)
 					->select(array('storage_value'))
 					->from($db->quoteName('#__securitycheckpro_storage'))
@@ -3345,7 +3177,7 @@ class Securitycheckpro extends CMSPlugin
         
 			try {
 							
-				// Comprobamos si hay algún dato añadido o la tabla es null; dependiendo del resultado haremos un 'update' o un 'insert'
+				// Comprobamos si hay algÃºn dato aÃ±adido o la tabla es null; dependiendo del resultado haremos un 'update' o un 'insert'
 				$query = $db->getQuery(true)
 					->select(array('storage_value'))
 					->from($db->quoteName('#__securitycheckpro_storage'))
@@ -3357,7 +3189,7 @@ class Securitycheckpro extends CMSPlugin
 					$empty = false;
 					$installs_array = json_decode($installs, true);
 					
-					// Obtenemos sólo el array de nombre para comprobar si ya hemos añadido la extensión            
+					// Obtenemos SÃ³lo el array de nombre para comprobar si ya hemos aÃ±adido la extensiÃ³n            
 					$array_names = array_column($installs_array, 'name');
 					
 					if (!in_array($name, $array_names)) {
@@ -3381,7 +3213,7 @@ class Securitycheckpro extends CMSPlugin
 				// Codificamos el array en formato json
 				$installs_array = json_encode($installs_array);
 										
-				// Instanciamos un objeto para almacenar los datos que serán sobreescritos/añadidos
+				// Instanciamos un objeto para almacenar los datos que serÃ¡n sobreescritos/aÃ±adidos
 				$object = new \StdClass();                    
 				$object->storage_key = $table;
 				$object->storage_value = $installs_array;

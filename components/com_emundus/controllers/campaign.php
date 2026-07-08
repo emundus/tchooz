@@ -1040,6 +1040,7 @@ class EmundusControllerCampaign extends EmundusController
 		$forms         = $this->input->getString('forms', 0);
 		$evaluations   = $this->input->getString('evaluations', 0);
 		$validators    = $this->input->getString('validators', 0);
+		$tags          = $this->input->getString('tags', 0);
 		$format        = $this->input->getString('format', 'xlsx');
 
 		if (empty($campaign_id))
@@ -1059,6 +1060,7 @@ class EmundusControllerCampaign extends EmundusController
 			'forms'       => $forms === 'true',
 			'evaluations' => $evaluations === 'true',
 			'validators'  => $validators === 'true',
+			'tags'        => $tags === 'true',
 		];
 		$xlsx_path = $m_campaign->generateModel($campaign, $options, $format);
 		if (empty($xlsx_path))
@@ -1136,7 +1138,7 @@ class EmundusControllerCampaign extends EmundusController
 		try
 		{
 			$m_campaign = $this->getModel('Campaign');
-			$results     = $m_campaign->importFiles($file, $campaign_id, $send_email, $create_new_fnum);
+			$results     = $m_campaign->importFiles($file, $campaign_id, $send_email, $create_new_fnum, $this->user->id);
 		}
 		catch (\Exception $e)
 		{

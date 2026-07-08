@@ -29,7 +29,7 @@ class ProtectionModel extends BaseDatabaseModel
 {
 
     /**
-     Configuración por defecto
+     Configuraciï¿½n por defecto
      *
      @var array<string, int|list<string>|string>
      */
@@ -62,7 +62,7 @@ class ProtectionModel extends BaseDatabaseModel
     ];
 
 	 /**
-     Configuración por defecto
+     Configuraciï¿½n por defecto
      *
      @var array<string, int|list<string>|string>
      */
@@ -95,14 +95,14 @@ class ProtectionModel extends BaseDatabaseModel
     ];
 
    /**
-     Configuración aplicada
+     Configuraciï¿½n aplicada
      *
      @var \Joomla\Registry\Registry
      */
     protected ?Registry $config = null;
 
     /**
-     * Obtiene el valor de una opción de configuración
+     * Obtiene el valor de una opciï¿½n de configuraciï¿½n
      *
      *
 	 * @param   string        		   $key    The key of the element
@@ -121,7 +121,7 @@ class ProtectionModel extends BaseDatabaseModel
     }
 
     /**
-     * Establece el valor de una opción de configuración
+     * Establece el valor de una opciï¿½n de configuraciï¿½n
      *
      *
 	 * @param   string             $key   		The key of the element
@@ -158,7 +158,7 @@ class ProtectionModel extends BaseDatabaseModel
     {
 		$this->config = new Registry();
 		
-        // 1) Validación: evita claves malformadas/excesivas
+        // 1) Validaciï¿½n: evita claves malformadas/excesivas
         if (!preg_match('/^[A-Za-z0-9._-]{1,128}$/', $keyName)) {
             return null;
         }
@@ -167,7 +167,7 @@ class ProtectionModel extends BaseDatabaseModel
         $db    = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
 
-        // 2) Construcción segura con protección nativa (sin bind)
+        // 2) Construcciï¿½n segura con protecciï¿½n nativa (sin bind)
         $query
             ->select($db->quoteName('storage_value'))
             ->from($db->quoteName('#__securitycheckpro_storage'))
@@ -184,13 +184,13 @@ class ProtectionModel extends BaseDatabaseModel
                 return null;
             }
 
-            // 3) Decodificación segura
+            // 3) Decodificaciï¿½n segura
             $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
             if (!is_array($data)) {
                 return null;
             }
 
-            // Mantén compatibilidad con $this->config si lo usas en otros sitios
+            // Mantï¿½n compatibilidad con $this->config si lo usas en otros sitios
             $this->config->loadArray($data);
 
             if (!array_key_exists($keyName, $data)) {
@@ -213,24 +213,24 @@ class ProtectionModel extends BaseDatabaseModel
     }
 
     /**
-	 * Guarda la configuración en la tabla de almacenamiento.
+	 * Guarda la configuraciï¿½n en la tabla de almacenamiento.
 	 *
-	 * @param  string $key_name  Clave bajo la que se persiste la configuración
+	 * @param  string $key_name  Clave bajo la que se persiste la configuraciï¿½n
 	 * @return void
 	 *
-	 * @throws InvalidArgumentException Si la clave no cumple el patrón permitido
-	 * @throws RuntimeException         Si falla el guardado o la codificación JSON
+	 * @throws InvalidArgumentException Si la clave no cumple el patrï¿½n permitido
+	 * @throws RuntimeException         Si falla el guardado o la codificaciï¿½n JSON
 	 */
 	public function save(string $key_name): void
 	{
-		// Asegura que la config esté cargada
+		// Asegura que la config estï¿½ cargada
 		if ($this->config === null) {
 			$this->load($key_name);
 		}
 
-		// 1) Validación estricta de la clave:
-		//    - Letras, números, punto, guion, guion bajo, dos puntos
-		//    - Longitud máxima 128
+		// 1) Validaciï¿½n estricta de la clave:
+		//    - Letras, nï¿½meros, punto, guion, guion bajo, dos puntos
+		//    - Longitud mï¿½xima 128
 		if (!preg_match('/^[A-Za-z0-9._:\-]{1,128}$/', $key_name)) {
 			throw new \InvalidArgumentException('Invalid storage key format.');
 		}
@@ -238,7 +238,7 @@ class ProtectionModel extends BaseDatabaseModel
 		/** @var DatabaseInterface $db */
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
-		// 2) Normaliza y serializa la configuración a JSON de forma segura
+		// 2) Normaliza y serializa la configuraciï¿½n a JSON de forma segura
 		$arrayData = $this->config instanceof Registry ? $this->config->toArray() : (array) $this->config;
 
 		try {
@@ -250,7 +250,7 @@ class ProtectionModel extends BaseDatabaseModel
 			throw new \RuntimeException('Failed to encode configuration to JSON.', 500, $e);
 		}
 
-		// 3) Transacción + upsert manual: UPDATE ? si no afecta, INSERT
+		// 3) Transacciï¿½n + upsert manual: UPDATE ? si no afecta, INSERT
 		try {
 			$db->transactionStart();
 
@@ -282,7 +282,7 @@ class ProtectionModel extends BaseDatabaseModel
 	}
 
    /**
-     * Obtiene la configuración de los parámetros del Firewall Web
+     * Obtiene la configuraciï¿½n de los parï¿½metros del Firewall Web
      *
      * 	 
      * @return  array<string, string>|null
@@ -298,7 +298,7 @@ class ProtectionModel extends BaseDatabaseModel
     }
 
     /**
-     * Guarda la modificación de los parámetros de la opción 'Mode'
+     * Guarda la modificaciï¿½n de los parï¿½metros de la opciï¿½n 'Mode'
      *
 	 * @param    array<string>       $newParams    Array with the values to add
 	 * @param    string       		 $key_name     The key of the storage table to insert the data
@@ -317,12 +317,12 @@ class ProtectionModel extends BaseDatabaseModel
     }
 
    	/**
-	 * Comprueba si un fichero existe en la raíz del sitio de forma segura.
+	 * Comprueba si un fichero existe en la raï¿½z del sitio de forma segura.
 	 *
 	 * @param  string $filename  Ruta relativa (respecto a JPATH_SITE) del fichero a comprobar
 	 * @return bool              TRUE si existe, FALSE en caso contrario
 	 *
-	 * @throws InvalidArgumentException Si la ruta es inválida o apunta fuera de JPATH_SITE
+	 * @throws InvalidArgumentException Si la ruta es invï¿½lida o apunta fuera de JPATH_SITE
 	 */
 	public function existsFile(string $filename): bool
 	{
@@ -341,7 +341,7 @@ class ProtectionModel extends BaseDatabaseModel
 			return false;
 		}
 
-		// Validamos que la ruta está dentro de JPATH_SITE
+		// Validamos que la ruta estï¿½ dentro de JPATH_SITE
 		if (strpos($realPath, $realBase) !== 0) {
 			throw new \InvalidArgumentException('Access outside site root is not permitted.');
 		}
@@ -353,9 +353,9 @@ class ProtectionModel extends BaseDatabaseModel
 	 * Crea una copia de seguridad del archivo .htaccess si existe.
 	 *
 	 * @param  string $name Nombre del archivo de backup (relativo a JPATH_SITE)
-	 * @return bool         TRUE si la copia se realizó, FALSE si no existía el .htaccess
+	 * @return bool         TRUE si la copia se realizï¿½, FALSE si no existï¿½a el .htaccess
 	 *
-	 * @throws InvalidArgumentException Si el nombre de backup es inválido
+	 * @throws InvalidArgumentException Si el nombre de backup es invï¿½lido
 	 * @throws RuntimeException         Si la copia falla
 	 */
 	public function makeBackup(string $name): bool
@@ -367,8 +367,8 @@ class ProtectionModel extends BaseDatabaseModel
 			return false;
 		}
 
-		// 2) Validación estricta del nombre de backup
-		//    Solo letras, números, guion, guion bajo y punto. Máx. 64 caracteres.
+		// 2) Validaciï¿½n estricta del nombre de backup
+		//    Solo letras, nï¿½meros, guion, guion bajo y punto. Mï¿½x. 64 caracteres.
 		if (!preg_match('/^[A-Za-z0-9._-]{1,64}$/', $name)) {
 			throw new \InvalidArgumentException('Invalid backup file name.');
 		}
@@ -392,7 +392,7 @@ class ProtectionModel extends BaseDatabaseModel
 	}
 	
 	/**
-	 * Modifica los valores del array 'ConfigApplied' según las opciones detectadas en el .htaccess actual.
+	 * Modifica los valores del array 'ConfigApplied' segï¿½n las opciones detectadas en el .htaccess actual.
 	 *
 	 * @return array<string, int|list<string>|string>
 	 */
@@ -424,7 +424,7 @@ class ProtectionModel extends BaseDatabaseModel
 			return (bool) preg_match($re, $haystack);
 		};
 		$hasRule = static function (string $haystack, string $regex): bool {
-			// $regex SIN delimitadores; se aplica en ~…~im
+			// $regex SIN delimitadores; se aplica en ~ï¿½~im
 			return (bool) preg_match('~' . $regex . '~im', $haystack);
 		};
 		$containsInsensitive = static function (string $haystack, string $needle): bool {
@@ -433,8 +433,8 @@ class ProtectionModel extends BaseDatabaseModel
 
 		/**
 		 * Mapa unificado de detectores:
-		 * - block: etiqueta del bloque Begin/End (si existe para esa opción)
-		 * - rules: regex equivalentes que consideramos “aplicado” aunque estén fuera del bloque
+		 * - block: etiqueta del bloque Begin/End (si existe para esa opciï¿½n)
+		 * - rules: regex equivalentes que consideramos ï¿½aplicadoï¿½ aunque estï¿½n fuera del bloque
 		 */
 		$detectors = [
 			'prevent_access' => [
@@ -445,7 +445,7 @@ class ProtectionModel extends BaseDatabaseModel
 				],
 			],
 			'prevent_unauthorized_browsing' => [
-				// No tiene etiqueta única siempre; detectamos bloque si lo tuvieras:
+				// No tiene etiqueta ï¿½nica siempre; detectamos bloque si lo tuvieras:
 				'block' => 'Prevent Unauthorized Browsing',
 				'rules' => [
 					// Tolerar "Options -Indexes" y "Options All -Indexes", etc.
@@ -540,7 +540,7 @@ class ProtectionModel extends BaseDatabaseModel
 				],
 			],
 			'redirect_to_www' => [
-				// No siempre hay etiqueta única, pero muchas veces añades “Securitycheck Pro Redirect …”
+				// No siempre hay etiqueta ï¿½nica, pero muchas veces aï¿½ades ï¿½Securitycheck Pro Redirect ï¿½ï¿½
 				'block' => 'Redirect non-www to www',
 				'rules' => [
 					'^\s*RewriteCond\s+\%\{HTTP_HOST\}\s+!\^www\\\.\s*\[?NC\]?',
@@ -556,7 +556,7 @@ class ProtectionModel extends BaseDatabaseModel
 			],
 		];
 
-		// 1) Detección por bloque/reglas para TODAS las opciones del mapa
+		// 1) Detecciï¿½n por bloque/reglas para TODAS las opciones del mapa
 		foreach ($detectors as $key => $cfg) {
 			$isApplied = false;
 
@@ -576,7 +576,7 @@ class ProtectionModel extends BaseDatabaseModel
 			}
 		}
 
-		// 2) Detectores dinámicos desde configuración del usuario (escapados)
+		// 2) Detectores dinï¿½micos desde configuraciï¿½n del usuario (escapados)
 
 		// own_banned_list: "RewriteCond %{HTTP_USER_AGENT} <AGENT>"
 		$ownBannedList = $this->toNonEmptyLines((string) $this->getValue('own_banned_list'));
@@ -594,7 +594,7 @@ class ProtectionModel extends BaseDatabaseModel
 			}
 		}
 
-		// own_code: cada línea/bloque debe estar incluido literalmente (case-insensitive)
+		// own_code: cada lï¿½nea/bloque debe estar incluido literalmente (case-insensitive)
 		$ownCode = $this->toNonEmptyLines((string) $this->getValue('own_code'));
 		if (!empty($ownCode)) {
 			$allPresent = true;
@@ -673,7 +673,7 @@ class ProtectionModel extends BaseDatabaseModel
 	 * ========================= */
 
 	/**
-	 * Normaliza saltos de línea a "\n".
+	 * Normaliza saltos de lï¿½nea a "\n".
 	 */
 	private function normalizeNewlines(string $text): string
 	{
@@ -681,7 +681,7 @@ class ProtectionModel extends BaseDatabaseModel
 	}	
 
 	/**
-	 * Convierte texto multilínea en array de líneas no vacías, recortadas.
+	 * Convierte texto multilï¿½nea en array de lï¿½neas no vacï¿½as, recortadas.
 	 *
 	 * @return list<string>
 	 */
@@ -693,7 +693,7 @@ class ProtectionModel extends BaseDatabaseModel
 	}   
 
     /**
-	 * Modifica o crea el archivo .htaccess según las opciones escogidas por el usuario,
+	 * Modifica o crea el archivo .htaccess segï¿½n las opciones escogidas por el usuario,
 	 * de forma idempotente y segura.
 	 *
 	 * @return bool True si el archivo queda actualizado o no requiere cambios; false si falla.
@@ -704,12 +704,12 @@ class ProtectionModel extends BaseDatabaseModel
 		$nl = "\n";
 
 		$sanitizeHeaderValue = static function (string $v, int $maxLen = 4096): string {
-			// Elimina CR/LF/NUL para evitar inyección de líneas/directivas
+			// Elimina CR/LF/NUL para evitar inyecciï¿½n de lï¿½neas/directivas
 			$v = str_replace(["\r", "\n", "\0"], '', $v);
 			// Colapsa espacios repetidos
 			$v = preg_replace('/[ \t]+/u', ' ', $v) ?? '';
 			$v = trim($v, " \t\"");
-			// Límite de longitud defensivo
+			// Lï¿½mite de longitud defensivo
 			if (strlen($v) > $maxLen) {
 				$v = substr($v, 0, $maxLen);
 			}
@@ -739,14 +739,14 @@ class ProtectionModel extends BaseDatabaseModel
 			return $line;
 		};
 
-		// Convierte lista (textarea) en array limpio, evitando líneas vacías
+		// Convierte lista (textarea) en array limpio, evitando lï¿½neas vacï¿½as
 		$toCleanArray = static function (?string $raw) use ($sanitizeHtLine): array {
 			$items = preg_split('/\R/u', (string) $raw) ?: [];
 			$items = array_map(static fn($x) => $sanitizeHtLine((string) $x), $items);
 			return array_values(array_filter($items, static fn($x) => $x !== ''));
 		};
 
-		// Literaliza patrón (no regex) dentro de RewriteCond para que sea seguro
+		// Literaliza patrï¿½n (no regex) dentro de RewriteCond para que sea seguro
 		$quoteForApacheRegex = static function (string $literal): string {
 			// \Q...\E es soportado por PCRE utilizado por Apache para RewriteCond
 			return '\Q' . $literal . '\E';
@@ -763,7 +763,7 @@ class ProtectionModel extends BaseDatabaseModel
 			$backupTarget = $this->ExistsFile('.htaccess.original') ? '.htaccess.backup' : '.htaccess.original';
 			if (!$this->makeBackup($backupTarget)) {
 				// No abortamos por backup fallido, pero lo notificamos en logs si tienes logger
-				// $this->logger->warning('Backup de .htaccess falló');
+				// $this->logger->warning('Backup de .htaccess fallï¿½');
 			}
 		}
 
@@ -776,28 +776,28 @@ class ProtectionModel extends BaseDatabaseModel
 		} else {
 			$filename  = 'default_joomla_htaccess.inc';
 			$baseRules = (string) @file_get_contents(JPATH_COMPONENT_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . $filename);
-			// Primer volcado (best-effort); luego haremos escritura atómica al final
+			// Primer volcado (best-effort); luego haremos escritura atï¿½mica al final
 			@File::copy(
 				JPATH_COMPONENT_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . $filename,
 				$htaccessPath
 			);
 		}
 
-		// Normaliza finales de línea a \n
+		// Normaliza finales de lï¿½nea a \n
 		$baseRules = str_replace(["\r\n", "\r"], "\n", $baseRules);
 
-		// 2) Elimina TODOS los bloques anteriores de Securitycheck Pro (idempotencia)
-		// Esta regex elimina cualquier bloque entre nuestros marcadores, repetidamente.
-		$cleanRules = $baseRules;
-		$pattern    = '/^\h*## Begin Securitycheck Pro.*?## End Securitycheck Pro.*$/ms';
-		while (preg_match($pattern, $cleanRules)) {
-			$cleanRules = (string) preg_replace($pattern, '', $cleanRules);
-		}
-		// Limpia líneas en blanco múltiples
+		// 2) Elimina SOLO los bloques anteriores de Securitycheck Pro (idempotencia)
+		$cleanRules = (string) preg_replace(
+			'/^[ \t]*## Begin Securitycheck Pro[^\n]*\n.*?^[ \t]*## End Securitycheck Pro[^\n]*\n?/ms',
+			'',
+			$baseRules
+		);
+
+		// Limpia lï¿½neas en blanco mï¿½ltiples
 		$cleanRules = preg_replace('/\n{3,}/', "\n\n", $cleanRules) ?? $cleanRules;
 		$cleanRules = rtrim($cleanRules) . "\n";
 
-		// 3) Construye nuevos bloques según opciones
+		// 3) Construye nuevos bloques segï¿½n opciones
 		$blocks = [];
 
 		// Prevent access to .ht* files
@@ -949,7 +949,7 @@ class ProtectionModel extends BaseDatabaseModel
 			$blocks[] = implode($nl, $lines);
 		}
 
-		// Código propio (permitimos líneas, pero saneadas y sin marcadores)
+		// Cï¿½digo propio (permitimos lï¿½neas, pero saneadas y sin marcadores)
 		$ownCode = $toCleanArray((string) $this->getValue('own_code'));
 		if ($ownCode !== []) {
 			$lines = ['## Begin Securitycheck Pro User Own Code'];
@@ -982,7 +982,7 @@ class ProtectionModel extends BaseDatabaseModel
 		// Sensitive files blocklist (lista de nombres/regex sencillas)
 		$sensFiles = $toCleanArray((string) $this->getValue('disallow_sensible_files_access'));
 		if ($sensFiles !== []) {
-			// Literalizamos cada ítem para evitar metacaracteres peligrosos.
+			// Literalizamos cada ï¿½tem para evitar metacaracteres peligrosos.
 			$alts = array_map($quoteForApacheRegex, $sensFiles);
 			$blocks[] = implode($nl, [
 				'## Begin Securitycheck Pro Disallow Access To Sensitive Files',
@@ -996,17 +996,17 @@ class ProtectionModel extends BaseDatabaseModel
 		$secret    = $sanitizeHtLine($secretRaw);
 
 		$redir = $sanitizeHtLine((string) $this->getValue('hide_backend_url_redirection'));
-		if ($redir === '') {
+		if ($redir === '' || strtolower($redir) === 'not_found') {
 			$redir = '/';
 		} elseif ($redir[0] !== '/') {
 			$redir = '/' . $redir;
 		}
 
 		// Lista de excepciones del usuario: CSV simple como "com_extension1,com_extension2"
-		// (también tolera saltos de línea accidentales)
+		// (tambiï¿½n tolera saltos de lï¿½nea accidentales)
 		$backendExceptionsRaw = (string) $this->getValue('backend_exceptions');
 
-		// Divide por comas o saltos de línea, recorta, y filtra vacíos/duplicados
+		// Divide por comas o saltos de lï¿½nea, recorta, y filtra vacï¿½os/duplicados
 		$items = preg_split('/[,\r\n]+/', $backendExceptionsRaw) ?: [];
 		$items = array_map(static fn(string $v): string => trim($v), $items);
 		$items = array_values(array_filter($items, static fn(string $v): bool => $v !== ''));
@@ -1016,10 +1016,10 @@ class ProtectionModel extends BaseDatabaseModel
 		$exceptionsList = [];
 		foreach ($items as $ex) {
 			// Soporte opcional de prefijos; sin prefijo => qs:
-			//   - "qs:algo"   -> excepción por query string
-			//   - "uri:/ruta" -> excepción por URI (patrón)
+			//   - "qs:algo"   -> excepciï¿½n por query string
+			//   - "uri:/ruta" -> excepciï¿½n por URI (patrï¿½n)
 			if (stripos($ex, 'qs:') === 0 || stripos($ex, 'uri:') === 0) {
-				$norm = $ex; // se sanitiza más adelante con $sanitizeHtLine
+				$norm = $ex; // se sanitiza mï¿½s adelante con $sanitizeHtLine
 			} else {
 				// Por defecto, trata como query-string key/value parcial
 				// (ej.: "com_extension1" equivale a "qs:com_extension1")
@@ -1031,7 +1031,7 @@ class ProtectionModel extends BaseDatabaseModel
 				$exceptionsList[] = $norm;
 			}
 
-			// Límite de seguridad (igual que tu lógica)
+			// Lï¿½mite de seguridad (igual que tu lï¿½gica)
 			if (count($exceptionsList) >= 20) {
 				break;
 			}
@@ -1047,7 +1047,7 @@ class ProtectionModel extends BaseDatabaseModel
 				'<IfModule mod_rewrite.c>',
 				'RewriteEngine On',
 				'',
-				'# 0) Excepciones de estáticos del admin y otros conocidos',
+				'# 0) Excepciones de estï¿½ticos del admin y otros conocidos',
 				'RewriteRule ^administrator/(templates|modules|components|media|images|includes|com_securitycheckprocontrolcenter|com_jchoptimize)/ - [L,NC]',
 				'',
 			];
@@ -1081,7 +1081,7 @@ class ProtectionModel extends BaseDatabaseModel
 						continue;
 					}
 
-					// Construye patrón seguro con soporte de '*'
+					// Construye patrï¿½n seguro con soporte de '*'
 					//  - Para qs: '*' => [^&]*  (no atraviesa pares de query)
 					//  - Para uri: '*' => .*     (libre)
 					$parts = explode('*', $ex);
@@ -1119,24 +1119,24 @@ class ProtectionModel extends BaseDatabaseModel
 
 			// --- 1) Clave en query (?SECRETO) -> HTTP/HTTPS ---
 			$lines = array_merge($lines, [
-				'# 1) Clave en query (?SECRETO) -> HTTP',
+				'# 1) Key in query (?SECRET) -> HTTP',
 				'RewriteCond %{REQUEST_URI} ^/administrator/?$ [NC]',
 				'RewriteCond %{QUERY_STRING} ' . $qToken,
 				'RewriteCond %{HTTP_HOST} ^(.+)$',
 				'RewriteCond %{HTTPS} !=on',
 				'RewriteRule ^ - [E=ALLOW_ADMIN:1,CO=scp_admin:1:%1:900:/:httponly,L]',
 				'',
-				'# 1) Clave en query (?SECRETO) -> HTTPS',
+				'# 1) Key in query (?SECRET) -> HTTPS',
 				'RewriteCond %{REQUEST_URI} ^/administrator/?$ [NC]',
 				'RewriteCond %{QUERY_STRING} ' . $qToken,
 				'RewriteCond %{HTTP_HOST} ^(.+)$',
 				'RewriteCond %{HTTPS} =on',
 				'RewriteRule ^ - [E=ALLOW_ADMIN:1,CO=scp_admin:1:%1:900:/:secure:httponly,L]',
 				'',				
-				'# 3) Si ya hay cookie, permite',
+				'# 3) If there is cookie, allow',
 				'SetEnvIfNoCase Cookie "(^|;\\s*)scp_admin=1(;|$)" ALLOW_ADMIN=1',
 				'',
-				'# 4) Bloqueo de entrada si no hay pase',
+				'# 4) Block if there is no entry',
 				'RewriteCond %{REQUEST_URI} ^/administrator/?$ [NC,OR]',
 				'RewriteCond %{REQUEST_URI} ^/administrator/index\\.php$ [NC]',
 				'RewriteCond %{ENV:ALLOW_ADMIN} !^1$',
@@ -1151,7 +1151,7 @@ class ProtectionModel extends BaseDatabaseModel
 			$input     = new Input();
 			$cookieVal = $input->cookie->get('scp_admin', null);
 			if (is_null($cookieVal)) {
-				$time = time() + 86400; // 1 día
+				$time = time() + 86400; // 1 dï¿½a
 				/** @var \Joomla\CMS\Application\CMSApplication $app */
 				$app  = Factory::getApplication();
 				$input->cookie->set('scp_admin', '1', [
@@ -1255,7 +1255,7 @@ class ProtectionModel extends BaseDatabaseModel
 			return true;
 		}
 
-		// 5) Escritura atómica (tmp ? rename) + permisos
+		// 5) Escritura atï¿½mica (tmp ? rename) + permisos
 		$tmpPath = $htaccessPath . '.tmp_' . bin2hex(random_bytes(4));
 		if (@File::write($tmpPath, $newContent) !== true) {
 			return false;
@@ -1264,7 +1264,7 @@ class ProtectionModel extends BaseDatabaseModel
 		// Endurece permisos (ignora errores en filesystems no compatibles)
 		@chmod($tmpPath, 0644);
 
-		// Renombrado atómico
+		// Renombrado atï¿½mico
 		if (!@rename($tmpPath, $htaccessPath)) {
 			// Limpieza si falla
 			@File::delete($tmpPath);
@@ -1315,7 +1315,7 @@ class ProtectionModel extends BaseDatabaseModel
         /* Comprobamos si hay que aplicar la lista de user-agents por defecto */
         if ($this->getValue("default_banned_list")) {
             $user_agent_rules = file_get_contents(JPATH_COMPONENT_ADMINISTRATOR.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'user_agent_blacklist_nginx.inc');
-            // Añadimos el contenido del fichero por defecto al final del buffer
+            // Aï¿½adimos el contenido del fichero por defecto al final del buffer
             $rules .= PHP_EOL . $user_agent_rules . PHP_EOL;
         }
     
@@ -1355,7 +1355,7 @@ class ProtectionModel extends BaseDatabaseModel
             $rules .= "# End Securitycheck Pro Disallow Php Easter Eggs" . PHP_EOL;
         }
     
-        /* Comprobamos si hay que prohibir el acceso a archivos que pueden contener información sensible o que tengan alguna vulnerabilidad */
+        /* Comprobamos si hay que prohibir el acceso a archivos que pueden contener informaciï¿½n sensible o que tengan alguna vulnerabilidad */
 		$disallow_sensible_files_access = array_filter(explode(PHP_EOL, (string) $this->getValue("disallow_sensible_files_access")),static fn($item) => trim($item) !== '');
 		if (!empty($disallow_sensible_files_access)) { 
             if (!$ExistsHtaccess || !$this->ConfigApplied['disallow_sensible_files_access']) {
@@ -1371,7 +1371,7 @@ class ProtectionModel extends BaseDatabaseModel
             }
         }
     
-        /* Comprobamos si hay que aplicar código del usuario */
+        /* Comprobamos si hay que aplicar cï¿½digo del usuario */
 		$own_code = array_filter(explode(PHP_EOL, (string) $this->getValue("own_code")),static fn($item) => trim($item) !== '');
 		if (!empty($own_code)) { 		
 			if (!$ExistsHtaccess || !$this->ConfigApplied['own_code']) {
@@ -1395,14 +1395,14 @@ class ProtectionModel extends BaseDatabaseModel
             $rules .= PHP_EOL . "## End Securitycheck Pro Xframe-options protection" . PHP_EOL;            
         }
     
-        /* Comprobamos si hay que establecer protección contra ataques basados en mime*/
+        /* Comprobamos si hay que establecer protecciï¿½n contra ataques basados en mime*/
         if ($this->getValue("prevent_mime_attacks")) {        
             $rules .= PHP_EOL . "## Begin Securitycheck Pro Prevent mime based attacks";            
             $rules .= PHP_EOL . 'add_header X-Content-Type-Options "nosniff";';    
             $rules .= PHP_EOL . "## End Securitycheck Pro Prevent mime based attacks" . PHP_EOL;        
         }
     
-        /* Comprobamos si hay que establecer protección STS (Strict Transport Security) */
+        /* Comprobamos si hay que establecer protecciï¿½n STS (Strict Transport Security) */
         $sts_options = $this->getValue("sts_options");
         if ($sts_options) {        
             $rules .= PHP_EOL . "## Begin Securitycheck Pro Strict Transport Security";
@@ -1410,7 +1410,7 @@ class ProtectionModel extends BaseDatabaseModel
             $rules .= PHP_EOL . "## End Securitycheck Pro Strict Transport Security" . PHP_EOL;            
         }
     
-        /* Comprobamos si hay que establecer protección X-Xss-Protection */
+        /* Comprobamos si hay que establecer protecciï¿½n X-Xss-Protection */
         $xss_options = $this->getValue("xss_options");
         if ($xss_options) {        
             $rules .= PHP_EOL . "## Begin Securitycheck Pro X-Xss-Protection";
@@ -1449,7 +1449,8 @@ class ProtectionModel extends BaseDatabaseModel
         $src     = $siteRoot . DIRECTORY_SEPARATOR . '.htaccess.original';
         $dst     = $siteRoot . DIRECTORY_SEPARATOR . '.htaccess';
         $tmp     = $siteRoot . DIRECTORY_SEPARATOR . '.htaccess.' . bin2hex(random_bytes(6)) . '.tmp';
-        $backup  = $siteRoot . DIRECTORY_SEPARATOR . '.htaccess.bak.' . gmdate('YmdHis');
+        $backup  = $siteRoot . DIRECTORY_SEPARATOR . '.htaccess.bak.' . gmdate('YmdHis');		
+		$tmpClean = null;
 
         try {
             // --- Normaliza y valida rutas dentro de JPATH_SITE ---
@@ -1459,7 +1460,7 @@ class ProtectionModel extends BaseDatabaseModel
             $bakClean = Path::clean($backup);
 
             foreach ([$srcClean, $dstClean, $tmpClean, $bakClean] as $p) {
-                // Si realpath falla (p.ej. archivo no existe aún), comprobamos prefijo con la ruta normalizada
+                // Si realpath falla (p.ej. archivo no existe aï¿½n), comprobamos prefijo con la ruta normalizada
                 $real = realpath($p) ?: $p;
                 if (strpos($real, $siteRoot) !== 0) {
                     throw new \RuntimeException('Ruta fuera del directorio del sitio.');
@@ -1493,14 +1494,14 @@ class ProtectionModel extends BaseDatabaseModel
             }
             @chmod($tmpClean, 0644);
 
-            // --- Reemplazo atómico: elimina destino (si existe) y mueve temporal a destino ---
+            // --- Reemplazo atï¿½mico: elimina destino (si existe) y mueve temporal a destino ---
             if (file_exists($dstClean) && !@File::delete($dstClean)) {
                 // Limpieza del temporal antes de abortar
                 @File::delete($tmpClean);
                 throw new \RuntimeException('No se pudo eliminar el .htaccess actual antes del reemplazo.');
             }
             if (!File::move($tmpClean, $dstClean)) {
-                // Intenta limpiar el temporal si falló el move
+                // Intenta limpiar el temporal si fallï¿½ el move
                 @File::delete($tmpClean);
                 throw new \RuntimeException('No se pudo mover el archivo temporal a .htaccess.');
             }
@@ -1508,11 +1509,11 @@ class ProtectionModel extends BaseDatabaseModel
             return true;
         } catch (\Throwable $e) {
             // Limpieza de residuos temporales
-            if (is_file($tmpClean ?? '')) {
+            if (is_string($tmpClean) && $tmpClean !== '' && is_file($tmpClean)) {
                 @File::delete($tmpClean);
             }
 
-            // Notificación en backend (sin filtrar detalles técnicos sensibles al usuario final)
+            // Notificaciï¿½n en backend (sin filtrar detalles tï¿½cnicos sensibles al usuario final)
             $app->enqueueMessage(
                 Text::sprintf('COM_SECURITYCHECKPRO_HTACCESS_RESTORE_FAILED', $e->getMessage()),
                 'error'
