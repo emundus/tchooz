@@ -13,6 +13,7 @@ use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\ApplicationFile\StatusEntity;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Providers\DateProvider;
@@ -64,8 +65,9 @@ class GenerateReferenceSubscriber extends EmundusSubscriber
 			}
 
 			// Maybe we have to generate a custom reference on the base status at file creation
-			$event->addArgument('state', $applicationFileEntity->getStatus()->getStep());
-			$event->addArgument('old_state', $applicationFileEntity->getStatus()->getStep());
+			$status = $applicationFileEntity->getStatusStep();
+			$event->addArgument('state', $status);
+			$event->addArgument('old_state', $status);
 			$this->generateReference($event);
 		}
 		catch (\Exception $e)
