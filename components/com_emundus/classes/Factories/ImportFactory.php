@@ -35,7 +35,8 @@ class ImportFactory
 		'username',
 		'lastname',
 		'firstname',
-		'fnum'
+		'fnum',
+		'tags'
 	];
 
 	private string $delimiter = ',';
@@ -357,6 +358,23 @@ class ImportFactory
 				$this->db->setQuery($query);
 				$status = $this->db->loadObjectList();
 				$this->createDataSheet($spreadsheet, Text::_('COM_EMUNDUS_STATUS'), $status, $cell, $model_options['validators']);
+
+				$cell++;
+			}
+
+			if (!empty($model_options['tags']))
+			{
+				$dataSheet->setCellValue($cell . '1', Text::_('COM_EMUNDUS_TAGS') . ' [tags]');
+				$query->clear()
+					->select([$this->db->quoteName('id', 'value'), $this->db->quoteName('label', 'label')])
+					->from($this->db->quoteName('#__emundus_setup_action_tag'))
+					->order($this->db->quoteName('ordering') . ' ASC');
+				$this->db->setQuery($query);
+				$tags = $this->db->loadObjectList();
+				if (!empty($tags))
+				{
+					$this->createDataSheet($spreadsheet, Text::_('COM_EMUNDUS_TAGS'), $tags, $cell, $model_options['validators']);
+				}
 
 				$cell++;
 			}

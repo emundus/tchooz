@@ -30,8 +30,18 @@
 			  } catch (e) {}
 			});
 		});
+
+		// Tooltips de la leyenda de colores y del badge de estado de "Update Database"
+		document.addEventListener('DOMContentLoaded', function () {
+			['legend_vuln_no', 'legend_vuln_undefined', 'legend_vuln_si', 'real_time_status_badge'].forEach(function (id) {
+				const el = document.getElementById(id);
+				if (el && window.bootstrap?.Tooltip) {
+					new bootstrap.Tooltip(el);
+				}
+			});
+		});
 	})();
-	
+
     function filter_vulnerable_extension(product) {
 	  const url = 'index.php?option=com_securitycheckpro'
 		+ '&controller=securitycheckpro'
@@ -55,7 +65,7 @@
 		.then(html => {
 		  const container = document.getElementById('response_result');
 		  if (container) {
-			container.innerHTML = html;
+			container.innerHTML = html; // trusted: own backend HTML view (format=raw)
 		  }
 
 		  // Mostrar modal con la API Bootstrap 5

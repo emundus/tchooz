@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita1dac397ff6de4c3ff9cb22d4e71298d
+class ComposerStaticInit90c201a0ec0fbd12d08f39ff0186a24f
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -866,6 +866,7 @@ class ComposerStaticInita1dac397ff6de4c3ff9cb22d4e71298d
         'GuzzleHttp\\Psr7\\Query' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/Query.php',
         'GuzzleHttp\\Psr7\\Request' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/Request.php',
         'GuzzleHttp\\Psr7\\Response' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/Response.php',
+        'GuzzleHttp\\Psr7\\Rfc3986' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/Rfc3986.php',
         'GuzzleHttp\\Psr7\\Rfc7230' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/Rfc7230.php',
         'GuzzleHttp\\Psr7\\ServerRequest' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/ServerRequest.php',
         'GuzzleHttp\\Psr7\\Stream' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/Stream.php',
@@ -3419,6 +3420,7 @@ class ComposerStaticInita1dac397ff6de4c3ff9cb22d4e71298d
         'Symfony\\Component\\Yaml\\Exception\\RuntimeException' => __DIR__ . '/..' . '/symfony/yaml/Exception/RuntimeException.php',
         'Symfony\\Component\\Yaml\\Inline' => __DIR__ . '/..' . '/symfony/yaml/Inline.php',
         'Symfony\\Component\\Yaml\\Parser' => __DIR__ . '/..' . '/symfony/yaml/Parser.php',
+        'Symfony\\Component\\Yaml\\ParserState' => __DIR__ . '/..' . '/symfony/yaml/ParserState.php',
         'Symfony\\Component\\Yaml\\Tag\\TaggedValue' => __DIR__ . '/..' . '/symfony/yaml/Tag/TaggedValue.php',
         'Symfony\\Component\\Yaml\\Unescaper' => __DIR__ . '/..' . '/symfony/yaml/Unescaper.php',
         'Symfony\\Component\\Yaml\\Yaml' => __DIR__ . '/..' . '/symfony/yaml/Yaml.php',
@@ -4041,9 +4043,9 @@ class ComposerStaticInita1dac397ff6de4c3ff9cb22d4e71298d
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInita1dac397ff6de4c3ff9cb22d4e71298d::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInita1dac397ff6de4c3ff9cb22d4e71298d::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInita1dac397ff6de4c3ff9cb22d4e71298d::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit90c201a0ec0fbd12d08f39ff0186a24f::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit90c201a0ec0fbd12d08f39ff0186a24f::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit90c201a0ec0fbd12d08f39ff0186a24f::$classMap;
 
         }, null, ClassLoader::class);
     }

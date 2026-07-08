@@ -32,6 +32,7 @@ use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
+use Tchooz\Services\ApplicationFile\ApplicationFileService;
 
 class EmundusModelCampaign extends ListModel
 {
@@ -4210,6 +4211,7 @@ class EmundusModelCampaign extends ListModel
 				if (!empty($rows_to_import))
 				{
 					$applicationFileRepository = new ApplicationFileRepository();
+					$applicationFileService    = new ApplicationFileService();
 					if (!class_exists('EmundusHelperDate'))
 					{
 						require_once(JPATH_ROOT . '/components/com_emundus/helpers/EmundusHelperDate.php');
@@ -4403,17 +4405,32 @@ class EmundusModelCampaign extends ListModel
 								{
 									$files_imported[] = $fnum;
 									$status           = true;
+
+									if (!empty($row['tags']))
+									{
+										$tag_ids = array_map(function ($tag_value) {
+											$tag_value = trim($tag_value);
+											if (empty($tag_value))
+											{
+												return null;
+											}
+
+											return preg_match('/\[(.*?)\]/', $tag_value, $tag_matches) ? (int) $tag_matches[1] : (int) $tag_value;
+										}, explode(',', $row['tags']));
+
+										$tag_ids = array_filter(array_unique($tag_ids));
+										$applicationFileService->assignTags($fnum, $tag_ids, $user_id);
+									}
 								}
 								else
 								{
 									$files_not_imported[] = $fnum;
-									Log::add('Failed to flush file ' . $fnum, Log::INFO, 'com_emundus.error');
-
+									Log::add('Failed to flush file ' . $fnum, Log::INFO, 'com_emundus.import');
 								}
 							}
 							catch (\Exception $e)
 							{
-								Log::add('Failed to flush file ' . $fnum . ' error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+								Log::add('Failed to flush file ' . $fnum . ' error ' . $e->getMessage(), Log::ERROR, 'com_emundus.import');
 							}
 
 							$onAfterImportRowEventHandler = new GenericEvent(
@@ -4474,7 +4491,7 @@ class EmundusModelCampaign extends ListModel
 		}
 		catch (Exception $e)
 		{
-			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.import');
 		}
 
 		Log::add('Import of ' . count($files_imported) . ' files done', Log::INFO, 'com_emundus.import');

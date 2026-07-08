@@ -61,18 +61,19 @@ final class Securitycheckpro_task_checker extends CMSPlugin implements Subscribe
     public function onSCPTaskAdded(EventInterface $event)
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = "SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key='remote_task'";
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('storage_value'))
+            ->from($db->quoteName('#__securitycheckpro_storage'))
+            ->where($db->quoteName('storage_key') . ' = ' . $db->quote('remote_task'));
         $db->setQuery($query);
-        $db->execute();
         $task_pending = $db->loadResult();
-				
+
 		if (!empty($task_pending))
 		{
 			$this->launch_task($task_pending);
-		}		
+		}
 
 		return true;
-        
     }
 
 }

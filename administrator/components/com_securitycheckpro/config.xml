@@ -6,10 +6,6 @@
 		<language tag="es-ES">language/es-ES/es-ES.com_securitycheckpro.ini</language>		
 	</languages>
 	
-	<fieldset name="component" label="COM_SECURITYCHECKPRO_CONFIG_COMPONENT_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_COMPONENT_DESCRIPTION">
-		<field name="downloadid" type="text" default="" size="30" label="COM_SECURITYCHECKPRO_CONFIG_DOWNLOADID_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_DOWNLOADID_DESCRIPTION"/>		
-	</fieldset>
-	
 	<fieldset name="tuning" type="text" default="" size="30" label="COM_SECURITYCHECKPRO_CONFIG_TUNING_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_TUNING_DESCRIPTION">
 		<field name="memory_limit" type="text" default="512M" size="5" label="COM_SECURITYCHECKPRO_CONFIG_MEMORY_LIMIT_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_MEMORY_LIMIT_DESCRIPTION" />
 		<field name="secret_key_length" type="radio" default="20" label="COM_SECURITYCHECKPRO_CONFIG_SECRET_KEY_LENGTH_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_SECRET_KEY_LENGTH_DESCRIPTION">

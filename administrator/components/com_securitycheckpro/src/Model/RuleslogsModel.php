@@ -19,6 +19,7 @@ use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Application\CMSWebApplicationInterface;
 
 class RuleslogsModel extends BaseDatabaseModel
 {
@@ -38,20 +39,29 @@ class RuleslogsModel extends BaseDatabaseModel
     {
         parent::__construct();  
 		
-		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
-        $mainframe = Factory::getApplication();
-    
-        // Obtenemos las variables de paginación de la petición
-		if ( $mainframe instanceof \Joomla\CMS\Application\CMSWebApplicationInterface ) {
-			$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getConfig()->get('list_limit',20), 'int');
-			$limitstart = $mainframe->getInput()->getInt('limitstart', 0);
+		$app = Factory::getApplication();
 
-			// En el caso de que los límites hayan cambiado, los volvemos a ajustar
-			$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
-
-			$this->setState('limit', $limit);
-			$this->setState('limitstart', $limitstart);
+		// Evita errores en CLI (no hay request/userstate)
+		if (!($app instanceof CMSWebApplicationInterface)) {
+			return;
 		}
+
+		$defaultLimit = (string) $app->get('list_limit', 20);
+
+		$limit = (int) $app->getUserStateFromRequest(
+			'global.list.limit',
+			'limit',
+			$defaultLimit,
+			'int'
+		);
+
+		$limitstart = $app->getInput()->getInt('limitstart', 0);
+
+		// Ajuste de límites si cambian
+		$limitstart = ($limit !== 0) ? (int) (floor($limitstart / $limit) * $limit) : 0;
+
+		$this->setState('limit', $limit);
+		$this->setState('limitstart', $limitstart);
     }
 
     protected function populateState()

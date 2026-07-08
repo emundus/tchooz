@@ -843,7 +843,11 @@ class EmundusControllersettings extends EmundusController
 
 	public function redirectjroute()
 	{
-		$current_link = $this->input->getString('link');
+		$raw_link = $this->input->getString('link');
+		// Link is base64-encoded client-side to avoid WAF false positives (RCE rule matching on `&id=` etc.).
+		// Fallback to raw value if it is not valid base64 (legacy callers / cached JS).
+		$decoded_link = base64_decode($raw_link, true);
+		$current_link = ($decoded_link !== false && str_contains($decoded_link, 'index.php')) ? $decoded_link : $raw_link;
 		$language     = $this->input->getString('redirect_language', 'fr-FR');
 
 		$options_to_set = [];

@@ -4027,21 +4027,34 @@ class EmundusModelUsers extends ListModel
 		}
 	}
 
+	/**
+	 * Can only delete if the attachment is owned by user
+	 * @param $id
+	 * @param $user_id
+	 *
+	 * @return bool
+	 */
 	public function deleteProfileAttachment($id, $user_id)
 	{
-
 		$query = $this->db->getQuery(true);
 
 		try {
-			$query->select('attachment_id,filename')
+			$query->select('attachment_id, filename')
 				->from($this->db->quoteName('#__emundus_users_attachments'))
-				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($id));
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($id))
+				->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id));
 			$this->db->setQuery($query);
 			$default_attachment = $this->db->loadObject();
 
+			if (empty($default_attachment))
+			{
+				throw new Exception(Text::_('NOT_FOUND'));
+			}
+
 			$query->clear()
 				->delete($this->db->quoteName('#__emundus_users_attachments'))
-				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($id));
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($id))
+				->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id));
 			$this->db->setQuery($query);
 			$result = $this->db->execute();
 
@@ -4049,6 +4062,10 @@ class EmundusModelUsers extends ListModel
 
 			$this->app->triggerEvent('onAfterProfileAttachmentDelete', [$user_id, (int) $default_attachment->attachment_id]);
 			$this->app->triggerEvent('onCallEventHandler', ['onAfterProfileAttachmentDelete', ['user_id' => $user_id, 'attachment_id' => (int) $default_attachment->attachment_id, 'filename' => $default_attachment->filename]]);
+
+			if ($result && !empty($default_attachment->filename) && file_exists($default_attachment->filename)) {
+				unlink(JPATH_SITE . DS . $default_attachment->filename);
+			}
 
 			return $result;
 		}

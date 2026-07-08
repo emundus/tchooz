@@ -13,6 +13,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Session\Session;
 use Joomla\Registry\Registry;
 use Joomla\Database\DatabaseInterface;
+use Joomla\CMS\Language\Text;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\SecuritycheckproBaseController;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\CpanelModel;
 
@@ -26,6 +27,10 @@ class CpanelController extends SecuritycheckproBaseController
      *     
      */
     function Set_Easy_Config() {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Cpanel');
 		if (!$model instanceof CpanelModel) {
 			Factory::getApplication()->enqueueMessage('Cpanel model not found', 'error');
@@ -46,6 +51,10 @@ class CpanelController extends SecuritycheckproBaseController
      *     
      */
     function Set_Default_Config() {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
 		$model = $this->getModel('Cpanel');
 		if (!$model instanceof CpanelModel) {
 			
@@ -67,6 +76,10 @@ class CpanelController extends SecuritycheckproBaseController
      *     
      */
     function disable_firewall() {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
 		$model = $this->getModel('Cpanel');
 		if (!$model instanceof CpanelModel) {
 			
@@ -87,6 +100,10 @@ class CpanelController extends SecuritycheckproBaseController
      *     
      */
     function enable_firewall() {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
         $model = $this->getModel('Cpanel');
 		if (!$model instanceof CpanelModel) {
 			
@@ -107,6 +124,10 @@ class CpanelController extends SecuritycheckproBaseController
      *     
      */
     function disable_cron() {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Cpanel');
 		if (!$model instanceof CpanelModel) {
 			
@@ -127,6 +148,10 @@ class CpanelController extends SecuritycheckproBaseController
      *     
      */
     function enable_cron() {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
         $model = $this->getModel('Cpanel');
 		if (!$model instanceof CpanelModel) {
 			
@@ -147,6 +172,10 @@ class CpanelController extends SecuritycheckproBaseController
      *     
      */
     function disable_update_database() {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Cpanel');
 		if (!$model instanceof CpanelModel) {
 			
@@ -167,6 +196,10 @@ class CpanelController extends SecuritycheckproBaseController
      *     
      */
     function enable_update_database() {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
         $model = $this->getModel('Cpanel');
 		if (!$model instanceof CpanelModel) {
 			
@@ -209,6 +242,10 @@ class CpanelController extends SecuritycheckproBaseController
      *     
      */
     function enable_spam_protection() {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
         $model = $this->getModel('Cpanel');
 		if (!$model instanceof CpanelModel) {
 			
@@ -229,6 +266,10 @@ class CpanelController extends SecuritycheckproBaseController
      *     
      */
     function disable_spam_protection() {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Cpanel');
 		if (!$model instanceof CpanelModel) {
 			
@@ -310,6 +351,18 @@ class CpanelController extends SecuritycheckproBaseController
 	function go_to_system_info() {        
         $this->setRedirect('index.php?option=com_securitycheckpro&controller=filemanager&view=sysinfo&'. Session::getFormToken() .'=1');        
     }
+	
+	/**
+     *  Función para ir al menú de control center. Usada desde el submenú
+     *
+     *
+     * @return  void
+     *     
+     */
+    function go_to_controlcenter() {
+        
+        $this->setRedirect('index.php?option=com_securitycheckpro&controller=controlcenter&view=controlcenter&'. Session::getFormToken() .'=1');        
+    }
     
     /**
      *  Función que bloquea las tablas importantes
@@ -319,6 +372,11 @@ class CpanelController extends SecuritycheckproBaseController
      *     
      */
     function lockSelectedTables() {
+		
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Cpanel');
 		if (!$model instanceof CpanelModel) {
 			
@@ -339,6 +397,11 @@ class CpanelController extends SecuritycheckproBaseController
      *     
      */
     function unlockAll() {
+		
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Cpanel');
 		if (!$model instanceof CpanelModel) {
 			
