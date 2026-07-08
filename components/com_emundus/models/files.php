@@ -2205,8 +2205,9 @@ class EmundusModelFiles extends JModelLegacy
 	 * @param $isGroup
 	 *
 	 * @return bool|mixed
+	 * @deprecated
 	 */
-	public function unlinkEvaluators($fnum, $id, $isGroup)
+	public function unlinkEvaluators(string $fnum, int $id, bool $isGroup): bool
 	{
 		try {
 

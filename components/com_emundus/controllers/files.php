@@ -1402,16 +1402,16 @@ class EmundusControllerFiles extends EmundusController
 	}
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public function unlinkevaluators()
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			$fnum  = $this->input->getString('fnum', null);
-			$id    = $this->input->getint('id', null);
-			$group = $this->input->getString('group', null);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$fnum  = $this->input->getString('fnum', '');
+			$id    = $this->input->getInt('id', 0);
+			$group = $this->input->getString('group', false);
 
 			$m_files = $this->getModel('Files');
 
@@ -3651,8 +3651,9 @@ class EmundusControllerFiles extends EmundusController
 		exit();
 	}
 
-	//todo: jeremy stopped here
-
+	#[AccessAttribute(AccessLevelEnum::PARTNER,
+		[['id' => ActionEnum::EXPORT_ZIP, 'mode' => CrudEnum::CREATE],]
+	)]
 	public function exportzipdoc()
 	{
 		$idFiles = $this->input->getString('ids', '');
@@ -3720,6 +3721,7 @@ class EmundusControllerFiles extends EmundusController
 		}
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getPDFProgrammes()
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
@@ -3761,6 +3763,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getPDFCampaigns()
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
@@ -3806,6 +3809,7 @@ class EmundusControllerFiles extends EmundusController
 	}
 
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getProgrammes()
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
@@ -3834,6 +3838,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getProgramCampaigns()
 	{
 		$html = '';
@@ -3857,6 +3862,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function saveExcelFilter()
 	{
 		$current_user = JFactory::getUser();
@@ -3879,6 +3885,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function savePdfFilter()
 	{
 
@@ -3904,6 +3911,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function deletePdfFilter()
 	{
 
@@ -3915,6 +3923,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getExportExcelFilter()
 	{
 		$response = array('status' => false, 'filter' => []);
@@ -3933,6 +3942,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getAllExportPdfFilter()
 	{
 		$user_id = JFactory::getUser()->id;
@@ -3944,6 +3954,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getExportPdfFilterById()
 	{
 		$modelId = $this->input->getRaw('id');
@@ -3955,6 +3966,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getExportExcelFilterById()
 	{
 		$user_id = JFactory::getUser()->id;
@@ -3968,6 +3980,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getAllLetters()
 	{
 		$h_files = new EmundusHelperFiles;
@@ -3977,6 +3990,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getexcelletter()
 	{
 		$h_files = new EmundusHelperFiles;
@@ -4026,7 +4040,10 @@ class EmundusControllerFiles extends EmundusController
 
 	/**
 	 * Generates or (if it exists already) loads the PDF for a certain GesCOF product.
+	 * todo: check whatever we do of this function
+	 * @deprecated
 	 */
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getproductpdf()
 	{
 
@@ -4186,7 +4203,6 @@ class EmundusControllerFiles extends EmundusController
 
 	}
 
-
 	public function getValueByFabrikElts($fabrikElts, $fnumsArray)
 	{
 		$m_files = $this->getModel('Files');
@@ -4264,6 +4280,7 @@ class EmundusControllerFiles extends EmundusController
 		return $fabrikValues;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function exportfile()
 	{
 
@@ -4296,6 +4313,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getfabrikdatabyelements()
 	{
 		$h_files = new EmundusHelperFiles;
@@ -4307,6 +4325,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getselectedelements()
 	{
 		$h_files   = new EmundusHelperFiles;
