@@ -431,6 +431,7 @@ abstract class ActionEntity
 			'label' => static::getLabel(),
 			'description' => static::getDescription(),
 			'icon' => static::getIcon(),
+			'is_asynchronous' => static::isAsynchronous(),
 			'parameters' => $this->getParametersSchema(),
 			'parameter_values' => $this->getParameterValues(),
 			'targets' => array_map(fn($target) => $target->serialize(), $this->getTargets()),
