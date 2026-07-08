@@ -33,6 +33,7 @@ use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\EmundusResponse;
+use Tchooz\Services\FileSecurityService;
 use Tchooz\Services\UploadService;
 use Tchooz\Controller\EmundusController;
 use Tchooz\Enums\Actions\ActionEnum;
@@ -1249,10 +1250,10 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::REGISTERED)]
 	public function uploaddefaultattachment()
 	{
 		$user = $this->user;
-
 
 		$file             = $this->input->files->get('file');
 		$attachment_id    = $this->input->getInt('attachment_id');
@@ -1260,6 +1261,12 @@ class EmundusControllerUsers extends EmundusController
 
 		if (isset($file))
 		{
+			if (!FileSecurityService::isAllowedUploadExtension($file['name']))
+			{
+				echo json_encode((object) ['status' => false, 'msg' => Text::_('COM_EMUNDUS_ERROR_INVALID_FILETYPE')]);
+				exit;
+			}
+
 			$root_dir   = "images/emundus/files/" . $user->id;
 			$target_dir = $root_dir . '/default_attachments/';
 
