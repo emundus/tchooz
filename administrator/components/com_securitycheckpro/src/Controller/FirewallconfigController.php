@@ -29,6 +29,10 @@ class FirewallconfigController extends SecuritycheckproBaseController
 
     /* Borra IPs de la lista negra */
     function deleteip_blacklist():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
 		$model = $this->getModel('Firewallconfig');
 		if (!$model instanceof FirewallconfigModel) {
 			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
@@ -39,8 +43,13 @@ class FirewallconfigController extends SecuritycheckproBaseController
         parent::display();    
     }
 
-    /* Añade un IP a la lista negra */
+    /* Aï¿½ade un IP a la lista negra */
     function addip_blacklist():void {
+		
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Firewallconfig');
 		if (!$model instanceof FirewallconfigModel) {
 			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
@@ -53,6 +62,11 @@ class FirewallconfigController extends SecuritycheckproBaseController
 
     /* Borra IPs de la lista blanca */
     function deleteip_whitelist():void {
+		
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Firewallconfig');
 		if (!$model instanceof FirewallconfigModel) {
 			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
@@ -63,8 +77,12 @@ class FirewallconfigController extends SecuritycheckproBaseController
         parent::display();    
     }
 
-    /* Añade un IP a la lista blanca */
+    /* Aï¿½ade un IP a la lista blanca */
     function addip_whitelist():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Firewallconfig');
 		if (!$model instanceof FirewallconfigModel) {
 			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
@@ -75,9 +93,15 @@ class FirewallconfigController extends SecuritycheckproBaseController
         parent::display();    
     }
 
-    /* Borra IPs de la lista negra dinámica */
+    /* Borra IPs de la lista negra dinï¿½mica */
     function deleteip_dynamic_blacklist():void {
+		
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
         $model = $this->getModel('Firewallconfig');
+		
 		if (!$model instanceof FirewallconfigModel) {
 			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
 			return;
@@ -89,6 +113,10 @@ class FirewallconfigController extends SecuritycheckproBaseController
 
     /* Guarda los cambios y redirige al cPanel */
     public function save():void {
+		
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
 		
         $model = $this->getModel('Firewallconfig');
 		if (!$model instanceof FirewallconfigModel) {
@@ -115,7 +143,7 @@ class FirewallconfigController extends SecuritycheckproBaseController
             $app->setUserState('com_securitycheckpro.ExceptionsTabs.active', $exceptions);
         }
 		    
-        //El campo 'custom_code' tendrá un formato raw
+        //El campo 'custom_code' tendrï¿½ un formato raw
         $custom_code = $jinput->get("custom_code", null, 'raw');
     
         $data = $jinput->post->getArray();
@@ -134,28 +162,29 @@ class FirewallconfigController extends SecuritycheckproBaseController
         
         // Look for super users groups
         $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = "SELECT id from #__usergroups where title='Super Users'" ;            
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('id'))
+            ->from($db->quoteName('#__usergroups'))
+            ->where($db->quoteName('title') . ' = ' . $db->quote('Super Users'));
         $db->setQuery($query);
         $super_user_group = $db->loadResult();
         
-        // Establecemos el grupo "Super users" por defecto para aplicar la protección de sesión
+        // Establecemos el grupo "Super users" por defecto para aplicar la protecciï¿½n de sesiï¿½n
         if ((!array_key_exists("session_protection_groups", $data)) || (is_null($data['session_protection_groups']))) {
             $data['session_protection_groups'] = array('0' => $super_user_group);
         }       
     
-        /* Variable que indicará si los emails introducidos en el campo 'email to' son válidos */
+        /* Variable que indicarï¿½ si los emails introducidos en el campo 'email to' son vï¿½lidos */
         $emails_valid = true;
-    
-        /* Obtenemos un array con todos los emails introducidos (separados con comas) */
-        $emails_array = explode(",", $data['email_to']);
-    
-        /* Chequeamos si los emails introducidos son válidos */
-        foreach($emails_array as $email)
-        {
-            $valid = filter_var(trim($email), FILTER_VALIDATE_EMAIL);
-            if (!$valid) {
-                $emails_valid = false;
-                break;
+
+        /* Chequeamos si los emails introducidos son vï¿½lidos (el campo es opcional) */
+        $email_to_trimmed = trim($data['email_to'] ?? '');
+        if ($email_to_trimmed !== '') {
+            foreach (array_filter(array_map('trim', explode(',', $email_to_trimmed))) as $email) {
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $emails_valid = false;
+                    break;
+                }
             }
         }
 		    
@@ -174,7 +203,7 @@ class FirewallconfigController extends SecuritycheckproBaseController
 		}		
     
         if (!array_key_exists('loggable_extensions', $data)) {
-            $data['loggable_extensions'] = explode(',', "com_banners,com_cache,com_categories,com_config,com_contact,com_content,com_installer,com_media,com_menus,com_messages,com_modules,com_newsfeeds,com_plugins,com_redirect,com_tags,com_templates,com_users");
+            $data['loggable_extensions'] = explode(',', "com_banners,com_cache,com_categories,com_config,com_contact,com_content,com_installer,com_media,com_menus,com_messages,com_modules,com_newsfeeds,com_plugins,com_redirect,com_tags,com_templates,com_users,com_akeebabackup,com_acym,com_securitycheckpro,com_securitycheckprocontrolcenter");
         }
     
         if ((!$emails_valid) || (!filter_var($data['email_from_domain'], FILTER_VALIDATE_EMAIL)) || (!is_numeric($data['email_max_number']))) {
@@ -200,6 +229,11 @@ class FirewallconfigController extends SecuritycheckproBaseController
 
     /* Importa un fichero de ips a la lista pasada como argumento */
     public function import_list():void {
+		
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Firewallconfig');
 		if (!$model instanceof FirewallconfigModel) {
 			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
@@ -210,9 +244,13 @@ class FirewallconfigController extends SecuritycheckproBaseController
         parent::display();    
     }
 	
-	/* Acciones al pulsar el botón para exportar las Ips en las listas */
+	/* Acciones al pulsar el botï¿½n para exportar las Ips en las listas */
     function export_list(): void
 	{
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
 		/** @var \Joomla\CMS\Application\CMSApplication $app */
 		$app    = Factory::getApplication();
 		/** @var Input $jinput */
@@ -221,7 +259,7 @@ class FirewallconfigController extends SecuritycheckproBaseController
 		// Nombre de lista recibido (por ejemplo: "whitelist", "blacklist", etc.)
 		$lista = $jinput->getString('export', '');
 
-		// Validación básica: solo letras, números y guiones bajos.
+		// Validaciï¿½n bï¿½sica: solo letras, nï¿½meros y guiones bajos.
 		if ($lista === '' || !preg_match('/^[a-z0-9_]+$/i', $lista)) {
 			$app->enqueueMessage('List to export is empty or invalid', 'error');
 			parent::display();
@@ -234,7 +272,7 @@ class FirewallconfigController extends SecuritycheckproBaseController
 		$tableName = $db->replacePrefix('#__securitycheckpro_' . $lista);
 
 		try {
-			// Selecciona únicamente la columna que contiene las IPs.
+			// Selecciona ï¿½nicamente la columna que contiene las IPs.
 			// Ajusta el nombre de columna si en tu tabla no se llama 'ip'.
 			$query = $db->getQuery(true)
 				->select($db->quoteName('ip'))
@@ -243,7 +281,7 @@ class FirewallconfigController extends SecuritycheckproBaseController
 			$db->setQuery($query);
 			$array_ips = $db->loadColumn();  // array de strings (IPs)
 		} catch (\Throwable $e) {
-			$app->enqueueMessage($e->getMessage(), 'error');
+			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_NO_DATA_TO_EXPORT'), 'error');
 			parent::display();
 			return;
 		}
@@ -255,15 +293,15 @@ class FirewallconfigController extends SecuritycheckproBaseController
 		}
 
 		// Construimos el contenido: ip,ip,ip
-		// Filtramos valores vacíos y duplicados por si acaso.
+		// Filtramos valores vacï¿½os y duplicados por si acaso.
 		$array_ips = array_values(array_unique(array_filter(array_map('trim', $array_ips))));
 		$list      = implode(',', $array_ips);
 
 		// Nombre de archivo
 		$config   = $app->getConfig();
 		$sitename = (string) $config->get('sitename', 'site');
-		$sitename = preg_replace('/\s+/', '', $sitename); // sin espacios
-		$timestamp = date('Ymd_His');                     // formato estable
+		$sitename = preg_replace('/[^a-zA-Z0-9_-]+/', '', $sitename) ?: 'site';
+		$timestamp = date('Ymd_His');
 		$filename  = "securitycheckpro_{$lista}_{$sitename}_{$timestamp}.txt";
 
 		// Aseguramos que no hay salida previa y limpiamos todos los buffers
@@ -271,7 +309,7 @@ class FirewallconfigController extends SecuritycheckproBaseController
 			@ob_end_clean();
 		}
 
-		// Enviamos cabeceras y contenido (sin usar métodos obsoletos)
+		// Enviamos cabeceras y contenido (sin usar mï¿½todos obsoletos)
 		header('Content-Type: text/plain; charset=UTF-8');
 		header('Content-Disposition: attachment; filename="' . $filename . '"');
 		header('X-Content-Type-Options: nosniff');
@@ -285,12 +323,17 @@ class FirewallconfigController extends SecuritycheckproBaseController
 		}
 
 		echo $list;
-		// Terminamos la petición aquí para evitar que Joomla agregue HTML extra
+		// Terminamos la peticiï¿½n aquï¿½ para evitar que Joomla agregue HTML extra
 		$app->close();
 	}  
     
-    /* Envía un correo de prueba */
+    /* Envï¿½a un correo de prueba */
     public function send_email_test():void {
+		
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         $model = $this->getModel('Firewallconfig');
 		if (!$model instanceof FirewallconfigModel) {
 			Factory::getApplication()->enqueueMessage('Firewallconfig model not found', 'error');
@@ -300,8 +343,12 @@ class FirewallconfigController extends SecuritycheckproBaseController
         $this->setRedirect('index.php?option=com_securitycheckpro&controller=firewallconfig&view=firewallconfig&'. Session::getFormToken() .'=1');
     }
 
-    /* Acciones al pulsar el botón 'Enable' en la pestaña url inspector*/
+    /* Acciones al pulsar el botï¿½n 'Enable' en la pestaï¿½a url inspector*/
     function enable_url_inspector():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+
         $cpanelmodel = new CpanelModel();
         $cpanelmodel->toggle_plugin('url_inspector', true);
     

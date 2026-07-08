@@ -56,7 +56,7 @@ class SecuritycheckproModel extends ListModel
     var $_dbrows = null;
 
     /**
-     * Carga estado (filtros, orden, paginación) desde la request.
+     * Carga estado (filtros, orden, paginaciï¿½n) desde la request.
      */
     protected function populateState($ordering = 'a.id', $direction = 'DESC'): void
     {
@@ -69,13 +69,13 @@ class SecuritycheckproModel extends ListModel
         $vulnerable = $app->getUserStateFromRequest('filter.vulnerable', 'filter_vulnerable');
         $this->setState('filter.vulnerable', $vulnerable);
 
-        // Orden y dirección
+        // Orden y direcciï¿½n
         $listOrder = $input->getCmd('list_ordering', $ordering);
         $listDirn  = $input->getCmd('list_direction', $direction);
         $this->setState('list.ordering', $listOrder);
         $this->setState('list.direction', $listDirn);
 
-        // Paginación
+        // Paginaciï¿½n
         $limit = $input->getInt('limit', $app->get('list_limit', 20));
         $start = $input->getInt('start', 0);
         $this->setState('list.limit', $limit);
@@ -106,10 +106,20 @@ class SecuritycheckproModel extends ListModel
         }
 
         if ($vulnerable !== '') {
-            // Si vulnerable es "0/1" o "si/no", normaliza aquí si procede
-            $normalized = in_array(strtolower($vulnerable), ['1','si','y','true'], true) ? '1' : (in_array(strtolower($vulnerable), ['0','no','n','false'], true) ? '0' : $vulnerable);
-            $query->where($db->quoteName('a.vulnerable') . ' = ' . $db->quote($normalized));
-        }
+			$v = strtolower($vulnerable);
+
+			if (in_array($v, ['1', 'si', 'y', 'true'], true)) {
+				$normalized = 'Si';
+			} elseif (in_array($v, ['0', 'no', 'n', 'false'], true)) {
+				$normalized = 'No';
+			} else {
+				$normalized = $vulnerable;
+			}
+
+			$query->where(
+				$db->quoteName('a.vulnerable') . ' = ' . $db->quote($normalized)
+			);
+		}
 
         // Orden
         $orderCol  = $this->getState('list.ordering', 'a.id');
@@ -118,7 +128,40 @@ class SecuritycheckproModel extends ListModel
 
         return $query;
     }
-	
+
+    /**
+     * Recuento global de extensiones registradas y su estado de vulnerabilidad
+     * (sin filtrar por los selects de la tabla), para las mÃ©tricas del dashboard.
+     *
+     * @return array{total: int, vulnerable: int, undefined: int}
+     */
+    public function getExtensionStats(): array
+    {
+        /** @var DatabaseInterface $db */
+        $db = $this->getDatabase();
+
+        $query = $db->getQuery(true)
+            ->select(
+                'COUNT(*) AS total, '
+                . 'SUM(CASE WHEN ' . $db->quoteName('vulnerable') . ' = ' . $db->quote('Si') . ' THEN 1 ELSE 0 END) AS vulnerable, '
+                . 'SUM(CASE WHEN ' . $db->quoteName('vulnerable') . ' = ' . $db->quote('Indefinido') . ' THEN 1 ELSE 0 END) AS undefin'
+            )
+            ->from($db->quoteName('#__securitycheckpro'));
+
+        try {
+            $db->setQuery($query);
+            $row = $db->loadAssoc();
+        } catch (\Throwable $e) {
+            $row = null;
+        }
+
+        return [
+            'total'      => isset($row['total']) ? (int) $row['total'] : 0,
+            'vulnerable' => isset($row['vulnerable']) ? (int) $row['vulnerable'] : 0,
+            'undefined'  => isset($row['undefin']) ? (int) $row['undefin'] : 0,
+        ];
+    }
+
 	/**
 	 * Get the list of items.
 	 *
@@ -151,10 +194,10 @@ class SecuritycheckproModel extends ListModel
         $db->setQuery($query);
         $components = $db->loadAssocList();
 		
-		// Versión de Joomla instalada
+		// Versiï¿½n de Joomla instalada
 		$local_joomla_branch = explode('.', JVERSION)[0];
 		
-        // Extraemos los componentes vulnerables para nuestra versión de Joomla
+        // Extraemos los componentes vulnerables para nuestra versiï¿½n de Joomla
         $query = $db->getQuery(true)
             ->select('*')
             ->from($db->quoteName('#__securitycheckpro_db'))
@@ -164,16 +207,16 @@ class SecuritycheckproModel extends ListModel
 		
 		foreach ($vuln_components as $vulnerable_product)
         {
-			$valor_campo_vulnerable = "Si"; // Valor que tendrá el campo 'Vulnerable' cuando se actualice. También puede tener el valor 'Indefinido'.
+			$valor_campo_vulnerable = "Si"; // Valor que tendrï¿½ el campo 'Vulnerable' cuando se actualice. Tambiï¿½n puede tener el valor 'Indefinido'.
 			$components_key = array_search($vulnerable_product['Product'], array_column($components, 'Product'));
 			
 			if ($components_key === false) {
-				// El producto vulnerable no está instalado
+				// El producto vulnerable no estï¿½ instalado
 			} else {
 				if ( $components[$components_key]['sc_type'] == $vulnerable_product['vuln_type'] ) {
-					$modvulnversion = $vulnerable_product['modvulnversion']; //Modificador sobre la versión de la extensión
-                    $db_version = $components[$components_key]['Installedversion']; // Versión de la extensión instalada
-                    $vuln_version = $vulnerable_product['Vulnerableversion']; // Versión de la extensión vulnerable
+					$modvulnversion = $vulnerable_product['modvulnversion']; //Modificador sobre la versiï¿½n de la extensiï¿½n
+                    $db_version = $components[$components_key]['Installedversion']; // Versiï¿½n de la extensiï¿½n instalada
+                    $vuln_version = $vulnerable_product['Vulnerableversion']; // Versiï¿½n de la extensiï¿½n vulnerable
 					                
                     // Usamos la funcion 'version_compare' de php para comparar las versiones del producto instalado y la del componente vulnerable					
                     $version_compare = version_compare($db_version, $vuln_version, $modvulnversion);
@@ -194,7 +237,7 @@ class SecuritycheckproModel extends ListModel
                                                                     
                         try
                         {
-							// Añadimos los datos a la tabla 'securitycheck_vuln_components' si no existen ya   
+							// Aï¿½adimos los datos a la tabla 'securitycheck_vuln_components' si no existen ya   
 							if (is_null($exists)) {
 								$result = $db->insertObject('#__securitycheckpro_vuln_components', $valor);        
 							}
@@ -233,18 +276,18 @@ class SecuritycheckproModel extends ListModel
 	 *
 	 * Seguridad:
 	 *  - Allow-list de tablas y columnas
-	 *  - Parámetros enlazados (bind) en vez de concatenar
-	 *  - Normalización de strings y límites de longitud
+	 *  - Parï¿½metros enlazados (bind) en vez de concatenar
+	 *  - Normalizaciï¿½n de strings y lï¿½mites de longitud
 	 *  - Manejo de errores sin filtrar mensajes de BBDD al usuario
 	 *
-	 * @param string      $nombre      Valor para la condición WHERE (del campo $campo)
-	 * @param string      $database    Nombre lógico de la tabla (sin prefijo), debe estar en la allow-list
-	 * @param string      $campo       Campo para la condición WHERE (p.ej. 'Product'), must be allowed
+	 * @param string      $nombre      Valor para la condiciï¿½n WHERE (del campo $campo)
+	 * @param string      $database    Nombre lï¿½gico de la tabla (sin prefijo), debe estar en la allow-list
+	 * @param string      $campo       Campo para la condiciï¿½n WHERE (p.ej. 'Product'), must be allowed
 	 * @param string      $nuevo_valor Nuevo valor para $campo_set
 	 * @param string      $campo_set   Campo a actualizar
 	 * @param string|null $tipo        Filtro adicional por 'sc_type' (opcional)
 	 *
-	 * @return bool True si se actualizó al menos una fila, False en caso contrario o error
+	 * @return bool True si se actualizï¿½ al menos una fila, False en caso contrario o error
 	 */
 	function actualizarRegistro(
 		string $nombre,
@@ -258,7 +301,7 @@ class SecuritycheckproModel extends ListModel
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		// ---- Allow-lists ----
-		// Mapea nombres lógicos a tablas reales (sin prefijo)
+		// Mapea nombres lï¿½gicos a tablas reales (sin prefijo)
 		$allowedTables = [
 			'securitycheckpro' => '#__securitycheckpro',			
 		];
@@ -273,7 +316,7 @@ class SecuritycheckproModel extends ListModel
 			],
 		];
 
-		// Validación de tabla
+		// Validaciï¿½n de tabla
 		if (!isset($allowedTables[$database])) {
 			// Tabla no permitida
 			return false;
@@ -304,7 +347,7 @@ class SecuritycheckproModel extends ListModel
 			return false;
 		}
 		
-		// Normalización/defensas básicas de datos (no afecta al bind, solo higiene)
+		// Normalizaciï¿½n/defensas bï¿½sicas de datos (no afecta al bind, solo higiene)
 		$nombre      = mb_substr($nombre, 0, 255);
 		$nuevo_valor = mb_substr($nuevo_valor, 0, 2048);
 		$tipo        = $useTipo ? mb_substr((string) $tipo, 0, 255) : null;	
@@ -329,7 +372,7 @@ class SecuritycheckproModel extends ListModel
 				$query->bind(':tipo', $tipo, ParameterType::STRING);
 			}
 
-			// Bind de parámetros
+			// Bind de parï¿½metros
 			$query->bind(':nuevo_valor', $nuevo_valor);
 			$query->bind(':nombre', $nombre);
 
@@ -340,7 +383,7 @@ class SecuritycheckproModel extends ListModel
 			$db->setQuery($query);
 			$db->execute();
 
-			// Devolvemos true solo si afectó al menos a una fila
+			// Devolvemos true solo si afectï¿½ al menos a una fila
 			return $db->getAffectedRows() > 0;
 		} catch (\Throwable $e) {
 			Log::add('SecuritycheckproModel. actualizarRegistro function error: ' . $e->getMessage(), Log::ERROR, 'com_securitycheckpro');
@@ -362,7 +405,7 @@ class SecuritycheckproModel extends ListModel
 		/** @var DatabaseInterface $db */
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
-		// --- Allow-list de tabla y campo (evita inyección en identificadores) ---
+		// --- Allow-list de tabla y campo (evita inyecciï¿½n en identificadores) ---
 		$allowedTable  = 'extensions';
 		$allowedFields = ['element', 'name'];
 
@@ -372,7 +415,7 @@ class SecuritycheckproModel extends ListModel
 		}
 
 		if (!in_array($campo, $allowedFields, true)) {
-			// Por seguridad, si el campo no es válido, devolvemos false
+			// Por seguridad, si el campo no es vï¿½lido, devolvemos false
 			return false;
 		}
 
@@ -384,7 +427,7 @@ class SecuritycheckproModel extends ListModel
 
 		try {
 			$db->setQuery($q);
-			// Si existe alguna fila, loadResult() devolverá '1'
+			// Si existe alguna fila, loadResult() devolverï¿½ '1'
 			return (bool) $db->loadResult();
 		} catch (\Throwable $e) {
 			return false;
@@ -401,7 +444,7 @@ class SecuritycheckproModel extends ListModel
 		/** @var DatabaseInterface $db */
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
-		// Normalización mínima (no hace falta escapar: insertObject crea los bindings)
+		// Normalizaciï¿½n mï¿½nima (no hace falta escapar: insertObject crea los bindings)
 		$nombre  = trim($nombre);
 		$version = trim($version);
 		$tipo    = trim($tipo);
@@ -425,7 +468,7 @@ class SecuritycheckproModel extends ListModel
 
 	/**
 	 * Elimina de #__securitycheckpro las entradas cuyo Product ya no existe como componente en #__extensions.
-	 * Mantiene 'Joomla!' como excepción.
+	 * Mantiene 'Joomla!' como excepciï¿½n.
 	 *
 	 * Eficiente: borra en una sola consulta usando NOT EXISTS.
 	 *
@@ -447,7 +490,7 @@ class SecuritycheckproModel extends ListModel
 			->where('e.' . $db->quoteName('element') . ' = sp.' . $db->quoteName('Product'))
 			->where('e.' . $db->quoteName('type') . ' = ' . $db->quote('component'));
 
-		// DELETE con NOT EXISTS (portátil y seguro)
+		// DELETE con NOT EXISTS (portï¿½til y seguro)
 		$q = $db->getQuery(true)
 			->delete($db->quoteName('#__securitycheckpro', 'sp'))
 			->where('sp.' . $db->quoteName('Product') . ' <> ' . $db->quote('Joomla!'))
@@ -459,9 +502,9 @@ class SecuritycheckproModel extends ListModel
 			$deleted = (int) $db->getAffectedRows();
 
 			if ($deleted > 0) {
-				// Compatibilidad con tu lógica original: dejamos el dato en input
+				// Compatibilidad con tu lï¿½gica original: dejamos el dato en input
 				$input->set('comp_eliminados', Text::_('COM_SECURITYCHECKPRO_DELETED_COMPONENTS') . $deleted);
-				// Y además mostramos un mensaje informativo en backend
+				// Y ademï¿½s mostramos un mensaje informativo en backend
 				$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_DELETED_COMPONENTS') . $deleted, 'info');
 			}
 		} catch (\Throwable $e) {
@@ -488,7 +531,7 @@ class SecuritycheckproModel extends ListModel
 			. DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR
 			. 'scans' . DIRECTORY_SEPARATOR;
 
-		// --- 1) ¿Hace falta sincronizar? ---
+		// --- 1) ï¿½Hace falta sincronizar? ---
 		$needSync = false;
 
 		// (a) Archivo testigo
@@ -497,7 +540,7 @@ class SecuritycheckproModel extends ListModel
 			$app->setUserState('show_vulnerabilities_table_updated', true);
 		}
 
-		// (b) Tabla vacía
+		// (b) Tabla vacï¿½a
 		if (!$needSync) {
 			try {
 				$qCount = $db->getQuery(true)
@@ -509,7 +552,7 @@ class SecuritycheckproModel extends ListModel
 					$needSync = true;
 				}
 			} catch (\Throwable $e) {
-				// Si no podemos leer, forzamos sincronización inicial
+				// Si no podemos leer, forzamos sincronizaciï¿½n inicial
 				$needSync = true;
 			}
 		}
@@ -521,7 +564,7 @@ class SecuritycheckproModel extends ListModel
 		// --- 2) Normaliza y mapea registros de #__extensions ---
 		$rows = [];
 		foreach ($registros as $row) {
-			// Valida forma mínima
+			// Valida forma mï¿½nima
 			if (!isset($row->element)) {
 				continue;
 			}
@@ -554,7 +597,7 @@ class SecuritycheckproModel extends ListModel
 			}
 
 			// Normalizaciones finales (longitudes razonables)
-			$product = mb_substr($product, 0, 190);    // índices/únicos suelen estar <191 chars en utf8mb4
+			$product = mb_substr($product, 0, 190);    // ï¿½ndices/ï¿½nicos suelen estar <191 chars en utf8mb4
 			$version = mb_substr(trim($version), 0, 64);
 			$type    = mb_substr(trim($type), 0, 32);
 
@@ -565,11 +608,11 @@ class SecuritycheckproModel extends ListModel
 			];
 		}
 
-		// --- 3) Transacción: TRUNCATE + inserciones ---
+		// --- 3) Transacciï¿½n: TRUNCATE + inserciones ---
 		try {
 			$db->transactionStart();
 
-			// TRUNCATE específico por driver
+			// TRUNCATE especï¿½fico por driver
 			$driver = strtolower((string) $db->getName()); // 'mysqli', 'pdomysql', 'pgsql', etc.
 			$table  = $db->quoteName('#__securitycheckpro');
 
@@ -600,7 +643,7 @@ class SecuritycheckproModel extends ListModel
 
 			$db->transactionCommit();
 		} catch (\JsonException $e) {
-			// JSON malformado en algún manifest_cache: no aborta toda la sync; puedes loguear y continuar.
+			// JSON malformado en algï¿½n manifest_cache: no aborta toda la sync; puedes loguear y continuar.
 			$db->transactionRollback();
 			Log::add('SecuritycheckproModel. actualizarbbdd function error: ' . $e->getMessage(), Log::ERROR, 'com_securitycheckpro');
 			return;
@@ -687,10 +730,10 @@ class SecuritycheckproModel extends ListModel
 	}
 
     /**
-	 * Obtiene la fecha de actualización del último componente añadido
+	 * Obtiene la fecha de actualizaciï¿½n del ï¿½ltimo componente aï¿½adido
 	 * a la tabla #__securitycheckpro_db por el plugin 'Update Database'.
 	 *
-	 * @return string Fecha (formato de la columna `published`) o cadena vacía si no hay registros o en caso de error
+	 * @return string Fecha (formato de la columna `published`) o cadena vacï¿½a si no hay registros o en caso de error
 	 */
 	function get_last_update(): string
 	{
@@ -758,7 +801,7 @@ class SecuritycheckproModel extends ListModel
 
 		} catch (\Throwable $ex) {
 			// Mostramos error amigable y salimos
-			$msg = Text::sprintf('JERROR_LOADING_MENUS', $e($ex->getMessage())); // reutilizamos texto genérico
+			$msg = Text::sprintf('JERROR_LOADING_MENUS', $e($ex->getMessage())); // reutilizamos texto genï¿½rico
 			return '<div class="alert alert-danger" role="alert">' . $msg . '</div>';
 		}
 
@@ -802,7 +845,7 @@ class SecuritycheckproModel extends ListModel
 				$vulnBadgeClass = 'badge bg-success';
 			}
 
-			// Mensaje de solución
+			// Mensaje de soluciï¿½n
 			switch ($solType) {
 				case 'update':
 					$solution = Text::_('COM_SECURITYCHECKPRO_SOLUTION_TYPE_UPDATE') . ' ' . $e($solutionRaw);

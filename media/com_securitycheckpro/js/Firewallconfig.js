@@ -179,6 +179,36 @@ document.addEventListener('DOMContentLoaded', function () {
     if (form) form.submit();
   });
 
+  const btnListsSearch = $('#filter_lists_search_submit');
+  if (btnListsSearch) btnListsSearch.addEventListener('click', function () {
+    if (form) form.submit();
+  });
+
+  const inpListsSearch = $('#filter_lists_search');
+
+  function updateListsSearchHighlight() {
+    if (!inpListsSearch) return;
+    const group = inpListsSearch.closest('.input-group');
+    const btn = $('#filter_lists_search_submit');
+    if (inpListsSearch.value.trim() !== '') {
+      inpListsSearch.classList.add('border-primary', 'fw-semibold');
+      if (group) group.classList.add('shadow-sm');
+      if (btn) { btn.classList.remove('btn-outline-secondary'); btn.classList.add('btn-primary'); }
+    } else {
+      inpListsSearch.classList.remove('border-primary', 'fw-semibold');
+      if (group) group.classList.remove('shadow-sm');
+      if (btn) { btn.classList.remove('btn-primary'); btn.classList.add('btn-outline-secondary'); }
+    }
+  }
+
+  if (inpListsSearch) {
+    inpListsSearch.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); if (form) form.submit(); }
+    });
+    inpListsSearch.addEventListener('input', updateListsSearchHighlight);
+    updateListsSearchHighlight();
+  }
+
   const btnEnableInspector = $('#enable_url_inspector_button');
   if (btnEnableInspector) btnEnableInspector.addEventListener('click', function () {
     Joomla.submitbutton('enable_url_inspector');
@@ -471,6 +501,107 @@ function disable_continent_checkbox(continentname, name) {
           ensureHidden(form, hiddenName, panelId);
         }
       });
+    });
+  });
+})();
+
+
+// === Bootstrap tab persistence for #ListsTabsNav ===
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    const nav = document.getElementById('ListsTabsNav');
+    const hidden = document.getElementById('activeTab_ListsTabs');
+    if (!nav || !hidden) return;
+
+    nav.addEventListener('shown.bs.tab', function (e) {
+      const paneId = e.target.getAttribute('data-bs-target');
+      if (paneId) hidden.value = paneId.replace(/^#/, '');
+    });
+  });
+})();
+
+
+// === Drag-and-drop para #priority-order-list ===
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    const list = document.getElementById('priority-order-list');
+    if (!list) return;
+
+    let draggedItem = null;
+
+    list.addEventListener('dragstart', function (e) {
+      draggedItem = e.target.closest('li');
+      if (draggedItem) draggedItem.style.opacity = '0.5';
+    });
+
+    list.addEventListener('dragend', function () {
+      if (draggedItem) draggedItem.style.opacity = '';
+      draggedItem = null;
+    });
+
+    list.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      const over = e.target.closest('li');
+      if (!over || over === draggedItem) return;
+      const rect = over.getBoundingClientRect();
+      if (e.clientY < rect.top + rect.height / 2) {
+        list.insertBefore(draggedItem, over);
+      } else {
+        list.insertBefore(draggedItem, over.nextSibling);
+      }
+    });
+
+    list.addEventListener('drop', function (e) {
+      e.preventDefault();
+      syncPriorityInputs();
+    });
+
+    function syncPriorityInputs() {
+      const items = list.querySelectorAll('li[data-list]');
+      ['priority1', 'priority2', 'priority3'].forEach(function (id, idx) {
+        const el = document.getElementById(id);
+        if (el && items[idx]) el.value = items[idx].getAttribute('data-list');
+      });
+    }
+  });
+})();
+
+
+// === Borrado de IP individual por fila (.scp-delete-row) ===
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (e) {
+      const btn = e.target.closest('.scp-delete-row');
+      if (!btn) return;
+      const task = btn.getAttribute('data-task');
+      const ip   = btn.getAttribute('data-ip');
+      if (!task || !ip) return;
+
+      const form = document.adminForm || document.getElementById('adminForm');
+      if (!form) return;
+
+      // The field name must match what manage_list() reads server-side
+      const fieldName = task === 'deleteip_whitelist' ? 'whitelist_cid[]' : 'cid[]';
+
+      // Uncheck existing checkboxes with this name so they are not submitted
+      form.querySelectorAll('input[type="checkbox"][name="' + fieldName + '"]').forEach(function (cb) {
+        cb.checked = false;
+      });
+
+      // Remove any previously injected hidden input for single-row delete
+      form.querySelectorAll('input.scp-single-delete-hidden').forEach(function (el) {
+        el.parentNode.removeChild(el);
+      });
+
+      // Inject the target IP as the only value for this field
+      const ipInput = document.createElement('input');
+      ipInput.type      = 'hidden';
+      ipInput.name      = fieldName;
+      ipInput.className = 'scp-single-delete-hidden';
+      ipInput.value     = ip;
+      form.appendChild(ipInput);
+
+      Joomla.submitbutton(task);
     });
   });
 })();

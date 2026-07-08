@@ -7,16 +7,14 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\Filesystem\Path;
 
 /** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\View\Ruleslogs\HtmlView $this */
-$app = Factory::getApplication();
 $filterSearch = (string) ($this->state->get('filter.rules_search') ?? '');
-$hasRows = !empty($this->log_details) && \is_iterable($this->log_details);
+$hasRows = !empty($this->log_details);
 ?>
 
 <form action="<?php echo Route::_('index.php?option=com_securitycheckpro&view=ruleslogs'); ?>"
@@ -32,6 +30,16 @@ $hasRows = !empty($this->log_details) && \is_iterable($this->log_details);
         require $navFile;
     }
     ?>
+
+    <!-- Action bar -->
+    <div class="scp-actionbar">
+        <div>
+            <p class="scp-actionbar__title">
+                <i class="fa fa-user-check" aria-hidden="true"></i>
+                <?php echo Text::_('COM_SECURITYCHECKPRO_RULES_LOGS'); ?>
+            </p>
+        </div>
+    </div>
 
     <div class="card mb-4">
         <div class="card-body">
@@ -145,12 +153,6 @@ $hasRows = !empty($this->log_details) && \is_iterable($this->log_details);
                 </div>
             <?php endif; ?>
 
-        </div>
-    </div>
-
-    <div class="card mt-3 w-100">
-        <div class="card-header">
-            <?php echo Text::_('COM_SECURITYCHECKPRO_COPYRIGHT'); ?><br/>
         </div>
     </div>
 

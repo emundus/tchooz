@@ -75,7 +75,8 @@ export default {
 
 	async redirectJRoute(link, language = 'fr-FR', redirect = true, newtab = false) {
 		let formDatas = new FormData();
-		formDatas.append('link', link);
+		// Encode link in base64 to avoid WAF false positives (RCE rule matching on `&id=` etc.)
+		formDatas.append('link', btoa(link));
 		formDatas.append('redirect_language', language);
 
 		try {
@@ -117,7 +118,8 @@ export default {
 	async getSEFLink(link, language = 'fr-FR') {
 		try {
 			return await fetchClient.post('redirectjroute', {
-				link: link,
+				// Encode link in base64 to avoid WAF false positives (RCE rule matching on `&id=` etc.)
+				link: btoa(link),
 				redirect_language: language,
 			});
 		} catch (e) {

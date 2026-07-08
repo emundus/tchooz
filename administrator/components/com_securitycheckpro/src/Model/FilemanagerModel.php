@@ -30,11 +30,21 @@ use Joomla\CMS\Application\CMSApplication;
 use Joomla\Console\Application as ConsoleApplication;
 use Joomla\Registry\Registry;
 use JsonException;
+use Joomla\CMS\Application\CMSWebApplicationInterface;
 
 class FilemanagerModel extends BaseModel
 {
 	/**
-     * @var object Pagination 
+	 * Tamano maximo (en bytes) de un archivo para calcularle el hash o analizar su contenido.
+	 * Por encima de este limite se omite (backups, dumps, media...) para no agotar memoria
+	 * ni el tiempo de ejecucion en archivos de varios GB.
+	 *
+	 * @var int
+	 */
+	private const MAX_SCANNABLE_FILE_SIZE = 52428800; // 50 MB
+
+	/**
+     * @var object Pagination
      */
     var $_pagination = null;
 
@@ -185,34 +195,29 @@ class FilemanagerModel extends BaseModel
     private $skipDirsMalwarescan =[];
 
     /**
-     * @var int Percent of files processed each time 
-     */
-    private $files_processed = 0;
-
-    /**
-     * @var SplFileObject|resource|null  The file pointer to the current log file 
+     * @var \SplFileObject|resource|null  The file pointer to the current log file 
      */
     protected $fp = null;
 
     /**
      * @var string File name for permissions log 
      */
-    private $filepermissions_log_name = null;
+    private $filepermissions_log_name = '';
 
     /**
      * @var string File name for integrity log 
      */
-    private $fileintegrity_log_name = null;
+    private $fileintegrity_log_name = '';
 
     /**
      * @var string File name for malware log 
      */
-    private $filemalware_log_name = null;
+    private $filemalware_log_name = '';
 	
 	/**
      * @var string File name for malware log 
      */
-	private $controlcenter_log_name = null;
+	private $controlcenter_log_name = '';
 	
 	/**
      * @var int Number of executable files
@@ -238,16 +243,6 @@ class FilemanagerModel extends BaseModel
      * @var array<string, mixed>|string Last scan info
      */
 	private $last_scan_info = "";
-	
-	/**
-     * @var array<string> The files to process 
-     */
-    private $stack_resume = [];
-	
-	/**
-     * @var string The last time a file integrity scan was launched
-     */
-    private $last_check_integrity = '';	
 	
 	/**
      * @var array<string> keys of analized files by Metadefender Cloud
@@ -277,7 +272,7 @@ class FilemanagerModel extends BaseModel
 			$config['filter_fields'] = $ff;
 		}
 
-		parent::__construct($config);
+		parent::__construct();
 
 		// Rutas base inmutables
 		$adminPath  = rtrim((string) JPATH_ADMINISTRATOR, DIRECTORY_SEPARATOR);
@@ -286,9 +281,10 @@ class FilemanagerModel extends BaseModel
 		// Archivos / carpetas internas
 		$this->folder_path = $this->safePath($adminPath . '/components/com_securitycheckpro/scans', $rootPath);
 		$excepcionEscaneos = $this->safePath($adminPath . '/components/com_securitycheckpro/models/protection.php', $rootPath);
+		$excepcionEscaneosControlCenter = $this->safePath($adminPath . '/components/com_securitycheckprocontrolcenter/scans', $rootPath);
 
 		// Parámetros del componente
-		$params = ComponentHelper::getParams('com_securitycheckpro');
+		$params = $this->loadComponentParamsFromDatabase('com_securitycheckpro');
 
 		// ---- Memory limit defensivo ----
 		$memoryLimit = (string) $params->get('memory_limit', '512M');
@@ -298,8 +294,34 @@ class FilemanagerModel extends BaseModel
 			Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_NO_VALID_MEMORY_LIMIT'), 'error');
 		}
 
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
 		$app = Factory::getApplication();
+		/** @var Registry $config */
+		$config = Factory::getConfig();
+		
+		// ---- Paginación segura (CLI vs Web) ----
+		$limit = 0;
+		$limitstart = 0;
+
+		if ($app instanceof CMSApplication) {
+			/** @var int $limit */
+			$limit = (int) $app->getUserStateFromRequest(
+				'global.list.limit',
+				'limit',
+				(string) $app->get('list_limit',20),
+				'int'
+			);
+			/** @var int $limitstart */
+			$limitstart = (int) $app->getInput()->get('limitstart', 0, 'int');
+			$limitstart = ($limit > 0) ? (int) (floor($limitstart / $limit) * $limit) : 0;
+			// Limitar duro para evitar desbordes en memoria
+			if ($limit <= 0) {
+				$this->setState('limit', 100);
+				$this->setState('showall', 1);
+			} else {
+				$this->setState('limit', $limit);
+			}
+			$this->setState('limitstart', $limitstart);
+		}		
 
 		// ---- Listas de exclusión seguras ----
 		// cache
@@ -315,8 +337,8 @@ class FilemanagerModel extends BaseModel
 		$this->addException($this->skipDirsIntegrity,   $this->folder_path);
 
 		// tmp y logs (de configuración)
-		$tmpConfigured = (string) $app->getConfig()->get('tmp_path', $rootPath . '/tmp');
-		$logConfigured = (string) $app->getConfig()->get('log_path', $rootPath . '/logs');
+		$tmpConfigured = (string) $config->get('tmp_path', $rootPath . '/tmp');
+		$logConfigured = (string) $config->get('log_path', $rootPath . '/logs');
 
 		$this->addException($this->skipDirsPermissions, $this->safePath($tmpConfigured, $rootPath));
 		$this->addException($this->skipDirsPermissions, $this->safePath($logConfigured, $rootPath));
@@ -331,13 +353,17 @@ class FilemanagerModel extends BaseModel
 		// protection.php (integridad + malware)
 		$this->addException($this->skipDirsIntegrity,   $excepcionEscaneos);
 		$this->addException($this->skipDirsMalwarescan, $excepcionEscaneos);
+		
+		// Ruta scans de Control Center (integridad + malware)
+		$this->addException($this->skipDirsIntegrity,   $excepcionEscaneosControlCenter);
+		$this->addException($this->skipDirsMalwarescan, $excepcionEscaneosControlCenter);
 
 		// ---- Excepciones definidas por el usuario ----
 		$this->appendExceptionsFromParam($params, 'file_manager_path_exceptions', $this->skipDirsPermissions, $rootPath);
 		$this->appendExceptionsFromParam($params, 'file_integrity_path_exceptions', $this->skipDirsIntegrity, $rootPath);
 		$this->appendExceptionsFromParam($params, 'malwarescan_path_exceptions', $this->skipDirsMalwarescan, $rootPath);
 
-		// ---- Cargar “resume” previos de BBDD (con defensas) ----
+		// ---- Cargar "resume" previos de BBDD (con defensas) ----
 		/** @var DatabaseInterface $db */
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
@@ -376,33 +402,7 @@ class FilemanagerModel extends BaseModel
 
 		// ---- Control de escaneo online ----
 		$this->checkLastOnlinecheck();
-
-		// ---- Paginación segura (CLI vs Web) ----
-		$limit = 0;
-		$limitstart = 0;
-
-		if ($app instanceof \Joomla\CMS\Application\CMSWebApplicationInterface) {
-			/** @var int $limit */
-			$limit = (int) $app->getUserStateFromRequest(
-				'global.list.limit',
-				'limit',
-				(int) $app->get('list_limit'),
-				'int'
-			);
-			/** @var int $limitstart */
-			$limitstart = (int) $app->getInput()->get('limitstart', 0, 'int');
-			$limitstart = ($limit > 0) ? (int) (floor($limitstart / $limit) * $limit) : 0;
-		}
-
-		// Limitar duro para evitar desbordes en memoria
-		if ($limit <= 0) {
-			$this->setState('limit', 100);
-			$this->setState('showall', 1);
-		} else {
-			$this->setState('limit', $limit);
-		}
-		$this->setState('limitstart', $limitstart);
-
+		
 		// Deduplicar listas por si quedaron duplicados tras merges
 		$this->skipDirsPermissions = array_values(array_unique($this->skipDirsPermissions));
 		$this->skipDirsIntegrity   = array_values(array_unique($this->skipDirsIntegrity));
@@ -476,31 +476,52 @@ class FilemanagerModel extends BaseModel
 			$list[] = $candidate;
 		}
 	}
-
+	
 	/**
-	 * Lee una clave de excepciones que puede venir como CSV o array y las añade.
+	 * Lee una clave de excepciones que puede venir como CSV, JSON array o array y las añade.
 	 *
 	 * @param array<int,string> $target
 	 */
 	private function appendExceptionsFromParam(Registry $params, string $key, array &$target, string $rootPath): void
 	{
 		$raw = $params->get($key);
+
 		/** @var list<string> $items */
 		$items = [];
 
 		if (is_string($raw)) {
-			// Soporta CSV con comas y salto de línea
-			$parts = preg_split('/[,\r\n]+/', $raw) ?: [];
-			foreach ($parts as $p) {
-				$p = trim($p);
-				if ($p !== '') {
-					$items[] = $p;
+			$raw = trim($raw);
+
+			if ($raw !== '') {
+				$decoded = json_decode($raw, true);
+
+				if (is_array($decoded)) {
+					foreach ($decoded as $p) {
+						if (is_string($p)) {
+							$p = trim($p);
+
+							if ($p !== '') {
+								$items[] = $p;
+							}
+						}
+					}
+				} else {
+					$parts = preg_split('/[,\r\n]+/', $raw) ?: [];
+
+					foreach ($parts as $p) {
+						$p = trim($p);
+
+						if ($p !== '') {
+							$items[] = $p;
+						}
+					}
 				}
 			}
 		} elseif (is_array($raw)) {
 			foreach ($raw as $p) {
 				if (is_string($p)) {
 					$p = trim($p);
+
 					if ($p !== '') {
 						$items[] = $p;
 					}
@@ -508,7 +529,7 @@ class FilemanagerModel extends BaseModel
 			}
 		}
 
-		foreach ($items as $path) {
+		foreach (array_values(array_unique($items)) as $path) {
 			$this->addException($target, $this->safePath($path, $rootPath));
 		}
 	}
@@ -540,11 +561,20 @@ class FilemanagerModel extends BaseModel
 		}
 
 		try {
-			/** @var array<string,mixed> $decoded */
 			$decoded = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
-			return is_array($decoded) ? $decoded : [];
+
+			if (!is_array($decoded)) {
+				return [];
+			}
+
+			/** @var array<string,mixed> $decoded */
+			return $decoded;
+
 		} catch (\JsonException) {
-			Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_INVALID_JSON_STORAGE'), 'warning');
+			Factory::getApplication()->enqueueMessage(
+				Text::_('COM_SECURITYCHECKPRO_INVALID_JSON_STORAGE'),
+				'warning'
+			);
 			return [];
 		}
 	}
@@ -644,34 +674,35 @@ class FilemanagerModel extends BaseModel
         $this->closeLogSCP();
     }
 
-    protected function populateState()
-    {
-        // Inicializamos las variables
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
-        $app        = Factory::getApplication();
+    protected function populateState(): void
+	{
+		// Inicializamos las variables
+		$app        = Factory::getApplication();
 		
-		// This is needed to avoid errors getting the file from cli
-		if ( $app instanceof \Joomla\CMS\Application\CMSWebApplicationInterface ) {
-			$search = $app->getUserStateFromRequest('filter.filemanager_search', 'filter_filemanager_search');
-			$this->setState('filter.filemanager_search', $search);
-			$filemanager_kind = $app->getUserStateFromRequest('filter.filemanager_kind', 'filter_filemanager_kind');
-			$this->setState('filter.filemanager_kind', $filemanager_kind);
-			$filemanager_permissions_status = $app->getUserStateFromRequest('filter.filemanager_permissions_status', 'filter_filemanager_permissions_status');
-			$this->setState('filter.filemanager_permissions_status', $filemanager_permissions_status);
-			$filemanager_permissions_status = $app->getUserStateFromRequest('filter.filemanager_permissions_status', 'filter_filemanager_permissions_status');
-		
-			$fileintegrity_search = $app->getUserStateFromRequest('filter.fileintegrity_search', 'filter_fileintegrity_search');
-			$this->setState('filter.fileintegrity_search', $fileintegrity_search);
-			$fileintegrity_status = $app->getUserStateFromRequest('filter.fileintegrity_status', 'filter_fileintegrity_status');
-			$this->setState('filter.fileintegrity_status', $fileintegrity_status);
-		
-			$malwarescan_search = $app->getUserStateFromRequest('filter.malwarescan_search', 'filter_malwarescan_search');
-			$this->setState('filter.malwarescan_search', $malwarescan_search);
-			$malwarescan_status = $app->getUserStateFromRequest('filter.malwarescan_status', 'filter_malwarescan_status');
-			$this->setState('filter.malwarescan_status', $malwarescan_status);	
-		       
-			parent::populateState();
+		// Evita errores en CLI (no hay request/userstate)
+		if (!($app instanceof CMSWebApplicationInterface)) {
+			return;
 		}
+		
+		$search = $app->getUserStateFromRequest('filter.filemanager_search', 'filter_filemanager_search');
+		$this->setState('filter.filemanager_search', $search);
+		$filemanager_kind = $app->getUserStateFromRequest('filter.filemanager_kind', 'filter_filemanager_kind');
+		$this->setState('filter.filemanager_kind', $filemanager_kind);
+		$filemanager_permissions_status = $app->getUserStateFromRequest('filter.filemanager_permissions_status', 'filter_filemanager_permissions_status');
+		$this->setState('filter.filemanager_permissions_status', $filemanager_permissions_status);
+		$filemanager_permissions_status = $app->getUserStateFromRequest('filter.filemanager_permissions_status', 'filter_filemanager_permissions_status');
+		
+		$fileintegrity_search = $app->getUserStateFromRequest('filter.fileintegrity_search', 'filter_fileintegrity_search');
+		$this->setState('filter.fileintegrity_search', $fileintegrity_search);
+		$fileintegrity_status = $app->getUserStateFromRequest('filter.fileintegrity_status', 'filter_fileintegrity_status');
+		$this->setState('filter.fileintegrity_status', $fileintegrity_status);
+		
+		$malwarescan_search = $app->getUserStateFromRequest('filter.malwarescan_search', 'filter_malwarescan_search');
+		$this->setState('filter.malwarescan_search', $malwarescan_search);
+		$malwarescan_status = $app->getUserStateFromRequest('filter.malwarescan_status', 'filter_malwarescan_status');
+		$this->setState('filter.malwarescan_status', $malwarescan_status);	
+		       
+		parent::populateState();		
     }
 	
 	/**
@@ -680,11 +711,11 @@ class FilemanagerModel extends BaseModel
      * @param   string            										 $dir    				The path
 	 * @param   string            										 $opcion   				The option (integrity, malwarescan, permissions)
 	 * @param   array<array<string, bool|int|string>|string>      		 $files    				Files found
-	 * @param   string            										 $include_exceptions   	Include exceptions in the database or not
+	 * @param   bool            										 $include_exceptions   	Include exceptions in the database or not
 	 * @param   array<string>    										 $excludedFiles    		Include files set as exceptions or not
 	 * @param   array<string>           								 $extensions_excluded   The excluded exceptions
      *
-     * @return  array<string>|null
+     * @return array<int, string|array<string, bool|int|string>>
      *     
      */
 	function get_file_list_recursively($dir, $opcion, &$files, $include_exceptions, $excludedFiles, $extensions_excluded=null)
@@ -692,7 +723,7 @@ class FilemanagerModel extends BaseModel
 		$files_found = array();
 		$exclude = array();
 				
-		/** @var \Joomla\CMS\Application\CMSApplication $app */	
+		/** @var CMSApplication $app */	
 		$app       = Factory::getApplication();
 		$lang = $app->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
@@ -726,14 +757,19 @@ class FilemanagerModel extends BaseModel
 			{
 				case "permissions":
 					if ($include_exceptions) {
-						$permissions = "Not calculated";						
-						$files[] = array(
-							'path'      => $exception,                            
-							'kind'    => $lang->_('COM_SECURITYCHECKPRO_FILEMANAGER_FILE'),
-							'permissions' => $permissions,
-							'last_modified' => date('Y-m-d H:i:s', filemtime($exception)),
-							'safe' => 2
-						);
+						$permissions = "Not calculated";
+
+						$mtime = is_file($exception) ? filemtime($exception) : false;
+
+						$files[] = [
+							'path'          => $exception,
+							'kind'          => $lang->_('COM_SECURITYCHECKPRO_FILEMANAGER_FILE'),
+							'permissions'   => $permissions,
+							'last_modified' => $mtime !== false
+								? date('Y-m-d H:i:s', $mtime)
+								: $lang->_('COM_SECURITYCHECKPRO_FILE_NOT_FOUND'),
+							'safe'          => 2,
+						];
 					}
 					break;
 				case "integrity":
@@ -873,8 +909,8 @@ class FilemanagerModel extends BaseModel
 		}
 		
 		//Max time used to get the hash of a file
-		$max_time = 0;
-		$max_time_filename = "";
+		$max_time = 0;	// int
+		$max_time_filename = "";	// string
 						
 		foreach ($iterator as $pathname => $fileInfo) {
 			
@@ -919,6 +955,10 @@ class FilemanagerModel extends BaseModel
 								// Lo marcamos con integridad correcta
 								$safe_integrity = 1; 
 							}
+							if (filesize($pathname) > self::MAX_SCANNABLE_FILE_SIZE) {
+								$hash_actual = null;
+								$texto_notes = $lang->_('COM_SECURITYCHECKPRO_FILE_TOO_LARGE_SKIPPED');
+							} else {
 							switch ($hash_alg_db)
 							{
 								case "SHA1":
@@ -927,6 +967,7 @@ class FilemanagerModel extends BaseModel
 								case "MD5":
 									$hash_actual = hash_file("md5",$pathname);
 									break;
+							}
 							}
 
 							$this->write_log("FILE: " . $pathname);
@@ -941,12 +982,13 @@ class FilemanagerModel extends BaseModel
 							
 							$timestamp = $this->get_Joomla_timestamp();
 							$datetime2 = new \DateTime($timestamp);//end time
+							$interval_in_seconds =  0;
 							try {								
 								$interval = $datetime1->diff($datetime2);								
-								(int) $interval_in_seconds = $interval->format('%s');
+								$interval_in_seconds = (int) $interval->format('%s');
 							} catch (\Throwable $e)
 							{
-								(int) $interval_in_seconds =  0;
+								$interval_in_seconds =  0;
 							}
 							
 							
@@ -977,6 +1019,10 @@ class FilemanagerModel extends BaseModel
 							// Lo marcamos con integridad correcta
 							$safe_integrity = 1; 
 						}
+						if (filesize($pathname) > self::MAX_SCANNABLE_FILE_SIZE) {
+							$hash_actual = null;
+							$texto_notes = $lang->_('COM_SECURITYCHECKPRO_FILE_TOO_LARGE_SKIPPED');
+						} else {
 						switch ($hash_alg_db)
 						{
 							case "SHA1":
@@ -985,6 +1031,7 @@ class FilemanagerModel extends BaseModel
 							case "MD5":
 								$hash_actual = hash_file("md5",$pathname);
 								break;
+						}
 						}
 
 						$this->write_log("FILE: " . $pathname);
@@ -999,12 +1046,13 @@ class FilemanagerModel extends BaseModel
 						
 						$timestamp = $this->get_Joomla_timestamp();
 						$datetime2 = new \DateTime($timestamp);//end time
+						$interval_in_seconds =  0;
 						try {								
 							$interval = $datetime1->diff($datetime2);								
-							(int) $interval_in_seconds = $interval->format('%s');
+							$interval_in_seconds = (int) $interval->format('%s');
 						} catch (\Throwable $e)
 						{
-							(int) $interval_in_seconds =  0;
+							$interval_in_seconds =  0;
 						}
 							
 						if ($interval_in_seconds >= $max_time) {
@@ -1029,13 +1077,11 @@ class FilemanagerModel extends BaseModel
 				
 		if ($opcion == "integrity") 
 		{
+			$scan_info = [];               // array<string,mixed>
+			
 			// Casi hemos acabado. Establecemos un valor cercano al 100
 			$this->setCampoFilemanager("files_scanned_integrity", 95);
-			
-			if (is_object($max_time)) {
-				$max_time = 0;
-			}
-						
+									
 			$scan_info['max_time'] = $max_time;
 			$scan_info['max_time_filename'] = $max_time_filename;
 			$scan_info['executable_files'] = $this->executable_files;
@@ -1075,7 +1121,6 @@ class FilemanagerModel extends BaseModel
 			return;
 		}
 
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
 		$app = Factory::getApplication();
 		$lang = $app->getLanguage();
 		$lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
@@ -1083,15 +1128,14 @@ class FilemanagerModel extends BaseModel
 		$isCli = $app instanceof ConsoleApplication;
 
 		// Evita Notice en CLI
-		if (!$isCli) {
+		if (!$isCli && $app instanceof CMSApplication) {
 			$app->setUserState("time_taken_set", "");
 			$app->setUserState("executable_files", 0);
 			$app->setUserState("non_executable_files", 0);
 		}
 
 		// --- Normalización y confinamiento de la ruta raíz ---
-		$root = ($root !== null && $root !== '') ? $root : JPATH_ROOT;
-		$root = Path::clean($root);
+		$root = Path::clean($root ?: JPATH_ROOT);
 
 		// Garantiza que $root está bajo JPATH_ROOT
 		try {
@@ -1119,13 +1163,15 @@ class FilemanagerModel extends BaseModel
 		// Selector de excepciones por modo
 		switch ($opcion) {
 			case 'permissions':
-				$exceptionsToSend = $this->skipDirsPermissions ?? [];
+				$exceptionsToSend = $this->skipDirsPermissions;
 				break;
 			case 'integrity':
-				$exceptionsToSend = $this->skipDirsIntegrity ?? [];
+				$exceptionsToSend = $this->skipDirsIntegrity;
 				break;
 			case 'malwarescan':
-				$exceptionsToSend = $this->use_filemanager_exceptions ? ($this->skipDirsIntegrity ?? []) : ($this->skipDirsMalwarescan ?? []);
+				$exceptionsToSend = $this->use_filemanager_exceptions
+				? $this->skipDirsIntegrity
+				: $this->skipDirsMalwarescan;
 				break;
 			case 'malwarescan_modified':
 				// Se gestiona más abajo
@@ -1142,14 +1188,11 @@ class FilemanagerModel extends BaseModel
 
 
 		if ($opcion === 'malwarescan_modified') {
-			$filesName = $this->loadModifiedFiles();
-			if (!is_array($filesName)) {
-				$filesName = [];
-			}
+			$filesName = $this->loadModifiedFiles();			
 		} else {
 			if ($scanExecutablesOnly) {
 				/** @var array<int, string> $excludedExt */
-				$excludedExt = $this->excludedExtensions ?? [];
+				$excludedExt = $this->excludedExtensions;
 				$filesName = $this->get_file_list_recursively($root, $opcion, $files, $includeExceptions, $exceptionsToSend, $excludedExt);
 			} else {
 				$filesName = $this->get_file_list_recursively($root, $opcion, $files, $includeExceptions, $exceptionsToSend);
@@ -1158,12 +1201,9 @@ class FilemanagerModel extends BaseModel
 
 		// En modos no-integrity normalizamos separadores a DIRECTORY_SEPARATOR
 		if ($opcion !== 'integrity' && !empty($filesName)) {
+			/** @var list<string> $filesName */
 			$filesName = array_map(
-				static function ($f) {
-					return is_string($f)
-						? str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $f)
-						: $f;
-				},
+				static fn (string $f): string => str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $f),
 				$filesName
 			);
 		}
@@ -1285,7 +1325,7 @@ class FilemanagerModel extends BaseModel
 			if ($prevStack === null || empty($prevStack['files_folders'])) {
 				// Primera ejecución o sin datos válidos previos
 				/** @var array<int, array<string, mixed>> $filesNameTyped */
-				$filesNameTyped = is_array($filesName) ? $filesName : [];
+				$filesNameTyped = $filesName;
 				$this->Stack_Integrity = \array_merge($filesNameTyped, $files);
 			} else {
 				/** @var array<int, array<string, mixed>> $prevFiles */
@@ -1311,7 +1351,7 @@ class FilemanagerModel extends BaseModel
 
 				$currHashes = array_map(
 					static fn(array $e): string => (string) ($e['hash'] ?? ''),
-					is_array($filesName) ? $filesName : []
+					$filesName
 				);
 
 				// Diferencias de hash => nuevos/modificados
@@ -1375,7 +1415,10 @@ class FilemanagerModel extends BaseModel
 		$this->files_scanned_malwarescan += \count($filesName);		
 		
 		// Extensiones a analizar
-		$fileExtList = str_replace(' ', '', (string) ($this->fileExt ?? ''));
+		if (empty($this->fileExt)) {
+			$this->fileExt = 'php,php3,php4,php5,phps,html,htaccess,js';
+		}
+		$fileExtList = str_replace(' ', '', $this->fileExt);
 		$scanExt = $fileExtList !== '' ? explode(',', $fileExtList) : [];
 
 		// Timeline (edad máxima de modificación, en días)
@@ -1400,6 +1443,12 @@ class FilemanagerModel extends BaseModel
 				$malwarescan_name = $prev['filename'];
 			}
 		}
+
+		// Si nunca se ha completado un escaneo de malware antes (no hay resume previo),
+		// lo tratamos como "Anytime": se analiza el contenido de todos los archivos sin
+		// aplicar el filtro timeline, para establecer una base completa desde el principio.
+		// A partir del siguiente escaneo ya existirá resume y se respetará el timeline configurado.
+		$isFirstMalwareScan = $malwarescan_name === '';
 
 		// Carga de escaneo previo (si se pide el nombre correcto)
 		$filteredQuarantined = [];
@@ -1458,13 +1507,24 @@ class FilemanagerModel extends BaseModel
 				$mtime   = \filemtime($file);
 				$daysOld = ($mtime !== false) ? (int) floor((\time() - $mtime) / 86400) : PHP_INT_MAX;
 
-				if ($daysOld <= $timelineDays) {
+				// En 'malwarescan_modified' los archivos ya vienen confirmados por hash desde
+				// el escaneo de integridad, así que el filtro timeline (pensado para no reanalizar
+				// contenido sin cambios en un escaneo completo) no debe aplicar aquí: de lo contrario
+				// un mtime manipulado/antiguo permitiría evadir el análisis de malware.
+				// Tampoco se aplica en el primer escaneo completo ($isFirstMalwareScan), para
+				// que la base inicial cubra todos los archivos sin importar su fecha.
+				if ($opcion === 'malwarescan_modified' || $isFirstMalwareScan || $daysOld <= $timelineDays) {
 					// --- Configuración ---
 					$basename = basename($file);
 					$parts    = explode('.', $basename);
 					$numExt   = \count($parts);
 
-					if ($numExt >= 3) {
+					// Directorios /vendor/ son paquetes de Composer/terceros con convenciones
+					// de nombre arbitrarias (Java, Node, Eclipse…). El escáner de contenido
+					// los cubre; el chequeo de nombre produce demasiados falsos positivos.
+					$inVendorDir = str_contains(str_replace('\\', '/', $file), '/vendor/');
+
+					if ($numExt >= 3 && !$inVendorDir) {
 						// Últimas tres partes para comprobar patrón
 						$last3 = array_map('strtolower', \array_slice($parts, -3));
 						$last2 = array_map('strtolower', \array_slice($parts, -2));
@@ -1473,25 +1533,59 @@ class FilemanagerModel extends BaseModel
 						$middle = $last2[0] ?? '';
 						$preLast= $last3[0] ?? '';
 
+						// Extensiones de documento: *.php.html es mucho menos peligroso que *.php.jpg
+						// porque los servidores sirven .html como HTML, no como PHP.
+						// Solo se marca si el archivo realmente contiene código PHP.
+						$docExtensions = ['html', 'htm', 'txt', 'md', 'xml', 'css', 'js', 'json', 'prefs', 'properties'];
+
 						// Caso A: *.php.xxx
 						if ($middle === 'php' && $last !== '') {
-							$safeMs   = 0;
-							$malType  = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_MULTIPLE_EXTENSIONS');
-							$malDesc  = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_EXTENSION') . implode('.', $last2);
-							$malCode  = $lang->_('COM_SECURITYCHECKPRO_LINE') . 'Undefined';
-							$malLevel = '0';
-							$this->suspicious_files++;
-							$this->write_log("FILE: {$file} has suspicious pattern .php.xxx");
+							$flag = true;
+							if (\in_array($last, $docExtensions, true)) {
+								// Extensión de documento: asumir seguro y solo marcar si contiene PHP.
+								// $flag=false por defecto para que un fopen fallido no cause falso positivo.
+								$flag   = false;
+								$handle = @fopen($file, 'r');
+								if ($handle !== false) {
+									$peek = fread($handle, 8192);
+									fclose($handle);
+									$flag = ($peek !== false && strpos($peek, '<?') !== false);
+								}
+							}
+							if ($flag) {
+								$safeMs   = 0;
+								$malType  = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_MULTIPLE_EXTENSIONS');
+								$malDesc  = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_EXTENSION') . implode('.', $last2);
+								$malCode  = $lang->_('COM_SECURITYCHECKPRO_LINE') . 'Undefined';
+								$malLevel = '0';
+								$this->suspicious_files++;
+								$this->write_log("FILE: {$file} has suspicious pattern .php.xxx");
+							}
 						}
 						// Caso B: *.php.xxx.yyy
 						elseif ($preLast === 'php' && $last3[1] !== '' && $last3[2] !== '') {
-							$safeMs   = 0;
-							$malType  = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_MULTIPLE_EXTENSIONS');
-							$malDesc  = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_EXTENSION') . implode('.', $last3);
-							$malCode  = $lang->_('COM_SECURITYCHECKPRO_LINE') . 'Undefined';
-							$malLevel = '0';
-							$this->suspicious_files++;
-							$this->write_log("FILE: {$file} has suspicious pattern .php.xxx.yyy");
+							$flag = true;
+							// Extensión de documento O nombre con 5+ partes (convención de paquetes
+							// tipo org.eclipse.php.ui.prefs, com.example.php.core.properties…):
+							// verificar contenido antes de marcar.
+							if (\in_array($last, $docExtensions, true) || $numExt >= 5) {
+								$flag   = false;
+								$handle = @fopen($file, 'r');
+								if ($handle !== false) {
+									$peek = fread($handle, 8192);
+									fclose($handle);
+									$flag = ($peek !== false && strpos($peek, '<?') !== false);
+								}
+							}
+							if ($flag) {
+								$safeMs   = 0;
+								$malType  = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_MULTIPLE_EXTENSIONS');
+								$malDesc  = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_EXTENSION') . implode('.', $last3);
+								$malCode  = $lang->_('COM_SECURITYCHECKPRO_LINE') . 'Undefined';
+								$malLevel = '0';
+								$this->suspicious_files++;
+								$this->write_log("FILE: {$file} has suspicious pattern .php.xxx.yyy");
+							}
 						}
 					}
 					
@@ -1499,7 +1593,7 @@ class FilemanagerModel extends BaseModel
 					$isImage = $this->isImageExtension($ext);					
 
 					// Análisis de contenido:
-					if (!$isImage && \in_array($ext, $scanExt, true) && \filesize($file) > 0) {						
+					if (!$isImage && \in_array($ext, $scanExt, true) && \filesize($file) > 0 && \filesize($file) <= self::MAX_SCANNABLE_FILE_SIZE) {
 						$resultado = $this->scan_file($file);
 						if (isset($resultado[0][0]) && $resultado[0][0]) {
 							$this->write_log("FILE: {$file} has malicious content");
@@ -1510,6 +1604,8 @@ class FilemanagerModel extends BaseModel
 							$malLevel = (string) ($resultado[0][4] ?? '');
 							$this->suspicious_files++;
 						}
+					} elseif (!$isImage && \in_array($ext, $scanExt, true) && \filesize($file) > self::MAX_SCANNABLE_FILE_SIZE) {
+						$this->write_log("FILE: {$file} skipped (too large to scan content: " . \filesize($file) . " bytes)");
 					} else {
 						$this->write_log("File not analysed because it is not included in the list of extensions to be analysed.");
 					}
@@ -1535,7 +1631,7 @@ class FilemanagerModel extends BaseModel
 						if (is_file($target)) {
 							// Evita overwrite si ya hay un registro previo con ese path
 							$idxPrev = array_search($original, array_column($filteredQuarantined, 'path'), true);
-							if (\is_int($idxPrev) && $idxPrev >= 0) {
+							if (\is_int($idxPrev)) {
 								$toMove = false;
 							} else {
 								// Nombre temporal alternativo para colisión
@@ -1576,7 +1672,7 @@ class FilemanagerModel extends BaseModel
 						'malware_code'         => $malCode,
 						'malware_alert_level'  => $malLevel,
 						'safe_malwarescan'     => $safeMs,
-						'sha1_value'           => (\is_file($file) && \is_readable($file) ? \hash_file('sha1', $file) : null),
+						'sha1_value'           => (\is_file($file) && \is_readable($file) && \filesize($file) <= self::MAX_SCANNABLE_FILE_SIZE ? \hash_file('sha1', $file) : null),
 						'data_id'              => '',
 						'rest_ip'              => '',
 						'online_check'         => 200,
@@ -1665,7 +1761,7 @@ class FilemanagerModel extends BaseModel
 	 */
 	public function getDirectories(string $root, bool $include_exceptions, string $opcion): void
 	{
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		/** @var CMSApplication $app */
 		$app  = Factory::getApplication();
 		$lang = $app->getLanguage();
 		$lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
@@ -1699,7 +1795,7 @@ class FilemanagerModel extends BaseModel
 		}
 
 		// 4) Preparar exclusiones normalizadas (prefijos absolutos canónicos)
-		$excludeList = is_array($this->skipDirsPermissions) ? $this->skipDirsPermissions : [];
+		$excludeList = $this->skipDirsPermissions;
 		$normalizedExcludes = $this->normalizeExcludes($excludeList);
 
 		// 5) Listado de carpetas (recursivo, rutas completas)
@@ -1971,15 +2067,15 @@ class FilemanagerModel extends BaseModel
                 'index.html',
                 'web.config',
                 '.htaccess',
-                (string) ($this->filemanager_name ?? ''),
-                (string) ($this->fileintegrity_name ?? ''),
-                (string) ($this->malwarescan_name ?? ''),
+                (string) ($this->filemanager_name),
+                (string) ($this->fileintegrity_name),
+                (string) ($this->malwarescan_name),
                 'error.php',
                 'update_vuln_table.php',
-                (string) ($this->filepermissions_log_name ?? ''),
-                (string) ($this->fileintegrity_log_name ?? ''),
-                (string) ($this->filemalware_log_name ?? ''),
-                (string) ($this->controlcenter_log_name ?? ''),
+                (string) ($this->filepermissions_log_name),
+                (string) ($this->fileintegrity_log_name),
+                (string) ($this->filemalware_log_name),
+                (string) ($this->controlcenter_log_name),
             ]
         ), static fn(string $v): bool => $v !== ''));
 		
@@ -1993,7 +2089,7 @@ class FilemanagerModel extends BaseModel
             /** @var list<array{0:string}> $onlineRows */
             $onlineRows = (array) $db->loadRowList();
             foreach ($onlineRows as $row) {
-                $bn = basename((string) ($row[0] ?? ''));
+                $bn = basename($row[0]);
                 if ($bn !== '') {
                     $exentos[] = $bn;
                 }
@@ -2038,7 +2134,11 @@ class FilemanagerModel extends BaseModel
                 }
             }
 
-            $result = $this->writeScanJson($scanDir, ['files_folders' => (array) ($this->Stack ?? [])], 'error_permissions_scan.php');
+            $result = $this->writeScanJson(
+				$scanDir,
+				['files_folders' => $this->Stack],
+				'error_permissions_scan.php'
+			);
             $this->Stack = [];
 
             // Limpia resumen anterior
@@ -2050,11 +2150,11 @@ class FilemanagerModel extends BaseModel
             } catch (\Throwable) {}
 
             $resume = [
-                'files_scanned'                    => (int) ($this->files_scanned ?? 0),
-                'files_with_incorrect_permissions' => (int) ($this->files_with_incorrect_permissions ?? 0),
+                'files_scanned'                    => (int) ($this->files_scanned),
+                'files_with_incorrect_permissions' => (int) ($this->files_with_incorrect_permissions),
                 'last_check'                       => $timestamp,
                 'filename'                         => (string) ($result['filename'] ?? ''),
-                'time_taken'                       => (string) ($this->time_taken ?? ''),
+                'time_taken'                       => (string) ($this->time_taken),
             ];
 
             try {
@@ -2068,7 +2168,7 @@ class FilemanagerModel extends BaseModel
                 File::write(Path::clean($scanDir . DIRECTORY_SEPARATOR . 'error_permissions_scan.php'), $e->getMessage());
             }
 
-            if (($this->task_completed ?? false) && $result['ok'] === true) {
+            if ($this->task_completed && $result['ok'] === true) {
                 $this->setCampoFilemanager('estado', 'ENDED');
             }
             $this->setCampoFilemanager('files_scanned', 100);
@@ -2083,7 +2183,7 @@ class FilemanagerModel extends BaseModel
                 }
             }
 
-            $result = $this->writeScanJson($scanDir, ['files_folders' => (array) ($this->Stack_Integrity ?? [])], 'error_integrity_scan.php');
+            $result = $this->writeScanJson($scanDir, ['files_folders' => $this->Stack_Integrity], 'error_integrity_scan.php');
             $this->Stack_Integrity = [];
 
             try {
@@ -2094,12 +2194,12 @@ class FilemanagerModel extends BaseModel
             } catch (\Throwable) {}
 
             $resume = [
-                'files_scanned_integrity'       => (int) ($this->files_scanned_integrity ?? 0),
-                'files_with_incorrect_integrity'=> (int) ($this->files_with_incorrect_integrity ?? 0),
+                'files_scanned_integrity'       => (int) ($this->files_scanned_integrity),
+                'files_with_incorrect_integrity'=> (int) ($this->files_with_incorrect_integrity),
                 'last_check_integrity'          => $timestamp,
                 'filename'                      => (string) ($result['filename'] ?? ''),
-                'time_taken'                    => (string) ($this->time_taken ?? ''),
-                'last_scan_info'                => (array) ($this->last_scan_info ?? []),
+                'time_taken'                    => (string) ($this->time_taken),
+                'last_scan_info'                => (array) ($this->last_scan_info),
             ];
 
             try {
@@ -2122,7 +2222,7 @@ class FilemanagerModel extends BaseModel
 				$this->setCampoFilemanager('estado_integrity', 'DATABASE_ERROR');
 			}
 
-            if (($this->task_completed ?? false) && $result['ok'] === true) {
+            if ($this->task_completed && $result['ok'] === true) {
                 $this->setCampoFilemanager('estado_integrity', 'ENDED');
             }
             return;
@@ -2137,7 +2237,7 @@ class FilemanagerModel extends BaseModel
         }
 		
 
-        $result = $this->writeScanJson($scanDir, ['files_folders' => (array) ($this->Stack_malwarescan ?? [])], 'error_malware_scan.php');
+        $result = $this->writeScanJson($scanDir, ['files_folders' => $this->Stack_malwarescan], 'error_malware_scan.php');
         $this->Stack_malwarescan = [];
 
         try {
@@ -2148,11 +2248,11 @@ class FilemanagerModel extends BaseModel
         } catch (\Throwable) {}
 
         $resume = [
-            'files_scanned_malwarescan' => (int) ($this->files_scanned_malwarescan ?? 0),
-            'suspicious_files'          => (int) ($this->suspicious_files ?? 0),
+            'files_scanned_malwarescan' => (int) ($this->files_scanned_malwarescan),
+            'suspicious_files'          => (int) ($this->suspicious_files),
             'last_check_malwarescan'    => $timestamp,
             'filename'                  => (string) ($result['filename'] ?? ''),
-            'time_taken'                => (string) ($this->time_taken ?? ''),
+            'time_taken'                => (string) ($this->time_taken),
         ];
 
         try {
@@ -2166,7 +2266,7 @@ class FilemanagerModel extends BaseModel
             File::write(Path::clean($scanDir . DIRECTORY_SEPARATOR . 'error_malware_scan.php'), $e->getMessage());
         }
 
-        if (($this->task_completed ?? false) && $result['ok'] === true) {
+        if ($this->task_completed && $result['ok'] === true) {
             $this->setCampoFilemanager('estado_malwarescan', 'ENDED');
         }
         $this->setCampoFilemanager('files_scanned_malwarescan', 100);
@@ -2265,7 +2365,6 @@ class FilemanagerModel extends BaseModel
 		}
 
 		if (is_array($value)) {
-			// @phpstan-ignore-next-line
 			return $this->normalizePayloadUtf8($value);
 		}
 
@@ -2277,7 +2376,7 @@ class FilemanagerModel extends BaseModel
 
 		if (is_object($value)) {
 			// Evita que json_encode reviente con objetos arbitrarios:
-			// lo convertimos a array “simple” y normalizamos strings internas si las hay.
+			// lo convertimos a array "simple" y normalizamos strings internas si las hay.
 			/** @var array<string, mixed> $vars */
 			$vars = get_object_vars($value);
 			return $this->normalizePayloadUtf8($vars);
@@ -2301,7 +2400,7 @@ class FilemanagerModel extends BaseModel
 			return $this->normalizeUnicodeNfc($s);
 		}
 
-		// 1) Intento de conversión “probable” -> UTF-8
+		// 1) Intento de conversión "probable" -> UTF-8
 		if (function_exists('mb_convert_encoding')) {
 			// Detecta de forma best-effort
 			$enc = function_exists('mb_detect_encoding')
@@ -2314,9 +2413,9 @@ class FilemanagerModel extends BaseModel
 				return $this->normalizeUnicodeNfc($converted);
 			}
 
-			// fallback: forzar desde “auto” (best effort)
+			// fallback: forzar desde "auto" (best effort)
 			$converted2 = @mb_convert_encoding($s, 'UTF-8', 'auto');
-			if (is_string($converted2) && $this->isValidUtf8($converted2)) {
+			if ($this->isValidUtf8($converted2)) {
 				return $this->normalizeUnicodeNfc($converted2);
 			}
 		}
@@ -2406,6 +2505,57 @@ class FilemanagerModel extends BaseModel
     }
 
     /**
+     * Cuenta cuántos archivos sospechosos del último escaneo de malware tienen el nivel de alerta
+     * indicado, independientemente del filtro o de la página mostrados actualmente en pantalla.
+     *
+     * @param   string  $alertLevel  Valor de 'malware_alert_level' ('0' = High, '1' = Medium, '2' = Low)
+     *
+     * @return  int
+     */
+	public function countMalwarescanByAlertLevel(string $alertLevel): int
+	{
+		if ($this->malwarescan_name === '') {
+			return 0;
+		}
+
+		$path = $this->folder_path . DIRECTORY_SEPARATOR . $this->malwarescan_name;
+
+		if (!is_file($path) || !is_readable($path)) {
+			return 0;
+		}
+
+		$raw = (string) @file_get_contents($path);
+		$raw = str_replace("#<?php die('Forbidden.'); ?>", '', $raw);
+
+		if ($raw === '') {
+			return 0;
+		}
+
+		$decoded = json_decode($raw, true);
+
+		if (!is_array($decoded) || !isset($decoded['files_folders']) || !is_array($decoded['files_folders'])) {
+			return 0;
+		}
+
+		$count = 0;
+
+		foreach ($decoded['files_folders'] as $entry) {
+			if (!is_array($entry)) {
+				continue;
+			}
+
+			$safe  = (string) ($entry['safe_malwarescan'] ?? '');
+			$level = (string) ($entry['malware_alert_level'] ?? '');
+
+			if ($safe === '0' && $level === $alertLevel) {
+				$count++;
+			}
+		}
+
+		return $count;
+	}
+
+    /**
      * Función que obtiene un array con los datos que serán mostrados en la opción 'file manager'
      *
      * @param   string             $opcion   				The option (integrity, malwarescan, permissions)
@@ -2413,7 +2563,7 @@ class FilemanagerModel extends BaseModel
 	 * @param   bool        	   $showall   			 	Show all files
      *
      * @return  array<array<string>>|string|int|null|void
-     *     
+     *
      */
     function loadStack($opcion,$field,$showall=false)
     {
@@ -2436,7 +2586,7 @@ class FilemanagerModel extends BaseModel
         case "permissions":      
 			if (file_exists($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name)) {
 				// Leemos el contenido del fichero
-				$stack = @file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name);
+				$stack = (string) @file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name);
 				// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 				$stack = str_replace("#<?php die('Forbidden.'); ?>", '', $stack);
 			}
@@ -2464,7 +2614,7 @@ class FilemanagerModel extends BaseModel
             }
             
 			if (file_exists($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name)) {
-				$stack = @file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
+				$stack = (string) @file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
 				// Eliminamos la parte del fichero que evita su lectura al acceder directamente
 				$stack = str_replace("#<?php die('Forbidden.'); ?>", '', $stack);
 			}
@@ -2477,7 +2627,7 @@ class FilemanagerModel extends BaseModel
         case "malwarescan":
             // Leemos el contenido del fichero            
             if (file_exists($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name)) {
-                $stack = @file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name);
+                $stack = (string) @file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name);
                 // Eliminamos la parte del fichero que evita su lectura al acceder directamente
                 $stack = str_replace("#<?php die('Forbidden.'); ?>", '', $stack);
             }
@@ -2610,7 +2760,7 @@ class FilemanagerModel extends BaseModel
             }
         case "malwarescan":
             // 1) Filtros desde el estado
-			/** @var string|null $filter_malwarescan_status */
+			/** @var string $filter_malwarescan_status */
 			$filter_malwarescan_status = (string) $this->state->get('filter.malwarescan_status', '');
 
 			// Nota: no HTML-encodees aquí; eso es para la vista. Aquí trabajamos con datos crudos.
@@ -2792,12 +2942,11 @@ class FilemanagerModel extends BaseModel
         $this->prepareLog($opcion);
         $this->write_log("------- Begin scan: " . strtoupper($opcion) . " --------");
 		
-		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
-		$mainframe = Factory::getApplication();
+		$app = Factory::getApplication();
 		$now = $this->get_Joomla_timestamp();  
-		// This is needed to avoid errors getting the file from cli
-		if ( !($mainframe instanceof ConsoleApplication) ) {		
-			$mainframe->setUserState("scan_start_time", $now );			
+		// En CLI no hay user state (session), así que sólo lo hacemos en CMSApplication (web/admin)
+		if ($app instanceof CMSApplication) {		
+			$app->setUserState("scan_start_time", $now );			
 		}
     
         $this->getDirectories($file_check_path, (bool) $include_exceptions, $opcion);
@@ -2812,7 +2961,7 @@ class FilemanagerModel extends BaseModel
 	 * Indica si el fichero/directorio es más permisivo de lo permitido.
 	 * - Archivos: como máximo 0644
 	 * - Directorios: como máximo 0755
-	 * Además marca como “malo” si hay suid/sgid/sticky.
+	 * Además marca como "malo" si hay suid/sgid/sticky.
 	 * @param   string             $file   				The path to the file
 	 *
      * @return  bool
@@ -2828,7 +2977,7 @@ class FilemanagerModel extends BaseModel
 		$perm      = $stat & 0o777;    // rwx
 		$isDir     = ($stat & 0x4000) === 0x4000; // S_IFDIR
 		$max       = $isDir ? 0o755 : 0o644;
-		$extraBits = 0o777 & (~$max);  // bits “sobrantes” sobre el máximo permitido
+		$extraBits = 0o777 & (~$max);  // bits "sobrantes" sobre el máximo permitido
 
 		$tooPermissive = ($perm & $extraBits) !== 0;
 
@@ -2848,7 +2997,7 @@ class FilemanagerModel extends BaseModel
      */
     function file_perms($file)
     {
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		/** @var CMSApplication $app */
         $app    = Factory::getApplication();
 		$server = (string) $app->getUserState('server', 'apache');
 
@@ -3060,8 +3209,7 @@ class FilemanagerModel extends BaseModel
 	 */
 	private function onIIS(): bool
 	{
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
-		$app = \Joomla\CMS\Factory::getApplication();
+		$app = Factory::getApplication();
 
 		// Evitamos errores si se ejecuta desde CLI
 		if ($app instanceof ConsoleApplication) {
@@ -3115,280 +3263,438 @@ class FilemanagerModel extends BaseModel
     }
 
     /**
-     Scan given file for all malware patterns
-    
-     Based on the JAMSS - Joomla! Anti-Malware Scan Script
-     *
-     @version 1.0.7
-    
-     @author Bernard Toplak [WarpMax] <bernard@orion-web.hr>
-     @link   http://www.orion-web.hr
-    
-     @global string $fileExt file extension list to be scanned
-     @global array $patterns array of patterns to search for
-     @param  string $path path of the scanned file
+	 * Scan given file for all malware patterns.
 	 *
-     * @return  list<array<int, mixed>>
-     */
-    private function scan_file($path)
-    {
+	 * Based on the JAMSS - Joomla! Anti-Malware Scan Script
+	 *
+	 * @param  string $path Path of the scanned file
+	 * @return list<array<int, mixed>> Legacy result format: [[0=>bool,1=>string,2=>string,3=>string,4=>string]]
+	 */
+	private function scan_file(string $path): array
+	{
+		/** @var CMSApplication $app */
+		$app  = Factory::getApplication();
+		$lang = $app->getLanguage();
+		$lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
 
-        /* Cargamos el lenguaje del sitio */
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
-		$app       = Factory::getApplication();
-        $lang = $app->getLanguage();
-        $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
+		// ---------------------------
+		// Read config / inputs
+		// ---------------------------
+		$params    = ComponentHelper::getParams('com_securitycheckpro');
+		$deepScan  = (int) $params->get('deep_scan', 0) === 1;
 
-        // Aadimos los strings sospechosos a la bsqueda de malware?
-        $params = ComponentHelper::getParams('com_securitycheckpro');
-        $deep_scan = $params->get('deep_scan', 0);
-		$suspicious_patterns = [];
-		$suspicious_strings = [];
-        if ($deep_scan) {
-
-            // Cargamos los strings que se buscan como malware desde el fichero de strings
-            if(@file_exists(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'Malware_strings.dat')) {
-                // Leemos el contenido del fichero, que estará en formato base64
-                $suspicious_strings = @file_get_contents(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'Malware_strings.dat');
-
-                // Lo decodificamos
-                $suspicious_strings = base64_decode($suspicious_strings);        
-            } 
-        } 
-
-        // Cargamos los patrones que se buscarán como malware desde el fichero de patrones
-        if(@file_exists(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'Malware_patterns.dat')) {
-
-            // Leemos el contenido del fichero, que estará en formato base64
-            $malware_patterns = @file_get_contents(JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'helpers'.DIRECTORY_SEPARATOR.'Malware_patterns.dat');    
-    
-            // Lo decodificamos
-            $malware_patterns = base64_decode($malware_patterns);
-    
-            // Creamos un array bidimensional con el contenido del fichero leído
-            $suspicious_patterns  = array_map(
-                function ($_) {
-                    return explode('~', $_);
-                },
-                explode('¡', $malware_patterns)
-            );    
-    
-        }
-
-
-        $jamssFileNames = array(
-        $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_OFC_UPLOAD_IMAGE')
-        => 'ofc_upload_image.php',
-        $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_R57')
-        => 'r57.php',
-        $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_PHPINFO')
-        => 'phpinfo.php',
-        );
-
-        /* * * * * Patterns End * * * * */
-
-        // Extensiones de ficheros que serán analizadas
-        // Eliminamos los espacios en blanco		
 		if (empty($this->fileExt)) {
-			$this->fileExt = "php,php3,php4,php5,phps,html,htaccess,js";
+			$this->fileExt = 'php,php3,php4,php5,phps,html,htaccess,js';
+		}
+		$this->fileExt = str_replace(' ', '', (string) $this->fileExt);
+		$ext = array_values(array_filter(explode(',', $this->fileExt), static fn(string $v): bool => $v !== ''));
+
+		// ---------------------------
+		// Load patterns and strings
+		// ---------------------------
+		$patternsFile = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro'
+			. DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Malware_patterns.dat';
+
+		$stringsFile = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro'
+			. DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'Malware_strings.dat';
+
+		/** @var list<array{0:string,1:string,2:string,3:string}> $suspiciousPatterns */
+		$suspiciousPatterns = $this->loadPatternsDat($patternsFile);
+		
+		$suspiciousStringsRaw = '';
+		if ($deepScan) {
+			$suspiciousStringsRaw = $this->loadBase64TextFile($stringsFile);
+		}
+		
+		/** @var list<array{0:string,1:string,2:string,3:string}|string> $patterns */
+		$patterns = $deepScan
+			? array_merge(
+				$suspiciousPatterns,
+				$suspiciousStringsRaw !== '' ? explode('|', $suspiciousStringsRaw) : []
+			)
+			: $suspiciousPatterns;
+
+		// ---------------------------
+		// Suspicious filenames
+		// ---------------------------
+		$jamssFileNames = [
+			$lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_OFC_UPLOAD_IMAGE') => 'ofc_upload_image.php',
+			$lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_R57')             => 'r57.php',
+			$lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_PHPINFO')         => 'phpinfo.php',
+		];
+
+		// ---------------------------
+		// Init result (legacy)
+		// ---------------------------
+		/** @var array{0: array{0: bool, 1?: string, 2?: string, 3?: string, 4?: string}} $resultado */
+		$resultado = [[0 => false]];
+		$count = 0;
+		$totalResults = 0;
+		$malwareFound = false;
+
+		// ---------------------------
+		// Quick filename check
+		// ---------------------------
+		$baseName = pathinfo($path, PATHINFO_BASENAME);
+		$malicFileDescr = array_search($baseName, $jamssFileNames, true);
+
+		if ($malicFileDescr !== false) {
+			$resultado[0][0] = true;
+			$resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME');
+			$resultado[0][2] = (string) $malicFileDescr;
+			$resultado[0][3] = '';
+			$resultado[0][4] = '0';
+
+			return $resultado;
 		}
 
-        $this->fileExt = str_replace(' ', '', $this->fileExt);
-        $ext = explode(',', $this->fileExt);
-    
-        // Patrones y strings a buscar
-        if ($deep_scan) {
-            $patterns = array_merge($suspicious_patterns, explode('|', $suspicious_strings));
-        } else
-        {
-            $patterns = $suspicious_patterns;
-        }
-        
-        // Inicializamos las variables
-        $resultado = array(array());
-        $resultado[0][0] = false;
-        $count = 0;
-        $total_results = 0;
-        $malware_found = false;
-				    
-    
-        if ($malic_file_descr = array_search(pathinfo($path, PATHINFO_BASENAME), $jamssFileNames)) {
-            $resultado[0][0] = true;
-            $resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME');
-            $resultado[0][2] = $malic_file_descr;
-            $resultado[0][3] = '';
-            $resultado[0][4] = '0';
-              
-        } else 
-        {
-            $content = @file_get_contents($path);
-            if (!$content) {
-                /*$error = 'Could not check '.$path;
-                echo formatError($error);*/
-            } else
-            { // do a search for fingerprints
-                // Look for obfuscated code
-                preg_match_all("/\\\x([0-9]{2})/", $content, $found);
-                $pattern[1] = "Php obfuscated";
-                $pattern[2] = "29";
-                $pattern[3] = "Encoded representation of source code, commonly used to hide malware";
-				$info = []; 
-            
-                $all_results = $found[0]; // remove outer array from results
-                $results_count = count($all_results); // count the number of results
-                $total_results += $results_count; // total results of all fingerprints   
-				                                
-                if ( (!empty($all_results)) && ($results_count>50) && ( substr_count(strtolower($content), strtolower("global"))) ) { 				
-				    // Update the variable to stop looking for more malware patterns
-                    $malware_found = true;
-                    // Let's see if this seems a Joomla file, which usually forbids direct access using the JEXEC feature
-                    $content_without_spaces = $this->cleanSpaces($content);
-                    //if ((!strstr($content_without_spaces,"defined('_JEXEC')ordie")) && (!strstr($content_without_spaces,"defined('JPATH_BASE')ordie"))) {
-                    $count++;
-                    $resultado[0][0] = true;
-                    $resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_ENCODED_CONTENT');
-                    $resultado[0][2] = Text::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'), $pattern[2], $pattern[1], $results_count, $pattern[3]);                    
-                    $resultado[0][3] = $lang->_('COM_SECURITYCHECKPRO_LINE') . 'Undefined';
-                    $resultado[0][4] = '0';                    
-                    //}                
-                }
-            
-                // Look for obfuscated code using conversions
-                if (!$malware_found) {
-                    $info = pathinfo($path);                    
-                    if ((array_key_exists('extension', $info)) && ($info['extension'] == 'php')) {
-                           $length = strlen($content);
-                           $number_of_spaces = substr_count($content, ' ');
-                           $number_of_new_lines = substr_count($content, PHP_EOL);
-						   // Count the number of apostrophes ('). This is done to avoid false positives in J4 /libraries/vendor/voku/portable-ascii/src/voku/helper/data/
-						   $number_of_apostrophes = substr_count($content, "'");
-                           // Check if we are on IIS. For some reason PHP_EOL doesn't return the number of new lines...
-                           $iis = $this->onIIS();					   
-							
-                        if (((($number_of_spaces/$length) < 0.001) && (($number_of_spaces/$length) > 0)) || ((($number_of_new_lines/$length) < 0.001) && (($number_of_new_lines/$length) > 0) && (($number_of_apostrophes) < 400)) || (($number_of_new_lines == 0) && (!$iis)) || ($number_of_spaces == 0)) {
-                            // Update the variable to stop looking for more malware patterns
-                            $malware_found = true;
-                            $pattern[1] = "Obfuscated file";
-                            $pattern[2] = "30";
-                            $pattern[3] = "Encoded representation of source code, commonly used to hide malware";
-                            $resultado[0][0] = true;
-                            $resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_ENCODED_CONTENT');
-                            $resultado[0][2] = Text::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'), $pattern[2], $pattern[1], 'Not applicable', $pattern[3]);
-                            $resultado[0][3] = $lang->_('COM_SECURITYCHECKPRO_LINE') . 'Undefined';
-                            $resultado[0][4] = '0';    
-                        } 
-                    }                    
-                }
-            
-                // Look for obfuscated code injected
-                if (!$malware_found) {
-                    if ((array_key_exists('extension', $info)) && ($info['extension'] == 'php')) {
-                        $injected = $this->code_at_start($content, $path);                
-                        if ($injected) {
-                            $malware_found = true;
-                            $count++;
-                            $pattern[1] = "Obfuscated content injected";
-                            $pattern[2] = "30";
-                            $pattern[3] = "Code injected at the beggining of the file";
-                            $resultado[0][0] = true;
-                            $resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_ENCODED_CONTENT_INJECTED');
-                            $resultado[0][2] = Text::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'), $pattern[2], $pattern[1], 'Not applicable', $pattern[3]);
-                            $resultado[0][3] = $lang->_('COM_SECURITYCHECKPRO_LINE') . 'Undefined';
-                            $resultado[0][4] = '0';                
-                        }
-                    }
-                }
-                    
-                // The file is not obfuscated
-                if (!$malware_found) {        
-                    foreach ($patterns As $pattern)
-                    {
-                        if (!$malware_found) {
-                            if (is_array($pattern)) { // it's a pattern                    
-                                // RegEx modifiers: i=case-insensitive; s=dot matches also newlines; S=optimization
-                                preg_match_all('/' . $pattern[0] . '/sS', $content, $found, PREG_OFFSET_CAPTURE);                                                 
-                            } else
-                            { // it's a string
-                                preg_match_all('/' . $pattern . '/isS', $content, $found, PREG_OFFSET_CAPTURE);
-                            }
-                        
-                            $all_results = $found[0]; // remove outer array from results
-                            $results_count = count($all_results); // count the number of results
-                            $total_results += $results_count; // total results of all fingerprints    
-                                                                                                    
-                            if (!empty($all_results)) {    
-                                // Update the variable to stop looking for more malware patterns
-                                $malware_found = true;
-                                // Let's see if this seems a Joomla file, which usually forbids direct access using the JEXEC feature
-                                $content_without_spaces = $this->cleanSpaces($content);
-                                // Check the line of the ocurrence; on modified files it's usuallly the first line
-								
-                                foreach ($all_results as $match)
-                                {
-                                        $line = $this->calculate_line_number($match[1], $content);
-                                }
-                            
-                                if (((!strstr($content_without_spaces, "defined('_JEXEC')ordie")) && (!strstr($content_without_spaces, "defined('JPATH_BASE')ordie")) && ($line==1)) || ($line==1)) {
-                                                $count++;
-                                    if (is_array($pattern)) { // then it has some additional comments
-                                        $resultado[0][0] = true;
-                                        $resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN');
-                                        $resultado[0][2] = Text::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'), $pattern[2], $pattern[1], $results_count, 
-										mb_convert_encoding($pattern[3], 'UTF-8'));										
-                                        $resultado[0][4] = '0';                                    
-                                    } else
-                                    { // it's a string, no comments available
-                                        $resultado[0][0] = true;
-                                        $resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN');
-                                        $resultado[0][2] = Text::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO_STRING'), $results_count, $pattern);
-                                        $resultado[0][4] = '2';                            
-                                    }
-                                    // Añadimos el código sospechoso encontrado (previamente sanitizado)
-                                    foreach ($all_results as $match)
-                                    {
-                                        $resultado[0][3] = $lang->_('COM_SECURITYCHECKPRO_LINE') . $line; 
-                                        $resultado[0][3] .= "<br />";
-                                        $resultado[0][3] .= htmlentities(substr($content, $match[1], 200), ENT_QUOTES);
-                                    }
-                                } else if (is_array($pattern)) {
-                                    // Found a malware pattern; it's almost sure a malware even when it's hide into a valid Joomla file.
-                                    $count++;
-                                    $resultado[0][0] = true;
-                                    $resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN');
-                                    $resultado[0][2] = Text::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'), $pattern[2], $pattern[1], $results_count, mb_convert_encoding($pattern[3], 'UTF-8'));                                
-                                    $resultado[0][4] = '0';                                    
-                                    // Añadimos el código sospechoso encontrado (previamente sanitizado)
-                                    foreach ($all_results as $match)
-                                    {
-                                        $resultado[0][3] = $lang->_('COM_SECURITYCHECKPRO_LINE') . $line; 
-                                        $resultado[0][3] .= "<br />";
-                                        $resultado[0][3] .= htmlentities(substr($content, $match[1], 200), ENT_QUOTES);
-                                    }
-                                } else if (!is_array($pattern)) {
-                                        // Found a malware string; can't be sure this is not a false positive.
-                                        $count++;
-                                        $resultado[0][0] = true;
-                                        $resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN');
-                                        $resultado[0][2] = Text::sprintf($lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO_STRING'), $results_count, $pattern);
-                                        $resultado[0][4] = '2';    
-                                
-                                        // Añadimos el código sospechoso encontrado (previamente sanitizado)
-                                    foreach ($all_results as $match)
-                                        {
-                                        $resultado[0][3] = $lang->_('COM_SECURITYCHECKPRO_LINE') . $line; 
-                                        $resultado[0][3] .= "<br />";
-                                        $resultado[0][3] .= htmlentities(substr($content, $match[1], 200), ENT_QUOTES);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }            
-                unset($content);
-            }
-        }
-        return $resultado;
-    }
+		// ---------------------------
+		// Read content
+		// ---------------------------
+		$content = @file_get_contents($path);
+		if (!is_string($content) || $content === '') {
+			// Mantengo comportamiento: no reporta error aquí, devuelve resultado "no malware".
+			return $resultado;
+		}
+
+		// ---------------------------
+		// 1) Obfuscated hex sequences (\\xNN)
+		// ---------------------------
+		preg_match_all("/\\\\x([0-9a-fA-F]{2})/", $content, $found);
+		$allResults = $found[0];
+		$resultsCount = count($allResults);
+		$totalResults += $resultsCount;
+
+		// "pattern meta" local para este detector
+		$metaName = 'Php obfuscated';
+		$metaId   = '29';
+		$metaDesc = 'Encoded representation of source code, commonly used to hide malware';
+
+		if (
+			strtolower(pathinfo($path, PATHINFO_EXTENSION)) === 'php'
+			&& (
+				($resultsCount > 100 && substr_count(strtolower($content), 'global') > 0)
+				|| ($resultsCount > 80 && preg_match('/\bglobal\s+\$/', $content))
+			)
+		) {
+			$malwareFound = true;
+			$count++;
+
+			$resultado[0][0] = true;
+			$resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_ENCODED_CONTENT');
+			$resultado[0][2] = Text::sprintf(
+				$lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'),
+				$metaId,
+				$metaName,
+				(string) $resultsCount,
+				$metaDesc
+			);
+			$resultado[0][3] = $lang->_('COM_SECURITYCHECKPRO_LINE') . 'Undefined';
+			$resultado[0][4] = '0';
+		}
+
+		// ---------------------------
+		// 2) Obfuscated file heuristic (space/newline ratio) for PHP files
+		// ---------------------------
+		$info = pathinfo($path);
+		$extension = isset($info['extension']) ? strtolower((string) $info['extension']) : '';
+
+		if (!$malwareFound && $extension === 'php') {
+			$length = strlen($content);
+			$spaces    = substr_count($content, ' ');
+			$newLines  = substr_count($content, PHP_EOL);
+			$apostroph = substr_count($content, "'");
+			$iis       = $this->onIIS();
+
+			$spaceRatio   = $spaces / $length;
+			$newLineRatio = $newLines / $length;
+			// Alta densidad de '=>' → archivo de datos PHP (métricas de fuente, tablas…), no ofuscación.
+			$arrowRatio   = substr_count($content, '=>') / $length;
+			// Alta densidad de '\x{' → patrón PCRE con Unicode code points (p.ej. word-boundary regex).
+			// '\x{NNNN}' es sintaxis PCRE exclusiva; PHP usa '\xNN' sin llaves para ofuscación.
+			$regexRatio   = substr_count($content, '\x{') / $length;
+			// SVG embebido en plantilla PHP: el dato vectorial ocupa una sola línea muy larga,
+			// lo que da newLineRatio ≈ 0 sin que el archivo esté ofuscado.
+			$isSvgEmbed   = strpos($content, '<svg') !== false;
+
+			if (
+				(($spaceRatio < 0.001) && ($spaceRatio > 0.0) && ($arrowRatio < 0.005) && ($regexRatio < 0.005))
+				|| (($newLineRatio < 0.001) && ($newLineRatio > 0.0) && ($apostroph < 400) && ($arrowRatio < 0.005) && ($regexRatio < 0.005) && !$isSvgEmbed)
+				|| (($newLines === 0) && (!$iis) && !$isSvgEmbed && ($length > 200 || preg_match('/@?eval\s*\(/', $content)))
+				|| ($spaces === 0 && $length > 100)
+			) {
+				$malwareFound = true;
+				$resultado[0][0] = true;
+				$resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_ENCODED_CONTENT');
+				$resultado[0][2] = Text::sprintf(
+					$lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'),
+					'30',
+					'Obfuscated file',
+					'Not applicable',
+					'Encoded representation of source code, commonly used to hide malware'
+				);
+				$resultado[0][3] = $lang->_('COM_SECURITYCHECKPRO_LINE') . 'Undefined';
+				$resultado[0][4] = '0';
+			}
+		}
+
+		// ---------------------------
+		// 3) Obfuscated content injected at file start
+		// ---------------------------
+		if (!$malwareFound && $extension === 'php') {
+			$injected = (bool) $this->code_at_start($content, $path);
+			if ($injected) {
+				$malwareFound = true;
+				$count++;
+
+				$resultado[0][0] = true;
+				$resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_ENCODED_CONTENT_INJECTED');
+				$resultado[0][2] = Text::sprintf(
+					$lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'),
+					'30',
+					'Obfuscated content injected',
+					'Not applicable',
+					'Code injected at the beginning of the file'
+				);
+				$resultado[0][3] = $lang->_('COM_SECURITYCHECKPRO_LINE') . 'Undefined';
+				$resultado[0][4] = '0';
+			}
+		}
+
+		// ---------------------------
+		// 4) Scan patterns/strings
+		// ---------------------------
+		if (!$malwareFound) {
+			foreach ($patterns as $pattern) {
+				if ($malwareFound) {
+					break;
+				}
+
+				$found = [[], []];
+
+				if (is_array($pattern)) {
+					// pattern[0] is regex fragment
+					$regex = '/' . $pattern[0] . '/sS';
+					preg_match_all($regex, $content, $found, PREG_OFFSET_CAPTURE);
+				} else {
+					// string treated as regex (legacy behavior)
+					$regex = '/' . $pattern . '/isS';
+					preg_match_all($regex, $content, $found, PREG_OFFSET_CAPTURE);
+				}
+
+				/** @var array<int, array{0:string,1:int}> $matches */
+				$matches = $found[0] ?? [];
+				$resultsCount = count($matches);
+				$totalResults += $resultsCount;
+
+				if ($resultsCount === 0) {
+					continue;
+				}
+
+				$malwareFound = true;
+
+				// Determine line number (legacy: ends up with last match line)
+				$line = 1;
+				foreach ($matches as $m) {
+					$line = (int) $this->calculate_line_number($m[1], $content);
+				}
+
+				$contentWithoutSpaces = $this->cleanSpaces($content);
+				$hasJexecGuard =
+					(strpos($contentWithoutSpaces, "defined('_JEXEC')ordie") !== false)
+					|| (strpos($contentWithoutSpaces, "defined('JPATH_BASE')ordie") !== false);
+
+				$isFirstLine = ($line === 1);
+
+				// Case A: first line and NOT Joomla-like => suspicious (pattern array or string)
+				if ($isFirstLine && !$hasJexecGuard) {
+					$count++;
+
+					$resultado[0][0] = true;
+					$resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN');
+
+					if (is_array($pattern)) {
+						$resultado[0][2] = Text::sprintf(
+							$lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'),
+							$pattern[2],
+							$pattern[1],
+							(string) $resultsCount,
+							mb_convert_encoding($pattern[3], 'UTF-8')
+						);
+						$resultado[0][4] = '0';
+					} else {
+						$resultado[0][2] = Text::sprintf(
+							$lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO_STRING'),
+							(string) $resultsCount,
+							$pattern
+						);
+						$resultado[0][4] = '2';
+					}
+
+					// Add suspicious snippet (legacy: overwrites each time; last one wins)
+					foreach ($matches as $m) {
+						$resultado[0][3]  = $lang->_('COM_SECURITYCHECKPRO_LINE') . $line;
+						$resultado[0][3] .= '<br />';
+						$resultado[0][3] .= htmlentities(substr($content, $m[1], 200), ENT_QUOTES);
+					}
+
+				// Case B: Joomla-like => array pattern = almost sure malware
+				} elseif (is_array($pattern)) {
+					$count++;
+
+					$resultado[0][0] = true;
+					$resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN');
+					$resultado[0][2] = Text::sprintf(
+						$lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO'),
+						$pattern[2],
+						$pattern[1],
+						(string) $resultsCount,
+						mb_convert_encoding($pattern[3], 'UTF-8')
+					);
+					$resultado[0][4] = '0';
+
+					foreach ($matches as $m) {
+						$resultado[0][3]  = $lang->_('COM_SECURITYCHECKPRO_LINE') . $line;
+						$resultado[0][3] .= '<br />';
+						$resultado[0][3] .= htmlentities(substr($content, $m[1], 200), ENT_QUOTES);
+					}
+
+				// Case C: Joomla-like => string match = possible FP
+				} else {
+					$count++;
+
+					$resultado[0][0] = true;
+					$resultado[0][1] = $lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN');
+					$resultado[0][2] = Text::sprintf(
+						$lang->_('COM_SECURITYCHECKPRO_SUSPICIOUS_PATTERN_INFO_STRING'),
+						(string) $resultsCount,
+						$pattern
+					);
+					$resultado[0][4] = '2';
+
+					foreach ($matches as $m) {
+						$resultado[0][3]  = $lang->_('COM_SECURITYCHECKPRO_LINE') . $line;
+						$resultado[0][3] .= '<br />';
+						$resultado[0][3] .= htmlentities(substr($content, $m[1], 200), ENT_QUOTES);
+					}
+				}
+			}
+		}
+
+		unset($content);
+
+		return $resultado;
+	}
+
+	/**
+	 * Load a base64-encoded text file and return decoded text.
+	 * Returns empty string if file is missing, unreadable or invalid.
+	 */
+	private function loadBase64TextFile(string $file): string
+	{
+		if (!is_file($file) || !is_readable($file)) {
+			return '';
+		}
+
+		$raw = file_get_contents($file);
+
+		if (!is_string($raw) || $raw === '') {
+			return '';
+		}
+
+		$raw = trim($raw);
+
+		if ($raw === '') {
+			return '';
+		}
+
+		// Strip UTF-8 BOM if present (EF BB BF), which breaks strict base64_decode.
+		if (str_starts_with($raw, "\xEF\xBB\xBF")) {
+			$raw = substr($raw, 3);
+		}
+
+		// Remove all whitespace/new lines commonly present in wrapped base64 files.
+		$normalized = preg_replace('/\s+/', '', $raw);
+
+		if (!is_string($normalized) || $normalized === '') {
+			return '';
+		}
+
+		$decoded = base64_decode($normalized, true);
+
+		if (!is_string($decoded) || $decoded === '') {
+			return '';
+		}
+
+		return $decoded;
+	}
+
+	/**
+	 * Load malware patterns DAT file.
+	 *
+	 * File format:
+	 * - whole file is base64-encoded
+	 * - decoded rows are separated by byte 0xA1
+	 * - each row is split by "~"
+	 *
+	 * Supported row shapes:
+	 * - [0]=regex, [1]=name, [2]=id, [3]=description
+	 * - [0]=regex, [1]=id,   [2]=description
+	 *
+	 * @return list<array{0:string,1:string,2:string,3:string}>
+	 */
+	private function loadPatternsDat(string $file): array
+	{
+		$decoded = $this->loadBase64TextFile($file);
+
+		if ($decoded === '') {
+			return [];
+		}
+
+		$rows = explode("\xA1", $decoded);
+
+		/** @var list<array{0:string,1:string,2:string,3:string}> $out */
+		$out = [];
+
+		foreach ($rows as $row) {
+			$row = trim($row);
+
+			if ($row === '') {
+				continue;
+			}
+
+			$parts = array_map(
+				static fn (string $value): string => trim($value),
+				explode('~', $row)
+			);
+
+			$regex = '';
+			$name  = '';
+			$id    = '';
+			$desc  = '';
+
+			if (count($parts) >= 4) {
+				$regex = $parts[0];
+				$name  = $parts[1];
+				$id    = $parts[2];
+				$desc  = $parts[3];
+			} elseif (count($parts) === 3) {
+				$regex = $parts[0];
+				$id    = $parts[1];
+				$desc  = $parts[2];
+			} else {
+				continue;
+			}
+
+			if ($regex === '') {
+				continue;
+			}
+
+			$out[] = [$regex, $name, $id, $desc];
+		}
+
+		return $out;
+	}
 
 	/**
 	 * Elimina todos los espacios en blanco de una cadena.
@@ -3422,11 +3728,14 @@ class FilemanagerModel extends BaseModel
      */
     function calculate_line_number($offset, $file_content)
     {
+        if ($offset <= 0) {
+            return 1;
+        }
         if (strlen($file_content) >= 1) {
             list($first_part) = str_split($file_content, $offset); // fetches all the text before the match
             $line_nr = strlen($first_part) - strlen(str_replace("\n", "", $first_part)) + 1;
             return $line_nr;
-        } else 
+        } else
         {
             return 0;
         }
@@ -3435,17 +3744,17 @@ class FilemanagerModel extends BaseModel
     /**
 	 * Obtiene un array de rutas de archivos con integridad modificada para la opción "filestatus".
 	 *
-	 *
 	 * @return array<int, string> Lista de rutas (paths) con integridad modificada.
 	 */
 	public function loadModifiedFiles(): array
 	{
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		/** @var CMSApplication $app */
 		$app = Factory::getApplication();
 
 		// 1) memory_limit desde parámetros (permite valores tipo "256M" o "1G")
-		$params       = ComponentHelper::getParams('com_securitycheckpro');
-		$memoryLimit  = (string) $params->get('memory_limit', '512M');
+		$params      = ComponentHelper::getParams('com_securitycheckpro');
+		$memoryLimit = (string) $params->get('memory_limit', '512M');
+
 		if (\preg_match('/^\d+[MG]$/i', $memoryLimit) === 1) {
 			@ini_set('memory_limit', $memoryLimit);
 		} else {
@@ -3454,8 +3763,9 @@ class FilemanagerModel extends BaseModel
 		}
 
 		// 2) Recuperamos de BBDD el nombre del fichero de resumen de integridad
-		/** @var \Joomla\Database\DatabaseInterface $db */
-		$db    = Factory::getContainer()->get(DatabaseInterface::class);
+		/** @var DatabaseInterface $db */
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
+
 		$query = $db->getQuery(true)
 			->select($db->quoteName('storage_value'))
 			->from($db->quoteName('#__securitycheckpro_storage'))
@@ -3469,21 +3779,21 @@ class FilemanagerModel extends BaseModel
 			try {
 				/** @var array<string, mixed> $stackIntegrity */
 				$stackIntegrity = \json_decode($stackIntegrityJson, true, 512, \JSON_THROW_ON_ERROR);
-				$candidate      = $stackIntegrity['filename'] ?? '';
-				// Saneamos: sólo nombre base, sin rutas
-				$candidate      = \is_string($candidate) ? \basename($candidate) : '';
+
+				$candidate = $stackIntegrity['filename'] ?? '';
+				$candidate = \is_string($candidate) ? \basename($candidate) : '';
+
 				if ($candidate !== '') {
 					$fileIntegrityName = $candidate;
 				}
 			} catch (\JsonException) {
-				// Param almacenado inválido; continuamos con array vacío
+				// continue: empty
 			}
 		}
 
 		if ($fileIntegrityName === '') {
-			// No hay fichero definido => nada que cargar
 			$this->Stack_Integrity = [];
-			return $this->Stack_Integrity;
+			return [];
 		}
 
 		// 3) Construimos ruta segura y comprobamos que quede dentro de $this->folder_path
@@ -3491,81 +3801,101 @@ class FilemanagerModel extends BaseModel
 		$safeRel = Path::clean($fileIntegrityName);
 		$full    = Path::clean($baseDir . DIRECTORY_SEPARATOR . $safeRel);
 
-		// Resolvemos rutas reales para evitar traversal
-		$realBase = realpath($baseDir) ?: $baseDir;
-		$realFull = realpath($full) ?: $full;
+		$realBase = \realpath($baseDir) ?: $baseDir;
+		$realFull = \realpath($full) ?: $full;
 
-		// Garantizamos que el fichero está dentro de la carpeta esperada
 		if (\strpos($realFull, $realBase . DIRECTORY_SEPARATOR) !== 0) {
 			$this->Stack_Integrity = [];
-			return $this->Stack_Integrity;
+			return [];
 		}
 
 		// 4) Leemos contenido del fichero (si existe)
-		if (!is_file($realFull) || !\is_readable($realFull)) {
+		if (!\is_file($realFull) || !\is_readable($realFull)) {
 			$this->Stack_Integrity = [];
-			return $this->Stack_Integrity;
+			return [];
 		}
 
-		// Preferimos File::read si está disponible, sino file_get_contents
-		try {
-			$stackRaw = File::read($realFull);
-		} catch (\Throwable) {
-			$stackRaw = @file_get_contents($realFull);
-		}
-
-		if (!is_string($stackRaw) || $stackRaw === '') {
+		$stackRaw = \file_get_contents($realFull);
+		if (!\is_string($stackRaw) || $stackRaw === '') {
 			$this->Stack_Integrity = [];
-			return $this->Stack_Integrity;
+			return [];
 		}
 
 		// 5) Eliminamos la línea de protección (por si existe)
-		//    Acepta variantes con o sin comillas dobles y posibles espacios.
-		$stackRaw = str_replace(["#<?php die('Forbidden.'); ?>", '#<?php die("Forbidden."); ?>'], '', $stackRaw);
+		$stackRaw = \str_replace(
+			["#<?php die('Forbidden.'); ?>", '#<?php die("Forbidden."); ?>'],
+			'',
+			$stackRaw
+		);
 
 		// 6) Decodificamos JSON de escaneo
 		try {
 			/** @var array<string, mixed> $stack */
-			$stack = json_decode($stackRaw, true, 512, JSON_THROW_ON_ERROR);
+			$stack = \json_decode($stackRaw, true, 512, \JSON_THROW_ON_ERROR);
 		} catch (\JsonException) {
 			$this->Stack_Integrity = [];
-			return $this->Stack_Integrity;
+			return [];
 		}
 
-		// Estructura esperada: $stack['files_folders'] = list<array{path:string, safe_integrity:int|0|1|...}>
 		$filesFolders = $stack['files_folders'] ?? null;
-		if (!is_array($filesFolders)) {
+		if (!\is_array($filesFolders)) {
 			$this->Stack_Integrity = [];
-			return $this->Stack_Integrity;
+			return [];
 		}
 
-		// 7) Filtramos sólo los elementos con integridad modificada (safe_integrity === 0)
-		$modified = array_values(array_filter(
-			$filesFolders,
-			static function ($el): bool {
-				if (!is_array($el)) {
-					return false;
-				}
-				$integrity = $el['safe_integrity'] ?? null;
-				return ($integrity === 0 || $integrity === '0'); // Admitimos string "0" por compatibilidad
-			}
-		));
+		// 7) Normaliza a estructura interna esperada y guarda en Stack_Integrity
+		/** @var array<int, array{path:string, hash:string, notes:string, new_file:int|string, safe_integrity:int|string}> $normalized */
+		$normalized = [];
 
-		// 8) Mapeamos a rutas (strings) válidas
+		foreach ($filesFolders as $el) {
+			if (!\is_array($el)) {
+				continue;
+			}
+
+			$path = $el['path'] ?? null;
+			if (!\is_string($path) || $path === '') {
+				continue;
+			}
+
+			$normalized[] = [
+				'path'           => $path,
+				'hash'           => \is_string($el['hash'] ?? null) ? (string) $el['hash'] : '',
+				'notes'          => \is_string($el['notes'] ?? null) ? (string) $el['notes'] : '',
+				'new_file'       => \is_int($el['new_file'] ?? null) || \is_string($el['new_file'] ?? null) ? $el['new_file'] : 0,
+				'safe_integrity' => \is_int($el['safe_integrity'] ?? null) || \is_string($el['safe_integrity'] ?? null) ? $el['safe_integrity'] : 1,
+			];
+		}
+
+		$this->Stack_Integrity = $this->dedupeIntegrityByPath($normalized);
+
+		// 8) Devolver sólo paths con integridad modificada (safe_integrity === 0)
 		$paths = [];
-		foreach ($modified as $el) {
-			$p = $el['path'] ?? null;
-			if (is_string($p) && $p !== '') {
-				$paths[] = $p;
+		foreach ($this->Stack_Integrity as $row) {
+			if ($row['safe_integrity'] === 0 || $row['safe_integrity'] === '0') {
+				$paths[] = $row['path'];
 			}
 		}
 
-		// 9) Normalizamos, deduplicamos y devolvemos
-		/** @var array<int, string> $unique */
-		$unique = array_values(array_unique($paths));
+		// 9) Normaliza + dedup (por si acaso)
+		return \array_values(\array_unique($paths));
+	}
 
-		$this->Stack_Integrity = $unique;
-		return $this->Stack_Integrity;
+	/**
+	 * Deduplica por 'path' manteniendo la última ocurrencia.
+	 *
+	 * @param  array<int, array{path:string, hash:string, notes:string, new_file:int|string, safe_integrity:int|string}> $rows
+	 * @return array<int, array{path:string, hash:string, notes:string, new_file:int|string, safe_integrity:int|string}>
+	 */
+	private function dedupeIntegrityByPath(array $rows): array
+	{
+		/** @var array<string, array{path:string, hash:string, notes:string, new_file:int|string, safe_integrity:int|string}> $map */
+		$map = [];
+
+		foreach ($rows as $row) {
+			$map[$row['path']] = $row;
+		}
+
+		return \array_values($map);
 	}
 
     /**
@@ -3602,17 +3932,20 @@ class FilemanagerModel extends BaseModel
     }
 
 	/**
-	 * Lee el log de reparaciones y devuelve HTML formateado.
+	 * Lee el log de reparaciones y devuelve HTML formateado junto con el recuento por nivel,
+	 * para poder mostrar un resumen ("X corregidos, Y con error") sin tener que volver a parsear el HTML.
 	 *
 	 * Formato esperado por línea:  "timestamp|LEVEL|mensaje"
 	 * Niveles: ERROR, WARNING, INFO, DEBUG, OK
 	 *
-	 * @return string HTML listo para pintar en la vista (nunca hace echo).
+	 * @return array{html: string, ok: int, error: int, warning: int} HTML listo para pintar en la vista (nunca hace echo) + recuentos.
 	 */
-	function getRepairLog(): string
+	function getRepairLog(): array
 	{
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		/** @var CMSApplication $app */
 		$app = Factory::getApplication();
+
+		$empty = ['html' => '', 'ok' => 0, 'error' => 0, 'warning' => 0];
 
 		// 1) Resolver ruta del directorio de logs desde configuration.php
 		$logDir = (string) $app->getConfig()->get('log_path', JPATH_ROOT . DIRECTORY_SEPARATOR . 'administrator' . DIRECTORY_SEPARATOR . 'logs');
@@ -3624,32 +3957,33 @@ class FilemanagerModel extends BaseModel
 		if ($logDirReal === '' || $logFileReal === '' || strncmp($logFileReal, $logDirReal . DIRECTORY_SEPARATOR, strlen($logDirReal) + 1) !== 0) {
 			// Ruta inválida o fuera del directorio de logs
 			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_LOGFILENOTEXISTS'), 'error');
-			return '<p>' . Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_LOGFILENOTEXISTS') . '</p>';
+			return ['html' => '<p>' . Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_LOGFILENOTEXISTS') . '</p>'] + $empty;
 		}
 
 		// 3) Comprobaciones de existencia/legibilidad
 		if (!is_file($logFileReal) || !is_readable($logFileReal)) {
 			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_UNREADABLE'), 'error');
-			return '<p>' . Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_UNREADABLE') . '</p>';
+			return ['html' => '<p>' . Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_UNREADABLE') . '</p>'] + $empty;
 		}
 
 		// 4) Apertura en modo lectura texto
 		$fp = @fopen($logFileReal, 'rb');
 		if ($fp === false) {
 			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_UNREADABLE'), 'error');
-			return '<p>' . Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_UNREADABLE') . '</p>';
+			return ['html' => '<p>' . Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_UNREADABLE') . '</p>'] + $empty;
 		}
 
-		// 5) Mapeo de estilos por nivel (inline para no depender de CSS externo)
-		$levelStyles = [
-			'ERROR'   => 'color: red; font-weight: bold;',
-			'WARNING' => 'color: #D8AD00; font-weight: bold;',
-			'INFO'    => 'color: black;',
-			'DEBUG'   => 'color: #666666; font-size: small;',
-			'OK'      => 'color: green; font-weight: bold;',
+		// 5) Mapeo de badges Bootstrap por nivel (coherente con el resto del dashboard)
+		$levelBadges = [
+			'ERROR'   => 'bg-danger',
+			'WARNING' => 'bg-warning',
+			'INFO'    => 'bg-secondary',
+			'DEBUG'   => 'bg-light text-dark',
+			'OK'      => 'bg-success',
 		];
 
 		$html = '';
+		$counts = ['OK' => 0, 'ERROR' => 0, 'WARNING' => 0];
 
 		// 6) Lectura en streaming (sin cargar todo a memoria)
 		//    Omitimos cabeceras PHP y líneas vacías.
@@ -3676,13 +4010,21 @@ class FilemanagerModel extends BaseModel
 				$message   = htmlspecialchars($parts[2], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
 				// Validar nivel
-				if (!isset($levelStyles[$levelRaw])) {
+				if (!isset($levelBadges[$levelRaw])) {
 					continue; // nivel desconocido -> ignoramos la línea
 				}
 
-				$style = $levelStyles[$levelRaw];
-				// Construimos la línea formateada
-				$html .= '<span style="' . $style . '">[' . $timestamp . '] ' . $message . '</span><br/>' . "\n";
+				if (isset($counts[$levelRaw])) {
+					$counts[$levelRaw]++;
+				}
+
+				$badgeClass = $levelBadges[$levelRaw];
+				// Construimos la línea formateada como una fila de badge + mensaje
+				$html .= '<div class="d-flex align-items-start gap-2 py-1 border-bottom small">'
+					. '<span class="badge ' . $badgeClass . '" style="min-width:5rem;">' . $levelRaw . '</span>'
+					. '<span class="flex-grow-1">' . $message . '</span>'
+					. '<span class="text-muted text-nowrap">' . $timestamp . '</span>'
+					. '</div>' . "\n";
 			}
 		} finally {
 			fclose($fp);
@@ -3690,10 +4032,15 @@ class FilemanagerModel extends BaseModel
 
 		// 7) Si no hubo contenido válido, devolvemos un mensaje suave (sin echo)
 		if ($html === '') {
-			return '<p>' . Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_LOGFILENOTEXISTS') . '</p>';
+			return ['html' => '<p>' . Text::_('COM_SECURITYCHECKPRO_LOG_ERROR_LOGFILENOTEXISTS') . '</p>'] + $empty;
 		}
 
-		return $html;
+		return [
+			'html'    => $html,
+			'ok'      => $counts['OK'],
+			'error'   => $counts['ERROR'],
+			'warning' => $counts['WARNING'],
+		];
 	}
 
     
@@ -3705,7 +4052,7 @@ class FilemanagerModel extends BaseModel
 	 */
 	function repair(): void
 	{
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		/** @var CMSApplication $app */
 		$app = Factory::getApplication();
 
 		// Marcar en estado de usuario que se lanza reparación
@@ -3768,16 +4115,42 @@ class FilemanagerModel extends BaseModel
 		// Preparar FTP si procede
 		$ftp = null;
 		if ($changeOption === 'ftp') {
+			/** @var array<string, mixed> $ftpOptions */
 			$ftpOptions = ClientHelper::getCredentials('ftp');
-			if (!empty($ftpOptions['enabled'])) {
+
+			// enabled puede venir como 0/1, '0'/'1', true/false...
+			$enabledRaw = $ftpOptions['enabled'] ?? 0;
+			$enabled = $enabledRaw === 1 || $enabledRaw === '1' || $enabledRaw === true;
+
+			if ($enabled) {
+				$host = isset($ftpOptions['host']) && is_string($ftpOptions['host']) && $ftpOptions['host'] !== ''
+					? $ftpOptions['host']
+					: 'localhost';
+
+				// Joomla espera string
+				$portRaw = $ftpOptions['port'] ?? '21';
+				$portStr = is_scalar($portRaw) ? (string) $portRaw : '21';
+				// validación ligera: 1..65535
+				if (preg_match('/^\d{1,5}$/', $portStr) !== 1) {
+					$portStr = '21';
+				} else {
+					$p = (int) $portStr;
+					if ($p < 1 || $p > 65535) {
+						$portStr = '21';
+					}
+				}
+
+				$user = isset($ftpOptions['user']) && is_string($ftpOptions['user']) ? $ftpOptions['user'] : '';
+				$pass = isset($ftpOptions['pass']) && is_string($ftpOptions['pass']) ? $ftpOptions['pass'] : '';
+
 				try {
-					/** @var FtpClient $ftp */
+					// getInstance signature (Joomla legacy) uses strings; options is array
 					$ftp = FtpClient::getInstance(
-						(string) ($ftpOptions['host'] ?? 'localhost'),
-						(int) ($ftpOptions['port'] ?? 21),
-						[],
-						(string) ($ftpOptions['user'] ?? ''),
-						(string) ($ftpOptions['pass'] ?? '')
+						$host,
+						$portStr,
+						[],     // options array
+						$user,
+						$pass
 					);
 				} catch (\Throwable $e) {
 					$logEntries[] = 'ERROR|' . Text::_('COM_SECURITYCHECKPRO_REPAIR_FTP_CONNECTION_FAILED') . ' ' . $e->getMessage();
@@ -3788,6 +4161,7 @@ class FilemanagerModel extends BaseModel
 			} else {
 				// Sin FTP habilitado -> replegar a chmod
 				$changeOption = 'chmod';
+				$ftp = null;
 			}
 		}
 
@@ -3803,8 +4177,17 @@ class FilemanagerModel extends BaseModel
 				$ok = false;
 
 				if ($changeOption === 'chmod') {
-					// Evitar @; capturamos warnings como excepciones si ocurre
-					set_error_handler(static function () { /* swallow to convert after */ });
+					$prevHandler = set_error_handler(
+						static function (int $severity, string $message, string $file, int $line): bool {
+							// Respeta @chmod si algún día alguien lo usa: si está silenciado, no lances
+							if ((error_reporting() & $severity) === 0) {
+								return false; // dejamos que PHP lo maneje (o lo ignore)
+							}
+
+							throw new \ErrorException($message, 0, $severity, $file, $line);
+						}
+					);
+
 					try {
 						$ok = chmod($path, $targetPerms);
 					} finally {
@@ -3815,7 +4198,6 @@ class FilemanagerModel extends BaseModel
 					if ($ftp instanceof FtpClient) {
 						$ok = $ftp->chmod($path, $targetPerms);
 					} else {
-						// Defensa por si cambió changeOption en runtime
 						$ok = false;
 					}
 				}
@@ -3913,7 +4295,7 @@ class FilemanagerModel extends BaseModel
 		}
 
 		// --- Carga de idioma y preparación de propiedades usadas por la clase ---
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		/** @var CMSApplication $app */
 		$app  = Factory::getApplication();
 		$lang = $app->getLanguage();
 		$lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
@@ -3921,8 +4303,7 @@ class FilemanagerModel extends BaseModel
 		// Copiamos la estructura y valores del resumen (si existen)
 		$this->Stack_Integrity               = $stack['files_folders']; // array<int,array<string,mixed>>
 		$this->files_scanned_integrity       = (int) ($stackResume['files_scanned_integrity'] ?? 0);
-		$this->files_with_incorrect_integrity = 0; // los vamos a “sanear”
-		$this->last_check_integrity          = (string) ($stackResume['last_check_integrity'] ?? '');
+		$this->files_with_incorrect_integrity = 0; // los vamos a "sanear"		
 		$this->time_taken                    = (string) ($stackResume['time_taken'] ?? '');
 		$this->last_scan_info                = (array) ($stackResume['last_scan_info'] ?? '');
 
@@ -3972,7 +4353,7 @@ class FilemanagerModel extends BaseModel
 	 */
 	public function markCheckedFilesAsSafe(): void
 	{
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		/** @var CMSApplication $app */
 		$app   = Factory::getApplication();
 		$input = $app->getInput();
 
@@ -4093,7 +4474,7 @@ class FilemanagerModel extends BaseModel
         // Inicializamos las variables
         $this->analized_keys_array = [];
         $error = false;
-		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
+		/** @var CMSApplication $mainframe */
 		$mainframe = Factory::getApplication();
     
         // Metadefender Cloud API V4
@@ -4104,7 +4485,7 @@ class FilemanagerModel extends BaseModel
         $apikey = $params->get('opswat_key', '');
     
         // Creamos el objeto Input para obtener las variables del formulario
-		/** @var \Joomla\CMS\Application\CMSApplication $jinput */
+		/** @var CMSApplication $jinput */
         $jinput = Factory::getApplication();
         
         // Obtenemos las rutas de los ficheros a analizar
@@ -4219,7 +4600,7 @@ class FilemanagerModel extends BaseModel
         }
 		
 		// Set the "get_apikey_info_and_limits" var to 1 to check for new API limits
-		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
+		/** @var CMSApplication $mainframe */
 		$mainframe = Factory::getApplication();
 		$mainframe->setUserState("get_apikey_info_and_limits", 1);
     
@@ -4240,7 +4621,7 @@ class FilemanagerModel extends BaseModel
         // Inicializamos las variables
         $this->analized_keys_array = array();
         $error = false;
-		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
+		/** @var CMSApplication $mainframe */
 		$mainframe = Factory::getApplication();
     
         // Obtenemos la API key
@@ -4248,7 +4629,7 @@ class FilemanagerModel extends BaseModel
         $apikey = $params->get('opswat_key', '');
     
         // Creamos el objeto Input para obtener las variables del formulario
-		/** @var \Joomla\CMS\Application\CMSApplication $jinput */
+		/** @var CMSApplication $jinput */
         $jinput = Factory::getApplication();
     
         // Obtenemos las rutas de los ficheros a analizar
@@ -4298,7 +4679,7 @@ class FilemanagerModel extends BaseModel
         }
 		
 		// Set the "get_apikey_info_and_limits" var to 1 to check for new API limits
-		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
+		/** @var CMSApplication $mainframe */
 		$mainframe = Factory::getApplication();
 		$mainframe->setUserState("get_apikey_info_and_limits", 1);
     
@@ -4319,7 +4700,7 @@ class FilemanagerModel extends BaseModel
         $params = ComponentHelper::getParams('com_securitycheckpro');
         $apikey = $params->get('opswat_key', '');
 				
-		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
+		/** @var CMSApplication $mainframe */
 		$mainframe = Factory::getApplication();
 				
 		$response = null;
@@ -4391,7 +4772,7 @@ class FilemanagerModel extends BaseModel
 		$response = "";
     
         /* Cargamos el lenguaje del sitio */
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		/** @var CMSApplication $app */
 		$app       = Factory::getApplication();
         $lang = $app->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
@@ -4855,7 +5236,7 @@ class FilemanagerModel extends BaseModel
     private function format_data($response, $not_found = false, $file_data = null) 
     {    
         /* Cargamos el lenguaje del sitio */
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		/** @var CMSApplication $app */
 		$app       = Factory::getApplication();
         $lang = $app->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
@@ -5003,11 +5384,7 @@ class FilemanagerModel extends BaseModel
 		array|string|null $infectedFiles
 	): void {
 		// 1) Recorte de histórico si aplica
-		if (method_exists($this, 'checkLogsStored')) {
-			$this->checkLogsStored();
-		} elseif (method_exists($this, 'check_logs_stored')) {
-			$this->check_logs_stored();
-		}
+		$this->checkLogsStored();
 
 		// 2) Generar nombre y ruta absoluta segura
 		$filename = (string) $this->generateKey(); // debe ser sólo nombre
@@ -5125,7 +5502,7 @@ class FilemanagerModel extends BaseModel
      */
     private function checkLogsStored(): void
     {
-        /** @var \Joomla\CMS\Application\CMSApplication $app */
+        /** @var CMSApplication $app */
         $app = Factory::getApplication();
 
         // Límite configurado (por defecto 5); si es <1, no hacemos nada
@@ -5172,7 +5549,7 @@ class FilemanagerModel extends BaseModel
         $toDelete = array_slice($filenames, $logFilesToStore);
 
         foreach ($toDelete as $name) {
-            if (!is_string($name) || $name === '') {
+            if ($name === '') {
                 continue;
             }
 
@@ -5235,11 +5612,10 @@ class FilemanagerModel extends BaseModel
         }
     }
 
-    /**
+	/**
 	 * Restaura o elimina archivos en cuarentena y actualiza el estado del escaneo.
 	 *
-	 * @param  string $opcion  "restore"|"delete"
-	 * @return void
+	 * @param string $opcion "restore"|"delete"
 	 */
 	public function quarantinedFile(string $opcion): void
 	{
@@ -5248,88 +5624,100 @@ class FilemanagerModel extends BaseModel
 			return;
 		}
 
-		// Rutas base
 		$scansPath = rtrim(
-			JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'scans',
+			JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro'
+			. DIRECTORY_SEPARATOR . 'scans',
 			DIRECTORY_SEPARATOR
 		);
 		$quarantinePath = $scansPath . DIRECTORY_SEPARATOR . 'quarantine';
 
-		if (!is_dir($quarantinePath) || !is_dir($scansPath)) {
+		if (!is_dir($scansPath) || !is_dir($quarantinePath)) {
 			return;
 		}
 
-		// Carga el JSON del último escaneo
 		$scanJsonPath = $this->getLatestMalwareScanFilename($scansPath, $this->malwarescan_name);
-		if ($scanJsonPath === '' || !is_file($scanJsonPath)) {
+		if ($scanJsonPath === '' || !is_file($scanJsonPath) || !is_readable($scanJsonPath)) {
 			return;
 		}
 
-		$raw = @file_get_contents($scanJsonPath);
-		if ($raw === false) {
+		$raw = file_get_contents($scanJsonPath);
+		if (!is_string($raw) || $raw === '') {
 			return;
 		}
 
-		// Quita cabecera de seguridad y decodifica
 		$raw = str_replace("#<?php die('Forbidden.'); ?>", '', $raw);
+
+		// Decodifica JSON sin "mentir" a PHPStan
 		try {
-			/** @var array{files_folders:list<array<string,mixed>>} $stack */
-			$stack = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+			/** @var mixed $decoded */
+			$decoded = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
 		} catch (\JsonException) {
 			return;
 		}
 
-		if (!isset($stack['files_folders']) || !is_array($stack['files_folders'])) {
+		if (!is_array($decoded)) {
 			return;
 		}
 
-		/** @var list<array<string,mixed>> $data */
-		$data = $stack['files_folders'];
+		/** @var array<string, mixed> $stack */
+		$stack = $decoded;
 
-		// Obtiene selección del usuario
+		$filesFolders = $stack['files_folders'] ?? null;
+		if (!is_array($filesFolders)) {
+			return;
+		}
+
+		/** @var list<array<string, mixed>> $data */
+		$data = array_values(array_filter(
+			$filesFolders,
+			static fn($v): bool => is_array($v)
+		));
+
+		// Selección del usuario
 		$input = Factory::getApplication()->getInput();
-		/** @var array<int,string> $paths */
+		/** @var array<int, string> $paths */
 		$paths = (array) $input->get('malwarescan_status_table', [], 'array');
+		$paths = array_values(array_unique(array_filter(
+			$paths,
+			static fn(string $v): bool => $v !== ''
+		)));
 
 		if ($paths === []) {
 			return;
 		}
 
 		// Índice rápido: path => índice
+		/** @var array<string, int> $indexByPath */
 		$indexByPath = [];
 		foreach ($data as $i => $row) {
-			if (isset($row['path']) && is_string($row['path']) && $row['path'] !== '') {
-				$indexByPath[$row['path']] = $i;
+			$p = $row['path'] ?? null;
+			if (is_string($p) && $p !== '') {
+				$indexByPath[$p] = $i;
 			}
 		}
 
 		foreach ($paths as $requestedPath) {
-			if (!is_string($requestedPath) || $requestedPath === '') {
+			$idx = $indexByPath[$requestedPath] ?? null;
+			if ($idx === null) {
 				continue;
 			}
 
-			if (!isset($indexByPath[$requestedPath])) {
-				continue;
-			}
-
-			$idx = $indexByPath[$requestedPath];
 			$row = $data[$idx];
 
-			$qfn = isset($row['quarantined_file_name']) && is_string($row['quarantined_file_name'])
-				? $row['quarantined_file_name']
-				: '';
-
+			$qfn = $row['quarantined_file_name'] ?? null;
+			$qfn = is_string($qfn) ? $qfn : '';
 			if ($qfn === '') {
 				continue;
 			}
 
-			// Usa tu método de validación
+			// Normaliza y valida que el fichero está dentro de quarantine
+			$qfn = Path::clean($qfn);
 			if (!$this->isPathInside($quarantinePath, $qfn)) {
-				continue; // aborta si intenta acceder fuera de /quarantine
+				continue;
 			}
 
 			if ($opcion === 'restore') {
-				$original = Path::clean($requestedPath);
+				$original  = Path::clean($requestedPath);
 				$targetDir = dirname($original);
 
 				if (!is_dir($targetDir)) {
@@ -5342,7 +5730,7 @@ class FilemanagerModel extends BaseModel
 				}
 
 				try {
-					$moved = File::move($qfn, $finalTarget);
+					$moved = (bool) File::move($qfn, $finalTarget);
 				} catch (\Throwable) {
 					$moved = false;
 				}
@@ -5354,13 +5742,8 @@ class FilemanagerModel extends BaseModel
 					$data[$idx] = $row;
 				}
 			} else { // delete
-				$deleted = false;
 				try {
-					if (file_exists($qfn)) {
-						$deleted = File::delete($qfn);
-					} else {
-						$deleted = true;
-					}
+					$deleted = !file_exists($qfn) ? true : (bool) File::delete($qfn);
 				} catch (\Throwable) {
 					$deleted = false;
 				}
@@ -5375,20 +5758,20 @@ class FilemanagerModel extends BaseModel
 
 		// Guarda JSON actualizado con cabecera protectora
 		try {
-			$payload = json_encode(['files_folders' => $data], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
-			if ($payload === null) {
-				return;
-			}
+			$payload = json_encode(
+				['files_folders' => $data],
+				JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
+			);
 
-			$tmpFile = $scanJsonPath . '.tmp';
-			$wrapped = "#<?php die('Forbidden.'); ?>\n" . $payload;
+			$tmpFile  = $scanJsonPath . '.tmp';
+			$wrapped  = "#<?php die('Forbidden.'); ?>\n" . $payload;
 
 			if (version_compare(PHP_VERSION, '7.2.0', '>')) {
 				$wrapped = mb_convert_encoding($wrapped, 'UTF-8', 'UTF-8');
 			}
 
 			if (File::write($tmpFile, $wrapped) !== false) {
-				if (!@rename($tmpFile, $scanJsonPath)) {
+				if (!rename($tmpFile, $scanJsonPath)) {
 					@copy($tmpFile, $scanJsonPath);
 					@unlink($tmpFile);
 				}
@@ -5426,7 +5809,7 @@ class FilemanagerModel extends BaseModel
 			try {
 				/** @var array{filename?:string} $decoded */
 				$decoded = json_decode($res, true, 16, JSON_THROW_ON_ERROR);
-				if (isset($decoded['filename']) && is_string($decoded['filename']) && $decoded['filename'] !== '') {
+				if (isset($decoded['filename']) && $decoded['filename'] !== '') {
 					$filename = $decoded['filename'];
 				}
 			} catch (\JsonException) {
@@ -5454,7 +5837,7 @@ class FilemanagerModel extends BaseModel
      */
     public function deleteFiles(): void
     {
-        /** @var \Joomla\CMS\Application\CMSApplication $app */
+        /** @var CMSApplication $app */
         $app   = Factory::getApplication();
         $input = $app->getInput();
 
@@ -5465,7 +5848,7 @@ class FilemanagerModel extends BaseModel
         // Cargamos el escaneo y validamos pronto
         $this->loadStack('malwarescan', 'malwarescan');
 
-        if ($rawPaths === [] || count($rawPaths) === 0) {
+        if ($rawPaths === []) {
             $app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_NO_FILES_SELECTED'), 'error');
             return;
         }
@@ -5473,7 +5856,7 @@ class FilemanagerModel extends BaseModel
         // Normaliza/limpia rutas & evita duplicados
         $normalizedPaths = [];
         foreach ($rawPaths as $p) {
-            if (!is_string($p) || $p === '') {
+            if ($p === '') {
                 continue;
             }
             // Normaliza saltos/espacios raros
@@ -5504,14 +5887,13 @@ class FilemanagerModel extends BaseModel
         // Índice rápido path => keys en la pila para borrado eficiente
         // (Evita recorrer toda la pila N veces)
         /** @var array<int, array{path:string}> $stack */
-        $stack = is_array($this->Stack_malwarescan ?? null) ? $this->Stack_malwarescan : [];
+		$stack = $this->Stack_malwarescan;
         $indexByPath = [];
         foreach ($stack as $k => $row) {
-            $pathInRow = isset($row['path']) && is_string($row['path']) ? $row['path'] : '';
-            if ($pathInRow !== '') {
-                $indexByPath[$pathInRow][] = $k;
-            }
-        }		
+			if ($row['path'] !== '') {
+				$indexByPath[$row['path']][] = $k;
+			}
+		}	
 		
         // Borrado físico y depuración de la pila en memoria
         foreach (array_keys($normalizedPaths) as $absPath) {
@@ -5554,9 +5936,7 @@ class FilemanagerModel extends BaseModel
         $this->loadStack('malwarescan_resume', 'last_check_malwarescan');
 
         // Asegura integridad de tipos
-        $suspicious = isset($this->suspicious_files) && is_numeric($this->suspicious_files)
-            ? (int) $this->suspicious_files
-            : 0;
+        $suspicious = $this->suspicious_files;
 
         $suspicious = max(0, $suspicious - $deletedCount);
         $this->suspicious_files = $suspicious;
@@ -5725,10 +6105,7 @@ class FilemanagerModel extends BaseModel
 
 		// Si hay un log abierto, ciérralo limpiamente
 		if (isset($this->fp) && (is_resource($this->fp) || $this->fp instanceof \SplFileObject)) {
-			// Conserva tu método existente si ya lo tienes
-			if (method_exists($this, 'closeLogSCP')) {
-				$this->closeLogSCP();
-			}
+			$this->closeLogSCP();
 		}
 
 		$path = $dir . DIRECTORY_SEPARATOR . $filenameLog;
@@ -5800,9 +6177,9 @@ class FilemanagerModel extends BaseModel
     /**
 	 * Extrae la información sobre las extensiones instaladas o actualizadas.
 	 *
-	 * @return array<string, mixed>|string|false Devuelve el array decodificado, el string original si no es JSON válido, o false si hay error de BBDD.
+	 * @return list<array{name: string, type: string}>
 	 */
-	public function getInstalls(): array|string|false
+	public function getInstalls(): array
 	{
 		/** @var \Joomla\Database\DatabaseInterface $db */
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
@@ -5822,24 +6199,37 @@ class FilemanagerModel extends BaseModel
 				return [];
 			}
 
-			/** @var array<string, mixed>|null $decoded */
 			$decoded = json_decode($result, true);
 
-			if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-				return $decoded;
+			if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) {
+				return [];
 			}
 
-			// Si no es JSON válido, devolvemos el valor original como string
-			return $result;
+			// Normaliza y valida shape
+			$out = [];
+
+			foreach ($decoded as $row) {
+				if (!is_array($row)) {
+					continue;
+				}
+
+				$name = isset($row['name']) && is_string($row['name']) ? $row['name'] : '';
+				$type = isset($row['type']) && is_string($row['type']) ? $row['type'] : '';
+
+				if ($name !== '' && $type !== '') {
+					$out[] = ['name' => $name, 'type' => $type];
+				}
+			}
+
+			return $out;
 
 		} catch (\Throwable $e) {
-			// Se captura cualquier error, incluidos de BBDD
 			Factory::getApplication()->enqueueMessage(
 				Text::sprintf('COM_SECURITYCHECKPRO_DB_ERROR', $e->getMessage()),
 				'error'
 			);
 
-			return false;
+			return [];
 		}
 	}
 
@@ -5851,7 +6241,7 @@ class FilemanagerModel extends BaseModel
 	 */
 	public function accionesCleanTmpDir(): void
 	{
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
+		/** @var CMSApplication $app */
 		$app = Factory::getApplication();
 		$app->setUserState('clean_tmp_dir_state', 'start');
 		$app->setUserState('clean_tmp_dir_result', '');

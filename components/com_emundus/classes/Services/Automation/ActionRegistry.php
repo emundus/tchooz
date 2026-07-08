@@ -5,6 +5,7 @@ namespace Tchooz\Services\Automation;
 use EmundusHelperCache;
 use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Entities\Automation\ActionEntity;
+use Tchooz\Entities\Automation\Actions\ActionGenerateSignatureRequest;
 use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
@@ -118,6 +119,8 @@ class ActionRegistry
 				'icon' => $class::getIcon(),
 				'parameters' => $class->getParametersSchema(),
 				'supported_target_types' => $class::supportTargetTypes(),
+				// todo: remove ActionGenerateSignatureRequest once plugin signature_request is replaced by emundusexecuteactions
+				'is_asynchronous' => $class::isAsynchronous() || $class instanceof ActionGenerateSignatureRequest,
 			];
 		}
 		return $schema;

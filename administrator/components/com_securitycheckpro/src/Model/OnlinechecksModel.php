@@ -30,7 +30,7 @@ class OnlinechecksModel extends ListModel
     var $total = 0;
 
     /**
-     * Carga estado de filtros/paginación/orden.
+     * Carga estado de filtros/paginaciï¿½n/orden.
      *
      * @param string|null $ordering
      * @param string|null $direction
@@ -40,7 +40,7 @@ class OnlinechecksModel extends ListModel
 		/** @var \Joomla\CMS\Application\CMSApplication $app */
         $app = Factory::getApplication();
 
-        // Filtro de búsqueda (persiste entre peticiones)
+        // Filtro de bï¿½squeda (persiste entre peticiones)
         $search = $app->getUserStateFromRequest(
             $this->context . '.filter.onlinechecks_search',
             'filter_onlinechecks_search',
@@ -49,7 +49,7 @@ class OnlinechecksModel extends ListModel
         );
         $this->setState('filter.onlinechecks_search', trim((string) $search));
 
-        // Límite por página (usa list_limit global como valor por defecto)
+        // Lï¿½mite por pï¿½gina (usa list_limit global como valor por defecto)
         $limit = $app->getUserStateFromRequest(
             $this->context . '.list.limit',
             'limit',
@@ -70,7 +70,7 @@ class OnlinechecksModel extends ListModel
     }
 
     /**
-     * Construye la consulta base que `ListModel` paginará automáticamente.
+     * Construye la consulta base que `ListModel` paginarï¿½ automï¿½ticamente.
      */
     protected function getListQuery()
     {
@@ -80,7 +80,7 @@ class OnlinechecksModel extends ListModel
             ->select('*')
             ->from($db->quoteName('#__securitycheckpro_online_checks'));
 
-        // Filtro de búsqueda (case-insensitive)
+        // Filtro de bï¿½squeda (case-insensitive)
         $search = (string) $this->getState('filter.onlinechecks_search', '');
         if ($search !== '') {
             $needle = '%' . $db->escape($search, true) . '%';
@@ -101,14 +101,46 @@ class OnlinechecksModel extends ListModel
         return $query;
     }
 
+    /**
+     * Recuento global de envÃ­os online, archivos comprobados y amenazas encontradas
+     * (sin filtrar por bÃºsqueda), para las mÃ©tricas del dashboard.
+     *
+     * @return array{total: int, files: int, threats: int}
+     */
+    public function getSubmissionStats(): array
+    {
+        /** @var DatabaseInterface $db */
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
-    
+        $query = $db->getQuery(true)
+            ->select(
+                'COUNT(*) AS total, '
+                . 'SUM(' . $db->quoteName('files_checked') . ') AS files, '
+                . 'SUM(' . $db->quoteName('threats_found') . ') AS threats'
+            )
+            ->from($db->quoteName('#__securitycheckpro_online_checks'));
+
+        $db->setQuery($query);
+
+        try {
+            $row = $db->loadAssoc();
+        } catch (\Throwable $e) {
+            $row = null;
+        }
+
+        return [
+            'total'   => isset($row['total']) ? (int) $row['total'] : 0,
+            'files'   => isset($row['files']) ? (int) $row['files'] : 0,
+            'threats' => isset($row['threats']) ? (int) $row['threats'] : 0,
+        ];
+    }
+
    /**
 	 * Borra ficheros de logs seleccionados de forma segura.
 	 */
 	public function delete_files(): void
 	{
-		// Requiere POST + token CSRF válido
+		// Requiere POST + token CSRF vï¿½lido
 		if (!Session::checkToken('post')) {
 			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
 		}
@@ -117,7 +149,7 @@ class OnlinechecksModel extends ListModel
 		/** @var DatabaseInterface $db */
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
-		// Carpeta base donde residen los scans (ruta canónica)
+		// Carpeta base donde residen los scans (ruta canï¿½nica)
 		$baseFolder = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components'
 			. DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'scans' . DIRECTORY_SEPARATOR;
 
@@ -128,7 +160,7 @@ class OnlinechecksModel extends ListModel
 		$input = $app->getInput();
 		$raw = (array) $input->get('onlinechecks_logs_table', [], 'array');
 
-		// Normaliza: quita vacíos, duplica, castea y limita tamaño razonable
+		// Normaliza: quita vacï¿½os, duplica, castea y limita tamaï¿½o razonable
 		/** @var list<string> $filenames */
 		$filenames = array_values(array_unique(array_filter(
 			array_map(
@@ -147,7 +179,7 @@ class OnlinechecksModel extends ListModel
 
 		foreach ($filenames as $name) {
 			// 1) Whitelist de nombre de fichero (sin barras, ni rutas relativas)
-			//    Permitimos letras, números, punto, guion y guion bajo.
+			//    Permitimos letras, nï¿½meros, punto, guion y guion bajo.
 			if (!preg_match('/\A[0-9A-Za-z._-]+\z/u', $name)) {
 				// Nombre sospechoso: lo ignoramos y avisamos
 				$app->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_DELETE_FILE_ERROR', $baseFolder . $name), 'error');
@@ -166,14 +198,14 @@ class OnlinechecksModel extends ListModel
 
 			// 3) Elimina primero el fichero del disco
 			if (!is_file($resolved)) {
-				// Si no existe, intentamos limpiar igualmente el registro para no dejar huérfanos
+				// Si no existe, intentamos limpiar igualmente el registro para no dejar huï¿½rfanos
 				try {
 					$query = $db->getQuery(true)
 						->delete($db->quoteName('#__securitycheckpro_online_checks'))
 						->where($db->quoteName('filename') . ' = ' . $db->quote($name));
 					$db->setQuery($query)->execute();
 				} catch (\Throwable $e) {
-					// silencio: no elevamos, sólo informamos
+					// silencio: no elevamos, sï¿½lo informamos
 				}
 
 				$app->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_DELETE_FILE_ERROR', $resolved), 'error');
@@ -190,7 +222,7 @@ class OnlinechecksModel extends ListModel
 				continue;
 			}
 
-			// 4) Si el fichero se borró, elimina su registro asociado en BD
+			// 4) Si el fichero se borrï¿½, elimina su registro asociado en BD
 			try {
 				$query = $db->getQuery(true)
 					->delete($db->quoteName('#__securitycheckpro_online_checks'))
@@ -198,7 +230,7 @@ class OnlinechecksModel extends ListModel
 				$db->setQuery($query)->execute();
 				$deleted++;
 			} catch (\Throwable $e) {
-				// El fichero ya está borrado; reportamos el error de BD pero no revertimos
+				// El fichero ya estï¿½ borrado; reportamos el error de BD pero no revertimos
 				$app->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_DELETE_DB_ERROR', $name), 'error');
 			}
 		}
@@ -209,7 +241,7 @@ class OnlinechecksModel extends ListModel
 	}
 
 	/**
-	 * Extrae filas de '#__securitycheckpro_online_checks' con paginación/filtrado seguros.
+	 * Extrae filas de '#__securitycheckpro_online_checks' con paginaciï¿½n/filtrado seguros.
 	 *
 	 * @param  string|null $key_name  (no usado; mantenido por compatibilidad)
 	 * @return array<int, array<int, string|null>>
@@ -230,7 +262,7 @@ class OnlinechecksModel extends ListModel
 		/** @var array<int, array<int, string|null>> $rows */
 		$rows = (array) $db->loadRowList();
 
-		// Filtrado por búsqueda en memoria (si la tabla crece convendría moverlo a SQL)
+		// Filtrado por bï¿½squeda en memoria (si la tabla crece convendrï¿½a moverlo a SQL)
 		$searchRaw = (string) $this->state->get('filter.onlinechecks_search', '');
 		$search = trim($searchRaw);
 
@@ -255,7 +287,7 @@ class OnlinechecksModel extends ListModel
 		// Total antes de paginar
 		$this->total = count($rows);
 
-		// Paginación estándar Joomla (usa list.start / list.limit)
+		// Paginaciï¿½n estï¿½ndar Joomla (usa list.start / list.limit)
 		$start = (int) $this->getState('list.start', 0);
 		$limit = (int) $this->getState('list.limit', 0);
 
@@ -266,11 +298,11 @@ class OnlinechecksModel extends ListModel
 			$limit = 0;
 		}
 
-		// Si limit == 0 -> sin límite
+		// Si limit == 0 -> sin lï¿½mite
 		if ($limit > 0) {
 			$rows = array_slice($rows, $start, $limit);
 		} elseif ($start > 0) {
-			// Si no hay límite pero sí desplazamiento, aplicamos desde start al final
+			// Si no hay lï¿½mite pero sï¿½ desplazamiento, aplicamos desde start al final
 			$rows = array_slice($rows, $start);
 		}
 
@@ -278,7 +310,7 @@ class OnlinechecksModel extends ListModel
 	}
 
     /**
-     * Función para descargar el fichero de logs de archivos sospechosos
+     * Funciï¿½n para descargar el fichero de logs de archivos sospechosos
      *
 	 *
      * @return  void
@@ -288,7 +320,7 @@ class OnlinechecksModel extends ListModel
 		$app   = Factory::getApplication();
 		$input = $app->getInput();
 
-		// 1) Selección (array) desde el formulario
+		// 1) Selecciï¿½n (array) desde el formulario
 		$selection = (array) $input->get('onlinechecks_logs_table', [], 'array');
 		if (empty($selection) || count($selection) !== 1) {
 			$app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_SELECT_ONLY_A_FILE'), 'error');
@@ -316,20 +348,20 @@ class OnlinechecksModel extends ListModel
 		// 4) Preparar salida: *nada* puede imprimirse antes de las cabeceras
 		//    - limpia buffers
 		while (ob_get_level()) { @ob_end_clean(); }
-		//    - desactiva compresión
+		//    - desactiva compresiï¿½n
 		if (ini_get('zlib.output_compression')) { @ini_set('zlib.output_compression', 'Off'); }
-		//    - cierra la sesión para liberar el handler
+		//    - cierra la sesiï¿½n para liberar el handler
 		if (session_status() === PHP_SESSION_ACTIVE) { @session_write_close(); }
-		//    - elimina cabeceras que pudo añadir Joomla/plugins
+		//    - elimina cabeceras que pudo aï¿½adir Joomla/plugins
 		if (function_exists('header_remove')) { @header_remove(); }
 
-		// 5) Cabeceras de descarga (sólo header() nativo)
+		// 5) Cabeceras de descarga (sï¿½lo header() nativo)
 		$size     = (int) filesize($targetReal);
 		$filename = $baseName;
 		$fallback = preg_replace('/[^A-Za-z0-9._-]/', '_', $filename);
 		$dispo    = 'attachment; filename="' . $fallback . '"; filename*=UTF-8\'\'' . rawurlencode($filename);
 
-		// Asegura código de estado correcto antes de enviar cabeceras
+		// Asegura cï¿½digo de estado correcto antes de enviar cabeceras
 		http_response_code(200);
 
 		header('Content-Description: File Transfer');
@@ -363,15 +395,15 @@ class OnlinechecksModel extends ListModel
 			$buf = fread($fp, $chunk);
 			if ($buf === false) { break; }
 			echo $buf;
-			// Envía al cliente de inmediato
+			// Envï¿½a al cliente de inmediato
 			if (function_exists('fastcgi_finish_request')) {
-				// No llamar aquí; lo usamos al final. Mantenemos flush clásico:
+				// No llamar aquï¿½; lo usamos al final. Mantenemos flush clï¿½sico:
 			}
 			flush();
 		}
 		fclose($fp);
 
-		// En FPM podrías terminar la respuesta aquí:
+		// En FPM podrï¿½as terminar la respuesta aquï¿½:
 		if (function_exists('fastcgi_finish_request')) {
 			@fastcgi_finish_request();
 		}

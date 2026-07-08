@@ -40,6 +40,50 @@ $badgeByVuln = [
     'Indefinido' => 'badge bg-warning',
     'No'         => 'badge bg-success',
 ];
+
+// Estado del plugin "Update Database" (badge compacto en la action bar)
+$msg = $this->database_message;
+
+$rtBadgeClass  = 'bg-info';
+$rtBadgeText   = Text::_('COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED');
+$rtTooltip     = Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_NOT_INSTALLED') . ' ' . Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_NOT_RECEIVE');
+$rtAlertText   = '';
+$rtActionUrl   = '';
+$rtActionLabel = '';
+$rtActionClass = 'btn-outline-secondary';
+$rtActionExternal = false;
+
+if ($this->update_database_plugin_exists && $this->update_database_plugin_enabled) {
+    if ($msg === 'PLG_SECURITYCHECKPRO_UPDATE_DATABASE_DATABASE_UPDATED') {
+        $rtBadgeClass = 'bg-success';
+        $rtBadgeText  = Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_OK_SHORT');
+        $rtTooltip    = Text::_('COM_SECURITYCHECKPRO_DATABASE_VERSION') . $this->escape((string) $this->database_version);
+    } elseif ($msg === null) {
+        $rtBadgeClass = 'bg-secondary';
+        $rtBadgeText  = Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_NOT_LAUNCHED_SHORT');
+        $rtTooltip    = Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_NOT_LAUNCHED');
+    } else {
+        $rtBadgeClass = 'bg-danger';
+        $rtBadgeText  = Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_PROBLEM_SHORT');
+        $rtTooltip    = '';
+        $rtAlertText  = Text::_('COM_SECURITYCHECKPRO_DATABASE_MESSAGE') . $this->escape(Text::_($msg));
+
+        if ($msg !== 'COM_SECURITYCHECKPRO_UPDATE_DATABASE_SUBSCRIPTION_EXPIRED') {
+            $rtActionUrl   = Route::_('index.php?option=com_installer&view=updatesites');
+            $rtActionLabel = Text::_('COM_SECURITYCHECKPRO_CHECK_CONFIG');
+            $rtActionClass = 'btn-outline-dark';
+        } else {
+            $rtActionUrl      = 'https://securitycheck.protegetuordenador.com/subscriptions';
+            $rtActionLabel    = Text::_('COM_SECURITYCHECKPRO_RENEW');
+            $rtActionClass    = 'btn-outline-warning';
+            $rtActionExternal = true;
+        }
+    }
+} elseif ($this->update_database_plugin_exists && !$this->update_database_plugin_enabled) {
+    $rtBadgeClass = 'bg-warning';
+    $rtBadgeText  = Text::_('COM_SECURITYCHECKPRO_PLUGIN_DISABLED');
+    $rtTooltip    = Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_DISABLED');
+}
 ?>
 
 <!-- Modal: Vulnerable extension -->
@@ -80,148 +124,124 @@ $badgeByVuln = [
     }
     ?>
 
-  <!-- Estado del plugin de actualización de base de datos -->
-  <div class="card mb-3">
-    <div class="card-body">
-      <?php
-      $msg = $this->database_message;
+  <!-- Action bar -->
+  <div class="scp-actionbar">
+    <div>
+      <p class="scp-actionbar__title">
+        <i class="fa fa-shield-virus" aria-hidden="true"></i>
+        <?php echo Text::_('COM_SECURITYCHECKPRO_VULNERABILITIES'); ?>
+      </p>
+      <p class="scp-actionbar__subtitle">
+        <?php echo trim(Text::_('COM_SECURITYCHECKPRO_UPDATE_DATE')); ?>
+        &middot; <?php echo $this->escape((string) $this->last_update); ?>
+        <?php if ($this->update_database_plugin_exists && $this->update_database_plugin_enabled && (string) $this->last_check !== '') : ?>
+          &middot; <?php echo trim(Text::_('COM_SECURITYCHECKPRO_LAST_CHECK')); ?>
+          <?php echo $this->escape((string) $this->last_check); ?>
+        <?php endif; ?>
+        &middot;
+        <?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME'); ?>
+        <span id="real_time_status_badge" class="badge <?php echo $rtBadgeClass; ?>"
+              <?php if ($rtTooltip !== '') : ?>data-bs-toggle="tooltip" title="<?php echo $this->escape($rtTooltip); ?>"<?php endif; ?>>
+          <?php echo $this->escape($rtBadgeText); ?>
+        </span>
+      </p>
+    </div>
+    <?php if ($rtActionUrl !== '') : ?>
+      <div class="scp-actionbar__actions">
+        <a class="btn btn-sm <?php echo $rtActionClass; ?>"
+           href="<?php echo $rtActionUrl; ?>"
+           <?php if ($rtActionExternal) : ?>target="_blank" rel="noopener noreferrer"<?php endif; ?>>
+          <?php echo $this->escape($rtActionLabel); ?>
+        </a>
+      </div>
+    <?php endif; ?>
+  </div>
 
-      if ($this->update_database_plugin_exists && $this->update_database_plugin_enabled) :	
-        
-        if ($msg === 'PLG_SECURITYCHECKPRO_UPDATE_DATABASE_DATABASE_UPDATED') : ?>
-          <div class="badge bg-success p-3 d-block text-start">
-            <h4 class="text-white mb-2"><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES'); ?></h4>
-            <p class="mb-1"><strong><?php echo Text::_('COM_SECURITYCHECKPRO_DATABASE_VERSION'); ?></strong> <?php echo $this->escape((string) $this->database_version); ?></p>
-            <p class="mb-0"><strong><?php echo Text::_('COM_SECURITYCHECKPRO_LAST_CHECK'); ?></strong> <?php echo $this->escape((string) $this->last_check); ?></p>
-          </div>
+  <?php if ($rtAlertText !== '') : ?>
+    <div class="alert alert-danger py-2 px-3 small mb-3"><?php echo $rtAlertText; ?></div>
+  <?php endif; ?>
 
-        <?php elseif (is_null($msg)) : ?>
-          <div class="badge bg-success p-3 d-block text-start">
-            <h4 class="mb-2"><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES'); ?></h4>
-            <p class="mb-0"><strong><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_NOT_LAUNCHED'); ?></strong></p>
-          </div>
 
-        <?php elseif ($msg !== 'PLG_SECURITYCHECKPRO_UPDATE_DATABASE_DATABASE_UPDATED') : ?>
-          <div class="badge bg-danger p-3 d-block text-start">
-            <h4 class="mb-2"><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_PROBLEM'); ?></h4>
-            <p class="mb-3">
-              <strong><?php echo Text::_('COM_SECURITYCHECKPRO_DATABASE_MESSAGE'); ?></strong>
-              <?php echo $this->escape(Text::_($msg)); ?>
-            </p>
-
-            <?php if ($msg !== 'COM_SECURITYCHECKPRO_UPDATE_DATABASE_SUBSCRIPTION_EXPIRED') : ?>
-              <a class="btn btn-dark"
-                 href="<?php echo Route::_('index.php?option=com_installer&view=updatesites'); ?>">
-                <?php echo Text::_('COM_SECURITYCHECKPRO_CHECK_CONFIG'); ?>
-              </a>
-            <?php else : ?>
-              <a class="btn btn-outline-light"
-                 href="https://securitycheck.protegetuordenador.com/subscriptions"
-                 target="_blank"
-                 rel="noopener noreferrer">
-                <?php echo Text::_('COM_SECURITYCHECKPRO_RENEW'); ?>
-              </a>
-            <?php endif; // <- cierre if interno de "subscription expired" ?>
-          </div>
-        <?php endif; // <- cierre de if ($msg...) ?>
-
-      <?php elseif ($this->update_database_plugin_exists && !$this->update_database_plugin_enabled) : ?>
-        <div class="badge bg-warning p-3 d-block text-start">
-          <h4 class="mb-2"><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME'); ?></h4>
-          <p class="mb-0"><strong><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_DISABLED'); ?></strong></p>
-        </div>
-
-      <?php elseif (!$this->update_database_plugin_exists) : ?>
-        <div class="badge bg-info p-3 d-block text-start">
-          <h4 class="mb-2"><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_NOT_INSTALLED'); ?></h4>
-          <p class="mb-0"><strong><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_NOT_RECEIVE'); ?></strong></p>
-        </div>
-      <?php endif; // <- cierre del if principal ($this->update_database_plugin_exists...) ?>
+  <!-- Metrics row -->
+  <div class="scp-grid scp-grid--3 mb-3">
+    <div class="card shadow-soft">
+      <div class="card-body text-center">
+        <div class="text-muted small"><?php echo Text::_('COM_SECURITYCHECKPRO_VULN_TOTAL_EXTENSIONS'); ?></div>
+        <div class="fs-4 fw-bold"><?php echo (int) $this->extensions_total; ?></div>
+      </div>
+    </div>
+    <div class="card shadow-soft">
+      <div class="card-body text-center">
+        <div class="text-muted small"><?php echo Text::_('COM_SECURITYCHECKPRO_VULN_VULNERABLE_TOTAL'); ?></div>
+        <div class="fs-4 fw-bold <?php echo $this->vulnerable_total > 0 ? 'text-danger' : ''; ?>"><?php echo (int) $this->vulnerable_total; ?></div>
+      </div>
+    </div>
+    <div class="card shadow-soft">
+      <div class="card-body text-center">
+        <div class="text-muted small"><?php echo Text::_('COM_SECURITYCHECKPRO_VULN_UNDEFINED_TOTAL'); ?></div>
+        <div class="fs-4 fw-bold <?php echo $this->undefined_total > 0 ? 'text-warning' : ''; ?>"><?php echo (int) $this->undefined_total; ?></div>
+      </div>
     </div>
   </div>
 
-
-  <!-- Leyenda colores -->
-  <div class="card mb-3 mx-2">
-    <div class="card-header text-center">
-      <?php echo Text::_('COM_SECURITYCHECKPRO_COLOR_CODE'); ?>
-    </div>
-    <div class="card-body py-2">
-      <table class="table table-borderless mb-0">
-        <tbody>
-          <tr>
-            <td><span class="badge bg-success">&nbsp;</span></td>
-            <td class="text-start"><?php echo Text::_('COM_SECURITYCHECKPRO_GREEN_COLOR'); ?></td>
-            <td><span class="badge bg-warning">&nbsp;</span></td>
-            <td class="text-start"><?php echo Text::_('COM_SECURITYCHECKPRO_YELLOW_COLOR'); ?></td>
-            <td><span class="badge bg-danger">&nbsp;</span></td>
-            <td class="text-start"><?php echo Text::_('COM_SECURITYCHECKPRO_RED_COLOR'); ?></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Filtros y meta -->
-	<div class="row gx-2 mx-2 mb-2 align-items-center">
-	  <div class="col-12 col-md">
-		<?php
-		// Añadimos 'All' (valor vacío) y 'Core'
-		echo $basemodel->renderSelect(
-		  'filter_extension_type',
-		  [
-			''         => 'JALL', // mostrará "Todos" con traducción de Joomla
-			'core'     => 'COM_SECURITYCHECKPRO_TYPE_core',
-			'component'=> 'COM_SECURITYCHECKPRO_TITLE_COMPONENT',
-			'plugin'   => 'COM_SECURITYCHECKPRO_TITLE_PLUGIN',
-			'module'   => 'COM_SECURITYCHECKPRO_TITLE_MODULE',
-		  ],
-		  ['class' => 'form-select', 'onchange' => 'this.form.submit()'],
-		  // <- valor por defecto vacío => lista TODO
-		  $this->state->get('filter.extension_type', ''),
-		  false,
-		  true
-		);
-		?>
-	  </div>
-
-	  <div class="col-12 col-md">
-		<?php
-		// Opcional: vulnerabilidad con opción "Todos" por defecto
-		echo $basemodel->renderSelect(
-		  'filter_vulnerable',
-		  [
-			''   => 'JALL',
-			'Si' => 'COM_SECURITYCHECKPRO_HEADING_VULNERABLE',
-			'No' => 'COM_SECURITYCHECKPRO_GREEN_COLOR',
-		  ],
-		  ['class' => 'form-select', 'onchange' => 'this.form.submit()'],
-		  $this->state->get('filter.vulnerable', ''),
-		  false,
-		  true
-		);
-		?>
-	  </div>
-
-	  <div class="col-6 col-md-auto">
-		<?php if (!empty($this->items)) : echo $this->pagination->getLimitBox(); endif; ?>
-	  </div>
-
-	  <div class="col-6 col-md text-md-end">
-		<span class="badge bg-info p-2">
-		  <?php echo Text::_('COM_SECURITYCHECKPRO_UPDATE_DATE') . ' ' . $this->escape((string) $this->last_update); ?>
-		</span>
-	  </div>
-	</div>
-
-  <!-- Tabla -->
-  <div class="card mb-3 mx-2">
+  <!-- Results -->
+  <div class="card shadow-soft mb-3">
     <div class="card-body">
+
+      <!-- Filtros -->
+      <div class="scp-filter-row row gx-2 mb-3 align-items-end">
+        <div class="col-12 col-md-auto">
+          <?php
+          // Añadimos 'All' (valor vacío) y 'Core'
+          echo $basemodel->renderSelect(
+            'filter_extension_type',
+            [
+              ''         => 'JALL', // mostrará "Todos" con traducción de Joomla
+              'core'     => 'COM_SECURITYCHECKPRO_TYPE_core',
+              'component'=> 'COM_SECURITYCHECKPRO_TITLE_COMPONENT',
+              'plugin'   => 'COM_SECURITYCHECKPRO_TITLE_PLUGIN',
+              'module'   => 'COM_SECURITYCHECKPRO_TITLE_MODULE',
+            ],
+            ['class' => 'form-select', 'style' => 'min-width: 11rem;', 'onchange' => 'this.form.submit()'],
+            // <- valor por defecto vacío => lista TODO
+            $this->state->get('filter.extension_type', ''),
+            false,
+            true
+          );
+          ?>
+        </div>
+
+        <div class="col-12 col-md-auto">
+          <?php
+          // Opcional: vulnerabilidad con opción "Todos" por defecto
+          echo $basemodel->renderSelect(
+            'filter_vulnerable',
+            [
+              ''   => 'JALL',
+              'Si' => 'COM_SECURITYCHECKPRO_HEADING_VULNERABLE',
+              'No' => 'COM_SECURITYCHECKPRO_GREEN_COLOR',
+            ],
+            ['class' => 'form-select', 'style' => 'min-width: 11rem;', 'onchange' => 'this.form.submit()'],
+            $this->state->get('filter.vulnerable', ''),
+            false,
+            true
+          );
+          ?>
+        </div>
+
+        <?php if (!empty($this->items)) : ?>
+          <div class="col-12 col-md-auto ms-md-auto">
+            <?php echo $this->pagination->getLimitBox(); ?>
+          </div>
+        <?php endif; ?>
+      </div>
+
+      <!-- Tabla -->
       <div class="table-responsive">
-        <table class="table table-bordered align-middle" id="dataTable" width="100%" cellspacing="0">
+        <table class="table table-bordered align-middle scp-table-responsive" id="dataTable">
           <thead>
             <tr>
-              <th width="5" class="alert alert-info text-center"><?php echo Text::_('COM_SECURITYCHECKPRO_HEADING_ID'); ?></th>
+              <th class="alert alert-info text-center"><?php echo Text::_('COM_SECURITYCHECKPRO_HEADING_ID'); ?></th>
               <th class="alert alert-info text-center"><?php echo Text::_('COM_SECURITYCHECKPRO_HEADING_PRODUCT'); ?></th>
               <th class="alert alert-info text-center"><?php echo Text::_('COM_SECURITYCHECKPRO_HEADING_TYPE'); ?></th>
               <th class="alert alert-info text-center"><?php echo Text::_('COM_SECURITYCHECKPRO_HEADING_INSTALLED_VERSION'); ?></th>
@@ -245,8 +265,8 @@ $badgeByVuln = [
                 $vulnLabel   = Text::_('COM_SECURITYCHECKPRO_VULNERABLE_' . $vuln);
               ?>
               <tr>
-                <td class="text-center"><?php echo $id; ?></td>
-                <td class="text-center">
+                <td class="text-center" data-label="<?php echo $this->escape(Text::_('COM_SECURITYCHECKPRO_HEADING_ID')); ?>"><?php echo $id; ?></td>
+                <td class="text-center" data-label="<?php echo $this->escape(Text::_('COM_SECURITYCHECKPRO_HEADING_PRODUCT')); ?>">
                   <?php if ($vuln !== 'No') : ?>
                     <a href="#"
                        class="link-primary"
@@ -260,13 +280,13 @@ $badgeByVuln = [
                     <?php echo $product; ?>
                   <?php endif; ?>
                 </td>
-                <td class="text-center">
+                <td class="text-center" data-label="<?php echo $this->escape(Text::_('COM_SECURITYCHECKPRO_HEADING_TYPE')); ?>">
                   <span class="<?php echo $this->escape($typeBadge); ?>">
                     <?php echo $this->escape($typeLabel); ?>
                   </span>
                 </td>
-                <td class="text-center"><?php echo $installed; ?></td>
-                <td class="text-center">
+                <td class="text-center" data-label="<?php echo $this->escape(Text::_('COM_SECURITYCHECKPRO_HEADING_INSTALLED_VERSION')); ?>"><?php echo $installed; ?></td>
+                <td class="text-center" data-label="<?php echo $this->escape(Text::_('COM_SECURITYCHECKPRO_HEADING_VULNERABLE')); ?>">
                   <span class="<?php echo $this->escape($vulnBadge); ?>">
                     <?php echo $this->escape($vulnLabel); ?>
                   </span>

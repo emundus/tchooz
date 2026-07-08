@@ -92,6 +92,11 @@ export default {
 				value: true,
 				label: 'COM_EMUNDUS_ONBOARD_ACTION_IMPORT_OPTIONS_VALIDATORS',
 			},
+			{
+				name: 'tags',
+				value: true,
+				label: 'COM_EMUNDUS_ONBOARD_ACTION_IMPORT_OPTIONS_TAGS',
+			},
 		],
 	}),
 	created: function () {},
@@ -127,6 +132,7 @@ export default {
 				forms: this.options[1].value,
 				evaluations: this.options[2].value,
 				validators: this.options[3].value,
+				tags: this.options[4].value,
 			};
 
 			campaignsService

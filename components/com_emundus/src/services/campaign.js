@@ -269,6 +269,7 @@ export default {
 				forms: options.forms,
 				evaluations: options.evaluations,
 				validators: options.validators,
+				tags: options.tags,
 			});
 		} catch (e) {
 			return {

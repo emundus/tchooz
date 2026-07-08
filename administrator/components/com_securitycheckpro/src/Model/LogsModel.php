@@ -22,6 +22,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
 use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Session\Session;
+use Joomla\CMS\Application\CMSWebApplicationInterface;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\IpModel;
 
@@ -36,7 +37,7 @@ class LogsModel extends ListModel
     ];
 	
 	/**
-     Configuración aplicada
+     Configuraciï¿½n aplicada
      *
      @var \Joomla\Registry\Registry
      */
@@ -81,47 +82,49 @@ class LogsModel extends ListModel
 
     protected function populateState($ordering = 'a.time', $direction = 'DESC')
     {
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
 		$app = Factory::getApplication();
 		$input = $app->getInput();
-
-		if ($app instanceof \Joomla\CMS\Application\CMSWebApplicationInterface) {
-			$search      = $app->getUserStateFromRequest($this->context . '.filter.search',      'filter_search',      '', 'string');
-			$description = $app->getUserStateFromRequest($this->context . '.filter.description', 'filter_description', '', 'string');
-			$type        = $app->getUserStateFromRequest($this->context . '.filter.type',        'filter_type',        '', 'string');
-			$leido       = $app->getUserStateFromRequest($this->context . '.filter.leido',       'filter_leido',       '', 'string');
-
-			$this->setState('filter.search', $search);
-			$this->setState('filter.description', $description);
-			$this->setState('filter.type', $type);
-			$this->setState('filter.leido', $leido);
-
-			// datefrom
-			$dateFrom = $app->getUserStateFromRequest($this->context . '.filter.datefrom', 'filter[datefrom]', '', 'string');
-			if ($dateFrom === '') {
-				$urlDateFrom = $app->getInput()->get('datefrom', '');
-				if ($urlDateFrom !== '') {
-					$dateFrom = $urlDateFrom;
-					$app->setUserState($this->context . '.filter.datefrom', $dateFrom);
-					$this->setState('list.start', 0);
-				}
-			}
-			$this->setState('filter.datefrom', $dateFrom);
-
-			// dateto (ojo al bug de variable)
-			$dateTo = $app->getUserStateFromRequest($this->context . '.filter.dateto', 'filter[dateto]', '', 'string');
-			if ($dateTo === '') {
-				$urlDateTo = $app->getInput()->get('dateto', '');
-				if ($urlDateTo !== '') {
-					$dateTo = $urlDateTo; // <- antes estabas tocando $dateFrom por error
-					$app->setUserState($this->context . '.filter.dateto', $dateTo);
-					$this->setState('list.start', 0);
-				}
-			}
-			$this->setState('filter.dateto', $dateTo);
+		
+		// Evita errores en CLI (no hay request/userstate)
+		if (!($app instanceof CMSWebApplicationInterface)) {
+			return;
 		}
 
-		// Defaults: más recientes primero
+		$search      = $app->getUserStateFromRequest($this->context . '.filter.search',      'filter_search',      '', 'string');
+		$description = $app->getUserStateFromRequest($this->context . '.filter.description', 'filter_description', '', 'string');
+		$type        = $app->getUserStateFromRequest($this->context . '.filter.type',        'filter_type',        '', 'string');
+		$leido       = $app->getUserStateFromRequest($this->context . '.filter.leido',       'filter_leido',       '', 'string');
+
+		$this->setState('filter.search', $search);
+		$this->setState('filter.description', $description);
+		$this->setState('filter.type', $type);
+		$this->setState('filter.leido', $leido);
+
+		// datefrom
+		$dateFrom = $app->getUserStateFromRequest($this->context . '.filter.datefrom', 'filter[datefrom]', '', 'string');
+		if ($dateFrom === '') {
+			$urlDateFrom = $app->getInput()->get('datefrom', '');
+			if ($urlDateFrom !== '') {
+				$dateFrom = $urlDateFrom;
+				$app->setUserState($this->context . '.filter.datefrom', $dateFrom);
+				$this->setState('list.start', 0);
+			}
+		}
+		$this->setState('filter.datefrom', $dateFrom);
+
+		// dateto
+		$dateTo = $app->getUserStateFromRequest($this->context . '.filter.dateto', 'filter[dateto]', '', 'string');
+		if ($dateTo === '') {
+			$urlDateTo = $app->getInput()->get('dateto', '');
+			if ($urlDateTo !== '') {
+				$dateTo = $urlDateTo; // <- antes estabas tocando $dateFrom por error
+				$app->setUserState($this->context . '.filter.dateto', $dateTo);
+				$this->setState('list.start', 0);
+			}
+		}
+		$this->setState('filter.dateto', $dateTo);
+		
+		// Defaults: mï¿½s recientes primero
 		parent::populateState($ordering, $direction);
 		
 		// Si en ESTA request NO viene 'filter_order_Dir', imponemos el default DESC
@@ -129,12 +132,12 @@ class LogsModel extends ListModel
 		
 		if ($dirFromRequest === '') {
 			$this->setState('list.direction', 'DESC');
-			// Asegura también la columna por defecto si no vino en la request
+			// Asegura tambiï¿½n la columna por defecto si no vino en la request
 			$orderFromRequest = $input->getCmd('filter_order', '');
 			if ($orderFromRequest === '') {
 				$this->setState('list.ordering', 'a.time');
 			}
-			// Opcional: resetea la paginación al cambiar orden por defecto
+			// Opcional: resetea la paginaciï¿½n al cambiar orden por defecto
 			$this->setState('list.start', 0);
 			// Persiste en user-state para siguientes vistas
 			$app->setUserState($this->context . '.list.direction', 'DESC');
@@ -161,12 +164,12 @@ class LogsModel extends ListModel
         $urlDateFrom = (string) $app->getInput()->get('datefrom','');
 		$urlDateTo = (string) $app->getInput()->get('dateto','');
 
-        // Sólo lo inyectamos si el filtro aún no tiene valor
+        // Sï¿½lo lo inyectamos si el filtro aï¿½n no tiene valor
         if ($urlDateFrom !== '' && (($data['filter']['datefrom'] ?? '') === '')) {
             $data['filter']['datefrom'] = $urlDateFrom;
         }
 		
-		// Sólo lo inyectamos si el filtro aún no tiene valor
+		// Sï¿½lo lo inyectamos si el filtro aï¿½n no tiene valor
         if ($urlDateTo !== '' && (($data['filter']['dateto'] ?? '') === '')) {
             $data['filter']['dateto'] = $urlDateTo;
         }
@@ -225,39 +228,60 @@ class LogsModel extends ListModel
     
         // Sanitizamos la entrada
         if (!empty($search)) {
-            $search = $db->Quote('%' . $db->escape($search, true) . '%');
-			
+            $searchParam = '%' . $search . '%';
+
 			if (strstr($this->dbtype,"mysql")) {
-				$query->where('(a.ip LIKE '.$search.' OR a.time LIKE '.$search.' OR a.username LIKE '.$search.' OR a.description LIKE '.$search.' OR a.uri LIKE '.$search.' OR a.geolocation LIKE '.$search.')');
+				$query->where('(' . $db->quoteName('a.ip') . ' LIKE :search1'
+					. ' OR ' . $db->quoteName('a.time') . ' LIKE :search2'
+					. ' OR ' . $db->quoteName('a.username') . ' LIKE :search3'
+					. ' OR ' . $db->quoteName('a.description') . ' LIKE :search4'
+					. ' OR ' . $db->quoteName('a.uri') . ' LIKE :search5'
+					. ' OR ' . $db->quoteName('a.geolocation') . ' LIKE :search6)');
 			} else if (strstr($this->dbtype,"pgsql")) {
-				$query->where('(a.ip LIKE '.$search.' OR CAST(a.time as TEXT) LIKE '.$search.' OR a.username LIKE '.$search.' OR a.description LIKE '.$search.' OR a.uri LIKE '.$search.' OR a.geolocation LIKE '.$search.')');
+				$query->where('(' . $db->quoteName('a.ip') . ' LIKE :search1'
+					. ' OR CAST(' . $db->quoteName('a.time') . ' as TEXT) LIKE :search2'
+					. ' OR ' . $db->quoteName('a.username') . ' LIKE :search3'
+					. ' OR ' . $db->quoteName('a.description') . ' LIKE :search4'
+					. ' OR ' . $db->quoteName('a.uri') . ' LIKE :search5'
+					. ' OR ' . $db->quoteName('a.geolocation') . ' LIKE :search6)');
 			}
-        }		
-            
+			$query->bind(':search1', $searchParam)
+				->bind(':search2', $searchParam)
+				->bind(':search3', $searchParam)
+				->bind(':search4', $searchParam)
+				->bind(':search5', $searchParam)
+				->bind(':search6', $searchParam);
+        }
+
         // Filtramos la descripcion
         if ($description = $this->getState('filter.description')) {
-            $query->where('a.tag_description = '.$db->quote($description));
+            $query->where($db->quoteName('a.tag_description') . ' = :description')
+				->bind(':description', $description);
         }
-		    
+
         // Filtramos el tipo
         if ($log_type = $this->getState('filter.type')) {
-            $query->where('a.type = '.$db->quote($log_type));
+            $query->where($db->quoteName('a.type') . ' = :logtype')
+				->bind(':logtype', $log_type);
         }
-        
+
         // Filtramos leido/no leido
         $leido = $this->getState('filter.leido');
-		
+
 		if (empty($leido)) {
 			$leido = 0;
 		}
-		
+
         if (is_numeric($leido)) {
+			$leidoInt = (int) $leido;
 			if (strstr($this->dbtype,"mysql")) {
-				 $query->where('a.marked = '.(int) $leido);
+				 $query->where($db->quoteName('a.marked') . ' = :leido')
+					->bind(':leido', $leidoInt, \Joomla\Database\ParameterType::INTEGER);
 			} else if (strstr($this->dbtype,"pgsql")) {
-				 $query->where("CAST(a.marked as TEXT) = '".(int) $leido . "'");
+				 $leidoStr = (string) $leidoInt;
+				 $query->where('CAST(' . $db->quoteName('a.marked') . ' as TEXT) = :leido')
+					->bind(':leido', $leidoStr);
 			}
-           
         }       
     
         // Filtramos el rango de fechas       
@@ -315,7 +339,7 @@ class LogsModel extends ListModel
     }
         
 	/**
-     * Chequea si un string es una fecha válida
+     * Chequea si un string es una fecha vï¿½lida
      *
 	 * @param   string             $myDateString    The date to check
      *
@@ -328,13 +352,13 @@ class LogsModel extends ListModel
     }
 
     /**
-     * Cambia el estado de marcado (leído/no leído) de los logs indicados.
+     * Cambia el estado de marcado (leï¿½do/no leï¿½do) de los logs indicados.
      *
-     * - Si $uids es null, leerá los IDs de la request: input['cid'] (array).
-     * - Sanitiza y normaliza los IDs, evitando valores no numéricos y duplicados.
-     * - Usa UPDATE con WHERE IN y parámetros ligados (sin concatenaciones).
+     * - Si $uids es null, leerï¿½ los IDs de la request: input['cid'] (array).
+     * - Sanitiza y normaliza los IDs, evitando valores no numï¿½ricos y duplicados.
+     * - Usa UPDATE con WHERE IN y parï¿½metros ligados (sin concatenaciones).
      *
-     * @param  bool                $setRead true => marcado=1 (leído), false => marcado=0 (no leído)
+     * @param  bool                $setRead true => marcado=1 (leï¿½do), false => marcado=0 (no leï¿½do)
      * @param  array<int|string>|null $uids   IDs de logs a actualizar; si null, usa input['cid']
      * @return void
      */
@@ -350,7 +374,7 @@ class LogsModel extends ListModel
         }
 
         // Normaliza IDs a enteros positivos y quita duplicados
-        // Convierte in-place y vuelve a mapear a int por si el helper no actuó por referencia
+        // Convierte in-place y vuelve a mapear a int por si el helper no actuï¿½ por referencia
 		ArrayHelper::toInteger($uids);
 		$uids = array_map(static fn ($v): int => (int) $v, (array) $uids);
 
@@ -379,7 +403,7 @@ class LogsModel extends ListModel
             $paramIds[$i]   = (int) $id; // valor estable
         }
 
-        $marked = $setRead ? 1 : 0; // variable (no expresión)
+        $marked = $setRead ? 1 : 0; // variable (no expresiï¿½n)
 
         // 2) Construye la query
         $query
@@ -393,7 +417,7 @@ class LogsModel extends ListModel
         $query->bind(':marked', $marked, ParameterType::INTEGER);
 
         foreach ($paramIds as $i => $val) {
-            // ¡OJO! Hay que ligar el elemento del array, no (int)$id ni $ids[$i]
+            // ï¿½OJO! Hay que ligar el elemento del array, no (int)$id ni $ids[$i]
             $query->bind(':id' . $i, $paramIds[$i], ParameterType::INTEGER);
         }
 
@@ -401,7 +425,7 @@ class LogsModel extends ListModel
             $db->setQuery($query);
             $db->execute();
         } catch (\Throwable $e) {
-            // Mensaje genérico para el usuario
+            // Mensaje genï¿½rico para el usuario
             Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_ERROR_UPDATING_LOGS'), 'error');
 			Log::add('LogsModel. markLogs function error: ' . $e->getMessage(), Log::ERROR, 'com_securitycheckpro');
             
@@ -485,15 +509,15 @@ class LogsModel extends ListModel
 
     public function add_to_whitelist(): void
     {
-        // En whitelist no aplicamos la restricción de “propia IP”
+        // En whitelist no aplicamos la restricciï¿½n de ï¿½propia IPï¿½
         $this->addIpsToList('whitelist', false);
     }
 
     /**
-     * Núcleo común para añadir IPs a blacklist/whitelist desde los logs seleccionados.
+     * Nï¿½cleo comï¿½n para aï¿½adir IPs a blacklist/whitelist desde los logs seleccionados.
      *
      * @param 'blacklist'|'whitelist' $listType
-     * @param bool                    $preventSelfBlock  Evita añadir la IP del cliente (sólo blacklist)
+     * @param bool                    $preventSelfBlock  Evita aï¿½adir la IP del cliente (sï¿½lo blacklist)
      */
     private function addIpsToList(string $listType, bool $preventSelfBlock): void
     {
@@ -553,7 +577,7 @@ class LogsModel extends ListModel
             return '';
         };
 
-        // 3) IPs candidatas (normalizadas, únicas)
+        // 3) IPs candidatas (normalizadas, ï¿½nicas)
         /** @var array<string,bool> $candidateIps */
         $candidateIps = [];
         foreach ($rows as $row) {
@@ -569,7 +593,7 @@ class LogsModel extends ListModel
             return;
         }
 
-        // 4) Evita bloquear IP propia si aplica (sólo blacklist)
+        // 4) Evita bloquear IP propia si aplica (sï¿½lo blacklist)
         $selfIpRemoved = false;
         if ($preventSelfBlock) {
             try {
@@ -582,7 +606,7 @@ class LogsModel extends ListModel
                     $app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_CANT_ADD_YOUR_OWN_IP'), 'warning');
                 }
             } catch (\Throwable $e) {
-                // si falla la detección de IP cliente, no impedimos el flujo
+                // si falla la detecciï¿½n de IP cliente, no impedimos el flujo
             }
         }
 
@@ -610,7 +634,7 @@ class LogsModel extends ListModel
             }
         }
 
-        // 6) Inserta bajo transacción
+        // 6) Inserta bajo transacciï¿½n
         $added = 0;
         if ($candidateIps !== []) {
             $db->transactionStart();
@@ -641,12 +665,12 @@ class LogsModel extends ListModel
             $app->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_IGNORED', $notAdded), 'notice');
         }
 
-        // 8) Marca los logs como leídos usando tu nuevo método
+        // 8) Marca los logs como leï¿½dos usando tu nuevo mï¿½todo
         $this->markLogs(true, $ids);
     }
 
    	/**
-     * Obtiene el valor de una opción de configuración
+     * Obtiene el valor de una opciï¿½n de configuraciï¿½n
      *
      *
 	 * @param   string             $key    The key of the element
@@ -665,7 +689,7 @@ class LogsModel extends ListModel
     }
 
     /**
-     * Hace una consulta a la tabla especificada como parámetro
+     * Hace una consulta a la tabla especificada como parï¿½metro
      *
      * @param   string             $key_name    The name of the key
      *
@@ -692,7 +716,7 @@ class LogsModel extends ListModel
     }
 
     /**
-     * Obtiene la configuración de los parámetros de la opción 'Mode'
+     * Obtiene la configuraciï¿½n de los parï¿½metros de la opciï¿½n 'Mode'
      *
      *
      * @return  array<string, array<string>>
@@ -711,8 +735,8 @@ class LogsModel extends ListModel
     }
 
 	/**
-	 * Vacía toda la tabla de logs (backend).
-	 * Requiere permiso fuerte específico.
+	 * Vacï¿½a toda la tabla de logs (backend).
+	 * Requiere permiso fuerte especï¿½fico.
 	 */
 	function delete_all(): void
 	{
@@ -743,7 +767,7 @@ class LogsModel extends ListModel
 	}    
 	
 	/**
-     * Función para guardar en la tabla securitycheck_storage la configuración pasada como argumento. Se usa para añadir un componente como excepción desde los logs
+     * Funciï¿½n para guardar en la tabla securitycheck_storage la configuraciï¿½n pasada como argumento. Se usa para aï¿½adir un componente como excepciï¿½n desde los logs
      *
 	 * @param   array<string,mixed>      $data    The data to store
      *
@@ -802,16 +826,16 @@ class LogsModel extends ListModel
 	}
 	
 	/**
-	 * Añade de forma segura un elemento a una lista CSV.
+	 * Aï¿½ade de forma segura un elemento a una lista CSV.
 	 *
 	 * Reglas:
-	 *  - No guarda HTML escapado (escapa sólo al mostrar).
+	 *  - No guarda HTML escapado (escapa sï¿½lo al mostrar).
 	 *  - Normaliza espacios y elimina controles.
 	 *  - Rechaza elementos que contengan comas.
-	 *  - Evita duplicados (comparación case-insensitive).
+	 *  - Evita duplicados (comparaciï¿½n case-insensitive).
 	 *
 	 * @param string $csv         Lista actual separada por comas (p.ej. "A,B,C")
-	 * @param string $newElement  Elemento a añadir (sin coma)
+	 * @param string $newElement  Elemento a aï¿½adir (sin coma)
 	 *
 	 * @return string             Nueva lista CSV normalizada
 	 *
@@ -819,7 +843,7 @@ class LogsModel extends ListModel
 	 */
 	function addElement(string $csv, string $newElement): string
 	{
-		// Limpieza básica del nuevo elemento
+		// Limpieza bï¿½sica del nuevo elemento
 		$cleanNew = trim($newElement);
 		// Elimina caracteres de control (incluyendo \r \n \t, etc.)
 		$cleanNew = preg_replace('/\p{C}+/u', '', $cleanNew) ?? '';
@@ -828,7 +852,7 @@ class LogsModel extends ListModel
 		$cleanNew = preg_replace('/\s+/u', ' ', $cleanNew) ?? '';
 
 		if ($cleanNew === '') {
-			// No añadimos vacíos; devolvemos tal cual normalizado
+			// No aï¿½adimos vacï¿½os; devolvemos tal cual normalizado
 			return $this->normalizeCsv($csv);
 		}
 
@@ -878,7 +902,7 @@ class LogsModel extends ListModel
 			$v = preg_replace('/\p{C}+/u', '', $v) ?? '';
 			$v = preg_replace('/\s+/u', ' ', $v) ?? '';
 			if ($v === '' || str_contains($v, ',')) {
-				// Descarta vacíos y entradas corruptas con coma
+				// Descarta vacï¿½os y entradas corruptas con coma
 				continue;
 			}
 			$key = mb_strtolower($v, 'UTF-8');
@@ -892,7 +916,7 @@ class LogsModel extends ListModel
 	}
 
 	/**
-	 * Normaliza un CSV (útil para entradas existentes).
+	 * Normaliza un CSV (ï¿½til para entradas existentes).
 	 *
 	 * @param string $csv
 	 * @return string
@@ -903,14 +927,14 @@ class LogsModel extends ListModel
 	}
 	
 	/**
-     * Añade excepciones a la configuración a partir de logs seleccionados.
+     * Aï¿½ade excepciones a la configuraciï¿½n a partir de logs seleccionados.
      *
      * Seguridad:
      *  - Tipado estricto y retorno void
-     *  - Consultas preparadas con parámetros tipados
-     *  - Allow-list de tags -> clave de parámetro
+     *  - Consultas preparadas con parï¿½metros tipados
+     *  - Allow-list de tags -> clave de parï¿½metro
      *  - Coincidencia exacta por elemento (sin 'stristr')
-     *  - Saneado/validación del valor 'component'
+     *  - Saneado/validaciï¿½n del valor 'component'
      *
      * @return void
      */
@@ -931,7 +955,7 @@ class LogsModel extends ListModel
             return;
         }
 
-        // --- Carga de parámetros del firewall (storage_key = 'pro_plugin') ---
+        // --- Carga de parï¿½metros del firewall (storage_key = 'pro_plugin') ---
         $query = $db->getQuery(true)
             ->select($db->quoteName('storage_value'))
             ->from($db->quoteName('#__securitycheckpro_storage'))
@@ -954,12 +978,12 @@ class LogsModel extends ListModel
                     $params = $decoded;
                 }
             } catch (\Throwable) {
-                // Si hay JSON corrupto, continúa con params vacíos para no romper UX
+                // Si hay JSON corrupto, continï¿½a con params vacï¿½os para no romper UX
                 $params = [];
             }
         }
 
-        // Allow-list: tag_description => clave de configuración
+        // Allow-list: tag_description => clave de configuraciï¿½n
         $tagToParam = [
             'TAGS_STRIPPED'         => 'strip_tags_exceptions',
             'DUPLICATE_BACKSLASHES' => 'duplicate_backslashes_exceptions',
@@ -1011,10 +1035,10 @@ class LogsModel extends ListModel
                 continue;
             }
 
-            // Asegura que el índice existe como CSV (compatibilidad)
+            // Asegura que el ï¿½ndice existe como CSV (compatibilidad)
             $currentCsv = (string) ($params[$paramKey] ?? '');
 
-            // Añade si no existe (comparación exacta tras normalizar)
+            // Aï¿½ade si no existe (comparaciï¿½n exacta tras normalizar)
             [$newCsv, $added] = $this->addToCsvListUnique($currentCsv, $component);
 
             if ($added) {
@@ -1029,7 +1053,7 @@ class LogsModel extends ListModel
             }
         }
 
-        // --- Guarda configuración sólo si hubo cambios ---
+        // --- Guarda configuraciï¿½n sï¿½lo si hubo cambios ---
         if ($somethingAdded) {
             try {
                 $this->save_config($params);                
@@ -1044,7 +1068,7 @@ class LogsModel extends ListModel
      * Normaliza y valida el identificador de componente.
      * Acepta patrones tipo "com_xxx", "plugin:group/element", etc.
      *
-     * @return non-empty-string|string '' si inválido
+     * @return non-empty-string|string '' si invï¿½lido
      */
     private function sanitizeComponent(string $value): string
     {
@@ -1058,21 +1082,21 @@ class LogsModel extends ListModel
             $value = substr($value, 0, 255);
         }
 
-        // Permitimos letras, dígitos, guion, guion bajo, punto, dos puntos y barra
+        // Permitimos letras, dï¿½gitos, guion, guion bajo, punto, dos puntos y barra
         $value = preg_replace('/[^a-zA-Z0-9_\-.:\/]/', '', $value) ?? '';
 
         return $value;
     }
 
     /**
-     * Dada una lista CSV, añade un elemento si no existe (comparación exacta tras trim).
+     * Dada una lista CSV, aï¿½ade un elemento si no existe (comparaciï¿½n exacta tras trim).
      *
      * @param non-empty-string $value
-     * @return array{0:string,1:bool} [csvNormalizado, añadido]
+     * @return array{0:string,1:bool} [csvNormalizado, aï¿½adido]
      */
     private function addToCsvListUnique(string $csv, string $value): array
     {
-        // Explota en items, normaliza espacios y filtra vacíos
+        // Explota en items, normaliza espacios y filtra vacï¿½os
         $items = array_values(
             array_filter(
                 array_map(
@@ -1083,7 +1107,7 @@ class LogsModel extends ListModel
             )
         );
 
-        // Coincidencia exacta (case-sensitive). Si prefieres insensible a mayúsculas, usa strtolower en ambos lados.
+        // Coincidencia exacta (case-sensitive). Si prefieres insensible a mayï¿½sculas, usa strtolower en ambos lados.
         $exists = in_array($value, $items, true);
 
         if (!$exists) {

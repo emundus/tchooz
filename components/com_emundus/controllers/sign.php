@@ -363,6 +363,7 @@ class EmundusControllerSign extends BaseController
 
 	public function cancelrequest(): void
 	{
+		$this->checkToken();
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => 0];
 
 		if (!EmundusHelperAccess::asAccessAction($this->sign_action_id, 'd', $this->user->id))
@@ -370,8 +371,6 @@ class EmundusControllerSign extends BaseController
 			$response['code']    = 403;
 			$response['message'] = 'Access denied.';
 			$this->sendJsonResponse($response);
-
-			return;
 		}
 
 		$cancel_reason = $this->input->getString('input', '');
@@ -396,8 +395,6 @@ class EmundusControllerSign extends BaseController
 				$response['code']    = 400;
 				$response['message'] = 'Missing required fields.';
 				$this->sendJsonResponse($response);
-
-				return;
 			}
 
 			try
@@ -432,6 +429,7 @@ class EmundusControllerSign extends BaseController
 
 	public function sendreminder(): void
 	{
+		$this->checkToken();
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => 0];
 
 		if (!EmundusHelperAccess::asAccessAction($this->sign_action_id, 'u', $this->user->id))

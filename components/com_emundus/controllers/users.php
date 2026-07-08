@@ -33,8 +33,10 @@ use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\EmundusResponse;
+use Tchooz\Services\FileSecurityService;
 use Tchooz\Services\UploadService;
 use Tchooz\Controller\EmundusController;
+use Tchooz\Enums\Actions\ActionEnum;
 
 /**
  * Emundus Component Users Controller
@@ -539,8 +541,13 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER, [
+		['id' => ActionEnum::ADD_GROUP, 'mode' => CrudEnum::CREATE]
+	])]
 	public function addgroup()
 	{
+		$this->checkToken();
+
 		$gname   = $this->input->getString('gname', null);
 		$actions = $this->input->getString('actions', null);
 		$progs   = $this->input->getString('gprog', null);
@@ -1243,10 +1250,10 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::REGISTERED)]
 	public function uploaddefaultattachment()
 	{
 		$user = $this->user;
-
 
 		$file             = $this->input->files->get('file');
 		$attachment_id    = $this->input->getInt('attachment_id');
@@ -1254,6 +1261,12 @@ class EmundusControllerUsers extends EmundusController
 
 		if (isset($file))
 		{
+			if (!FileSecurityService::isAllowedUploadExtension($file['name']))
+			{
+				echo json_encode((object) ['status' => false, 'msg' => Text::_('COM_EMUNDUS_ERROR_INVALID_FILETYPE')]);
+				exit;
+			}
+
 			$root_dir   = "images/emundus/files/" . $user->id;
 			$target_dir = $root_dir . '/default_attachments/';
 
@@ -1286,23 +1299,16 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::REGISTERED)]
 	public function deleteprofileattachment()
 	{
 		$user = $this->user;
 
-
 		$id       = $this->input->getInt('id', null);
-		$filename = $this->input->getString('filename');
-
 		if (!empty($id))
 		{
 			$m_users = $this->getModel('Users');
 			$deleted = $m_users->deleteProfileAttachment($id, $user->id);
-
-			if ($deleted && !empty($filename))
-			{
-				unlink(JPATH_SITE . DS . $filename);
-			}
 		}
 		else
 		{

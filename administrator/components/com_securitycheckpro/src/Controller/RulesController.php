@@ -14,18 +14,22 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
 use Joomla\Input\Input;
-use Joomla\CMS\MVC\Controller\BaseController;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\SecuritycheckproBaseController;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\RulesModel;
 
 /**
  * Securitycheckpros  Controller
  */
-class RulesController extends BaseController
+class RulesController extends SecuritycheckproBaseController
 {
 	/**
-	 * Método para aplicar las reglas a un grupo o conjunto de grupos
+	 * Mï¿½todo para aplicar las reglas a un grupo o conjunto de grupos
 	*/
     public function apply_rules():void {
+		
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
         // Inicializamos las variables.
         $app   = Factory::getApplication();
 		/** @var Input $jinput */
@@ -57,9 +61,13 @@ class RulesController extends BaseController
     }
 
 	/**
-	 * Método para NO aplicar las reglas a un grupo o conjunto de grupos
+	 * Mï¿½todo para NO aplicar las reglas a un grupo o conjunto de grupos
 	*/    
     public function not_apply_rules():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
         // Inicializamos las variables.
         $app   = Factory::getApplication();
 		/** @var Input $jinput */
