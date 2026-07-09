@@ -2,20 +2,28 @@
 
 namespace Tchooz\Entities\Contacts;
 
+use Tchooz\Attributes\SensitiveData;
+
 class AddressEntity
 {
 	private int $id;
 
+	#[SensitiveData]
 	private ?string $locality;
 
+	#[SensitiveData]
 	private ?string $region;
 
+	#[SensitiveData]
 	private ?string $street_address;
 
+	#[SensitiveData]
 	private ?string $extended_address;
 
+	#[SensitiveData]
 	private ?string $postal_code;
 
+	#[SensitiveData]
 	private ?string $description;
 
 	private ?int $country;

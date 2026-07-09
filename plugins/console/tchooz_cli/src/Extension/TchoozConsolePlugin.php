@@ -22,6 +22,7 @@ use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozUpdateCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozVanillaCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozUserAddCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozMigrateChecklistCommand;
+use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozAnonymizeUsersCommand;
 
 class TchoozConsolePlugin extends CMSPlugin implements SubscriberInterface
 {
@@ -50,5 +51,6 @@ class TchoozConsolePlugin extends CMSPlugin implements SubscriberInterface
 		$app->addCommand(new TchoozFixCollations($db));
 		$app->addCommand(new TchoozFixEvaluationsDataCommand($db));
 		$app->addCommand(new TchoozLanguage($db));
+		$app->addCommand(new TchoozAnonymizeUsersCommand($db));
 	}
 }

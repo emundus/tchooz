@@ -9,29 +9,38 @@
 
 namespace Tchooz\Entities\Contacts;
 
+use Tchooz\Attributes\SensitiveData;
 use Tchooz\Entities\Comments\CommentEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
+use Tchooz\Enums\Security\SensitiveDataStrategy;
 
 class OrganizationEntity
 {
 	private int $id;
 
+	#[SensitiveData(SensitiveDataStrategy::FAKE_ORGANIZATION_NAME)]
 	private string $name;
 
+	#[SensitiveData]
 	private ?string $description;
 
+	#[SensitiveData]
 	private ?string $url_website;
 
 	private bool $published;
 
+	// $address holds a lazy-loaded AddressEntity; the SQL column stores a FK to
+	// #__emundus_addresses which is anonymised on its own via AddressEntity.
 	private ?AddressEntity $address;
 
 	private ?array $referent_contacts;
 	private ?array $other_contacts;
 
+	#[SensitiveData(SensitiveDataStrategy::UNIQUE_PLACEHOLDER)]
 	private ?string $identifier_code;
 
+	#[SensitiveData]
 	private ?string $logo;
 
 	private ?VerifiedStatusEnum $status;
