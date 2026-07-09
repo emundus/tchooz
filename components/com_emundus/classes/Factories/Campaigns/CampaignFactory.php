@@ -77,7 +77,7 @@ class CampaignFactory extends AbstractFactory
 		$this->buildMoreProperties($dbObject, $this->elements);
 
 		return new CampaignEntity(
-			label: $dbObject->label,
+			label: $dbObject->label ?? '',
 			start_date: new DateTime($dbObject->start_date),
 			end_date: new DateTime($dbObject->end_date),
 			program: $relations[self::RELATION_PROGRAM] ?? null,

@@ -2232,11 +2232,6 @@ class EmundusModelCampaign extends ListModel
 				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($cid));
 			$this->_db->setQuery($query);
 			$old_data = $this->_db->loadAssoc();
-
-			if (!empty($data['label']) && empty($selectedLang))
-			{
-				$m_falang->updateFalang($labels, $cid, 'emundus_setup_campaigns', 'label');
-			}
 			
 			// Check if we have campaign more form
 			if($force_campaigns_more == 1)
