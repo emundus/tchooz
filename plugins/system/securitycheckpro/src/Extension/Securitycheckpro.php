@@ -830,13 +830,13 @@ class Securitycheckpro extends CMSPlugin
 		/* ========= Command Injection ========= */
 		if (!$modified && !$is_admin) {
 			$cmdPatterns = [
-				'/(?:^|[;&|`])\s*(?:cat|ls|dir|whoami|id|uname|wget|curl|nc|ncat|bash|sh|cmd|powershell|ping|nslookup|traceroute|netstat|ifconfig|ipconfig)\b/i',
+				'/(?:^|[;&|`])\s*(?:cat|ls|dir|whoami|uname|wget|curl|nc|ncat|bash|sh|cmd|powershell|ping|nslookup|traceroute|netstat|ifconfig|ipconfig)\b/i',
 				'/\$\([^)]+\)/',                    // $(command)
-				'/`\s*(?:cat|ls|dir|whoami|id|uname|wget|curl|nc|ncat|bash|sh|cmd|powershell|ping|nslookup|traceroute|netstat|ifconfig|ipconfig)\b[^`]*`/i', // `command`
-				'/\|\s*(?:cat|ls|dir|whoami|id|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
-				'/;\s*(?:cat|ls|dir|whoami|id|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
-				'/&&\s*(?:cat|ls|dir|whoami|id|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
-				'/\|\|\s*(?:cat|ls|dir|whoami|id|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
+				'/`\s*(?:cat|ls|dir|whoami|uname|wget|curl|nc|ncat|bash|sh|cmd|powershell|ping|nslookup|traceroute|netstat|ifconfig|ipconfig)\b[^`]*`/i', // `command`
+				'/\|\s*(?:cat|ls|dir|whoami|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
+				'/;\s*(?:cat|ls|dir|whoami|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
+				'/&&\s*(?:cat|ls|dir|whoami|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
+				'/\|\|\s*(?:cat|ls|dir|whoami|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
 			];
 			foreach ($cmdPatterns as $cmdRx) {
 				if (preg_match($cmdRx, $string)) {
