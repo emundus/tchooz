@@ -246,7 +246,7 @@ class EmundusModelFiles extends JModelLegacy
                                           where ' . $def_elmt->table_join . '.' . $def_elmt->table_join_key . '=' . $def_elmt->join_from_table . '.id' . '
                                         )
                                     ' . $publish_query . '
-                                  ) AS `' . $def_elmt->tab_name . '___' . $def_elmt->element_name . '`';
+                                  ) AS `' . $def_elmt->table_join . '___' . $def_elmt->element_name . '`';
 					}
 					else {
 						$query = '(
@@ -2205,8 +2205,9 @@ class EmundusModelFiles extends JModelLegacy
 	 * @param $isGroup
 	 *
 	 * @return bool|mixed
+	 * @deprecated
 	 */
-	public function unlinkEvaluators($fnum, $id, $isGroup)
+	public function unlinkEvaluators(string $fnum, int $id, bool $isGroup): bool
 	{
 		try {
 

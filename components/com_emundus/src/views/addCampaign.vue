@@ -1113,6 +1113,9 @@ export default {
 				parent_id: this.choicesModuleEnabled && this.form.parent_id ? this.form.parent_id.value : null,
 			};
 
+			// Remove langCache entries with empty key
+			this.langCache = Object.fromEntries(Object.entries(this.langCache).filter(([lang]) => lang !== ''));
+
 			// Envoie une requête par langue ayant des modifications en cache
 			const savePromises = Object.entries(this.langCache).map(([lang, cached]) => {
 				return campaignService.updateCampaign(
@@ -1314,7 +1317,7 @@ export default {
 
 	watch: {
 		selectedLang(newLang, oldLang) {
-			if (newLang === oldLang || !this.campaignId) return;
+			if (newLang === oldLang || !oldLang || !this.campaignId) return;
 
 			// Sauvegarde les valeurs de l'ancienne langue en mémoire avant de switcher
 			this.langCache[oldLang] = {
