@@ -489,6 +489,24 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                 <hr />
 							<?php endif; ?>
                             <div class="<?= $moduleclass_sfx ?> mod_emundus_applications___content em-mb-32">
+                                <?php if (($show_show_campaigns && $applicant_can_renew) || ($show_add_application && $applicant_can_renew)) : ?>
+                                    <div class="hover-and-tile-container  hover-and-tile-container-add"
+                                         style="height: 300px;">
+                                        <?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
+                                            <div id="tile-hover-offset-request"></div>
+                                        <?php endif; ?>
+                                        <div
+                                            class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
+                                            <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                                                <div id="background-shapes"
+                                                     alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+                                            <?php endif; ?>
+                                            <span class="material-symbols-outlined tw-w-fit">add_circle</span>
+                                            <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+
 								<?php foreach ($files as $application) : ?>
 
 									<?php
@@ -805,23 +823,6 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 										<?php endif; ?>
 									<?php } ?>
 								<?php endforeach; ?>
-								<?php if (($show_show_campaigns && $applicant_can_renew) || ($show_add_application && $applicant_can_renew)) : ?>
-                                    <div class="hover-and-tile-container  hover-and-tile-container-add"
-                                         style="height: 300px;">
-										<?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
-                                            <div id="tile-hover-offset-request"></div>
-										<?php endif; ?>
-                                        <div
-                                            class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
-											<?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                                <div id="background-shapes"
-                                                     alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
-											<?php endif; ?>
-                                            <span class="material-symbols-outlined tw-w-fit">add_circle</span>
-                                            <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
-                                        </div>
-                                    </div>
-								<?php endif; ?>
 
                                 <?php if ($displayImportPublicFilesAction): ?>
                                     <div id="import_file">
@@ -919,6 +920,23 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 							<?php endif; ?>
                             <table class="em-ml-12" style="border-collapse: separate;border-spacing: 0 6px;">
                                 <tbody>
+                                <?php if (($show_show_campaigns && $applicant_can_renew) || ($show_add_application && $applicant_can_renew)) : ?>
+                                    <tr class="em-pointer list-application-add">
+                                        <td>
+                                            <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                                                <div id="background-shapes"
+                                                     alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+                                            <?php endif; ?>
+                                            <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <span class="material-symbols-outlined tw-w-fit">add_circle</span>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                <?php endif; ?>
 								<?php foreach ($files as $application) : ?>
 
 									<?php
@@ -1035,23 +1053,6 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 										<?php endif; ?>
 									<?php } ?>
 								<?php endforeach; ?>
-								<?php if (($show_show_campaigns && $applicant_can_renew) || ($show_add_application && $applicant_can_renew)) : ?>
-                                    <tr class="em-pointer list-application-add">
-                                        <td>
-											<?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                                <div id="background-shapes"
-                                                     alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
-											<?php endif; ?>
-                                            <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
-                                        </td>
-                                        <td></td>
-                                        <td>
-                                            <span class="material-symbols-outlined tw-w-fit">add_circle</span>
-                                        </td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-								<?php endif; ?>
                                 <?php if ($displayImportPublicFilesAction): ?>
                                     <tr class="tw-cursor-pointer" id="import_file">
                                         <td>
