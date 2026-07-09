@@ -9,28 +9,35 @@
 
 namespace Tchooz\Entities\Contacts;
 
+use Tchooz\Attributes\SensitiveData;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Comments\CommentEntity;
 use Tchooz\Entities\Country;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 use Tchooz\Enums\Contacts\GenderEnum;
+use Tchooz\Enums\Security\SensitiveDataStrategy;
 
 class ContactEntity
 {
 	private int $id;
 
+	#[SensitiveData(SensitiveDataStrategy::FAKE_LASTNAME)]
 	private string $lastname;
 
+	#[SensitiveData(SensitiveDataStrategy::FAKE_FIRSTNAME)]
 	private string $firstname;
 
 	private string $fullname;
 
+	#[SensitiveData(SensitiveDataStrategy::FAKE_EMAIL)]
 	private string $email;
 
+	#[SensitiveData]
 	private ?string $phone_1;
 
 	private int $user_id;
 
+	#[SensitiveData(SensitiveDataStrategy::NULL_VALUE)]
 	private ?string $birthdate;
 
 	private ?GenderEnum $gender;
@@ -47,10 +54,13 @@ class ContactEntity
 
 	private ?array $application_files = [];
 
+	#[SensitiveData]
 	private ?string $profile_picture;
 
+	#[SensitiveData]
 	private ?string $fonction;
 
+	#[SensitiveData]
 	private ?string $service;
 
 	private ?array $comments = [];
