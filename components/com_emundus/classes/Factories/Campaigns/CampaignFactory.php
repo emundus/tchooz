@@ -114,7 +114,7 @@ class CampaignFactory implements DBFactory
 	public function buildEntity(object $dbObject, ?ProgramRepository $programRepository = null, ?CampaignRepository $campaignRepository = null): CampaignEntity
 	{
 		return new CampaignEntity(
-			label: $dbObject->label,
+			label: $dbObject->label ?? '',
 			start_date: new DateTime($dbObject->start_date),
 			end_date: new DateTime($dbObject->end_date),
 			program: !empty($programRepository) ? $programRepository->getByCode($dbObject->training) : null,
