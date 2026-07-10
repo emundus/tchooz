@@ -18,10 +18,12 @@ use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozKeycloakCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozMigrateCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozMigrateCheckReqsCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozResetFabrikConnectionCommand;
+use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozResetSynchronizersCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozUpdateCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozVanillaCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozUserAddCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozMigrateChecklistCommand;
+use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozAnonymizeUsersCommand;
 
 class TchoozConsolePlugin extends CMSPlugin implements SubscriberInterface
 {
@@ -41,6 +43,7 @@ class TchoozConsolePlugin extends CMSPlugin implements SubscriberInterface
 		$app->addCommand(new TchoozUpdateCommand($db));
 		$app->addCommand(new TchoozMigrateCommand($db));
 		$app->addCommand(new TchoozResetFabrikConnectionCommand($db));
+		$app->addCommand(new TchoozResetSynchronizersCommand($db));
 		$app->addCommand(new TchoozVanillaCommand($db));
 		$app->addCommand(new TchoozConfigCommand($db));
 		$app->addCommand(new TchoozKeycloakCommand($db));
@@ -50,5 +53,6 @@ class TchoozConsolePlugin extends CMSPlugin implements SubscriberInterface
 		$app->addCommand(new TchoozFixCollations($db));
 		$app->addCommand(new TchoozFixEvaluationsDataCommand($db));
 		$app->addCommand(new TchoozLanguage($db));
+		$app->addCommand(new TchoozAnonymizeUsersCommand($db));
 	}
 }

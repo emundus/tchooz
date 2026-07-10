@@ -27,6 +27,8 @@ use Tchooz\Entities\Messages\TriggerEntity;
 use Tchooz\Enums\Emails\TagTypeEnum;
 use Tchooz\Repositories\Reference\InternalReferenceRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Entities\Emails\TagContext;
+use Tchooz\Entities\Emails\TagProviderRegistry;
 
 class EmundusModelEmails extends JModelList
 {
@@ -850,6 +852,28 @@ class EmundusModelEmails extends JModelList
 						$replacements[] = '';
 					}
 				}
+			}
+		}
+
+		// Constant tags resolved by registered providers (extensible structure: one class per tag group).
+		if (!class_exists('EmundusHelperTags')) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/tags.php');
+		}
+		$tags_in_content = !empty($content) ? (new EmundusHelperTags())->getVariables($content, 'SQUARE') : [];
+		$tag_context     = new TagContext($user_id ?? 0, $fnum, null, $passwd, $content, false);
+		foreach (TagProviderRegistry::all() as $provider) {
+			// Cheap string check first: when a content is given, only consider providers whose tags appear in it.
+			if (!empty($content) && empty(array_intersect($provider->getProvidedTags(), $tags_in_content))) {
+				continue;
+			}
+
+			if (!$provider->supports($tag_context)) {
+				continue;
+			}
+
+			foreach ($provider->provide($tag_context) as $tag => $value) {
+				$patterns[]     = '/\[' . $tag . '\]/';
+				$replacements[] = $value;
 			}
 		}
 

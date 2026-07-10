@@ -15,7 +15,7 @@ use Tchooz\Exception\EmundusInvalidAmountException;
 use Tchooz\Factories\Payment\StripeItemFactory;
 use Tchooz\Repositories\Payment\TransactionRepository;
 
-class Stripe
+class Stripe implements PaymentSynchronizerInterface
 {
 	const HANDLED_EVENTS = [
 		'checkout.session.completed',

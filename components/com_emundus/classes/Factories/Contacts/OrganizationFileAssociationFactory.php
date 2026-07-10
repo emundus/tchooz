@@ -54,7 +54,7 @@ class OrganizationFileAssociationFactory extends EmundusFactory implements DBFac
 		}
 		elseif (in_array(self::ORGANIZATION, $relationsToLoad, true))
 		{
-			$entity->setOrganization($this->loadRelation(self::ORGANIZATION, $dbObject));
+			$entity->setOrganization($this->loadRelation(self::ORGANIZATION, (object) $dbObject));
 		}
 
 		$applicationFileObject = $this->extractPrefixed($dbObject, 'application_file_');
@@ -64,7 +64,7 @@ class OrganizationFileAssociationFactory extends EmundusFactory implements DBFac
 		}
 		elseif (in_array(self::APPLICATION_FILE, $relationsToLoad, true))
 		{
-			$entity->setApplicationFile($this->loadRelation(self::APPLICATION_FILE, $dbObject));
+			$entity->setApplicationFile($this->loadRelation(self::APPLICATION_FILE, (object) $dbObject));
 		}
 
 		return $entity;
@@ -93,12 +93,12 @@ class OrganizationFileAssociationFactory extends EmundusFactory implements DBFac
 		return $entities;
 	}
 
-	protected function loadRelation(string $relation, array $object): mixed
+	protected function loadRelation(string $relation, object $dbObject): mixed
 	{
 		return match ($relation)
 		{
-			self::ORGANIZATION     => (new OrganizationRepository(false))->getById((int) $object['organization_id']),
-			self::APPLICATION_FILE => (new ApplicationFileRepository())->getByFnum($object['fnum']),
+			self::ORGANIZATION     => (new OrganizationRepository(false))->getById((int) $dbObject->organization_id),
+			self::APPLICATION_FILE => (new ApplicationFileRepository())->getByFnum($dbObject->fnum),
 			default                => null,
 		};
 	}
