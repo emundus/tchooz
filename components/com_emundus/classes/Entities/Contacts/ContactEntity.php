@@ -9,25 +9,35 @@
 
 namespace Tchooz\Entities\Contacts;
 
+use Tchooz\Attributes\SensitiveData;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Comments\CommentEntity;
 use Tchooz\Entities\Country;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 use Tchooz\Enums\Contacts\GenderEnum;
+use Tchooz\Enums\Security\SensitiveDataStrategy;
 
 class ContactEntity
 {
 	private int $id;
 
+	#[SensitiveData(SensitiveDataStrategy::FAKE_LASTNAME)]
 	private string $lastname;
 
+	#[SensitiveData(SensitiveDataStrategy::FAKE_FIRSTNAME)]
 	private string $firstname;
 
+	private string $fullname;
+
+	#[SensitiveData(SensitiveDataStrategy::FAKE_EMAIL)]
 	private string $email;
 
+	#[SensitiveData]
 	private ?string $phone_1;
 
 	private int $user_id;
 
+	#[SensitiveData(SensitiveDataStrategy::NULL_VALUE)]
 	private ?string $birthdate;
 
 	private ?GenderEnum $gender;
@@ -44,13 +54,18 @@ class ContactEntity
 
 	private ?array $application_files = [];
 
+	#[SensitiveData]
 	private ?string $profile_picture;
 
+	#[SensitiveData]
 	private ?string $fonction;
 
+	#[SensitiveData]
 	private ?string $service;
 
-	public function __construct(string $email, string $lastname, string $firstname, ?string $phone_1 = null, ?int $id = 0, ?int $user_id = 0, ?array $addresses = null, ?string $birth = null, GenderEnum|string|null $gender = null, ?string $fonction = null, ?string $service = null, ?array $countries = null, ?array $organizations = null, ?array $application_files = null, ?string $profile_picture = null, bool $published = true, ?VerifiedStatusEnum $status = VerifiedStatusEnum::VERIFIED)
+	private ?array $comments = [];
+
+	public function __construct(string $email, string $lastname, string $firstname, ?string $phone_1 = null, ?int $id = 0, ?int $user_id = 0, ?array $addresses = null, ?string $birth = null, GenderEnum|string|null $gender = null, ?string $fonction = null, ?string $service = null, ?array $countries = null, ?array $organizations = null, ?array $application_files = null, ?string $profile_picture = null, bool $published = true, ?VerifiedStatusEnum $status = VerifiedStatusEnum::VERIFIED, ?array $comments = null)
 	{
 		$this->email     = $email;
 		$this->lastname  = $lastname;
@@ -116,8 +131,20 @@ class ContactEntity
 			}
 		}
 
+		if(!empty($comments))
+		{
+			foreach ($comments as $comment)
+			{
+				if ($comment instanceof CommentEntity)
+				{
+					$this->comments[] = $comment;
+				}
+			}
+		}
+
 		$this->profile_picture = $profile_picture;
 		$this->published       = $published;
+		$this->fullname = $this->getFullName();
 	}
 
 	public function getId(): int
@@ -211,6 +238,24 @@ class ContactEntity
 	public function getGender(): ?GenderEnum
 	{
 		return $this->gender;
+	}
+
+	/**
+	 * @return ?CommentEntity[]
+	 */
+	public function getComments(): ?array
+	{
+		return $this->comments;
+	}
+
+	/**
+	 * @param   array<CommentEntity>|null  $comments
+	 *
+	 * @return void
+	 */
+	public function setComments(?array $comments): void
+	{
+		$this->comments = $comments;
 	}
 
 	public function setGender(?GenderEnum $gender): void

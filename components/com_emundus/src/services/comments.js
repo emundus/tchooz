@@ -144,4 +144,41 @@ export default {
 			};
 		}
 	},
+	async getCommentsByTarget(targetType, targetId) {
+		try {
+			return await client.get('getCommentsByTarget', {
+				targetType: targetType,
+				targetId: targetId,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async saveComment(comment) {
+		try {
+			return await client.post('savecomment', comment);
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async removeComment(commentId) {
+		try {
+			return await client.post('removecomment', {
+				commentId: commentId,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
 };

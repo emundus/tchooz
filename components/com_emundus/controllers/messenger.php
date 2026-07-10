@@ -105,9 +105,9 @@ class EmundusControllerMessenger extends BaseController
 
 	public function createchatroom()
 	{
-		$response = ['data' => null, 'status' => false, 'msg' => Text::_('BAD_REQUEST'), 'code' => 403];
+		$response = ['data' => null, 'status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
 
-		$fnum = $this->input->getString('fnum');
+		$fnum = $this->input->getString('fnum', '');
 
 		if (!empty($fnum)) {
 			$response['msg'] = Text::_('ACCESS_DENIED');

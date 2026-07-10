@@ -160,7 +160,7 @@ class AttachmentType
 		$this->isRequired = $isRequired;
 	}
 
-	public function getProperties(): AttachmentTypeProperty
+	public function getProperties(): ?AttachmentTypeProperty
 	{
 		return $this->properties;
 	}

@@ -54,7 +54,7 @@ class ContactFileAssociationFactory extends EmundusFactory implements DBFactory
 		}
 		elseif (in_array(self::CONTACT, $relationsToLoad, true))
 		{
-			$entity->setContact($this->loadRelation(self::CONTACT, $dbObject));
+			$entity->setContact($this->loadRelation(self::CONTACT, (object) $dbObject));
 		}
 
 		$applicationFileObject = $this->extractPrefixed($dbObject, 'application_file_');
@@ -64,7 +64,7 @@ class ContactFileAssociationFactory extends EmundusFactory implements DBFactory
 		}
 		elseif (in_array(self::APPLICATION_FILE, $relationsToLoad, true))
 		{
-			$entity->setApplicationFile($this->loadRelation(self::APPLICATION_FILE, $dbObject));
+			$entity->setApplicationFile($this->loadRelation(self::APPLICATION_FILE, (object) $dbObject));
 		}
 
 		return $entity;
@@ -93,12 +93,12 @@ class ContactFileAssociationFactory extends EmundusFactory implements DBFactory
 		return $entities;
 	}
 
-	protected function loadRelation(string $relation, array $object): mixed
+	protected function loadRelation(string $relation, object $dbObject): mixed
 	{
 		return match ($relation)
 		{
-			self::CONTACT          => (new ContactRepository(false))->getById((int) $object['contact_id']),
-			self::APPLICATION_FILE => (new ApplicationFileRepository())->getByFnum($object['fnum']),
+			self::CONTACT          => (new ContactRepository(false))->getById((int) $dbObject->contact_id),
+			self::APPLICATION_FILE => (new ApplicationFileRepository())->getByFnum($dbObject->fnum),
 			default                => null,
 		};
 	}

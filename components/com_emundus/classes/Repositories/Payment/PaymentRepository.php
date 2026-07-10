@@ -7,6 +7,7 @@ use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Plugin\PluginHelper;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Enums\Payment\PaymentGatewayEnum;
 use Tchooz\Entities\Payment\DiscountType;
 use Tchooz\Entities\Payment\PaymentStepEntity;
 use Tchooz\Entities\Payment\ProductCategoryEntity;
@@ -18,6 +19,8 @@ use Tchooz\Entities\Addons\AddonEntity;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Workflow\StepTypeEntity;
+use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Factories\Payment\PaymentStepFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
@@ -56,7 +59,7 @@ class PaymentRepository
 		$this->h_cache = new \EmundusHelperCache();
 
 		$actionRepository = new ActionRepository();
-		$this->action_id = $actionRepository->getByName('payment')->getId();
+		$this->action_id = $actionRepository->getByName(ActionEnum::PAYMENT->value)->getId();
 
 		$this->loadAddon();
 		$this->setPaymentStepTypeId();
@@ -75,7 +78,7 @@ class PaymentRepository
 	public function loadAddon(): void
 	{
 		$addonRepository = new AddonRepository();
-		$this->addon = $addonRepository->getByName('payment');
+		$this->addon = $addonRepository->getByName(AddonEnum::PAYMENT->value);
 	}
 
 	public function getActionId(): int
@@ -452,7 +455,7 @@ class PaymentRepository
 		$payment_services = [];
 
 		try {
-			$types = ['sogecommerce', 'stripe'];
+			$types = array_map(static fn(PaymentGatewayEnum $gateway): string => $gateway->value, PaymentGatewayEnum::cases());
 
 			$query = $this->db->createQuery();
 			$query->select('id, name, description')

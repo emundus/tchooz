@@ -13,7 +13,7 @@ use Tchooz\Entities\Payment\TransactionStatus;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Payment\TransactionRepository;
 
-class Sogecommerce
+class Sogecommerce implements PaymentSynchronizerInterface
 {
 	private DatabaseDriver $db;
 
