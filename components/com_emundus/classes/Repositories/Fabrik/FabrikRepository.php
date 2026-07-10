@@ -63,6 +63,8 @@ class FabrikRepository
 		$this->withRelations = $withRelations;
 		$this->db            = Factory::getContainer()->get('DatabaseDriver');
 		$this->user          = empty($user) ? Factory::getApplication()->getIdentity() : $user;
+
+		Log::addLogger(['text_file' => 'com_emundus.repository.fabrik.php'], Log::ALL, ['com_emundus.repository.fabrik']);
 	}
 
 	/**
@@ -974,7 +976,7 @@ class FabrikRepository
 		$query = $this->db->getQuery(true);
 
 		$query->clear()
-			->select('fg.*')
+			->select('ffg.group_id AS source_group_id, fg.*')
 			->from($this->db->quoteName('#__fabrik_formgroup', 'ffg'))
 			->leftJoin($this->db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $this->db->quoteName('fg.id') . ' = ' . $this->db->quoteName('ffg.group_id'))
 			->where('ffg.form_id = ' . $oldFormId);
@@ -984,6 +986,15 @@ class FabrikRepository
 		$ordering = 0;
 		foreach ($groups as $group)
 		{
+			$sourceGroupId = $group->source_group_id;
+			unset($group->source_group_id);
+
+			if (empty($group->id))
+			{
+				Log::add('Skipping group ' . $sourceGroupId . ' while duplicating form ' . $oldFormId . ': linked in fabrik_formgroup but missing from fabrik_groups', Log::WARNING, 'com_emundus.repository.fabrik');
+				continue;
+			}
+
 			$ordering++;
 			$newGroup = $this->duplicateGroup($group, $list, $form, $oldFormId, true, $languages);
 
