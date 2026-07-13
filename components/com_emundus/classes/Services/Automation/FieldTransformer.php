@@ -128,7 +128,7 @@ class FieldTransformer
 					{
 						foreach ($rows as $row)
 						{
-							$choices[] = new ChoiceFieldValue($row->{$params->join_key_column}, $row->{$params->join_val_column});
+							$choices[] = new ChoiceFieldValue($row->{$params->join_key_column}, (string) ($row->{$params->join_val_column} ?? ''));
 						}
 					}
 				}
