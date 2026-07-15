@@ -46,6 +46,7 @@ if(empty($profile_form_id))
     <iframe id="iframe"
             src="<?php echo Uri::base(); ?>index.php?option=com_fabrik&view=details&formid=<?php echo $profile_form_id; ?>&tmpl=component&iframe=1&rowid=<?php echo $applicant->id; ?>"
             height="600" width="100%"
+            title="<?php echo Text::_('COM_EMUNDUS_IFRAME_ACCOUNT_DETAILS_TITLE'); ?>"
     </iframe>
 </div>
 

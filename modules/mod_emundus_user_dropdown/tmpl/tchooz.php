@@ -250,9 +250,6 @@ if ($user != null)
 
     <!-- Button which opens up the dropdown menu. -->
     <div class='dropdown' tabindex="0" id="userDropdown" style="float: right;">
-		<?php if ($display_svg == 1) : ?>
-            <div id="background-shapes"></div>
-		<?php endif; ?>
 		<?php if (!empty($profile_picture)): ?>
             <div id="userDropdownLabel">
                 <div class="em-flex-row em-flex-end em-profile-container"
@@ -551,9 +548,6 @@ if ($user != null)
         }
     </script>
 <?php } else { ?>
-	<?php if ($display_svg == 1) : ?>
-        <div id="background-shapes" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></div>
-	<?php endif; ?>
     <div class="header-right" style="text-align: right;">
 		<?php if ($show_registration) : ?>
             <?php
