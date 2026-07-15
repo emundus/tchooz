@@ -152,7 +152,7 @@ class FileuploadsModel extends ListModel
 		$site_url = rtrim(JUri::root(), '/\\') . '/';
 		$attachments_folder = 'images/emundus/files/';
 
-		$query->select('upload.id, upload.fnum, upload.filename, upload.local_filename, upload.user_id, attachment.value as attachment_name, attachment.description, CONCAT(' . $db->quote($site_url . $attachments_folder) . ', candidature.applicant_id, "/", upload.filename) as download_url')
+		$query->select('upload.id, upload.fnum, upload.filename, upload.local_filename, upload.user_id, upload.is_validated, attachment.value as attachment_name, attachment.description, CONCAT(' . $db->quote($site_url . $attachments_folder) . ', candidature.applicant_id, "/", upload.filename) as download_url')
 			->from($db->quoteName('#__emundus_uploads', 'upload'))
 			->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'candidature') . ' ON ' . $db->quoteName('candidature.fnum') . ' = ' . $db->quoteName('upload.fnum'))
 			->leftJoin($db->quoteName('#__emundus_setup_attachments', 'attachment') . ' ON ' . $db->quoteName('attachment.id') . ' = ' . $db->quoteName('upload.attachment_id'))

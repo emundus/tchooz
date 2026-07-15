@@ -125,12 +125,24 @@ class ApplicationFileEntity
         $this->fnum = $fnum;
     }
 
+	/**
+	 * @param   int  $campaign_id
+	 * @param   int  $user_id deprecated
+	 *
+	 * @return string
+	 * @throws \Random\RandomException
+	 */
 	public function generateFnum(int $campaign_id = 0, int $user_id = 0): string
 	{
 		if (empty($campaign_id))
 		{
 			$campaign_id = $this->getCampaignId();
 		}
+		else if ($campaign_id !== $this->getCampaignId())
+		{
+			$this->setCampaignId($campaign_id);
+		}
+
 		$this->fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad(random_int(0, 9999999), 7, '0', STR_PAD_LEFT);
 
         return $this->fnum;

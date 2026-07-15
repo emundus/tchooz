@@ -11,67 +11,38 @@ namespace Tchooz\Factories\ApplicationFile;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
-use Tchooz\Factories\DBFactory;
+use Tchooz\Factories\AbstractFactory;
+use Tchooz\Factories\Cache\RelationCache;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 
-class ApplicationFileFactory implements DBFactory
+class ApplicationFileFactory extends AbstractFactory
 {
-	private CampaignRepository $campaignRepository;
+	public const RELATION_CAMPAIGN = CampaignRepository::NAME;
+	public const RELATION_STATUS = StatusRepository::NAME;
+	public const RELATION_USER = 'user';
 
-	private StatusRepository $statusRepository;
+	protected const RELATIONS = [
+		self::RELATION_CAMPAIGN,
+		self::RELATION_STATUS,
+		self::RELATION_USER,
+	];
 
-	public function fromDbObject(object|array $dbObject, $withRelations = true, $exceptRelations = [], ?DatabaseDriver $db = null, array $elements = []): ApplicationFileEntity
+	private ?CampaignRepository $campaignRepository = null;
+	private ?StatusRepository $statusRepository = null;
+
+	public function buildEntity(object $dbObject, array $relations): ApplicationFileEntity
 	{
-		if (is_array($dbObject))
-		{
-			$dbObject = (object) $dbObject;
-		}
-
-		if ($withRelations)
-		{
-			$this->prepareRelations();
-		}
-
-		return $this->buildEntity($dbObject, $withRelations, $exceptRelations);
-	}
-
-	public function fromDbObjects(array $dbObjects, $withRelations = true, $exceptRelations = []): array
-	{
-		$entities = [];
-
-		if ($withRelations)
-		{
-			$this->prepareRelations();
-		}
-
-		foreach ($dbObjects as $dbObject)
-		{
-			$entities[] = $this->buildEntity($dbObject, $withRelations, $exceptRelations);
-		}
-
-		return $entities;
-	}
-
-	public function buildEntity(
-		object $dbObject,
-		bool $withRelations = true,
-		array $exceptRelations = []
-	): ApplicationFileEntity
-	{
-		$applicant = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($dbObject->applicant_id);
-
 		return new ApplicationFileEntity(
-			user: $applicant,
+			user: $relations[self::RELATION_USER] ?? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($dbObject->applicant_id),
 			fnum: $dbObject->fnum,
-			status: self::checkRelationLoad(StatusRepository::class, $withRelations, $exceptRelations) ? $this->statusRepository->getByStep((int) $dbObject->status) : null,
+			status: $relations[self::RELATION_STATUS] ?? null,
 			campaign_id: $dbObject->campaign_id,
 			published: $dbObject->published,
 			data: [],
 			id: (int) $dbObject->id,
-			campaign: self::checkRelationLoad(CampaignRepository::class, $withRelations, $exceptRelations) ? $this->campaignRepository->getById((int) $dbObject->campaign_id) : null,
+			campaign: $relations[self::RELATION_CAMPAIGN] ?? null,
 			date_submitted: !empty($dbObject->date_submitted) && $dbObject->date_submitted !== '0000-00-00 00:00:00' ? new \DateTime($dbObject->date_submitted) : null,
 			formProgress: (int) $dbObject->form_progress,
 			attachmentProgress: (int) $dbObject->attachment_progress,
@@ -84,29 +55,107 @@ class ApplicationFileFactory implements DBFactory
 		);
 	}
 
-	public static function checkRelationLoad(string $relation, bool $withRelations = true, array $exceptRelations = []): bool
+	protected function loadRelation(string $relation, object $dbObject): mixed
 	{
-		return $withRelations && !in_array($relation, $exceptRelations);
+		return match ($relation)
+		{
+			self::RELATION_CAMPAIGN => $this->getCampaignRepository()->getById((int) $dbObject->campaign_id),
+			self::RELATION_STATUS => $this->getStatusRepository()->getByStep((int) $dbObject->status),
+			self::RELATION_USER => Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $dbObject->applicant_id),
+			default => null,
+		};
 	}
 
-	public function prepareRelations(): void
+	protected function getRelationCacheKey(string $relation, object $dbObject): string|int
 	{
-		if(empty($this->campaignRepository)) {
-			$this->setCampaignRepository(new CampaignRepository());
+		return match ($relation)
+		{
+			self::RELATION_CAMPAIGN => (int) $dbObject->campaign_id,
+			self::RELATION_STATUS => (int) $dbObject->status,
+			self::RELATION_USER => (int) $dbObject->applicant_id,
+			default => spl_object_id($dbObject),
+		};
+	}
+
+	protected function preloadRelations(array $dbObjects, array $relationsToLoad): void
+	{
+		// Preload campaigns
+		if (in_array(self::RELATION_CAMPAIGN, $relationsToLoad))
+		{
+			$campaignIds = array_unique(array_map(fn($obj) => (int) $obj->campaign_id, $dbObjects));
+			$cacheNs     = self::RELATION_CAMPAIGN;
+
+			foreach ($campaignIds as $campaignId)
+			{
+				if (!RelationCache::has($cacheNs, $campaignId))
+				{
+					$campaign = $this->getCampaignRepository()->getById($campaignId);
+					RelationCache::set($cacheNs, $campaignId, $campaign);
+				}
+			}
 		}
 
-		if(empty($this->statusRepository)) {
-			$this->setStatusRepository(new StatusRepository());
+		// Preload statuses
+		if (in_array(self::RELATION_STATUS, $relationsToLoad))
+		{
+			$statusSteps = array_unique(array_map(fn($obj) => (int) $obj->status, $dbObjects));
+			$cacheNs     = self::RELATION_STATUS;
+
+			foreach ($statusSteps as $step)
+			{
+				if (!RelationCache::has($cacheNs, $step))
+				{
+					$status = $this->getStatusRepository()->getByStep($step);
+					RelationCache::set($cacheNs, $step, $status);
+				}
+			}
 		}
+
+		// Preload users
+		if (in_array(self::RELATION_USER, $relationsToLoad))
+		{
+			$userIds     = array_unique(array_map(fn($obj) => (int) $obj->applicant_id, $dbObjects));
+			$cacheNs     = self::RELATION_USER;
+			$userFactory = Factory::getContainer()->get(UserFactoryInterface::class);
+
+			foreach ($userIds as $userId)
+			{
+				if (!RelationCache::has($cacheNs, $userId))
+				{
+					RelationCache::set($cacheNs, $userId, $userFactory->loadUserById($userId));
+				}
+			}
+		}
+	}
+
+	private function getCampaignRepository(): CampaignRepository
+	{
+		if ($this->campaignRepository === null)
+		{
+			$this->campaignRepository = new CampaignRepository();
+		}
+
+		return $this->campaignRepository;
+	}
+
+	private function getStatusRepository(): StatusRepository
+	{
+		if ($this->statusRepository === null)
+		{
+			$this->statusRepository = new StatusRepository();
+		}
+
+		return $this->statusRepository;
+	}
+
+
+	public function setCampaignRepository(CampaignRepository $campaignRepository): void
+	{
+		$this->campaignRepository = $campaignRepository;
 	}
 
 	public function setStatusRepository(StatusRepository $statusRepository): void
 	{
 		$this->statusRepository = $statusRepository;
-	}
-
-	public function setCampaignRepository(CampaignRepository $campaignRepository): void
-	{
-		$this->campaignRepository = $campaignRepository;
 	}
 }

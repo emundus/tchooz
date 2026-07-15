@@ -675,4 +675,108 @@ class CampaignRepositoryTest extends UnitTestCase
 		$this->assertFalse($campaign->isPublished(), 'Campaign with files should be unpublished after batch delete');
 	}
 
+
+	public function testGetCampaignWithRelations(): void
+	{
+		$repository = new CampaignRepository(true);
+		$campaign = $repository->getById($this->dataset['campaign']);
+
+		$this->assertNotEmpty($campaign);
+		$this->assertNotEmpty($campaign->getProgram());
+		$this->assertSame($campaign->getProgram()->getId(), $this->dataset['program']['programme_id']);
+	}
+
+	public function testGetCampaignWithoutRelations(): void
+	{
+		$repository = new CampaignRepository(false);
+		$campaign = $repository->getById($this->dataset['campaign']);
+
+		$this->assertNotEmpty($campaign);
+		$this->assertEmpty($campaign->getProgram());
+	}
+
+	public function testGetCampaignWithEveryRelationMinusProgram(): void
+	{
+		$repository = new CampaignRepository(true, [ProgramRepository::NAME]);
+		$campaign = $repository->getById($this->dataset['campaign']);
+
+		$this->assertNotEmpty($campaign);
+		$this->assertEmpty($campaign->getProgram());
+	}
+
+	public function testGetChildCampaignLoadParentRelation(): void
+	{
+		$campaign = $this->repository->getById($this->dataset['campaign']);
+		$childCampaign = new CampaignEntity('Child campaign', new \DateTime(), new \DateTime(), $campaign->getProgram(), '2050', 'Campaign test description', 'Short campaign test description', 1000, true, false, '', true, $campaign);
+		$flushed = $this->repository->flush($childCampaign);
+		$this->assertTrue($flushed);
+		$this->assertNotEmpty($childCampaign->getParent());
+
+		$repository = new CampaignRepository(true);
+		$repository->getById($childCampaign->getId());
+		$this->assertNotEmpty($childCampaign->getParent());
+		$this->assertSame($childCampaign->getParent()->getId(), $this->dataset['campaign']);
+	}
+
+	public function testGetChildCampaignWithoutRelations(): void
+	{
+		$campaign = $this->repository->getById($this->dataset['campaign']);
+		$childCampaign = new CampaignEntity('Child campaign 2', new \DateTime(), new \DateTime(), $campaign->getProgram(), '2050', 'Campaign test description', 'Short campaign test description', 1000, true, false, '', true, $campaign);
+		$flushed = $this->repository->flush($childCampaign);
+		$this->assertTrue($flushed);
+
+		$repository = new CampaignRepository(false);
+		$childCampaignLoaded = $repository->getById($childCampaign->getId());
+		$this->assertEmpty($childCampaignLoaded->getParent());
+	}
+
+	public function testGetChildCampaignWithEveryRelationMinusParent(): void
+	{
+		$campaign = $this->repository->getById($this->dataset['campaign']);
+		$childCampaign = new CampaignEntity('Child campaign 3', new \DateTime(), new \DateTime(), $campaign->getProgram(), '2050', 'Campaign test description', 'Short campaign test description', 1000, true, false, '', true, $campaign);
+		$flushed = $this->repository->flush($childCampaign);
+		$this->assertTrue($flushed);
+
+		$repository = new CampaignRepository(true, [CampaignRepository::NAME]);
+		$childCampaignLoaded = $repository->getById($childCampaign->getId());
+		$this->assertEmpty($childCampaignLoaded->getParent());
+		$this->assertNotEmpty($childCampaignLoaded->getProgram());
+		$this->assertSame($childCampaignLoaded->getProgram()->getId(), $this->dataset['program']['programme_id']);
+	}
+
+	public function testGetMultipleCampaignsWithDifferentPrograms(): void
+	{
+		$campaign1 = $this->repository->getById($this->dataset['campaign']);
+		$program2 = $this->h_dataset->createSampleProgram('Programme pour tester la gestion des relations abstractFactory');
+		$campaignid2 = $this->h_dataset->createSampleCampaign($program2);
+		$campaign2 =  $this->repository->getById($campaignid2);
+
+		$campaigns = $this->repository->get([
+			'id' => [$campaign1->getId(), $campaign2->getId()],
+		]);
+		$this->assertNotEmpty($campaigns);
+		$this->assertCount(2, $campaigns);
+
+		foreach ($campaigns as $campaign) {
+			$this->assertInstanceOf(CampaignEntity::class, $campaign);
+
+			if ($campaign->getId() === $campaign1->getId()) {
+				$this->assertSame($campaign->getProgram()->getId(), $this->dataset['program']['programme_id']);
+			} else {
+				$this->assertSame($campaign->getProgram()->getId(), $program2['programme_id']);
+			}
+		}
+
+		$noRelationsRepository = new CampaignRepository(false);
+		$noRelationsCampaigns = $noRelationsRepository->get([
+			'id' => [$campaign1->getId(), $campaign2->getId()]
+		]);
+		$this->assertNotEmpty($noRelationsCampaigns);
+		$this->assertCount(2, $noRelationsCampaigns);
+
+		foreach ($noRelationsCampaigns as $campaign) {
+			$this->assertInstanceOf(CampaignEntity::class, $campaign);
+			$this->assertEmpty($campaign->getProgram());
+		}
+	}
 }

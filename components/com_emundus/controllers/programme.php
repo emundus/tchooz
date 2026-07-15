@@ -321,7 +321,7 @@ class EmundusControllerProgramme extends EmundusController
 		{
 			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_PROGRAM_FORM_MISSING_REQUIRED_FIELDS'));
 		}
-		
+
 		if ($handleLogo && (!empty($logo) && $logo['error'] === 0 || $logoPath === 'null' || empty($logoPath)))
 		{
 			// Delete old logo if exists
@@ -388,7 +388,7 @@ class EmundusControllerProgramme extends EmundusController
 		{
 			throw new RuntimeException(Text::_('COM_EMUNDUS_PROGRAM_FORM_ERROR'));
 		}
-		
+
 		$successMessage = !empty($id) ? Text::_('COM_EMUNDUS_PROGRAM_FORM_SUCCESS_SAVED') : Text::_('COM_EMUNDUS_PROGRAM_FORM_SUCCESS_ADD');
 
 		return EmundusResponse::ok([

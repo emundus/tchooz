@@ -10,41 +10,33 @@
 namespace Tchooz\Factories\Label;
 
 use Joomla\Database\DatabaseDriver;
+use Tchooz\Entities\Campaigns\CampaignEntity;
 use Tchooz\Entities\Label\LabelEntity;
+use Tchooz\Factories\AbstractFactory;
 use Tchooz\Factories\DBFactory;
 
-class LabelFactory implements DBFactory
+class LabelFactory extends AbstractFactory
 {
-
-	public function fromDbObject(object|array $dbObject, bool|array $withRelations = true, array $exceptRelations = [], ?DatabaseDriver $db = null): mixed
-	{
-		if (is_array($dbObject))
-		{
-			$dbObject = (object) $dbObject;
-		}
-
-		return self::buildEntity($dbObject);
-	}
-
-	public static function fromDbObjects(array $dbObjects, bool|array $withRelations = true, array $exceptRelations = [], ?DatabaseDriver $db = null): mixed
-	{
-		$entities = [];
-		foreach ($dbObjects as $dbObject)
-		{
-			$entities[] = self::buildEntity($dbObject);
-		}
-
-		return $entities;
-	}
-
-	public static function buildEntity(object $dbObject): LabelEntity
+	public function buildEntity(object $dbObject, array $relations): LabelEntity
 	{
 		return new LabelEntity(
 			label: $dbObject->label ?? '',
 			class: $dbObject->class ?? '',
-			ordering: (int) ($dbObject->ordering ?? 0),
-			id: $dbObject->id,
+			ordering: $dbObject->ordering ?? 0,
+			id: $dbObject->id ?? 0,
 			category: $dbObject->category ?? '',
 		);
+	}
+
+	protected function loadRelation(string $relation, object $dbObject): mixed
+	{
+		// No relation supported by this factory.
+		return null;
+	}
+
+	protected function getRelationCacheKey(string $relation, object $dbObject): string|int
+	{
+		// No relation supported by this factory.
+		return spl_object_id($dbObject);
 	}
 }

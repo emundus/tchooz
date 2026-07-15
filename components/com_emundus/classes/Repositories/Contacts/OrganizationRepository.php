@@ -9,11 +9,15 @@
 
 namespace Tchooz\Repositories\Contacts;
 
+use DateTime;
+use EmundusHelperDate;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
+use Tchooz\Enums\Comments\CommentTargetTypeEnum;
 use Tchooz\Factories\Contacts\OrganizationFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\EmundusRepository;
@@ -466,10 +470,64 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 			$this->db->setQuery($query, $offset, $limit);
 			$organizations = $this->db->loadObjectList();
 
+			$loadComments = $this->withRelations && !in_array('comments', $this->exceptRelations);
+
+			// Comments are loaded in a single scoped query below, so skip the factory relation to avoid a redundant N+1 load.
+			$factoryExceptRelations = $loadComments ? array_merge($this->exceptRelations, ['comments']) : $this->exceptRelations;
+
 			foreach ($organizations as $key => $organization)
 			{
-				$organizations[$key] = $this->factory->fromDbObject($organization, $this->withRelations, $this->exceptRelations);
+				$organizations[$key] = $this->factory->fromDbObject($organization, $this->withRelations, $factoryExceptRelations);
 			}
+
+			if ($loadComments)
+			{
+				$organizationId = array_map(fn($c) => $c->getId(), $organizations);
+				if (!empty($organizationId))
+				{
+					$commentsQuery = $this->db->createQuery();
+					$commentsQuery->select([
+						'ec.*',
+						'u.name'
+					])
+						->from($this->db->quoteName('#__emundus_comments', 'ec'))
+						->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('ec.user_id') . ' = ' . $this->db->quoteName('u.id'));
+
+					$session = Factory::getApplication()->getSession();
+					$currentUser = $session->get('emundusUser');
+					$currentUserId = $currentUser->id ?? 0;
+
+					$commentsQuery->where('ec.target_type = ' . $this->db->quote(CommentTargetTypeEnum::ORGANIZATION->value))
+						->whereIn($this->db->quoteName('ec.target_id'), $organizationId)
+						->extendWhere(
+							'AND',
+							[
+								'ec.is_public = ' . $this->db->quote(1),
+								'ec.user_id = ' . $this->db->quote($currentUserId)
+							],
+							'OR'
+						);
+
+					$this->db->setQuery($commentsQuery);
+					$allComments = $this->db->loadObjectList();
+
+					$commentsByOrganization = [];
+					foreach ($allComments as $comment)
+					{
+						$comment->date = (new DateTime(EmundusHelperDate::displayDate($comment->date, 'Y-m-d H:i', 0)))->format('Y-m-d H:i');
+						if($comment->updated) {
+							$comment->updated = (new DateTime(EmundusHelperDate::displayDate($comment->updated, 'Y-m-d H:i', 0)))->format('Y-m-d H:i');
+						}
+						$commentsByOrganization[$comment->target_id][] = $comment;
+					}
+
+					foreach ($organizations as $organization)
+					{
+						$organization->setComments($commentsByOrganization[$organization->getId()] ?? []);
+					}
+				}
+			}
+
 
 			if ($this->withRelations && !in_array('application_files', $this->exceptRelations))
 			{

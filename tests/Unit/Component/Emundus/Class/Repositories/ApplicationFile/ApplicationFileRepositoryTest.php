@@ -390,6 +390,18 @@ class ApplicationFileRepositoryTest extends UnitTestCase
 		$applicationFile = $repositoryNoRelations->getByFnum($this->dataset['fnum']);
 		$this->assertNotNull($applicationFile, 'Le dossier doit exister même sans relations');
 		$this->assertEquals($this->dataset['fnum'], $applicationFile->getFnum(), 'Le fnum doit correspondre');
+
+		$this->assertEmpty($applicationFile->getCampaign(), 'campaign has not been loaded');
+		$this->assertNotEmpty($applicationFile->getCampaignId(), 'campaign_id should not be empty');
+		$this->assertSame($applicationFile->getCampaignId(), $this->dataset['campaign'], 'campaign_id should be the same');
+	}
+
+	public function testGetByFnumWithRelations(): void
+	{
+		$repositoryWithRelations = new ApplicationFileRepository(true);
+		$applicationFile = $repositoryWithRelations->getByFnum($this->dataset['fnum']);
+		$this->assertNotEmpty($applicationFile->getCampaign(), 'campaign has been loaded');
+		$this->assertSame($applicationFile->getCampaign()->getId(), $this->dataset['campaign'], 'campaign id should be the same');
 	}
 
 	/**

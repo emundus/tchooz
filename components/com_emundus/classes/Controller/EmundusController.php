@@ -217,21 +217,33 @@ abstract class EmundusController extends BaseController
 		];
 	}
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	public function getUser(): ?User
 	{
 		return $this->user;
 	}
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	public function setUser(?User $user): void
 	{
 		$this->user = $user;
 	}
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	public function setInput(Input $input): void
 	{
 		$this->input = $input;
 	}
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	public function getBaseUri(): string
 	{
 		return Uri::base();
