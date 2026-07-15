@@ -2987,9 +2987,9 @@ class EmundusModelForm extends ListModel
 									// Truncate to 30 characters and remove html tags for panel default values
 									$label = Text::_($actionElement->default_value);
 									$label = strip_tags($label);
-									if (strlen($label) > 30)
+									if (mb_strlen($label, 'UTF-8') > 30)
 									{
-										$label = substr($label, 0, 30) . '...';
+										$label = mb_substr($label, 0, 30, 'UTF-8') . '...';
 									}
 									$label = '[' . Text::_($plugin->getLabel()) . '] - ' . $label;
 								}
