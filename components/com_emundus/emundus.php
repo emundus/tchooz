@@ -1401,6 +1401,12 @@ Text::script('COM_EMUNDUS_FILE_ORGANIZATIONS_UPDATED_FAILED');
 Text::script('COM_EMUNDUS_FILE_ORGANIZATIONS_RETRIEVAL_FAILED');
 Text::script('COM_EMUNDUS_GET_FILES_ORGANIZATION_FAILED');
 
+Text::script('COM_EMUNDUS_IFRAME_ATTACHMENT_TITLE');
+Text::script('COM_EMUNDUS_IFRAME_EVALUATION_FORM_TITLE');
+Text::script('COM_EMUNDUS_IFRAME_CAMPAIGN_FORM_ADVANCED_TITLE');
+Text::script('COM_EMUNDUS_IFRAME_APPLICATION_CHOICES_FORM_TITLE');
+Text::script('COM_EMUNDUS_IFRAME_FORMBUILDER_PREVIEW_TITLE');
+
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
 foreach ($actionlog_translation_tags as $tag => $translation)

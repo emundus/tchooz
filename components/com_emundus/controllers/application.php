@@ -1078,7 +1078,7 @@ class EmundusControllerApplication extends EmundusController
 
 				if (!empty($filename) && !empty($upload_details['user_id']))
 				{
-					$response = $m_application->getAttachmentPreview($user, $filename);
+					$response = $m_application->getAttachmentPreview($user, $filename, $upload_details['value']);
 				}
 			}
 		}

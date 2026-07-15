@@ -235,6 +235,7 @@
 						:src="'/index.php?option=com_fabrik&view=form&formid=' + selectedPage + '&tmpl=component&preview=1'"
 						@load="loading = false"
 						v-show="!loading"
+						:title="translate('COM_EMUNDUS_IFRAME_FORMBUILDER_PREVIEW_TITLE')"
 					></iframe>
 				</div>
 
