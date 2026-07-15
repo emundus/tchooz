@@ -828,26 +828,8 @@ class Securitycheckpro extends CMSPlugin
 		}
 
 		/* ========= Command Injection ========= */
-		if (!$modified && !$is_admin) {
-			$cmdPatterns = [
-				'/(?:^|[;&|`])\s*(?:cat|ls|dir|whoami|uname|wget|curl|nc|ncat|bash|sh|cmd|powershell|ping|nslookup|traceroute|netstat|ifconfig|ipconfig)\b/i',
-				'/\$\([^)]+\)/',                    // $(command)
-				'/`\s*(?:cat|ls|dir|whoami|uname|wget|curl|nc|ncat|bash|sh|cmd|powershell|ping|nslookup|traceroute|netstat|ifconfig|ipconfig)\b[^`]*`/i', // `command`
-				'/\|\s*(?:cat|ls|dir|whoami|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
-				'/;\s*(?:cat|ls|dir|whoami|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
-				'/&&\s*(?:cat|ls|dir|whoami|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
-				'/\|\|\s*(?:cat|ls|dir|whoami|uname|wget|curl|nc|bash|sh|cmd|powershell)\b/i',
-			];
-			foreach ($cmdPatterns as $cmdRx) {
-				if (preg_match($cmdRx, $string)) {
-					$this->grabar_log($logs_attacks, $ip, 'CMD_INJECTION', '[' .$methods_options .':' .$a .']', 'CMD_INJECTION', $request_uri, $string, $username, $pageoption);
-					$modified = true;
-					$hardHits++;
-					$this->actualizar_lista_dinamica($ip);
-					$this->redirection(403, "", true);
-				}
-			}
-		}
+		/* Regla desactivada temporalmente por falsos positivos (p. ej. &id=42, emails tipo dir-xxx@xxx.fr).
+		   La versión 5.2.0 la reintroducirá con patrones que exigen contexto de shell y excepciones por componente. */
 
 		/* ========= CRLF Injection ========= */
 		if (!$modified) {
@@ -899,8 +881,8 @@ class Securitycheckpro extends CMSPlugin
         $is_admin = $app->isClient('administrator');
                 
         $pageoption = $option;
-
-		if (is_array($string)) {
+		
+		if (is_array($string)) {                
             // Get all values of the array
 			$strings_in_array = array();			
 			foreach ($string as $item) {				
@@ -1532,7 +1514,7 @@ class Securitycheckpro extends CMSPlugin
     }
     
 	/**
-     * Opciones de redirecci�n: p�gina de error (de Joomla o personalizada) o rechazar la conexi�n. El parámetro blacklist indica si venimos de una lista negra; en ese caso, no podemos hacer la
+     * Opciones de redirecci�n: p�gina de error (de Joomla o personalizada) o rechazar la conexi�n. El parámetro blacklist indica si venimos de una lista negra; en ese caso, no podemos hacer la 
 	 * redirecci�n ya que entrar�amos en un bucle infinito. Lo que hacemos es mostrar el c�digo que haya establecido el administrador
      *
      * @param   int	     	           $code				 The code to show
@@ -1585,7 +1567,7 @@ class Securitycheckpro extends CMSPlugin
 				'securitycheckpro'
 			);
 		}
-
+        
         // Obtenemos los valores del plugin para la protección de sesión del usuario
         $session_hijack_protection = $this->pro_plugin->getValue('session_hijack_protection', 1, 'pro_plugin');
         $session_protection_active = $this->pro_plugin->getValue('session_protection_active', 1, 'pro_plugin');
@@ -1798,7 +1780,7 @@ class Securitycheckpro extends CMSPlugin
         $db->setQuery($query);
         $result = $db->loadResult();
                         
-        if (($result > 1) && ($apply_to_user)) {  // Ya existe m�s de una sesi�n activa del usuario y el usuario está incluido en un grupo al que hay que aplicar la protecci�n
+        if (($result > 1) && ($apply_to_user)) {  // Ya existe m�s de una sesi�n activa del usuario y el usuario está incluido en un grupo al que hay que aplicar la protecci�n                
             if ($session_protection_active) {
                 /*Cerramos todas las sesiones activas del usuario, tanto del frontend (clientid->0) como del backend (clientid->1); este c�digo es necesario porque no queremos modificar los archivos de Joomla , pero esta comprobaci�n podr�a incluirse en la Función onUserLogin*/
                 $app->logout($user_id, array("clientid" => 0));
@@ -1871,7 +1853,7 @@ class Securitycheckpro extends CMSPlugin
         
         $query = "SELECT id FROM #__usergroups WHERE title='Guest'";
         $db->setQuery($query);
-        $guest_acl_security = (int) $db->loadResult();
+        $guest_acl_security = (int) $db->loadResult();        
         
         // Obtenemos la longitud de la clave que tenemos que generar
         $params = ComponentHelper::getParams('com_securitycheckpro');
@@ -1904,7 +1886,7 @@ class Securitycheckpro extends CMSPlugin
 					$guest_acl
 					&& in_array($app->getName(), ['administrator', 'admin'], true)
 				){
-                    $app->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_INSECURE_ACL_CONFIG_DETECTED', Text::_('COM_SECURITYCHECKPRO_GUEST'), Text::_($value)), 'error');
+                    $app->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_INSECURE_ACL_CONFIG_DETECTED', Text::_('COM_SECURITYCHECKPRO_GUEST'), Text::_($value)), 'error');                   
                 }
             }            
         }                
@@ -1918,12 +1900,12 @@ class Securitycheckpro extends CMSPlugin
 			: '';
 
 		$name = $username;
-
+		
 		$session_id = (string) $app->getSession()->getId();
 
 		$ip = (string) $this->ipmodel->getClientIpForSecuritycheckPro();
         $user_agent = '';
-
+		
 		if (isset($_SERVER['HTTP_USER_AGENT']) && is_string($_SERVER['HTTP_USER_AGENT'])) {
 			$user_agent = $_SERVER['HTTP_USER_AGENT'];
 		}
@@ -3189,7 +3171,7 @@ class Securitycheckpro extends CMSPlugin
 					$empty = false;
 					$installs_array = json_decode($installs, true);
 					
-					// Obtenemos Sólo el array de nombre para comprobar si ya hemos añadido la extensión
+					// Obtenemos Sólo el array de nombre para comprobar si ya hemos añadido la extensión            
 					$array_names = array_column($installs_array, 'name');
 					
 					if (!in_array($name, $array_names)) {
