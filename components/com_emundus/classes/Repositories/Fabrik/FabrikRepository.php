@@ -859,7 +859,13 @@ class FabrikRepository
 
 		$groups = $this->duplicateGroups($oldForm->id, $form, $list, $languages);
 
-		$this->duplicateConditions($oldForm, $form);
+		$groupIdMap = [];
+		foreach ($groups as $newGroup)
+		{
+			$groupIdMap[$newGroup->old_id] = $newGroup->id;
+		}
+
+		$this->duplicateConditions($oldForm, $form, $groupIdMap);
 
 		return (object) [
 			'form'   => $form,
@@ -986,6 +992,7 @@ class FabrikRepository
 		{
 			$ordering++;
 			$newGroup = $this->duplicateGroup($group, $list, $form, $oldFormId, true, $languages);
+			$newGroup->old_id = $group->id;
 
 			$insert = [
 				'form_id'  => $form->id,
@@ -1440,7 +1447,7 @@ class FabrikRepository
 		return $updated;
 	}
 
-	public function duplicateConditions(object $oldForm, object $form): bool
+	public function duplicateConditions(object $oldForm, object $form, array $groupIdMap = []): bool
 	{
 		$duplicated = false;
 
@@ -1499,9 +1506,15 @@ class FabrikRepository
 
 						foreach ($fields as $field)
 						{
+							$fieldValue = $field->fields;
+							if (in_array($action->action, ['show_group', 'hide_group']) && isset($groupIdMap[$fieldValue]))
+							{
+								$fieldValue = $groupIdMap[$fieldValue];
+							}
+
 							$insert = [
 								'parent_id' => $new_action_id,
-								'fields'    => $field->fields,
+								'fields'    => $fieldValue,
 								'params'    => $field->params
 							];
 							$insert = (object) $insert;

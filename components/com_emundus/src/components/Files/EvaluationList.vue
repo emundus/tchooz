@@ -12,6 +12,7 @@
 				:key="selectedEvaluation.id"
 				@load="iframeLoaded($event)"
 				class="iframe-selected-evaluation tw-w-full tw-rounded-coordinator-cards tw-shadow-card"
+				:title="translate('COM_EMUNDUS_IFRAME_EVALUATION_FORM_TITLE')"
 			>
 			</iframe>
 		</div>

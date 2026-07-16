@@ -34,6 +34,7 @@
 					class="iframe-evaluation-list tw-w-full tw-bg-coordinator-bg tw-p-4"
 					:key="selectedTab"
 					@load="iframeLoaded($event)"
+					:title="translate('COM_EMUNDUS_IFRAME_EVALUATION_FORM_TITLE')"
 				>
 				</iframe>
 

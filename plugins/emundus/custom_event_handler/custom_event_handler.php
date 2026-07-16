@@ -13,6 +13,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
@@ -1989,6 +1990,9 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		{
 			return false;
 		}
+
+		// Actionlog plugins record the automation history.
+		PluginHelper::importPlugin('actionlog');
 
 		// Circuit breaker: if we are already nested too deep in automation processing for this
 		// request, abort to avoid runaway recursion (infinite loop protection) and notify the manager.
