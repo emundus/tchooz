@@ -315,7 +315,7 @@ class EmundusControllerProgramme extends EmundusController
 			}
 			$programmes  = $data['programmes'] ?? '';
 			$description = $data['notes'] ?? '';
-			$synthesis   = $data['synthesis'] ?? '';
+			$synthesis   = $data['synthesis'] ?? '<p><strong>[APPLICANT_NAME]</strong></p><p><a href="mailto:[EMAIL]">[EMAIL]</a></p>';
 			$applyOnline = $data['apply_online'] ?? true;
 		}
 
