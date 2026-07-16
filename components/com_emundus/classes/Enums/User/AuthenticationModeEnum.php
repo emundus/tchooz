@@ -33,6 +33,7 @@ enum AuthenticationModeEnum: string
 			'OAuth2', 'Saml', 'oauth2', 'saml' => self::SSO,
 			'access_key' => self::ACCESS_KEY,
 			'Joomla' => self::DEFAULT,
+			default => null,
 		};
 	}
 }

@@ -9,6 +9,7 @@
 
 namespace Tchooz\Traits;
 
+use Joomla\CMS\Log\Log;
 use Tchooz\EmundusResponse;
 
 trait TraitResponse
@@ -40,7 +41,17 @@ trait TraitResponse
 			header($header);
 		}
 
-		echo json_encode($response);
+		$json = json_encode($response);
+
+		if ($json === false)
+		{
+			Log::add('classes/Traits/TraitResponse | json_encode failed: ' . json_last_error_msg(), Log::ERROR, 'com_emundus');
+
+			header('HTTP/1.1 500 ' . EmundusResponse::$statusTexts[500]);
+			$json = json_encode(EmundusResponse::fail('Failed to encode response: ' . json_last_error_msg(), 500));
+		}
+
+		echo $json;
 		exit;
 	}
 }

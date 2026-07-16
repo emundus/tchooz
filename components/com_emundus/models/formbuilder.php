@@ -4847,12 +4847,12 @@ class EmundusModelFormbuilder extends ListModel
 
 					if (!empty($new_list_id))
 					{
-						$copied = $this->copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $list_to_copy->db_table_name);
+						$groupIdMap = $this->copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $list_to_copy->db_table_name);
 
-						if ($copied)
+						if ($groupIdMap)
 						{
-							$copied = $this->duplicateConditions((int) $form_id_to_copy, (int) $new_form_id);
-							$label  = !empty($label) ? $label : 'Model - ' . $form_id_to_copy . ' - ' . $new_form_id;
+							$this->duplicateConditions((int) $form_id_to_copy, (int) $new_form_id, $groupIdMap);
+							$label = !empty($label) ? $label : 'Model - ' . $form_id_to_copy . ' - ' . $new_form_id;
 
 							// insert form into models list
 							$insert = [
@@ -5142,12 +5142,13 @@ class EmundusModelFormbuilder extends ListModel
 	 * @param          $user
 	 * @param   array  $elements_to_exclude
 	 *
-	 * @return bool
+	 * @return array  Map of old group id => new group id, empty array on failure
 	 * @throws Exception
 	 */
-	public function copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $db_table_name, $label_prefix = '', $user = null, array $elements_to_exclude = []): bool
+	public function copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $db_table_name, $label_prefix = '', $user = null, array $elements_to_exclude = []): array
 	{
 		$copied = false;
+		$groupIdMap = [];
 
 		if (empty($user))
 		{
@@ -5215,6 +5216,7 @@ class EmundusModelFormbuilder extends ListModel
 					$this->db->setQuery($query);
 					$this->db->execute();
 					$new_group_id = $this->db->insertid();
+					$groupIdMap[$properties->id] = $new_group_id;
 
 					if (!empty($new_group_id))
 					{
@@ -5356,7 +5358,7 @@ class EmundusModelFormbuilder extends ListModel
 			$copied = !in_array(false, $groups_copied);
 		}
 
-		return $copied;
+		return $copied ? $groupIdMap : [];
 	}
 
 	public function getDocumentSample($attachment_id, $profile_id)
@@ -5594,14 +5596,14 @@ class EmundusModelFormbuilder extends ListModel
 				}
 			}
 
-			$duplicatedGroups = $this->duplicateFabrikGroups($formId, $newFormId, $newListId, $args, $userId);
-			if (!$duplicatedGroups)
+			$groupIdMap = $this->duplicateFabrikGroups($formId, $newFormId, $newListId, $args, $userId);
+			if (!$groupIdMap)
 			{
 				throw new RuntimeException('Failed to duplicate fabrik groups for form id ' . $formId);
 			}
 			else
 			{
-				$this->duplicateConditions($formId, $newFormId);
+				$this->duplicateConditions($formId, $newFormId, $groupIdMap);
 			}
 		}
 
@@ -5693,11 +5695,12 @@ class EmundusModelFormbuilder extends ListModel
 	 * @param   array  $args  ['db_table_name' => '...', 'keep_structure' => true/false, etc...]
 	 * @param   int    $userId
 	 *
-	 * @return bool
+	 * @return array  Map of old group id => new group id, empty array on failure
 	 */
-	public function duplicateFabrikGroups(int $oldFormId, int $newFormId, int $newListId, array $args, int $userId): bool
+	public function duplicateFabrikGroups(int $oldFormId, int $newFormId, int $newListId, array $args, int $userId): array
 	{
 		$duplicated = false;
+		$groupIdMap = [];
 
 		if (!empty($oldFormId) && !empty($newFormId))
 		{
@@ -5748,6 +5751,7 @@ class EmundusModelFormbuilder extends ListModel
 				$db->insertObject('#__fabrik_groups', $insert);
 
 				$newGroupId = $db->insertid();
+				$groupIdMap[$properties->id] = $newGroupId;
 
 				if ($group_model->is_join == 1)
 				{
@@ -5869,7 +5873,7 @@ class EmundusModelFormbuilder extends ListModel
 			$this->updateCalculationParametersAfterDuplicate($oldFormId, $newFormId);
 		}
 
-		return $duplicated;
+		return $duplicated ? $groupIdMap : [];
 	}
 
 	/**
@@ -6176,12 +6180,13 @@ class EmundusModelFormbuilder extends ListModel
 	/**
 	 * TODO: verify what happens if structure is not kept and there are conditions on the form
 	 *
-	 * @param   int  $formid
-	 * @param   int  $new_form_id
+	 * @param   int    $formid
+	 * @param   int    $new_form_id
+	 * @param   array  $groupIdMap  Map of old group id => new group id, used to remap show_group/hide_group actions
 	 *
 	 * @return bool
 	 */
-	public function duplicateConditions(int $formid, int $new_form_id): bool
+	public function duplicateConditions(int $formid, int $new_form_id, array $groupIdMap = []): bool
 	{
 		$duplicated = false;
 
@@ -6195,8 +6200,6 @@ class EmundusModelFormbuilder extends ListModel
 				->where($this->db->quoteName('form_id') . ' = ' . $this->db->quote($formid));
 			$this->db->setQuery($query);
 			$rules = $this->db->loadObjectList();
-
-			// TODO: Get groups of old form to map to new form groups and manage show/hide groups actions
 
 			foreach ($rules as $rule)
 			{
@@ -6244,9 +6247,15 @@ class EmundusModelFormbuilder extends ListModel
 
 							foreach ($fields as $field)
 							{
+								$fieldValue = $field->fields;
+								if (in_array($action->action, ['show_group', 'hide_group']) && isset($groupIdMap[$fieldValue]))
+								{
+									$fieldValue = $groupIdMap[$fieldValue];
+								}
+
 								$insert = [
 									'parent_id' => $new_action_id,
-									'fields'    => $field->fields,
+									'fields'    => $fieldValue,
 									'params'    => $field->params
 								];
 								$insert = (object) $insert;

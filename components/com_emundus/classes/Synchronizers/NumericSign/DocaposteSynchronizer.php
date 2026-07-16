@@ -27,11 +27,13 @@ use Tchooz\Repositories\NumericSign\RequestRepository;
 use Tchooz\Repositories\NumericSign\RequestSignersRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
+use Tchooz\Traits\TraitAutomatedTask;
 use Tchooz\Traits\TraitDispatcher;
 
 class DocaposteSynchronizer extends Api
 {
 	use TraitDispatcher;
+	use TraitAutomatedTask;
 
 	protected $auth = [];
 
@@ -237,7 +239,7 @@ class DocaposteSynchronizer extends Api
 									['onAfterSignRequestCompleted',
 										// Datas to pass to the event
 										['context' => new EventContextEntity(
-											Factory::getApplication()->getIdentity(),
+											Factory::getApplication()->getIdentity() ?? $this->getAutomatedTaskUser(),
 											[$request->getFnum()],
 											[],
 											['request_id' => $request->getId()]
@@ -265,7 +267,7 @@ class DocaposteSynchronizer extends Api
 									['onAfterSignRequestCancelled',
 										// Datas to pass to the event
 										['context' => new EventContextEntity(
-											Factory::getApplication()->getIdentity(),
+											Factory::getApplication()->getIdentity() ?? $this->getAutomatedTaskUser(),
 											[$request->getFnum()],
 											[],
 											[
@@ -336,7 +338,7 @@ class DocaposteSynchronizer extends Api
 			];
 
 			$response = $this->post(
-				$this->auth['offerCode'] . '/transactions',
+				'transactions',
 				$body,
 				$this->getHeaders()
 			);
@@ -361,7 +363,7 @@ class DocaposteSynchronizer extends Api
 					['onAfterSignRequestCreated',
 						// Datas to pass to the event
 						['context' => new EventContextEntity(
-							Factory::getApplication()->getIdentity(),
+							Factory::getApplication()->getIdentity() ?? $this->getAutomatedTaskUser(),
 							[$request->getFnum()],
 							[],
 							[
@@ -661,7 +663,7 @@ class DocaposteSynchronizer extends Api
 					['onAfterSignRequestCancelled',
 						// Datas to pass to the event
 						['context' => new EventContextEntity(
-							Factory::getApplication()->getIdentity(),
+							Factory::getApplication()->getIdentity() ?? $this->getAutomatedTaskUser(),
 							[$request->getFnum()],
 							[],
 							[
