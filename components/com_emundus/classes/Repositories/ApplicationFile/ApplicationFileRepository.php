@@ -14,6 +14,7 @@ use Tchooz\Entities\ApplicationFile\StatusEntity;
 use Tchooz\Factories\ApplicationFile\ApplicationFileFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
+use Tchooz\Services\Fabrik\CurrencyStorageFormatter;
 use Tchooz\Traits\TraitDispatcher;
 
 #[TableAttribute(
@@ -473,6 +474,8 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 					}
 				}
 			}
+
+			$datas = (new CurrencyStorageFormatter())->format($datas);
 
 			$datas = (object) $datas;
 
