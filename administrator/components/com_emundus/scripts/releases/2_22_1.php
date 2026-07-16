@@ -45,7 +45,13 @@ class Release2_22_1Installer extends ReleaseInstaller
 
 				if ($currentColumn && preg_match('/varchar\((\d+)\)/i', $currentColumn->Type, $matches) && (int) $matches[1] < 45)
 				{
-					$this->tasks[] = $this->db->setQuery("ALTER TABLE `{$ipColumn['table']}` MODIFY `{$ipColumn['column']}` VARCHAR(45) NOT NULL DEFAULT '';")->execute();
+					if($ipColumn['table'] === 'jos_securitycheckpro_sessions')
+					{
+						$this->tasks[] = $this->db->setQuery("ALTER TABLE `{$ipColumn['table']}` MODIFY `{$ipColumn['column']}` VARCHAR(45) NOT NULL DEFAULT '';")->execute();
+					}
+					else {
+						$this->tasks[] = $this->db->setQuery("ALTER TABLE `{$ipColumn['table']}` MODIFY `{$ipColumn['column']}` VARCHAR(45) NULL;")->execute();
+					}
 				}
 			}
 
