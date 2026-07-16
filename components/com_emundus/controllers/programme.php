@@ -439,6 +439,80 @@ class EmundusControllerProgramme extends EmundusController
 		return EmundusResponse::ok($result, Text::_('PROGRAMMES_DELETED'));
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::UPDATE]])]
+	public function publishprogram(): EmundusResponse
+	{
+		$data = $this->getProgramIdsFromInput();
+
+		$result = $this->m_programme->publishProgram($data);
+		if ($result !== true)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_PUBLISH_PROGRAMS'));
+		}
+
+		$this->cleanProgramCache();
+
+		return EmundusResponse::ok($result, Text::_('PROGRAMMES_PUBLISHED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::UPDATE]])]
+	public function unpublishprogram(): EmundusResponse
+	{
+		$data = $this->getProgramIdsFromInput();
+
+		$result = $this->m_programme->unpublishProgram($data);
+		if ($result !== true)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_UNPUBLISH_PROGRAMS'));
+		}
+
+		$this->cleanProgramCache();
+
+		return EmundusResponse::ok($result, Text::_('PROGRAMMES_UNPUBLISHED'));
+	}
+
+	/**
+	 * Read one program id (`id`) or a list of ids (`ids`, comma-separated) from the request.
+	 *
+	 * @return int[]
+	 */
+	private function getProgramIdsFromInput(): array
+	{
+		$data = $this->input->getInt('id', 0);
+		if (empty($data))
+		{
+			$data = array_filter(explode(',', $this->input->getString('ids', '')));
+		}
+
+		if (!is_array($data))
+		{
+			$data = [$data];
+		}
+
+		$data = array_map('intval', $data);
+		$data = array_filter($data);
+
+		if (empty($data))
+		{
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Clear the eMundus output cache so program list changes are reflected immediately.
+	 *
+	 * @return void
+	 */
+	private function cleanProgramCache(): void
+	{
+		$hCache = new \EmundusHelperCache();
+		$hCache->clean(false);
+	}
+
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
 	public function getprogramcategories(): EmundusResponse
 	{
