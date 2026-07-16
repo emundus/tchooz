@@ -296,6 +296,7 @@ class EmundusControllerProgramme extends EmundusController
 			$synthesis   = $this->input->getRaw('synthesis');
 			$logo        = $this->input->files->get('logo');
 			$logoPath    = $this->input->getString('logo');
+			$applyOnline = $this->input->getInt('apply_online', 1) === 1;
 			$handleLogo  = true;
 		}
 		else
@@ -315,6 +316,7 @@ class EmundusControllerProgramme extends EmundusController
 			$programmes  = $data['programmes'] ?? '';
 			$description = $data['notes'] ?? '';
 			$synthesis   = $data['synthesis'] ?? '';
+			$applyOnline = $data['apply_online'] ?? true;
 		}
 
 		if (empty($label) || empty($code))
@@ -365,6 +367,7 @@ class EmundusControllerProgramme extends EmundusController
 			$programEntity->setNotes($description ?? '');
 			$programEntity->setProgrammes($programmes ?? '');
 			$programEntity->setSynthesis($synthesis ?? '');
+			$programEntity->setApplyOnline($applyOnline);
 
 			if ($handleLogo)
 			{
@@ -379,7 +382,7 @@ class EmundusControllerProgramme extends EmundusController
 				notes: $description,
 				programmes: $programmes,
 				synthesis: $synthesis,
-				applyOnline: true,
+				applyOnline: $applyOnline,
 				logo: $logoPath
 			);
 		}

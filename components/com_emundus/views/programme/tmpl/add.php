@@ -19,6 +19,8 @@ Text::script('COM_EMUNDUS_PROGRAM_SYNTHESIS_LABEL');
 Text::script('COM_EMUNDUS_PROGRAM_SYNTHESIS_HELP');
 Text::script('COM_EMUNDUS_PROGRAM_LOGO_LABEL');
 Text::script('COM_EMUNDUS_PROGRAM_FORM_CREATE');
+Text::script('COM_EMUNDUS_PROGRAM_APPLY_ONLINE_LABEL');
+Text::script('COM_EMUNDUS_PROGRAM_APPLY_ONLINE_HELP');
 
 $data = LayoutFactory::prepareVueData();
 $data['program'] = (new ProgramEntity('', '', 0))->__serialize();
