@@ -190,7 +190,7 @@ $allowDefaultLogin = (bool)$eMConfig->get('allow_default_login', 1);
 					<?php endif; ?>
 				<?php endforeach; ?>
             </div>
-            <?php if (empty($this->samlConfig)) : ?>
+            <?php if (empty($this->samlConfig) && $allowDefaultLogin) : ?>
             <!-- SEPARATOR -->
             <div class="tw-mt-6 tw-flex tw-items-center tw-justify-center tw-gap-2 tw-w-full">
                 <hr class="tw-w-full">
@@ -213,12 +213,14 @@ $allowDefaultLogin = (bool)$eMConfig->get('allow_default_login', 1);
                     ]);
                 ?>
             </div>
+            <?php if ($allowDefaultLogin): ?>
             <!-- SEPARATOR -->
             <div class="tw-mt-6 tw-flex tw-items-center tw-justify-center tw-gap-2 tw-w-full">
                 <hr class="tw-w-full">
                 <span class="tw-text-neutral-500"><?php echo Text::_('OU'); ?></span>
                 <hr class="tw-w-full">
             </div>
+            <?php endif; ?>
         </div>
 	<?php endif; ?>
 
