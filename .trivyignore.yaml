@@ -27,6 +27,9 @@ vulnerabilities:
       - "media/gantry5/engines/nucleus/yarn.lock"
     statement: It's dev dependency and not used in production. The library is used for development purposes only, so it is not a security risk. (cf. https://github.com/gantry/gantry5/blob/master/package.json)
   - id: CVE-2026-46633
+  - id: CVE-2026-48805
+  - id: CVE-2026-48806
+  - id: CVE-2026-48807
     paths:
       - "libraries/gantry5/composer.lock"
       - "libraries/gantry5/compat/composer.lock"
