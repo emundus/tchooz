@@ -24,6 +24,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\User\User;
 use Joomla\Database\DatabaseDriver;
+use Joomla\Database\ParameterType;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\User\AuthenticationModeEnum;
 use Tchooz\Factories\Fabrik\FabrikOptionsFactory;
@@ -2959,7 +2960,7 @@ class EmundusModelForm extends ListModel
 						if (in_array($action->action, ['show_group','hide_group']))
 						{
 							$query->clear()
-								->select('fg.label')
+								->select('fg.id, fg.label')
 								->from($this->db->quoteName('#__fabrik_groups', 'fg'))
 								->where($this->db->quoteName('fg.id') . ' IN (' . implode(',', $this->db->quote($action->fields)) . ')');
 						}
@@ -2978,6 +2979,28 @@ class EmundusModelForm extends ListModel
 						foreach ($actionElements as $actionElement)
 						{
 							$label = Text::_($actionElement->label);
+							
+							if(empty($label) && in_array($action->action, ['show_group','hide_group']))
+							{
+								// Get first element of group with label
+								$query->clear()
+									->select('fe.label')
+									->from($this->db->quoteName('#__fabrik_elements', 'fe'))
+									->where($this->db->quoteName('group_id') . ' = :groupId')
+									->bind(':groupId', $actionElement->id, ParameterType::INTEGER);
+								$this->db->setQuery($query);
+								$groupElements = $this->db->loadColumn();
+
+								foreach ($groupElements as $groupElement)
+								{
+									$elementLabel = Text::_($groupElement);
+									if(!empty($elementLabel))
+									{
+										$label = Text::sprintf('COM_EMUNDUS_FORM_BUILDER_RULES_GROUP_WITH_ELEMENT_LIST', $elementLabel);
+										break;
+									}
+								}
+							}
 
 							if(isset($actionElement->plugin)) {
 								$plugin = ElementPluginEnum::tryFrom($actionElement->plugin);
@@ -2987,9 +3010,9 @@ class EmundusModelForm extends ListModel
 									// Truncate to 30 characters and remove html tags for panel default values
 									$label = Text::_($actionElement->default_value);
 									$label = strip_tags($label);
-									if (strlen($label) > 30)
+									if (mb_strlen($label, 'UTF-8') > 30)
 									{
-										$label = substr($label, 0, 30) . '...';
+										$label = mb_substr($label, 0, 30, 'UTF-8') . '...';
 									}
 									$label = '[' . Text::_($plugin->getLabel()) . '] - ' . $label;
 								}

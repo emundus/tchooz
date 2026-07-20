@@ -955,9 +955,10 @@ class EmundusModelApplication extends ListModel
 
 		try {
 			$query = $this->_db->createQuery();
-			$query->select('*')
-				->from($this->_db->quoteName('#__emundus_uploads'))
-				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($id));
+			$query->select('eu.*, esa.value')
+				->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quoteName('esa.id'))
+				->where($this->_db->quoteName('eu.id') . ' = ' . $this->_db->quote($id));
 			$this->_db->setQuery($query);
 			$upload = $this->_db->loadAssoc();
 		} catch (\Exception $e) {
@@ -6842,7 +6843,7 @@ class EmundusModelApplication extends ListModel
 	 *
 	 * @return string preview html tags
 	 */
-	public function getAttachmentPreview($user, $fileName)
+	public function getAttachmentPreview($user, $fileName, $label = '')
 	{
 		$preview   = [
 			'status'    => true,
@@ -6859,9 +6860,10 @@ class EmundusModelApplication extends ListModel
 
 		if ($fileExists) {
 
+			$iframeTitle = !empty($label) ? $label : Text::_('COM_EMUNDUS_IFRAME_ATTACHMENT_TITLE');
 			// create preview based on filetype
 			if ($extension == 'pdf') {
-				$preview['content'] = '<iframe src="/index.php?option=com_emundus&task=getfile&u=images/emundus/files/'. $user . '/' . $fileName . '" style="width:100%;height:100%;" border="0"></iframe>';
+				$preview['content'] = '<iframe title="'.$iframeTitle.'" src="/index.php?option=com_emundus&task=getfile&u=images/emundus/files/'. $user . '/' . $fileName . '" style="width:100%;height:100%;" border="0"></iframe>';
 			}
 			else if ($extension == 'txt') {
 				$content              = file_get_contents($filePath);

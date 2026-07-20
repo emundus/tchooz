@@ -43,7 +43,7 @@ export default {
 					if (!parameter || !parameter.param) continue;
 					if (!Object.prototype.hasOwnProperty.call(source, parameter.param)) continue;
 
-					if (parameter.type === 'file') {
+					if (parameter.type === 'file' && source[parameter.param]) {
 						parameter.value = source[parameter.param].startsWith('https')
 							? source[parameter.param]
 							: base + source[parameter.param];
