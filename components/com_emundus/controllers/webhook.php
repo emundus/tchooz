@@ -19,10 +19,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
 use GuzzleHttp\Client as GuzzleClient;
-
 use Tchooz\Entities\Payment\TransactionStatus;
 use Tchooz\Enums\Payment\PaymentGatewayEnum;
-use Tchooz\Synchronizers\Payment\Sogecommerce;
 use Tchooz\Repositories\Payment\TransactionRepository;
 use Tchooz\Synchronizers\Payment\Stripe;
 use Tchooz\Synchronizers\Payment\Paybox;
@@ -1015,114 +1013,147 @@ class EmundusControllerWebhook extends BaseController
 			try
 			{
 				$query = $this->db->createQuery();
-				$query->select('type')
+				$query->select('type, name')
 					->from('#__emundus_setup_sync')
 					->where('id = ' . $sync_id);
 
 				$this->db->setQuery($query);
-				$type = $this->db->loadResult();
+				$sync = $this->db->loadObject();
+				$type = $sync->type ?? '';
+				$sync_name = !empty($sync->name) ? $sync->name : $type;
+
+				$gateway = PaymentGatewayEnum::tryFrom($type);
+				$synchronizer = $gateway?->getSynchronizer();
 
 				switch(PaymentGatewayEnum::tryFrom($type)) {
 					case PaymentGatewayEnum::SOGECOMMERCE:
-						Log::add('Sogecommerce transaction update attempt', Log::INFO, 'com_emundus.payment');
-						$sogecommerce = new Sogecommerce();
-						$verified     = $sogecommerce->verifySignature($payload);
-						if ($verified) {
-							Log::add('Sogecommerce signature verified', Log::INFO, 'com_emundus.payment');
+					case PaymentGatewayEnum::PAYZEN:
+						Log::add($sync_name . ' transaction update attempt', Log::INFO, 'com_emundus.payment');
+						$verified = $synchronizer->verifySignature($payload);
+						if ($verified)
+						{
+							Log::add($sync_name . ' signature verified', Log::INFO, 'com_emundus.payment');
 
 							$added_to_queue = $transaction_repository->addTransactionToQueue($payload, $payload['vads_trans_id'], $sync_id);
 
-							if ($added_to_queue) {
-								Log::add('Sogecommerce transaction added to queue', Log::INFO, 'com_emundus.payment');
+							if ($added_to_queue)
+							{
+								Log::add($sync_name . ' transaction added to queue', Log::INFO, 'com_emundus.payment');
 								$transaction_id = $transaction_repository->getTransactionIdByExternalReference($payload['vads_trans_id']);
-								$transactions = $transaction_repository->getTransactionsInQueue(['pending'], [$transaction_id]);
-								$managed = $transaction_repository->manageQueueTransactions($transactions);
+								$transactions   = $transaction_repository->getTransactionsInQueue(['pending'], [$transaction_id]);
+								$managed        = $transaction_repository->manageQueueTransactions($transactions);
 
-								if ($managed) {
-									Log::add('Sogecommerce transaction ' . $payload['vads_trans_id'] . '  managed', Log::INFO, 'com_emundus.payment');
-								} else {
-									Log::add('Sogecommerce transaction ' . $payload['vads_trans_id'] .' not managed', Log::ERROR, 'com_emundus.payment');
+								if ($managed)
+								{
+									Log::add($sync_name . ' transaction ' . $payload['vads_trans_id'] . ' managed', Log::INFO, 'com_emundus.payment');
 								}
-							} else {
-								Log::add('Sogecommerce transaction not added to queue', Log::ERROR, 'com_emundus.payment');
+								else
+								{
+									Log::add($sync_name . ' transaction ' . $payload['vads_trans_id'] . ' not managed', Log::ERROR, 'com_emundus.payment');
+								}
 							}
-						} else {
-							Log::add('Sogecommerce signature verification failed', Log::ERROR, 'com_emundus.payment');
+							else
+							{
+								Log::add($sync_name . ' transaction not added to queue', Log::ERROR, 'com_emundus.payment');
+							}
+						}
+						else
+						{
+							Log::add($sync_name . ' signature verification failed', Log::ERROR, 'com_emundus.payment');
 							$added_to_queue = false;
 						}
 						break;
 					case PaymentGatewayEnum::STRIPE:
 						Log::add('Stripe transaction update attempt ', Log::INFO, 'com_emundus.payment');
 						$added_to_queue = false;
-						$stripe = new Stripe();
-						$verified = $stripe->verifySignature($raw_payload);
+						$verified       = $synchronizer->verifySignature($raw_payload);
 
-						if ($verified) {
+						if ($verified)
+						{
 							Log::add('Stripe signature verified', Log::INFO, 'com_emundus.payment');
 							$payload = json_decode($raw_payload, true);
 
-							if (in_array($payload['type'], $stripe::HANDLED_EVENTS) && !empty($payload['data']['object']['client_reference_id'])) {
+							if (in_array($payload['type'], Stripe::HANDLED_EVENTS) && !empty($payload['data']['object']['client_reference_id']))
+							{
 								Log::add('Stripe webhook received for checkout.session.completed event', Log::INFO, 'com_emundus.payment');
 								$added_to_queue = $transaction_repository->addTransactionToQueue($payload, $payload['data']['object']['client_reference_id'], $sync_id);
 
-								if ($added_to_queue) {
+								if ($added_to_queue)
+								{
 									Log::add('Stripe transaction added to queue', Log::INFO, 'com_emundus.payment');
 									$transaction_id = $transaction_repository->getTransactionIdByExternalReference($payload['data']['object']['client_reference_id']);
-									$transactions = $transaction_repository->getTransactionsInQueue(['pending'], [$transaction_id]);
-									$managed = $transaction_repository->manageQueueTransactions($transactions);
+									$transactions   = $transaction_repository->getTransactionsInQueue(['pending'], [$transaction_id]);
+									$managed        = $transaction_repository->manageQueueTransactions($transactions);
 
-									if ($managed) {
+									if ($managed)
+									{
 										Log::add('Stripe transaction ' . $payload['data']['object']['client_reference_id'] . '  managed', Log::INFO, 'com_emundus.payment');
-									} else {
-										Log::add('Stripe transaction ' . $payload['data']['object']['client_reference_id'] .' not managed', Log::ERROR, 'com_emundus.payment');
 									}
-								} else {
+									else
+									{
+										Log::add('Stripe transaction ' . $payload['data']['object']['client_reference_id'] . ' not managed', Log::ERROR, 'com_emundus.payment');
+									}
+								}
+								else
+								{
 									Log::add('Stripe transaction not added to queue', Log::ERROR, 'com_emundus.payment');
 								}
-							} else {
+							}
+							else
+							{
 								Log::add('Stripe webhook received but not a checkout.session.completed event or missing client_reference_id', Log::WARNING, 'com_emundus.payment');
 							}
-						} else {
+						}
+						else
+						{
 							Log::add('Stripe signature verification failed', Log::ERROR, 'com_emundus.payment');
 						}
 						break;
 					case PaymentGatewayEnum::PAYBOX:
 						Log::add('Paybox transaction update attempt', Log::INFO, 'com_emundus.payment');
 						$added_to_queue = false;
-						$paybox   = new Paybox();
-						$verified = $paybox->verifySignature($raw_payload);
+						$paybox         = new Paybox();
+						$verified       = $paybox->verifySignature($raw_payload);
 
-						if ($verified) {
+						if ($verified)
+						{
 							Log::add('Paybox signature verified', Log::INFO, 'com_emundus.payment');
 							$reference      = $payload['Ref'] ?? '';
 							$transaction_id = $transaction_repository->getTransactionIdByExternalReference($reference);
 							$transaction    = $transaction_repository->getById($transaction_id);
 
-							if (!empty($transaction) && $transaction->getStatus() === TransactionStatus::CONFIRMED) {
+							if (!empty($transaction) && $transaction->getStatus() === TransactionStatus::CONFIRMED)
+							{
 								Log::add('Paybox IPN replayed for already confirmed transaction ' . $reference . ', skipping', Log::INFO, 'com_emundus.payment');
 								$added_to_queue = true;
-							} else {
+							}
+							else
+							{
 								$added_to_queue = $transaction_repository->addTransactionToQueue($payload, $reference, $sync_id);
 
-								if ($added_to_queue) {
+								if ($added_to_queue)
+								{
 									$transactions = $transaction_repository->getTransactionsInQueue(['pending'], [$transaction_id]);
 									$managed      = $transaction_repository->manageQueueTransactions($transactions);
 									Log::add('Paybox transaction ' . $reference . ' managed: ' . (int) $managed, Log::INFO, 'com_emundus.payment');
-								} else {
+								}
+								else
+								{
 									Log::add('Paybox transaction not added to queue', Log::ERROR, 'com_emundus.payment');
 								}
 							}
-						} else {
+						}
+						else
+						{
 							Log::add('Paybox signature verification failed', Log::ERROR, 'com_emundus.payment');
 						}
 						break;
 					default:
 						Log::add('Wrong attempt to add transaction to queue, no matching synchronizer found', Log::ERROR, 'com_emundus.payment');
-						$verified = false;
+						$verified       = false;
 						$added_to_queue = false;
 						break;
 				}
-
 				if ($verified)
 				{
 					if ($added_to_queue)

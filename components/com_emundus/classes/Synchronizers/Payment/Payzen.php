@@ -4,10 +4,10 @@ namespace Tchooz\Synchronizers\Payment;
 
 use Tchooz\Enums\Payment\PaymentGatewayEnum;
 
-class Sogecommerce extends Lyra
+class Payzen extends Lyra
 {
 	protected function getPaymentGateway(): PaymentGatewayEnum
 	{
-		return PaymentGatewayEnum::SOGECOMMERCE;
+		return PaymentGatewayEnum::PAYZEN;
 	}
 }
