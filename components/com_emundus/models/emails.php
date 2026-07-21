@@ -1689,7 +1689,7 @@ class EmundusModelEmails extends JModelList
 	 * @throws Exception
 	 * @since version v6
 	 */
-	public function sendExpertMail(array $fnums, int $sender_id, string $mail_subject, string $mail_from_name, string $mail_from, array $mail_to, string $mail_body, int $mail_id = 0): array
+	public function sendExpertMail(array $fnums, int $sender_id, string $mail_subject, string $mail_from_name, array $mail_from, array $mail_to, string $mail_body, int $mail_id = 0): array
 	{
 		$sent          = [];
 		$failed        = [];
@@ -1886,7 +1886,7 @@ class EmundusModelEmails extends JModelList
 					// If the email sender has the same domain as the system sender address.
 					$mail_from_address = $email_from_sys;
 					if(empty($mail_from)) {
-						$mail_from = $reply_to;
+						$mail_from = [$reply_to];
 					}
 					if(empty($mail_from_name)) {
 						$mail_from_name = $mail_from_sys_name;
