@@ -27,7 +27,9 @@ class ProgramFactory extends AbstractFactory
 			applyOnline: (bool) $dbObject->apply_online,
 			ordering: (int) $dbObject->ordering,
 			logo: $dbObject->logo,
-			color: $dbObject->color
+			color: $dbObject->color,
+			longDescription: $dbObject->long_description ?? '',
+			mustOpenRights: $dbObject->must_open_rights ?? 0,
 		);
 	}
 

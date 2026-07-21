@@ -281,31 +281,34 @@ class EmundusControllerProgramme extends EmundusController
 	{
 		$this->checkToken();
 		$data = $this->input->getRaw('body');
-		$id = $this->input->getInt('id', 0);
+		$id   = $this->input->getInt('id', 0);
 
 		$logoPath   = '';
 		$logo       = null;
 		$handleLogo = false;
 		if (empty($data))
 		{
-			$label       = $this->input->getString('label');
-			$code        = $this->input->getString('code');
-			$programmes  = $this->input->getString('programmes');
-			$description = $this->input->getRaw('notes');
-			$description = (is_null($description) || $description === 'null') ? '' : $description;
-			$synthesis   = $this->input->getRaw('synthesis');
-			$logo        = $this->input->files->get('logo');
-			$logoPath    = $this->input->getString('logo');
-			$applyOnline = $this->input->getInt('apply_online', 1) === 1;
-			$handleLogo  = true;
+			$label           = $this->input->getString('label');
+			$code            = $this->input->getString('code');
+			$programmes      = $this->input->getString('programmes');
+			$description     = $this->input->getRaw('notes');
+			$description     = (is_null($description) || $description === 'null') ? '' : $description;
+			$longDescription = $this->input->getRaw('long_description');
+			$longDescription = (is_null($longDescription) || $longDescription === 'null') ? '' : $longDescription;
+			$synthesis       = $this->input->getRaw('synthesis');
+			$logo            = $this->input->files->get('logo');
+			$logoPath        = $this->input->getString('logo');
+			$applyOnline     = $this->input->getInt('apply_online', 1) === 1;
+			$mustOpenRights  = $this->input->getInt('must_open_rights', 0) === 1;
+			$handleLogo      = true;
 		}
 		else
 		{
 			// Backward compatibility: legacy JSON callers do not manage the logo
-			$data        = json_decode($data, true);
-			$label       = $data['label'];
-			$code        = $data['code'];
-			if(empty($code) && !empty($label))
+			$data  = json_decode($data, true);
+			$label = $data['label'];
+			$code  = $data['code'];
+			if (empty($code) && !empty($label))
 			{
 				$code = preg_replace('/[^A-Za-z0-9]/', '', $label);
 				$code = str_replace(' ', '_', $code);
@@ -314,9 +317,11 @@ class EmundusControllerProgramme extends EmundusController
 				$code = uniqid($code . '-');
 			}
 			$programmes  = $data['programmes'] ?? '';
+			$longDescription = $data['long_description'] ?? '';
 			$description = $data['notes'] ?? '';
 			$synthesis   = $data['synthesis'] ?? '<p><strong>[APPLICANT_NAME]</strong></p><p><a href="mailto:[EMAIL]">[EMAIL]</a></p>';
 			$applyOnline = $data['apply_online'] ?? true;
+			$mustOpenRights = $data['must_open_rights'] ?? true;
 		}
 
 		if (empty($label) || empty($code))
@@ -342,7 +347,8 @@ class EmundusControllerProgramme extends EmundusController
 				$random   = substr($random, 0, $length);
 				$logoPath = $uploader->upload($logo, $label . '_' . $random, 'program');
 			}
-			else {
+			else
+			{
 				$logoPath = null;
 			}
 		}
@@ -365,9 +371,11 @@ class EmundusControllerProgramme extends EmundusController
 			$programEntity->setCode($code);
 			$programEntity->setLabel($label);
 			$programEntity->setNotes($description ?? '');
+			$programEntity->setLongDescription($longDescription ?? '');
 			$programEntity->setProgrammes($programmes ?? '');
 			$programEntity->setSynthesis($synthesis ?? '');
 			$programEntity->setApplyOnline($applyOnline);
+			$programEntity->setMustOpenRights($mustOpenRights);
 
 			if ($handleLogo)
 			{
@@ -383,7 +391,9 @@ class EmundusControllerProgramme extends EmundusController
 				programmes: $programmes,
 				synthesis: $synthesis,
 				applyOnline: $applyOnline,
-				logo: $logoPath
+				logo: $logoPath,
+				longDescription: $longDescription,
+				mustOpenRights: $mustOpenRights,
 			);
 		}
 
