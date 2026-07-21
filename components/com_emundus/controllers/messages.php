@@ -290,10 +290,21 @@ class EmundusControllerMessages extends BaseController
 		// If no mail sender info is provided, we use the system global config.
 		$mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
 		$mail_from      = $this->input->post->getString('mail_from', $mail_from_sys);
-		$reply_to_from  = $this->input->post->getString('reply_to_from', '');
-		if(empty($reply_to_from))
-		{
-			$reply_to_from = $reply_to;
+		$reply_to_from  = $this->input->post->getString('reply_to_from', null, null);
+		if (!empty($reply_to_from) && is_array($reply_to_from)) {
+			foreach ($reply_to_from as $key => $reply_to_to_test) {
+				if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $reply_to_to_test) !== 1) {
+					unset($reply_to_from[$key]);
+				}
+			}
+			$reply_to_from = array_values(array_unique($reply_to_from));
+		}
+		else {
+			$reply_to_from = [];
+		}
+
+		if (empty($reply_to_from)) {
+			$reply_to_from = [$reply_to];
 		}
 
 		$mail_subject = $this->input->post->getString('mail_subject', 'No Subject');
@@ -435,7 +446,7 @@ class EmundusControllerMessages extends BaseController
                     <strong>' . Text::_('COM_EMUNDUS_EMAILS_FROM') . '</strong> ' . $sender . ' </br>';
 
 		if (!empty($reply_to_from)) {
-			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_REPLY_TO') . '</strong> ' . $reply_to_from . ' </br>';
+			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_REPLY_TO') . '</strong> ' . implode(', ', $reply_to_from) . ' </br>';
 		}
 
 
@@ -592,10 +603,21 @@ class EmundusControllerMessages extends BaseController
 		// If no mail sender info is provided, we use the system global config.
 		$mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
 		$mail_from      = $this->input->post->getString('mail_from', $mail_from_sys);
-		$reply_to_from  = $this->input->post->getString('reply_to_from', '');
-		if(empty($reply_to_from))
-		{
-			$reply_to_from = $reply_to;
+		$reply_to_from  = $this->input->post->getString('reply_to_from', null, null);
+		if (!empty($reply_to_from) && is_array($reply_to_from)) {
+			foreach ($reply_to_from as $key => $reply_to_to_test) {
+				if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $reply_to_to_test) !== 1) {
+					unset($reply_to_from[$key]);
+				}
+			}
+			$reply_to_from = array_values(array_unique($reply_to_from));
+		}
+		else {
+			$reply_to_from = [];
+		}
+
+		if (empty($reply_to_from)) {
+			$reply_to_from = [$reply_to];
 		}
 
 		$mail_subject = $this->input->post->getString('mail_subject', 'No Subject');

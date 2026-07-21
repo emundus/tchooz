@@ -17,7 +17,7 @@ export default {
 		// props
 		form: {
 			fromName: '',
-			from: '',
+			from: [],
 			emailId: 0,
 			subject: '',
 			to: [],
@@ -31,6 +31,7 @@ export default {
 		},
 
 		experts: [],
+		replyToAddresses: [],
 		emails: [],
 
 		editorPlugins: [
@@ -65,7 +66,8 @@ export default {
 			return await emailService.getExpertConfig().then((response) => {
 				if (response.status) {
 					this.form.emailId = response.data.id;
-					this.form.from = response.data.emailfrom;
+					this.form.from = response.data.emailfrom ? [{ email: response.data.emailfrom }] : [];
+					this.replyToAddresses = [...this.form.from];
 					this.form.fromName = response.data.name;
 
 					this.reloadForm++;
@@ -119,6 +121,7 @@ export default {
 			this.loading = true;
 
 			this.form.to = this.form.to.map((expert) => expert.email);
+			this.form.from = this.form.from.map((entry) => entry.email);
 
 			let data = {
 				mail_from_name: this.form.fromName,
@@ -172,6 +175,17 @@ export default {
 				this.form.to.push(expert);
 			}
 		},
+
+		addFromOption(newOption) {
+			let res = /^[\w.+-]+@([\w-]+\.)+[\w-]{2,}$/;
+			if (res.test(newOption)) {
+				let address = {
+					email: newOption,
+				};
+				this.replyToAddresses.push(address);
+				this.form.from.push(address);
+			}
+		},
 	},
 	watch: {
 		'form.emailId': function (val) {
@@ -200,7 +214,23 @@ export default {
 
 			<div>
 				<label>{{ translate('COM_EMUNDUS_EXPERT_MAIL_FROM') }}</label>
-				<input v-model="form.from" type="text" ref="expert_from" />
+				<multiselect
+					ref="expert_from"
+					v-model="form.from"
+					label="email"
+					track-by="email"
+					:options="replyToAddresses"
+					:multiple="true"
+					:taggable="true"
+					:placeholder="translate('COM_EMUNDUS_EXPERT_MAIL_FROM_PLACEHOLDER')"
+					:tagPlaceholder="translate('COM_EMUNDUS_EXPERT_MAIL_FROM_TAG_ENTER')"
+					select-label=""
+					selected-label=""
+					deselect-label=""
+					@tag="addFromOption"
+				>
+					<template #noOptions>{{ translate('COM_EMUNDUS_EXPERT_MAIL_FROM_EMPTY') }}</template>
+				</multiselect>
 			</div>
 
 			<div>
