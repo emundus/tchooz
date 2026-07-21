@@ -17,6 +17,7 @@ use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\NumericSign\Request;
 use Tchooz\Entities\NumericSign\RequestSigners;
 use Tchooz\Enums\NumericSign\SignAuthenticationLevelEnum;
+use Tchooz\Enums\NumericSign\SignConnectorsEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Attachments\AttachmentTypeRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
@@ -59,7 +60,7 @@ class EmundusModelSign extends ListModel
 		Log::addLogger(['text_file' => 'com_emundus.sign.php'], Log::ALL, array('com_emundus.sign'));
 	}
 
-	public function getRequests(string $order_by = '', string $sort = 'DESC', string $search = '', int|string $lim = 25, int|string $page = 0, ?string $status = '', ?int $attachment = 0, ?int $applicant = 0, ?string $signed_date = ''): array
+	public function getRequests(string $order_by = '', string $sort = 'DESC', string $search = '', int|string $lim = 25, int|string $page = 0, ?string $status = '', ?int $attachment = 0, ?int $applicant = 0, ?string $signed_date = '', ?string $creation_date = '', ?string $reminder_date = '', ?string $connector = ''): array
 	{
 		$requests = ['datas' => [], 'count' => 0];
 
@@ -84,7 +85,7 @@ class EmundusModelSign extends ListModel
 			}
 
 			$requestsRepository = new RequestRepository($this->db);
-			$requestsRepository->setFilters($search, $status, $attachment, $applicant, $signed_date);
+			$requestsRepository->setFilters($search, $status, $attachment, $applicant, $signed_date, $creation_date, $reminder_date, $connector);
 
 			$requests['count'] = $requestsRepository->getCountRequests();
 			$requests['datas'] = $requestsRepository->loadRequests($order_by, $sort, $limit, $offset);
@@ -634,6 +635,33 @@ class EmundusModelSign extends ListModel
 			}
 
 			return $status;
+		}
+		catch (\Exception $e)
+		{
+			Log::add($e->getMessage(), Log::ERROR);
+			throw $e;
+		}
+	}
+
+	public function getFilterConnectors(): array
+	{
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select([$this->db->quoteName('esr.connector', 'value'), 'connector as label'])
+				->from($this->db->quoteName('#__emundus_sign_requests','esr'))
+				->group('esr.connector')
+				->order('esr.connector ASC');
+			$this->db->setQuery($query);
+			$connectors = $this->db->loadObjectList();
+
+			foreach ($connectors as $connector)
+			{
+				$connector->label = SignConnectorsEnum::from($connector->label)->getLabel();
+			}
+
+			return $connectors;
 		}
 		catch (\Exception $e)
 		{
