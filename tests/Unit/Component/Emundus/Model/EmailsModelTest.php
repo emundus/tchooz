@@ -122,4 +122,76 @@ class EmailsModelTest extends UnitTestCase
 		$response = $this->model->sendExpertMail([$this->dataset['fnum']],0,'','','',[],'');
 		$this->assertEmpty($response['sent'], 'L\'envoi de l\'email a échoué, car il manque des paramètres');
 	}
+
+	// -------------------------------------------------------------------------
+	// scopeAliasElementsToFnumForms — used by setTagsFabrik to resolve an alias
+	// against the file's current campaign forms (moved-campaign bug).
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @covers EmundusModelEmails::scopeAliasElementsToFnumForms
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testScopeAliasElementsToFnumFormsWhenSeveralFormsShareAliasKeepsOnlyCurrentCampaignElement()
+	{
+		// Two elements share the same alias on the same table: id 10 belongs to the original
+		// campaign form, id 20 to the current campaign form. Only the current one must remain.
+		$alias_element_ids = [10, 20];
+		$fnum_form_elements = [3, 20, 42];
+
+		$scoped = $this->model->scopeAliasElementsToFnumForms($alias_element_ids, $fnum_form_elements);
+
+		$this->assertSame([20], $scoped, 'Seul l\'élément appartenant au formulaire de la campagne courante doit être conservé');
+	}
+
+	/**
+	 * @covers EmundusModelEmails::scopeAliasElementsToFnumForms
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testScopeAliasElementsToFnumFormsIgnoresElementOrderAndPicksCurrentCampaignElement()
+	{
+		// The original-campaign element (id 5) comes first and has the lowest id: without scoping
+		// it would win. Scoping must still keep the current-campaign element (id 30).
+		$alias_element_ids = [5, 30];
+		$fnum_form_elements = [30];
+
+		$scoped = $this->model->scopeAliasElementsToFnumForms($alias_element_ids, $fnum_form_elements);
+
+		$this->assertSame([30], $scoped, 'Le scoping doit ignorer l\'ordre des éléments et retenir celui de la campagne courante');
+	}
+
+	/**
+	 * @covers EmundusModelEmails::scopeAliasElementsToFnumForms
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testScopeAliasElementsToFnumFormsWhenScopeUnknownReturnsAllElements()
+	{
+		// No campaign forms could be resolved for the file: fall back to the previous behaviour
+		// (every element sharing the alias) rather than dropping the tag entirely.
+		$alias_element_ids = [10, 20];
+
+		$scoped = $this->model->scopeAliasElementsToFnumForms($alias_element_ids, []);
+
+		$this->assertSame([10, 20], $scoped, 'Sans périmètre de campagne connu, tous les éléments de l\'alias doivent être conservés');
+	}
+
+	/**
+	 * @covers EmundusModelEmails::scopeAliasElementsToFnumForms
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testScopeAliasElementsToFnumFormsWhenNoAliasElementInScopeReturnsAllElements()
+	{
+		// The alias only exists in forms outside the current campaign: keep every element rather
+		// than resolving to nothing, so a genuinely shared value is not lost.
+		$alias_element_ids = [10, 20];
+		$fnum_form_elements = [1, 2, 3];
+
+		$scoped = $this->model->scopeAliasElementsToFnumForms($alias_element_ids, $fnum_form_elements);
+
+		$this->assertSame([10, 20], $scoped, 'Si aucun élément de l\'alias n\'est dans le périmètre, tous les éléments sont conservés (repli)');
+	}
 }

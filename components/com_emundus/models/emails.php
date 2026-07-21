@@ -1257,7 +1257,16 @@ class EmundusModelEmails extends JModelList
 
 			$preg = array('patterns' => array(), 'replacements' => array());
 
+			$m_application = null;
+			if (!empty($aliasFabrik)) {
+				require_once(JPATH_SITE . DS . 'components/com_emundus/models/application.php');
+				$m_application = new EmundusModelApplication();
+			}
+
 			foreach ($fnumsArray as $fnum) {
+				// restrict the alias resolution to the elements belonging to this file's current
+				// campaign forms.
+				$fnumFormElements = !empty($m_application) ? $m_application->getFabrikDataByFnum($fnum, 'element') : [];
 				foreach ($idFabrik as $id) {
 					$preg['patterns'][] = '/\$\{' . $id . '\}/';
 					if (isset($fabrikValues[$id][$fnum])) {
@@ -1272,7 +1281,11 @@ class EmundusModelEmails extends JModelList
 				foreach ($aliasFabrik as $alias => $ids) {
 					$value_found = false;
 					$preg['patterns'][] = '/\$\{' . $alias . '\}/';
-					foreach($ids as $id) {
+
+					// Keep only the alias elements that belong to this file's current campaign forms.
+					$scopedIds = $this->scopeAliasElementsToFnumForms($ids, $fnumFormElements);
+
+					foreach($scopedIds as $id) {
 						if (!empty($fabrikValues[$id][$fnum]) && !empty($fabrikValues[$id][$fnum]['val'])) {
 							$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
 							$value_found = true;
@@ -1306,6 +1319,33 @@ class EmundusModelEmails extends JModelList
 		else {
 			return $str;
 		}
+	}
+
+	/**
+	 * Restrict the elements sharing an alias to those belonging to a file's current campaign forms.
+	 *
+	 * Several elements can share the same alias across different forms/campaigns while writing to
+	 * the same data table. Without scoping, a file moved to another campaign would resolve the alias
+	 * to the first element found (its original campaign form) instead of the current one.
+	 *
+	 * @param   array  $ids               The element ids sharing the alias.
+	 * @param   array  $fnumFormElements  The element ids belonging to the file's current campaign forms.
+	 *
+	 * @return  array  The scoped element ids, or every id when no scope could be resolved.
+	 *
+	 * @since   version 2.0.0
+	 */
+	public function scopeAliasElementsToFnumForms(array $ids, array $fnumFormElements): array
+	{
+		if (empty($fnumFormElements)) {
+			return $ids;
+		}
+
+		$filteredIds = array_values(array_filter($ids, function ($id) use ($fnumFormElements) {
+			return in_array($id, $fnumFormElements);
+		}));
+
+		return !empty($filteredIds) ? $filteredIds : $ids;
 	}
 
 
