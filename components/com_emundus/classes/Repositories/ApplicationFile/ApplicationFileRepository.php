@@ -176,6 +176,26 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 		return (int) $this->db->loadResult() > 0;
 	}
 
+	/**
+	 * Load every non-empty short reference in a single query.
+	 *
+	 * Used for bulk generation to check collisions in-memory instead of running one
+	 * COUNT query per file.
+	 *
+	 * @return array<string>
+	 */
+	public function getAllShortReferences(): array
+	{
+		$this->query->clear()
+			->select($this->db->quoteName('short_reference'))
+			->from($this->db->quoteName($this->tableName))
+			->where($this->db->quoteName('short_reference') . ' IS NOT NULL')
+			->where($this->db->quoteName('short_reference') . ' != ' . $this->db->quote(''));
+		$this->db->setQuery($this->query);
+
+		return $this->db->loadColumn() ?: [];
+	}
+
 	public function getIdByFnum(string $fnum): ?int
 	{
 		$this->query->clear()

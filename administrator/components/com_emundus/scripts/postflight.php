@@ -1716,55 +1716,88 @@ class Com_EmundusPostflightTasks
 	{
 		$generated = true;
 
-		// Get application files that have short_reference empty
+		// Ensure short_reference is indexed: speeds up uniqueness lookups for runtime generation.
+		EmundusHelperUpdate::addColumnIndex('#__emundus_campaign_candidature', 'short_reference');
+
+		// Get application files that have short_reference empty (only the columns needed for generation)
 		$query = $this->db->getQuery(true)
-			->select('id, short_reference')
+			->select($this->db->quoteName(['id', 'campaign_id', 'applicant_id']))
 			->from($this->db->quoteName('#__emundus_campaign_candidature'))
 			->where($this->db->quoteName('short_reference') . ' IS NULL')
-			->orWhere($this->db->quoteName('short_reference') . ' = ""');
+			->orWhere($this->db->quoteName('short_reference') . ' = ' . $this->db->quote(''));
 		$this->db->setQuery($query);
 		$applicationFiles = $this->db->loadObjectList();
 
-		if(!empty($applicationFiles))
+		if (empty($applicationFiles))
 		{
-			EmundusHelperUpdate::displayMessage(
-				'Generating short reference for ' . count($applicationFiles) . ' application files.'
-			);
-
-			$output = new ConsoleOutput();
-			$progressBar = new EmundusProgressBar($output, count($applicationFiles));
-			$progressBar->start();
-
-			$applicationFileRepository = new ApplicationFileRepository();
-			$internalReferenceService = new InternalReferenceService(
-				new DateProvider(),
-				$applicationFileRepository
-			);
-
-			$successCount = 0;
-			foreach ($applicationFiles as $applicationFile)
-			{
-				$applicationFileEntity           = $applicationFileRepository->getById($applicationFile->id);
-				$shortReference = $internalReferenceService->generateShortReference($applicationFileEntity);
-				$applicationFileEntity->setShortReference($shortReference);
-				if(!$applicationFileRepository->flush($applicationFileEntity))
-				{
-					EmundusHelperUpdate::displayMessage(
-						'Failed to generate short reference for application file with id ' . $applicationFile->id,
-						'error'
-					);
-					$generated = false;
-					continue;
-				}
-
-				$successCount++;
-				$progressBar->advance();
-			}
-			$progressBar->finish('Generated short reference for ' . $successCount . ' application files.');
-		}
-		else {
 			EmundusHelperUpdate::displayMessage('No application file to update with short reference.');
+
+			return true;
 		}
+
+		EmundusHelperUpdate::displayMessage(
+			'Generating short reference for ' . count($applicationFiles) . ' application files.'
+		);
+
+		$applicationFileRepository = new ApplicationFileRepository();
+		$internalReferenceService  = new InternalReferenceService(
+			new DateProvider(),
+			$applicationFileRepository
+		);
+
+		try
+		{
+			// Generate every reference in memory: a single existing-reference lookup, no per-file queries.
+			$shortReferences = $internalReferenceService->generateShortReferences($applicationFiles);
+		}
+		catch (Exception $e)
+		{
+			EmundusHelperUpdate::displayMessage('Failed to generate short references: ' . $e->getMessage(), 'error');
+
+			return false;
+		}
+
+		// Persist in batches to avoid one UPDATE per file.
+		$chunks = array_chunk($shortReferences, 500, true);
+
+		$output      = new ConsoleOutput();
+		$progressBar = new EmundusProgressBar($output, count($chunks));
+		$progressBar->start();
+
+		$successCount = 0;
+		foreach ($chunks as $chunk)
+		{
+			$cases = '';
+			$ids   = [];
+			foreach ($chunk as $id => $shortReference)
+			{
+				$cases .= ' WHEN ' . (int) $id . ' THEN ' . $this->db->quote($shortReference);
+				$ids[] = (int) $id;
+			}
+
+			$updateQuery = 'UPDATE ' . $this->db->quoteName('#__emundus_campaign_candidature')
+				. ' SET ' . $this->db->quoteName('short_reference') . ' = CASE ' . $this->db->quoteName('id')
+				. $cases . ' END'
+				. ' WHERE ' . $this->db->quoteName('id') . ' IN (' . implode(',', $ids) . ')';
+
+			try
+			{
+				$this->db->setQuery($updateQuery);
+				$this->db->execute();
+				$successCount += count($ids);
+			}
+			catch (Exception $e)
+			{
+				EmundusHelperUpdate::displayMessage(
+					'Failed to update short references for ids ' . implode(',', $ids) . ': ' . $e->getMessage(),
+					'error'
+				);
+				$generated = false;
+			}
+
+			$progressBar->advance();
+		}
+		$progressBar->finish('Generated short reference for ' . $successCount . ' application files.');
 
 		return $generated;
 	}
