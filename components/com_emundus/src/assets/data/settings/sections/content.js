@@ -14,6 +14,19 @@ export default [
 		},
 	},
 	{
+		label: 'COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_CAMPAIGN_LOGGED_PAGE',
+		name: 'campaign_logged_page',
+		component: 'EditArticle',
+		props: {
+			name: 'text_campaign_logged',
+			article_alias: 'campaigns-logged',
+			field: 'introtext',
+			category: 'homepage',
+			published: 1,
+			displayPublishedToggle: false,
+		},
+	},
+	{
 		label: 'COM_EMUNDUS_ONBOARD_CONTENT_TOOL_FOOTER',
 		name: 'footer',
 		component: 'EditFooter',
