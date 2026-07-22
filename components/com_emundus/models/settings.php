@@ -763,6 +763,7 @@ class EmundusModelSettings extends ListModel
 			->allowElement('img', '*')
 			->allowElement('p', ['style', 'class'])
 			->allowElement('span', ['style', 'class'])
+			->allowElement('div', ['data-plugin', 'data-type'])
 			->allowAttribute('img', ['src', 'style', 'alt', 'title', 'width', 'height', 'draggable'])
 			->allowAttribute('*', 'style')
 			->allowRelativeLinks(true)

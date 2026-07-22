@@ -140,13 +140,7 @@ body {
 
 /* Accueil */
 .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
-    background-image: var(--display-demonstration);
-    background-size: 250px;
-    background-repeat: no-repeat;
-    background-position: top 50% right 30px;
     width: 100%;
-    padding-right: 28%;
-    min-height: 150px;
 }
 
 /* Profile form */
@@ -263,12 +257,6 @@ body {
 
 /* TABLETTE */
 @media screen and (min-width: 768px) and (max-width: 959px) {
-
-    /* Accueil */
-    .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
-        background-position: top 50% right -40px;
-    }
-
     /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
     .view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround, .view-automation #g-page-surround, .view-task.layout-history #g-page-surround, .view-users.layout-exceptions #g-page-surround, .view-groups #g-page-surround {
         background-size: 90%;
@@ -281,11 +269,6 @@ body {
     /* Accueil */
     .homepage #g-container-main .g-container {
         background-image : none;
-    }
-
-    .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
-        background-image: none;
-        padding-right: 0;
     }
 
     /* Connexion */
@@ -521,4 +504,37 @@ div.sx__time-grid-event.sx__event {
 
 .em-applicant .toggle-editor {
     display: none;
+}
+
+/** PANEL **/
+div[data-plugin="panel"] {
+    display: flex;
+    padding: var(--em-spacing-5);
+    border-radius: 0.25rem;
+    align-items: start;
+    gap: 0.75rem;
+
+    &[data-type="info"] {
+        background: var(--blue-50);
+
+        span.material-symbols-outlined {
+            color: rgb(82, 91, 133) !important;
+        }
+    }
+
+    &[data-type="warning"] {
+        background: #fff6de;
+
+        span.material-symbols-outlined {
+            color: rgb(179, 132, 5) !important;
+        }
+    }
+
+    &[data-type="error"] {
+        background: var(--red-50);
+
+        span.material-symbols-outlined {
+            color: rgb(166, 14, 21) !important;
+        }
+    }
 }

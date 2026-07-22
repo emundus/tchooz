@@ -1902,7 +1902,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $element;
 	}
 
-	public static function searchFabrikElements(string $searchName, array $formIds = [], array $excludedPlugins = [], int $limit = 0): array
+	public static function searchFabrikElements(string $searchName, array $formIds = [], array $excludedPlugins = [], int $limit = 0, bool $excludeHiddenElements = true): array
 	{
 		$elements = [];
 
@@ -1941,10 +1941,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
 			->join('inner', 'jos_fabrik_lists as jfl ON jff.id = jfl.form_id')
 			->where('jfe.published = 1')
-			->andWhere('jfe.hidden = 0')
 			->andWhere('jfg.published = 1')
 			->andWhere('jff.published = 1')
 			->andWhere('jfl.published = 1');
+
+		if($excludeHiddenElements) {
+			$query->andWhere('jfe.hidden = 0');
+		}
 
 		if (!empty($searchName)) {
 			$query->andWhere($searchCondition);

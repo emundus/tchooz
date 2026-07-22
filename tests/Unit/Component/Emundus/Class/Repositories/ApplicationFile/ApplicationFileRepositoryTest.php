@@ -405,6 +405,27 @@ class ApplicationFileRepositoryTest extends UnitTestCase
 	}
 
 	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileRepository::getAllShortReferences
+	 * @return void
+	 */
+	public function testGetAllShortReferences(): void
+	{
+		$applicationFile = $this->repository->getByFnum($this->dataset['fnum']);
+		$applicationFile->setShortReference('Z9X8');
+		$this->repository->flush($applicationFile, $this->dataset['coordinator']);
+
+		$shortReferences = $this->repository->getAllShortReferences();
+
+		$this->assertIsArray($shortReferences, 'Le résultat doit être un tableau');
+		$this->assertContains('Z9X8', $shortReferences, 'La référence courte persistée doit être retournée');
+
+		foreach ($shortReferences as $shortReference)
+		{
+			$this->assertNotEmpty($shortReference, 'Les références courtes vides ne doivent pas être retournées');
+		}
+	}
+
+	/**
 	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileRepository::buildQuery
 	 * @return void
 	 */

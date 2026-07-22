@@ -1347,6 +1347,8 @@ class EmundusModelUsers extends ListModel
 						if (!$applicationFileRepository->flush($applicationFileEntity, $this->user->id)) {
 							throw new \Exception('Failed to create campaign candidature for user ' . $this->user->id);
 						}
+
+						\EmundusModelLogs::log($this->user->id,$applicationFileEntity->getUser()->id, $applicationFileEntity->getFnum(), 1, 'c', 'COM_EMUNDUS_ACCESS_FILE_CREATE');
 					}
 				}
 			}
@@ -3074,8 +3076,18 @@ class EmundusModelUsers extends ListModel
 						$this->db->setQuery($query);
 						try {
 							$this->db->execute();
+							$cid = $this->db->insertid();
 
-							//TODO: Add log to know who created the application for this user
+							EmundusModelLogs::log($this->user->id, $user['id'], $fnum, 1, 'c', 'COM_EMUNDUS_ACCESS_FILE_CREATE');
+
+							$this->dispatchJoomlaEvent('onAfterCampaignCandidature',
+								[
+									'user_id' => $user['id'],
+									'fnum' => $fnum,
+									'cid' => $cid,
+									'campaign' => $campaign,
+									'connected' => $this->user->id
+								]);
 						}
 						catch (Exception $e) {
 							error_log($e->getMessage(), 0);

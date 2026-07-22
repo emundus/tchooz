@@ -136,6 +136,7 @@ export default {
 				'h1',
 				'h2',
 				'ul',
+				'panel',
 			],
 
 			lang: null,

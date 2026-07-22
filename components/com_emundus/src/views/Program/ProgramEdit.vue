@@ -23,7 +23,11 @@
 					class="tw-bg-(--neutral-0) tw-relative tw-w-full tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-p-6"
 				>
 					<div class="tw-w-full" v-show="selectedMenuItem.code === 'general'">
-						<ProgramForm v-if="!this.useOldProgramForm" :program="this.program" />
+						<ProgramForm
+							v-if="!this.useOldProgramForm"
+							:program="this.program"
+							:prestation_sociales="prestation_sociales"
+						/>
 
 						<iframe
 							v-else
@@ -123,6 +127,11 @@ export default {
 		},
 		useOldProgramForm: {
 			type: Boolean,
+			default: false,
+		},
+		prestation_sociales: {
+			type: Boolean,
+			required: false,
 			default: false,
 		},
 	},

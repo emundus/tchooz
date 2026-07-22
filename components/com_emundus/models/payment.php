@@ -1726,4 +1726,114 @@ class EmundusModelPayment extends JModelList
 
 		return $fnum;
 	}
+
+	/**
+	 * @deprecated Client-specific logic (hardcoded fields and pricing rules).
+	 */
+	public function getAmountsToPayHtml($fnum, $enrolled = null)
+	{
+		$amount_to_pay = '';
+
+		if (!empty($fnum)) {
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			try {
+				$query->select('e_453_3771 as format, e_453_3772 as current_position, e_453_3773 as situation, e_453_3776 as payment_processing')
+					->from('#__emundus_1007_00')
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+				$db->setQuery($query);
+				$infos = $db->loadAssoc();
+
+				if (empty($enrolled)) {
+					$query->clear()
+						->select('e_497_4229')
+						->from('#__emundus_1011_00')
+						->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+					$db->setQuery($query);
+					$enrolled = $db->loadResult();
+				}
+
+				if (!empty($enrolled)) {
+					$is_free_of_charge = ($infos['payment_processing'] == 6) ? 1 : 0;
+					if ($is_free_of_charge) {
+						return 0;
+					}
+
+					$is_sponsored_by_org  = (in_array($infos['payment_processing'], [3, 5])) ? 2 : 1;
+					$has_history_with_pse = ($infos['situation'] == 1) ? 2 : 1;
+					$is_student           = ($infos['current_position'] != 3) ? 1 : 2;
+					$amount_format        = ($infos['format'] == 1) ? ['status', 'amount_1st', 'amount_2nd', 'amount_3rd'] : ['status', 'amount_1st_online as amount_1st', 'amount_2nd_online as amount_2nd', 'amount_3rd_online as amount_3rd'];
+
+					if ($is_sponsored_by_org == 2) {
+						$is_student = 3;
+					}
+
+					$query->clear()
+						->select($amount_format)
+						->from('#__emundus_pricing_grid')
+						->where($db->quoteName('sponsored') . ' = ' . $db->quote($is_sponsored_by_org))
+						->where($db->quoteName('history') . ' = ' . $db->quote($has_history_with_pse))
+						->where($db->quoteName('type') . ' = ' . $db->quote($is_student));
+					$db->setQuery($query);
+					$amounts = $db->loadAssoc();
+
+					$amount_to_pay = '<p class="mb-4"><strong>' . $amounts['status'] . '</strong></p>';
+
+					$query->clear()
+						->select('sc.year, ecc.applicant_id')
+						->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+						->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $db->quoteName('sc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+						->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+					$db->setQuery($query);
+					$fnumInfos = $db->loadAssoc();
+
+					$query->clear()
+						->select('b.id, b.fnum as fnum')
+						->from($db->quoteName('#__emundus_billing', 'b'))
+						->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.fnum') . ' = ' . $db->quoteName('b.fnum'))
+						->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $db->quoteName('sc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+						->where($db->quoteName('ecc.applicant_id') . ' = ' . $db->quote($fnumInfos['applicant_id']))
+						->where($db->quoteName('sc.year') . ' = ' . $db->quote($fnumInfos['year']))
+						->where($db->quoteName('sc.training') . ' LIKE ' . $db->quote('summer-%'))
+						->order('b.invoice_no');
+					$db->setQuery($query);
+					$other_sc_files = $db->loadAssocList('fnum');
+
+					$current_index_fnum = array_search($fnum, array_keys($other_sc_files));
+
+					switch ($enrolled) {
+						case '1':
+							$amount_to_pay .= '<p>' . ((int) $amounts['amount_1st'] + (int) $amounts['amount_2nd']) . ' € for 2 programmes</p>';
+
+							if ($other_sc_files >= 1 && $current_index_fnum >= 1) {
+								$amount_to_pay .= '<p>' . (int) $amounts['amount_2nd'] . ' € for this programme only</p>';
+							} else {
+								$amount_to_pay .= '<p>' . (int) $amounts['amount_1st'] . ' € for this programme only</p>';
+							}
+							break;
+						case '2':
+							$amount_to_pay .= '<p>' . ((int) $amounts['amount_1st'] + (int) $amounts['amount_2nd'] + (int) $amounts['amount_3rd']) . ' € for 3 programmes</p>';
+
+							if ($other_sc_files >= 2 && $current_index_fnum >= 2) {
+								$amount_to_pay .= '<p>' . (int) $amounts['amount_3rd'] . ' € for this programme only</p>';
+							} elseif ($other_sc_files >= 2 && $current_index_fnum == 1) {
+								$amount_to_pay .= '<p>' . (int) $amounts['amount_2nd'] . ' € for this programme only</p>';
+							} elseif ($other_sc_files == 1 && $current_index_fnum == 1) {
+								$amount_to_pay .= '<p>' . (int) $amounts['amount_2nd'] . ' € for this programme only</p>';
+							} else {
+								$amount_to_pay .= '<p>' . (int) $amounts['amount_1st'] . ' € for this programme only</p>';
+							}
+							break;
+						default:
+							$amount_to_pay .= '<p>' . (int) $amounts['amount_1st'] . ' € for 1 programme</p>';
+					}
+				}
+			} catch (Exception $e) {
+				Log::add('Error getting amounts to pay HTML for fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.payment');
+			}
+		}
+
+		return $amount_to_pay;
+	}
 }

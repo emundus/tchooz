@@ -541,7 +541,7 @@
 						<multiselect
 							v-model="campaignLanguages"
 							label="label"
-							track-by="value"
+							track-by="lang_id"
 							:options="languageOptions"
 							:multiple="true"
 							:taggable="false"
@@ -557,6 +557,7 @@
 					<button
 						id="save-btn"
 						type="button"
+						:disabled="submitted"
 						class="tw-btn-primary tw-w-auto tw-rounded-coordinator"
 						@click="
 							quit = 1;
@@ -777,6 +778,10 @@ export default {
 		});
 	},
 	methods: {
+		stripLanguageSuffix(label) {
+			return label ? label.replace(/\s*\([^)]*\)\s*$/, '') : label;
+		},
+
 		changed() {
 			console.debug('changed');
 			throw new Error("It's not an Error, please ignore.");
@@ -870,7 +875,12 @@ export default {
 		getCampaignLanguages() {
 			if (this.campaignId) {
 				campaignService.getCampaignLanguages(this.campaignId).then((response) => {
-					this.campaignLanguages = response.data;
+					this.campaignLanguages = response.data.map((language) => ({
+						lang_id: language.value,
+						label: this.stripLanguageSuffix(
+							this.languages.find((l) => l.lang_id == language.value)?.title_native ?? language.label,
+						),
+					}));
 				});
 			}
 		},
@@ -936,7 +946,7 @@ export default {
 		createCampaign(form_data) {
 			form_data.start_date = this.formatDate(new Date(this.form.start_date));
 			form_data.end_date = this.formatDate(new Date(this.form.end_date));
-			form_data.languages = this.campaignLanguages.map((language) => language.value);
+			form_data.languages = this.campaignLanguages.map((language) => language.lang_id);
 			form_data.usercategories = this.userCategoryEnabled
 				? this.campaignUsercategories.map((category) => category.value)
 				: [];
@@ -979,6 +989,10 @@ export default {
 		},
 
 		submit() {
+			if (this.submitted) {
+				return;
+			}
+
 			const campaignStore = useCampaignStore();
 			campaignStore.setUnsavedChanges(true);
 
@@ -1108,7 +1122,7 @@ export default {
 				training: this.programForm.code,
 				start_date: this.formatDate(new Date(this.form.start_date)),
 				end_date: this.formatDate(new Date(this.form.end_date)),
-				languages: this.campaignLanguages.map((language) => language.value),
+				languages: this.campaignLanguages.map((language) => language.lang_id),
 				usercategories: this.userCategoryEnabled ? this.campaignUsercategories.map((category) => category.value) : [],
 				parent_id: this.choicesModuleEnabled && this.form.parent_id ? this.form.parent_id.value : null,
 			};
@@ -1118,16 +1132,23 @@ export default {
 
 			// Envoie une requête par langue ayant des modifications en cache
 			const savePromises = Object.entries(this.langCache).map(([lang, cached]) => {
-				return campaignService.updateCampaign(
-					{
-						...baseFormData,
-						lang,
-						description: cached.description,
-						short_description: cached.short_description,
-						label: { [lang]: cached.label },
-					},
-					this.campaignId,
-				);
+				const payload = {
+					...baseFormData,
+					lang,
+					description: cached.description,
+					short_description: cached.short_description,
+					label: { [lang]: cached.label },
+				};
+
+				// languages/usercategories sont partagés par toute la campagne : une seule des
+				// requêtes parallèles par langue doit les synchroniser, sinon chaque requête fait
+				// sa propre suppression/insertion en parallèle sur les mêmes tables pivot.
+				if (lang !== this.selectedLang) {
+					delete payload.languages;
+					delete payload.usercategories;
+				}
+
+				return campaignService.updateCampaign(payload, this.campaignId);
 			});
 
 			Promise.all(savePromises)
@@ -1258,8 +1279,9 @@ export default {
 			return this.languages.map((language) => {
 				const countryCode = language.lang_code.split('-')[1]?.toLowerCase();
 				return {
-					label: language.title_native,
+					label: this.stripLanguageSuffix(language.title_native),
 					value: language.sef,
+					lang_id: language.lang_id,
 					icon: `flag_round_${countryCode}`,
 				};
 			});

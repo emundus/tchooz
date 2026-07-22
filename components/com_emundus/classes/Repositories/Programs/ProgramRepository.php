@@ -36,13 +36,16 @@ use Tchooz\Traits\TraitDispatcher;
 		'apply_online',
 		'ordering',
 		'logo',
-		'color'
+		'color',
+		'long_description',
+		'must_open_rights'
 	]
 )
 ]
 class ProgramRepository extends EmundusRepository
 {
 	use TraitDispatcher;
+
 	const NAME = 'program';
 
 	private ProgramFactory $factory;
@@ -55,7 +58,7 @@ class ProgramRepository extends EmundusRepository
 
 	public function flush(ProgramEntity $programEntity, ?User $user = null): bool
 	{
-		if(empty($user))
+		if (empty($user))
 		{
 			$user = Factory::getApplication()->getIdentity();
 		}
@@ -63,14 +66,16 @@ class ProgramRepository extends EmundusRepository
 		$programEntity->sanitize();
 
 		$data = [
-			'code'         => $programEntity->getSlug(),
-			'label'        => $programEntity->getLabel(),
-			'notes'        => $programEntity->getNotes(),
-			'published'    => $programEntity->isPublished() ? 1 : 0,
-			'programmes'   => $programEntity->getProgrammes(),
-			'synthesis'    => $programEntity->getSynthesis(),
-			'apply_online' => $programEntity->isApplyOnline() ? 1 : 0,
-			'logo'         => $programEntity->getLogo(),
+			'code'             => $programEntity->getSlug(),
+			'label'            => $programEntity->getLabel(),
+			'notes'            => $programEntity->getNotes(),
+			'long_description' => $programEntity->getLongDescription(),
+			'published'        => $programEntity->isPublished() ? 1 : 0,
+			'programmes'       => $programEntity->getProgrammes(),
+			'synthesis'        => $programEntity->getSynthesis(),
+			'apply_online'     => $programEntity->isApplyOnline() ? 1 : 0,
+			'logo'             => $programEntity->getLogo(),
+			'must_open_rights' => $programEntity->isMustOpenRights() ? 1 : 0
 		];
 
 		$isNew = empty($programEntity->getId());
@@ -105,7 +110,7 @@ class ProgramRepository extends EmundusRepository
 
 		if ($isNew)
 		{
-			$this->dispatchJoomlaEvent('onAfterProgramCreate', ['programme' => $data, 'user_id' => $user->id, 'context' => new EventContextEntity($user, [],[],[])]);
+			$this->dispatchJoomlaEvent('onAfterProgramCreate', ['programme' => $data, 'user_id' => $user->id, 'context' => new EventContextEntity($user, [], [], [])]);
 		}
 
 		return true;
@@ -251,7 +256,7 @@ class ProgramRepository extends EmundusRepository
 					$update = $this->db->createQuery();
 					$update->update($this->tableName)
 						->set('logo = NULL')
-						->where('id = ' .  $id);
+						->where('id = ' . $id);
 
 					$this->db->setQuery($update)->execute();
 				}

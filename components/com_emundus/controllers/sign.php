@@ -91,10 +91,13 @@ class EmundusControllerSign extends BaseController
 		$applicant   = $this->input->getInt('applicant', 0);
 		$status      = $this->input->getString('status', '');
 		$signed_date = $this->input->getString('signed_date', '');
+		$creation_date = $this->input->getString('creation_date', '');
+		$reminder_date = $this->input->getString('reminder_date', '');
+		$connector   = $this->input->getString('connector', '');
 
 		try
 		{
-			$requests = $this->model->getRequests($order_by, $sort, $recherche, $lim, $page, $status, $attachment, $applicant, $signed_date);
+			$requests = $this->model->getRequests($order_by, $sort, $recherche, $lim, $page, $status, $attachment, $applicant, $signed_date, $creation_date, $reminder_date, $connector);
 			if (count($requests) > 0)
 			{
 				// Search for a files or evaluation view
@@ -194,6 +197,20 @@ class EmundusControllerSign extends BaseController
 							'type'    => 'tags',
 							'values'  => $state_values,
 							'display' => 'table'
+						],
+						[
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_REQUEST_CREATION_DATE'),
+							'value'   => \EmundusHelperDate::displayDate($request->created_at, 'DATE_FORMAT_LC2', 0),
+							'classes' => '',
+							'display' => 'all',
+							'order_by' => 'esr.created_at'
+						],
+						[
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_REQUEST_REMINDER_DATE'),
+							'value'   => !empty($request->last_reminder_at) ? \EmundusHelperDate::displayDate($request->last_reminder_at, 'DATE_FORMAT_LC2', 0) : '-',
+							'classes' => '',
+							'display' => 'all',
+							'order_by' => 'esr.last_reminder_at'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_CONNECTOR'),
@@ -970,6 +987,31 @@ class EmundusControllerSign extends BaseController
 				$response['status']  = true;
 				$response['message'] = Text::_('STATUS_FOUND');
 				$response['data']    = $statuses;
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = $e->getCode();
+				$response['message'] = $e->getMessage();
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getfilterconnectors(): void
+	{
+		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => []];
+
+		if (EmundusHelperAccess::asAccessAction($this->sign_action_id, 'r', $this->user->id))
+		{
+			try
+			{
+				$connectors = $this->model->getFilterConnectors();
+
+				$response['code']    = 200;
+				$response['status']  = true;
+				$response['message'] = Text::_('CONNECTORS_FOUND');
+				$response['data']    = $connectors;
 			}
 			catch (Exception $e)
 			{

@@ -52,6 +52,11 @@ export default {
 			type: Object,
 			required: true,
 		},
+		prestation_sociales: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
 	},
 	data() {
 		return {
@@ -99,6 +104,17 @@ export default {
 							optional: true,
 						},
 						{
+							param: 'long_description',
+							type: 'wysiwig',
+							placeholder: '',
+							value: '',
+							label: 'COM_EMUNDUS_PROGRAM_LONG_DESCRIPTION_LABEL',
+							helptext: 'COM_EMUNDUS_PROGRAM_LONG_DESCRIPTION_HELPTEXT',
+							displayed: this.prestation_sociales,
+							preset: 'full',
+							optional: true,
+						},
+						{
 							param: 'synthesis',
 							type: 'wysiwig',
 							value: '<p><strong>[APPLICANT_NAME]</strong></p>\n<p><a href="mailto:[EMAIL]">[EMAIL]</a></p>',
@@ -126,6 +142,15 @@ export default {
 							label: 'COM_EMUNDUS_PROGRAM_APPLY_ONLINE_LABEL',
 							hideLabel: true,
 							displayed: true,
+						},
+						{
+							param: 'must_open_rights',
+							type: 'toggle',
+							placeholder: '',
+							value: '0',
+							label: 'COM_EMUNDUS_PROGRAM_MUST_OPEN_RIGHTS_LABEL',
+							hideLabel: true,
+							displayed: this.prestation_sociales,
 						},
 					],
 					isRepeatable: false,
