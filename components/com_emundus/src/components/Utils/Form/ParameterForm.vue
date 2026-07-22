@@ -323,7 +323,7 @@ export default {
 
 <template>
 	<div :id="'form-' + id" class="form-container">
-		<h2 v-if="title">{{ title }}</h2>
+		<h2 v-if="title">{{ translate(title) }}</h2>
 		<p v-if="description">{{ description }}</p>
 		<div v-for="group in groups" :key="group.id" class="form-group tw-mt-4">
 			<div v-if="group.isRepeatable">
@@ -415,7 +415,7 @@ export default {
 				</div>
 			</div>
 			<div v-else>
-				<h3>{{ group.title }}</h3>
+				<h3>{{ translate(group.title) }}</h3>
 				<p v-if="group.description">{{ group.description }}</p>
 				<div class="tw-flex tw-w-full tw-flex-col tw-gap-4">
 					<Parameter

@@ -183,6 +183,19 @@
 											v-html="item.label[params.shortlang]"
 										></span>
 										<span
+											v-else-if="
+												labelAction &&
+												(typeof labelAction.showon === 'undefined' || evaluateShowOn(item, labelAction.showon))
+											"
+											@click="onClickAction(labelAction, item.id, false, $event)"
+											class="hover:tw-underline"
+											:class="{
+												'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
+											}"
+											:title="item.label[params.shortlang]"
+											v-html="item.label[params.shortlang]"
+										></span>
+										<span
 											v-else
 											:class="{
 												'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
@@ -1627,6 +1640,18 @@ export default {
 				? this.currentTab.actions.find((action) => {
 						return (
 							action.name === 'show' &&
+							action.display &&
+							(action.view === this.viewType || typeof action.view === 'undefined')
+						);
+					})
+				: false;
+		},
+
+		labelAction() {
+			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
+				? this.currentTab.actions.find((action) => {
+						return (
+							action.onLabelClick === true &&
 							action.display &&
 							(action.view === this.viewType || typeof action.view === 'undefined')
 						);

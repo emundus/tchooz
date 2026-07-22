@@ -224,11 +224,13 @@ class EmundusRepository
 	}
 
 	/**
-	 * @param   array   $filters
-	 * @param   int     $limit
-	 * @param   int     $page
+	 * @param   array         $filters
+	 * @param   int           $limit
+	 * @param   int           $page
 	 * @param   string|array  $select
-	 * @param   string  $order
+	 * @param   string        $order
+	 * @param   string        $search
+	 * @param   bool          $buildEntity
 	 *
 	 * @return array
 	 */
