@@ -25,8 +25,8 @@ use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
-use Tchooz\Enums\Export\ExportSettingEnum;
 use Tchooz\Enums\List\ListColumnTypesEnum;
+use Tchooz\Services\Export\OptionsSchema\OptionsSchemaFactory;
 use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
@@ -80,8 +80,8 @@ class EmundusControllerExport extends BaseController
 		//$this->exportAction      = $actionRepository->getByName('export');
 
 		$this->exportActionExcel = $actionRepository->getByName('export_excel');
-		$this->exportActionPdf   = $actionRepository->getByName('export_zip');
-		$this->exportActionZip   = $actionRepository->getByName('export_pdf');
+		$this->exportActionPdf   = $actionRepository->getByName('export_pdf');
+		$this->exportActionZip   = $actionRepository->getByName('export_zip');
 
 		$this->exportAction = EmundusHelperAccess::asAccessAction($this->exportActionExcel->getId(), CrudEnum::CREATE->value, $this->_user->id) || EmundusHelperAccess::asAccessAction($this->exportActionPdf->getId(), CrudEnum::CREATE->value, $this->_user->id) || EmundusHelperAccess::asAccessAction($this->exportActionZip->getId(), CrudEnum::CREATE->value, $this->_user->id);
 
@@ -597,11 +597,12 @@ class EmundusControllerExport extends BaseController
 	}
 
 	/**
-	 * Return the declarative schema of every runtime export setting so the front
-	 * can render the toggles dynamically (one block per tab). The list of
-	 * settings is the single source of truth in {@see ExportSettingEnum}.
+	 * Return the declarative schema of the "Options" step for a given format so
+	 * the front can render the form dynamically (one block per tab). Each
+	 * format owns its schema under
+	 * {@see \Tchooz\Services\Export\OptionsSchema\AbstractOptionsSchema}.
 	 */
-	public function settings(): void
+	public function optionsschema(): void
 	{
 		try
 		{
@@ -610,16 +611,15 @@ class EmundusControllerExport extends BaseController
 				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
-			$schema = array_map(
-				static fn (ExportSettingEnum $c) => array_merge($c->toField()->toSchema(), ['default' => $c->getDefault()]),
-				ExportSettingEnum::cases()
-			);
+			$format = $this->input->getString('format', '');
+			$schema = OptionsSchemaFactory::for($format)->toSchema();
 
 			$response = EmundusResponse::ok($schema, Text::_('COM_EMUNDUS_EXPORT_SETTINGS_RETRIEVED_SUCCESSFULLY'));
 		}
 		catch (Exception $e)
 		{
-			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
+			$code = $e->getCode() ?: EmundusResponse::HTTP_BAD_REQUEST;
+			$response = EmundusResponse::fail($e->getMessage(), $code);
 		}
 
 		$this->sendJsonResponse($response);
@@ -627,15 +627,11 @@ class EmundusControllerExport extends BaseController
 
 	/**
 	 * Accept the raw `settings` POST (JSON string or array/object) and return a
-	 * sanitized array containing only known keys with the right casts applied.
+	 * sanitized array containing only known keys with the right casts applied
+	 * for the given format.
 	 */
-	private function parseSettingsInput(mixed $raw): array
+	private function parseSettingsInput(mixed $raw, ExportFormatEnum|string $format): array
 	{
-		if (empty($raw))
-		{
-			return [];
-		}
-
 		if (is_string($raw))
 		{
 			$decoded = json_decode($raw, true);
@@ -648,19 +644,17 @@ class EmundusControllerExport extends BaseController
 
 		if (!is_array($raw))
 		{
+			$raw = [];
+		}
+
+		try
+		{
+			return OptionsSchemaFactory::for($format)->cast($raw);
+		}
+		catch (\InvalidArgumentException)
+		{
 			return [];
 		}
-
-		$out = [];
-		foreach (ExportSettingEnum::cases() as $case)
-		{
-			if (array_key_exists($case->value, $raw))
-			{
-				$out[$case->value] = $case->cast($raw[$case->value]);
-			}
-		}
-
-		return $out;
 	}
 
 	public function export(): void
@@ -703,20 +697,38 @@ class EmundusControllerExport extends BaseController
 			else
 			{
 				$elements = $this->input->post->getString('elements', '');
-				if (empty($elements))
+				if (empty($elements) && $format !== ExportFormatEnum::ZIP)
 				{
 					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NO_ELEMENTS_SELECTED'), EmundusResponse::HTTP_BAD_REQUEST);
 				}
 			}
 
-			if ($format === ExportFormatEnum::PDF)
+			if ($format === ExportFormatEnum::PDF || $format === ExportFormatEnum::ZIP)
 			{
 				$headers     = $this->input->getString('headers', '');
 				$attachments = $this->input->getString('attachments', '');
 			}
 			$synthesis = $this->input->getString('synthesis', '');
 
-			$settings = $this->parseSettingsInput($this->input->get('settings', null, 'RAW'));
+			$zipParameters = [];
+			if ($format === ExportFormatEnum::ZIP)
+			{
+				$evalStepsRaw = $this->input->getString('eval_steps', '');
+				$evalSteps    = !empty($evalStepsRaw) ? (json_decode($evalStepsRaw, true) ?: []) : [];
+
+				$hasFormContent = !empty($elements) || !empty($headers) || !empty($synthesis) || !empty($evalSteps);
+
+				$zipParameters = [
+					'forms'                 => $this->input->getInt('forms', $hasFormContent ? 1 : 0),
+					'attachment'            => $this->input->getInt('attachment', 1),
+					'form_ids'              => $this->input->getString('form_ids', $this->input->getString('formids', '')),
+					'attach_ids'            => $this->input->getString('attach_ids', $this->input->getString('attachids', '')),
+					'eval_steps'            => $evalSteps,
+					'legacy_header_options' => $this->input->getString('options', ''),
+				];
+			}
+
+			$settings = $this->parseSettingsInput($this->input->get('settings', null, 'RAW'), $format);
 
 			$fnums = $this->input->post->getString('fnums');
 			if (empty($fnums))
@@ -819,6 +831,11 @@ class EmundusControllerExport extends BaseController
 					'settings'       => $settings,
 					'lang'           => $currentLang,
 				]);
+
+				if (!empty($zipParameters))
+				{
+					$parameters = array_merge($parameters, $zipParameters);
+				}
 			}
 
 			$exportEntity = null;
@@ -1070,8 +1087,30 @@ class EmundusControllerExport extends BaseController
 				$filePath = $export->getFilename();
 			}
 
+			// Guard against a stored filename whose file is missing on disk (e.g. an empty/failed
+			// archive). Without this, the front fetches a non-existent static path, the Joomla rewrite
+			// returns the HTML SPA page and the browser saves it as a misleading ".html" download.
+			if (empty($filePath) || !file_exists(JPATH_SITE . '/' . $filePath))
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
+			}
+
+			// Serve files stored under images/emundus/exports through the getfile PHP gateway rather
+			// than as a direct static URL: some web servers (e.g. IIS) 301-redirect .zip requests, which
+			// turns the download into the HTML home page. Routing through index.php?task=getfile streams
+			// the bytes via PHP and is immune to static-file rewrite rules. The tmp/ CSV (json branch)
+			// stays a direct static URL — getfile only authorizes the exports & applicant-files paths.
+			if (str_starts_with($filePath, 'images/emundus/exports'))
+			{
+				$downloadFile = '/index.php?option=com_emundus&task=getfile&u=' . $filePath;
+			}
+			else
+			{
+				$downloadFile = '/' . $filePath;
+			}
+
 			$response = EmundusResponse::ok(
-				['download_file' => '/' . $filePath],
+				['download_file' => $downloadFile],
 				Text::_('COM_EMUNDUS_EXPORT_RETRIEVED_SUCCESSFULLY')
 			);
 		}
@@ -1204,9 +1243,16 @@ class EmundusControllerExport extends BaseController
 				'headers'     => [],
 				'synthesis'   => [],
 				'attachments' => [],
+				'settings'    => [],
 				'format'      => $constraints->format,
 				'name'        => $exportTemplate->name
 			];
+
+			if (isset($constraints->settings))
+			{
+				$rawSettings = is_string($constraints->settings) ? json_decode($constraints->settings, true) : (array) $constraints->settings;
+				$data['settings'] = $this->parseSettingsInput(is_array($rawSettings) ? $rawSettings : [], $constraints->format);
+			}
 
 			$elements = json_decode($constraints->elements);
 			foreach ($elements as $elementId)
@@ -1346,7 +1392,9 @@ class EmundusControllerExport extends BaseController
 			$attachments = $this->input->getString('attachments', '');
 			$attachments = !empty($attachments) ? explode(',', $attachments) : [];
 
-			$saved = $this->exportRepository->saveExportTemplate($name, $format, $elements, $headers, $synthesis, $attachments, $this->_user->id, $id);
+			$settings = $this->parseSettingsInput($this->input->get('settings', null, 'RAW'), $format);
+
+			$saved = $this->exportRepository->saveExportTemplate($name, $format, $elements, $headers, $synthesis, $attachments, $this->_user->id, $id, $settings);
 
 			$response = EmundusResponse::ok(
 				$saved,

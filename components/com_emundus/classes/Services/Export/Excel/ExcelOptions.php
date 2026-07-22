@@ -11,6 +11,7 @@ namespace Tchooz\Services\Export\Excel;
 
 use Tchooz\Services\Export\ExportOptions;
 use Tchooz\Services\Export\HeadersEnum;
+use Tchooz\Services\Export\OptionsSchema\ExcelOptionsSchema;
 
 class ExcelOptions extends ExportOptions
 {
@@ -55,11 +56,16 @@ class ExcelOptions extends ExportOptions
 		$excelOptions->setElements($elements);
 		$excelOptions->setLang($lang);
 
-		if (isset($options->settings))
+		$rawSettings = $options->settings ?? null;
+		if (is_string($rawSettings))
 		{
-			$rawSettings = is_string($options->settings) ? json_decode($options->settings, true) : $options->settings;
-			$excelOptions->setSettings($rawSettings);
+			$rawSettings = json_decode($rawSettings, true);
 		}
+		if (is_object($rawSettings))
+		{
+			$rawSettings = (array) $rawSettings;
+		}
+		$excelOptions->setSettings((new ExcelOptionsSchema())->cast(is_array($rawSettings) ? $rawSettings : []));
 
 		return $excelOptions;
 	}

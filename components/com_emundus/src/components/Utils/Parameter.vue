@@ -1092,6 +1092,17 @@ export default {
 					val = this.countryCode + (val ? val.replace(/\s+/g, '') : '');
 				}
 
+				// Live-strip characters the backend would silently drop, so the field shows exactly
+				// what will be kept. sanitizePattern is a regex of DISALLOWED characters to remove.
+				if (this.parameter.sanitizePattern && typeof val === 'string') {
+					const cleaned = val.replace(new RegExp(this.parameter.sanitizePattern, 'g'), '');
+					if (cleaned !== val) {
+						// Reassigning re-triggers this watcher with the cleaned value, which emits cleanly.
+						this.value = cleaned;
+						return;
+					}
+				}
+
 				this.parameter.value = val;
 
 				if (this.parameter.splitField) {

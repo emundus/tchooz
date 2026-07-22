@@ -31,6 +31,8 @@ import { Button, Alert, Slider } from '@emundus/ui';
 <Button label="Valider" variant="primary" size="md" @click="onClick" />
 ```
 
+To list what's published, run `ls components/com_emundus/node_modules/@emundus/ui/dist/components`. If `@emundus/ui` exposes a matching component, use it — do not duplicate it locally, do not wrap it just to rename props.
+
 The stylesheet is already loaded once in `main.js` (`import '@emundus/ui/style.css'`), don't re-import it. Library utility classes use the `eui:` prefix and component classes the `eui-` prefix; don't mix them with the app's `tw-` classes.
 
 **2. Local project components — for anything the library doesn't cover.**
@@ -41,7 +43,7 @@ ls components/com_emundus/src/components/Molecules/
 ls components/com_emundus/src/components/Utils/
 ```
 
-Plus root-level reusables (`Modal.vue`, `AdvancedSelect.vue`, `Popover.vue`, `Skeleton.vue`, `IncrementalSelect.vue`). If a matching component exists, reuse it. If it lacks a prop or slot, extend it rather than duplicate.
+Plus root-level reusables (`Modal.vue`, `AdvancedSelect.vue`, `Popover.vue`, `Skeleton.vue`, `IncrementalSelect.vue`). If a matching component exists there, reuse it. If it lacks a prop or slot, extend it rather than duplicate. Only write from scratch when neither `@emundus/ui` nor the in-repo libraries cover the case.
 
 ---
 

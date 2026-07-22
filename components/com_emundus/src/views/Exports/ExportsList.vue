@@ -78,6 +78,7 @@ export default {
 									name: 'download',
 									multiple: false,
 									method: 'get',
+									onLabelClick: true,
 								},
 								{
 									action: 'delete',

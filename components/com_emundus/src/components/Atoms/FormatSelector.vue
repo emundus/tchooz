@@ -1,6 +1,9 @@
 <script>
+import { SelectionCard, Slider } from '@emundus/ui';
+
 export default {
 	name: 'FormatSelector',
+	components: { Slider, SelectionCard },
 
 	props: {
 		modelValue: {
@@ -15,12 +18,82 @@ export default {
 			type: Array,
 			default: [],
 		},
+		selectedTemplate: {
+			type: Number,
+			default: 0,
+		},
 	},
 
-	emits: ['update:modelValue', 'select-template'],
+	emits: ['update:modelValue', 'select-template', 'update:view'],
+
+	data() {
+		return {
+			selectedView: 'format',
+			selectionCardKey: 0,
+		};
+	},
+
+	computed: {
+		hasTemplates() {
+			return this.exportTemplates.length > 0;
+		},
+		templatesByFormat() {
+			const groups = {};
+			this.exportTemplates.forEach((template) => {
+				const format = template.format || 'other';
+				if (!groups[format]) {
+					groups[format] = [];
+				}
+				groups[format].push(template);
+			});
+
+			// Follow the formats prop order, then append any leftover (unknown) formats
+			const orderedFormats = [...this.formats.map((format) => format.value), ...Object.keys(groups)];
+
+			return orderedFormats
+				.filter((format, index) => groups[format] && orderedFormats.indexOf(format) === index)
+				.map((format) => {
+					const formatDef = this.formats.find((f) => f.value === format);
+					return {
+						format,
+						label: formatDef ? this.translate(formatDef.label) : format,
+						templates: groups[format],
+					};
+				});
+		},
+		viewOptions() {
+			return [
+				{
+					value: 'format',
+					label: this.translate('COM_EMUNDUS_EXPORT_SLIDER_FORMAT'),
+				},
+				{
+					value: 'template',
+					label: this.translate('COM_EMUNDUS_EXPORT_SLIDER_TEMPLATE'),
+				},
+			];
+		},
+	},
+
+	mounted() {
+		// Restore the template view when returning with a template already selected
+		if (this.selectedTemplate > 0) {
+			this.selectedView = 'template';
+		}
+		// Keep the parent in sync with the view this component (re)mounts on
+		this.$emit('update:view', this.selectedView);
+	},
 
 	methods: {
+		selectView(value) {
+			this.selectedView = value;
+			this.$emit('update:view', value);
+		},
 		selectFormat(value) {
+			if (this.modelValue === value) {
+				return;
+			}
+
 			this.$emit('update:modelValue', value);
 		},
 		selectTemplate(event) {
@@ -32,33 +105,35 @@ export default {
 </script>
 
 <template>
-	<div class="tw-flex tw-flex-col tw-gap-4">
-		<div class="tw-flex tw-items-center tw-justify-center tw-gap-8">
-			<label
+	<div class="tw-w-100 tw-flex tw-flex-col tw-gap-4">
+		<div v-if="hasTemplates" class="tw-flex tw-justify-center">
+			<Slider :model-value="selectedView" :options="viewOptions" variant="primary" @update:model-value="selectView" />
+		</div>
+
+		<div v-if="selectedView === 'format'" class="tw-flex tw-items-center tw-justify-center tw-gap-8">
+			<SelectionCard
 				v-for="format in formats"
 				:key="format.value"
-				class="tw-flex tw-cursor-pointer tw-flex-col tw-items-center tw-justify-center tw-gap-5 tw-rounded-coordinator tw-border tw-px-6 tw-py-3"
-				:class="[
-					modelValue === format.value ? 'tw-border-main-300 tw-bg-main-100' : 'tw-border-transparent tw-bg-neutral-200',
-				]"
+				:label="translate(format.label)"
+				:active="modelValue === format.value"
+				:icon="format.image"
+				:class="{
+					'tw-pointer-events-none': modelValue === format.value,
+				}"
 				@click="selectFormat(format.value)"
-			>
-				<img :src="format.image" alt="" class="tw-h-12 tw-w-12" />
-				<span>{{ this.translate(format.label) }}</span>
-			</label>
+			/>
 		</div>
-		<div v-if="exportTemplates.length > 0" class="tw-flex tw-items-center tw-gap-3">
-			<hr class="tw-w-full" />
-			<span class="tw-whitespace-nowrap">{{ this.translate('COM_EMUNDUS_CONDITIONS_GROUP_OPERATOR_OR') }}</span>
-			<hr class="tw-w-full" />
-		</div>
-		<div v-if="exportTemplates.length > 0" class="tw-flex tw-flex-col tw-gap-2">
+
+		<div v-else-if="selectedView === 'template'" class="tw-flex tw-flex-col tw-gap-2">
 			<label>{{ this.translate('COM_EMUNDUS_EXPORT_SELECT_TEMPLATE') }}</label>
-			<select @change="selectTemplate($event)">
-				<option selected value="">{{ this.translate('COM_EMUNDUS_EXPORT_SELECT_TEMPLATE_PLEASE_SELECT') }}</option>
-				<option v-for="template in exportTemplates" :key="template.id" :value="template.id">
-					{{ template.name }}
-				</option>
+			<span>{{ this.translate('COM_EMUNDUS_EXPORT_SELECT_TEMPLATE_HELP') }}</span>
+			<select :value="selectedTemplate || ''" @change="selectTemplate($event)">
+				<option value="">{{ this.translate('COM_EMUNDUS_EXPORT_SELECT_TEMPLATE_PLEASE_SELECT') }}</option>
+				<optgroup v-for="group in templatesByFormat" :key="group.format" :label="group.label">
+					<option v-for="template in group.templates" :key="template.id" :value="template.id">
+						{{ template.name }}
+					</option>
+				</optgroup>
 			</select>
 		</div>
 	</div>

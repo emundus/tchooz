@@ -5828,242 +5828,36 @@ class EmundusModelFiles extends JModelLegacy
 		return $status;
 	}
 
+	/**
+	 * @deprecated Since 2.6 — use Tchooz\Services\Export\Zip\ZipService instead.
+	 *             Kept as a wrapper so any external integration calling EmundusModelFiles::exportZip()
+	 *             continues to receive the basename of the generated archive in /tmp/.
+	 */
 	public function exportZip($fnums, $form_post = 1, $attachment = 1, $eval_steps = [], $form_ids = null, $attachids = null, $options = null, $acl_override = false, $current_user = null, $params = []) {
-		$eMConfig = ComponentHelper::getParams('com_emundus');
+		$user = $current_user ?: Factory::getApplication()->getIdentity();
 
-		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
-		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+		$serviceOptions = [
+			'forms'                        => (int) $form_post,
+			'attachment'                   => (int) $attachment,
+			'form_ids'                     => $form_ids ?? [],
+			'attach_ids'                   => $attachids ?? [],
+			'eval_steps'                   => is_array($eval_steps) ? $eval_steps : [],
+			'legacy_header_options'        => is_array($options) ? $options : [],
+			'concat_attachments_with_form' => !empty($params['concat_attachments_with_form']),
+			'convert_docx_to_pdf'          => !empty($params['convert_docx_to_pdf']),
+			'lang'                         => Factory::getApplication()->getLanguage()->getTag(),
+		];
 
-		$m_emails = new EmundusModelEmails;
+		$service = new \Tchooz\Services\Export\Zip\ZipService($fnums, $user, $serviceOptions);
+		$result  = $service->export('tmp/', null, $serviceOptions['lang']);
 
-		$zip = new ZipArchive();
-		$nom = date("Y-m-d").'_'.rand(1000,9999).'_x'.(count($fnums)).'.zip';
+		if (!$result->isStatus() || empty($result->getFilePath())) {
+			Log::add('Legacy EmundusModelFiles::exportZip delegation failed', Log::ERROR, 'com_emundus.export.zip');
 
-		$path = JPATH_SITE.DS.'tmp'.DS.$nom;
-
-		$fnumsInfo = $this->getFnumsInfos($fnums);
-
-		if (file_exists($path)) {
-			unlink($path);
+			return '';
 		}
 
-		$concat_attachments_with_form = $params['concat_attachments_with_form'] ?? false;
-		$convert_docx_to_pdf = $params['convert_docx_to_pdf'] ?? false;
-
-		foreach ($fnums as $fnum) {
-
-			if ($zip->open($path, ZipArchive::CREATE) == TRUE) {
-
-				$dossier = EMUNDUS_PATH_ABS.$fnumsInfo[$fnum]['applicant_id'].DS;
-
-				/// Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
-				$post = array(
-					'FNUM' => $fnum,
-					'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
-				);
-				$application_form_name = $eMConfig->get('application_form_name', "application_form_pdf");
-				if ($fnumsInfo[$fnum]['is_anonym'] == 1) {
-					$application_form_name = 'anonym_file_' . $fnum; // tags could contain user name
-				} else {
-					$tags = $m_emails->setTags($fnumsInfo[$fnum]['applicant_id'], $post, $fnum, '', $application_form_name);
-					$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
-					$application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
-
-					if ($application_form_name == "application_form_pdf") {
-						$application_form_name = $fnumsInfo[$fnum]['name'].'_'.$fnum;
-					}
-				}
-
-				// Format filename
-				$application_form_name = $m_emails->stripAccents($application_form_name);
-				$application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/','', $application_form_name);
-				$application_form_name = preg_replace('/\s/', '', $application_form_name);
-				$application_form_name = strtolower($application_form_name);
-
-				$application_pdf = $application_form_name . '_applications.pdf';
-
-				$files_list = array();
-
-				if (isset($form_post)) {
-					$forms_to_export = array();
-					if (!empty($form_ids)) {
-						foreach ($form_ids as $fids) {
-							$detail = explode("|", $fids);
-							if ($detail[1] == $fnumsInfo[$fnum]['training'] && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
-								$forms_to_export[] = $detail[0];
-							}
-						}
-					}
-
-					if ($form_post || !empty($forms_to_export)) {
-						if ($concat_attachments_with_form) {
-							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum],$fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post, $forms_to_export, $options, null, null, false);
-						} else {
-							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post, $forms_to_export, $options);
-						}
-					}
-				}
-
-				if (!empty($eval_steps) && (!empty($eval_steps['tables']) || !empty($eval_steps['groups']) || !empty($eval_steps['elements']))) {
-					$elements = [
-						['fids' => $eval_steps['tables'], 'gids' => $eval_steps['groups'], 'eids' => $eval_steps['elements']]
-					];
-					$options[] = 'eval_steps';
-
-					$eval_pdf_filename = '_evaluations';
-					$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, 0, $eval_steps['tables'], $options, null, $elements, false, $eval_pdf_filename);
-				}
-
-				if ($concat_attachments_with_form) {
-					if ($attachment || !empty($attachids)) {
-						$attachment_to_export = array();
-						if (!empty($attachids)) {
-							foreach ($attachids as $aids) {
-								$detail = explode("|", $aids);
-								if ($detail[1] == $fnumsInfo[$fnum]['training'] && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
-									$attachment_to_export[] = $detail[0];
-								}
-							}
-						}
-
-						if ($attachment || !empty($attachment_to_export)) {
-							$files = $this->getFilesByFnums([$fnum], $attachment_to_export, true);
-						}
-
-						$tmpArray = [];
-						EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id'], $convert_docx_to_pdf);
-					}
-				}
-
-				if (!empty($files_list)) {
-					foreach ($files_list as $key => $file_list){
-						if(empty($file_list)){
-							unset($files_list[$key]);
-						}
-					}
-
-					$gotenberg_merge_activation = $eMConfig->get('gotenberg_merge_activation', 0);
-
-					if(!$gotenberg_merge_activation || count($files_list) == 1) {
-						require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
-
-						$pdf = new ConcatPdf();
-						$pdf->setFiles($files_list);
-						$pdf->concat();
-
-						if (isset($tmpArray)) {
-							foreach ($tmpArray as $fn) {
-								unlink($fn);
-							}
-						}
-						$pdf->Output($dossier . $application_pdf, 'F');
-					} else {
-						$gotenberg_url = $eMConfig->get('gotenberg_url', '');
-
-						if (!empty($gotenberg_url)) {
-							$got_files = [];
-							foreach ($files_list as $item) {
-								$got_files[] = Stream::path($item);
-							}
-							$request  = Gotenberg::pdfEngines($gotenberg_url)
-								->merge(...$got_files);
-							$response = Gotenberg::send($request);
-							$content = $response->getBody()->getContents();
-
-							$filename = $dossier . $application_pdf;
-							$fp       = fopen($filename, 'w');
-							$pieces   = str_split($content, 1024 * 16);
-							if ($fp)
-							{
-								foreach ($pieces as $piece) {
-									fwrite($fp, $piece, strlen($piece));
-								}
-							}
-						}
-					}
-
-					$filename = $application_form_name . DS . $application_pdf;
-					if (!$zip->addFile($dossier . $application_pdf, $filename)) {
-						continue;
-					}
-				}
-
-				if (($attachment || !empty($attachids)) && !$concat_attachments_with_form) {
-					$attachment_to_export = array();
-					if (!empty($attachids)) {
-						foreach($attachids as $aids){
-							$detail = explode("|", $aids);
-							if ($detail[1] == $fnumsInfo[$fnum]['training'] && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
-								$attachment_to_export[] = $detail[0];
-							}
-						}
-					}
-
-					$fnum = explode(',', $fnum);
-					if ($attachment || !empty($attachment_to_export)) {
-						$files = $this->getFilesByFnums($fnum, $attachment_to_export);
-						$file_ids = array();
-
-						foreach($files as $file) {
-							if (!empty($file['attachment_id'])) {
-								$file_ids[] = $file['attachment_id'];
-							}
-						}
-
-						// TODO: weird to use attachment_to_export here, should be $file_ids instead ? it has been like this for a long time, so I'm not sure
-						$setup_attachments = $this->getSetupAttachmentsById($attachment_to_export);
-						if (!empty($setup_attachments) && !empty($files)) {
-							foreach($setup_attachments as $att) {
-								if (!empty($files)) {
-									foreach ($files as $file) {
-										if ($file['attachment_id'] == $att['id']) {
-											$filename = $application_form_name . DS . $file['filename'];
-											$dossier = EMUNDUS_PATH_ABS . $fnumsInfo[$file['fnum']]['applicant_id'] . DS;
-											if (file_exists($dossier . $file['filename'])) {
-												if (!$zip->addFile($dossier . $file['filename'], $filename)) {
-													continue;
-												}
-											} else {
-												$zip->addFromString($filename."-missing.txt", '');
-											}
-										} elseif (!in_array($att['id'], $file_ids)) {
-											$zip->addFromString($application_form_name.DS.str_replace('_', "", $att['lbl'])."-notfound.txt", '');
-										}
-									}
-								} elseif (empty($files)) {
-									foreach ($setup_attachments as $att) {
-										$zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
-									}
-								}
-							}
-						} elseif (!empty($files)) {
-							foreach ($files as $file) {
-								$filename = $application_form_name . DS . $file['filename'];
-								$dossier = EMUNDUS_PATH_ABS . $fnumsInfo[$file['fnum']]['applicant_id'] . DS;
-								if (file_exists($dossier . $file['filename'])) {
-									if (!$zip->addFile($dossier . $file['filename'], $filename)) {
-										continue;
-									}
-								} else {
-									$zip->addFromString($filename."-missing.txt", '');
-								}
-							}
-						} elseif (empty($files)) {
-							foreach ($setup_attachments as $att) {
-								$zip->addFromString($application_form_name . DS .str_replace('_', "", $att['lbl']) ."-notfound.txt", '');
-							}
-						}
-					}
-				}
-				$zip->close();
-
-			} else {
-				die("ERROR");
-			}
-		}
-
-		return $nom;
+		return basename($result->getFilePath());
 	}
 
 	/**
