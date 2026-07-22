@@ -10,6 +10,7 @@
 
 namespace scripts;
 
+use Tchooz\Entities\Automation\Actions\ActionRedirect;
 use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 
@@ -68,6 +69,8 @@ class Release2_23_0Installer extends ReleaseInstaller
 				$this->tasks[] = $this->associatePaymentMethod('sepa', $payzen->getId());
 			}
 
+			$this->rebuildRedirectAutomationsActions();
+
 			$result['status'] = !in_array(false, $this->tasks, true);
 		}
 		catch (\Exception $e)
@@ -112,4 +115,36 @@ class Release2_23_0Installer extends ReleaseInstaller
 		return $this->db->insertObject('#__emundus_setup_payment_method_sync', $association);
 	}
 
+	private function rebuildRedirectAutomationsActions(): void
+	{
+		$query = $this->db->createQuery();
+
+		$query->select('id, params')
+			->from($this->db->quoteName('#__emundus_action'))
+			->where($this->db->quoteName('name') . ' = ' . $this->db->quote('redirect'));
+		$this->db->setQuery($query);
+		$redirectActions = $this->db->loadObjectList();
+
+		foreach ($redirectActions as $redirectAction)
+		{
+			$params = json_decode($redirectAction->params);
+
+			// Same priority that execute method in ActionRedirect class
+			if (!empty($params->known_url))
+			{
+				$params->url_type = ActionRedirect::KNOWN_URL;
+			}
+			elseif (!empty($params->custom_url))
+			{
+				$params->url_type = ActionRedirect::CUSTOM_URL;
+			}
+			else
+			{
+				$params->url_type = ActionRedirect::INTERN_URL;
+			}
+
+			$redirectAction->params = json_encode($params);
+			$this->tasks[]          = $this->db->updateObject('#__emundus_action', $redirectAction, 'id');
+		}
+	}
 }
