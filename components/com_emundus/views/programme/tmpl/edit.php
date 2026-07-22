@@ -40,6 +40,9 @@ Text::script('COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS');
 Text::script('COM_EMUNDUS_PROGRAM_UPDATE_ASSOCIATED_WORKFLOW_SUCCESS');
 Text::script('COM_EMUNDUS_PROGRAM_APPLY_ONLINE_LABEL');
 Text::script('COM_EMUNDUS_PROGRAM_APPLY_ONLINE_HELP');
+Text::script('COM_EMUNDUS_PROGRAM_LONG_DESCRIPTION_LABEL');
+Text::script('COM_EMUNDUS_PROGRAM_LONG_DESCRIPTION_HELPTEXT');
+Text::script('COM_EMUNDUS_PROGRAM_MUST_OPEN_RIGHTS_LABEL');
 
 $data = LayoutFactory::prepareVueData();
 $user = Factory::getApplication()->getIdentity();
@@ -63,6 +66,7 @@ $data['crud'] = [
 
 $data['program'] = $this->programEntity->__serialize();
 $data['useOldProgramForm'] = $this->useOldProgramForm;
+$data['prestation_sociales'] = $this->prestationSociales;
 ?>
 
 <div id="em-component-vue" component="Program/ProgramEdit"

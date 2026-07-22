@@ -149,10 +149,14 @@
             </fieldset>
 
             <fieldset name="list" label="Paramètres de la liste">
-                <field showon="mod_em_campaign_layout:default_tchooz" type="checkboxes"
-                       name="mod_em_campaign_list_sections" label="MOD_EM_CAMPAIGN_LIST_SECTIONS"
-                       description="MOD_EM_CAMPAIGN_LIST_SECTIONS_DESC">
-                    <option value="intro">MOD_EM_CAMPAIGN_LIST_SECTIONS_INTROTEXT</option>
+                <field showon="mod_em_campaign_layout:default_tchooz" type="sql"
+                       query="select id,title from #__content"
+                       key_field="id"
+                       value_field="title"
+                       default="0"
+                       name="mod_em_campaign_article_logged" label="MOD_EM_CAMPAIGN_LIST_ARTICLE_LOGGED"
+                       description="MOD_EM_CAMPAIGN_LIST_ARTICLE_LOGGED_DESC">
+                    <option value="0">MOD_EM_CAMPAIGN_LIST_ARTICLE_LOGGED_NONE</option>
                 </field>
 
                 <field type="list" name="mod_em_campaign_display_program_label" label="MOD_EM_CAMPAIGN_DISPLAY_PROGRAM_LABEL" description="MOD_EM_CAMPAIGN_DISPLAY_PROGRAM_LABEL_DESC" default="0">

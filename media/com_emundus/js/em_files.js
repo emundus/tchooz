@@ -6246,7 +6246,7 @@ async function sendMailQueue(fnums, nbFiles = 0) {
                     template        : $('#message_template :selected').val(),
                     mail_from_name  : $('#mail_from_name').text(),
                     mail_from       : $('#mail_from').text(),
-                    reply_to_from   : $('#reply_to_from').text(),
+                    reply_to_from   : [],
                     mail_subject    : $('#mail_subject').text(),
                     message         : body,
                     bcc             : [],
@@ -6277,6 +6277,18 @@ async function sendMailQueue(fnums, nbFiles = 0) {
                     }
 
                     if (REGEX_EMAIL.test(val)) { data.bcc.push(val); }
+                });
+
+                // reply to email(s)
+                $('#reply_to_div div[data-value]').each(function () {
+                    var val = $(this).attr('data-value');
+                    var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+                    if (val.split(':')[0] === 'REPLYTO') {
+                        val = $(this).attr('data-value').split('REPLYTO: ')[1];
+                    }
+
+                    if (REGEX_EMAIL.test(val)) { data.reply_to_from.push(val); }
                 });
 
                 // Attachments object used for sorting the different attachment types.

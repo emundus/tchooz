@@ -124,6 +124,8 @@ class EmundusControllerEmail extends EmundusController
 		$mail_body      = $this->input->post->getRaw('mail_body', '');
 		$mail_id        = $this->input->post->getInt('mail_id', 0);
 
+		$mail_from = !empty($mail_from) ? explode(',', $mail_from) : [];
+
 		if (!empty($fnums) && !empty($mail_subject) && !empty($mail_to) && !empty($mail_body))
 		{
 			$mail_to = explode(',', $mail_to);

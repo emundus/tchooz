@@ -21,9 +21,13 @@ Text::script('COM_EMUNDUS_PROGRAM_LOGO_LABEL');
 Text::script('COM_EMUNDUS_PROGRAM_FORM_CREATE');
 Text::script('COM_EMUNDUS_PROGRAM_APPLY_ONLINE_LABEL');
 Text::script('COM_EMUNDUS_PROGRAM_APPLY_ONLINE_HELP');
+Text::script('COM_EMUNDUS_PROGRAM_LONG_DESCRIPTION_LABEL');
+Text::script('COM_EMUNDUS_PROGRAM_LONG_DESCRIPTION_HELPTEXT');
+Text::script('COM_EMUNDUS_PROGRAM_MUST_OPEN_RIGHTS_LABEL');
 
 $data = LayoutFactory::prepareVueData();
 $data['program'] = (new ProgramEntity('', '', 0))->__serialize();
+$data['prestation_sociales'] = $this->prestationSociales;
 ?>
 
 <div id="em-component-vue" component="Program/ProgramForm"

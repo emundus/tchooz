@@ -118,6 +118,27 @@ export default {
 									alwaysDisplay: true,
 								},
 								{
+									label: 'COM_EMUNDUS_ONBOARD_SIGN_FILTER_CREATION_DATE_LABEL',
+									type: 'date',
+									key: 'creation_date',
+									alwaysDisplay: true,
+								},
+								{
+									label: 'COM_EMUNDUS_ONBOARD_SIGN_FILTER_REMINDER_DATE_LABEL',
+									type: 'date',
+									key: 'reminder_date',
+									alwaysDisplay: true,
+								},
+								{
+									label: 'COM_EMUNDUS_ONBOARD_SIGN_FILTER_CONNECTOR_LABEL',
+									allLabel: 'COM_EMUNDUS_ONBOARD_SIGN_FILTER_CONNECTOR_ALL',
+									getter: 'getfilterconnectors',
+									controller: 'sign',
+									key: 'connector',
+									values: null,
+									alwaysDisplay: true,
+								},
+								{
 									label: 'COM_EMUNDUS_ONBOARD_SIGN_FILTER_SIGNED_DATE_LABEL',
 									type: 'date',
 									key: 'signed_date',

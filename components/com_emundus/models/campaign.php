@@ -2290,24 +2290,27 @@ class EmundusModelCampaign extends ListModel
 					}
 
 					// update campaign languages
-					$query->clear()
-						->delete($this->_db->quoteName('#__emundus_setup_campaigns_languages'))
-						->where($this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($cid));
-
-					$this->_db->setQuery($query);
-					$this->_db->execute();
-
-					if (!empty($data['languages']))
+					if (array_key_exists('languages', $data))
 					{
-						foreach ($data['languages'] as $lang_id)
-						{
-							$query->clear()
-								->insert('#__emundus_setup_campaigns_languages')
-								->set('campaign_id = ' . $cid)
-								->set('lang_id = ' . $lang_id);
+						$query->clear()
+							->delete($this->_db->quoteName('#__emundus_setup_campaigns_languages'))
+							->where($this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($cid));
 
-							$this->_db->setQuery($query);
-							$this->_db->execute();
+						$this->_db->setQuery($query);
+						$this->_db->execute();
+
+						if (!empty($data['languages']))
+						{
+							foreach (array_unique($data['languages']) as $lang_id)
+							{
+								$query->clear()
+									->insert('#__emundus_setup_campaigns_languages')
+									->set('campaign_id = ' . $cid)
+									->set('lang_id = ' . $lang_id);
+
+								$this->_db->setQuery($query);
+								$this->_db->execute();
+							}
 						}
 					}
 					//
@@ -2316,7 +2319,7 @@ class EmundusModelCampaign extends ListModel
 					$emConfig = ComponentHelper::getParams('com_emundus');
 					$userCategoryEnabled = $emConfig->get('enable_user_categories', 0);
 
-					if($userCategoryEnabled == 1)
+					if($userCategoryEnabled == 1 && array_key_exists('usercategories', $data))
 					{
 						$query->clear()
 							->delete($this->_db->quoteName('#__emundus_setup_campaigns_user_category'))
@@ -2327,7 +2330,7 @@ class EmundusModelCampaign extends ListModel
 
 						if (!empty($data['usercategories']))
 						{
-							foreach ($data['usercategories'] as $user_category_id)
+							foreach (array_unique($data['usercategories']) as $user_category_id)
 							{
 								$query->clear()
 									->insert('#__emundus_setup_campaigns_user_category')
