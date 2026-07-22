@@ -289,7 +289,7 @@ export default {
 			>
 				<h2>{{ this.translate('COM_EMUNDUS_EXPORT_AVAILABLE_CONTENT') }}</h2>
 
-				<div class="tw-flex tw-items-center tw-gap-2 tw-overflow-auto">
+				<div class="tw-flex tw-shrink-0 tw-flex-wrap tw-items-center tw-gap-2 tw-overflow-auto">
 					<Button
 						v-for="option in tabsOptions"
 						:key="option.value"
@@ -300,6 +300,7 @@ export default {
 						{{ translate(option.label) }}
 					</Button>
 				</div>
+				<hr />
 
 				<div v-if="loading" class="tw-flex tw-flex-col tw-items-center tw-justify-center">
 					<div class="em-loader"></div>

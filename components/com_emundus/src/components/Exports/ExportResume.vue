@@ -67,8 +67,8 @@ export default {
 		optionRows() {
 			return this.optionsFields.map((field) => ({
 				name: field.name,
-				label: field.label,
-				value: this.formatValue(this.exportSettings[field.name], field.type),
+				label: this.formatFieldLabel(field),
+				value: this.formatValue(this.exportSettings[field.name], field),
 			}));
 		},
 
@@ -128,18 +128,76 @@ export default {
 			});
 		},
 
-		formatValue(value, type) {
+		// Pre-substitute `%s` in the pivot-target label with the current scope's own
+		// translation (backend uses one label template with a `%s` placeholder).
+		// Named `formatFieldLabel` to avoid clashing with the `formatLabel` computed
+		// above, which returns the export-format label (xlsx/pdf/zip).
+		formatFieldLabel(field) {
+			if (field.name !== 'pivot_target') {
+				return field.label;
+			}
+
+			const scopeLabelKeys = {
+				group: 'COM_EMUNDUS_EXPORT_PIVOT_SCOPE_GROUP',
+				element: 'COM_EMUNDUS_EXPORT_PIVOT_SCOPE_ELEMENT',
+				evaluation: 'COM_EMUNDUS_EXPORT_PIVOT_SCOPE_EVALUATION',
+			};
+
+			const template = this.translate(field.label);
+			const scopeKey = scopeLabelKeys[this.exportSettings?.pivot_scope];
+			const scopeLabel = scopeKey ? this.translate(scopeKey) : '';
+			return template.replace('%s', scopeLabel);
+		},
+
+		formatValue(value, field) {
 			if (value === null || value === undefined || value === '') {
 				return '—';
 			}
 
-			if (type === 'boolean') {
+			if (field.type === 'boolean') {
 				return value
 					? this.translate('COM_EMUNDUS_EXPORT_RESUME_VALUE_YES')
 					: this.translate('COM_EMUNDUS_EXPORT_RESUME_VALUE_NO');
 			}
 
+			// Pivot target holds a raw id — resolve to a human label using the current
+			// scope and the elements the user picked in the Content step.
+			if (field.name === 'pivot_target') {
+				return this.resolvePivotTargetLabel(value);
+			}
+
+			// Regular ChoiceField (e.g. pivot_scope, language) — look up the picked choice's label.
+			if (field.type === 'choice' && Array.isArray(field.choices)) {
+				const choice = field.choices.find((c) => String(c.value) === String(value));
+				if (choice) return this.translate(choice.label);
+			}
+
 			return value;
+		},
+
+		resolvePivotTargetLabel(targetId) {
+			const scope = this.exportSettings?.pivot_scope;
+			if (!scope) return targetId;
+
+			const eq = (a, b) => String(a) === String(b);
+			const unnamed = () => this.translate('COM_EMUNDUS_FORM_BUILDER_UNNAMED_SECTION');
+
+			switch (scope) {
+				case 'element': {
+					const el = this.selectedElements.find((e) => eq(e.id, targetId));
+					return el ? el.label : targetId;
+				}
+				case 'group': {
+					const el = this.selectedElements.find((e) => eq(e.group_id, targetId));
+					return el ? el.group_label || unnamed() : targetId;
+				}
+				case 'evaluation': {
+					const el = this.selectedElements.find((e) => eq(e.form_id, targetId));
+					return el ? el.form_label || unnamed() : targetId;
+				}
+				default:
+					return targetId;
+			}
 		},
 	},
 };
