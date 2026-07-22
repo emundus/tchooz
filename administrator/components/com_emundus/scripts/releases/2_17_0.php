@@ -72,7 +72,7 @@ class Release2_17_0Installer extends ReleaseInstaller
 		{
 			// Get menus associated to update links
 			$query->clear()
-				->select('id, link, component_id, menutype, access')
+				->select('id, link, component_id, menutype, access, type')
 				->from($this->db->quoteName('#__menu'))
 				->where($this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_fabrik&view=list&listid=' . $groupsList));
 			$this->db->setQuery($query);
@@ -81,6 +81,7 @@ class Release2_17_0Installer extends ReleaseInstaller
 			foreach ($menus as $menu)
 			{
 				$menu->link         = 'index.php?option=com_emundus&view=groups';
+				$menu->type = 'component';
 				$menu->component_id = ComponentHelper::getComponent('com_emundus')->id;
 				$this->tasks[]      = $this->db->updateObject('#__menu', $menu, 'id');
 
