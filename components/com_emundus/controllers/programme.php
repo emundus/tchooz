@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Symfony\Component\OptionsResolver\Exception\AccessException;
@@ -154,6 +155,9 @@ class EmundusControllerProgramme extends EmundusController
 		$campaignAccess     = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::READ->value, $this->user->id);
 		$campaignEditAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::UPDATE->value, $this->user->id);
 
+		$emConfig = ComponentHelper::getParams('com_emundus');
+		$prestationSociales = $emConfig->get('prestations_sociales', 0) == 1;
+
 		$programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche, $this->user, $category, $order_by);
 
 		foreach ($programs['datas'] as $key => $program)
@@ -263,6 +267,17 @@ class EmundusControllerProgramme extends EmundusController
 				]
 			];
 
+			if($prestationSociales)
+			{
+				$programs['datas'][$key]->additional_columns[] = [
+					'key'      => Text::_('COM_EMUNDUS_PROGRAM_MUST_OPEN_RIGHTS_LABEL'),
+					'value'    => $program->must_open_rights == 1 ? Text::_('JYES') : Text::_('JNO'),
+					'classes'  => '',
+					'display'  => 'table',
+					'order_by' => 'p.must_open_rights'
+				];
+			}
+
 			if ($campaignAccess)
 			{
 				$programs['datas'][$key]->additional_columns[] = $campaigns_assiocated_column;
@@ -321,7 +336,7 @@ class EmundusControllerProgramme extends EmundusController
 			$description = $data['notes'] ?? '';
 			$synthesis   = $data['synthesis'] ?? '<p><strong>[APPLICANT_NAME]</strong></p><p><a href="mailto:[EMAIL]">[EMAIL]</a></p>';
 			$applyOnline = $data['apply_online'] ?? true;
-			$mustOpenRights = $data['must_open_rights'] ?? true;
+			$mustOpenRights = $data['must_open_rights'] ?? false;
 		}
 
 		if (empty($label) || empty($code))
