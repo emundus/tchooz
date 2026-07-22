@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Programs\ProgramEntity;
@@ -29,6 +30,8 @@ class EmundusViewProgramme extends JViewLegacy
 
 	protected bool $useOldProgramForm = false;
 
+	protected bool $prestationsSociales = false;
+
 	/**
 	 * Display the view
 	 */
@@ -44,6 +47,11 @@ class EmundusViewProgramme extends JViewLegacy
 		$menu_params  = $menu->getParams(@$current_menu->id);
 		$layout = $jinput->getString('layout', null);
 		$this->user = $app->getIdentity();
+		
+		if ($layout === 'edit' || $layout === 'add') {
+			$emConfig = ComponentHelper::getParams('com_emundus');
+			$this->prestationSociales = $emConfig->get('prestations_sociales', 0) == 1;
+		}
 
 		if ($layout === 'edit') {
 			$actionRepository = new ActionRepository();

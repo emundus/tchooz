@@ -1275,7 +1275,7 @@ class EmundusControllerFormbuilder extends EmundusController
 			ElementPluginEnum::PASSWORD->value,
 		];
 
-		$elements = EmundusHelperFabrik::searchFabrikElements($search, $formIds, $excluded, 20);
+		$elements = EmundusHelperFabrik::searchFabrikElements($search, $formIds, $excluded, 20, false);
 
 		$elementsListOptions = [];
 		$seen                = [];

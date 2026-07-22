@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Symfony\Component\OptionsResolver\Exception\AccessException;
@@ -154,6 +155,9 @@ class EmundusControllerProgramme extends EmundusController
 		$campaignAccess     = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::READ->value, $this->user->id);
 		$campaignEditAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::UPDATE->value, $this->user->id);
 
+		$emConfig = ComponentHelper::getParams('com_emundus');
+		$prestationSociales = $emConfig->get('prestations_sociales', 0) == 1;
+
 		$programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche, $this->user, $category, $order_by);
 
 		foreach ($programs['datas'] as $key => $program)
@@ -263,6 +267,17 @@ class EmundusControllerProgramme extends EmundusController
 				]
 			];
 
+			if($prestationSociales)
+			{
+				$programs['datas'][$key]->additional_columns[] = [
+					'key'      => Text::_('COM_EMUNDUS_PROGRAM_MUST_OPEN_RIGHTS_LABEL'),
+					'value'    => $program->must_open_rights == 1 ? Text::_('JYES') : Text::_('JNO'),
+					'classes'  => '',
+					'display'  => 'table',
+					'order_by' => 'p.must_open_rights'
+				];
+			}
+
 			if ($campaignAccess)
 			{
 				$programs['datas'][$key]->additional_columns[] = $campaigns_assiocated_column;
@@ -281,31 +296,34 @@ class EmundusControllerProgramme extends EmundusController
 	{
 		$this->checkToken();
 		$data = $this->input->getRaw('body');
-		$id = $this->input->getInt('id', 0);
+		$id   = $this->input->getInt('id', 0);
 
 		$logoPath   = '';
 		$logo       = null;
 		$handleLogo = false;
 		if (empty($data))
 		{
-			$label       = $this->input->getString('label');
-			$code        = $this->input->getString('code');
-			$programmes  = $this->input->getString('programmes');
-			$description = $this->input->getRaw('notes');
-			$description = (is_null($description) || $description === 'null') ? '' : $description;
-			$synthesis   = $this->input->getRaw('synthesis');
-			$logo        = $this->input->files->get('logo');
-			$logoPath    = $this->input->getString('logo');
-			$applyOnline = $this->input->getInt('apply_online', 1) === 1;
-			$handleLogo  = true;
+			$label           = $this->input->getString('label');
+			$code            = $this->input->getString('code');
+			$programmes      = $this->input->getString('programmes');
+			$description     = $this->input->getRaw('notes');
+			$description     = (is_null($description) || $description === 'null') ? '' : $description;
+			$longDescription = $this->input->getRaw('long_description');
+			$longDescription = (is_null($longDescription) || $longDescription === 'null') ? '' : $longDescription;
+			$synthesis       = $this->input->getRaw('synthesis');
+			$logo            = $this->input->files->get('logo');
+			$logoPath        = $this->input->getString('logo');
+			$applyOnline     = $this->input->getInt('apply_online', 1) === 1;
+			$mustOpenRights  = $this->input->getInt('must_open_rights', 0) === 1;
+			$handleLogo      = true;
 		}
 		else
 		{
 			// Backward compatibility: legacy JSON callers do not manage the logo
-			$data        = json_decode($data, true);
-			$label       = $data['label'];
-			$code        = $data['code'];
-			if(empty($code) && !empty($label))
+			$data  = json_decode($data, true);
+			$label = $data['label'];
+			$code  = $data['code'];
+			if (empty($code) && !empty($label))
 			{
 				$code = preg_replace('/[^A-Za-z0-9]/', '', $label);
 				$code = str_replace(' ', '_', $code);
@@ -314,9 +332,11 @@ class EmundusControllerProgramme extends EmundusController
 				$code = uniqid($code . '-');
 			}
 			$programmes  = $data['programmes'] ?? '';
+			$longDescription = $data['long_description'] ?? '';
 			$description = $data['notes'] ?? '';
 			$synthesis   = $data['synthesis'] ?? '<p><strong>[APPLICANT_NAME]</strong></p><p><a href="mailto:[EMAIL]">[EMAIL]</a></p>';
 			$applyOnline = $data['apply_online'] ?? true;
+			$mustOpenRights = $data['must_open_rights'] ?? false;
 		}
 
 		if (empty($label) || empty($code))
@@ -342,7 +362,8 @@ class EmundusControllerProgramme extends EmundusController
 				$random   = substr($random, 0, $length);
 				$logoPath = $uploader->upload($logo, $label . '_' . $random, 'program');
 			}
-			else {
+			else
+			{
 				$logoPath = null;
 			}
 		}
@@ -365,9 +386,11 @@ class EmundusControllerProgramme extends EmundusController
 			$programEntity->setCode($code);
 			$programEntity->setLabel($label);
 			$programEntity->setNotes($description ?? '');
+			$programEntity->setLongDescription($longDescription ?? '');
 			$programEntity->setProgrammes($programmes ?? '');
 			$programEntity->setSynthesis($synthesis ?? '');
 			$programEntity->setApplyOnline($applyOnline);
+			$programEntity->setMustOpenRights($mustOpenRights);
 
 			if ($handleLogo)
 			{
@@ -383,7 +406,9 @@ class EmundusControllerProgramme extends EmundusController
 				programmes: $programmes,
 				synthesis: $synthesis,
 				applyOnline: $applyOnline,
-				logo: $logoPath
+				logo: $logoPath,
+				longDescription: $longDescription,
+				mustOpenRights: $mustOpenRights,
 			);
 		}
 

@@ -24,10 +24,12 @@ class ProgramFactory extends AbstractFactory
 			notes: $dbObject->notes,
 			programmes: $dbObject->programmes,
 			synthesis: $dbObject->synthesis,
-			applyOnline: (bool) $dbObject->apply_online,
+			applyOnline: $dbObject->apply_online == 1,
 			ordering: (int) $dbObject->ordering,
 			logo: $dbObject->logo,
-			color: $dbObject->color
+			color: $dbObject->color,
+			longDescription: $dbObject->long_description ?? '',
+			mustOpenRights: $dbObject->must_open_rights == 1,
 		);
 	}
 

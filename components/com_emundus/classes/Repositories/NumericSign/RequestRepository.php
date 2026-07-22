@@ -186,6 +186,7 @@ class RequestRepository
 				$this->db->quoteName('esr.status'),
 				$this->db->quoteName('esr.connector'),
 				$this->db->quoteName('esr.fnum'),
+				$this->db->quoteName('esr.created_at'),
 				$this->db->quoteName('esr.last_reminder_at'),
 				$this->db->quoteName('esr.cancel_reason'),
 				$this->db->quoteName('esr.cancel_at'),
@@ -597,14 +598,17 @@ class RequestRepository
 		}
 	}
 
-	public function setFilters(string $search = '', ?string $status = '', ?int $attachment = 0, ?int $applicant = 0, ?string $signed_date = ''): array
+	public function setFilters(string $search = '', ?string $status = '', ?int $attachment = 0, ?int $applicant = 0, ?string $signed_date = '', ?string $creation_date = '', ?string $reminder_date = '', ?string $connector = ''): array
 	{
 		$this->filters = [
 			'search'      => $search,
 			'status'      => $status,
 			'attachment'  => $attachment,
 			'applicant'   => $applicant,
-			'signed_date' => $signed_date
+			'signed_date' => $signed_date,
+			'created_at' => $creation_date,
+			'last_reminder_at' => $reminder_date,
+			'connector' => $connector
 		];
 
 		return $this->filters;
@@ -651,6 +655,34 @@ class RequestRepository
 		{
 			$query->where('DATE('.$this->db->quoteName('esrs.signed_at') . ') = :signed_date')
 				->bind(':signed_date', $this->filters['signed_date']);
+		}
+
+		if(!empty($this->filters['created_at']))
+		{
+			$query->where('DATE('.$this->db->quoteName('esr.created_at') . ') = :creation_date')
+				->bind(':creation_date', $this->filters['created_at']);
+		}
+
+		if(!empty($this->filters['last_reminder_at']))
+		{
+			$query->where('DATE('.$this->db->quoteName('esr.last_reminder_at') . ') = :reminder_date')
+				->bind(':reminder_date', $this->filters['last_reminder_at']);
+		}
+
+		if(!empty($this->filters['connector']))
+		{
+			$connector = $this->filters['connector'];
+			if (is_string($connector))
+			{
+				$connector = [$connector];
+			}
+
+			if (!is_array($connector))
+			{
+				throw new \Exception('Connector must be a string or an array of strings.', 400);
+			}
+
+			$query->whereIn($this->db->quoteName('esr.connector'), $connector, ParameterType::STRING);
 		}
 
 		return $query;
