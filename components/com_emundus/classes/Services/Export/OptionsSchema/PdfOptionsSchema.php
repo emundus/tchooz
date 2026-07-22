@@ -20,7 +20,7 @@ class PdfOptionsSchema extends AbstractOptionsSchema
 	public const FILENAME                = 'filename';
 	public const DISPLAY_EVALUATOR_NAME  = 'display_evaluator_name';
 
-	public function getFields(): array
+	protected function getFormatFields(): array
 	{
 		$group = ExportTabEnum::OPTIONS->toFieldGroup();
 
@@ -47,7 +47,7 @@ class PdfOptionsSchema extends AbstractOptionsSchema
 		];
 	}
 
-	public function getDefaults(): array
+	protected function getFormatDefaults(): array
 	{
 		$emConfig            = ComponentHelper::getParams('com_emundus');
 		$applicationFormName = (string) $emConfig->get('application_form_name', '');

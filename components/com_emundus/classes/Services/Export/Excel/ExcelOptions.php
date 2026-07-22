@@ -9,6 +9,7 @@
 
 namespace Tchooz\Services\Export\Excel;
 
+use Tchooz\Enums\Export\PivotScopeEnum;
 use Tchooz\Services\Export\ExportOptions;
 use Tchooz\Services\Export\HeadersEnum;
 use Tchooz\Services\Export\OptionsSchema\ExcelOptionsSchema;
@@ -44,10 +45,16 @@ class ExcelOptions extends ExportOptions
 		$elements           = $options->elements ? explode(',', $options->elements) : [];
 		$lang               = $options->lang ?? 'en-GB';
 
-		if(!empty($options->synthesis) && is_string($options->synthesis)) {
-			$options->synthesis = explode(',', $options->synthesis);
+		$synthesis = [];
+		if(!empty($options->synthesis)) {
+			if(is_string($options->synthesis))
+			{
+				$synthesis = explode(',', $options->synthesis);
+			}
+			else {
+				$synthesis = $options->synthesis;
+			}
 		}
-		$synthesis            = $options->synthesis ? $options->synthesis : [];
 
 		$excelOptions = new ExcelOptions($synthesis);
 
@@ -78,5 +85,34 @@ class ExcelOptions extends ExportOptions
 	public function setSynthesis(array $synthesis): void
 	{
 		$this->synthesis = $synthesis;
+	}
+
+	/**
+	 * Pivot lives inside `settings` (cast through ExcelOptionsSchema): a scope
+	 * ("form", "group", "element", "evaluation") plus a target id resolved
+	 * within that scope. Both must be set for pivot expansion to happen.
+	 */
+	public function getPivotScope(): ?PivotScopeEnum
+	{
+		$scope = $this->getSetting(ExcelOptionsSchema::PIVOT_SCOPE);
+
+		if (!is_string($scope) || $scope === '')
+		{
+			return null;
+		}
+
+		return PivotScopeEnum::tryFrom($scope);
+	}
+
+	public function getPivotTargetId(): ?int
+	{
+		$target = $this->getSetting(ExcelOptionsSchema::PIVOT_TARGET);
+
+		if ($target === null || $target === '' || $target === 0)
+		{
+			return null;
+		}
+
+		return is_numeric($target) ? (int) $target : null;
 	}
 }

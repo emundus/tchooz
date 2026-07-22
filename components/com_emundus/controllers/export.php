@@ -15,6 +15,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\User\User;
 use Symfony\Component\OptionsResolver\Exception\AccessException;
+use Tchooz\EmundusResponse;
 use Tchooz\Entities\Actions\ActionEntity as AccessActionEntity;
 use Tchooz\Entities\Automation\Actions\ActionExport;
 use Tchooz\Entities\Automation\ActionTargetEntity;
@@ -26,6 +27,7 @@ use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
 use Tchooz\Enums\List\ListColumnTypesEnum;
+use Tchooz\Services\Export\OptionsSchema\AbstractOptionsSchema;
 use Tchooz\Services\Export\OptionsSchema\OptionsSchemaFactory;
 use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
@@ -40,7 +42,6 @@ use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Task\TaskRepository;
 use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
-use Tchooz\EmundusResponse;
 use Tchooz\Services\Export\Excel\ExcelService;
 use Tchooz\Services\Export\Export;
 use Tchooz\Traits\TraitResponse;
@@ -436,38 +437,65 @@ class EmundusControllerExport extends BaseController
 					$form            = $fabrikRepository->getFormById($elementId);
 					$form            = $form->__serialize();
 
+					// A form is "multiple" when at least one evaluation workflow step using it is
+					// flagged multiple (several submissions per file). Only such forms are offered
+					// as a "Formulaire" pivot scope on the front, so we tag every serialized element.
+					$stepRepository       = new StepRepository();
+					$steps                = $stepRepository->getStepsByFormId($form['id']);
+					$isMultipleEvaluation = false;
+					foreach ($steps as $step)
+					{
+						if ($step->getMultiple() === 1)
+						{
+							$isMultipleEvaluation = true;
+							break;
+						}
+					}
+
 					if (!class_exists('EmundusModelEvaluation'))
 					{
 						require_once ( JPATH_ROOT . '/components/com_emundus/models/evaluation.php' );
 					}
 					$evaluationModel = new EmundusModelEvaluation();
 					$avgElt          = $evaluationModel->getEvaluationFormAverageElement($form['id']);
-					if (!empty($avgElt))
+					if (!empty($avgElt) && !empty($steps))
 					{
-						$stepRepository = new StepRepository();
-						$steps          = $stepRepository->getStepsByFormId($form['id']);
+						$group = [
+							'id' => 'evaluation_average_' . $form['id'],
+							'name' => 'evaluation_average_' . $form['id'],
+							'label' => Text::_('COM_EMUNDUS_AVERAGE_SCORE_BY_STEPS') . ' - ' . $form['label'],
+							'published' => true,
+							'elements' => []
+						];
 
-						if (!empty($steps))
+						foreach ($steps as $step)
 						{
-							$group = [
-								'id' => 'evaluation_average_' . $form['id'],
-								'name' => 'evaluation_average_' . $form['id'],
-								'label' => Text::_('COM_EMUNDUS_AVERAGE_SCORE_BY_STEPS') . ' - ' . $form['label'],
-								'published' => true,
-								'elements' => []
+							$group['elements'][] = [
+								'id' => 'evaluation_average_step_' . $step->getId(),
+								'name' => 'evaluation_average_step_' . $step->getId(),
+								'label' => Text::_('COM_EMUNDUS_ONBOARD_TYPE_AVERAGE') . ' ' . Text::_('COM_EMUNDUS_EVALUATION_EVAL_STEP') . ' ' . $step->getLabel(),
 							];
-
-							foreach ($steps as $step)
-							{
-								$group['elements'][] = [
-									'id' => 'evaluation_average_step_' . $step->getId(),
-									'name' => 'evaluation_average_step_' . $step->getId(),
-									'label' => Text::_('COM_EMUNDUS_ONBOARD_TYPE_AVERAGE') . ' ' . Text::_('COM_EMUNDUS_EVALUATION_EVAL_STEP') . ' ' . $step->getLabel(),
-								];
-							}
-
-							$form['groups'][] = $group;
 						}
+
+						$form['groups'][] = $group;
+					}
+
+					// Propagate the multiple flag onto every element so the pivot picker can
+					// filter the "Formulaire" scope down to multiple-evaluation forms only.
+					if (!empty($form['groups']))
+					{
+						foreach ($form['groups'] as &$serializedGroup)
+						{
+							if (!empty($serializedGroup['elements']))
+							{
+								foreach ($serializedGroup['elements'] as &$serializedElement)
+								{
+									$serializedElement['is_multiple_evaluation'] = $isMultipleEvaluation;
+								}
+								unset($serializedElement);
+							}
+						}
+						unset($serializedGroup);
 					}
 
 					$subElements = [$form];
@@ -729,6 +757,12 @@ class EmundusControllerExport extends BaseController
 			}
 
 			$settings = $this->parseSettingsInput($this->input->get('settings', null, 'RAW'), $format);
+
+			// Language is a base setting on every OptionsSchema; honor it if the user picked one.
+			if (!empty($settings[AbstractOptionsSchema::LANGUAGE]))
+			{
+				$currentLang = $settings[AbstractOptionsSchema::LANGUAGE];
+			}
 
 			$fnums = $this->input->post->getString('fnums');
 			if (empty($fnums))

@@ -9,7 +9,10 @@ use Tchooz\Repositories\Export\ExportRepository;
 use Tchooz\Services\Export\Excel\ExcelService;
 
 /**
- * @covers \Tchooz\Services\Export\Excel\ExcelService
+ * @package     Unit\Component\Emundus\Class\Services\Export\Excel
+ *
+ * @since       version 1.0.0
+ * @covers      \Tchooz\Services\Export\Excel\ExcelService
  */
 class ExcelServiceTest extends UnitTestCase
 {
@@ -309,7 +312,10 @@ class ExcelServiceTest extends UnitTestCase
 	 * @covers \Tchooz\Services\Export\Excel\ExcelService::export()
 	 * @covers \Tchooz\Services\Export\Excel\ExcelService::__construct()
 	 * @covers \Tchooz\Services\Export\Excel\ExcelService::computeProgress()
+	 * @covers \Tchooz\Services\Export\Excel\ExcelService::fillCsv()
 	 * @covers \Tchooz\Services\Export\Excel\ExcelService::convertToXlsx()
+	 * @covers \Tchooz\Services\Export\Excel\ExcelOptions
+	 * @covers \Tchooz\Services\Export\Excel\ExcelPivotProcessor
 	 * @return void
 	 */
 	public function testExport(): void

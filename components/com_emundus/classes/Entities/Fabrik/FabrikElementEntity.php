@@ -21,6 +21,12 @@ class FabrikElementEntity
 
 	private int $groupId;
 
+	private int $formId = 0;
+
+	private string $groupLabel = '';
+
+	private string $formLabel = '';
+
 	private ElementPluginEnum $plugin;
 
 	private string $label;
@@ -432,6 +438,42 @@ class FabrikElementEntity
 		$this->alias = $alias;
 	}
 
+	public function getFormId(): int
+	{
+		return $this->formId;
+	}
+
+	public function setFormId(int $formId): FabrikElementEntity
+	{
+		$this->formId = $formId;
+
+		return $this;
+	}
+
+	public function getGroupLabel(): string
+	{
+		return $this->groupLabel;
+	}
+
+	public function setGroupLabel(string $groupLabel): FabrikElementEntity
+	{
+		$this->groupLabel = $groupLabel;
+
+		return $this;
+	}
+
+	public function getFormLabel(): string
+	{
+		return $this->formLabel;
+	}
+
+	public function setFormLabel(string $formLabel): FabrikElementEntity
+	{
+		$this->formLabel = $formLabel;
+
+		return $this;
+	}
+
 	public function toArray(bool $translate = true): array
 	{
 		return [
@@ -440,6 +482,9 @@ class FabrikElementEntity
 			'created_by'    => $this->createdBy->id,
 			'name'          => $this->name,
 			'group_id'      => $this->groupId,
+			'form_id'       => $this->formId,
+			'group_label'   => $translate && !empty($this->groupLabel) ? Text::_($this->groupLabel) : $this->groupLabel,
+			'form_label'    => $translate && !empty($this->formLabel) ? Text::_($this->formLabel) : $this->formLabel,
 			'plugin'        => $this->plugin->value,
 			'plugin_name'   => $translate ? Text::_($this->plugin->getLabel()) : $this->plugin->getLabel(),
 			'label'         => $translate ? strip_tags(Text::_($this->label)) : strip_tags($this->label),

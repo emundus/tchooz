@@ -10,6 +10,7 @@ import { Alert, Button, Icon, MenuItem } from '@emundus/ui';
 import ExportContent from '@/components/Exports/ExportContent.vue';
 import ExportOptions from '@/components/Exports/ExportOptions.vue';
 import ExportResume from '@/components/Exports/ExportResume.vue';
+import { VueDraggableNext as draggable } from 'vue-draggable-next';
 
 export default defineComponent({
 	name: 'Exports',
@@ -665,8 +666,13 @@ export default defineComponent({
 					@toggle-content-menu="updateSelectedContentMenu"
 				/>
 
-				<div v-if="isActiveStep('options')" class="tw-max-h-[55vh] tw-overflow-y-auto">
-					<ExportOptions v-model="exportSettings" :format="selectedFormat" />
+				<div v-if="isActiveStep('options')">
+					<ExportOptions
+						v-model="exportSettings"
+						:format="selectedFormat"
+						:elements="selectedElements"
+						:all-elements="elements"
+					/>
 				</div>
 
 				<div v-if="isActiveStep('resume')" class="tw-max-h-[55vh] tw-overflow-y-auto">

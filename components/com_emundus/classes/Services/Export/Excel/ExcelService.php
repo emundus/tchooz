@@ -525,7 +525,23 @@ class ExcelService extends Export implements ExportInterface
 				}
 
 				// ----------------------------
-				// 6) Finalization when all fnums processed
+				// 6) Pivot processing — user picks a scope (form/group/element/evaluation)
+				// and a target id within it; the processor expands each row into N rows
+				// and groups them by fnum. Both must be set to apply pivot.
+				// ----------------------------
+				$pivotScope    = $this->options->getPivotScope();
+				$pivotTargetId = $this->options->getPivotTargetId();
+				if ($pivotScope !== null && $pivotTargetId !== null)
+				{
+					// Fresh FabrikRepository — the service's own instance carries stale
+					// `$elementFilters` from earlier getData() calls and would narrow the
+					// pivot lookups (see ExcelPivotProcessor doc).
+					$pivotProcessor = new ExcelPivotProcessor();
+					$json['files']  = $pivotProcessor->process($json['files'], $json['headers'], $pivotScope, $pivotTargetId);
+				}
+
+				// ----------------------------
+				// 7) Finalization when all fnums processed
 				// ----------------------------
 				$csvFile = $this->fillCsv($exportPath, $json);
 
