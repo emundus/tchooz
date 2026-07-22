@@ -76,11 +76,11 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		$mapping = [];
 
+		$mapping['onAfterInitialise'] = 'onAfterInitialise';
 		if ($app->isClient('site') || $app->isClient('administrator'))
 		{
 			$mapping['onBeforeCompileHead']              = 'injectLazyJS';
 			$mapping['onAfterRender']                    = 'onAfterRender';
-			$mapping['onAfterInitialise']                = 'onAfterInitialise';
 			$mapping['onComUsersCaptiveValidateSuccess'] = 'onComUsersCaptiveValidateSuccess';
 		}
 
@@ -100,7 +100,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$model->setState('record_id', $recordId);
 		$record = $model->getRecord();
 
-		if(empty($record))
+		if (empty($record))
 		{
 			return;
 		}
@@ -117,16 +117,19 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 	public function onAfterInitialise(AfterInitialiseEvent $event): void
 	{
-		if($this->getApplication()->isClient('administrator') && file_exists(JPATH_LIBRARIES.'/emundus/vendor/autoload.php'))
+		if (($this->getApplication()->isClient('administrator') || $this->getApplication()->isClient('api')) && file_exists(JPATH_LIBRARIES . '/emundus/vendor/autoload.php'))
 		{
-			require_once JPATH_LIBRARIES.'/emundus/vendor/autoload.php';
+			require_once JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
 		}
 
 		$container = Factory::getContainer();
 
-		// Register language provider
-		$dbLanguageProvider = new DbLanguageProvider();
-		$dbLanguageProvider->register($container);
+		if ($this->getApplication()->isClient('site') || $this->getApplication()->isClient('administrator'))
+		{
+			// Register language provider
+			$dbLanguageProvider = new DbLanguageProvider();
+			$dbLanguageProvider->register($container);
+		}
 
 		// Register email tag modifiers
 		TagModifierRegistry::registerDefaults();
@@ -156,7 +159,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$wa   = $this->getApplication()->getDocument()->getWebAssetManager();
 
 		$profile_data = [];
-		$query = $this->getDatabase()->createQuery();
+		$query        = $this->getDatabase()->createQuery();
 		if (!$this->getApplication()->getIdentity()->guest)
 		{
 			$query->clear()
@@ -327,7 +330,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 				}
 				// End of SAML user info update
 			}
-			
+
 			// Add a class to the body tag depending on the emundus profile
 			$body = $app->getBody();
 
@@ -386,9 +389,9 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$user = $app->getIdentity();
 		if ($user instanceof User && !$user->guest && $user->activation != -1)
 		{
-			$plugin = PluginHelper::getPlugin('system', 'emundus');
-			$params = new Registry($plugin->params);
-			$mfaSso = $params->get('2faforSSO', 0);
+			$plugin             = PluginHelper::getPlugin('system', 'emundus');
+			$params             = new Registry($plugin->params);
+			$mfaSso             = $params->get('2faforSSO', 0);
 			$publicAccessUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
 
 			if (!empty($publicAccessUserId) && $user->id === $publicAccessUserId)
@@ -396,18 +399,21 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 				// public access skip 2FA enforcement
 				return;
 			}
-			else if ($mfaSso == 0 && ($isSamlUser || (!empty($userParams) && $userParams->OAuth2 === 'openid')))
+			else
 			{
-				// If user logged in via SAML or OIDC we skip the 2FA enforcement
-				return;
-			}
-			// If 2fa for SSO is enabled but user email is @emundus.fr we skip the 2FA enforcement
-			elseif (
-				$mfaSso == 1 &&
-				(!empty($userParams) && ($userParams->OAuth2 === 'openid') && str_ends_with($user->email, '@emundus.fr'))
-			)
-			{
-				return;
+				if ($mfaSso == 0 && ($isSamlUser || (!empty($userParams) && $userParams->OAuth2 === 'openid')))
+				{
+					// If user logged in via SAML or OIDC we skip the 2FA enforcement
+					return;
+				}
+				// If 2fa for SSO is enabled but user email is @emundus.fr we skip the 2FA enforcement
+				elseif (
+					$mfaSso == 1 &&
+					(!empty($userParams) && ($userParams->OAuth2 === 'openid') && str_ends_with($user->email, '@emundus.fr'))
+				)
+				{
+					return;
+				}
 			}
 
 			$profiles = $params->get('2faForceForProfiles', []);
@@ -553,11 +559,11 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 	private function isMultiFactorAuthenticationPage(bool $onlyCaptive = false): bool
 	{
-		$input  = Factory::getApplication()->getInput();
-		$option = $input->get('option');
-		$controller   = $input->get('controller');
-		$task   = $input->get('task');
-		$view   = $input->get('view');
+		$input      = Factory::getApplication()->getInput();
+		$option     = $input->get('option');
+		$controller = $input->get('controller');
+		$task       = $input->get('task');
+		$view       = $input->get('view');
 
 		$fulltask = $controller ? $controller . '.' . $task : $task;
 		if ($option !== 'com_users')
