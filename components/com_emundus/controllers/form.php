@@ -744,6 +744,43 @@ class EmundusControllerForm extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getelementdefinition(): EmundusResponse
+	{
+		$elementId = $this->input->getInt('element_id');
+
+		if (empty($elementId))
+		{
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
+		}
+
+		$element = $this->fabrikRepository->getElementById($elementId);
+
+		if (empty($element))
+		{
+			throw new RuntimeException(Text::_('COM_EMUNDUS_FORM_ELEMENT_NOT_FOUND'));
+		}
+
+		$params = $element->getParams();
+		if (isset($params->sub_options))
+		{
+			foreach ($params->sub_options->sub_labels as $key => $sub_label)
+			{
+				$params->sub_options->sub_labels[$key] = Text::_($sub_label);
+			}
+		}
+
+		$data = [
+			'id'     => $element->getId(),
+			'name'   => $element->getName(),
+			'plugin' => $element->getPlugin()->value,
+			'params' => $params,
+		];
+
+		return EmundusResponse::ok($data);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::UPDATE]])]
 	public function addRule(): EmundusResponse
 	{
