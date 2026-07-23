@@ -27,11 +27,11 @@ class UploadFactory
 				$dbObject->filename,
 				$dbObject->description,
 				$dbObject->local_filename,
-				$dbObject->campaign_id,
-				$dbObject->size,
+				$dbObject->campaign_id ?? null,
+				$dbObject->size ?? 0,
 				self::resolveValidationStatus($dbObject->is_validated ?? null, $dbObject->id ?? null),
-				(bool) $dbObject->signed_file,
-				$dbObject->thumbnail,
+				(bool) ($dbObject->signed_file ?? false),
+				$dbObject->thumbnail ?? null,
 				(bool) $dbObject->can_be_deleted,
 				(bool) $dbObject->can_be_viewed
 			);

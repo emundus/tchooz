@@ -80,6 +80,7 @@ export default {
 									label: 'COM_EMUNDUS_ONBOARD_ADD_FORM',
 									name: 'add',
 									acl: 'form|c',
+									iconLabel: 'control_point',
 								},
 								{
 									action:
@@ -124,6 +125,7 @@ export default {
 									controller: 'form',
 									name: 'add',
 									acl: 'form|c',
+									iconLabel: 'control_point',
 								},
 								{
 									action:

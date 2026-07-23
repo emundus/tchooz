@@ -300,6 +300,7 @@ return [
 	'Joomla\\Plugin\\Task\\ExecuteEmundusActions\\' => [JPATH_PLUGINS . '/task/executeemundusactions/src'],
 	'Joomla\\Plugin\\Task\\Globalcheckin\\' => [JPATH_PLUGINS . '/task/globalcheckin/src'],
 	'Joomla\\Plugin\\Task\\Inactiveaccounts\\' => [JPATH_PLUGINS . '/task/inactiveaccounts/src'],
+	'Joomla\\Plugin\\Task\\ManagePolls\\' => [JPATH_PLUGINS . '/task/managepolls/src'],
 	'Joomla\\Plugin\\Task\\Microsoftdynamics\\' => [JPATH_PLUGINS . '/task/microsoftdynamics/src'],
 	'Joomla\\Plugin\\Task\\Parcoursup\\' => [JPATH_PLUGINS . '/task/parcoursup/src'],
 	'Joomla\\Plugin\\Task\\Payment\\' => [JPATH_PLUGINS . '/task/payment/src'],
