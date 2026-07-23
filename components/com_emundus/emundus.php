@@ -17,6 +17,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Controller\EmundusControllerRegistry;
 use Tchooz\Exception\EmundusException;
 use Tchooz\Repositories\Payment\PaymentRepository;
 
@@ -1448,6 +1449,9 @@ Text::script('COM_EMUNDUS_IFRAME_CAMPAIGN_FORM_ADVANCED_TITLE');
 Text::script('COM_EMUNDUS_IFRAME_APPLICATION_CHOICES_FORM_TITLE');
 Text::script('COM_EMUNDUS_IFRAME_FORMBUILDER_PREVIEW_TITLE');
 
+Text::script('COM_EMUNDUS_VIEWS_TABLE_VIEW');
+Text::script('COM_EMUNDUS_VIEWS_GRID_VIEW');
+
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
 foreach ($actionlog_translation_tags as $tag => $translation)
@@ -1455,23 +1459,8 @@ foreach ($actionlog_translation_tags as $tag => $translation)
 	Text::script($tag);
 }
 
-// Require specific controller if requested
-if ($controller = $app->input->get('controller', '', 'WORD'))
-{
-	$path = JPATH_BASE . '/components/com_emundus/controllers/' . $controller . '.php';
-	if (file_exists($path))
-	{
-		require_once $path;
-	}
-	else
-	{
-		$controller = '';
-	}
-}
-
-// Create the controller
-$classname  = 'EmundusController' . $controller;
-$controller = new $classname();
+// Resolve and instantiate the requested controller (new namespaced location or legacy fallback)
+$controller = EmundusControllerRegistry::resolve($app->input->get('controller', '', 'WORD'));
 
 $eMConfig = ComponentHelper::getParams('com_emundus');
 $cdn      = $eMConfig->get('use_cdn', 1);

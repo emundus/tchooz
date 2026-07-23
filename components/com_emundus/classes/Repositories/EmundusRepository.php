@@ -162,8 +162,9 @@ class EmundusRepository
 		$items = [];
 
 		$query = $this->db->getQuery(true)
-			->select($this->alias . '.*')
+			->select($this->columns)
 			->from($this->db->quoteName($this->tableName, $this->alias));
+		$this->buildLeftJoin($query);
 
 		foreach ($fields as $field => $value) {
 			if (!in_array($field, $this->columns) && !in_array($this->alias . '.' . $field, $this->columns))

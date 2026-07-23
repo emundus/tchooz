@@ -59,6 +59,18 @@ module.exports = {
             pattern: /tw-bg-/
         },
         {
+            pattern: /tw-text-info-/
+        },
+        {
+            pattern: /tw-text-success-/
+        },
+        {
+            pattern: /tw-text-warning-/
+        },
+        {
+            pattern: /tw-text-error-/
+        },
+        {
             pattern: /tw-text-orange-500/
         },
         {
@@ -174,6 +186,30 @@ module.exports = {
                 green: {
                     500: 'var(--green-500)',
                     700: 'var(--green-700)'
+                },
+                success: {
+                    100: 'var(--success-100)',
+                    200: 'var(--success-200)',
+                    300: 'var(--success-300)',
+                    400: 'var(--success-400)',
+                },
+                warning: {
+                    100: 'var(--warning-100)',
+                    200: 'var(--warning-200)',
+                    300: 'var(--warning-300)',
+                    400: 'var(--warning-400)',
+                },
+                error: {
+                    100: 'var(--error-100)',
+                    200: 'var(--error-200)',
+                    300: 'var(--error-300)',
+                    400: 'var(--error-400)',
+                },
+                info: {
+                    100: 'var(--info-100)',
+                    200: 'var(--info-200)',
+                    300: 'var(--info-300)',
+                    400: 'var(--info-400)',
                 },
                 alert: {
                     'error': 'var(--em-alert-error-color)',
@@ -623,6 +659,91 @@ module.exports = {
                         top: '4px',
                     },
                 },
+
+                '.btn-active': {
+                    backgroundColor: 'var(--neutral-0)',
+                    color: 'var(--neutral-500) !important',
+                    border: '1px solid var(--neutral-500) !important',
+                    textShadow: 'none',
+                    textTransform: 'math-auto',
+                    textDecoration: 'none',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal) !important',
+                    fontSize: 'var(--em-applicant-font-size)',
+                    fontFamily: 'var(--em-profile-font)',
+                    lineHeight: '1.5',
+                    borderRadius: 'var(--em-applicant-br)',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important',
+                    display: 'flex !important',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexWrap: 'nowrap',
+                    whiteSpace: 'nowrap',
+                    cursor: 'pointer',
+                    height: '40px',
+                    boxShadow: 'none',
+
+                    '&:hover': {
+                        backgroundColor: 'var(--neutral-0)',
+                        color: 'var(--neutral-700) !important',
+                        border: '1px solid var(--neutral-700) !important',
+                        textDecoration: 'none',
+                    },
+
+                    '&:active': {
+                        backgroundColor: 'var(--neutral-0)',
+                        color: 'var(--neutral-900) !important',
+                        border: '1px solid var(--neutral-900) !important',
+                        textDecoration: 'none',
+                    },
+
+                    '&:disabled': {
+                        opacity: '0.6',
+                        cursor: 'not-allowed',
+                    },
+
+                    '&:focus': {
+                        backgroundColor: 'var(--neutral-0)',
+                        color: 'var(--neutral-500) !important',
+                        border: '1px solid var(--neutral-700) !important',
+                        textDecoration: 'none',
+                    },
+
+                    '&.btn-active-success.is-active': {
+                        backgroundColor: 'var(--success-100)',
+                        color: 'var(--success-300) !important',
+                        border: '1px solid var(--success-300) !important',
+
+                        '&:focus': {
+                            backgroundColor: 'var(--success-100)',
+                            color: 'var(--success-300) !important',
+                            border: '1px solid var(--success-400) !important',
+                        }
+                    },
+
+                    '&.btn-active-info.is-active': {
+                        backgroundColor: 'var(--info-100)',
+                        color: 'var(--info-300) !important',
+                        border: '1px solid var(--info-300) !important',
+
+                        '&:focus': {
+                            backgroundColor: 'var(--info-100)',
+                            color: 'var(--info-300) !important',
+                            border: '1px solid var(--info-400) !important',
+                        }
+                    },
+
+                    '&.btn-active-danger.is-active': {
+                        backgroundColor: 'var(--error-100)',
+                        color: 'var(--error-300) !important',
+                        border: '1px solid var(--error-300) !important',
+
+                        '&:focus': {
+                            backgroundColor: 'var(--error-100)',
+                            color: 'var(--error-300) !important',
+                            border: '1px solid var(--error-400) !important',
+                        }
+                    }
+                }
             });
         })
     ],

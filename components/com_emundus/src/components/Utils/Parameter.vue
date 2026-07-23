@@ -434,6 +434,7 @@
 			<color-picker
 				v-else-if="parameter.type === 'color'"
 				v-model="value"
+				:variant="'field'"
 				:swatches="parameter.swatches ? parameter.swatches : 'dark'"
 				:row-length="8"
 				:id="paramId"

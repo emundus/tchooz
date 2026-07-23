@@ -149,6 +149,8 @@ export default {
 						} else {
 							form[field.param] = field.value ? field.value[field.multiselectOptions.trackBy] : null;
 						}
+					} else if (field.type === 'datetime') {
+						form[field.param] = this.normalizeDateValue(field.value);
 					} else {
 						form[field.param] = field.value;
 					}
@@ -171,6 +173,61 @@ export default {
 					el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 				}
 			});
+		},
+		/**
+		 * Normalize a date field value to an ISO 8601 datetime with local timezone offset
+		 * (e.g. `"2026-05-13T00:00:00+02:00"`), using Temporal.
+		 *
+		 * Accepts a `Date` instance, an ISO date / datetime string, a locale string
+		 * (e.g. `"Wed May 13 2026 00:00:00 GMT+0200 (heure d'été d'Europe centrale)"`),
+		 * or a `Temporal.PlainDate` / `Temporal.PlainDateTime` / `Temporal.ZonedDateTime`.
+		 * Local calendar components and the user's resolved timezone are used so the
+		 * value round-trips without the UTC-shift footgun, and both date AND time are
+		 * preserved so the backend can persist either a DATE or DATETIME column.
+		 *
+		 * @param {Date|string|Temporal.ZonedDateTime|Temporal.PlainDateTime|Temporal.PlainDate|null|undefined} value
+		 * @returns {string|null} ISO 8601 datetime with offset, or `null` when empty/invalid.
+		 */
+		normalizeDateValue(value) {
+			if (value === null || value === undefined || value === '') {
+				return null;
+			}
+
+			const tz = Temporal.Now.timeZoneId();
+
+			if (value instanceof Temporal.ZonedDateTime) {
+				return value.toString({ timeZoneName: 'never' });
+			}
+			if (value instanceof Temporal.PlainDateTime) {
+				return value.toZonedDateTime(tz).toString({ timeZoneName: 'never' });
+			}
+			if (value instanceof Temporal.PlainDate) {
+				return value.toZonedDateTime(tz).toString({ timeZoneName: 'never' });
+			}
+
+			// Bare `YYYY-MM-DD` strings: anchor at midnight in the user's timezone
+			// (otherwise `new Date('YYYY-MM-DD')` parses as UTC midnight and shifts).
+			if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+				try {
+					return Temporal.PlainDate.from(value).toZonedDateTime(tz).toString({ timeZoneName: 'never' });
+				} catch {
+					return null;
+				}
+			}
+
+			const date = value instanceof Date ? value : new Date(value);
+			if (Number.isNaN(date.getTime())) return null;
+
+			return Temporal.PlainDateTime.from({
+				year: date.getFullYear(),
+				month: date.getMonth() + 1,
+				day: date.getDate(),
+				hour: date.getHours(),
+				minute: date.getMinutes(),
+				second: date.getSeconds(),
+			})
+				.toZonedDateTime(tz)
+				.toString({ timeZoneName: 'never' });
 		},
 		findParameterByName(name) {
 			for (const group of this.groups) {
@@ -399,6 +456,7 @@ export default {
 								:key="field.param + '-' + rowIndex + '-' + field.reload"
 								:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
 								:parameter-object="row.parameters[index]"
+								:help-text-type="'above'"
 								:asyncAttributes="field.type === 'multiselect' ? field.multiselectOptions.asyncAttributes : null"
 								@valueUpdated="
 									(parameter, oldVal, newVal) =>
@@ -421,7 +479,7 @@ export default {
 					<Parameter
 						v-for="(field, index) in group.parameters"
 						v-show="field.displayed !== false"
-						:help-text-type="group.helpTextType ? group.helpTextType : 'icon'"
+						:help-text-type="group.helpTextType ? group.helpTextType : 'above'"
 						:ref="'field_' + field.param"
 						:key="field.param + '-' + field.reload"
 						:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
