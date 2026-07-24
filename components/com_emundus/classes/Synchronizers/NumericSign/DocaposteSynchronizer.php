@@ -588,6 +588,7 @@ class DocaposteSynchronizer extends Api
 				'firstname'  => $contact->getFirstname(),
 				'lastname'   => $contact->getLastname(),
 				'email'      => $contact->getEmail(),
+				'phone'      => $contact->getPhone1(),
 				'externalId' => $signer->getId(),
 			];
 
