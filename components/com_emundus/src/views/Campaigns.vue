@@ -54,6 +54,7 @@ export default {
 									label: 'COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN',
 									controller: 'campaign',
 									name: 'add',
+									iconLabel: 'control_point',
 									type: 'redirect',
 									acl: 'campaign|c',
 								},
@@ -202,6 +203,7 @@ export default {
 									label: 'COM_EMUNDUS_ONBOARD_ADD_PROGRAM',
 									name: 'add',
 									type: 'redirect',
+									iconLabel: 'control_point',
 									acl: 'program|c',
 								},
 								{

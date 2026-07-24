@@ -183,6 +183,19 @@
 											v-html="item.label[params.shortlang]"
 										></span>
 										<span
+											v-else-if="
+												labelAction &&
+												(typeof labelAction.showon === 'undefined' || evaluateShowOn(item, labelAction.showon))
+											"
+											@click="onClickAction(labelAction, item.id, false, $event)"
+											class="hover:tw-underline"
+											:class="{
+												'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
+											}"
+											:title="item.label[params.shortlang]"
+											v-html="item.label[params.shortlang]"
+										></span>
+										<span
 											v-else
 											:class="{
 												'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
@@ -286,7 +299,9 @@
 												style="padding: 0.5rem"
 												:title="translate(showAction.label)"
 											>
-												<span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">visibility</span>
+												<span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">{{
+													showAction.iconLabel ?? 'visibility'
+												}}</span>
 											</button>
 
 											<button
@@ -297,7 +312,9 @@
 												:class="[
 													action.buttonClasses,
 													{
-														'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon)),
+														'!tw-hidden': !(
+															typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon)
+														),
 													},
 												]"
 												@click="onClickAction(action, item.id, false, $event)"
@@ -361,8 +378,11 @@
 															'tw-text-red-500': action.name === 'delete',
 														}"
 														@click="onClickAction(action, item.id, false, $event)"
-														class="tw-cursor-pointer tw-px-2 tw-py-1.5 tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300"
+														class="tw-flex tw-cursor-pointer tw-items-center tw-gap-1 tw-px-2 tw-py-1.5 tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300"
 													>
+														<span v-if="action.iconLabel" class="material-symbols-outlined">{{
+															action.iconLabel
+														}}</span>
 														{{ translate(action.label) }}
 													</li>
 												</ul>
@@ -435,6 +455,7 @@
 						<component
 							:is="resolvedComponent"
 							:items="checkedItems"
+							:selected-items="checkedItems.map((id) => displayedItems.find((it) => it.id === id)).filter(Boolean)"
 							:tab="currentTab.key"
 							@close="closePopup()"
 							@update-items="getListItems"
@@ -478,6 +499,11 @@ import SaveRequest from '@/views/Sign/SaveRequest.vue';
 import UpdateApplicationChoiceState from '@/components/Application/UpdateApplicationChoiceState.vue';
 import AddUser from '@/components/Users/AddUser.vue';
 import ImportEntity from '@/components/Import/ImportEntity.vue';
+import PollReply from '@/components/Polls/Popup/PollReply.vue';
+import PollDetails from '@/components/Polls/Popup/PollDetails.vue';
+import PollRun from '@/components/Polls/Popup/PollRun.vue';
+import PollContact from '@/components/Polls/Popup/PollContact.vue';
+import PollClose from '@/components/Polls/Popup/PollClose.vue';
 
 /* Services */
 import settingsService from '@/services/settings.js';
@@ -518,6 +544,11 @@ export default {
 		UpdateApplicationChoiceState,
 		AddUser,
 		ImportEntity,
+		PollReply,
+		PollDetails,
+		PollRun,
+		PollContact,
+		PollClose,
 	},
 	props: {
 		defaultLists: {
@@ -583,6 +614,11 @@ export default {
 				UpdateApplicationChoiceState,
 				AddUser,
 				ImportEntity,
+				PollReply,
+				PollDetails,
+				PollRun,
+				PollContact,
+				PollClose,
 			},
 
 			lists: {},
@@ -595,8 +631,8 @@ export default {
 			title: '',
 			viewType: null,
 			defaultViewsOptions: [
-				{ value: 'table', icon: 'dehaze' },
-				{ value: 'blocs', icon: 'grid_view' },
+				{ value: 'table', icon: 'dehaze', ariaLabel: this.translate('COM_EMUNDUS_VIEWS_TABLE_VIEW') },
+				{ value: 'blocs', icon: 'grid_view', ariaLabel: this.translate('COM_EMUNDUS_VIEWS_GRID_VIEW') },
 			],
 
 			searches: {},
@@ -1127,14 +1163,17 @@ export default {
 				}
 
 				Swal.fire({
-					icon: 'warning',
 					title: this.translate(action.label),
 					html: this.translate(action.confirm),
 					input: action.input ? action.input : null,
 					inputLabel: action.inputLabel ? this.translate(action.inputLabel) : null,
 					showCancelButton: true,
-					confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
-					cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+					confirmButtonText: action.confirmButton
+						? this.translate(action.confirmButton)
+						: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+					cancelButtonText: action.cancelButton
+						? this.translate(action.cancelButton)
+						: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
 					reverseButtons: true,
 					customClass: {
 						title: 'em-swal-title',
@@ -1266,6 +1305,7 @@ export default {
 		},
 
 		async executeAction(url, data = null, method = 'get') {
+			console.log(url);
 			this.loading.items = true;
 
 			let controller = url.split('controller=')[1].split('&')[0];
@@ -1281,27 +1321,31 @@ export default {
 
 				addLoader();
 
-				if (method === 'get') {
-					response = await fetchClient.get(task, data).catch((error) => {
-						// if error is a json with a message, display it, otherwise display a generic error message
-						const parsedMessage = JSON.parse(error.message);
-						if (parsedMessage) {
-							if (parsedMessage.message) {
-								this.alertError('COM_EMUNDUS_ERROR', parsedMessage.message);
-							} else if (parsedMessage.msg) {
-								this.alertError('COM_EMUNDUS_ERROR', parsedMessage.msg);
-							} else {
-								this.alertError('COM_EMUNDUS_ERROR', 'COM_EMUNDUS_UNKNOWN_ERROR');
-							}
-						} else {
-							this.alertError('COM_EMUNDUS_ERROR', error.message);
+				const handleFetchError = (error) => {
+					let message = error && error.message ? error.message : 'COM_EMUNDUS_UNKNOWN_ERROR';
+					try {
+						const parsed = JSON.parse(message);
+						if (parsed && (parsed.message || parsed.msg)) {
+							message = parsed.message || parsed.msg;
 						}
-						removeLoader();
+					} catch (_) {
+						// message is not JSON, keep the raw string
+					}
+					this.alertError('COM_EMUNDUS_ERROR', message).then(() => {
+						this.getListItems();
 					});
-				} else if (method === 'post') {
-					response = await fetchClient.post(task, data);
-				} else if (method === 'delete') {
-					response = await fetchClient.delete(task, data);
+				};
+
+				try {
+					if (method === 'get') {
+						response = await fetchClient.get(task, data);
+					} else if (method === 'post') {
+						response = await fetchClient.post(task, data);
+					} else if (method === 'delete') {
+						response = await fetchClient.delete(task, data);
+					}
+				} catch (error) {
+					handleFetchError(error);
 				}
 				removeLoader();
 
@@ -1627,6 +1671,18 @@ export default {
 				? this.currentTab.actions.find((action) => {
 						return (
 							action.name === 'show' &&
+							action.display &&
+							(action.view === this.viewType || typeof action.view === 'undefined')
+						);
+					})
+				: false;
+		},
+
+		labelAction() {
+			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
+				? this.currentTab.actions.find((action) => {
+						return (
+							action.onLabelClick === true &&
 							action.display &&
 							(action.view === this.viewType || typeof action.view === 'undefined')
 						);

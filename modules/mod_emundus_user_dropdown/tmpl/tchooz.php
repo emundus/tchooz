@@ -244,175 +244,238 @@ if ($user != null)
         .em-user-dropdown-icon-xxl:hover:before {
             color: transparent;
         }
+
+        .em-poll-notification {
+            float: right;
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+        }
+
+        .em-poll-notification-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--neutral-0, #fff);
+            color: var(--em-profile-color, #353544);
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            text-decoration: none;
+        }
+
+        .em-poll-notification-link:hover {
+            background: var(--neutral-50, #f4f4f4);
+        }
+
+        .em-poll-notification-link .material-symbols-outlined {
+            font-size: 26px;
+        }
+
+        .em-poll-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            border-radius: 9px;
+            background-color: #e53935;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 18px;
+            text-align: center;
+            box-sizing: border-box;
+        }
     </style>
 
 	<?= $intro; ?>
 
-    <!-- Button which opens up the dropdown menu. -->
-    <div class='dropdown' tabindex="0" id="userDropdown" style="float: right;">
-		<?php if (!empty($profile_picture)): ?>
-            <div id="userDropdownLabel">
-                <div class="em-flex-row em-flex-end em-profile-container"
-                     tabindex="0" aria-expanded="false" aria-haspopup="true"
-                     onclick="manageHeight()">
-                    <div class="tw-mr-4">
-						<?php if (!empty($user)) : ?>
-                            <p id="current_user_fullname" class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . mb_substr($user->lastname, 0, 1) . '.'; ?></p>
-						<?php endif; ?>
-						<?php if (!empty($profile_label)) : ?>
-                            <p class="em-profile-color em-text-italic"
-                               title="<?= $profile_label; ?>"><?= $profile_label; ?></p>
-						<?php endif; ?>
-                    </div>
-                    <div class="em-profile-picture em-pointer em-user-dropdown-button"
-                         style="background-image:url('<?php echo $profile_picture ?>');">
+    <div class="tw-flex tw-items-center tw-gap-2">
+        <?php if (!empty($has_polls) && !empty($polls_link)) : ?>
+            <div class="em-poll-notification">
+                <a href="<?= Route::_('index.php?Itemid=' . (int) $polls_link->id); ?>"
+                   class="em-poll-notification-link"
+                   title="<?= htmlspecialchars(Text::_($pending_polls_count > 0 ? 'MOD_EMUNDUS_USERDROPDOWN_POLLS_PENDING' : 'MOD_EMUNDUS_USERDROPDOWN_POLLS_ICON'), ENT_QUOTES, 'UTF-8'); ?>"
+                   aria-label="<?= htmlspecialchars(Text::_($pending_polls_count > 0 ? 'MOD_EMUNDUS_USERDROPDOWN_POLLS_PENDING' : 'MOD_EMUNDUS_USERDROPDOWN_POLLS_ICON'), ENT_QUOTES, 'UTF-8'); ?>">
+                    <span class="material-symbols-outlined" aria-hidden="true">how_to_vote</span>
+                    <?php if ($pending_polls_count > 0) : ?>
+                        <span class="em-poll-badge" aria-hidden="true"><?= $pending_polls_count > 99 ? '99+' : $pending_polls_count; ?></span>
+                    <?php endif; ?>
+                </a>
+            </div>
+        <?php endif; ?>
+
+        <!-- Button which opens up the dropdown menu. -->
+        <div class='dropdown' tabindex="0" id="userDropdown" style="float: right;">
+            <?php if (!empty($profile_picture)): ?>
+                <div id="userDropdownLabel">
+                    <div class="em-flex-row em-flex-end em-profile-container"
+                         tabindex="0" aria-expanded="false" aria-haspopup="true"
+                         onclick="manageHeight()">
+                        <div class="tw-mr-4">
+                            <?php if (!empty($user)) : ?>
+                                <p id="current_user_fullname" class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . mb_substr($user->lastname, 0, 1) . '.'; ?></p>
+                            <?php endif; ?>
+                            <?php if (!empty($profile_label)) : ?>
+                                <p class="em-profile-color em-text-italic"
+                                   title="<?= $profile_label; ?>"><?= $profile_label; ?></p>
+                            <?php endif; ?>
+                        </div>
+                        <div class="em-profile-picture em-pointer em-user-dropdown-button"
+                             style="background-image:url('<?php echo $profile_picture ?>');">
+                        </div>
                     </div>
                 </div>
-            </div>
-		<?php else : ?>
-            <div id="userDropdownLabel" onclick="manageHeight()">
-                <div class="em-flex-row em-flex-end em-profile-container">
-                    <div class="tw-mr-4">
-						<?php if (!empty($user)) : ?>
-                            <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . mb_substr($user->lastname, 0, 1) . '.'; ?></p>
-						<?php endif; ?>
-						<?php if (!empty($profile_label)) : ?>
-                            <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
-						<?php endif; ?>
+            <?php else : ?>
+                <div id="userDropdownLabel" onclick="manageHeight()">
+                    <div class="em-flex-row em-flex-end em-profile-container">
+                        <div class="tw-mr-4">
+                            <?php if (!empty($user)) : ?>
+                                <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . mb_substr($user->lastname, 0, 1) . '.'; ?></p>
+                            <?php endif; ?>
+                            <?php if (!empty($profile_label)) : ?>
+                                <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
+                            <?php endif; ?>
+                        </div>
+                        <div class="em-user-dropdown-button" aria-haspopup="true" aria-expanded="false">
+                            <span class="em-user-dropdown-icon"
+                                  data-initials="<?php echo mb_strtoupper(mb_substr($user->firstname, 0, 1) . mb_substr($user->lastname, 0, 1)); ?>"
+                                  alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>"></span>
+                        </div>
+
                     </div>
-                    <div class="em-user-dropdown-button" aria-haspopup="true" aria-expanded="false">
-                        <span class="em-user-dropdown-icon"
+                </div>
+            <?php endif; ?>
+            <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
+            <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
+                <div class="em-flex-column-default em-w-100">
+                    <?php if (!empty($profile_picture)): ?>
+                        <div class="em-profile-picture-modal"
+                             style="background-image:url('<?php echo $profile_picture ?>');">
+                        </div>
+                    <?php else : ?>
+                        <span class="em-user-dropdown-icon em-user-dropdown-icon-big"
                               data-initials="<?php echo mb_strtoupper(mb_substr($user->firstname, 0, 1) . mb_substr($user->lastname, 0, 1)); ?>"
                               alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>"></span>
-                    </div>
+                    <?php endif; ?>
+                    <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
+                    <li class="dropdown-header em-text-align-center em-text-neutral-600"
+                        title="<?= $user->email; ?>"><?= $user->email; ?></li>
+
+                    <?php if ($is_anonym_user): ?>
+                        <p class="tw-w-full em-text-align-center"><?= Text::_('ANONYM_SESSION') ?></p>
+                        <!-- TODO: add access to generate a new token -->
+                    <?php endif; ?>
 
                 </div>
-            </div>
-		<?php endif; ?>
-        <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
-        <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
-            <div class="em-flex-column-default em-w-100">
-		        <?php if (!empty($profile_picture)): ?>
-                    <div class="em-profile-picture-modal"
-                         style="background-image:url('<?php echo $profile_picture ?>');">
-                    </div>
-		        <?php else : ?>
-                    <span class="em-user-dropdown-icon em-user-dropdown-icon-big"
-                          data-initials="<?php echo mb_strtoupper(mb_substr($user->firstname, 0, 1) . mb_substr($user->lastname, 0, 1)); ?>"
-                          alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>"></span>
-		        <?php endif; ?>
-                <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
-                <li class="dropdown-header em-text-align-center em-text-neutral-600"
-                    title="<?= $user->email; ?>"><?= $user->email; ?></li>
+                <hr style="width: 100%" aria-hidden="true">
 
-	            <?php if ($is_anonym_user): ?>
-                    <p class="tw-w-full em-text-align-center"><?= Text::_('ANONYM_SESSION') ?></p>
-                    <!-- TODO: add access to generate a new token -->
-	            <?php endif; ?>
-
-            </div>
-            <hr style="width: 100%" aria-hidden="true">
-
-			<?php
-			$ids_array = array();
-			if (isset($user->fnums) && $user->fnums)
-			{
-				foreach ($user->fnums as $fnum)
-				{
-					$ids_array[$fnum->profile_id] = $fnum->fnum;
-				}
-			}
-
-			if (!empty($user_profiles) && sizeof($user_profiles) > 1 && (!$only_applicant))
-			{
-                echo '<div class="tw-mb-3">';
-				echo '<p class="mb-2 em-profile-font">' . JText::_('SELECT_PROFILE') . '</p>';
-				echo '<div class="select">';
-				echo '<select class="profile-select tw-cursor-pointer" id="profile" name="profiles" onchange="postCProfile()"> ';
-				foreach ($user_profiles as $profile)
-				{
-					if ($profile->published && !$applicant_option)
-					{
-						echo '<option  value="' . $profile->id . "." . $ids_array[$profile->id] . '"' . (in_array($user->profile, $app_prof) ? 'selected="selected"' : "") . '>' . Text::_('MOD_EMUNDUS_USERDROPDOWN_APPLICANT') . '</option>';
-						$applicant_option = true;
-					}
-                    elseif (!$profile->published)
-					{
-						echo '<option  value="' . $profile->id . "." . '"' . (($user->profile == $profile->id) ? 'selected="selected"' : "") . '>' . trim($profile->label) . '</option>';
-					}
-				}
-				echo '</select></div></div>';
-			}
-			?>
-
-			<?php if ($show_update == '1') : ?>
-                <li>
-                    <?php
-                    echo LayoutHelper::render('emundus.button', [
-                        'variant' => ButtonVariantEnum::PRIMARY,
-                        'icon'    => 'person_outline',
-                        'width'   => ButtonWidthEnum::FULL,
-                        'text'    => Text::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL'),
-                        'href'    => $link_edit_profile,
-                    ]);
-                    ?>
-                </li>
-			<?php endif; ?>
-            <?php if (!empty($link_exports)) : ?>
-            <li>
                 <?php
-                    echo LayoutHelper::render('emundus.button', [
-                        'variant' => ButtonVariantEnum::PRIMARY,
-                        'icon'    => 'archive',
-                        'width'   => ButtonWidthEnum::FULL,
-                        'text'    => Text::_('COM_EMUNDUS_USER_MENU_EXPORTS_LABEL'),
-                        'href'    => $link_exports,
-                    ]);
-                ?>
-            </li>
-            <?php endif; ?>
-			<?php if (!empty($custom_actions))
-			{
-				foreach ($custom_actions as $custom_action)
-				{
-					if (!empty($custom_action->link) || !empty($custom_action->onclick))
-					{
-						?>
-                        <li>
-							<?php
-							switch ($custom_action->type)
-							{
-								case 'button':
-									echo '<a type="button" onclick="' . $custom_action->onclick . '" class="edit-button-user em-pointer">' . JText::_($custom_action->title) . '</a>';
-									break;
-								case 'link':
-								default:
-									echo '<a href="' . $custom_action->link . '" target="_blank" class="edit-button-user em-pointer">' . JText::_($custom_action->title) . '</a>';
-									break;
-							}
-							?>
-                        </li>
-						<?php
-					}
-				}
-			} ?>
+                $ids_array = array();
+                if (isset($user->fnums) && $user->fnums)
+                {
+                    foreach ($user->fnums as $fnum)
+                    {
+                        $ids_array[$fnum->profile_id] = $fnum->fnum;
+                    }
+                }
 
-			<?php if ($show_logout == '1') : ?>
-				<hr style="width: 100%" aria-hidden="true">
+                if (!empty($user_profiles) && sizeof($user_profiles) > 1 && (!$only_applicant))
+                {
+                    echo '<div class="tw-mb-3">';
+                    echo '<p class="mb-2 em-profile-font">' . JText::_('SELECT_PROFILE') . '</p>';
+                    echo '<div class="select">';
+                    echo '<select class="profile-select tw-cursor-pointer" id="profile" name="profiles" onchange="postCProfile()"> ';
+                    foreach ($user_profiles as $profile)
+                    {
+                        if ($profile->published && !$applicant_option)
+                        {
+                            echo '<option  value="' . $profile->id . "." . $ids_array[$profile->id] . '"' . (in_array($user->profile, $app_prof) ? 'selected="selected"' : "") . '>' . Text::_('MOD_EMUNDUS_USERDROPDOWN_APPLICANT') . '</option>';
+                            $applicant_option = true;
+                        }
+                        elseif (!$profile->published)
+                        {
+                            echo '<option  value="' . $profile->id . "." . '"' . (($user->profile == $profile->id) ? 'selected="selected"' : "") . '>' . trim($profile->label) . '</option>';
+                        }
+                    }
+                    echo '</select></div></div>';
+                }
+                ?>
+
+                <?php if ($show_update == '1') : ?>
+                    <li>
+                        <?php
+                        echo LayoutHelper::render('emundus.button', [
+                            'variant' => ButtonVariantEnum::PRIMARY,
+                            'icon'    => 'person_outline',
+                            'width'   => ButtonWidthEnum::FULL,
+                            'text'    => Text::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL'),
+                            'href'    => $link_edit_profile,
+                        ]);
+                        ?>
+                    </li>
+                <?php endif; ?>
+                <?php if (!empty($link_exports)) : ?>
                 <li>
                     <?php
                         echo LayoutHelper::render('emundus.button', [
-                            'variant' => ButtonVariantEnum::RED,
-                            'icon'    => 'logout',
+                            'variant' => ButtonVariantEnum::PRIMARY,
+                            'icon'    => 'archive',
                             'width'   => ButtonWidthEnum::FULL,
-                            'text'    => Text::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION'),
-                            'href'    => Uri::base() . 'index.php?option=com_users&task=user.logout&' . Session::getFormToken() . '=1',
+                            'text'    => Text::_('COM_EMUNDUS_USER_MENU_EXPORTS_LABEL'),
+                            'href'    => $link_exports,
                         ]);
                     ?>
                 </li>
-			<?php endif; ?>
+                <?php endif; ?>
+                <?php if (!empty($custom_actions))
+                {
+                    foreach ($custom_actions as $custom_action)
+                    {
+                        if (!empty($custom_action->link) || !empty($custom_action->onclick))
+                        {
+                            ?>
+                            <li>
+                                <?php
+                                switch ($custom_action->type)
+                                {
+                                    case 'button':
+                                        echo '<a type="button" onclick="' . $custom_action->onclick . '" class="edit-button-user em-pointer">' . JText::_($custom_action->title) . '</a>';
+                                        break;
+                                    case 'link':
+                                    default:
+                                        echo '<a href="' . $custom_action->link . '" target="_blank" class="edit-button-user em-pointer">' . JText::_($custom_action->title) . '</a>';
+                                        break;
+                                }
+                                ?>
+                            </li>
+                            <?php
+                        }
+                    }
+                } ?>
 
-        </ul>
+                <?php if ($show_logout == '1') : ?>
+                    <hr style="width: 100%" aria-hidden="true">
+                    <li>
+                        <?php
+                            echo LayoutHelper::render('emundus.button', [
+                                'variant' => ButtonVariantEnum::RED,
+                                'icon'    => 'logout',
+                                'width'   => ButtonWidthEnum::FULL,
+                                'text'    => Text::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION'),
+                                'href'    => Uri::base() . 'index.php?option=com_users&task=user.logout&' . Session::getFormToken() . '=1',
+                            ]);
+                        ?>
+                    </li>
+                <?php endif; ?>
+
+            </ul>
+        </div>
     </div>
 
     <script>

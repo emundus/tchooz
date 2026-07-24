@@ -80,7 +80,7 @@
 						<multiselect
 							v-if="
 								conditionData.field &&
-								(options_plugins.includes(conditionData.field.plugin) || conditionData.field.plugin == 'yesno')
+								(options_plugins.includes(effectiveFieldPlugin) || effectiveFieldPlugin == 'yesno')
 							"
 							v-model="conditionData.values"
 							label="value"
@@ -111,6 +111,8 @@ import globalMixin from '@/mixins/mixin.js';
 import fabrikMixin from '@/mixins/fabrik.js';
 import errorMixin from '@/mixins/errors.js';
 import transformIntoParameterField from '@/mixins/transformIntoParameterField.js';
+
+import formService from '@/services/form.js';
 
 import Multiselect from 'vue-multiselect';
 import { watch } from 'vue';
@@ -198,6 +200,8 @@ export default {
 			options_plugins: ['dropdown', 'databasejoin', 'radiobutton', 'checkbox'],
 			fieldType: ['form', 'user'],
 			conditionData: null,
+
+			sourceField: null,
 		};
 	},
 	created() {
@@ -224,6 +228,7 @@ export default {
 					this.conditionData.values = '';
 				}
 				this.options = [];
+				this.sourceField = null;
 
 				if (val) {
 					this.defineOptions(val);
@@ -248,6 +253,29 @@ export default {
 			return labelTranslated;
 		},
 		defineOptions(val) {
+			if (val.plugin === 'emundusreadonly') {
+				this.sourceField = null;
+				const sourceId = val.params ? val.params.source_element_id : null;
+				if (!sourceId) {
+					return;
+				}
+
+				this.loading = true;
+				formService.getElementDefinition(sourceId).then((response) => {
+					if (response.status && response.data) {
+						this.sourceField = response.data;
+						this.defineOptions(response.data);
+					} else {
+						this.displayError(
+							this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
+							this.translate('COM_EMUNDUS_FORM_ELEMENT_NOT_FOUND'),
+						);
+						this.loading = false;
+					}
+				});
+				return;
+			}
+
 			if (this.options_plugins.includes(val.plugin)) {
 				if (val.plugin == 'databasejoin') {
 					this.loading = true;
@@ -325,6 +353,7 @@ export default {
 			if (newType !== oldType && oldType !== null) {
 				this.conditionData.field = null;
 				this.conditionData.values = '';
+				this.sourceField = null;
 
 				if (newType === 'form') {
 					this.elementsOptions = this.elements;
@@ -337,6 +366,17 @@ export default {
 	computed: {
 		conditionLabel() {
 			return `-- ${this.index + 1} --`;
+		},
+		effectiveFieldPlugin() {
+			if (!this.conditionData || !this.conditionData.field) {
+				return null;
+			}
+
+			if (this.conditionData.field.plugin === 'emundusreadonly') {
+				return this.sourceField ? this.sourceField.plugin : null;
+			}
+
+			return this.conditionData.field.plugin;
 		},
 		elementPreoperatorParameters() {
 			let parameters = [];

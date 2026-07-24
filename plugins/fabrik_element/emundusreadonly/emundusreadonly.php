@@ -61,6 +61,7 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 		$displayData->id          = $this->getHTMLId($repeatCounter);
 		$displayData->name        = $this->getHTMLName($repeatCounter);
 		$displayData->value       = $this->getFormattedValue($data, (int) $repeatCounter);
+		$displayData->rawValue    = $this->getRawValue($data, (int) $repeatCounter);
 		$displayData->placeholder = (string) $params->get('empty_placeholder', '');
 
 		return $layout->render($displayData);
@@ -79,9 +80,40 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 	}
 
 	/**
-	 * Resolve and return the value from the source element, rendered using
-	 * the source plugin's own formatting. Returns '' if access is denied or
-	 * if the source configuration is invalid — never raw error output.
+	 * Resolve and return the source value using the source plugin's own
+	 * formatting (labels for choice elements). Returns '' if access is denied
+	 * or if the source configuration is invalid — never raw error output.
+	 *
+	 * This is the value shown to the user and persisted through the hidden
+	 * input rendered by the form layout.
+	 */
+	public function getFormattedValue($data, int $repeatCounter = 0): ?string
+	{
+		$value = $this->resolveSourceValue($data, (int) $repeatCounter, ValueFormatEnum::FORMATTED);
+
+		if (is_array($value))
+		{
+			$value = implode(', ', $value);
+		}
+
+		return is_null($value) ? '' : (string) $value;
+	}
+
+	/**
+	 * Resolve the source's RAW key(s): a scalar key for a single-value source,
+	 * an array of keys for a multi-value source. Fed to the client-side
+	 * show/hide condition engine (custom_form.js) so conditions compare on
+	 * stable keys rather than volatile labels. Nothing is persisted from this —
+	 * the stored value stays the formatted label (see getFormattedValue).
+	 */
+	public function getRawValue($data, int $repeatCounter = 0): mixed
+	{
+		return $this->resolveSourceValue($data, (int) $repeatCounter, ValueFormatEnum::RAW);
+	}
+
+	/**
+	 * Shared resolution behind getFormattedValue() and getRawValue(): the only
+	 * difference between the two is the requested value format.
 	 *
 	 * When the element is configured with adapt_to_repetitions = 1, the source
 	 * is assumed to live in a joined repeating group; the value returned is
@@ -90,7 +122,7 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 	 * into the host form plugin, is responsible for ensuring the evaluator
 	 * group has the matching number of repetitions.
 	 */
-	public function getFormattedValue($data, int $repeatCounter = 0): ?string
+	private function resolveSourceValue($data, int $repeatCounter, ValueFormatEnum $format): mixed
 	{
 		$value = '';
 
@@ -137,7 +169,7 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 
 		if ($adaptToRepetitions)
 		{
-			return $this->getRepetitionValue($fabrikElement, $fnum, $repeatCounter);
+			return $this->getRepetitionValue($fabrikElement, $fnum, $repeatCounter, $format);
 		}
 
 		$context = new ActionTargetEntity($user, $fnum);
@@ -146,16 +178,11 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 
 		try
 		{
-			$value = (new FormDataConditionResolver())->resolveValue($context, $fieldName, ValueFormatEnum::FORMATTED);
+			$value = (new FormDataConditionResolver())->resolveValue($context, $fieldName, $format);
 		}
 		catch (Throwable $e)
 		{
 			Log::add('resolver failed for source ' . $sourceId . ' on fnum ' . $fnum . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.fabrik.readonly');
-		}
-
-		if (is_array($value))
-		{
-			$value = implode(', ', $value);
 		}
 
 		return $value;
@@ -166,7 +193,7 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 	 * repeating group. Uses LEFT_JOIN export mode so the helper returns the
 	 * per-repetition list instead of a CSV string.
 	 */
-	private function getRepetitionValue($fabrikElement, string $fnum, int $repeatCounter): string
+	private function getRepetitionValue($fabrikElement, string $fnum, int $repeatCounter, ValueFormatEnum $format = ValueFormatEnum::FORMATTED): string
 	{
 		try
 		{
@@ -179,7 +206,7 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 				$fabrikElement->toArray(false),
 				[$fnum],
 				0,
-				ValueFormatEnum::FORMATTED,
+				$format,
 				0,
 				ExportModeEnum::LEFT_JOIN
 			);

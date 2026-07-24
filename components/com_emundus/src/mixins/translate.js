@@ -18,12 +18,22 @@ export default {
 		this.shortDefaultLang = globalStore.defaultLang ? globalStore.defaultLang.substring(0, 2) : 'fr';
 	},
 	methods: {
-		translate(key) {
-			if (typeof key !== 'undefined' && key != null && Joomla !== null && typeof Joomla !== 'undefined') {
-				return Joomla.Text._(key) ? Joomla.Text._(key) : key;
-			} else {
+		translate(key, replacements) {
+			if (typeof key === 'undefined' || key === null || typeof Joomla === 'undefined' || Joomla === null) {
 				return '';
 			}
+
+			const translated = Joomla.Text._(key) ? Joomla.Text._(key) : key;
+
+			if (!replacements || typeof replacements !== 'object') {
+				return translated;
+			}
+
+			return Object.entries(replacements).reduce((acc, [token, value]) => {
+				const safeToken = String(token).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+				const pattern = new RegExp(`\\{${safeToken}\\}`, 'g');
+				return acc.replace(pattern, value ?? '');
+			}, translated);
 		},
 	},
 };

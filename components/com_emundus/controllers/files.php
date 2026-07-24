@@ -16,6 +16,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\User;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -33,7 +34,6 @@ use Tchooz\Enums\Filters\FilterModeEnum;
 use Tchooz\Factories\Filters\FilterFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
-use Tchooz\Repositories\ApplicationFile\TagsRepository;
 use Tchooz\Repositories\Filters\FilterRepository;
 use Tchooz\Repositories\Label\LabelRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
@@ -1548,61 +1548,92 @@ class EmundusControllerFiles extends EmundusController
 
 
 	/**
+	 * Legacy ZIP export endpoint. Delegates to Tchooz\Services\Export\Zip\ZipService.
 	 *
+	 * Preserves the {status, name, msg} response shape consumed by media/com_emundus/js/mixins/exports.js
+	 * so that no frontend change is required. The resulting archive is dropped under JPATH_SITE/tmp/ so the
+	 * legacy controller=files&task=download endpoint can serve it as-is.
 	 */
 	public function zip()
 	{
-		$response = ['status' => false, 'msg' => Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS')];
+		$response = ['status' => false, 'name' => '', 'msg' => Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS')];
 
-		require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
-		$current_user = JFactory::getUser();
+		try {
+			$current_user = $this->app->getIdentity();
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-			$forms      = $this->input->getInt('forms', 0);
-			$attachment = $this->input->getInt('attachment', 0);
-			$eval_steps = $this->input->getString('eval_steps', '');
-			$eval_steps = !empty($eval_steps) ? json_decode($eval_steps, true) : [];
-			$formids    = $this->input->getVar('formids', null);
-			$attachids  = $this->input->getVar('attachids', null);
-			$options    = $this->input->getVar('options', null);
-			$params     = $this->input->getString('params', null);
-			$params     = !empty($params) ? json_decode($params, true) : [];
-
-			$m_files = $this->getModel('Files');
-
-			$fnums_post  = $this->input->getVar('fnums', null);
-			$fnums_array = ($fnums_post == 'all') ? 'all' : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
-
-			if ($fnums_array == 'all') {
-				$fnums = $m_files->getAllFnums();
-			}
-			else {
-				$fnums = array();
-				foreach ($fnums_array as $key => $value) {
-					$fnums[] = $value;
-				}
+			if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+				throw new Exception(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 			}
 
-			$validFnums = array();
-			foreach ($fnums as $fnum) {
-				if (EmundusHelperAccess::asAccessAction(6, 'c', $this->_user->id, $fnum)) {
-					$validFnums[] = $fnum;
-				}
+			if (!extension_loaded('zip')) {
+				$name = $this->export_zip_pcl($this->resolveLegacyZipFnums($current_user));
+				echo json_encode((object) ['status' => true, 'name' => $name, 'msg' => '']);
+				exit();
 			}
 
-
-			if (extension_loaded('zip')) {
-				$name = $m_files->exportZip($validFnums, $forms, $attachment, $eval_steps, $formids, $attachids, $options, false, $current_user, $params);
-			}
-			else {
-				$name = $this->export_zip_pcl($validFnums);
+			$validFnums = $this->resolveLegacyZipFnums($current_user);
+			if (empty($validFnums)) {
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NO_FILES_SELECTED'));
 			}
 
-			$response = ['status' => true, 'name' => $name, 'msg' => ''];
+			$params = $this->input->getString('params', null);
+			$params = !empty($params) ? json_decode($params, true) : [];
+
+			$evalStepsRaw = $this->input->getString('eval_steps', '');
+			$evalSteps    = !empty($evalStepsRaw) ? (json_decode($evalStepsRaw, true) ?: []) : [];
+
+			$options = [
+				'forms'                        => $this->input->getInt('forms', 0),
+				'attachment'                   => $this->input->getInt('attachment', 0),
+				'form_ids'                     => $this->input->getVar('formids', []),
+				'attach_ids'                   => $this->input->getVar('attachids', []),
+				'eval_steps'                   => $evalSteps,
+				'legacy_header_options'        => $this->input->getVar('options', []),
+				'concat_attachments_with_form' => !empty($params['concat_attachments_with_form']),
+				'convert_docx_to_pdf'          => !empty($params['convert_docx_to_pdf']),
+				'lang'                         => $this->app->getLanguage()->getTag(),
+			];
+
+			$service = new \Tchooz\Services\Export\Zip\ZipService($validFnums, $current_user, $options);
+			$result  = $service->export('tmp/', null, $options['lang']);
+
+			if (!$result->isStatus() || empty($result->getFilePath())) {
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_EXECUTE_EXPORT'));
+			}
+
+			$response = ['status' => true, 'name' => basename($result->getFilePath()), 'msg' => ''];
+		} catch (Exception $e) {
+			Log::add('Legacy ZIP export failed: ' . $e->getMessage(), Log::ERROR, 'com_emundus.export.zip');
+			$response = ['status' => false, 'name' => '', 'msg' => $e->getMessage()];
 		}
 
 		echo json_encode((object) $response);
 		exit();
+	}
+
+	private function resolveLegacyZipFnums(User $current_user): array
+	{
+		$m_files     = $this->getModel('Files');
+		$fnums_post  = $this->input->getVar('fnums', null);
+		$fnums_array = ($fnums_post == 'all') ? 'all' : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
+
+		if ($fnums_array == 'all') {
+			$fnums = $m_files->getAllFnums();
+		} else {
+			$fnums = [];
+			foreach ($fnums_array as $value) {
+				$fnums[] = $value;
+			}
+		}
+
+		$validFnums = [];
+		foreach ($fnums as $fnum) {
+			if (EmundusHelperAccess::asAccessAction(6, 'c', $current_user->id, $fnum)) {
+				$validFnums[] = $fnum;
+			}
+		}
+
+		return $validFnums;
 	}
 
 	/**

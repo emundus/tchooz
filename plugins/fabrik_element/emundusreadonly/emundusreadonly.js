@@ -19,9 +19,25 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 			}
 		},
 
-		// The element never stores a value directly — it is resolved server-side.
 		getValue: function () {
-			return '';
+			if (!this.element) {
+				return '';
+			}
+
+			var node = this.element;
+			if (node.getAttribute('data-raw-value') === null) {
+				node = this.element.querySelector('[data-raw-value]');
+			}
+			var raw = node ? node.getAttribute('data-raw-value') : '';
+			if (raw === null || raw === '') {
+				return '';
+			}
+
+			try {
+				return raw.startsWith('[') ? JSON.parse(raw) : raw;
+			} catch (e) {
+				return raw;
+			}
 		},
 
 		setValue: function () {
