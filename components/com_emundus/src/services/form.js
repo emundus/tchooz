@@ -389,4 +389,17 @@ export default {
 			};
 		}
 	},
+
+	async getElementDefinition(elementId) {
+		try {
+			return await fetchClient.get('getelementdefinition', {
+				element_id: elementId,
+			});
+		} catch (error) {
+			return {
+				status: false,
+				error: error,
+			};
+		}
+	},
 };

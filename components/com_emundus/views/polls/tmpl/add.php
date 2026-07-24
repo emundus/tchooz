@@ -1,0 +1,58 @@
+<?php
+
+use Joomla\CMS\Language\Text;
+use Tchooz\Entities\Fields\Field;
+use Tchooz\Entities\Poll\PollEntity;
+use Tchooz\Enums\ColorEnum;
+use Tchooz\Factories\LayoutFactory;
+use Tchooz\Factories\Poll\PollFactory;
+
+$translations = [
+	'COM_EMUNDUS_GENERAL_GROUP_LABEL',
+	'COM_EMUNDUS_POLLS_EDIT',
+	'COM_EMUNDUS_POLLS_ADD',
+	'COM_EMUNDUS_POLL_FIELD_NAME_LABEL',
+	'COM_EMUNDUS_POLL_FIELD_DESCRIPTION_LABEL',
+	'COM_EMUNDUS_POLL_FIELD_COLOR_LABEL',
+	'COM_EMUNDUS_POLL_FIELD_LOCATION_LABEL',
+	'COM_EMUNDUS_POLL_FIELD_STATUS_LABEL',
+	'COM_EMUNDUS_POLL_FIELD_START_DATE_LABEL',
+	'COM_EMUNDUS_POLL_FIELD_END_DATE_LABEL',
+	'COM_EMUNDUS_POLL_FIELD_SLOT_LABEL',
+	'COM_EMUNDUS_POLL_FIELD_SLOT_DURATION',
+	'COM_EMUNDUS_POLL_FIELD_SLOT_DURATION_CUSTOM',
+	'COM_EMUNDUS_POLL_FIELD_SLOT_ADD',
+	'COM_EMUNDUS_POLL_FIELD_SLOT_EDIT',
+	'COM_EMUNDUS_POLL_FIELD_SLOT_SAVE',
+	'COM_EMUNDUS_POLL_FIELD_SLOT_REQUIRED_PARTICIPANTS',
+	'COM_EMUNDUS_POLL_DATES_SLOT_DAY',
+	'COM_EMUNDUS_POLL_SLOT_SAVED_SUCCESS',
+	'COM_EMUNDUS_POLL_SLOT_DELETED_SUCCESS',
+	'COM_EMUNDUS_ACTIONS_CANCEL',
+	'COM_EMUNDUS_ONBOARD_ADD_SLOT_DELETE',
+	'COM_EMUNDUS_POLL_FIELD_SLOT_SAVE_EXISTING',
+	'COM_EMUNDUS_POLL_DELETE_SLOT_CONFIRM_TITLE',
+	'COM_EMUNDUS_POLL_DELETE_SLOT_CONFIRM_TEXT',
+	'COM_EMUNDUS_POLL_DELETE_SLOT_CONFIRM_YES',
+	'COM_EMUNDUS_POLL_DELETE_SLOT_CONFIRM_NO',
+    'COM_EMUNDUS_POLL_SLOT_FIELD_START_HOUR_LABEL',
+    'COM_EMUNDUS_POLL_SLOT_FIELD_END_HOUR_LABEL',
+    'COM_EMUNDUS_REGISTRANTS_LOCATION',
+];
+foreach ($translations as $translation)
+{
+	Text::script($translation);
+}
+
+$data = LayoutFactory::prepareVueData();
+
+$data['poll'] = $this->poll->__serialize();
+$data['fields'] = $this->fields;
+?>
+
+<div id="em-component-vue"
+     component="Polls/PollForm"
+     data="<?= htmlspecialchars(json_encode($data), ENT_QUOTES, 'UTF-8'); ?>">
+</div>
+
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

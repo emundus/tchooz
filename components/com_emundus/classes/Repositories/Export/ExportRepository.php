@@ -398,14 +398,15 @@ class ExportRepository extends EmundusRepository implements RepositoryInterface
 		return $template ?: null;
 	}
 
-	public function saveExportTemplate(string $name, ExportFormatEnum $format, array $elements, array $headers, array $synthesis, array $attachments, int $user_id, int $id = 0): int
+	public function saveExportTemplate(string $name, ExportFormatEnum $format, array $elements, array $headers, array $synthesis, array $attachments, int $user_id, int $id = 0, array $settings = []): int
 	{
 		$constraints = [
-			'format'    => $format->value,
-			'elements'  => json_encode($elements),
-			'headers'   => json_encode($headers),
-			'synthesis' => json_encode($synthesis),
+			'format'      => $format->value,
+			'elements'    => json_encode($elements),
+			'headers'     => json_encode($headers),
+			'synthesis'   => json_encode($synthesis),
 			'attachments' => json_encode($attachments),
+			'settings'    => json_encode((object) $settings),
 		];
 
 		$template = (object) [

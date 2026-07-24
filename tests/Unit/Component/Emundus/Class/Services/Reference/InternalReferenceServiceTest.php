@@ -59,6 +59,15 @@ class InternalReferenceServiceTest extends UnitTestCase
 
 		// Clear all references after each test to ensure no side effects
 		$this->internalReferenceRepository->clearAll();
+
+		// Reset short references persisted on candidature files: clearAll() only empties the internal
+		// reference table, so a short reference stored on the shared dataset file would otherwise leak
+		// into the next test and make the deterministic-suffix collision checks flaky.
+		$query = $this->db->getQuery(true)
+			->update($this->db->quoteName('#__emundus_campaign_candidature'))
+			->set($this->db->quoteName('short_reference') . ' = NULL');
+		$this->db->setQuery($query);
+		$this->db->execute();
 	}
 
 	/**
@@ -548,7 +557,10 @@ class InternalReferenceServiceTest extends UnitTestCase
 
 		$shortRef3 = $this->internalReferenceService->generateShortReference($applicationFile);
 		$this->assertNotEmpty($shortRef3);
-		$this->assertNotEquals($shortRef2, $shortRef3, 'Generating a short reference twice on the same file should not return the same value if flushed');
+		// Once $shortRef is persisted, regeneration must never hand back that exact taken value.
+		// Compare against the persisted $shortRef, not $shortRef2: $shortRef2 was never saved and
+		// shares the same deterministic suffix, so it differs from $shortRef3 only by a random prefix.
+		$this->assertNotEquals($shortRef, $shortRef3, 'Generating a short reference on a file whose reference is already persisted should not return the same value');
 		$this->assertEquals(5, strlen($shortRef3), 'The short reference should be 4 characters long');
 		$this->assertDoesNotMatchRegularExpression('/[O0IL]/', $shortRef3, 'The short reference should not contain O, 0, I, 1 or L');
 	}

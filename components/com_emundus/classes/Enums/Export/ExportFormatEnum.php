@@ -13,6 +13,7 @@ enum ExportFormatEnum: string
 {
 	case XLSX = 'xlsx';
 	case PDF = 'pdf';
+	case ZIP = 'zip';
 
 	public function getLabel(): string
 	{
@@ -20,6 +21,7 @@ enum ExportFormatEnum: string
 		{
 			ExportFormatEnum::XLSX => 'COM_EMUNDUS_EXPORT_FORMAT_XLSX',
 			ExportFormatEnum::PDF => 'COM_EMUNDUS_EXPORT_FORMAT_PDF',
+			ExportFormatEnum::ZIP => 'COM_EMUNDUS_EXPORT_FORMAT_ZIP',
 		};
 	}
 
@@ -27,8 +29,9 @@ enum ExportFormatEnum: string
 	{
 		return match ($this)
 		{
-			ExportFormatEnum::XLSX => '/media/com_emundus/images/icones/filetype/excel.png',
-			ExportFormatEnum::PDF => '/media/com_emundus/images/icones/filetype/pdf.png',
+			ExportFormatEnum::XLSX => 'xls_file',
+			ExportFormatEnum::PDF => 'pdf_file',
+			ExportFormatEnum::ZIP => 'zip_file',
 		};
 	}
 
@@ -38,6 +41,7 @@ enum ExportFormatEnum: string
 		{
 			ExportFormatEnum::XLSX => 'excel',
 			ExportFormatEnum::PDF => 'pdf',
+			ExportFormatEnum::ZIP => 'zip',
 		};
 	}
 
@@ -47,6 +51,7 @@ enum ExportFormatEnum: string
 		{
 			ExportFormatEnum::XLSX => 'export_excel',
 			ExportFormatEnum::PDF => 'export_pdf',
+			ExportFormatEnum::ZIP => 'export_zip',
 		};
 	}
 
@@ -56,6 +61,7 @@ enum ExportFormatEnum: string
 		{
 			ExportFormatEnum::XLSX => 'default_synthesis_excel',
 			ExportFormatEnum::PDF => 'default_synthesis_pdf',
+			ExportFormatEnum::ZIP => 'default_synthesis_zip',
 		};
 	}
 }

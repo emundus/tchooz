@@ -538,3 +538,24 @@ div[data-plugin="panel"] {
         }
     }
 }
+
+/* eMundus UI override */
+.eui-tag {
+    --eui-tag-radius: var(--em-coordinator-br);
+}
+
+.eui-scope__tooltip[role="tooltip"]:not(.show) {
+    right: inherit;
+    z-index: inherit;
+    display: inherit;
+    max-width: inherit;
+    padding: inherit;
+    margin: inherit;
+    color: inherit;
+    text-align: inherit;
+    background: inherit;
+    border: inherit;
+    border-radius: inherit;
+    box-shadow: inherit;
+}
+/* */

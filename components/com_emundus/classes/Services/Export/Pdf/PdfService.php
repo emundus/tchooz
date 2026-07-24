@@ -11,10 +11,7 @@ namespace Tchooz\Services\Export\Pdf;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
-use Gotenberg\Gotenberg;
-use Gotenberg\Stream;
 use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -25,14 +22,15 @@ use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Entities\User\EmundusUserEntity;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
-use Tchooz\Enums\Export\ExportSettingEnum;
 use Tchooz\Enums\ValueFormatEnum;
+use Tchooz\Services\Export\OptionsSchema\PdfOptionsSchema;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Services\Export\Export;
 use Tchooz\Services\Export\ExportInterface;
 use Tchooz\Services\Export\ExportResult;
+use Tchooz\Services\Export\FilenameRenderer;
 use Tchooz\Services\Export\HeadersEnum;
 
 class PdfService extends Export implements ExportInterface
@@ -62,11 +60,18 @@ class PdfService extends Export implements ExportInterface
 		$this->fnums = $fnums;
 		$this->user  = $user;
 
-		if (is_array($options))
+		if ($options instanceof PdfOptions)
 		{
-			$options = (object) $options;
+			$this->options = $options;
 		}
-		$this->options = !empty($options) ? PdfOptions::fromObject($options) : new PdfOptions();
+		else
+		{
+			if (is_array($options))
+			{
+				$options = (object) $options;
+			}
+			$this->options = !empty($options) ? PdfOptions::fromObject($options) : new PdfOptions();
+		}
 
 		$this->parser       = new PdfParser();
 		$this->exportEntity = $exportEntity;
@@ -88,7 +93,8 @@ class PdfService extends Export implements ExportInterface
 				return $result;
 			}
 
-			$files = [];
+			$files                = [];
+			$firstApplicationFile = null;
 
 			$anonymize_data      = \EmundusHelperAccess::isDataAnonymized($this->user->id);
 			$allowed_attachments = \EmundusHelperAccess::getUserAllowedAttachmentIDs($this->user->id);
@@ -111,6 +117,7 @@ class PdfService extends Export implements ExportInterface
 				$html = '';
 
 				$applicationFile = $this->applicationFileRepository->getByFnum($fnum);
+				$firstApplicationFile ??= $applicationFile;
 				$emundusUser     = $this->emundusUserRepository->getByUserId($applicationFile->getUser()->id);
 
 				$anonymize_data = $anonymize_data || $emundusUser->isAnonym() || $applicationFile->isAnonymous();
@@ -131,42 +138,7 @@ class PdfService extends Export implements ExportInterface
 
 				$html .= $this->parser::BODY_CLOSE_TAG . $this->parser::HTML_CLOSE_TAG;
 
-				$base_path = EMUNDUS_PATH_ABS . $applicationFile->getUser()->id . '/';
-				if (empty($this->options->getFilename()))
-				{
-					$filename = $base_path . $applicationFile->getFnum() . '_' . $this->generatePdfName() . '.pdf';
-				}
-				else
-				{
-					$filename = $this->options->getFilename();
-
-					// Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
-					$post     = array('FNUM' => $applicationFile->getFnum(), 'CAMPAIGN_YEAR' => $applicationFile->getCampaign()->getYear(), 'PROGRAMME_CODE' => $applicationFile->getCampaign()->getProgram()->getCode());
-					$tags     = $this->mEmails->setTags($applicationFile->getUser()->id, $post, $fnum, '', $filename);
-					$filename = preg_replace($tags['patterns'], $tags['replacements'], $filename);
-					$filename = $this->mEmails->setTagsFabrik($filename, array($fnum));
-
-					// Format filename
-					$filename = $this->mEmails->stripAccents($filename);
-					$filename = preg_replace('/[^A-Za-z0-9 _.-]/', '', $filename);
-					$filename = preg_replace('/\s/', '', $filename);
-					$filename = strtolower($filename);
-
-					// Check if extension is present, if yes remove it
-					if (str_ends_with($filename, '.pdf'))
-					{
-						$filename = substr($filename, 0, -4);
-					}
-
-					if (empty($filename))
-					{
-						$filename = $base_path . $applicationFile->getFnum() . '_' . $this->generatePdfName() . '.pdf';
-					}
-					else
-					{
-						$filename = $base_path . $filename . '.pdf';
-					}
-				}
+				$filename = $this->buildOutputFilename($applicationFile);
 
 				// Check if directory exists
 				$dir = dirname($filename);
@@ -202,8 +174,8 @@ class PdfService extends Export implements ExportInterface
 				}
 				else
 				{
-					$exportFilename = $exportPath . $this->generatePdfName() . '.pdf';
-					if ($this->mergePdfs($files, $exportFilename))
+					$exportFilename = $exportPath . $this->buildMergedFilename($firstApplicationFile) . '.pdf';
+					if ((new PdfMerger())->merge($files, $exportFilename))
 					{
 						$result->setFilePath($exportFilename);
 					}
@@ -361,7 +333,7 @@ class PdfService extends Export implements ExportInterface
 
 		try
 		{
-			$displayEvaluatorName = (bool) $this->options->getSetting(ExportSettingEnum::DISPLAY_EVALUATOR_NAME);
+			$displayEvaluatorName = (bool) $this->options->getSetting(PdfOptionsSchema::DISPLAY_EVALUATOR_NAME, true);
 			$forms = $this->m_application->getFormsPDF($applicationFile->getUser()->id, $applicationFile->getFnum(), null, 0, null, $elementIds, true, $stepTypes, $this->user->id, $displayEvaluatorName);
 		}
 		catch (\Exception $e)
@@ -419,6 +391,12 @@ class PdfService extends Export implements ExportInterface
 
 			$output = $dompdf->output();
 
+			$dir = dirname($filename);
+			if (!is_dir($dir))
+			{
+				mkdir($dir, 0755, true);
+			}
+
 			return file_put_contents($filename, $output);
 		}
 		catch (\Exception $e)
@@ -429,58 +407,59 @@ class PdfService extends Export implements ExportInterface
 		}
 	}
 
-	private function mergePdfs(array $files, string $exportFilename): bool
+	/**
+	 * Resolve the absolute output path for the per-fnum PDF, applying the configured filename
+	 * template (or a random fallback when the template is empty or sanitizes to nothing).
+	 */
+	private function buildOutputFilename(ApplicationFileEntity $applicationFile): string
 	{
-		try
+		$basePath = EMUNDUS_PATH_ABS . $applicationFile->getUser()->id . '/';
+		$fallback = $basePath . $applicationFile->getFnum() . '_' . $this->generatePdfName() . '.pdf';
+
+		$template = $this->options->getFilename();
+		if ($template === '')
 		{
-			$merged = false;
-
-			$emConfig = ComponentHelper::getParams('com_emundus');
-
-			require_once(JPATH_LIBRARIES . '/emundus/fpdi.php');
-
-			$gotenberg_merge_activation = $emConfig->get('gotenberg_merge_activation', 0);
-			$gotenberg_url = $emConfig->get('gotenberg_url', 'http://localhost:3000');
-
-			if(!$gotenberg_merge_activation)
-			{
-				$pdf = new \ConcatPdf();
-				$pdf->setFiles($files);
-				$pdf->concat();
-				$pdf->Output($exportFilename, 'F');
-
-				$merged = true;
-			}
-			elseif (!empty($gotenberg_url))
-			{
-				$got_files = [];
-				foreach ($files as $item)
-				{
-					$got_files[] = Stream::path($item);
-				}
-				$request  = Gotenberg::pdfEngines($gotenberg_url)
-					->merge(...$got_files);
-				$response = Gotenberg::send($request);
-				$content  = $response->getBody()->getContents();
-
-				$filename = $exportFilename;
-				$fp       = fopen($filename, 'w');
-				$pieces   = str_split($content, 1024 * 16);
-				if ($fp)
-				{
-					foreach ($pieces as $piece)
-					{
-						$merged = fwrite($fp, $piece, strlen($piece)) !== false;
-					}
-				}
-			}
-		}
-		catch (\Exception $e)
-		{
-			Log::add($e->getMessage(), Log::ERROR, 'com_emundus.export.pdf');
-			$merged = false;
+			return $fallback;
 		}
 
-		return $merged;
+		$rendered = (new FilenameRenderer($this->mEmails))->render($template, $applicationFile);
+		if (str_ends_with($rendered, '.pdf'))
+		{
+			$rendered = substr($rendered, 0, -4);
+		}
+
+		if ($rendered === '')
+		{
+			return $fallback;
+		}
+
+		return $basePath . $rendered . '.pdf';
+	}
+
+	/**
+	 * Resolve the filename stem (no path, no extension) for the merged multi-fnum PDF, applying the
+	 * configured filename template so a custom name is honoured. Any per-fnum tags are rendered
+	 * against the first exported file. Falls back to a random name when no file was exported or the
+	 * template sanitizes to nothing.
+	 */
+	private function buildMergedFilename(?ApplicationFileEntity $applicationFile): string
+	{
+		$template = $this->options->getFilename();
+
+		// Untouched default template: keep a unique auto-generated name so consecutive default
+		// exports don't overwrite each other. Only a genuinely custom name overrides it.
+		$default = (string) ComponentHelper::getParams('com_emundus')->get('application_form_name', 'application_form_pdf');
+		if ($applicationFile === null || $template === '' || $template === $default)
+		{
+			return $this->generatePdfName();
+		}
+
+		$rendered = (new FilenameRenderer($this->mEmails))->render($template, $applicationFile);
+		if (str_ends_with($rendered, '.pdf'))
+		{
+			$rendered = substr($rendered, 0, -4);
+		}
+
+		return $rendered !== '' ? $rendered : $this->generatePdfName();
 	}
 }

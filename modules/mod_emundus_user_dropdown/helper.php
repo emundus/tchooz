@@ -9,6 +9,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
+use Joomla\Database\ParameterType;
 use Tchooz\Repositories\User\EmundusUserRepository;
 
 /**
@@ -142,5 +143,60 @@ class modEmundusUserDropdownHelper
 		}
 
 		return $pp;
+	}
+
+	static function getUserPollStats(int $userId): array
+	{
+		$stats = ['total' => 0, 'pending' => 0];
+
+		if (empty($userId)) {
+			return $stats;
+		}
+
+		try {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$slotCountSub = '(SELECT COUNT(s.id) FROM ' . $db->quoteName('#__emundus_setup_event_slots', 's')
+				. ' WHERE s.' . $db->quoteName('poll') . ' = p.id)';
+
+			$answerCountSub = '(SELECT COUNT(a.id) FROM ' . $db->quoteName('#__emundus_poll_answers', 'a')
+				. ' INNER JOIN ' . $db->quoteName('#__emundus_setup_event_slots', 's2')
+				. ' ON s2.id = a.' . $db->quoteName('slot')
+				. ' WHERE s2.' . $db->quoteName('poll') . ' = p.id'
+				. ' AND a.' . $db->quoteName('participant') . ' = pp.id)';
+
+			$query->select([
+					'p.id',
+					$slotCountSub . ' AS slot_count',
+					$answerCountSub . ' AS answer_count',
+				])
+				->from($db->quoteName('#__emundus_setup_polls', 'p'))
+				->innerJoin($db->quoteName('#__emundus_setup_polls_participants', 'pp')
+					. ' ON pp.' . $db->quoteName('poll') . ' = p.id')
+				->where('pp.' . $db->quoteName('user') . ' = :userId')
+				->where('p.' . $db->quoteName('status') . ' = ' . $db->quote('open'))
+				->bind(':userId', $userId, ParameterType::INTEGER);
+
+			$db->setQuery($query);
+			$rows = $db->loadObjectList();
+
+			if (!empty($rows)) {
+				$stats['total'] = count($rows);
+				foreach ($rows as $row) {
+					$slotCount   = (int) $row->slot_count;
+					$answerCount = (int) $row->answer_count;
+
+					if ($slotCount === 0 || $answerCount < $slotCount) {
+						$stats['pending']++;
+					}
+				}
+			}
+		}
+		catch (Exception $e) {
+			Log::add('Failed to fetch user poll stats: ' . $e->getMessage(), Log::ERROR, 'com_emundus.poll');
+		}
+
+		return $stats;
 	}
 }

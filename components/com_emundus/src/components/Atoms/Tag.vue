@@ -31,7 +31,7 @@ export default {
 
 <template>
 	<div
-		class="tw-mr-2 tw-flex tw-h-max tw-flex-row tw-items-center tw-gap-2 tw-rounded-coordinator tw-px-2 tw-py-1 tw-text-sm tw-font-medium"
+		class="tw-mr-2 tw-flex tw-h-max tw-w-fit tw-flex-row tw-items-center tw-gap-2 tw-rounded-coordinator tw-px-2 tw-py-1 tw-text-sm tw-font-medium"
 		:class="[bgColorClass, textColorClass]"
 	>
 		<span>{{ text }}</span>

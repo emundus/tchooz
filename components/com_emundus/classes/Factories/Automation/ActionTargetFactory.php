@@ -13,7 +13,7 @@ class ActionTargetFactory
 	{
 		$actionTarget = null;
 
-		if (!empty($serialized) && !empty($serialized['triggeredBy']) && (!empty($serialized['file']) || !empty($serialized['user'])))
+		if (!empty($serialized) && !empty($serialized['triggeredBy']) && (!empty($serialized['file']) || !empty($serialized['user']) || !empty($serialized['custom'])))
 		{
 			$actionTarget = new ActionTargetEntity(
 				Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($serialized['triggeredBy']),

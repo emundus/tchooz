@@ -2288,6 +2288,27 @@ class EmundusControllersettings extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function getaddon(): EmundusResponse
+	{
+		$addon_type = $this->input->getString('addon_type', '');
+		if (empty($addon_type))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_SETTINGS_ADDON_TYPE_REQUIRED'));
+		}
+
+		$addonService = new AddonService();
+		$addon = $addonService->getAddon($addon_type);
+
+		if(empty($addon))
+		{
+			throw new RuntimeException(Text::_('COM_EMUNDUS_SETTINGS_ADDON_NOT_FOUND'));
+		}
+		assert($addon instanceof AddonEntity);
+
+		return EmundusResponse::ok($addon->__serialize(), Text::_('APP_FOUND'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function setupaddon(): EmundusResponse
 	{
 		$addon_type = $this->input->getString('addon_type', '');
