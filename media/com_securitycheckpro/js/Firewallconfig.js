@@ -580,8 +580,15 @@ function disable_continent_checkbox(continentname, name) {
       const form = document.adminForm || document.getElementById('adminForm');
       if (!form) return;
 
-      // The field name must match what manage_list() reads server-side
-      const fieldName = task === 'deleteip_whitelist' ? 'whitelist_cid[]' : 'cid[]';
+      // The field name must match what the model reads server-side:
+      // deleteip_whitelist -> whitelist_cid, deleteip_dynamic_blacklist -> dynamic_blacklist_cid,
+      // deleteip_blacklist -> cid
+      let fieldName = 'cid[]';
+      if (task === 'deleteip_whitelist') {
+        fieldName = 'whitelist_cid[]';
+      } else if (task === 'deleteip_dynamic_blacklist') {
+        fieldName = 'dynamic_blacklist_cid[]';
+      }
 
       // Uncheck existing checkboxes with this name so they are not submitted
       form.querySelectorAll('input[type="checkbox"][name="' + fieldName + '"]').forEach(function (cb) {

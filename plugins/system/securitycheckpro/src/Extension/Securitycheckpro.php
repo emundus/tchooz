@@ -176,7 +176,7 @@ class Securitycheckpro extends CMSPlugin
 	 * @param   string             $type   				Type of attack
 	 * @param   string             $uri   				The uri where the attack has been stopped
 	 * @param   string             $original_string     Original string involved in the attack
-	 * @param   string             $username    		Username used in the attack
+	 * @param   string|null        $username    		Username used in the attack (null when the request carries none, e.g. API token auth)
 	 * @param   string             $component   		Extension involved in the attack
      *
      * @return void|bool
@@ -548,7 +548,7 @@ class Securitycheckpro extends CMSPlugin
 		$lfiStatements  = array(
 			"/\.\.\//",
 			"/\.\.\\\\/",
-			"/\?\?\?/",
+			"/\?{6,}/", // relleno de path truncation; umbral alto para no coincidir con puntuación normal ("do???")
 			"/(?:php|expect|data|phar|zip|zlib|glob|ssh2|rar|ogg):\/\//i",
 			"/php:\/\/(?:filter|input|stdin|memory|temp)/i",
 			"/%00/"
@@ -893,9 +893,11 @@ class Securitycheckpro extends CMSPlugin
 				}
 				
 			}
-            foreach ($strings_in_array as $string) {                       
-                if ((!(is_array($string))) && (mb_strlen($string)>0) && ($pageoption != '')) {                    
-                    $this->apply_filters($ip, $string, $methods_options, $a, $request_uri, $modified, $check, $logs_attacks, $option);                        
+            // Variable propia para no pisar $string: la función devuelve el valor original
+            // y reasignarlo corrompería el campo array en la superglobal ($req es referencia).
+            foreach ($strings_in_array as $string_item) {
+                if ((!(is_array($string_item))) && (mb_strlen($string_item)>0) && ($pageoption != '')) {
+                    $this->apply_filters($ip, $string_item, $methods_options, $a, $request_uri, $modified, $check, $logs_attacks, $option);
                 }
             }
         } else
@@ -2682,11 +2684,14 @@ class Securitycheckpro extends CMSPlugin
 		$imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
 		$fileExtLower = strtolower((string) pathinfo((string) $file_name, PATHINFO_EXTENSION));
 		if (in_array($fileExtLower, $imageExtensions, true) && file_exists($tmp_name)) {
-			$fh = @fopen($tmp_name, 'rb');
-			if ($fh !== false) {
-				$header = (string) fread($fh, 512);
-				fclose($fh);
-				if (strpos($header, '<?') !== false || strpos($header, '<%') !== false) {
+			// Se busca en el archivo completo (un payload en EXIF puede estar más allá de los
+			// primeros bytes) pero solo firmas ejecutables inequívocas: '<?' o '<%' a secas son
+			// 2 bytes que aparecen por azar en el binario de imágenes legítimas (falsos positivos).
+			$contents = (string) @file_get_contents($tmp_name);
+			if ($contents !== '') {
+				if (stripos($contents, '<?php') !== false
+					|| strpos($contents, '<?=') !== false
+					|| stripos($contents, '<script') !== false) {
 					$malware_description = $lang->_('COM_SECURITYCHECKPRO_FILE_MIMETYPE_NOT_ALLOWED') . 'PHP/script content in image file';
 					$type = 'FORBIDDEN_EXTENSION';
 					if ($delete_files) {
@@ -2794,13 +2799,15 @@ class Securitycheckpro extends CMSPlugin
                         
         if($track_failed_logins) {
             $login_info = $this->trackFailedLogin();
+            // En la autenticación por token de la API no llega ningún 'username', así que el array puede venir vacío
+            $login_username = (string) ($login_info[0] ?? '');
             // Controlamos el acceso al backend           
             if (in_array($app->getName(), array('administrator','admin'))) {
                 // Escribimos un log si se produce un intento de acceso fallido    al backend                
                 if ($logins_to_monitorize != 1) {
-                    $description = $lang->_('COM_SECURITYCHECKPRO_USERNAME') . $login_info[0];
+                    $description = $lang->_('COM_SECURITYCHECKPRO_USERNAME') . $login_username;
                     if($write_log) {
-                        $this->grabar_log($write_log, $attack_ip, 'FAILED_LOGIN_ATTEMPT_LABEL', $lang->_('COM_SECURITYCHECKPRO_FAILED_ADMINISTRATOR_LOGIN_ATTEMPT_LABEL'), 'SESSION_PROTECTION', $request_uri, $description, $login_info[0], '---');                        
+                        $this->grabar_log($write_log, $attack_ip, 'FAILED_LOGIN_ATTEMPT_LABEL', $lang->_('COM_SECURITYCHECKPRO_FAILED_ADMINISTRATOR_LOGIN_ATTEMPT_LABEL'), 'SESSION_PROTECTION', $request_uri, $description, $login_username, '---');
                     }
                     // Si está marcada la opci�n, a�adimos la IP a la lista negra din�mica
                     if ((int) $actions_failed_login === 1) {
@@ -2811,9 +2818,9 @@ class Securitycheckpro extends CMSPlugin
             {
                 // Escribimos en log si se produce un intento de acceso fallido al frontend
                 if ($logins_to_monitorize != 2) {
-                    $description = $lang->_('COM_SECURITYCHECKPRO_USERNAME') . $login_info[0];                    
+                    $description = $lang->_('COM_SECURITYCHECKPRO_USERNAME') . $login_username;
                     if($write_log) {
-                        $this->grabar_log($write_log, $attack_ip, 'FAILED_LOGIN_ATTEMPT_LABEL', $lang->_('COM_SECURITYCHECKPRO_FAILED_LOGIN_ATTEMPT_LABEL'), 'SESSION_PROTECTION', $request_uri, $description, $login_info[0], '---');
+                        $this->grabar_log($write_log, $attack_ip, 'FAILED_LOGIN_ATTEMPT_LABEL', $lang->_('COM_SECURITYCHECKPRO_FAILED_LOGIN_ATTEMPT_LABEL'), 'SESSION_PROTECTION', $request_uri, $description, $login_username, '---');
                     }
                     // Si está marcada la opci�n, a�adimos la IP a la lista negra din�mica
                     if ((int) $actions_failed_login === 1) {

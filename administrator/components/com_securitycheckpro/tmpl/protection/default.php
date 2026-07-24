@@ -416,7 +416,7 @@ $defaultUa = (is_file($uaFile) && is_readable($uaFile)) ? (string) file_get_cont
 							<div class="col-md-4">
 								<div class="fw-semibold" data-bs-toggle="tooltip" data-bs-theme="dark" title="<?= $esc(Text::_('COM_SECURITYCHECKPRO_FEATURE_APPLIED_EXPLAIN')) ?>">
 									<?= Text::_('COM_SECURITYCHECKPRO_FEATURE_APPLIED_TEXT'); ?>
-									<?= $appliedIcon(!empty($this->protection_config['backend_protection_applied'])); ?>
+									<?= $appliedIcon(!empty($this->config_applied['backend_protection_applied'])); ?>
 								</div>
 							</div>
 							<div class="col-md-8">
