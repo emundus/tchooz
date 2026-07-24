@@ -458,6 +458,19 @@ export default {
 		}
 	},
 
+	async getAddon(addon_type = '') {
+		try {
+			return await fetchClient.get('getaddon', {
+				addon_type: addon_type,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
 	async saveAddon(addon) {
 		try {
 			return await fetchClient.post('saveaddon', {

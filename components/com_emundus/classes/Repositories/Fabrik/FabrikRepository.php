@@ -482,7 +482,7 @@ class FabrikRepository
 		$columns = self::FABRIK_ELEMENT_COLUMNS;
 		if ($withJoins)
 		{
-			$columns = array_merge($columns, ['fg.params AS group_params', 'fl.db_table_name', 'fj.table_join']);
+			$columns = array_merge($columns, ['fg.params AS group_params', 'ff.form_id AS form_id', 'fl.db_table_name', 'fj.table_join']);
 		}
 		$query->select($columns)
 			->from($this->db->quoteName('#__fabrik_elements', 'fe'));

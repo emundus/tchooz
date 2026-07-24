@@ -52,6 +52,72 @@ enum HeadersEnum: string
 	case APPLICATION_CHOICE_CAMPAIGN = 'application_choice_campaign';
 	case APPLICATION_CHOICE_STATUS = 'application_choice_status';
 
+	/**
+	 * Mapping of legacy header-inclusion tokens emitted by media/com_emundus/js/mixins/exports.js
+	 * (and consumed by libraries/emundus/pdf.php::application_form_pdf) to their HeadersEnum
+	 * equivalents. Position 0 of the legacy options array is a separate '0'/'1' toggle handled by
+	 * isLegacyHeaderEnabled() — it never appears as a key here.
+	 */
+	private const LEGACY_OPTION_MAP = [
+		'aemail'     => self::EMAIL,
+		'afnum'      => self::FNUM,
+		'aid'        => self::ID,
+		'aapp-sent'  => self::SUBMITTED_DATE,
+		'adoc-print' => self::PRINTED_DATE,
+		'status'     => self::STATUS,
+		'tags'       => self::STICKERS,
+	];
+
+	/**
+	 * Translate the legacy header-inclusion tokens into HeadersEnum values.
+	 *
+	 * Returns an empty array when the toggle (first element) is '0' or '', preserving the opt-out
+	 * behaviour of application_form_pdf(). When the toggle is on, FULLNAME is always prepended —
+	 * parity with the legacy template that injected `<b>Candidat :</b> firstname lastname`
+	 * unconditionally. Callers decide how to split between page header and info-dossier section.
+	 *
+	 * @param   string[]  $legacyOptions
+	 *
+	 * @return array<HeadersEnum>
+	 */
+	public static function fromLegacyOptions(array $legacyOptions): array
+	{
+		if (!self::isLegacyHeaderEnabled($legacyOptions))
+		{
+			return [];
+		}
+
+		$headers = [self::FULLNAME->value => self::FULLNAME];
+
+		foreach ($legacyOptions as $token)
+		{
+			$mapped = self::LEGACY_OPTION_MAP[$token] ?? null;
+			if ($mapped !== null)
+			{
+				$headers[$mapped->value] = $mapped;
+			}
+		}
+
+		return array_values($headers);
+	}
+
+	/**
+	 * Whether the legacy options array enables the header section at all (first element != '0').
+	 *
+	 * @param   string[]  $legacyOptions
+	 */
+	public static function isLegacyHeaderEnabled(array $legacyOptions): bool
+	{
+		if (empty($legacyOptions))
+		{
+			return false;
+		}
+
+		$toggle = (string) ($legacyOptions[0] ?? '0');
+
+		return $toggle !== '0' && $toggle !== '';
+	}
+
 	public function getLabel(): string
 	{
 		return match ($this)

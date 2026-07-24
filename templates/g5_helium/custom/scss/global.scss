@@ -244,7 +244,7 @@ p,
 }
 
 .gantry:not(.applicant-form):not(.files-board) {
-  &.view-campaigns, &.view-form.com_emundus, &.view-emails, &.view-settings, &.view-events, &.view-sign, &.view-payment:not(.layout-cart), &.view-emundus .layout-history, &.view-export_select_columns.layout-aliases, &.view-automation, &.view-task.layout-history, &.view-export_select_columns.layout-exports, &.view-application_choices.layout-list, &.view-users.layout-exceptions, &.view-groups {
+  &.view-campaigns, &.view-form.com_emundus, &.view-emails, &.view-settings, &.view-events, &.view-sign, &.view-payment:not(.layout-cart), &.view-emundus .layout-history, &.view-export_select_columns.layout-aliases, &.view-automation, &.view-task.layout-history, &.view-export_select_columns.layout-exports, &.view-application_choices.layout-list, &.view-users.layout-exceptions, &.view-groups, &.view-polls {
   #g-container-main {
     padding-top: 26px !important;
 
@@ -3973,7 +3973,8 @@ ul.unstyled.em-linkForgot li a {
 .gantry:not(.applicant-form):not(.files-board).com_emundus.view-export_select_columns.layout-exports,
 .gantry:not(.applicant-form):not(.files-board).com_emundus.view-application_choices.layout-list,
 .gantry:not(.applicant-form):not(.files-board).com_emundus.view-users.layout-exceptions,
-.gantry:not(.applicant-form):not(.files-board).com_emundus.view-groups
+.gantry:not(.applicant-form):not(.files-board).com_emundus.view-groups,
+.gantry:not(.applicant-form):not(.files-board).com_emundus.view-polls
 {
   #g-container-main {
     padding-left: 76px;

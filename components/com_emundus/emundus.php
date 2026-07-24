@@ -17,6 +17,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Controller\EmundusControllerRegistry;
 use Tchooz\Exception\EmundusException;
 use Tchooz\Repositories\Payment\PaymentRepository;
 
@@ -1293,9 +1294,13 @@ Text::script('COM_EMUNDUS_ACCESS_EXPORT');
 Text::script('COM_EMUNDUS_EXPORT_RUN');
 Text::script('COM_EMUNDUS_EXPORT_FORMAT_XLSX');
 Text::script('COM_EMUNDUS_EXPORT_FORMAT_PDF');
+Text::script('COM_EMUNDUS_EXPORT_FORMAT_ZIP');
 Text::script('COM_EMUNDUS_EXPORT_SUCCESS_TITLE');
 Text::script('COM_EMUNDUS_EXPORT_IN_PROGRESS_TITLE');
-Text::script('COM_EMUNDUS_EXPORT_CONTENT');
+Text::script('COM_EMUNDUS_EXPORT_CONTENT_MAIN');
+Text::script('COM_EMUNDUS_EXPORT_CONTENT_SYNTHESIS');
+Text::script('COM_EMUNDUS_EXPORT_CONTENT_HEADER');
+Text::script('COM_EMUNDUS_EXPORT_CONTENT_ATTACHMENT');
 Text::script('COM_EMUNDUS_EXPORTS_FORMAT');
 Text::script('COM_EMUNDUS_EXPORT_OPTIONS');
 Text::script('COM_EMUNDUS_EXPORT_RESUME');
@@ -1320,9 +1325,13 @@ Text::script('COM_EMUNDUS_CONDITIONS_GROUP_OPERATOR_OR');
 Text::script('COM_EMUNDUS_EXPORT_SELECT_TEMPLATE');
 Text::script('COM_EMUNDUS_EXPORT_SELECT_TEMPLATE_PLEASE_SELECT');
 Text::script('COM_EMUNDUS_EXPORT_TEMPLATE_DELETE');
+Text::script('COM_EMUNDUS_EXPORT_TEMPLATE_DELETE_UNDO');
+Text::script('COM_EMUNDUS_EXPORT_TEMPLATE_DELETE_UNDONE_MESSAGE');
+Text::script('COM_EMUNDUS_EXPORT_TEMPLATE_DELETED_UNDO_MESSAGE');
 Text::script('COM_EMUNDUS_EXPORT_TEMPLATE_UPDATE');
 Text::script('COM_EMUNDUS_EXPORT_TEMPLATE_CREATE');
 Text::script('COM_EMUNDUS_EXPORT_TEMPLATE_BACK');
+Text::script('COM_EMUNDUS_EXPORT_ACTIONS');
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE');
 Text::script('COM_EMUNDUS_EXPORT_TEMPLATE_NAME');
 Text::script('COM_EMUNDUS_EXPORT_MAX_HEADER_REACHED');
@@ -1347,6 +1356,31 @@ Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_REDIREC
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SERVER_TYPE_HELPTEXT');
 Text::script('COM_EMUNDUS_ONBOARD_ITEM_SELECTED');
 Text::script('COM_EMUNDUS_ONBOARD_ITEMS_SELECTED');
+Text::script('COM_EMUNDUS_EXPORTS_OPTIONS_TAB');
+Text::script('COM_EMUNDUS_EXPORTS_OPTION_DISPLAY_HEADER');
+Text::script('COM_EMUNDUS_EXPORTS_OPTION_DISPLAY_PAGE_NUMBERS');
+Text::script('COM_EMUNDUS_EXPORTS_OPTION_FILENAME');
+Text::script('COM_EMUNDUS_EXPORT_NO_OPTIONS_AVAILABLE');
+Text::script('COM_EMUNDUS_EXPORT_RESUME_FORMAT_AND_OPTIONS');
+Text::script('COM_EMUNDUS_EXPORT_RESUME_SELECTED_FORMAT');
+Text::script('COM_EMUNDUS_EXPORT_RESUME_VALUE_YES');
+Text::script('COM_EMUNDUS_EXPORT_RESUME_VALUE_NO');
+Text::script('COM_EMUNDUS_EXPORT_RESUME_CONTENT');
+Text::script('COM_EMUNDUS_EXPORT_RESUME_HEADER_CONTENT');
+Text::script('COM_EMUNDUS_EXPORT_RESUME_SYNTHESIS_CONTENT');
+Text::script('COM_EMUNDUS_EXPORT_RESUME_BODY_CONTENT');
+Text::script('COM_EMUNDUS_EXPORT_RESUME_ATTACHMENTS_CONTENT');
+Text::script('COM_EMUNDUS_EXPORT_RESUME_CONTENTS_ARIA_LABEL');
+Text::script('COM_EMUNDUS_EXPORT_ELEMENTS_NO_ELEMENTS_FOUND');
+Text::script('COM_EMUNDUS_EXPORT_LANGUAGE_LABEL');
+Text::script('COM_EMUNDUS_EXPORT_PIVOT_DATA_LABEL');
+Text::script('COM_EMUNDUS_EXPORT_PIVOT_DATA_HELPTEXT');
+Text::script('COM_EMUNDUS_EXPORT_PIVOT_SCOPE_LABEL');
+Text::script('COM_EMUNDUS_EXPORT_PIVOT_SCOPE_HELPTEXT');
+Text::script('COM_EMUNDUS_EXPORT_PIVOT_SCOPE_GROUP');
+Text::script('COM_EMUNDUS_EXPORT_PIVOT_SCOPE_ELEMENT');
+Text::script('COM_EMUNDUS_EXPORT_PIVOT_SCOPE_EVALUATION');
+Text::script('COM_EMUNDUS_FORM_BUILDER_UNNAMED_SECTION');
 
 Text::script('COM_EMUNDUS_ACCESS_UPDATE_OWNER');
 Text::script('COM_EMUNDUS_UPDATE_OWNER_NEW_OWNER_LABEL');
@@ -1364,7 +1398,12 @@ Text::script('COM_EMUNDUS_NEW_REFERENCE');
 Text::script('COM_EMUNDUS_CUSTOM_REFERENCE_ACCESS_LOADER');
 Text::script('COM_EMUNDUS_CUSTOM_REFERENCE_GENERATE_DESC');
 
+Text::script('COM_EMUNDUS_EXPORT_SELECT_TEMPLATE_HELP');
+Text::script('COM_EMUNDUS_EXPORT_SLIDER_FORMAT');
+Text::script('COM_EMUNDUS_EXPORT_SLIDER_TEMPLATE');
+Text::script('COM_EMUNDUS_EXPORT_TEMPLATE_NAME_HELP');
 Text::script('COM_EMUNDUS_EXPORT_SELECT_COLUMNS_NO_ELEMENTS');
+Text::script('COM_EMUNDUS_EXPORT_TEMPLATE_BACK_TO_RESUME');
 Text::script('COM_EMUNDUS_APPLICATION_TAGS_PICK');
 Text::script('COM_EMUNDUS_APPLICATION_TAGS_PICK_PLACEHOLDER');
 Text::script('COM_EMUNDUS_APPLICATION_TAGS_ATTACH');
@@ -1410,6 +1449,9 @@ Text::script('COM_EMUNDUS_IFRAME_CAMPAIGN_FORM_ADVANCED_TITLE');
 Text::script('COM_EMUNDUS_IFRAME_APPLICATION_CHOICES_FORM_TITLE');
 Text::script('COM_EMUNDUS_IFRAME_FORMBUILDER_PREVIEW_TITLE');
 
+Text::script('COM_EMUNDUS_VIEWS_TABLE_VIEW');
+Text::script('COM_EMUNDUS_VIEWS_GRID_VIEW');
+
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
 foreach ($actionlog_translation_tags as $tag => $translation)
@@ -1417,23 +1459,8 @@ foreach ($actionlog_translation_tags as $tag => $translation)
 	Text::script($tag);
 }
 
-// Require specific controller if requested
-if ($controller = $app->input->get('controller', '', 'WORD'))
-{
-	$path = JPATH_BASE . '/components/com_emundus/controllers/' . $controller . '.php';
-	if (file_exists($path))
-	{
-		require_once $path;
-	}
-	else
-	{
-		$controller = '';
-	}
-}
-
-// Create the controller
-$classname  = 'EmundusController' . $controller;
-$controller = new $classname();
+// Resolve and instantiate the requested controller (new namespaced location or legacy fallback)
+$controller = EmundusControllerRegistry::resolve($app->input->get('controller', '', 'WORD'));
 
 $eMConfig = ComponentHelper::getParams('com_emundus');
 $cdn      = $eMConfig->get('use_cdn', 1);

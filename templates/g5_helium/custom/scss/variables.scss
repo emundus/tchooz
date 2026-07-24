@@ -433,6 +433,31 @@
   --sx-color-neutral: var(--sx-color-outline);
   --sx-color-neutral-variant: var(--sx-color-outline-variant);
 
+  // v3 color
+  // SUCCESS
+  --success-100: #D2E6DF;
+  --success-200: #20835F;
+  --success-300: #1E5E4C;
+  --success-400: #1C3938;
+
+  // WARNING
+  --warning-100: #FCE1D2;
+  --warning-200: #EF681F;
+  --warning-300: #A54D22;
+  --warning-400: #5A3124;
+
+  // ERROR
+  --error-100: #FCDAD7;
+  --error-200: #F04437;
+  --error-300: #A53532;
+  --error-400: #5A262C;
+
+  // INFO
+  --info-100: #E5E9FF;
+  --info-200: #7E8FFF;
+  --info-300: #5B66B4;
+  --info-400: #383D68;
+
   // eMundus UI override
   --color-primary-100: hsl(from var(--color-primary-200) h s l / 15%);
   --color-primary-200: var(--em-profile-color);

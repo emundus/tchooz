@@ -202,5 +202,6 @@ export default {
 	opacity: 0;
 	max-height: 100%;
 	overflow-y: auto;
+	overscroll-behavior: contain;
 }
 </style>

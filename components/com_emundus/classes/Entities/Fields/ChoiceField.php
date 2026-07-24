@@ -24,12 +24,14 @@ class ChoiceField extends Field
 		bool $multiple = false,
 		?FieldGroup $group = null,
 		bool $choicesGrouped = false,
-		bool $addSelectOption = true
+		bool $addSelectOption = true,
+		?string $selectOptionLabel = null
 	) {
 		parent::__construct($name, $label, $required, $group);
 
 		if (!$multiple && $addSelectOption) {
-			$this->addChoice(new ChoiceFieldValue(null, Text::_('TCHOOZ_AUTOMATION_FIELD_CHOICE_SELECT_OPTION')));
+			$emptyOptionLabel = $selectOptionLabel ?? 'TCHOOZ_AUTOMATION_FIELD_CHOICE_SELECT_OPTION';
+			$this->addChoice(new ChoiceFieldValue(null, Text::_($emptyOptionLabel)));
 		}
 
 		if (!empty($choices)) {

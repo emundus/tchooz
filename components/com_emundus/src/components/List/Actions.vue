@@ -1,12 +1,14 @@
 <script>
 import Popover from '@/components/Popover.vue';
 import Exports from '@/components/List/Exports.vue';
+import { Slider } from '@emundus/ui';
 import Imports from '@/components/List/Imports.vue';
 
 export default {
 	name: 'Actions',
 	components: {
 		Imports,
+		Slider,
 		Exports,
 		Popover,
 	},
@@ -153,12 +155,16 @@ export default {
 		currentSearches() {
 			this.$emit('update:searches', this.currentSearches);
 		},
+		currentView(value) {
+			this.$emit('update:view', value);
+			localStorage.setItem('tchooz_view_type/' + document.location.hostname, value);
+		},
 	},
 };
 </script>
 
 <template>
-	<section id="default-actions" class="tw-flex tw-gap-4">
+	<section id="default-actions" class="tw-flex tw-flex-shrink-0 tw-items-end tw-gap-4">
 		<div class="tw-flex tw-h-[72px] tw-items-end tw-gap-2">
 			<div v-if="multipleActionsPopover.length > 0">
 				<label class="!tw-mb-0 tw-font-medium tw-opacity-0">{{ translate('COM_EMUNDUS_ONBOARD_ACTIONS') }}</label>
@@ -174,7 +180,7 @@ export default {
 							v-for="action in multipleActionsPopover"
 							:key="action.name"
 							@click="onClickAction(action)"
-							class="tw-px-2 tw-py-1.5"
+							class="tw-flex tw-items-center tw-gap-1 tw-px-2 tw-py-1.5"
 							:class="{
 								'tw-pointer-events-none tw-cursor-not-allowed tw-text-neutral-500':
 									checkedItems.length === 0 || !(typeof action.showon === 'undefined' || evaluateShowOn(action.showon)),
@@ -182,8 +188,10 @@ export default {
 									checkedItems.length > 0 &&
 									((typeof action.showon !== 'undefined' && evaluateShowOn(action.showon)) ||
 										typeof action.showon === 'undefined'),
+								'tw-text-red-500': action.name === 'delete' && checkedItems.length > 0,
 							}"
 						>
+							<span v-if="action.iconLabel" class="material-symbols-outlined">{{ action.iconLabel }}</span>
 							{{ translate(action.label) }}
 						</li>
 					</ul>
@@ -237,19 +245,7 @@ export default {
 			</div>
 		</div>
 
-		<div class="view-type tw-flex tw-items-end tw-gap-2">
-			<span
-				v-for="viewTypeOption in views"
-				:key="viewTypeOption.value"
-				class="material-symbols-outlined !tw-flex tw-h-form tw-w-form tw-cursor-pointer tw-items-center tw-justify-center tw-rounded-coordinator tw-border tw-bg-neutral-0 tw-p-4"
-				:class="{
-					'active tw-border-main-500 tw-text-main-500': viewTypeOption.value === view,
-					'tw-border-neutral-600 tw-text-neutral-600': viewTypeOption.value !== view,
-				}"
-				@click="changeViewType(viewTypeOption)"
-				>{{ viewTypeOption.icon }}</span
-			>
-		</div>
+		<Slider :options="views" v-model="currentView" />
 	</section>
 </template>
 

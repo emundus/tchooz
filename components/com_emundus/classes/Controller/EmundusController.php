@@ -18,6 +18,7 @@ use Joomla\CMS\User\User;
 use Joomla\Input\Input;
 use Symfony\Component\OptionsResolver\Exception\AccessException;
 use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Attributes\PublicAccessAttribute;
 use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\EmundusResponse;
@@ -74,6 +75,12 @@ abstract class EmundusController extends BaseController
 	private function enforceAccess(object $controller, string $method): void
 	{
 		$attributes = $this->getCachedAccessAttributes($controller, $method);
+
+		// 0 - Explicit public marker → allow
+		if (!empty($attributes['public']))
+		{
+			return;
+		}
 
 		// 1 - Method-level rules take priority
 		if (!empty($attributes['method']))
@@ -170,8 +177,9 @@ abstract class EmundusController extends BaseController
 					continue;
 				}
 
-				$actionMode = $action['mode']->value;
-				$actionId = $action['id'] instanceof ActionEnum ? $action['id']->value : $action['id'];
+				$resolvedMode = $this->resolveActionMode($action);
+				$actionMode   = $resolvedMode->value;
+				$actionId     = $action['id'] instanceof ActionEnum ? $action['id']->value : $action['id'];
 				if ($this->callAccessActionMethod($actionId, $actionMode, $this->user->id))
 				{
 					return true;
@@ -211,10 +219,92 @@ abstract class EmundusController extends BaseController
 			$classReflection->getAttributes(AccessAttribute::class)
 		);
 
+		$publicAttributes = $methodReflection->getAttributes(PublicAccessAttribute::class);
+
 		return self::$accessAttributeCache[$key] = [
 			'method' => $methodAttributes,
 			'class'  => $classAttributes,
+			'public' => $publicAttributes,
 		];
+	}
+
+	/**
+	 * Resolve the effective CRUD mode for an action declaration.
+	 *
+	 * Supports CrudEnum::CREATE_OR_UPDATE: reads the request parameter named by
+	 * `entityIdParam` (default 'id'). Mode becomes UPDATE when the value > 0,
+	 * CREATE otherwise.
+	 */
+	private function resolveActionMode(array $action): CrudEnum
+	{
+		$mode = $action['mode'];
+		assert($mode instanceof CrudEnum);
+
+		if ($mode !== CrudEnum::CREATE_OR_UPDATE)
+		{
+			return $mode;
+		}
+
+		$entityIdParam = $action['entityIdParam'] ?? 'id';
+		$entityId      = (int) $this->input->getInt($entityIdParam, 0);
+
+		return $entityId > 0 ? CrudEnum::UPDATE : CrudEnum::CREATE;
+	}
+
+	/**
+	 * Enforce a single CRUD access check for the current user on the given action.
+	 *
+	 * Coordinators bypass the action check by default.
+	 *
+	 * @param ActionEnum|string|int $actionId
+	 * @param CrudEnum              $mode
+	 * @param bool                  $bypassForCoordinator
+	 *
+	 * @throws AccessException When the user does not have the required access.
+	 */
+	protected function enforceAccessAction(
+		ActionEnum|string|int $actionId,
+		CrudEnum $mode,
+		bool $bypassForCoordinator = true
+	): void
+	{
+		if ($this->user === null || $this->user->guest)
+		{
+			throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
+		}
+
+		if ($bypassForCoordinator && \EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			return;
+		}
+
+		$resolvedActionId = $actionId instanceof ActionEnum ? $actionId->value : $actionId;
+
+		if (!\EmundusHelperAccess::asAccessAction($resolvedActionId, $mode->value, $this->user->id))
+		{
+			throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
+		}
+	}
+
+	/**
+	 * Enforce CREATE or UPDATE access depending on whether the entity already exists.
+	 *
+	 * Use for save endpoints that handle both creation (entityId <= 0) and update (entityId > 0).
+	 *
+	 * @param ActionEnum|string|int $actionId
+	 * @param int                   $entityId
+	 * @param bool                  $bypassForCoordinator
+	 *
+	 * @throws AccessException When the user does not have the required access.
+	 */
+	protected function enforceCreateOrUpdateAccess(
+		ActionEnum|string|int $actionId,
+		int $entityId,
+		bool $bypassForCoordinator = true
+	): void
+	{
+		$mode = $entityId > 0 ? CrudEnum::UPDATE : CrudEnum::CREATE;
+		$this->enforceAccessAction($actionId, $mode, $bypassForCoordinator);
 	}
 
 	/**

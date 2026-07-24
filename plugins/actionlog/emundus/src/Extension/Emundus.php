@@ -12,6 +12,7 @@ namespace Joomla\Plugin\Actionlog\Emundus\Extension;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Installer\Installer;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Factory\MVCFactoryServiceInterface;
@@ -56,6 +57,10 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	public static function getSubscribedEvents(): array
 	{
+		if (Factory::getApplication()->isClient('cli') && \defined('PHPUNIT_COMPOSER_INSTALL')) {
+			return [];
+		}
+
 		return [
 			'onAfterCampaignUpdate'          => 'onAfterCampaignUpdate',
 			'onAfterCampaignCreate'          => 'onAfterCampaignCreate',
@@ -77,7 +82,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 			'onYousignError'                 => 'onYousignError',
 			'onYousignSendReminder'          => 'onYousignSendReminder',
 			'onYousignRequestCancelled'      => 'onYousignRequestCancelled',
-			'onAfterAutomationProcessed' 	 => 'onAfterAutomationProcessed',
+			'onAfterAutomationProcessed'     => 'onAfterAutomationProcessed',
 			'onAutomationLoopDetected'       => 'onAutomationLoopDetected',
 		];
 	}
@@ -211,7 +216,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	public function onAfterAmmonRegistration(GenericEvent $event): void
 	{
-		$arguments = $event->getArguments();
+		$arguments           = $event->getArguments();
 		$automated_task_user = ComponentHelper::getParams('com_emundus')->get('automated_task_user', 0);
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_AMMON_REGISTRATION';
@@ -227,8 +232,8 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 			$title = 'PLG_ACTIONLOG_EMUNDUS_AMMON_REGISTRATION_ERROR';
 		}
 
-        Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
-        Log::add('Registration successful for fnum ' . $arguments['fnum'] . ' on session ' . $arguments['session_id'] . ' -> ' . $arguments['message'], Log::INFO, 'plugin.emundus.ammon');
+		Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
+		Log::add('Registration successful for fnum ' . $arguments['fnum'] . ' on session ' . $arguments['session_id'] . ' -> ' . $arguments['message'], Log::INFO, 'plugin.emundus.ammon');
 
 		$message = $this->setMessage('ammon', 'create', $title, $arguments['status'], [], $arguments['data'], $more_data, $automated_task_user);
 		$this->addLog([$message], $messageLanguageKey, $context, $automated_task_user);
@@ -236,7 +241,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	public function onAfterAmmonApplicantCreate(GenericEvent $event): void
 	{
-		$arguments          = $event->getArguments();
+		$arguments           = $event->getArguments();
 		$automated_task_user = ComponentHelper::getParams('com_emundus')->get('automated_task_user', 0);
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_AMMON_APPLICANT';
@@ -251,10 +256,10 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	public function onAmmonFoundSimilarName(GenericEvent $event): void
 	{
-		$arguments          = $event->getArguments();
+		$arguments           = $event->getArguments();
 		$automated_task_user = ComponentHelper::getParams('com_emundus')->get('automated_task_user', 0);
-		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_AMMON_FOUND_SIMILAR_NAME';
-		$context            = 'com_emundus.ammon';
+		$messageLanguageKey  = 'PLG_ACTIONLOG_EMUNDUS_AMMON_FOUND_SIMILAR_NAME';
+		$context             = 'com_emundus.ammon';
 
 		$more_data['fnum']    = $arguments['fnum'];
 		$more_data['name']    = $arguments['name'];
@@ -266,10 +271,10 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	public function onAmmonSync(GenericEvent $event): void
 	{
-		$arguments          = $event->getArguments();
+		$arguments           = $event->getArguments();
 		$automated_task_user = ComponentHelper::getParams('com_emundus')->get('automated_task_user', 0);
-		$messageLanguageKey = $arguments['message_key'];
-		$context            = 'com_emundus.ammon';
+		$messageLanguageKey  = $arguments['message_key'];
+		$context             = 'com_emundus.ammon';
 
 		$old_data  = $arguments['old_data'] ?? [];
 		$new_data  = $arguments['new_data'] ?? [];
