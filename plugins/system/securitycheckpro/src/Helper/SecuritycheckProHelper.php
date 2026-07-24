@@ -29,7 +29,7 @@ class SecuritycheckProHelper
         string $type,
         string $uri,
         string $original_string,
-        string $username,
+        ?string $username,
         string $component
     ): void {
         if (!$logs_attacks) {

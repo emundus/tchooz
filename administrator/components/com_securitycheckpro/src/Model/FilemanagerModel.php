@@ -913,7 +913,9 @@ class FilemanagerModel extends BaseModel
 		$max_time_filename = "";	// string
 						
 		foreach ($iterator as $pathname => $fileInfo) {
-			
+
+			$this->heartbeat();
+
 			if (!$fileInfo instanceof \SplFileInfo) {
 				// Defensa extra por si alguien cambia el iterador en el futuro
 				continue;
@@ -1798,10 +1800,12 @@ class FilemanagerModel extends BaseModel
 		$excludeList = $this->skipDirsPermissions;
 		$normalizedExcludes = $this->normalizeExcludes($excludeList);
 
-		// 5) Listado de carpetas (recursivo, rutas completas)
+		// 5) Listado de carpetas (recursivo, rutas completas). No usamos Folder::folders()
+		// porque no emite salida hasta recorrer todo el árbol y algunos servidores matan
+		// el proceso por falta de salida ("Timeout waiting for output from CGI script").
 		try {
 			/** @var list<string> $folders_name */
-			$folders_name = Folder::folders($canonicalRoot, '.', true, true, [] /*exclude*/, [] /*excludefilter*/);
+			$folders_name = $this->listFoldersRecursively($canonicalRoot);
 		} catch (\Throwable $e) {
 			$this->write_log('getDirectories(): error leyendo directorios: ' . $e->getMessage(), 'ERROR');
 			return;
@@ -1835,6 +1839,7 @@ class FilemanagerModel extends BaseModel
 		// 8) Procesar
 		$folders = [];
 		foreach ($folders_name as $folder) {
+			$this->heartbeat();
 			try {
 				$this->files_processed_permissions++;
 
@@ -1888,6 +1893,83 @@ class FilemanagerModel extends BaseModel
 			/** @var array<int,array<string,mixed>> $folders */
 			$this->Stack = array_merge($this->Stack, $folders);
 		}
+	}
+
+	/**
+	 * Momento (epoch) del último latido de salida enviado al navegador.
+	 */
+	private int $lastHeartbeat = 0;
+
+	/**
+	 * Envía un byte de relleno y vacía los búferes de salida, como máximo una vez cada
+	 * 10 segundos. Algunos servidores (Apache mod_cgi/mod_fcgid) matan el proceso si el
+	 * script no produce salida durante el escaneo ("Timeout waiting for output from CGI
+	 * script"), aunque el límite de tiempo de PHP esté desactivado. Sólo actúa en el
+	 * backend, donde la respuesta del escaneo es texto que el JS descarta; en CLI/cron y
+	 * en el frontend (respuestas JSON al Control Center) no debe emitirse relleno.
+	 */
+	private function heartbeat(): void
+	{
+		$now = time();
+		if (($now - $this->lastHeartbeat) < 10) {
+			return;
+		}
+		$this->lastHeartbeat = $now;
+
+		if (PHP_SAPI === 'cli') {
+			return;
+		}
+
+		$app = Factory::getApplication();
+		if (!$app instanceof CMSApplication || !$app->isClient('administrator')) {
+			return;
+		}
+
+		echo ' ';
+		while (ob_get_level() > 0) {
+			if (@ob_end_flush() === false) {
+				break;
+			}
+		}
+		@flush();
+	}
+
+	/**
+	 * Lista carpetas recursivamente (rutas completas) emitiendo latidos de salida
+	 * durante el recorrido. Omite symlinks para evitar bucles.
+	 *
+	 * @return list<string>
+	 */
+	private function listFoldersRecursively(string $base): array
+	{
+		$folders = [];
+		$pending = [$base];
+
+		while ($pending !== []) {
+			$dir     = array_pop($pending);
+			$entries = @scandir($dir);
+			if ($entries === false) {
+				continue;
+			}
+
+			foreach ($entries as $entry) {
+				if ($entry === '.' || $entry === '..') {
+					continue;
+				}
+
+				$path = $dir . DIRECTORY_SEPARATOR . $entry;
+				if (is_link($path) || !is_dir($path)) {
+					continue;
+				}
+
+				$folders[] = $path;
+				$pending[] = $path;
+			}
+
+			$this->heartbeat();
+		}
+
+		return $folders;
 	}
 
 	/**
@@ -2902,6 +2984,12 @@ class FilemanagerModel extends BaseModel
      */
     function scan($opcion)
     {
+		// Elevamos el límite aquí porque el listado recursivo de carpetas de getDirectories()
+		// se ejecuta antes de que getFiles() lo haga; en sitios grandes el max_execution_time
+		// del servidor mataba el proceso durante ese listado.
+		if (\function_exists('set_time_limit')) {
+			@set_time_limit(0);
+		}
 
         $include_exceptions = 0;
         $folder_exceptions = 0;
