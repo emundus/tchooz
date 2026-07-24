@@ -33,6 +33,7 @@ use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
@@ -249,7 +250,8 @@ class EmundusModelApplication extends ListModel
 			}
 			$m_sign = new EmundusModelSign();
 			$m_settings = new EmundusModelSettings();
-			$sign_enabled = $m_settings->getAddonStatus('numeric_sign')['enabled'];
+			$numericSignAddon = (new AddonRepository())->getByName('numeric_sign');
+			$sign_enabled = !empty($numericSignAddon) && $numericSignAddon->isActivated();
 			if($sign_enabled && !$app->isClient('cli'))
 			{
 				$emundusUser      = $app->getSession()->get('emundusUser');
