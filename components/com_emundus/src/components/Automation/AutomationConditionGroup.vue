@@ -1,7 +1,7 @@
 <script>
 import AutomationCondition from '@/components/Automation/AutomationCondition.vue';
 import { newConditionGroup } from '@/components/Automation/conditionGroup.js';
-import Button from '@/components/Atoms/Button.vue';
+import { Button } from '@emundus/ui';
 
 export default {
 	name: 'AutomationConditionGroup',
@@ -195,13 +195,13 @@ export default {
 			<div class="tw-flex tw-w-full tw-flex-row tw-justify-end tw-gap-2">
 				<Button
 					v-if="canAddConditionGroup"
-					:variant="'orange'"
+					variant="warning"
 					id="add-condition-group"
 					@click="addConditionGroup(conditionGroup.id)"
 				>
 					{{ translate('COM_EMUNDUS_AUTOMATION_ADD_CONDITION_GROUP') }}
 				</Button>
-				<Button @click="addCondition" variant="orange">
+				<Button @click="addCondition" variant="warning">
 					{{ translate('COM_EMUNDUS_AUTOMATION_ADD_CONDITION') }}
 				</Button>
 			</div>
