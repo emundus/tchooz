@@ -933,8 +933,8 @@ class EmundusModelForm extends ListModel
 
 					$newmenutype = 'menu-profile' . $profile->getId();
 					$new_title = $profile->getLabel();
-					if (strlen($new_title) > 48) {
-						$new_title = substr($new_title, 0, 45) . '...';
+					if (mb_strlen($new_title, 'UTF-8') > 48) {
+						$new_title = mb_substr($new_title, 0, 45, 'UTF-8') . '...';
 					}
 					$newmenutype = $this->createMenuType($newmenutype, $new_title);
 					if (empty($newmenutype)) {
@@ -1527,8 +1527,8 @@ class EmundusModelForm extends ListModel
 			$query = $this->db->getQuery(true);
 
 			// Truncate label to 150 characters if too long to avoid database errors
-			if (strlen($label) > 150) {
-				$label = substr($label, 0, 147) . '...';
+			if (mb_strlen($label, 'UTF-8') > 150) {
+				$label = mb_substr($label, 0, 147, 'UTF-8') . '...';
 			}
 
 			$query->update($this->db->quoteName('#__menu_types'))
