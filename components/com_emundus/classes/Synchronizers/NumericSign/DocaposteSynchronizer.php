@@ -31,6 +31,7 @@ use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Traits\TraitAutomatedTask;
 use Tchooz\Traits\TraitDispatcher;
+use Tchooz\Transformers\PhoneNumberTransformer;
 
 class DocaposteSynchronizer extends Api
 {
@@ -590,7 +591,7 @@ class DocaposteSynchronizer extends Api
 				'firstname'  => $contact->getFirstname(),
 				'lastname'   => $contact->getLastname(),
 				'email'      => $contact->getEmail(),
-				'phone'      => $contact->getPhone1(),
+				'phone'      => PhoneNumberTransformer::toE164($contact->getPhone1()) ?? $contact->getPhone1(),
 				'externalId' => $signer->getId(),
 			];
 
