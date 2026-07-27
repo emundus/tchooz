@@ -197,11 +197,11 @@ class EmundusModelSign extends ListModel
 							if (is_array($signer))
 							{
 								$signer['order'] = isset($signer['order']) ? (int)$signer['order'] : 0;
-								$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, $signer['page'] ?? 0, $signer['position'] ?? '', $signer['authentication_level'] ?? SignAuthenticationLevelEnum::STANDARD->value, $signer['anchor'] ?? '', $signer['order']);
+								$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, $signer['page'] ?? 0, $signer['position'] ?? '', $signer['authentication_level'] ?? SignAuthenticationLevelEnum::STANDARD->value, $signer['anchor'] ?? '', $signer['order'], $contact->getPhone1());
 							}
 							else
 							{
-								$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, 0, '', $signer['authentication_level'] ?? SignAuthenticationLevelEnum::STANDARD->value, '', 0);
+								$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, 0, '', $signer['authentication_level'] ?? SignAuthenticationLevelEnum::STANDARD->value, '', 0, $contact->getPhone1());
 							}
 						}
 					}
@@ -222,7 +222,7 @@ class EmundusModelSign extends ListModel
 		}
 	}
 
-	public function addSigner(int $request_id, string $email, string $firstname, string $lastname, ?string $status = 'to_sign', ?int $step = 1, ?int $page = 0, ?string $position = '', ?string $authentication_level = SignAuthenticationLevelEnum::STANDARD->value, ?string $anchor = '', ?int $order = 0): int
+	public function addSigner(int $request_id, string $email, string $firstname, string $lastname, ?string $status = 'to_sign', ?int $step = 1, ?int $page = 0, ?string $position = '', ?string $authentication_level = SignAuthenticationLevelEnum::STANDARD->value, ?string $anchor = '', ?int $order = 0, ?string $phoneNumber = null): int
 	{
 		try
 		{
@@ -232,7 +232,7 @@ class EmundusModelSign extends ListModel
 				$contact           = $contactRepository->getByEmail($email);
 				if (empty($contact))
 				{
-					$contact = new ContactEntity($email, $lastname, $firstname, '');
+					$contact = new ContactEntity($email, $lastname, $firstname, $phoneNumber);
 					$contactRepository->flush($contact);
 				}
 

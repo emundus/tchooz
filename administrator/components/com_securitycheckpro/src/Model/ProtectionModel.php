@@ -403,13 +403,13 @@ class ProtectionModel extends BaseDatabaseModel
 
 		$htaccessPath = JPATH_SITE . DIRECTORY_SEPARATOR . '.htaccess';
 		if (!is_file($htaccessPath)) {
-			$applied['backend_protection_applied'] = !empty($actualConfig['backend_protection_applied']) ? 1 : 0;
+			$applied['backend_protection_applied'] = $this->computeBackendProtectionApplied($actualConfig, $applied);
 			return $applied;
 		}
 
 		$rules = (string) @file_get_contents($htaccessPath);
 		if ($rules === '') {
-			$applied['backend_protection_applied'] = !empty($actualConfig['backend_protection_applied']) ? 1 : 0;
+			$applied['backend_protection_applied'] = $this->computeBackendProtectionApplied($actualConfig, $applied);
 			return $applied;
 		}
 		// Normaliza EOL a \n
@@ -626,32 +626,35 @@ class ProtectionModel extends BaseDatabaseModel
 			}
 		}
 
-		// hide_backend_url
-		$hideBackend = (string) $this->getValue('hide_backend_url');
+		// hide_backend_url: buscamos el token de la clave tal y como lo escribe protect()
+		$hideBackend = $this->sanitizeHtLine((string) $this->getValue('hide_backend_url'));
 		if ($hideBackend !== '') {
-			$pat = '~RewriteCond\s+\%\{QUERY_STRING\}\s+!\s*' . preg_quote($hideBackend, '~') . '(?:\s|\]|$)~i';
-			if (preg_match($pat, $rules)) {
+			$needle = 'RewriteCond %{QUERY_STRING} (?:^|&)' . $this->quoteForApacheRegex($hideBackend) . '(?:&|$)';
+			if (strpos($rules, $needle) !== false) {
 				$applied['hide_backend_url'] = 1;
 			}
 		}
 
-		// hide_backend_url_redirection
-		$hideBackendRedirect = (string) $this->getValue('hide_backend_url_redirection');
+		// hide_backend_url_redirection: protect() la escribe como 'RewriteRule ^.*$ /destino [R=302,L]'
+		$hideBackendRedirect = $this->sanitizeHtLine((string) $this->getValue('hide_backend_url_redirection'));
 		if ($hideBackendRedirect !== '') {
-			$redir = ltrim($hideBackendRedirect, '/');
-			$pat   = '~RewriteRule\s+\^\.\*administrator/\?\s+/' . preg_quote($redir, '~') . '(?:\s|\[|$)~i';
-			if (preg_match($pat, $rules)) {
+			$redir = $hideBackendRedirect;
+			if (strtolower($redir) === 'not_found') {
+				$redir = '/';
+			} elseif ($redir[0] !== '/') {
+				$redir = '/' . $redir;
+			}
+			if (strpos($rules, 'RewriteRule ^.*$ ' . $redir . ' [R=302,L]') !== false) {
 				$applied['hide_backend_url_redirection'] = 1;
 			}
 		}
 
-		// backend_exceptions: todas presentes
-		$backendExceptions = $this->toNonEmptyLines((string) $this->getValue('backend_exceptions'));
-		if (!empty($backendExceptions)) {
+		// backend_exceptions: todas las RewriteCond que generaría protect() están presentes
+		$backendExceptionConds = $this->backendExceptionConds();
+		if (!empty($backendExceptionConds)) {
 			$allPresent = true;
-			foreach ($backendExceptions as $ex) {
-				$pat = '~\%\{QUERY_STRING\}\s+!\s*' . preg_quote($ex, '~') . '(?:\s|\]|$)~i';
-				if (!preg_match($pat, $rules)) {
+			foreach ($backendExceptionConds as $cond) {
+				if (strpos($rules, $cond) === false) {
 					$allPresent = false;
 					break;
 				}
@@ -661,8 +664,8 @@ class ProtectionModel extends BaseDatabaseModel
 			}
 		}
 
-		// backend_protection_applied se toma de la config real
-		$applied['backend_protection_applied'] = !empty($actualConfig['backend_protection_applied']) ? 1 : 0;
+		// backend_protection_applied: flag manual u otra protección real del backend detectada
+		$applied['backend_protection_applied'] = $this->computeBackendProtectionApplied($actualConfig, $applied);
 
 		return $applied;
 	}
@@ -690,7 +693,126 @@ class ProtectionModel extends BaseDatabaseModel
 		$text = $this->normalizeNewlines($text);
 		$lines = array_map('trim', explode("\n", $text));
 		return array_values(array_filter($lines, static fn (string $v): bool => $v !== ''));
-	}   
+	}
+
+	/**
+	 * Sanea una línea destinada al .htaccess: neutraliza nuestros marcadores, elimina
+	 * CR/LF/NUL, normaliza espacios y limita la longitud.
+	 */
+	private function sanitizeHtLine(string $line, int $maxLen = 4096): string
+	{
+		// Evita que un usuario cierre/inyecte nuestros marcadores o bloques
+		$forbidden = [
+			'## Begin Securitycheck Pro',
+			'## End Securitycheck Pro',
+		];
+		foreach ($forbidden as $f) {
+			if (stripos($line, $f) !== false) {
+				// Neutraliza el marcador
+				$line = str_ireplace($f, str_replace('#', '#', $f), $line);
+			}
+		}
+
+		// Quita CR/LF/NUL y normaliza espacios
+		$line = str_replace(["\r", "\n", "\0"], '', $line);
+		$line = preg_replace('/[ \t]+/u', ' ', $line) ?? '';
+		$line = trim($line);
+		if (strlen($line) > $maxLen) {
+			$line = substr($line, 0, $maxLen);
+		}
+		return $line;
+	}
+
+	/**
+	 * Literaliza un patrón (no regex) dentro de RewriteCond para que sea seguro.
+	 * \Q...\E es soportado por el PCRE que utiliza Apache.
+	 */
+	private function quoteForApacheRegex(string $literal): string
+	{
+		return '\Q' . $literal . '\E';
+	}
+
+	/**
+	 * Construye, a partir de la configuración guardada, las líneas RewriteCond que protect()
+	 * escribe para cada excepción del backend. Se usa para detectar si están aplicadas, por lo
+	 * que la normalización (prefijos qs:/uri:, comodín '*', límite de 20) ha de ser idéntica.
+	 *
+	 * @return list<string>
+	 */
+	private function backendExceptionConds(): array
+	{
+		$raw   = (string) $this->getValue('backend_exceptions');
+		$items = preg_split('/[,\r\n]+/', $raw) ?: [];
+		$items = array_map(static fn(string $v): string => trim($v), $items);
+		$items = array_values(array_filter($items, static fn(string $v): bool => $v !== ''));
+
+		$seen  = [];
+		$conds = [];
+		foreach ($items as $ex) {
+			// Sin prefijo equivale a 'qs:'
+			if (stripos($ex, 'qs:') !== 0 && stripos($ex, 'uri:') !== 0) {
+				$ex = 'qs:' . $ex;
+			}
+			if (isset($seen[$ex])) {
+				continue;
+			}
+			$seen[$ex] = true;
+
+			if (stripos($ex, 'qs:') === 0) {
+				$mode = 'qs';
+				$ex   = substr($ex, 3);
+			} else {
+				$mode = 'uri';
+				$ex   = substr($ex, 4);
+			}
+
+			$ex = $this->sanitizeHtLine($ex);
+			if ($ex === '') {
+				continue;
+			}
+
+			// Soporte del comodín '*' idéntico al de protect()
+			$parts       = explode('*', $ex);
+			$quotedParts = array_map(fn(string $p): string => $this->quoteForApacheRegex($p), $parts);
+			$glue        = ($mode === 'qs') ? '(?:[^&]*)' : '.*';
+			$safePattern = implode($glue, $quotedParts);
+
+			if ($mode === 'qs') {
+				$conds[] = 'RewriteCond %{QUERY_STRING} (?:^|&)' . $safePattern . '(?:&|$) [NC]';
+			} else {
+				if ($ex[0] !== '/') {
+					$safePattern = '^/' . $safePattern;
+				} elseif (strpos($safePattern, '^') !== 0) {
+					$safePattern = '^' . $safePattern;
+				}
+				$conds[] = 'RewriteCond %{REQUEST_URI} ' . $safePattern . ' [NC]';
+			}
+
+			// protect() escribe como máximo 20 excepciones
+			if (count($seen) >= 20) {
+				break;
+			}
+		}
+
+		return $conds;
+	}
+
+	/**
+	 * Calcula el estado 'aplicado' de la protección del backend: el flag manual («aplicada de
+	 * otra forma»), las reglas de ocultación de la url detectadas en el .htaccess o la
+	 * existencia de un fichero .htpasswd en la carpeta administrator.
+	 *
+	 * @param array<string, string>|null              $actualConfig Configuración guardada
+	 * @param array<string, int|list<string>|string>  $applied      Opciones detectadas hasta ahora
+	 */
+	private function computeBackendProtectionApplied(?array $actualConfig, array $applied): int
+	{
+		if (!empty($actualConfig['backend_protection_applied']) || !empty($applied['hide_backend_url'])) {
+			return 1;
+		}
+
+		return is_file(JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . '.htpasswd') ? 1 : 0;
+	}
 
     /**
 	 * Modifica o crea el archivo .htaccess seg�n las opciones escogidas por el usuario,
@@ -716,28 +838,7 @@ class ProtectionModel extends BaseDatabaseModel
 			return $v;
 		};
 
-		$sanitizeHtLine = static function (string $line, int $maxLen = 4096): string {
-			// Evita que un usuario cierre/inyecte nuestros marcadores o bloques
-			$forbidden = [
-				'## Begin Securitycheck Pro',
-				'## End Securitycheck Pro',
-			];
-			foreach ($forbidden as $f) {
-				if (stripos($line, $f) !== false) {
-					// Neutraliza el marcador
-					$line = str_ireplace($f, str_replace('#', '#', $f), $line);
-				}
-			}
-
-			// Quita CR/LF/NUL y normaliza espacios
-			$line = str_replace(["\r", "\n", "\0"], '', $line);
-			$line = preg_replace('/[ \t]+/u', ' ', $line) ?? '';
-			$line = trim($line);
-			if (strlen($line) > $maxLen) {
-				$line = substr($line, 0, $maxLen);
-			}
-			return $line;
-		};
+		$sanitizeHtLine = fn(string $line, int $maxLen = 4096): string => $this->sanitizeHtLine($line, $maxLen);
 
 		// Convierte lista (textarea) en array limpio, evitando l�neas vac�as
 		$toCleanArray = static function (?string $raw) use ($sanitizeHtLine): array {
@@ -747,10 +848,7 @@ class ProtectionModel extends BaseDatabaseModel
 		};
 
 		// Literaliza patr�n (no regex) dentro de RewriteCond para que sea seguro
-		$quoteForApacheRegex = static function (string $literal): string {
-			// \Q...\E es soportado por PCRE utilizado por Apache para RewriteCond
-			return '\Q' . $literal . '\E';
-		};
+		$quoteForApacheRegex = fn(string $literal): string => $this->quoteForApacheRegex($literal);
 
 		// 1) Cargar estado actual / plantilla base
 		$siteUrl      = rtrim(str_replace(['http://', 'https://'], '', Uri::base()), '/');

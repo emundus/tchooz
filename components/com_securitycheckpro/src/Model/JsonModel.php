@@ -339,6 +339,10 @@ class JsonModel extends BaseModel
      */
     public function sendResponsePostPrefer(?string $connect_back_url = null): void
     {
+        // Tras una tarea larga (p.ej. un backup) MySQL puede haber cerrado la conexión por
+        // inactividad; sin ella no podríamos leer el token y el envío fallaría con un fatal.
+        $this->reconnectDatabaseIfNeeded();
+
         if ($connect_back_url !== null) {
             $this->cipher = self::CIPHER_RAW;
 			// Vamos a establecer una id para el sitio o el controlador del controlcenter rechazará la llamada
@@ -2334,33 +2338,148 @@ class JsonModel extends BaseModel
 			return;
 		}
 
-		$akeeba_key = $response['frontend_key'];
+		$akeeba_key = (string) $response['frontend_key'];
 		$akeeba_profile = (int) $response['akeeba_profile'];
-		
+
 		// Componente (com_akeeba para J3 y com_akeebackup para J4)
 		$akeeba_component = "com_akeebabackup";
-		
-		$this->write_log("Launching curl: " . $uri . "?option=" . $akeeba_component . "&view=backup&key=removed_for_security&profile=" . $akeeba_profile);
-		
-		// Inicializamos la tarea
-		$ch = curl_init($uri . "?option=" . $akeeba_component . "&view=backup&key=" . $akeeba_key . "&profile=" . $akeeba_profile);
-		
-		// Configuraci�n extra�da de https://www.akeebabackup.com/documentation/akeeba-backup-documentation/automating-your-backup.html
-		curl_setopt($ch, CURLOPT_HEADER, false);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 300);
 
-		$response = curl_exec($ch);
-		
-		$this->write_log("Akeeba response: " . $response);
+		$this->write_log("Launching curl: " . $uri . "?option=" . $akeeba_component . "&view=backup&key=removed_for_security&profile=" . $akeeba_profile);
+
+		// El backup se ejecuta dentro de la misma petición HTTP con la que el Control Center añade
+		// la tarea, y en sitios grandes dura horas. Respondemos 'Task added' y cerramos la conexión
+		// ANTES de empezar: si no, el curl del Control Center expira y reenvía la tarea por GET,
+		// lo que lanzaría un segundo backup en paralelo.
+		$this->finishRequestEarly('Task added');
+
+		$url = $uri . "?option=" . $akeeba_component . "&view=backup&key=" . urlencode($akeeba_key) . "&profile=" . $akeeba_profile;
+
+		// El backup frontend de Akeeba ejecuta UN paso por petición y redirige al siguiente,
+		// así que seguimos las redirecciones manualmente: cada paso tiene su propio timeout.
+		// Un límite global de redirecciones o de tiempo abortaría los backups grandes a medias.
+		$expected_host = parse_url($uri, PHP_URL_HOST);
+		$max_steps = 10000;
+		$step = 0;
+		$akeeba_response = '';
+		$backup_finished = false;
+
+		while ($step < $max_steps) {
+			$step++;
+
+			$ch = curl_init($url);
+
+			if ($ch === false) {
+				$this->write_log("Backup aborted: can't initialize curl", "ERROR");
+				$this->data = ['backup' => false];
+				return;
+			}
+
+			curl_setopt($ch, CURLOPT_HEADER, false);
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+			curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
+
+			$step_response = curl_exec($ch);
+			$redirect_url = (string) curl_getinfo($ch, CURLINFO_REDIRECT_URL);
+
+			if ($step_response === false) {
+				$this->write_log("Backup step " . $step . " failed: " . curl_error($ch), "ERROR");
+				curl_close($ch);
+				$this->data = ['backup' => false];
+				return;
+			}
+
+			curl_close($ch);
+
+			$akeeba_response = (string) $step_response;
+
+			// No hay más redirecciones: el backup ha terminado
+			if ($redirect_url === '') {
+				$backup_finished = true;
+				break;
+			}
+
+			// Solo seguimos redirecciones que apunten al propio sitio
+			if (parse_url($redirect_url, PHP_URL_HOST) !== $expected_host) {
+				$this->write_log("Backup aborted: redirected outside the site (" . $redirect_url . ")", "ERROR");
+				$this->data = ['backup' => false];
+				return;
+			}
+
+			$url = $redirect_url;
+		}
+
+		if (!$backup_finished) {
+			$this->write_log("Backup aborted: maximum number of steps (" . $max_steps . ") reached", "ERROR");
+			$this->data = ['backup' => 'Error: maximum number of backup steps reached'];
+			return;
+		}
+
+		$this->write_log("Backup finished after " . $step . " step(s). Akeeba response: " . $akeeba_response);
 
 		// Devolvemos el resultado
 		$this->data = [
-			'backup'        => $response
+			'backup'        => $akeeba_response
 		];
+	}
+
+	/**
+	 * Envía la respuesta indicada al cliente y termina la conexión HTTP, dejando el proceso PHP
+	 * vivo para continuar la tarea en segundo plano. El resultado real de la tarea se comunica
+	 * después mediante el callback al Control Center.
+	 *
+	 * @param   string   $body   Response body to send
+	 *
+	 * @return  void
+	 *
+	 */
+	private function finishRequestEarly($body)
+	{
+		ignore_user_abort(true);
+		set_time_limit(0);
+
+		// Vaciamos cualquier buffer de salida abierto por Joomla
+		while (ob_get_level() > 0) {
+			@ob_end_clean();
+		}
+
+		if (!headers_sent()) {
+			header('Content-Type: text/plain; charset=utf-8');
+			header('Content-Length: ' . strlen($body));
+			header('Connection: close');
+		}
+
+		echo $body;
+		flush();
+
+		// PHP-FPM y LiteSpeed cierran aquí la conexión con el cliente
+		if (function_exists('fastcgi_finish_request')) {
+			fastcgi_finish_request();
+		}
+	}
+
+	/**
+	 * Restablece la conexión con la base de datos si el servidor la ha cerrado
+	 * (p.ej. por wait_timeout durante una tarea de larga duración).
+	 *
+	 * @return  void
+	 *
+	 */
+	private function reconnectDatabaseIfNeeded()
+	{
+		try {
+			$db = Factory::getContainer()->get(DatabaseInterface::class);
+
+			if ($db instanceof DatabaseDriver && !$db->connected()) {
+				$db->disconnect();
+				$db->connect();
+				$this->write_log('Database connection re-established after long task');
+			}
+		} catch (\Throwable $e) {
+			$this->write_log('Database reconnection failed: ' . $e->getMessage(), 'ERROR');
+		}
 	}
 
 	/**

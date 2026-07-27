@@ -1994,6 +1994,12 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		// Actionlog plugins record the automation history.
 		PluginHelper::importPlugin('actionlog');
 
+		// Action labels are built via Text::_() on com_emundus site language keys, in the site's default
+		// language. CLI (scheduled tasks) never runs that resolution, so its Language object stays on Joomla's
+		// internal default (en-GB) unless we resolve and pass the same site default language explicitly.
+		$siteDefaultLanguage = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+		Factory::getApplication()->getLanguage()->load('com_emundus', JPATH_SITE . '/components/com_emundus', $siteDefaultLanguage);
+
 		// Circuit breaker: if we are already nested too deep in automation processing for this
 		// request, abort to avoid runaway recursion (infinite loop protection) and notify the manager.
 		if (AutomationExecutionContext::hasReachedMaxProcessingDepth())
