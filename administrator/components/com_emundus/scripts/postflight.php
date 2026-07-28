@@ -2124,4 +2124,84 @@ class Com_EmundusPostflightTasks
 
 		return true;
 	}
+
+	#[PostflightAttribute(name: "Check programs are associated to the all rights group")]
+	public function checkProgramsAllRightsGroupAssociation(): bool
+	{
+		try
+		{
+			$allRightsGroupId = (int) ComponentHelper::getParams('com_emundus')->get('all_rights_group', 1);
+
+			if (empty($allRightsGroupId))
+			{
+				return true;
+			}
+
+			$query = $this->db->getQuery(true)
+				->select('id')
+				->from($this->db->quoteName('#__emundus_setup_groups'))
+				->where($this->db->quoteName('id') . ' = :group_id')
+				->bind(':group_id', $allRightsGroupId, ParameterType::INTEGER);
+			$this->db->setQuery($query);
+
+			if (empty($this->db->loadResult()))
+			{
+				Log::add(
+					'All rights group #' . $allRightsGroupId . ' does not exist, skipping program association',
+					Log::WARNING,
+					'com_emundus.error'
+				);
+
+				return true;
+			}
+
+			$query->clear()
+				->select('p.code')
+				->from($this->db->quoteName('#__emundus_setup_programmes', 'p'))
+				->where('NOT EXISTS (' .
+					(string) $this->db->getQuery(true)
+						->select('1')
+						->from($this->db->quoteName('#__emundus_setup_groups_repeat_course', 'gc'))
+						->where($this->db->quoteName('gc.course') . ' = ' . $this->db->quoteName('p.code'))
+						->where($this->db->quoteName('gc.parent_id') . ' = ' . $allRightsGroupId) .
+					')');
+			$this->db->setQuery($query);
+			$missingCodes = $this->db->loadColumn();
+
+			if (empty($missingCodes))
+			{
+				return true;
+			}
+
+			foreach (array_chunk($missingCodes, 500) as $chunk)
+			{
+				$values = [];
+				foreach ($chunk as $code)
+				{
+					$values[] = $allRightsGroupId . ', ' . $this->db->quote($code);
+				}
+
+				$query->clear()
+					->insert($this->db->quoteName('#__emundus_setup_groups_repeat_course'))
+					->columns([$this->db->quoteName('parent_id'), $this->db->quoteName('course')])
+					->values($values);
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+
+			Log::add(
+				count($missingCodes) . ' program(s) associated to the all rights group #' . $allRightsGroupId,
+				Log::INFO,
+				'com_emundus'
+			);
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Failed to check programs all rights group association: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
+			return false;
+		}
+
+		return true;
+	}
 }
