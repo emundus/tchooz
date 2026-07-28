@@ -19,6 +19,7 @@ use Http\Discovery\Exception\NotFoundException;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
@@ -78,6 +79,28 @@ use Web357\Plugin\System\Microsoftoutlook365mailconnect\Extension\Microsoftoutlo
 // TODO: Split into more controllers
 class EmundusControllersettings extends EmundusController
 {
+	/**
+	 * Mime types accepted for a campaign preliminary document.
+	 * Both the browser-declared type and the one detected from the file content must be in this list.
+	 */
+	private const DROPFILE_MIME_TYPES = [
+		'application/pdf',
+		'application/msword',
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+		'application/vnd.ms-excel',
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+		'application/vnd.ms-powerpoint',
+		'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+		'application/vnd.oasis.opendocument.text',
+		'application/vnd.oasis.opendocument.spreadsheet',
+		'application/vnd.oasis.opendocument.formula',
+		'application/zip',
+		'application/x-zip-compressed',
+		'text/csv',
+		'text/plain',
+		'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'image/webp', 'image/svg+xml',
+	];
+
 	private EmundusModelSettings $m_settings;
 
 	public function __construct($config = array())
@@ -1031,7 +1054,13 @@ class EmundusControllersettings extends EmundusController
 	{
 		$m_campaign = $this->getModel('Campaign');
 
-		$file = $this->input->files->get('file');
+		/*
+		 * Read the file with the 'raw' filter: the default one runs InputFilter::isSafeFile(),
+		 * whose 'fobidden_ext_in_content' rule scans the whole binary of an archive for strings
+		 * such as '.pl'. Those bytes appear by chance in compressed data, so any large enough
+		 * zip was rejected and get() silently returned null. The checks below replace it.
+		 */
+		$file = $this->input->files->get('file', null, 'raw');
 		$cid  = $this->input->get('cid');
 
 		if (empty($file))
@@ -1039,36 +1068,35 @@ class EmundusControllersettings extends EmundusController
 			throw new InvalidArgumentException('No file uploaded', 400);
 		}
 
-		$campaign_category = $m_campaign->getCampaignCategory($cid);
-
 		$path     = $file['name'];
-		$ext      = pathinfo($path, PATHINFO_EXTENSION);
+		$ext      = strtolower(pathinfo($path, PATHINFO_EXTENSION));
 		$filename = pathinfo($path, PATHINFO_FILENAME);
 
-		if (!file_exists('media/com_dropfiles') || !is_dir('media/com_dropfiles'))
+		$allowed_extensions = [
+			'pdf', 'doc', 'docx', 'odf', 'odt', 'csv', 'xls', 'xlsx', 'ods', 'ppt', 'pptx', 'txt', 'zip',
+			'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'
+		];
+
+		// Same scan as Joomla's default file filter, minus the rule that misfires on archives.
+		if (!in_array($ext, $allowed_extensions, true)
+			|| !InputFilter::isSafeFile($file, ['fobidden_ext_in_content' => false]))
 		{
-			mkdir('media/com_dropfiles');
-		}
-		$target_dir = "media/com_dropfiles/$campaign_category/";
-		if (!file_exists($target_dir))
-		{
-			mkdir($target_dir);
+			throw new InvalidArgumentException('File type not allowed', 400);
 		}
 
-		if (!file_exists($target_dir))
+		$campaign_category = $m_campaign->getCampaignCategory($cid);
+
+		// UploadService moves the file and scans it for active content (macros, scripts, JS in PDF).
+		$max_filesize = (int) ComponentHelper::getParams('com_media')->get('upload_maxsize', 10);
+		$uploader     = new UploadService("media/com_dropfiles/$campaign_category/", $max_filesize, self::DROPFILE_MIME_TYPES);
+		$uploaded     = $uploader->upload($file);
+
+		if (empty($uploaded))
 		{
-			throw new RuntimeException('Error while trying to create the dropbox folder.', 500);
+			throw new RuntimeException('Error while trying to move the file to the dropbox folder. File ' . $file['name'] . ' not uploaded.', 500);
 		}
 
-		do
-		{
-			$target_file = $target_dir . rand(1000, 90000) . '.' . $ext;
-		} while (file_exists($target_file));
-
-		if (!move_uploaded_file($file['tmp_name'], $target_file))
-		{
-			throw new RuntimeException('Error while trying to move the file to the dropbox folder. File ' . $file['name'] . ' not uploaded to ' . $target_file . '.', 500);
-		}
+		$target_file = JPATH_SITE . DIRECTORY_SEPARATOR . $uploaded;
 
 		$did      = $this->m_settings->moveUploadedFileToDropbox(pathinfo($target_file, PATHINFO_BASENAME), $filename, $ext, $campaign_category, filesize($target_file));
 		$response = $m_campaign->getDropfileDocument($did);
