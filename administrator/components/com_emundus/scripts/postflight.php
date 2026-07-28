@@ -2204,4 +2204,52 @@ class Com_EmundusPostflightTasks
 
 		return true;
 	}
+
+	#[PostflightAttribute(name: "In some cases menu of type component have 0")]
+	public function repairMenuComponentId(): bool
+	{
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select('id, link, component_id')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('component'))
+				->where($this->db->quoteName('component_id') . ' = 0');
+			$this->db->setQuery($query);
+			$menusToRepair = $this->db->loadObjectList();
+
+			foreach ($menusToRepair as $menuToRepair)
+			{
+				$queryString = parse_url($menuToRepair->link, PHP_URL_QUERY);
+				if (empty($queryString))
+				{
+					continue;
+				}
+
+				parse_str($queryString, $linkParams);
+				$option = $linkParams['option'] ?? null;
+				if (empty($option))
+				{
+					continue;
+				}
+
+				$component = ComponentHelper::getComponent($option);
+				if(!empty($component->id))
+				{
+					$menuToRepair->component_id = $component->id;
+
+					$this->db->updateObject('#__menu', $menuToRepair, 'id');
+				}
+			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Failed to repair menu with component id 0: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
+			return false;
+		}
+
+		return true;
+	}
 }
