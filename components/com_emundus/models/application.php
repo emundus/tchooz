@@ -373,6 +373,9 @@ class EmundusModelApplication extends ListModel
 					}
 
 					$attachment->value = Text::_($attachment->value);
+					// Keep the raw ISO datetimes so the frontend can sort chronologically (the display strings are localized and not sortable).
+					$attachment->timedate_sort = $attachment->timedate;
+					$attachment->modified_sort = $attachment->modified;
 					$attachment->timedate = EmundusHelperDate::displayDate($attachment->timedate, 'DATE_FORMAT_LC2', 0);
 					$attachment->modified = EmundusHelperDate::displayDate($attachment->modified, 'DATE_FORMAT_LC2', 0);
 

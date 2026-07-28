@@ -787,6 +787,11 @@ export default {
 			this.sort = { last: '', order: '', orderBy: '' };
 		},
 		orderBy(key) {
+			// Date columns display a localized string (e.g. "lundi 27 octobre 2025"), which is not sortable.
+			// Sort on the raw ISO datetime provided by the backend instead.
+			const dateSortKeys = { timedate: 'timedate_sort', modified: 'modified_sort' };
+			const sortKey = dateSortKeys[key] ?? key;
+
 			// if last sort is the same as the current sort, reverse the order
 			if (this.sort.last === key) {
 				this.sort.order = this.sort.order === 'asc' ? 'desc' : 'asc';
@@ -794,10 +799,10 @@ export default {
 			} else {
 				// sort in ascending order by key
 				this.attachments.sort((a, b) => {
-					if (a[key] < b[key]) {
+					if (a[sortKey] < b[sortKey]) {
 						return -1;
 					}
-					if (a[key] > b[key]) {
+					if (a[sortKey] > b[sortKey]) {
 						return 1;
 					}
 					return 0;
