@@ -1303,8 +1303,22 @@ class FabrikRepository
 			$labels    = [];
 			foreach ($languages as $language)
 			{
-				$labels[$language->sef] = $labelPrefix . LanguageFactory::getTranslation($oldLabel, $language->lang_code);
+				$translation = LanguageFactory::getTranslation($oldLabel, $language->lang_code);
+
+				if ($translation !== null)
+				{
+					$labels[$language->sef] = $labelPrefix . $translation;
+				}
 			}
+
+			if (empty($labels))
+			{
+				foreach ($languages as $language)
+				{
+					$labels[$language->sef] = $labelPrefix . $oldLabel;
+				}
+			}
+
 			$key     = LanguageFactory::translate($newKey, $labels, $referenceTable, $identifier, $referenceField, $this->user->id);
 			$updated = !empty($key);
 		}
