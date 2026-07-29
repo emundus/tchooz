@@ -197,6 +197,8 @@ class CheckHealthJob extends TchoozJob
 	{
 		$checked = false;
 
+		\EmundusHelperUpdate::installExtension('System - OAuth 2 routing', 'oauth2', null, 'plugin', 1, 'system');
+
 		$query = $this->databaseServiceSource->getDatabase()->createQuery();
 
 		$query->clear()
