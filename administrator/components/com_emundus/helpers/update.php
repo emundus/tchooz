@@ -343,7 +343,11 @@ class EmundusHelperUpdate
 						$query->clear()
 							->update($db->quoteName('#__extensions'))
 							->set($db->quoteName('manifest_cache') . ' = ' . $db->quote($manifest_cache))
+							->set($db->quoteName('state') . ' = 0')
 							->where($db->quoteName('extension_id') . ' = ' . $db->quote($is_existing));
+						if ($enabled !== 0) {
+							$query->set($db->quoteName('enabled') . ' = ' . $enabled);
+						}
 						$db->setQuery($query);
 						$installed = $db->execute();
 
