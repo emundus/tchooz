@@ -1941,6 +1941,8 @@ class EmundusHelperUpdate
 					$parent_id = 1;
 				}
 
+				$menu_data['parent_id'] = $parent_id;
+
 				$menu_table->setLocation($parent_id, $position);
 
 				if (!$menu_table->save($menu_data))
