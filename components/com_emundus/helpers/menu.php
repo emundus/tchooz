@@ -437,6 +437,23 @@ class EmundusHelperMenu
 		return $db->loadObject();
 	}
 
+	/**
+	 * Reads the fabrik form id carried by a menu link, whatever the position of the formid parameter.
+	 *
+	 * @param   string|null  $link
+	 *
+	 * @return int|null
+	 */
+	public static function getFormIdFromLink(?string $link): ?int
+	{
+		if (empty($link) || !preg_match('/formid=([0-9]+)/', $link, $matches))
+		{
+			return null;
+		}
+
+		return (int) $matches[1];
+	}
+
 	public static function getSpecialCharacters(): array
 	{
 		return array('=', '&', ',', '#', '_', '*', ';', '!', '?', ':', '+', '$', '\'', ' ', '£', ')', '(', '@', '%');

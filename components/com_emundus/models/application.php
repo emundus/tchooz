@@ -32,6 +32,7 @@ use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagRemoveDefinition;
 use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
+use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
@@ -2208,13 +2209,12 @@ class EmundusModelApplication extends ListModel
 					$groupes = $this->_db->loadObjectList();
 
 					/*-- Liste des groupes -- */
-					$hidden_group_param_values = [0, '-1', '-2'];
 					foreach ($groupes as $itemg) {
 						$g_params = json_decode($itemg->params);
 
 						if (
 							(($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int) $g_params->access)) &&
-							!in_array($g_params->repeat_group_show_first, $hidden_group_param_values)
+							!GroupVisibilityEnum::fromParams($g_params->repeat_group_show_first ?? null)->isHidden()
 						) {
 							$forms .= '<fieldset class="em-personalDetail">
 											<h3 style="font-size: var(--em-coordinator-h3); font-weight: inherit; padding-left: 0;">' . Text::_($itemg->label) . '</h3>
@@ -2698,7 +2698,7 @@ class EmundusModelApplication extends ListModel
 
 								$check_not_empty_group = $this->checkEmptyGroups($elements, $itemt->db_table_name, $fnum);
 
-								if($check_not_empty_group && !in_array($g_params->repeat_group_show_first, $hidden_group_param_values)) {
+								if($check_not_empty_group && !GroupVisibilityEnum::fromParams($g_params->repeat_group_show_first ?? null)->isHidden()) {
 									$forms .= '<table class="em-mt-8 em-mb-16 em-personalDetail-table-inline tw-p-6 tw-border-separate tw-rounded-coordinator-cards tw-shadow-card tw-bg-neutral-0">';
 
 									$forms .= '<div class="tw-flex tw-flex-row tw-justify-between form-group-title">';
@@ -3184,7 +3184,6 @@ class EmundusModelApplication extends ListModel
 				}
 
 				/*-- Liste des groupes -- */
-				$hidden_group_param_values = [0, '-1', '-2'];
 				foreach ($groupes as $itemg) {
 					$query    = $this->_db->getQuery(true);
 					$g_params = json_decode($itemg->params);
@@ -3196,7 +3195,7 @@ class EmundusModelApplication extends ListModel
 					$g_params->repeated = $g_params->repeated ?? 0;
 
 					if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
-						if(!in_array($g_params->repeat_group_show_first, $hidden_group_param_values) && !empty(Text::_($itemg->label)))
+						if(!GroupVisibilityEnum::fromParams($g_params->repeat_group_show_first ?? null)->isHidden() && !empty(Text::_($itemg->label)))
 						{
 							if(!$page_title_inserted)
 							{
