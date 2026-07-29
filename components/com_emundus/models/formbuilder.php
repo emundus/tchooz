@@ -33,6 +33,7 @@ use Tchooz\Entities\Indexer\IndexEntity;
 use Tchooz\Entities\Profile\ProfileEntity;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
+use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
@@ -4343,7 +4344,7 @@ class EmundusModelFormbuilder extends ListModel
 		return $saved;
 	}
 
-	function displayHideGroup($gid)
+	function displayHideGroup(int $gid): string|false
 	{
 
 		$query = $this->db->getQuery(true);
@@ -4355,14 +4356,18 @@ class EmundusModelFormbuilder extends ListModel
 				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($gid));
 			$this->db->setQuery($query);
 			$group_params = json_decode($this->db->loadResult());
-			if ((int) $group_params->repeat_group_show_first == -1)
+
+			if (!is_object($group_params))
 			{
-				$group_params->repeat_group_show_first = 1;
+				Log::add('component/com_emundus/models/formbuilder | Cannot read params of group ' . $gid, Log::ERROR, 'com_emundus');
+
+				return false;
 			}
-			else
-			{
-				$group_params->repeat_group_show_first = -1;
-			}
+
+			$visibility = GroupVisibilityEnum::fromParams($group_params->repeat_group_show_first ?? null);
+			$visibility = $visibility === GroupVisibilityEnum::HIDDEN ? GroupVisibilityEnum::VISIBLE : GroupVisibilityEnum::HIDDEN;
+
+			$group_params->repeat_group_show_first = $visibility->value;
 
 			$query->clear()
 				->update($this->db->quoteName('#__fabrik_groups'))
