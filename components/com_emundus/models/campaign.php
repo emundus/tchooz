@@ -25,6 +25,7 @@ use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Factories\ImportFactory;
@@ -2034,6 +2035,20 @@ class EmundusModelCampaign extends ListModel
 
 		if (!empty($data) && !empty($cid))
 		{
+			$config = (new HtmlSanitizerConfig())
+				->allowSafeElements()
+				->allowElement('a', ['href', 'title', 'target'])
+				->allowElement('img', ['src', 'style', 'alt', 'title', 'width', 'height', 'draggable', 'containerstyle', 'wrapperstyle'])
+				->allowElement('p', ['style', 'class'])
+				->allowElement('span', ['style', 'class'])
+				->allowElement('div', ['data-plugin', 'data-type'])
+				->allowAttribute('img', ['src', 'style', 'alt', 'title', 'width', 'height', 'draggable', 'containerstyle', 'wrapperstyle'])
+				->allowAttribute('*', 'style')
+				->allowRelativeLinks(true)
+				->allowRelativeMedias(true)
+				->forceHttpsUrls(true);
+			$complexHtmlSanitizer = HtmlSanitizerSingleton::getInstance($config);
+			
 			$emParams = ComponentHelper::getParams('com_emundus');
 			$force_campaigns_more = $emParams->get('force_campaigns_more', 0);
 			
@@ -2193,8 +2208,9 @@ class EmundusModelCampaign extends ListModel
 						break;
 					case 'description':
 					case 'short_description':
-						$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
-						$val           = $htmlSanitizer->sanitizeFor('section', $val);
+						$val           = $complexHtmlSanitizer->sanitizeFor('body', $val);
+
+						$val = str_replace('containerstyle', 'style', $val);
 
 						if (!empty($selectedLang))
 						{

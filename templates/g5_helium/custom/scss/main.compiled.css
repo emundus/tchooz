@@ -168024,12 +168024,14 @@ video {
 
     ul {
         list-style: initial;
-        padding-left: 24px;
+        padding: 0 1rem;
+        margin: 1.25rem 1rem 1.25rem 1rem;
     }
 
     ol {
         list-style: auto;
-        padding-left: 24px;
+        padding: 0 1rem;
+        margin: 1.25rem 1rem 1.25rem 1rem;
     }
 
     legend {
