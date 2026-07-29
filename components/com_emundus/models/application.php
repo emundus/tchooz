@@ -4253,11 +4253,20 @@ class EmundusModelApplication extends ListModel
 														->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
 														->andWhere($this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quote($params->attachmentId));
 													$this->_db->setQuery($query);
-													$attachment_upload = $this->_db->loadObject();
+													$attachment_uploads = $this->_db->loadObjectList();
 
-													if (!empty($attachment_upload->filename)) {
-														$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
-														$elt  = '<a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a>';
+													if(!empty($attachment_uploads))
+													{
+														$elt = '<ul>';
+														foreach ($attachment_uploads as $attachment_upload)
+														{
+															if (!empty($attachment_upload->filename))
+															{
+																$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
+																$elt  .= '<li><a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a></li>';
+															}
+														}
+														$elt .= '</ul>';
 													}
 													else {
 														$elt = '';
