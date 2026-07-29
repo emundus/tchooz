@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted Access');
 
 use Joomla\CMS\Language\Text;
 use Symfony\Component\Yaml\Yaml;
+use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Factories\LayoutFactory;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
@@ -124,7 +125,7 @@ foreach ($profiles as $profile)
             foreach ($formGroups as $group)
             {
                 $params = json_decode($group->getParamsRaw());
-                if($group->isPublished() && in_array($params->repeat_group_show_first, [1, 3]))
+                if($group->isPublished() && GroupVisibilityEnum::fromParams($params->repeat_group_show_first ?? null)->isVisibleInForm())
                 {
                     $formGroupsObject['groups'][] = [
                         'id'    => $group->getId(),
