@@ -48,23 +48,23 @@ class PdfParser
 		// Columns is between 1 and 5
 		switch ($columns) {
 			case 1:
-				$topMargin = 80;
+				$topMargin = 90;
 				break;
 			case 2:
-				$topMargin = 100;
+				$topMargin = 115;
 				break;
 			case 3:
-				$topMargin = 120;
+				$topMargin = 145;
 				break;
 			case 4:
-				$topMargin = 130;
+				$topMargin = 170;
 				break;
 			case 5:
-				$topMargin = 160;
+				$topMargin = 205;
 				break;
 		}
 
-		$pageMargin = $topMargin + 10;
+		$pageMargin = $topMargin + 15;
 
 		$header = '<style>@page { margin-top: ' . $pageMargin . 'px !important; }</style>';
 		$header .= '<header style="top: -' . $topMargin . 'px;">';

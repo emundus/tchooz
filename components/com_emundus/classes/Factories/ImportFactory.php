@@ -334,7 +334,7 @@ class ImportFactory
 
 			$spreadsheet = new Spreadsheet();
 			$dataSheet   = $spreadsheet->getActiveSheet();
-			$dataSheet->setTitle(substr($campaign_label, 0, 31));
+			$dataSheet->setTitle($this->sanitizeSheetTitle($campaign_label));
 
 			$csv_directory = JPATH_ROOT . '/tmp/' . $campaign_label . '/';
 			if (!is_dir($csv_directory))
@@ -448,7 +448,7 @@ class ImportFactory
 
 			$writer->save($xlsx_file);
 		}
-		catch (\Exception $e)
+		catch (\Throwable $e)
 		{
 			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
@@ -456,20 +456,25 @@ class ImportFactory
 		return $xlsx_file;
 	}
 
+	private function sanitizeSheetTitle(string $title): string
+	{
+		$title = str_replace(Worksheet::getInvalidCharacters(), '', $title);
+		$title = preg_replace('/\s+|-/', '_', $title);
+
+		return substr($title, 0, 31);
+	}
+
 	private function createDataSheet(Spreadsheet $spreadsheet, string $label, array $options, string $cell, bool $validators = true): void
 	{
 		try
 		{
-			$dataSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet);
+			$dataSheet = new Worksheet($spreadsheet);
 
-			$sheet_name = LanguageFactory::replaceAccents($label);
 			$newSheet      = $spreadsheet->addSheet($dataSheet);
 			$newSheetIndex = $newSheet->getParent()->getIndex($newSheet);
 			$spreadsheet->setActiveSheetIndex($newSheetIndex);
 
-			$sheet_name = $newSheetIndex . '_' . $sheet_name;
-			$sheet_name = preg_replace('/\s+|-/', '_', $sheet_name);
-			$sheet_name = substr($sheet_name, 0, 31);
+			$sheet_name = $this->sanitizeSheetTitle($newSheetIndex . '_' . LanguageFactory::replaceAccents($label));
 			$dataSheet->setTitle($sheet_name);
 
 			$dataSheet->setCellValue('A1', Text::_('COM_EMUNDUS_ONBOARD_VALUES'));
@@ -504,7 +509,7 @@ class ImportFactory
 				$validation->setFormula1($sheet_name . '!$C$2:$C$' . (count($options) + 1));
 			}
 		}
-		catch (Exception $e)
+		catch (\Throwable $e)
 		{
 			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}

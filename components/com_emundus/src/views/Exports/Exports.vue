@@ -238,7 +238,7 @@ export default defineComponent({
 
 					let confirmMessage = 'LINK_TO_DOWNLOAD';
 					let closeMessage = 'COM_EMUNDUS_CLOSE';
-					if (async && !response.data.progress >= 100) {
+					if (async && (!response.data || !response.data.progress >= 100)) {
 						confirmMessage = 'COM_EMUNDUS_GO_TO_EXPORTS_PAGE';
 						closeMessage = 'COM_EMUNDUS_STAY_ON_PAGE';
 					}

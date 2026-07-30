@@ -1078,9 +1078,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	    $htmldata .= "
 			<style>
 					@page { 
-						margin: 130px 25px; 
+						margin: 150px 25px; 
 					}
-					header { position: fixed; top: -120px; left: 0px; right: 0px; }
+					header { position: fixed; top: -140px; left: 0px; right: 0px; }
 					header hr {
 						border: none;
 						height: 1px;
@@ -1534,14 +1534,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 		/** DOMPDF */
 	    $options = new Options();
-	    $options->set('defaultFont', 'helvetica');
+	    \Tchooz\Services\Export\Pdf\PdfFont::configureOptions($options);
 		$options->set('isPhpEnabled', true);
 	    $dompdf = new Dompdf($options);
 	    $dompdf->addInfo('Producer', '');
 	    $dompdf->addInfo('Creator', '');
 
 	    try {
-		    $dompdf->loadHtml($htmldata);
+		    $dompdf->loadHtml(\Tchooz\Services\Export\Pdf\PdfFont::injectFontFace($htmldata));
 		    $dompdf->render();
 
 		    if($output) {
@@ -1602,7 +1602,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 
 	// replace fpdi with dompdf
 	$pdf_options = new Options();
-	$pdf_options->set('defaultFont', 'freeserif');
+	\Tchooz\Services\Export\Pdf\PdfFont::configureOptions($pdf_options);
 	$pdf_options->set('isPhpEnabled', true);
 	$dompdf = new Dompdf($pdf_options);
 
@@ -1783,7 +1783,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
         $start_page = $pdf->getPage();
         $pdf->writeHTMLCell(0, '', '', $start_y, $htmldata, 'B', 1);*/
 
-	    $dompdf->loadHtml($htmldata);
+	    $dompdf->loadHtml(\Tchooz\Services\Export\Pdf\PdfFont::injectFontFace($htmldata));
 		$dompdf->render();
 	}
 
