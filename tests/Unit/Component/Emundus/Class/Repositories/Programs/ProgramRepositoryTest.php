@@ -167,6 +167,33 @@ class ProgramRepositoryTest extends UnitTestCase
 		$this->assertIsArray($codes, 'getCodesByIds should return an array');
 		$this->assertEmpty($codes, 'getCodesByIds should return an empty array when no IDs are provided');
 	}
+	
+
+	/**
+	 * @covers \Tchooz\Repositories\Programs\ProgramRepository::codeExists
+	 * @return void
+	 */
+	public function testCodeExistsReturnsTrueWhenCodeIsAlreadyUsed()
+	{
+		$exists = $this->repository->codeExists($this->dataset['program']['programme_code']);
+		$this->assertTrue($exists, 'codeExists should return true when a program already uses the given code');
+
+		$unknownCodeExists = $this->repository->codeExists('non_existing_code_' . uniqid());
+		$this->assertFalse($unknownCodeExists, 'codeExists should return false when no program uses the given code');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Programs\ProgramRepository::codeExists
+	 * @return void
+	 */
+	public function testCodeExistsReturnsFalseWhenTheOnlyMatchingProgramIsExcluded()
+	{
+		$exists = $this->repository->codeExists(
+			$this->dataset['program']['programme_code'],
+			[$this->dataset['program']['programme_id']]
+		);
+		$this->assertFalse($exists, 'codeExists should return false when the only program using the code is excluded');
+	}
 
 	// -------------------------------------------------------------------------
 	// flush — insert / update

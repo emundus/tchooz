@@ -37,6 +37,12 @@ trait TraitResponse
 				}
 			}
 
+			if (!isset(EmundusResponse::$statusTexts[$code]))
+			{
+				// Non HTTP status codes (database error codes for instance) would produce an invalid header
+				$code = 500;
+			}
+
 			$header = 'HTTP/1.1 ' . $code . ' ' . EmundusResponse::$statusTexts[$code];
 			header($header);
 		}

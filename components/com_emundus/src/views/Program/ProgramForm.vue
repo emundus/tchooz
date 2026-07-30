@@ -201,7 +201,7 @@ export default {
 					});
 				} else {
 					this.loading = false;
-					this.alertError(response.message);
+					this.alertError(response.msg || this.translate('COM_EMUNDUS_PROGRAM_FORM_ERROR'));
 				}
 			});
 		},
