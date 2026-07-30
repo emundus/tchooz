@@ -935,9 +935,15 @@ class EmundusModelCampaign extends ListModel
 				$query = $this->_db->getQuery(true);
 
 				$query->select('COUNT(id)')
-					->from($this->_db->quoteName('#__emundus_campaign_candidature'))
-					->where($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')')
-					->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $campaign_id)
+					->from($this->_db->quoteName('#__emundus_campaign_candidature'));
+					if(!empty($limit->steps))
+					{
+						$query->where($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')');
+					}
+					else {
+						$query->where($this->_db->quoteName('status') . ' <> 0');
+					}
+					$query->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $campaign_id)
 					->andWhere($this->_db->quoteName('published') . ' = 1');
 
 				try
