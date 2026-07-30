@@ -29,9 +29,9 @@ class UploadService
 		int $maxFilesizeMB = 10,
 		array $validMimeTypes = null
 	) {
-		// Upload directory must be start by images/emundus/ or tmp/
-		if (!preg_match('#^(images/emundus/|tmp/)#', str_replace(DIRECTORY_SEPARATOR, '/', $uploadDir))) {
-			throw new InvalidArgumentException('Upload directory must be within images/emundus/ or tmp/');
+		// Upload directory must be start by images/emundus/, tmp/ or media/com_dropfiles/
+		if (!preg_match('#^(images/emundus/|tmp/|media/com_dropfiles/)#', str_replace(DIRECTORY_SEPARATOR, '/', $uploadDir))) {
+			throw new InvalidArgumentException('Upload directory must be within images/emundus/, tmp/ or media/com_dropfiles/');
 		}
 
 		$this->uploadDir = rtrim($uploadDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;

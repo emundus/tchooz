@@ -641,7 +641,7 @@ class EmundusModelEmails extends JModelList
 	 * @throws Exception
 	 * @since version v6
 	 */
-	public function setConstants(?int $user_id, ?array $post = null, string $passwd = '', ?string $fnum = null, string $content = ''): array
+	public function setConstants(?int $user_id, ?array $post = null, ?string $passwd = '', ?string $fnum = null, string $content = ''): array
 	{
 		$patterns = array();
 		$replacements = array();
@@ -690,6 +690,8 @@ class EmundusModelEmails extends JModelList
 			{
 				$base_url .= '/';
 			}
+
+			$passwd = is_null($passwd) ? '' : $passwd;
 
 			$activation = $user->get('activation');
 
