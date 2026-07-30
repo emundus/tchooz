@@ -26,6 +26,7 @@ use Joomla\CMS\User\User;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
+use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Enums\User\AuthenticationModeEnum;
 use Tchooz\Factories\Fabrik\FabrikOptionsFactory;
 use Tchooz\Factories\Language\LanguageFactory;
@@ -933,8 +934,8 @@ class EmundusModelForm extends ListModel
 
 					$newmenutype = 'menu-profile' . $profile->getId();
 					$new_title = $profile->getLabel();
-					if (strlen($new_title) > 48) {
-						$new_title = substr($new_title, 0, 45) . '...';
+					if (mb_strlen($new_title, 'UTF-8') > 48) {
+						$new_title = mb_substr($new_title, 0, 45, 'UTF-8') . '...';
 					}
 					$newmenutype = $this->createMenuType($newmenutype, $new_title);
 					if (empty($newmenutype)) {
@@ -1017,8 +1018,10 @@ class EmundusModelForm extends ListModel
 					$this->db->setQuery($query);
 					$links = $this->db->loadObjectList();
 					foreach ($links as $link) {
-						if (str_contains($link->link, 'formid')) {
-							$formsid_arr[] = explode('=', $link->link)[3];
+						$linkedFormId = EmundusHelperMenu::getFormIdFromLink($link->link);
+
+						if (!empty($linkedFormId)) {
+							$formsid_arr[] = $linkedFormId;
 						}
 					}
 
@@ -1527,8 +1530,8 @@ class EmundusModelForm extends ListModel
 			$query = $this->db->getQuery(true);
 
 			// Truncate label to 150 characters if too long to avoid database errors
-			if (strlen($label) > 150) {
-				$label = substr($label, 0, 147) . '...';
+			if (mb_strlen($label, 'UTF-8') > 150) {
+				$label = mb_substr($label, 0, 147, 'UTF-8') . '...';
 			}
 
 			$query->update($this->db->quoteName('#__menu_types'))
@@ -2155,18 +2158,18 @@ class EmundusModelForm extends ListModel
 
 		$query = $this->db->getQuery(true);
 
-		$query->select(['menu.link', 'menu.rgt', 'menu.id as menu_id'])
-			->from($this->db->quoteName('#__menu', 'menu'))
-			->leftJoin($this->db->quoteName('#__menu_types', 'mt') . ' ON ' . $this->db->quoteName('mt.menutype') . ' = ' . $this->db->quoteName('menu.menutype'))
+		$query->select('m.link,m.rgt')
+			->from($this->db->quoteName('#__menu', 'm'))
+			->leftJoin($this->db->quoteName('#__menu_types', 'mt') . ' ON ' . $this->db->quoteName('mt.menutype') . ' = ' . $this->db->quoteName('m.menutype'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_profiles', 'sp') . ' ON ' . $this->db->quoteName('sp.menutype') . ' = ' . $this->db->quoteName('mt.menutype'))
 			->where($this->db->quoteName('sp.id') . ' = ' . $profile_id)
-			->where($this->db->quoteName('menu.published') . ' = 1')
-			->where($this->db->quoteName('menu.link') . ' LIKE ' . $this->db->quote('%option=com_fabrik%'))
-			->group('menu.rgt')
-			->order('menu.rgt ASC');
+			->where($this->db->quoteName('m.published') . ' = 1')
+			->where($this->db->quoteName('m.link') . ' LIKE ' . $this->db->quote('%option=com_fabrik%'))
+			->group('m.id')
+			->order('m.rgt ASC');
 		if(!$submittionPage)
 		{
-			$query->where($this->db->quoteName('menu.parent_id') . ' != 1');
+			$query->where($this->db->quoteName('m.parent_id') . ' != 1');
 		}
 
 
@@ -2174,23 +2177,42 @@ class EmundusModelForm extends ListModel
 			$this->db->setQuery($query);
 			$forms = $this->db->loadObjectList();
 
-			foreach ($forms as $form) {
-				$link     = explode('=', $form->link);
-				$form->id = $link[sizeof($link) - 1];
+			if (!class_exists('EmundusHelperMenu')) {
+				require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+			}
+
+			$fabrikRepository = new FabrikRepository();
+			foreach ($forms as $key => $form) {
+				$formId = EmundusHelperMenu::getFormIdFromLink($form->link);
+
+				if (empty($formId)) {
+					Log::add('component/com_emundus/models/form | Menu ' . $form->menu_id . ' of profile ' . $profile_id . ' carries no form id: ' . $form->link, Log::WARNING, 'com_emundus');
+					unset($forms[$key]);
+					continue;
+				}
 
 				$query->clear()
 					->select('label, intro')
 					->from($this->db->quoteName('#__fabrik_forms'))
-					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($form->id));
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($formId));
 				$this->db->setQuery($query);
 				$formObject = $this->db->loadObject();
 
+				if (empty($formObject)) {
+					Log::add('component/com_emundus/models/form | Menu ' . $form->menu_id . ' of profile ' . $profile_id . ' points to missing form ' . $formId, Log::WARNING, 'com_emundus');
+					unset($forms[$key]);
+					continue;
+				}
+				
+				$form->menu_id = $fabrikRepository->getMenuItemIdByFormId($formId);
+
+				$form->id    = (string) $formId;
 				$form->label = Text::_($formObject->label);
 				$form->intro = Text::_(strip_tags($formObject->intro));
 				$form->intro = strip_tags($form->intro);
 			}
 
-			return $forms;
+			return array_values($forms);
 		}
 		catch (Exception $e) {
 			Log::add('component/com_emundus/models/form | Error at getting form pages by profile_id ' . $profile_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -2243,11 +2265,13 @@ class EmundusModelForm extends ListModel
 			$this->db->setQuery($query);
 			$groups = $this->db->loadObjectList();
 
-			foreach ($groups as $key => $group) {
+			$groups = array_values(array_filter($groups, static function ($group) {
 				$params = json_decode($group->params, true);
-				if ($params['repeat_group_show_first'] == -1) {
-					array_splice($groups, $key, 1);
-				}
+
+				return GroupVisibilityEnum::fromParams($params['repeat_group_show_first'] ?? null) !== GroupVisibilityEnum::HIDDEN;
+			}));
+
+			foreach ($groups as $group) {
 				$group->label = Text::_($group->label);
 			}
 
@@ -2279,12 +2303,16 @@ class EmundusModelForm extends ListModel
 			->andWhere($this->db->quoteName('menu.published') . ' = 1');
 
 		try {
+			if (!class_exists('EmundusHelperMenu')) {
+				require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+			}
+
 			$this->db->setQuery($query);
 			$menus    = $this->db->loadObjectList();
 			$sub_page = new stdClass();
 
 			foreach ($menus as $menu) {
-				$formid = explode('=', $menu->link)[3];
+				$formid = EmundusHelperMenu::getFormIdFromLink($menu->link);
 				if ($formid != null) {
 					$query->clear()
 						->select('count(id)')

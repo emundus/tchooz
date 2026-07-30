@@ -377,7 +377,7 @@ class PdfService extends Export implements ExportInterface
 	private function renderPdf(string $html, string $filename): bool|int
 	{
 		$options = new Options();
-		$options->set('defaultFont', 'helvetica');
+		PdfFont::configureOptions($options);
 		$options->set('isPhpEnabled', true);
 
 		$dompdf = new Dompdf($options);
@@ -386,7 +386,7 @@ class PdfService extends Export implements ExportInterface
 
 		try
 		{
-			$dompdf->loadHtml($html);
+			$dompdf->loadHtml(PdfFont::injectFontFace($html));
 			$dompdf->render();
 
 			$output = $dompdf->output();

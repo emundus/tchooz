@@ -26,6 +26,7 @@ use Tchooz\Entities\Profile\ProfileEntity;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\Fabrik\FabrikObjectsEnum;
+use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Services\Fabrik\ApplicantTableCreator;
@@ -246,7 +247,7 @@ class FabrikRepository
 				->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ' . $this->db->quoteName('ff.group_id') . ' = ' . $this->db->quoteName('fg.id'))
 				->where($this->db->quoteName('ff.form_id') . ' = ' . $this->db->quote($formId))
 				->where($this->db->quoteName('fg.published') . ' = 1')
-				->where('JSON_EXTRACT(fg.params,"$.repeat_group_show_first")' . ' = ' . $this->db->quote(1))
+				->where(GroupVisibilityEnum::VISIBLE->toSqlCondition('fg.params'))
 				->order('ff.ordering');
 
 			$this->db->setQuery($query);
@@ -1303,8 +1304,22 @@ class FabrikRepository
 			$labels    = [];
 			foreach ($languages as $language)
 			{
-				$labels[$language->sef] = $labelPrefix . LanguageFactory::getTranslation($oldLabel, $language->lang_code);
+				$translation = LanguageFactory::getTranslation($oldLabel, $language->lang_code);
+
+				if ($translation !== null)
+				{
+					$labels[$language->sef] = $labelPrefix . $translation;
+				}
 			}
+
+			if (empty($labels))
+			{
+				foreach ($languages as $language)
+				{
+					$labels[$language->sef] = $labelPrefix . $oldLabel;
+				}
+			}
+
 			$key     = LanguageFactory::translate($newKey, $labels, $referenceTable, $identifier, $referenceField, $this->user->id);
 			$updated = !empty($key);
 		}

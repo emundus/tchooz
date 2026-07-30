@@ -125,8 +125,13 @@ class EmundusHelperEvents
 					$prid = $m_profile->getProfileByFnum($user->fnum);
 				}
 
+				if (!class_exists('EmundusHelperMenu'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
+				}
+
 				$submittion_page    = $m_form->getSubmittionPage($prid);
-				$submittion_page_id = (int) explode('=', $submittion_page->link)[3];
+				$submittion_page_id = (int) EmundusHelperMenu::getFormIdFromLink($submittion_page->link ?? null);
 
 				if ($submittion_page_id === $params['formModel']->id)
 				{
@@ -456,8 +461,13 @@ class EmundusHelperEvents
 					$prid = $mProfile->getProfileByFnum($user->fnum);
 				}
 
+				if (!class_exists('EmundusHelperMenu'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
+				}
+
 				$submittion_page    = $mForm->getSubmittionPage($prid);
-				$submittion_page_id = (int) explode('=', $submittion_page->link)[3];
+				$submittion_page_id = (int) EmundusHelperMenu::getFormIdFromLink($submittion_page->link ?? null);
 
 				$this->applicationUpdating($user->fnum);
 
