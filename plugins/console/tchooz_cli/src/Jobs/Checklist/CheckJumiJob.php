@@ -22,11 +22,8 @@ class CheckJumiJob extends TchoozChecklistJob
 
 	private const AUTO_DELETE_TITLES = [
 		'Formulaires',
-		'Forms',
 		'Documents optionnels',
-		'Optional documents',
 		'Documents obligatoires',
-		'Mandatory documents',
 		'Documents chargés',
 		'Période dépôt',
 		'SAVE REGISTRATION',
@@ -148,13 +145,23 @@ class CheckJumiJob extends TchoozChecklistJob
 
 				if ($shouldDelete) {
 					$this->output->writeln('Deleting Jumi module ' . $module->title . '...');
-					$query->clear()
-						->delete('#__modules')
-						->where('id = ' . (int) $module->id);
 
 					try {
+						// Supprime d'abord les associations aux menus pour ne pas laisser d'orphelins dans #__modules_menu
+						$query->clear()
+							->delete('#__modules_menu')
+							->where('moduleid = ' . (int) $module->id);
+
 						$db->setQuery($query);
 						$db->execute();
+
+						$query->clear()
+							->delete('#__modules')
+							->where('id = ' . (int) $module->id);
+
+						$db->setQuery($query);
+						$db->execute();
+
 						$this->output->writeln('<info>Module ' . $module->title . ' deleted successfully.</info>');
 					} catch (\Exception $e) {
 						$this->output->writeln('<error>Error deleting module: ' . $e->getMessage() . '</error>');
