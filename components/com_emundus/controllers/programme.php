@@ -344,6 +344,11 @@ class EmundusControllerProgramme extends EmundusController
 			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_PROGRAM_FORM_MISSING_REQUIRED_FIELDS'));
 		}
 
+		if ($this->programRepository->codeExists($code, [$id]))
+		{
+			throw new RuntimeException(Text::sprintf('COM_EMUNDUS_PROGRAM_FORM_ERROR_CODE_ALREADY_EXISTS', $code), EmundusResponse::HTTP_CONFLICT);
+		}
+
 		if ($handleLogo && (!empty($logo) && $logo['error'] === 0 || $logoPath === 'null' || empty($logoPath)))
 		{
 			// Delete old logo if exists
