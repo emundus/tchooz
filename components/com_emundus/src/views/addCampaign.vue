@@ -202,6 +202,53 @@
 						<div class="em-toggle">
 							<input
 								type="checkbox"
+								true-value="1"
+								false-value="0"
+								class="em-toggle-check tw-mt-2"
+								id="limit"
+								name="limit"
+								v-model="form.is_limited"
+							/>
+							<strong class="b em-toggle-switch"></strong>
+							<strong class="b em-toggle-track"></strong>
+						</div>
+						<span for="limit" class="tw-ml-2">{{ translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT') }}</span>
+					</div>
+
+					<transition name="'slide-down'">
+						<div v-if="form.is_limited == 1" class="tw-flex tw-flex-col tw-gap-4">
+							<div>
+								<label for="limitNumber"
+									>{{ translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER') }}
+									<span class="tw-text-red-600">*</span></label
+								>
+								<div>
+									<span class="tw-text-base tw-text-neutral-600">
+										{{ translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER_HELPTEXT') }}
+									</span>
+									<input
+										id="limitNumber"
+										type="number"
+										class="form__input field-general w-input"
+										v-model="form.limit"
+										:class="{ 'is-invalid !tw-border-red-600': errors.limit_files_number }"
+									/>
+									<div
+										v-if="errors.limit_files_number"
+										id="error-campaign-name"
+										class="tw-mb-1 tw-mt-1 tw-text-red-600"
+									>
+										<span>{{ translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED') }}</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</transition>
+
+					<div class="tw-flex tw-items-center">
+						<div class="em-toggle">
+							<input
+								type="checkbox"
 								true-value="0"
 								false-value="1"
 								class="em-toggle-check tw-mt-2"
