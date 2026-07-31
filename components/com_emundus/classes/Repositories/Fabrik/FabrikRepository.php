@@ -1457,6 +1457,7 @@ class FabrikRepository
 				if (!empty($elementIds))
 				{
 					$this->deleteJsActionsByElementIds($elementIds);
+					$this->deleteValidationsByElementIds($elementIds);
 					$this->deleteJoinsByElementIds($elementIds);
 					$this->deleteElementsByGroupIds($groupIds);
 				}
@@ -1465,6 +1466,8 @@ class FabrikRepository
 				$this->deleteGroupsByIds($groupIds);
 			}
 
+			$this->deleteJoinsByListIds($listIds);
+			$this->deleteFormSessionsByFormIds($formIds);
 			$this->deleteFormGroupsByFormIds($formIds);
 			$this->deleteFormsByIds($formIds);
 			$this->deleteListsByIds($listIds);
@@ -1566,6 +1569,60 @@ class FabrikRepository
 		$query = $this->db->getQuery(true);
 		$query->delete($this->db->quoteName('#__fabrik_joins'))
 			->where($this->db->quoteName('element_id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $elementIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->execute();
+	}
+
+	/**
+	 * Supprime les validations liées à une liste d'éléments.
+	 *
+	 * @param   array  $elementIds
+	 *
+	 * @return bool
+	 */
+	private function deleteValidationsByElementIds(array $elementIds): bool
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__fabrik_validations'))
+			->where($this->db->quoteName('element_id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $elementIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->execute();
+	}
+
+	/**
+	 * Supprime les joins rattachés directement à une liste, sans passer par un élément ou un groupe.
+	 *
+	 * @param   array  $listIds
+	 *
+	 * @return bool
+	 */
+	private function deleteJoinsByListIds(array $listIds): bool
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__fabrik_joins'))
+			->where($this->db->quoteName('list_id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $listIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->execute();
+	}
+
+	/**
+	 * Supprime les sessions de saisie liées à une liste de formulaires.
+	 *
+	 * @param   array  $formIds
+	 *
+	 * @return bool
+	 */
+	private function deleteFormSessionsByFormIds(array $formIds): bool
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__fabrik_form_sessions'))
+			->where($this->db->quoteName('form_id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $formIds)) . ')');
 
 		$this->db->setQuery($query);
 
