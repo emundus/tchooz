@@ -15,6 +15,7 @@ use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Tchooz\Repositories\Fabrik\FabrikRepository;
 
 class CheckFabrikFieldsJob extends TchoozChecklistJob
 {
@@ -69,18 +70,15 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 	 */
 	private function deleteDeprecatedFabrikLists(): void
 	{
-		$db = $this->databaseService->getDatabase();
-		$query = $db->createQuery();
+		$fabrikRepository = new FabrikRepository();
 
-		$query->delete($db->quoteName('#__fabrik_lists'))
-			->where($db->quoteName('db_table_name') . ' IN (' . implode(',', array_map([$db, 'quote'], self::AUTO_DELETE_TABLES)) . ')');
-
-		try {
-			$db->setQuery($query);
-			$db->execute();
-			$this->output->writeln('<info>Deprecated Fabrik lists deleted successfully.</info>');
-		} catch (\Exception $e) {
-			$this->output->writeln('<error>Failed to delete deprecated Fabrik lists: ' . $e->getMessage() . '</error>');
+		foreach (self::AUTO_DELETE_TABLES as $table) {
+			// deleteList supprime toute la chaîne (formulaire, groupes, éléments), pas seulement la ligne de #__fabrik_lists
+			if ($fabrikRepository->deleteList($table)) {
+				$this->output->writeln('<info>Deprecated Fabrik list deleted successfully for table ' . $table . '.</info>');
+			} else {
+				$this->output->writeln('<error>Failed to delete deprecated Fabrik list for table ' . $table . '.</error>');
+			}
 		}
 	}
 
