@@ -9,6 +9,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
@@ -174,6 +175,13 @@ if ($is_anonym_user && !$allow_anonym_files)
 {
 	return;
 }
+
+$poll_stats          = modEmundusUserDropdownHelper::getUserPollStats((int) ($user->id ?? 0));
+$pending_polls_count = (int) $poll_stats['pending'];
+$has_polls           = (int) $poll_stats['total'] > 0;
+
+$siteApplication = Factory::getContainer()->get(SiteApplication::class);
+$polls_link = $siteApplication->getMenu()->getItems('link', 'index.php?option=com_emundus&view=polls&layout=reply', true);
 
 $m_users         = new EmundusModelUsers;
 $profile_details = new stdClass();

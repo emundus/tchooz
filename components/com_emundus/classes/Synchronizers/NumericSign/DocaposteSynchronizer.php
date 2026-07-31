@@ -2,7 +2,9 @@
 
 namespace Tchooz\Synchronizers\NumericSign;
 
+use EmundusHelperFiles;
 use EmundusModelEmails;
+use EmundusModelLogs;
 use Exception;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
@@ -27,11 +29,14 @@ use Tchooz\Repositories\NumericSign\RequestRepository;
 use Tchooz\Repositories\NumericSign\RequestSignersRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
+use Tchooz\Traits\TraitAutomatedTask;
 use Tchooz\Traits\TraitDispatcher;
+use Tchooz\Transformers\PhoneNumberTransformer;
 
 class DocaposteSynchronizer extends Api
 {
 	use TraitDispatcher;
+	use TraitAutomatedTask;
 
 	protected $auth = [];
 
@@ -237,7 +242,7 @@ class DocaposteSynchronizer extends Api
 									['onAfterSignRequestCompleted',
 										// Datas to pass to the event
 										['context' => new EventContextEntity(
-											Factory::getApplication()->getIdentity(),
+											Factory::getApplication()->getIdentity() ?? $this->getAutomatedTaskUser(),
 											[$request->getFnum()],
 											[],
 											['request_id' => $request->getId()]
@@ -265,7 +270,7 @@ class DocaposteSynchronizer extends Api
 									['onAfterSignRequestCancelled',
 										// Datas to pass to the event
 										['context' => new EventContextEntity(
-											Factory::getApplication()->getIdentity(),
+											Factory::getApplication()->getIdentity() ?? $this->getAutomatedTaskUser(),
 											[$request->getFnum()],
 											[],
 											[
@@ -336,7 +341,7 @@ class DocaposteSynchronizer extends Api
 			];
 
 			$response = $this->post(
-				$this->auth['offerCode'] . '/transactions',
+				'transactions',
 				$body,
 				$this->getHeaders()
 			);
@@ -361,7 +366,7 @@ class DocaposteSynchronizer extends Api
 					['onAfterSignRequestCreated',
 						// Datas to pass to the event
 						['context' => new EventContextEntity(
-							Factory::getApplication()->getIdentity(),
+							Factory::getApplication()->getIdentity() ?? $this->getAutomatedTaskUser(),
 							[$request->getFnum()],
 							[],
 							[
@@ -586,6 +591,7 @@ class DocaposteSynchronizer extends Api
 				'firstname'  => $contact->getFirstname(),
 				'lastname'   => $contact->getLastname(),
 				'email'      => $contact->getEmail(),
+				'phone'      => PhoneNumberTransformer::toE164($contact->getPhone1()) ?? $contact->getPhone1(),
 				'externalId' => $signer->getId(),
 			];
 
@@ -661,7 +667,7 @@ class DocaposteSynchronizer extends Api
 					['onAfterSignRequestCancelled',
 						// Datas to pass to the event
 						['context' => new EventContextEntity(
-							Factory::getApplication()->getIdentity(),
+							Factory::getApplication()->getIdentity() ?? $this->getAutomatedTaskUser(),
 							[$request->getFnum()],
 							[],
 							[
@@ -755,6 +761,15 @@ class DocaposteSynchronizer extends Api
 
 	private function onAfterRequestCompleted(Request $request): void
 	{
+		// Allow to translate keys when this runs from CLI (scheduled task). Web requests already resolved their
+		// own language, loading another one would override it for the whole request.
+		$app = Factory::getApplication();
+		if ($app->isClient('cli'))
+		{
+			$siteDefaultLanguage = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+			$app->getLanguage()->load('com_emundus', JPATH_SITE . '/components/com_emundus', $siteDefaultLanguage);
+		}
+
 		$pdfContent = $this->getFinalDocument($request);
 
 		if (empty($request->getUploadId()))
@@ -826,12 +841,36 @@ class DocaposteSynchronizer extends Api
 				throw new \RuntimeException(Text::_('DOCAPOSTE_SYNCHRONIZER_FAILED_TO_WRITE_PROOF_DOCUMENT'));
 			}
 
+			if (!class_exists('EmundusHelperFiles'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
+			}
+			if (!class_exists('EmundusModelLogs'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/logs.php';
+			}
+
+			$automatedTaskUserId = $this->getAutomatedTaskUserId();
+			$applicantId         = EmundusHelperFiles::getApplicantIdFromFileId($request->getCcid());
+
+			$createdLog = new \stdClass();
+			$createdLog->element = '[' . Text::_($attachment->getName()) . ']';
+			$createdLog->details = $filename;
+			EmundusModelLogs::log($automatedTaskUserId, $applicantId, $request->getFnum(), 'attachment', 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE', json_encode(['created' => [$createdLog]], JSON_UNESCAPED_UNICODE));
+
 			$upload->setIsSigned(true);
 
 			if (!$uploadRepository->flush($upload))
 			{
 				throw new \RuntimeException(Text::_('DOCAPOSTE_SYNCHRONIZER_FAILED_TO_UPDATE_DOCUMENT'));
 			}
+
+			$updatedLog = new \stdClass();
+			$updatedLog->description = '<b>[' . Text::_($signedAttachment->getName()) . ']</b>';
+			$updatedLog->element     = '<u>' . Text::_('COM_EMUNDUS_DOCAPOSTE_DOCUMENT_SIGNED') . '</u>';
+			$updatedLog->old         = Text::_('COM_EMUNDUS_DOCUMENT_SIGNED_NO');
+			$updatedLog->new         = Text::_('COM_EMUNDUS_DOCUMENT_SIGNED_YES');
+			EmundusModelLogs::log($automatedTaskUserId, $applicantId, $request->getFnum(), 'attachment', 'u', 'COM_EMUNDUS_ACCESS_ATTACHMENT_UPDATE', json_encode(['updated' => [$updatedLog]], JSON_UNESCAPED_UNICODE));
 
 			$request->setSignedUploadId($upload->getId());
 			$requestRepository = new RequestRepository();

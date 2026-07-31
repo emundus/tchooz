@@ -2,6 +2,12 @@
 
 Tchooz is an online application management platform built on Joomla 5 (PHP 8.2+) with a Vue 3 SPA frontend. Two repos: `tchooz` (active) and `core` (legacy Joomla 3.10, read-only).
 
+## Code conventions (read before writing code)
+
+Before writing or modifying any code in `com_emundus`, read:
+- `.claude/docs/conventions/code-conventions.md` — cross-cutting rules: naming honesty, one source of truth per fact, reuse-before-reimplement, translation policy, and the universal anti-patterns.
+- `.claude/docs/conventions/design-decisions.md` — architectural decision rules: single responsibility, declarative > imperative, defaults preserve old behavior, validation derivation, when to rewrite vs patch, guards at the entry point.
+
 ## Architecture
 
 ### Backend (PHP)

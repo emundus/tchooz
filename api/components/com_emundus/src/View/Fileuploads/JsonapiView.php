@@ -37,6 +37,7 @@ class JsonapiView extends BaseApiView
 		'user_id',
 		'attachment_name',
 		'description',
+		'is_validated',
 		'download_url'
 	];
 
@@ -53,6 +54,7 @@ class JsonapiView extends BaseApiView
 		'user_id',
 		'attachment_name',
 		'description',
+		'is_validated',
 		'download_url'
 	];
 

@@ -583,6 +583,7 @@ class TranslateController extends AdminController   {
 
 	/**
 	 * method to show orphan translation details
+     * @update 6.7 security fix on query
 	 */
 	function showOrphanDetail(  ){
 		$app     = Factory::getApplication();
@@ -599,8 +600,14 @@ class TranslateController extends AdminController   {
 		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		// read details of orphan translation
-		$sql = "SELECT * FROM #__falang_content WHERE reference_id=$contentid AND language_id='".$language_id."' AND reference_table='".$tablename."'";
-		$db->setQuery($sql);
+        $query  = $db->getQuery(true);
+        $query->select('*')
+            ->from('#__falang_content')
+            ->where('reference_id = '.(int)$contentid )
+            ->where('language_id = '.(int)$language_id)
+            ->where('reference_table = '.$query->quote($tablename));
+
+		$db->setQuery($query);
 		$rows = null;
 		$rows=$db->loadObjectList();
 
@@ -609,7 +616,7 @@ class TranslateController extends AdminController   {
 
 		// Set the layout
 		$this->view->setLayout('orphandetail');
-		// Assign data for view - should really do this as I go along
+    		// Assign data for view - should really do this as I go along
 		$this->view->rows = $rows;
 		$this->view->tablename = $tablename;
 		$this->view->display();

@@ -386,6 +386,14 @@ class FalangHelper
                             }
                         }
 
+                        //fix for Zoo cateogry item
+                        //6.6 fix for zoo category item view
+                        if (isset($vars['option']) && $vars['option'] == 'com_zoo'){
+                            if (isset($vars['view']) && $vars['view'] == 'category'){
+                                unset($vars['view']);
+                            }
+                        }
+
 	                    // Fix for Fabrikar
 	                    if (isset($vars['option']) && $vars['option'] == 'com_fabrik' && isset($vars['view']) && $vars['view'] == 'list') {
 		                    $fManager = \FalangManager::getInstance();
@@ -745,13 +753,16 @@ class FalangHelper
 
     }
 
+    /*
+     * @update 6.7 security fix
+     * */
     public static function getTranslatedPathFromMenuItem($ItemID,$idLang){
         $db = Factory::getContainer()->get(DatabaseInterface::class);
         // get translated path if exist
         $query = $db->getQuery(true);
         $query->select('fc.value')
             ->from('#__falang_content fc')
-            ->where('fc.reference_id = '.$ItemID)
+            ->where('fc.reference_id = '.(int) $ItemID)
             ->where('fc.language_id = '.(int) $idLang )
             ->where('fc.reference_field = \'path\'')
             ->where('fc.published = 1')
@@ -762,7 +773,10 @@ class FalangHelper
     }
 
     //copy from administrator/components/com_falang/models/ContentObject.php
-    public static function getMenuPath($alias,$reference_id,$lang_id)
+    /*
+     * @update 6.7 security fix ($reference_id, lang_id) set as int and change query
+     * */
+    public static function getMenuPath($alias,int $reference_id,int $lang_id)
     {
 
         $table = Table::getInstance("Menu");
@@ -775,7 +789,7 @@ class FalangHelper
         $select = 'p.*, jfc.value as jfcvalue';
         $query->select($select);
         $query->from('#__menu AS n, #__menu AS p');
-        $query->join('left', "#__falang_content as jfc ON jfc.reference_table='menu' AND jfc.reference_id=p.id AND jfc.language_id='$lang_id' and jfc.reference_field='alias' ");
+        $query->join('left', "#__falang_content as jfc ON jfc.reference_table= 'menu' AND jfc.reference_id=p.id AND jfc.language_id = ".(int)$lang_id. " AND jfc.reference_field = 'alias' ");
         $query->where('n.lft BETWEEN p.lft AND p.rgt');
         $query->where('n.id = ' . (int) $reference_id);
         $query->where('p.client_id = 0');

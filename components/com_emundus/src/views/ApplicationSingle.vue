@@ -572,8 +572,8 @@ export default {
 
 #modal-applicationform #em-attachments #edit-modal {
 	width: var(--attachment-width) !important;
-	top: 52px;
-	height: calc(100% - 52px) !important;
+	top: 95px;
+	height: calc(100% - 95px) !important;
 }
 
 #modal-applicationform #em-attachments .modal-body {

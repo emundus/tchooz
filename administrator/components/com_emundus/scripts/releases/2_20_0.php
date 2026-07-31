@@ -310,56 +310,71 @@ class Release2_20_0Installer extends ReleaseInstaller
 			\EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FILE_SUBMITTED_PUBLIC_ACCESS_MESSAGE', 'Your application has been successfully submitted.', 'override', 0, null, null, 'en-GB');
 
 			$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
-			if (empty($systemUserId))
+			$systemUserExist = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($systemUserId);
+			if (empty($systemUserExist->id))
 			{
-				require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
-				require_once(JPATH_SITE . '/components/com_emundus/helpers/users.php');
+				$query->clear()
+					->select('id')
+					->from($this->db->quoteName('#__users'))
+					->where($this->db->quoteName('username') . ' = ' . $this->db->quote('system-public@emundus.fr'));
+				$this->db->setQuery($query);
+				$systemUserIdCreated = $this->db->loadResult();
 
-				$h_users = new \EmundusHelperUsers();
-				$m_users = new \EmundusModelUsers();
+				if (empty($systemUserIdCreated)) {
+					require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+					require_once(JPATH_SITE . '/components/com_emundus/helpers/users.php');
 
-				$other_param = [
-					'firstname'    => 'Public',
-					'lastname'     => 'SYSTEM',
-					'profile'      => 1000,
-					'em_oprofiles' => '',
-					'univ_id'      => 0,
-					'em_groups'    => [],
-					'em_campaigns' => [],
-					'news'         => 0,
-					'is_anonym'    => 1,
-				];
+					$h_users = new \EmundusHelperUsers();
+					$m_users = new \EmundusModelUsers();
 
-				$user           = clone(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0));
-				$user->name     = 'Public SYSTEMACCOUNT';
-				$user->username = 'system-public@emundus.fr';
-				$user->email    = 'system-public@emundus.fr';
+					$other_param = [
+						'firstname'    => 'Public',
+						'lastname'     => 'SYSTEM',
+						'profile'      => 1000,
+						'em_oprofiles' => '',
+						'univ_id'      => 0,
+						'em_groups'    => [],
+						'em_campaigns' => [],
+						'news'         => 0,
+						'is_anonym'    => 1,
+					];
 
-				$password       = $h_users->generateStrongPassword(30);
-				$user->password = UserHelper::hashPassword($password);
+					$user           = clone(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0));
+					$user->name     = 'Public SYSTEMACCOUNT';
+					$user->username = 'system-public@emundus.fr';
+					$user->email    = 'system-public@emundus.fr';
 
-				$now                 = \EmundusHelperDate::getNow();
-				$user->registerDate  = $now;
-				$user->lastvisitDate = null;
-				$user->block         = 1;
-				$user->authProvider  = '';
+					$password       = $h_users->generateStrongPassword(30);
+					$user->password = UserHelper::hashPassword($password);
 
-				$acl_aro_groups = $m_users->getDefaultGroup(1000);
-				$user->groups   = $acl_aro_groups;
+					$now                 = \EmundusHelperDate::getNow();
+					$user->registerDate  = $now;
+					$user->lastvisitDate = null;
+					$user->block         = 1;
+					$user->authProvider  = '';
 
-				$usertype       = $m_users->found_usertype($acl_aro_groups[0]);
-				$user->usertype = $usertype;
+					$acl_aro_groups = $m_users->getDefaultGroup(1000);
+					$user->groups   = $acl_aro_groups;
 
-				$systemUserId = $m_users->adduser($user, $other_param);
-				if (!empty($systemUserId))
+					$usertype       = $m_users->found_usertype($acl_aro_groups[0]);
+					$user->usertype = $usertype;
+
+					$systemUserIdCreated = $m_users->adduser($user, $other_param);
+				}
+
+				if (!empty($systemUserIdCreated))
 				{
-					\EmundusHelperUpdate::updateComponentParameter('com_emundus', 'system_public_user_id', $systemUserId);
+					\EmundusHelperUpdate::updateComponentParameter('com_emundus', 'system_public_user_id', $systemUserIdCreated);
 				}
 				else
 				{
 					$this->tasks[]     = false;
 					$result['message'] .= 'Failed to create system public user. ';
 				}
+			}
+			elseif (empty($systemUserId))
+			{
+				\EmundusHelperUpdate::updateComponentParameter('com_emundus', 'system_public_user_id', $systemUserExist->id);
 			}
 
 			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_emundus_anonymization', 'anonymization', null, 'plugin', 0, 'emundus');

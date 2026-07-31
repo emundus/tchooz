@@ -18,6 +18,37 @@ use Joomla\CMS\Log\Log;
 class FileSecurityService
 {
 	/**
+	 * Whitelist of file extensions accepted for user uploads (message attachments, default
+	 * profile attachments, documents sent through the messenger). Anything not listed is rejected
+	 * before the file is written to disk.
+	 *
+	 * This is a whitelist on purpose: a blacklist inevitably misses executable/script extensions
+	 * (php, phtml, phar, pht, php5, php7, phps, cgi, pl, py, sh, asp, jsp, htaccess, …) which, once
+	 * dropped in a web-served directory, could be executed by the server -> remote code execution.
+	 */
+	public const ALLOWED_UPLOAD_EXTENSIONS = [
+		'pdf',
+		'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+		'odt', 'ods', 'odp', 'odg', 'odf',
+		'txt', 'csv', 'rtf',
+		'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tif', 'tiff', 'heic', 'heif',
+	];
+
+	/**
+	 * Whether $filename bears an extension allowed for upload (case-insensitive).
+	 *
+	 * @param   string  $filename  The original client filename (or just its extension).
+	 *
+	 * @return  bool
+	 */
+	public static function isAllowedUploadExtension(string $filename): bool
+	{
+		$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+		return $ext !== '' && in_array($ext, self::ALLOWED_UPLOAD_EXTENSIONS, true);
+	}
+
+	/**
 	 * Map of file extensions to their corresponding check method.
 	 */
 	private const EXTENSION_HANDLERS = [

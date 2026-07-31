@@ -12,9 +12,11 @@ defined('_JEXEC') or die('Restricted Access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\Campaigns\AnonymizationPolicyEnum;
 use Tchooz\Factories\LayoutFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 
@@ -73,6 +75,7 @@ Text::script('COM_EMUNDUS_ONBOARD_PUBLIC_CAMPAIGN_TIP_TEXT');
 Text::script('COM_EMUNDUS_SWAL_OK_BUTTON');
 Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT');
 Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER');
+Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER_HELPTEXT');
 Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS');
 Text::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED');
 Text::script('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED');
@@ -136,14 +139,20 @@ $data['crud']     = [
 $data['campaign'] = $this->id;
 $data['campaignId'] = $this->id;
 
-$data['anonymizationPolicies'] = array_map(
-	fn(AnonymizationPolicyEnum $policy) => [
-		'value' => $policy->value,
-		'label' => $policy->getLabel(),
-		'description' => Text::_('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_' . strtoupper($policy->name) . '_DESC'),
-	],
-	AnonymizationPolicyEnum::cases()
-);
+$addonRepository = new AddonRepository();
+$addonAnonymous = $addonRepository->getByName(AddonEnum::ANONYMOUS->value);
+if ($addonAnonymous->isActivated())
+{
+    $data['anonymizationPolicies'] = array_map(
+        fn(AnonymizationPolicyEnum $policy) => [
+            'value' => $policy->value,
+            'label' => $policy->getLabel(),
+            'description' => Text::_('COM_EMUNDUS_CAMPAIGN_ANONYMISATION_' . strtoupper($policy->name) . '_DESC'),
+        ],
+        AnonymizationPolicyEnum::cases()
+    );
+}
+$data['publicAddonActivated'] = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value)->isActivated();
 ?>
 
 

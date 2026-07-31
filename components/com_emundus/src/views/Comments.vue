@@ -23,7 +23,11 @@
 					{{ translate('COM_EMUNDUS_COMMENTS_CLOSED_THREAD') }}
 				</option>
 			</select>
-			<select v-model="filterVisibleToApplicant" v-if="!isApplicant" class="tw-rounded-applicant">
+			<select
+				v-model="filterVisibleToApplicant"
+				v-if="!isApplicant && applicantsAllowedToComment"
+				class="tw-rounded-applicant"
+			>
 				<option value="all">
 					{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT') }}
 				</option>

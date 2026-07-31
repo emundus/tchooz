@@ -125,7 +125,28 @@ class HtmlView extends BaseHtmlView {
 	/**
 	 * @var BaseModel
 	 */
-	public $basemodel;	
+	public $basemodel;
+
+	/**
+	 * Número total de extensiones registradas (sin filtrar por los selects de la tabla)
+	 *
+	 * @var int
+	 */
+	public int $extensions_total = 0;
+
+	/**
+	 * Número de extensiones marcadas como vulnerables (sin filtrar por los selects de la tabla)
+	 *
+	 * @var int
+	 */
+	public int $vulnerable_total = 0;
+
+	/**
+	 * Número de extensiones con estado de vulnerabilidad indefinido (sin filtrar)
+	 *
+	 * @var int
+	 */
+	public int $undefined_total = 0;
 	
 	/**
 	 * Devuelve la fecha de creación del manifest del componente formateada.
@@ -239,7 +260,13 @@ class HtmlView extends BaseHtmlView {
 		
         $this->items      = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
-		
+
+		// Métricas globales (no afectadas por los filtros de la tabla)
+		$stats = $model->getExtensionStats();
+		$this->extensions_total = $stats['total'];
+		$this->vulnerable_total = $stats['vulnerable'];
+		$this->undefined_total  = $stats['undefined'];
+
 		$jinput = Factory::getApplication();
 		
         $vulnerabilies_table_updated = $app->getUserState('show_vulnerabilities_table_updated', false);

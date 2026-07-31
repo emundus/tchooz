@@ -1,0 +1,110 @@
+/* ============================================================
+   SecurityCheck Pro — Barra de navegación (pestañas + acciones)
+   media/com_securitycheckpro/css/scp-navbar.css
+   ============================================================ */
+
+/* Contenedor principal */
+.scp-navbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+  padding: .375rem .625rem;
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, .10), 0 0 0 1px rgba(0, 0, 0, .04);
+  border-radius: .5rem;
+  margin-bottom: 1rem;
+}
+
+/* Logo / Home */
+.scp-navbar__logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  text-decoration: none;
+  border-radius: .375rem;
+  padding: .125rem .25rem;
+}
+.scp-navbar__logo:hover,
+.scp-navbar__logo:focus-visible {
+  background: var(--bs-tertiary-bg);
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 1px;
+}
+
+/* Grupo segmentado de pestañas */
+.scp-navbar__tabs {
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: wrap;
+  background: var(--bs-tertiary-bg);
+  border-radius: .5rem;
+  padding: .1875rem !important;
+  gap: .125rem !important;
+}
+
+.scp-navbar__tabs .nav-link {
+  font-size: .8125rem;
+  padding: .25rem .625rem;
+  border-radius: .375rem;
+  color: var(--bs-secondary-color);
+  white-space: nowrap;
+  line-height: 1.4;
+  transition: color .12s, background .12s;
+}
+.scp-navbar__tabs .nav-link:hover:not(.active) {
+  color: var(--bs-body-color);
+  background: rgba(var(--bs-emphasis-color-rgb), .08);
+}
+.scp-navbar__tabs .nav-link.active {
+  background: var(--bs-body-bg);
+  color: var(--bs-emphasis-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
+}
+.scp-navbar__tabs .nav-link:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 1px;
+}
+
+/* Badge dentro de la pestaña (logs) */
+.scp-navbar__tabs .nav-link .badge {
+  font-size: .6rem;
+  vertical-align: middle;
+  line-height: 1.4;
+}
+
+/* Barra de acciones (derecha, se alinea con ms-auto en el flex padre) */
+.scp-navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: .375rem;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.scp-navbar__actions .btn {
+  border-radius: .5rem;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────────
+   < 992 px (lg): texto de botones ya oculto via d-none d-lg-inline en HTML.
+   Las pestañas bajan a segunda fila scrollable para no competir con las acciones. */
+@media (max-width: 991.98px) {
+  .scp-navbar__tabs {
+    order: 10;           /* segunda fila, detrás de logo + acciones  */
+    flex: 1 1 100%;
+    flex-wrap: nowrap;   /* fila única horizontal                     */
+    overflow-x: auto;    /* scroll si hay muchas pestañas             */
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scp-navbar__tabs::-webkit-scrollbar { display: none; }
+}
+
+/* < 576 px: acciones pueden romperse en dos filas si es necesario */
+@media (max-width: 575.98px) {
+  .scp-navbar__actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}

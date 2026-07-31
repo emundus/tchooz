@@ -92,6 +92,13 @@ class FabrikFactory
 		if ($withRelations)
 		{
 			$groups = $this->fabrikRepository->getGroupsByFormId($fabrikFormEntity->getId());
+			foreach ($groups as $group)
+			{
+				foreach ($group->getElements() as $element)
+				{
+					$element->setFormLabel($fabrikFormEntity->getLabel());
+				}
+			}
 			$fabrikFormEntity->setGroups($groups);
 		}
 
@@ -119,6 +126,10 @@ class FabrikFactory
 		if ($withRelations)
 		{
 			$elements = $this->fabrikRepository->getElementsByGroupId($fabrikGroupEntity->getId());
+			foreach ($elements as $element)
+			{
+				$element->setGroupLabel($fabrikGroupEntity->getLabel());
+			}
 			$fabrikGroupEntity->setElements($elements);
 		}
 
@@ -135,7 +146,7 @@ class FabrikFactory
 		$user    = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($dbObject->created_by);
 		$created = $dbObject->created ? new \DateTime($dbObject->created) : new \DateTime();
 
-		return new FabrikElementEntity(
+		$element = new FabrikElementEntity(
 			$dbObject->id,
 			$dbObject->name,
 			$dbObject->group_id,
@@ -153,5 +164,12 @@ class FabrikFactory
 			(bool) ($dbObject->published ?? true),
 			(int) ($dbObject->hidden ?? 0)
 		);
+
+		if (!empty($dbObject->form_id))
+		{
+			$element->setFormId((int) $dbObject->form_id);
+		}
+
+		return $element;
 	}
 }

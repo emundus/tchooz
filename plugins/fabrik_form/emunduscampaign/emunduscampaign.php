@@ -17,7 +17,6 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
@@ -54,6 +53,9 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 
 	public function onBeforeLoad()
 	{
+		$cid                 = $this->app->getInput()->getInt('cid');
+		$app = Factory::getApplication();
+
 		if(!class_exists('EmundusHelperMenu'))
 		{
 			require_once JPATH_SITE . '/components/com_emundus/helpers/menu.php';
@@ -76,7 +78,6 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 
 		$emundus_config      = ComponentHelper::getParams('com_emundus');
 		$applicant_can_renew = $emundus_config->get('applicant_can_renew', '0');
-		$cid                 = $this->app->getInput()->getInt('cid');
 		$anonymous     = $this->app->getInput()->getBool('anonymous', false);
 
 		$session = $this->app->getSession();

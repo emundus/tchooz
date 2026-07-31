@@ -113,6 +113,14 @@ class MigrateEmundusJob extends TchoozJob
 			}
 
 			$tableDump = $this->databaseServiceSource->getTableCreate($table);
+
+			if ($table === 'jos_emundus_hikashop' && !empty($tableDump[$table]))
+			{
+				// Remove FK constraints referencing jos_hikashop_order to avoid type incompatibility
+				// (order_id INT vs INT UNSIGNED) during CREATE TABLE on destination
+				$tableDump[$table] = $this->databaseServiceSource->stripForeignKeysFromSql($tableDump[$table]);
+			}
+
 			if (empty($tableDump[$table]) || !$this->databaseService->getDatabase()->setQuery($tableDump[$table])->execute())
 			{
 				Log::add('Error while creating table ' . $table, Log::ERROR, self::getJobName());

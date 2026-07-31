@@ -18,6 +18,7 @@ use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseM
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FirewallconfigModel;
 use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Uri\Uri;
 
 class HtmlView extends BaseHtmlView {
     
@@ -40,18 +41,12 @@ class HtmlView extends BaseHtmlView {
 	public string $current_ip = '';
 	public string $range_example = '';
 	public string $cidr_v4_example = '';
-	/**
-	 * @var string[]
-	 */
-	public ?array $whitelist_elements = [];
-	/**
-	 * @var string[]
-	 */
-	public ?array $blacklist_elements = [];
-	/**
-	 * @var string[]
-	 */
-	public ?array $dynamic_blacklist_elements = [];	
+	/** @var list<object> */
+	public array $whitelist_elements = [];
+	/** @var list<object> */
+	public array $blacklist_elements = [];
+	/** @var list<object> */
+	public array $dynamic_blacklist_elements = [];	
 	/**
      * State data
      *
@@ -71,11 +66,10 @@ class HtmlView extends BaseHtmlView {
 	public int    $log_limits_per_ip_and_day = 0;
 	public int   $add_access_attempts_logs = 0;
 	public string   $methods = 'GET,POST,REQUEST';	
-	public int   $mode = 1;
 	public int   $email_active = 0;
 	public string   $email_subject = 'Securitycheck Pro alert!';
 	public string   $email_body = 'Securitycheck Pro has generated a new alert. Please, check your logs.';
-	public string   $email_to = 'youremail@yourdomain.com';
+	public string   $email_to = '';
 	public string   $email_from_domain = 'me@mydomain.com';
 	public string   $email_from_name = 'Your name';
 	public int   $email_add_applied_rule = 1;
@@ -125,7 +119,7 @@ class HtmlView extends BaseHtmlView {
 	/**
 	 * @var string[]
 	 */
-	public array   $loggable_extensions = ['0' => 'com_banners','1' => 'com_cache','2' => 'com_categories','3' => 'com_config','4' => 'com_contact','5' => 'com_content','6' => 'com_installer','7' => 'com_media','8' => 'com_menus','9' => 'com_messages','10' => 'com_modules','11' => 'com_newsfeeds','12' => 'com_plugins','13' => 'com_redirect','14' => 'com_tags','15' => 'com_templates','16' => 'com_users'];
+	public array   $loggable_extensions = ['0' => 'com_banners','1' => 'com_cache','2' => 'com_categories','3' => 'com_config','4' => 'com_contact','5' => 'com_content','6' => 'com_installer','7' => 'com_media','8' => 'com_menus','9' => 'com_messages','10' => 'com_modules','11' => 'com_newsfeeds','12' => 'com_plugins','13' => 'com_redirect','14' => 'com_tags','15' => 'com_templates','16' => 'com_users','17' => 'com_akeebabackup','18' => 'com_acym','19' => 'com_securitycheckpro','20' => 'com_securitycheckprocontrolcenter'];
 	public bool   $plugin_trackactions_installed = false;
 	public int   $upload_scanner_enabled = 1;
 	public int   $check_multiple_extensions = 1;
@@ -133,7 +127,7 @@ class HtmlView extends BaseHtmlView {
 	public string   $extensions_blacklist = 'php,js,exe,xml';
 	public int   $delete_files = 1;
 	public int   $actions_upload_scanner = 0;
-	public ?int   $url_inspector_enabled = 0;
+	public bool   $url_inspector_enabled = false;
 	public int   $write_log_inspector = 1;
 	public int   $send_email_inspector = 1;
 	public int   $action_inspector = 2;	
@@ -185,6 +179,11 @@ class HtmlView extends BaseHtmlView {
 	 */
 	public $activeExceptions;
 	
+	/**
+	 * @var string
+	 */
+	public string $siteUrl = '';
+	
     /**
      * Display the main view
      *
@@ -196,6 +195,8 @@ class HtmlView extends BaseHtmlView {
 		ToolbarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_WAF_CONFIG'), 'securitycheckpro');
 		ToolbarHelper::apply('firewallconfig.apply');
         ToolbarHelper::save('firewallconfig.save');
+		
+		$this->siteUrl = (string) Uri::root();
 		
 		// Load css and js
 		$this->document->getWebAssetManager()
@@ -304,9 +305,6 @@ class HtmlView extends BaseHtmlView {
         // Pestaña methods
 		$this->methods = (string) ($items['methods'] ?? $this->methods);
         
-        // Pestaña Mode       
-		$this->mode = (int) ($items['mode'] ?? $this->mode);
-
         // Pestaña Logs
        	$this->scp_delete_period = (int) ($items['scp_delete_period'] ?? $this->scp_delete_period);
 		$this->logs_attacks = (int) ($items['logs_attacks'] ?? $this->logs_attacks);
@@ -396,7 +394,8 @@ class HtmlView extends BaseHtmlView {
 
         // Pestaña track actions
         // Chequeamos si el plugin 'Track actions' está instalado
-        $this->plugin_trackactions_installed = $model->is_plugin_installed('system', 'trackactions');
+        $this->plugin_trackactions_installed = $model->is_plugin_installed('actionlog', 'trackactions')
+            || $model->is_plugin_installed('system', 'trackactions');
 		$this->delete_period = (int) ($items['delete_period'] ?? $this->delete_period);
 		$this->ip_logging = (int) ($items['ip_logging'] ?? $this->ip_logging);
 		$this->loggable_extensions = (array) ($items['loggable_extensions'] ?? $this->loggable_extensions);

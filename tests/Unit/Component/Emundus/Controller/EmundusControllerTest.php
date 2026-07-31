@@ -54,6 +54,11 @@ class TestableEmundusController extends EmundusController
 	}
 }
 
+/**
+ * @package     Unit\Component\Emundus\Controller
+ *
+ * @covers \Tchooz\Controller\EmundusController
+ */
 class EmundusControllerTest extends TestCase
 {
 	private TestableEmundusController $controller;

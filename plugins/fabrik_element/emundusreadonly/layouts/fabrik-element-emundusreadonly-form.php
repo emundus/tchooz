@@ -12,7 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 
 $d = $displayData;
 ?>
-<div id="<?= $d->id; ?>" class="fabrikinput fabrikElementReadOnly tw-text-gray-800">
+<div id="<?= $d->id; ?>" class="fabrikinput fabrikElementReadOnly tw-text-gray-800" data-raw-value="<?= htmlspecialchars(is_array($d->rawValue ?? '') ? json_encode($d->rawValue) : (string) ($d->rawValue ?? ''), ENT_QUOTES); ?>">
 	<?= !empty($d->value) || $d->value == '0' || $d->value === 0 ? $d->value : ($d->placeholder ?? ''); ?>
 </div>
 <input type="hidden" name="<?= $d->name; ?>" value="<?= $d->value; ?>" />

@@ -12,21 +12,28 @@ namespace Tchooz\Factories\Contacts;
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
+use Tchooz\Enums\Comments\CommentTargetTypeEnum;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 use Tchooz\Factories\DBFactory;
 use Tchooz\Factories\EmundusFactory;
+use Tchooz\Repositories\Comments\CommentRepository;
 use Tchooz\Repositories\Contacts\AddressRepository;
 use Tchooz\Repositories\Contacts\ContactOrganizationRepository;
+use Tchooz\Repositories\Contacts\OrganizationFileRepository;
 
 class OrganizationFactory extends EmundusFactory implements DBFactory
 {
 	private const ADDRESS = 'address';
 	private const REFERENT_CONTACTS = 'referent_contacts';
 	private const OTHER_CONTACTS = 'other_contacts';
+	private const APPLICATION_FILES = 'application_files';
+	private const COMMENTS = 'comments';
 	protected const RELATIONS = [
 		self::ADDRESS,
 		self::REFERENT_CONTACTS,
 		self::OTHER_CONTACTS,
+		self::APPLICATION_FILES,
+		self::COMMENTS,
 	];
 
 	public function fromDbObject(object|array $dbObject, bool|array $withRelations = true, array $exceptRelations = [], ?DatabaseDriver $db = null): OrganizationEntity
@@ -50,16 +57,20 @@ class OrganizationFactory extends EmundusFactory implements DBFactory
 			other_contacts: $relations[self::OTHER_CONTACTS] ?? [],
 			published: (bool) $dbObject['published'],
 			status: $dbObject['status'] ? VerifiedStatusEnum::from($dbObject['status']) : VerifiedStatusEnum::VERIFIED,
+			application_files: $relations[self::APPLICATION_FILES] ?? [],
+			comments: $relations[self::COMMENTS] ?? []
 		);
 	}
 
-	protected function loadRelation(string $relation, array $object): array|AddressEntity|null
+	protected function loadRelationFromArray(string $relation, array $object): array|AddressEntity|null
 	{
 		return match ($relation)
 		{
 			self::ADDRESS => $this->loadAddress($object['address']),
 			self::REFERENT_CONTACTS => $this->loadReferentContacts($object['id']),
 			self::OTHER_CONTACTS => $this->loadOtherContacts($object['id']),
+			self::APPLICATION_FILES => $this->loadApplicationFiles($object['id'] ?? null),
+			self::COMMENTS => $this->loadComments($object['id'] ?? null),
 			default => [],
 		};
 	}
@@ -89,4 +100,23 @@ class OrganizationFactory extends EmundusFactory implements DBFactory
 		return $contactOrganizationRepository->getContactsByOrganizationId($contactId, 0);
 	}
 
+	private function loadApplicationFiles(?int $organizationId): array
+	{
+		if (empty($organizationId))
+		{
+			return [];
+		}
+
+		$organizationFileRepository = new OrganizationFileRepository(false);
+
+		return $organizationFileRepository->getFilesByOrganizationId($organizationId);
+	}
+
+
+	private function loadComments(int $organizationId): array
+	{
+		$commentRepository = new CommentRepository(false);
+
+		return $commentRepository->get(['target_type' => CommentTargetTypeEnum::ORGANIZATION->value, 'target_id' => $organizationId]);
+	}
 }

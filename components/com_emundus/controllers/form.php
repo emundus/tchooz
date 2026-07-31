@@ -534,7 +534,7 @@ class EmundusControllerForm extends EmundusController
 			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'), EmundusResponse::HTTP_BAD_REQUEST);
 		}
 
-		$forms = $this->m_form->getFormsByProfileId($profile_id);
+		$forms = $this->m_form->getFormsByProfileId($profile_id, true);
 		if (empty($forms))
 		{
 			throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_FORM'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
@@ -741,6 +741,43 @@ class EmundusControllerForm extends EmundusController
 		$conditions = $this->m_form->getJSConditionsByForm($formId, $format);
 
 		return EmundusResponse::ok(['conditions' => $conditions]);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getelementdefinition(): EmundusResponse
+	{
+		$elementId = $this->input->getInt('element_id');
+
+		if (empty($elementId))
+		{
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
+		}
+
+		$element = $this->fabrikRepository->getElementById($elementId);
+
+		if (empty($element))
+		{
+			throw new RuntimeException(Text::_('COM_EMUNDUS_FORM_ELEMENT_NOT_FOUND'));
+		}
+
+		$params = $element->getParams();
+		if (isset($params->sub_options))
+		{
+			foreach ($params->sub_options->sub_labels as $key => $sub_label)
+			{
+				$params->sub_options->sub_labels[$key] = Text::_($sub_label);
+			}
+		}
+
+		$data = [
+			'id'     => $element->getId(),
+			'name'   => $element->getName(),
+			'plugin' => $element->getPlugin()->value,
+			'params' => $params,
+		];
+
+		return EmundusResponse::ok($data);
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]

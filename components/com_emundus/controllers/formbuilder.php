@@ -1275,7 +1275,7 @@ class EmundusControllerFormbuilder extends EmundusController
 			ElementPluginEnum::PASSWORD->value,
 		];
 
-		$elements = EmundusHelperFabrik::searchFabrikElements($search, $formIds, $excluded, 20);
+		$elements = EmundusHelperFabrik::searchFabrikElements($search, $formIds, $excluded, 20, false);
 
 		$elementsListOptions = [];
 		$seen                = [];
@@ -1295,7 +1295,7 @@ class EmundusControllerFormbuilder extends EmundusController
 		// Preload the currently selected element so the multiselect can display its label on reopen
 		if ($elementId > 0 && !isset($seen[$elementId]))
 		{
-			$preloaded = EmundusHelperFabrik::searchFabrikElements('', [$elementFormId], $excluded);
+			$preloaded = EmundusHelperFabrik::searchFabrikElements('', [$elementFormId], $excluded, 0, false);
 			foreach ($preloaded as $element)
 			{
 				if ((int) $element->id === $elementId)

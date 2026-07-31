@@ -21,7 +21,8 @@ class ChoicesAddonConfiguration extends EmundusAddonConfiguration
 		$configGroup = new FieldGroup('configuration', Text::_('COM_EMUNDUS_INTEGRATIONS_DOCAPOSTE_CONFIGURATION_GROUP_LABEL'));
 
 		return [
-			new ChoiceField('status_when_refused', Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_STATUS_REFUSED_LABEL'), $this->getStatusChoices(), false, false, $configGroup)
+			new ChoiceField('status_when_refused', Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_STATUS_REFUSED_LABEL'), $this->getStatusChoices(), false, false, $configGroup),
+			new ChoiceField('status_when_accepted', Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_STATUS_ACCEPTED_LABEL'), $this->getStatusChoices(), false, false, $configGroup)
 		];
 	}
 

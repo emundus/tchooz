@@ -25,6 +25,7 @@ use Joomla\CMS\Mail;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
+use Tchooz\Services\FileSecurityService;
 
 /**
  * eMundus Component Controller
@@ -124,6 +125,12 @@ class EmundusControllerMessages extends BaseController
 	{
 		$result = ['status' => false, 'file_name' => '', 'file_path' => '', 'msg' => ''];
 
+		if (empty($this->_user->id)) {
+			$result['msg'] = Text::_('ACCESS_DENIED');
+			echo json_encode($result);
+			exit;
+		}
+
 		$filetype = $this->input->post->get('filetype', null);
 		$file = $this->input->files->get('file');
 		$user = $this->input->post->get('user');
@@ -154,8 +161,7 @@ class EmundusControllerMessages extends BaseController
 				throw new Exception(Text::_('COM_EMUNDUS_ERROR_INVALID_FILETYPE'));
 			}
 
-			// Check file extension and remove any dengerous ones.
-			if (preg_match("/.exe$|.com$|.bat$|.zip$|.php$|.sh$/i", $file['name'])) {
+			if (!FileSecurityService::isAllowedUploadExtension($file['name'])) {
 				throw new Exception(Text::_('COM_EMUNDUS_ERROR_INVALID_FILETYPE'));
 			}
 			// Check if the message attachments directory exists.
@@ -284,10 +290,21 @@ class EmundusControllerMessages extends BaseController
 		// If no mail sender info is provided, we use the system global config.
 		$mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
 		$mail_from      = $this->input->post->getString('mail_from', $mail_from_sys);
-		$reply_to_from  = $this->input->post->getString('reply_to_from', '');
-		if(empty($reply_to_from))
-		{
-			$reply_to_from = $reply_to;
+		$reply_to_from  = $this->input->post->getString('reply_to_from', null, null);
+		if (!empty($reply_to_from) && is_array($reply_to_from)) {
+			foreach ($reply_to_from as $key => $reply_to_to_test) {
+				if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $reply_to_to_test) !== 1) {
+					unset($reply_to_from[$key]);
+				}
+			}
+			$reply_to_from = array_values(array_unique($reply_to_from));
+		}
+		else {
+			$reply_to_from = [];
+		}
+
+		if (empty($reply_to_from)) {
+			$reply_to_from = [$reply_to];
 		}
 
 		$mail_subject = $this->input->post->getString('mail_subject', 'No Subject');
@@ -429,11 +446,11 @@ class EmundusControllerMessages extends BaseController
                     <strong>' . Text::_('COM_EMUNDUS_EMAILS_FROM') . '</strong> ' . $sender . ' </br>';
 
 		if (!empty($reply_to_from)) {
-			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_REPLY_TO') . '</strong> ' . $reply_to_from . ' </br>';
+			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_REPLY_TO') . '</strong> ' . implode(', ', $reply_to_from) . ' </br>';
 		}
 
 
-		if ($fnum->is_anonym == 1) {
+		if ($fnum->is_anonym == 1 || $fnum->anonymous == 1) {
 			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_TO') . '</strong> ' . Text::_('COM_EMUNDUS_ANONYM_EMAIL') . ' </br>';
 
 			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_SUBJECT') . '</strong> ' . $subject . ' </br>' .
@@ -586,10 +603,21 @@ class EmundusControllerMessages extends BaseController
 		// If no mail sender info is provided, we use the system global config.
 		$mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
 		$mail_from      = $this->input->post->getString('mail_from', $mail_from_sys);
-		$reply_to_from  = $this->input->post->getString('reply_to_from', '');
-		if(empty($reply_to_from))
-		{
-			$reply_to_from = $reply_to;
+		$reply_to_from  = $this->input->post->getString('reply_to_from', null, null);
+		if (!empty($reply_to_from) && is_array($reply_to_from)) {
+			foreach ($reply_to_from as $key => $reply_to_to_test) {
+				if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $reply_to_to_test) !== 1) {
+					unset($reply_to_from[$key]);
+				}
+			}
+			$reply_to_from = array_values(array_unique($reply_to_from));
+		}
+		else {
+			$reply_to_from = [];
+		}
+
+		if (empty($reply_to_from)) {
+			$reply_to_from = [$reply_to];
 		}
 
 		$mail_subject = $this->input->post->getString('mail_subject', 'No Subject');

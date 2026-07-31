@@ -295,7 +295,8 @@ requirejs(['fab/fabrik'], function () {
       element.update(filteredOptions[0].value);
     }
 
-    jQuery(element.element).trigger(element.getChangeEvent());
+    var event = new Event(element.getChangeEvent());
+    element.element.dispatchEvent(event);
   });
 
   window.setInterval(function () {

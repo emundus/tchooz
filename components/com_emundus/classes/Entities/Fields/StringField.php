@@ -34,7 +34,9 @@ class StringField extends Field
 			'group' => $this->getGroup()?->toSchema(),
 			'minLength' => $this->minLength,
 			'maxLength' => $this->maxLength,
-			'displayRules' => array_map(fn($rule) => $rule->toSchema(), $this->getDisplayRules())
+			'displayRules' => array_map(fn($rule) => $rule->toSchema(), $this->getDisplayRules()),
+			'helpText' => $this->getHelpText(),
+			'defaultValue' => $this->getDefaultValue(),
 		];
 	}
 }

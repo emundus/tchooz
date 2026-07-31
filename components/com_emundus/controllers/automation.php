@@ -173,9 +173,34 @@ class EmundusControllerAutomation extends BaseController
 			$history = array_map(function ($row) {
 				$message = json_decode($row->message);
 
+				$isAborted = !empty($message->aborted);
+				$isLoop    = $isAborted || !empty($message->loop_detected);
+				$name      = $isLoop
+					? ($message->automation_name ?? Text::_('COM_EMUNDUS_AUTOMATION'))
+					: ($message->automation_entity->name ?? Text::_('COM_EMUNDUS_AUTOMATION'));
+
+				if ($isAborted)
+				{
+					$stateLabel   = Text::_('COM_EMUNDUS_AUTOMATION_PROCESS_LOOP_ABORTED');
+					$stateClasses = 'tw-mr-2 tw-h-max tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-bg-red-300 tw-text-red-700';
+				}
+				elseif ($isLoop)
+				{
+					$stateLabel   = Text::_('COM_EMUNDUS_AUTOMATION_PROCESS_LOOP_DETECTED');
+					$stateClasses = 'tw-mr-2 tw-h-max tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-bg-orange-300 tw-text-orange-700';
+				}
+				else
+				{
+					$nbFailed     = $message->nb_failed_actions ?? 0;
+					$stateLabel   = $nbFailed > 0 ? Text::_('COM_EMUNDUS_AUTOMATION_PROCESS_FAILED') : Text::_('COM_EMUNDUS_AUTOMATION_PROCESS_SUCCESS');
+					$stateClasses = $nbFailed < 1
+						? 'tw-mr-2 tw-h-max tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm em-bg-main-500 tw-text-white'
+						: 'tw-mr-2 tw-h-max tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-bg-red-300 tw-text-red-700';
+				}
+
 				return [
 					'id' => $row->id,
-					'label' => ['fr' => $message->automation_entity->name, 'en' => $message->automation_entity->name],
+					'label' => ['fr' => $name, 'en' => $name],
 					'message' => $row->message,
 					'additional_columns' => [
 						new AdditionalColumn(
@@ -201,9 +226,9 @@ class EmundusControllerAutomation extends BaseController
 							[
 								new AdditionalColumnTag(
 									Text::_('COM_EMUNDUS_AUTOMATION_STATE'),
-									$message->nb_failed_actions > 0 ? Text::_('COM_EMUNDUS_AUTOMATION_PROCESS_FAILED') : Text::_('COM_EMUNDUS_AUTOMATION_PROCESS_SUCCESS'),
+									$stateLabel,
 									'',
-									$message->nb_failed_actions < 1 ? 'tw-mr-2 tw-h-max tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm em-bg-main-500 tw-text-white' : 'tw-mr-2 tw-h-max tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-bg-red-300 tw-text-red-700'
+									$stateClasses
 								)
 							],
 							ListColumnTypesEnum::TAGS

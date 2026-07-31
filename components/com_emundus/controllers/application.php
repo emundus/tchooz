@@ -1078,7 +1078,7 @@ class EmundusControllerApplication extends EmundusController
 
 				if (!empty($filename) && !empty($upload_details['user_id']))
 				{
-					$response = $m_application->getAttachmentPreview($user, $filename);
+					$response = $m_application->getAttachmentPreview($user, $filename, $upload_details['value']);
 				}
 			}
 		}
@@ -2040,6 +2040,29 @@ class EmundusControllerApplication extends EmundusController
 			return;
 		}
 
+		if (!class_exists('EmundusModelGroups'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/models/groups.php';
+		}
+		if (!class_exists('EmundusModelFiles'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/models/files.php';
+		}
+		$m_files = new EmundusModelFiles();
+		$m_groups            = new EmundusModelGroups();
+		$eMConfig            = ComponentHelper::getParams('com_emundus');
+		$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
+		$groups = $m_groups->getGroupsIdByCourse($applicationChoicesEntity->getCampaign()->getProgram()->getCode());
+		$groups = array_column($groups, 'id');
+		$groups = array_diff($groups, [$all_rights_group_id]);
+		if (!empty($groups))
+		{
+			$actions = [
+				['id' => 1, 'r' => 1, 'c' => 0, 'u' => 0, 'd' => 0],
+			];
+			$m_files->shareGroups($groups, $actions, [$current_fnum]);
+		}
+
 		EmundusModelLogs::log($this->_user->id, $this->_user->id, $current_fnum, $this->applicationChoicesAction->getId(), 'c', 'COM_EMUNDUS_LOGS_ADD_CHOICE', json_encode(['created' => [$applicationChoicesEntity->getCampaign()->getLabel()]]));
 
 		$entityObject               = $applicationChoicesEntity->__serialize();
@@ -2539,7 +2562,7 @@ class EmundusControllerApplication extends EmundusController
 		$response['status']  = true;
 		$response['data']    = $choiceObject;
 		$response['message'] = 'Choice refused successfully.';
-		
+
 		// AUTOMATIONS : If we have other admitted choices, we stay here. Else we check if a status parameter is set and then update file status then redirect to homepage
 		$addonRepository = new AddonRepository();
 		$addon = $addonRepository->getByName('choices');
@@ -2554,7 +2577,7 @@ class EmundusControllerApplication extends EmundusController
 					require_once JPATH_SITE . '/components/com_emundus/models/files.php';
 				}
 				$mFiles = new EmundusModelFiles();
-				
+
 				$mFiles->updateState([$current_fnum], $statusWhenRefused, $this->_user->id);
 
 				$response['redirect'] = EmundusHelperMenu::getHomepageLink();
@@ -2653,16 +2676,10 @@ class EmundusControllerApplication extends EmundusController
 			$fileStatusesFilter = array_filter($fileStatusesFilter);
 		}
 
-		$applicationChoicesRepository = new ApplicationChoicesRepository(false);
-		$campaignRepository = new CampaignRepository(false);
-		$applicationFileRepository = new ApplicationFileRepository(true, [CampaignRepository::class]);
+		$applicationChoicesRepository = new ApplicationChoicesRepository();
 
 		$emundusUserRepository        = new EmundusUserRepository();
 		$labelRepository = new LabelRepository();
-
-		// Create static cache to avoid multiple queries for the same campaign or application file when exporting all choices
-		$staticCampaigns = [];
-		$staticApplicationFiles = [];
 
 		$userPrograms = $emundusUserRepository->getUserProgramsCodes($this->_user->id);
 		if (!empty($program) && $program != 'all')
@@ -2711,27 +2728,8 @@ class EmundusControllerApplication extends EmundusController
 		{
 			assert($applicationChoice instanceof ApplicationChoicesEntity);
 
-			if(in_array($applicationChoice->getCampaignId(), array_keys($staticCampaigns)))
-			{
-				$campaign = $staticCampaigns[$applicationChoice->getCampaignId()];
-			}
-			else
-			{
-				$campaign = $campaignRepository->getById($applicationChoice->getCampaignId());
-				$staticCampaigns[$applicationChoice->getCampaignId()] = $campaign;
-			}
-
-			if(in_array($applicationChoice->getFnum(), array_keys($staticApplicationFiles)))
-			{
-				$applicationFile = $staticApplicationFiles[$applicationChoice->getFnum()];
-			}
-			else
-			{
-				$applicationFile = $applicationFileRepository->getByFnum($applicationChoice->getFnum());
-				$staticApplicationFiles[$applicationChoice->getFnum()] = $applicationFile;
-			}
-
-			if (empty($applicationFile))
+			// Skip orphan choices whose application file or campaign no longer exists
+			if (empty($applicationChoice->getApplicationFile()) || empty($applicationChoice->getCampaign()))
 			{
 				continue;
 			}
@@ -2749,7 +2747,7 @@ class EmundusControllerApplication extends EmundusController
 					'',
 					ListDisplayEnum::ALL,
 					'c.label',
-					$campaign->getLabel()
+					$applicationChoice->getCampaign()->getLabel()
 				),
 				new AdditionalColumn(
 					Text::_('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_STATUS'),
@@ -2783,9 +2781,9 @@ class EmundusControllerApplication extends EmundusController
 					[
 						new AdditionalColumnTag(
 							Text::_('COM_EMUNDUS_ACCESS_STATUS'),
-							$applicationFile->getStatus()->getLabel(),
+							$applicationChoice->getApplicationFile()->getStatus()->getLabel(),
 							'',
-							'label label-' . $applicationFile->getStatus()->getColor()
+							'label label-' . $applicationChoice->getApplicationFile()->getStatus()->getColor()
 						)
 					],
 					ListColumnTypesEnum::TAGS
@@ -2962,7 +2960,7 @@ class EmundusControllerApplication extends EmundusController
 
 		$applicationChoicesRepository = new ApplicationChoicesRepository(false);
 		$campaignRepository = new CampaignRepository(false);
-		$applicationFileRepository = new ApplicationFileRepository(true, [CampaignRepository::class]);
+		$applicationFileRepository = new ApplicationFileRepository(true, [CampaignRepository::NAME]);
 
 		// Create static cache to avoid multiple queries for the same campaign or application file when exporting all choices
 		$staticCampaigns = [];
@@ -3077,7 +3075,7 @@ class EmundusControllerApplication extends EmundusController
 
 		$applicationChoicesRepository = new ApplicationChoicesRepository(false);
 		$campaignRepository = new CampaignRepository(false);
-		$applicationFileRepository = new ApplicationFileRepository(true, [CampaignRepository::class]);
+		$applicationFileRepository = new ApplicationFileRepository(true, [CampaignRepository::NAME]);
 
 		// Create static cache to avoid multiple queries for the same campaign or application file when exporting all choices
 		$staticCampaigns = [];
@@ -3493,7 +3491,7 @@ class EmundusControllerApplication extends EmundusController
                     $this->app->triggerEvent('onSyncEparapheur', [
                         [
                             'fnums'         => $fnums,
-                            'signer_email'  => 'murielle.pineau@sorbonne-universite.fr',
+                            'signer_email'  => 'jean-pierre.test@sorbonne-universite.fr',
                             'attachment_id' => 71,
                             'file'          => basename($file['filename']),
                             'filepath'      => $file['filename'],
@@ -3510,6 +3508,31 @@ class EmundusControllerApplication extends EmundusController
         echo json_encode($response);
         exit;
     }
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function updatesifac(): void
+	{
+		$response = array('status' => false, 'message' => '');
+
+		$user_id   = $this->input->getInt('user_id', 0);
+		$matricule = $this->input->getString('matricule', '');
+
+		if (!empty($user_id))
+		{
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->update($db->quoteName('#__emundus_users'))
+				->set($db->quoteName('matricule') . ' = ' . $db->quote($matricule))
+				->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+
+			$db->setQuery($query);
+			$response['status'] = $db->execute();
+		}
+
+		echo json_encode($response);
+		exit;
+	}
 
 	/**
 	 * @depecated Need to move this to a real feature of application files group

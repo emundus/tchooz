@@ -116,12 +116,28 @@ class HtmlView extends BaseHtmlView {
     public $repair_launched = '';
 	
 	/**
-	 * Nombre del fichero de reparación
+	 * HTML del log de la última reparación
 	 *
-	 * @var string|null
+	 * @var string
 	 */
     public $repair_log = '';
-	
+
+	/**
+	 * Recuentos del log de la última reparación
+	 *
+	 * @var int
+	 */
+	public int $repair_ok_count = 0;
+	public int $repair_error_count = 0;
+	public int $repair_warning_count = 0;
+
+	/**
+	 * Estado actual del escaneo de permisos ('IN_PROGRESS' | 'ENDED' | 'ERROR' | 'DATABASE_ERROR' | '')
+	 *
+	 * @var string
+	 */
+	public string $scan_state = '';
+
 	/**
 	 * The model state
 	 *
@@ -137,10 +153,7 @@ class HtmlView extends BaseHtmlView {
 	 */
 	public $pagination = null;
 	
-	/**
-	 * @var BaseModel
-	 */
-	public $basemodel;
+	public ?BaseModel $basemodel = null;
 	
 	
     /**
@@ -160,23 +173,17 @@ class HtmlView extends BaseHtmlView {
 
        	// Obtenemos el modelo de esta vista (Filemanager)
 		/** @var FilemanagerModel $model */
-        $model = $this->getModel();		
-		
-		// Crea BaseModel con el factory del componente (no lo "registra" en la vista)
-        $component = Factory::getApplication()->bootComponent('com_securitycheckpro');
-        /** @var MVCFactoryInterface $factory */
-        $factory = $component->getMVCFactory();
+		$model = $this->getModel();
 
-        /** @var BaseModel $baseModel */
-        $baseModel = $factory->createModel('Base', 'Administrator', ['ignore_request' => true]);
-        $this->basemodel = $baseModel;
-		
+		// BaseModel
+		$this->basemodel = new BaseModel();
+
         $this->last_check = $model->loadStack("filemanager_resume", "last_check");
         $this->files_scanned = $model->loadStack("filemanager_resume", "files_scanned");
        	$this->time_taken = $model->loadStack("filemanager_resume", "time_taken");
         $this->log_filename = $model->get_log_filename("filepermissions_log", true);
 
-        $task_ended = $model->GetCampoFilemanager("estado");
+        $this->scan_state = (string) $model->GetCampoFilemanager("estado");
 
         // Obtenemos si está habilitada la opción para escanear sólo ficheros ejecutables
         $params = ComponentHelper::getParams('com_securitycheckpro');
@@ -217,20 +224,20 @@ class HtmlView extends BaseHtmlView {
         }
 		
 		$this->repair_launched = $app->getUserState("repair_launched", null);
-       
+
         if (!empty($this->repair_launched)) {
-            $this->repair_log = $model->getRepairLog();    
+            $repairResult = $model->getRepairLog();
+            $this->repair_log           = $repairResult['html'];
+            $this->repair_ok_count      = $repairResult['ok'];
+            $this->repair_error_count   = $repairResult['error'];
+            $this->repair_warning_count = $repairResult['warning'];
         }
-		
+
 		// Also comes common data from SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\DisplayController
-		
+
 		// Pass parameters to the filemanager.js script using Joomla's script options API
-		// No es necesario pasar "true" a Text::_ porque addscriptoptions ya json-escapa el contenido		
-		$this->document->addScriptOptions('securitycheckpro.Filemanager.repairviewlogheader', '<div class="alert alert-info" role="alert">' . Text::_('COM_SECURITYCHECKPRO_REPAIR_VIEW_LOG_HEADER') . '</div>');
-		$this->document->addScriptOptions('securitycheckpro.Filemanager.repairlaunched', $this->repair_launched);		
-		$this->document->addScriptOptions('securitycheckpro.Filemanager.launchnewtask', '<div class="alert alert-warning" role="alert">' . Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_LAUNCH_NEW_TASK') . '</div>');
-		$this->document->addScriptOptions('securitycheckpro.Filemanager.divviewlogbutton', '<button class="btn btn-primary" onclick="showLog();">' . Text::_('COM_SECURITYCHECKPRO_REPAIR_VIEW_LOG_MESSAGE') . '</button>');
-		$this->document->addScriptOptions('securitycheckpro.Filemanager.inprogress', '<span class="badge bg-info">' . Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS') . '</span>');		
+		// No es necesario pasar "true" a Text::_ porque addscriptoptions ya json-escapa el contenido
+		$this->document->addScriptOptions('securitycheckpro.Filemanager.inprogress', '<span class="badge bg-info">' . Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS') . '</span>');
 		$this->document->addScriptOptions('securitycheckpro.Filemanager.updatingstats', Text::_('COM_SECURITYCHECKPRO_UPDATING_STATS') . '<br/><br/><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
 		$this->document->addScriptOptions('securitycheckpro.Filemanager.urltoredirect', Route::_('index.php?option=com_securitycheckpro&controller=filemanager&view=filemanager&'. Session::getFormToken() .'=1', false));		
 		$this->document->addScriptOptions('securitycheckpro.Filemanager.errorbutton', '<button class="btn btn-primary" type="button" onclick="window.location.reload();">' . Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_REFRESH_BUTTON') . '</button>');		

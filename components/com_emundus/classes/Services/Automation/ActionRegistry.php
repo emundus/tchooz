@@ -5,9 +5,12 @@ namespace Tchooz\Services\Automation;
 use EmundusHelperCache;
 use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Entities\Automation\ActionEntity;
+use Tchooz\Entities\Automation\Actions\ActionGenerateSignatureRequest;
 use Tchooz\Entities\Synchronizer\SynchronizerEntity;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Synchronizer\SynchronizerContextEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 
@@ -92,25 +95,13 @@ class ActionRegistry
 					}
 					break;
 				case ActionCategoryEnum::SIGN:
-					$synchronizerRepository = new SynchronizerRepository();
+					$addonRepository = new AddonRepository();
+					$numericSignAddon = $addonRepository->getByName(AddonEnum::NUMERIC_SIGN->value);
 
-					$synchronizers = $synchronizerRepository->getBy('context', SynchronizerContextEnum::NUMERIC_SIGN->value);
-					$atLeastOneActive = false;
-					foreach ($synchronizers as $synchronizer)
+					if (!$numericSignAddon->isActivated())
 					{
-						assert($synchronizer instanceof SynchronizerEntity);
-						if ($synchronizer->isPublished() && $synchronizer->isEnabled())
-						{
-							$atLeastOneActive = true;
-							break;
-						}
+						continue 2;
 					}
-
-					if (!$atLeastOneActive)
-					{
-						continue 2; // skip this action
-					}
-
 					break;
 				default:
 					break;
@@ -128,6 +119,8 @@ class ActionRegistry
 				'icon' => $class::getIcon(),
 				'parameters' => $class->getParametersSchema(),
 				'supported_target_types' => $class::supportTargetTypes(),
+				// todo: remove ActionGenerateSignatureRequest once plugin signature_request is replaced by emundusexecuteactions
+				'is_asynchronous' => $class::isAsynchronous() || $class instanceof ActionGenerateSignatureRequest,
 			];
 		}
 		return $schema;

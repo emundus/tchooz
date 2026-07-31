@@ -18,6 +18,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
+use Tchooz\Enums\Workflow\StepStateEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 
@@ -906,6 +907,18 @@ class EmundusControllerEvaluation extends BaseController
 			}
 		}
 		$status      = $m_files->getStatusByFnums($fnums);
+
+		$applicant_ids_by_fnum = [];
+		if (!empty($fnums)) {
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+			$query->select($db->quoteName(['fnum', 'applicant_id']))
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where($db->quoteName('fnum') . ' IN (' . implode(',', array_map([$db, 'quote'], $fnums)) . ')');
+			$db->setQuery($query);
+			$applicant_ids_by_fnum = $db->loadAssocList('fnum', 'applicant_id');
+		}
+
 		$line        = "";
 		$element_csv = array();
 		$i           = $start;
@@ -952,7 +965,7 @@ class EmundusControllerEvaluation extends BaseController
 					{
 						$line       .= $v . "\t";
 						$line       .= $status[$v]['value'] . "\t";
-						$uid        = intval(substr($v, 21, 7));
+						$uid        = (int) ($applicant_ids_by_fnum[$v] ?? 0);
 						$userProfil = JUserHelper::getProfile($uid)->emundus_profile;
 						$lastname   = (!empty($userProfil['lastname'])) ? $userProfil['lastname'] : JFactory::getUser($uid)->name;
 						$line       .= strtoupper($lastname) . "\t";
@@ -1211,14 +1224,14 @@ class EmundusControllerEvaluation extends BaseController
 				}
 
 				// merge steps of workflow and child workflows
-				$steps = array_merge($steps, $workflow->getSteps());
+				$steps = array_merge($steps, array_filter($workflow->getSteps(), fn($s) => $s->getState() === StepStateEnum::PUBLISHED->value));
 				foreach ($workflow->getChildWorkflows() as $childWorkflow)
 				{
 					if (!empty($applicationChoicesProgram) && count(array_intersect($applicationChoicesProgram, $childWorkflow->getProgramIds())) === 0)
 					{
 						continue;
 					}
-					$steps = array_merge($steps, $childWorkflow->getSteps());
+					$steps = array_merge($steps, array_filter($childWorkflow->getSteps(), fn($s) => $s->getState() === StepStateEnum::PUBLISHED->value));
 				}
 			}
 

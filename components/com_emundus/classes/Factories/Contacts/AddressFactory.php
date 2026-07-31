@@ -30,7 +30,7 @@ class AddressFactory implements DBFactory
 			extended_address: $dbObject['extended_address'] ?? null,
 			postal_code: $dbObject['postal_code'] ?? null,
 			description: $dbObject['description'] ?? null,
-			country: $dbObject['country'] ?? 0
+			country: $dbObject['country'] ?? null
 		);
 	}
 }

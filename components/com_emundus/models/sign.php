@@ -17,6 +17,7 @@ use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\NumericSign\Request;
 use Tchooz\Entities\NumericSign\RequestSigners;
 use Tchooz\Enums\NumericSign\SignAuthenticationLevelEnum;
+use Tchooz\Enums\NumericSign\SignConnectorsEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Attachments\AttachmentTypeRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
@@ -59,7 +60,7 @@ class EmundusModelSign extends ListModel
 		Log::addLogger(['text_file' => 'com_emundus.sign.php'], Log::ALL, array('com_emundus.sign'));
 	}
 
-	public function getRequests(string $order_by = '', string $sort = 'DESC', string $search = '', int|string $lim = 25, int|string $page = 0, ?string $status = '', ?int $attachment = 0, ?int $applicant = 0, ?string $signed_date = ''): array
+	public function getRequests(string $order_by = '', string $sort = 'DESC', string $search = '', int|string $lim = 25, int|string $page = 0, ?string $status = '', ?int $attachment = 0, ?int $applicant = 0, ?string $signed_date = '', ?string $creation_date = '', ?string $reminder_date = '', ?string $connector = ''): array
 	{
 		$requests = ['datas' => [], 'count' => 0];
 
@@ -84,7 +85,7 @@ class EmundusModelSign extends ListModel
 			}
 
 			$requestsRepository = new RequestRepository($this->db);
-			$requestsRepository->setFilters($search, $status, $attachment, $applicant, $signed_date);
+			$requestsRepository->setFilters($search, $status, $attachment, $applicant, $signed_date, $creation_date, $reminder_date, $connector);
 
 			$requests['count'] = $requestsRepository->getCountRequests();
 			$requests['datas'] = $requestsRepository->loadRequests($order_by, $sort, $limit, $offset);
@@ -196,11 +197,11 @@ class EmundusModelSign extends ListModel
 							if (is_array($signer))
 							{
 								$signer['order'] = isset($signer['order']) ? (int)$signer['order'] : 0;
-								$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, $signer['page'] ?? 0, $signer['position'] ?? '', $signer['authentication_level'] ?? SignAuthenticationLevelEnum::STANDARD->value, $signer['anchor'] ?? '', $signer['order']);
+								$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, $signer['page'] ?? 0, $signer['position'] ?? '', $signer['authentication_level'] ?? SignAuthenticationLevelEnum::STANDARD->value, $signer['anchor'] ?? '', $signer['order'], $contact->getPhone1());
 							}
 							else
 							{
-								$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, 0, '', $signer['authentication_level'] ?? SignAuthenticationLevelEnum::STANDARD->value, '', 0);
+								$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, 0, '', $signer['authentication_level'] ?? SignAuthenticationLevelEnum::STANDARD->value, '', 0, $contact->getPhone1());
 							}
 						}
 					}
@@ -221,7 +222,7 @@ class EmundusModelSign extends ListModel
 		}
 	}
 
-	public function addSigner(int $request_id, string $email, string $firstname, string $lastname, ?string $status = 'to_sign', ?int $step = 1, ?int $page = 0, ?string $position = '', ?string $authentication_level = SignAuthenticationLevelEnum::STANDARD->value, ?string $anchor = '', ?int $order = 0): int
+	public function addSigner(int $request_id, string $email, string $firstname, string $lastname, ?string $status = 'to_sign', ?int $step = 1, ?int $page = 0, ?string $position = '', ?string $authentication_level = SignAuthenticationLevelEnum::STANDARD->value, ?string $anchor = '', ?int $order = 0, ?string $phoneNumber = null): int
 	{
 		try
 		{
@@ -231,7 +232,7 @@ class EmundusModelSign extends ListModel
 				$contact           = $contactRepository->getByEmail($email);
 				if (empty($contact))
 				{
-					$contact = new ContactEntity($email, $lastname, $firstname, '');
+					$contact = new ContactEntity($email, $lastname, $firstname, $phoneNumber);
 					$contactRepository->flush($contact);
 				}
 
@@ -369,7 +370,7 @@ class EmundusModelSign extends ListModel
 
 			if(empty($request))
 			{
-				throw new \Exception('Request not found.', 404);
+				throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_REQUEST_NOT_FOUND_ERROR'), 404);
 			}
 
 			$signed_file = $request_repository->getSignedDocument($request);
@@ -634,6 +635,33 @@ class EmundusModelSign extends ListModel
 			}
 
 			return $status;
+		}
+		catch (\Exception $e)
+		{
+			Log::add($e->getMessage(), Log::ERROR);
+			throw $e;
+		}
+	}
+
+	public function getFilterConnectors(): array
+	{
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select([$this->db->quoteName('esr.connector', 'value'), 'connector as label'])
+				->from($this->db->quoteName('#__emundus_sign_requests','esr'))
+				->group('esr.connector')
+				->order('esr.connector ASC');
+			$this->db->setQuery($query);
+			$connectors = $this->db->loadObjectList();
+
+			foreach ($connectors as $connector)
+			{
+				$connector->label = SignConnectorsEnum::from($connector->label)->getLabel();
+			}
+
+			return $connectors;
 		}
 		catch (\Exception $e)
 		{

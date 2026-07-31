@@ -38,6 +38,7 @@ export default {
 									name: 'add',
 									type: 'redirect',
 									acl: 'workflow|c',
+									iconLabel: 'control_point',
 								},
 								{
 									action: 'index.php?option=com_emundus&view=workflows&layout=edit&wid=%id%',

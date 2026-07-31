@@ -21,9 +21,8 @@ use Tchooz\Entities\Payment\TransactionEntity;
 use Tchooz\Factories\Payment\TransactionFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
+use Tchooz\Enums\Payment\PaymentGatewayEnum;
 use Tchooz\Repositories\EmundusRepository;
-use Tchooz\Synchronizers\Payment\Sogecommerce;
-use Tchooz\Synchronizers\Payment\Stripe;
 use Tchooz\Traits\TraitTable;
 
 #[TableAttribute(table: '#__emundus_payment_transaction', alias: 'transaction', columns: [
@@ -571,6 +570,31 @@ class TransactionRepository extends EmundusRepository
 		return $transaction_id;
 	}
 
+	public function logFailureReason(TransactionEntity $transaction, string $reason, int $user_id, array $details = []): void
+	{
+		Log::add('Payment failed for transaction ' . $transaction->getId() . ' : ' . $reason, Log::WARNING, 'com_emundus.payment');
+
+		if (!class_exists('EmundusModelLogs')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
+		}
+		if (!class_exists('EmundusHelperFiles')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+		}
+
+		$applicant_id       = \EmundusHelperFiles::getApplicantIdFromFnum($transaction->getFnum());
+		$payment_repository = new PaymentRepository();
+
+		\EmundusModelLogs::log(
+			$user_id,
+			$applicant_id,
+			$transaction->getFnum(),
+			$payment_repository->getActionId(),
+			'u',
+			'COM_EMUNDUS_PAYMENT_FAILED',
+			json_encode(array_merge(['reason' => $reason], $details))
+		);
+	}
+
 	/**
 	 * @param   array  $data (payload)
 	 * @param   string  $external_reference
@@ -677,19 +701,14 @@ class TransactionRepository extends EmundusRepository
 				if (!empty($row->sync_type)) {
 					$data = json_decode($row->data, true);
 
-					switch($row->sync_type) {
-						case 'sogecommerce':
-							$sogecommerce = new Sogecommerce();
-							$updated = $sogecommerce->updateTransactionFromCallback($data, $row->transaction_id, $automated_task_user);
-							break;
-						case 'stripe':
-							$stripe = new Stripe();
-							$updated = $stripe->updateTransactionFromCallback($data, $row->transaction_id, $automated_task_user);
-							break;
-						default:
-							Log::add('Unknown sync type: ' . $row->sync_type, Log::ERROR, 'com_emundus.repository.transaction');
-							continue 2;
+					$gateway = PaymentGatewayEnum::tryFrom($row->sync_type);
+					if ($gateway === null) {
+						Log::add('Unknown sync type: ' . $row->sync_type, Log::ERROR, 'com_emundus.repository.transaction');
+						$updates[] = false;
+						continue;
 					}
+
+					$updated = $gateway->getSynchronizer()->updateTransactionFromCallback($data, $row->transaction_id, $automated_task_user);
 
 					if ($updated) {
 						$query->update($this->db->quoteName('#__emundus_payment_queue', 'queue'))

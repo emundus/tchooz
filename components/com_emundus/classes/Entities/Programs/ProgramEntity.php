@@ -9,24 +9,30 @@
 
 namespace Tchooz\Entities\Programs;
 
+use Tchooz\Attributes\ORM\Sanitize;
+use Tchooz\Traits\TraitSanitizable;
+
 class ProgramEntity
 {
+	use TraitSanitizable;
+
 	private int $id;
 
 	private string $code;
 
 	private string $label;
 
-	private ?string $notes;
+	#[Sanitize]
+	private string $notes;
 
 	private bool $published;
 
 	/**
 	 * Deprecated: Need to use the category entity relation
 	 */
-	private ?string $programmes;
+	private string $programmes;
 
-	private ?string $synthesis;
+	private string $synthesis;
 
 	private bool $applyOnline;
 
@@ -36,19 +42,26 @@ class ProgramEntity
 
 	private ?string $color;
 
-	public function __construct(string $code, string $label, int $id = 0, bool $published = true, ?string $notes = '', ?string $programmes = '', ?string $synthesis = '', bool $applyOnline = false, ?int $ordering = 0, ?string $logo = '', ?string $color = '')
+	#[Sanitize]
+	private ?string $longDescription;
+
+	private bool $mustOpenRights;
+
+	public function __construct(string $code, string $label, int $id = 0, bool $published = true, ?string $notes = '', ?string $programmes = '', ?string $synthesis = '', bool $applyOnline = true, ?int $ordering = 0, ?string $logo = null, ?string $color = '', ?string $longDescription = '', bool $mustOpenRights = false)
 	{
-		$this->id = $id;
-		$this->code = $code;
-		$this->label = $label;
-		$this->published = $published;
-		$this->notes = $notes;
-		$this->programmes = $programmes;
-		$this->synthesis = $synthesis;
-		$this->applyOnline = $applyOnline;
-		$this->ordering = $ordering;
-		$this->logo = $logo;
-		$this->color = $color;
+		$this->id              = $id;
+		$this->code            = $code;
+		$this->label           = $label;
+		$this->published       = $published;
+		$this->notes           = $notes ?? '';
+		$this->programmes      = $programmes ?? '';
+		$this->synthesis       = $synthesis ?? '';
+		$this->applyOnline     = $applyOnline;
+		$this->ordering        = $ordering;
+		$this->logo            = $logo;
+		$this->color           = $color;
+		$this->longDescription = $longDescription;
+		$this->mustOpenRights  = $mustOpenRights;
 	}
 
 	public function getId(): int
@@ -69,6 +82,24 @@ class ProgramEntity
 	public function setCode(string $code): void
 	{
 		$this->code = $code;
+	}
+
+	public function getSlug(): string
+	{
+		$code = $this->code;
+		if (empty($code))
+		{
+			$code = $this->label;
+
+			$code = preg_replace('/[^A-Za-z0-9]/', '', $code);
+			$code = str_replace(' ', '_', $code);
+			$code = substr($code, 0, 20);
+			$code = strtolower($code);
+
+			$code = uniqid($code . '-');
+		}
+
+		return $code;
 	}
 
 	public function getLabel(): string
@@ -141,12 +172,12 @@ class ProgramEntity
 		$this->ordering = $ordering;
 	}
 
-	public function getLogo(): string
+	public function getLogo(): ?string
 	{
 		return $this->logo;
 	}
 
-	public function setLogo(string $logo): void
+	public function setLogo(?string $logo): void
 	{
 		$this->logo = $logo;
 	}
@@ -161,8 +192,37 @@ class ProgramEntity
 		$this->color = $color;
 	}
 
+	public function getLongDescription(): ?string
+	{
+		return $this->longDescription;
+	}
+
+	public function setLongDescription(?string $longDescription): ProgramEntity
+	{
+		$this->longDescription = $longDescription;
+
+		return $this;
+	}
+
+	public function isMustOpenRights(): bool
+	{
+		return $this->mustOpenRights;
+	}
+
+	public function setMustOpenRights(bool $mustOpenRights): ProgramEntity
+	{
+		$this->mustOpenRights = $mustOpenRights;
+
+		return $this;
+	}
+
 	public function __serialize(): array
 	{
-		return get_object_vars($this);
+		$serialization                     = get_object_vars($this);
+		$serialization['apply_online']     = $this->isApplyOnline() ? 1 : 0;
+		$serialization['must_open_rights'] = $this->isMustOpenRights() ? 1 : 0;
+		$serialization['long_description'] = $this->getLongDescription();
+
+		return $serialization;
 	}
 }

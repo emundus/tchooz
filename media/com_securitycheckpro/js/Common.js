@@ -5,8 +5,6 @@
  */
 "use strict";
 
-let cont_otp = 0;
-
 // ---------------------
 // Mostrar logs por AJAX
 // ---------------------
@@ -22,6 +20,25 @@ document.addEventListener("click", async (e) => {
 
   content.textContent = "";
   spinner?.classList.remove("d-none");
+
+  // Enlace de descarga del mismo log (independiente del fetch de abajo)
+  const downloadLink = document.getElementById("logDownloadLink");
+  if (downloadLink) {
+    if (filename) {
+      const csrfToken = Joomla.getOptions("csrf.token");
+      const downloadUrl = new URL("index.php", window.location.href);
+      downloadUrl.searchParams.set("option", "com_securitycheckpro");
+      downloadUrl.searchParams.set("task", "filemanager.downloadLog");
+      downloadUrl.searchParams.set("format", "raw");
+      downloadUrl.searchParams.set("logfilename", filename);
+      downloadUrl.searchParams.set(csrfToken, "1");
+      downloadLink.href = downloadUrl.toString();
+      downloadLink.classList.remove("disabled");
+    } else {
+      downloadLink.href = "#";
+      downloadLink.classList.add("disabled");
+    }
+  }
 
   try {
     // Construye URL bien (evita problemas con & ?)
@@ -90,8 +107,10 @@ window.addEventListener("DOMContentLoaded", () => {
 // Toast Bootstrap 5
 // ---------------------
 function configure_toast(text, auto) {
-  document.getElementById("toast-body").innerHTML = text;
-  document.getElementById("toast-auto").innerHTML = auto;
+  const body = document.getElementById("toast-body");
+  const autoEl = document.getElementById("toast-auto");
+  if (body) body.textContent = text;
+  if (autoEl) autoEl.textContent = auto;
 
   const toastEl = document.getElementById("toast");
   if (toastEl) {
@@ -111,16 +130,16 @@ document.getElementById('boton_purge_sessions')?.addEventListener('click', funct
 function muestra_progreso_purge() {
   const divBtn = document.getElementById("div_boton_purge_sessions");
   const divLoading = document.getElementById("div_loading");
-  if (divBtn) divBtn.style.display = "none";
-  if (divLoading) divLoading.style.display = "block";
+  if (divBtn) divBtn.classList.add("d-none");
+  if (divLoading) divLoading.classList.remove("d-none");
 }
 
 // ---------------------
 // Purgar sessiones
 // ---------------------
 function purgeSessionsSubmit() {
-  window.location.href = "index.php?option=com_securitycheckpro&view=filemanager&controller=filemanager&task=purgeSessions";
-
+  const csrfToken = Joomla.getOptions("csrf.token");
+  window.location.href = "index.php?option=com_securitycheckpro&view=filemanager&controller=filemanager&task=purgeSessions" + "&" + encodeURIComponent(csrfToken) + "=1";
 }
 
 // ---------------------
@@ -143,22 +162,20 @@ const process_completed = Joomla.Text._("COM_SECURITYCHECKPRO_FILEMANAGER_PROCES
 const ended_string_initialize = Joomla.Text._("COM_SECURITYCHECKPRO_FILEMANAGER_ENDED");
 const filemanager_warning_message = Joomla.Text._("COM_SECURITYCHECKPRO_FILEMANAGER_WARNING_MESSAGE");
 const completed_error = Joomla.Text._("COM_SECURITYCHECKPRO_COMPLETED_ERRORS");
-const passed = Joomla.Text._("COM_SECURITYCHECKPRO_PASSED");
-const failed = Joomla.Text._("COM_SECURITYCHECKPRO_FAILED");
-const otpstatus = Joomla.Text._("COM_SECURITYCHECKPRO_OTP_STATUS");
-const moreinfo = Joomla.Text._("COM_SECURITYCHECKPRO_MORE_INFO");
 const error_string = Joomla.Text._("COM_SECURITYCHECKPRO_FILEMANAGER_ERROR");
 
 // ---------------------
 // Clear data
 // ---------------------
 async function clear_data_button() {
+  const csrfToken = Joomla.getOptions("csrf.token");
+
   if (cont_initialize === 0) {
-    document.getElementById("loading-container").innerHTML = loadinggif;
-    document.getElementById("warning_message").innerHTML = filemanager_warning_message;
+    document.getElementById("loading-container").innerHTML = loadinggif; // trusted server HTML (img tag)
+    document.getElementById("warning_message").textContent = filemanager_warning_message;
   } else if (cont_initialize === 1) {
     url_initialize =
-      "index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=acciones_clear_data";
+      "index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=acciones_clear_data" + "&" + encodeURIComponent(csrfToken) + "=1";
     etiqueta_initialize = "current_task";
   } else {
     url_initialize =
@@ -178,9 +195,24 @@ async function clear_data_button() {
   if (request_initialize === ended_string_initialize) {
     hideElement("loading-container");
     hideElement("warning_message");
-    document.getElementById("completed_message").innerHTML = process_completed;
-    document.getElementById("buttonclose").style.display = "block";
+    const completedEl = document.getElementById("completed_message");
+    if (completedEl) {
+      completedEl.textContent = process_completed;
+      completedEl.classList.remove("d-none");
+    }
     cont_initialize = 0;
+    setTimeout(() => {
+      const modalEl = document.getElementById("initialize_data");
+      if (modalEl && window.bootstrap?.Modal) {
+        const bsModal = window.bootstrap.Modal.getInstance(modalEl);
+        if (bsModal) {
+          modalEl.addEventListener("hidden.bs.modal", () => window.location.reload(), { once: true });
+          bsModal.hide();
+          return;
+        }
+      }
+      window.location.reload();
+    }, 1500);
   } else {
     setTimeout(clear_data_button, 1000);
   }
@@ -190,12 +222,14 @@ async function clear_data_button() {
 // Clean tmp dir
 // ---------------------
 async function clean_tmp_dir() {
+  const csrfToken = Joomla.getOptions("csrf.token");
+
   if (cont_initialize === 0) {
-    document.getElementById("tmpdir-container").innerHTML = loadinggif;
-    document.getElementById("warning_message_tmpdir").innerHTML = filemanager_warning_message;
+    document.getElementById("tmpdir-container").innerHTML = loadinggif; // trusted server HTML (img tag)
+    document.getElementById("warning_message_tmpdir").textContent = filemanager_warning_message;
   } else if (cont_initialize === 1) {
     url_initialize =
-      "index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=acciones_clean_tmp_dir";
+      "index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=acciones_clean_tmp_dir" + "&" + encodeURIComponent(csrfToken) + "=1";
     etiqueta_initialize = "current_task";
   } else {
     url_initialize =
@@ -222,97 +256,37 @@ async function clean_tmp_dir() {
       );
       clean_tmp_dir_result = await respMsg.text();
 
-      if (clean_tmp_dir_result !== "") {
-        const el = document.getElementById("completed_message_tmpdir");
-        el.classList.add("color_rojo");
-        el.innerHTML = completed_error;
+      const el = document.getElementById("completed_message_tmpdir");
+      el.classList.remove("d-none");
 
-        document.getElementById("container_result_area").value = clean_tmp_dir_result;
-        document.getElementById("container_result").style.display = "block";
+      if (clean_tmp_dir_result !== "") {
+        el.classList.add("text-danger");
+        el.textContent = completed_error;
+        document.getElementById("container_result_area").textContent = clean_tmp_dir_result;
+        document.getElementById("container_result").classList.remove("d-none");
+        const closeBtn = document.getElementById("buttonclose_tmpdir");
+        if (closeBtn) closeBtn.classList.remove("d-none");
       } else {
-        const el = document.getElementById("completed_message_tmpdir");
-        el.classList.add("color_verde");
-        el.innerHTML = process_completed;
+        el.classList.add("text-success");
+        el.textContent = process_completed;
+        setTimeout(() => {
+          const modalEl = document.getElementById("cleantmpdir");
+          if (modalEl && window.bootstrap?.Modal) {
+            const bsModal = window.bootstrap.Modal.getInstance(modalEl);
+            if (bsModal) {
+              modalEl.addEventListener("hidden.bs.modal", () => window.location.reload(), { once: true });
+              bsModal.hide();
+              return;
+            }
+          }
+          window.location.reload();
+        }, 1500);
       }
     } catch (e) {}
 
-    document.getElementById("buttonclose_tmpdir").style.display = "block";
     cont_initialize = 0;
   } else {
     setTimeout(clean_tmp_dir, 1000);
   }
 }
 
-// ---------------------
-// OTP Status
-// ---------------------
-function get_otp_status() {
-  const twofactor_status = Joomla.getOptions("securitycheckpro.Common.twofactorstatus");
-  const otp_enabled = Joomla.getOptions("securitycheckpro.Common.otpenabled");
-
-  let type = "error";
-  let text_message = failed;
-
-  if (otp_enabled == 1 && twofactor_status >= 2) {
-    type = "success";
-    text_message = passed;
-  }
-
-  show_otp_status(text_message, type, twofactor_status, otp_enabled);
-}
-
-function show_otp_status(otp_text, otp_type, twofactor_status, otp_enabled) {
-  swal(
-    {
-      title: otpstatus,
-      text: otp_text,
-      type: otp_type,
-      showCancelButton: true,
-      cancelButtonClass: "btn-success",
-      cancelButtonText: moreinfo,
-    },
-    function (isConfirm) {
-      if (!isConfirm) {
-        window.open("https://scpdocs.securitycheckextensions.com/troubleshooting/otp");
-      }
-    }
-  );
-
-  // Contenido extra
-  const extra_content = Joomla.getOptions("securitycheckpro.Common.extracontent");
-
-  if (extra_content && cont_otp < 1) {
-    document.querySelectorAll(".form-group").forEach((el) =>
-      el.insertAdjacentHTML("afterend", extra_content)
-    );
-    cont_otp++;
-  }
-
-  if (otp_enabled == 0) {
-    const otp_enabled_content = Joomla.getOptions("securitycheckpro.Common.otpenabledcontent");
-    if (cont_otp < 2) {
-      document.querySelectorAll(".form-group").forEach((el) =>
-        el.insertAdjacentHTML("afterend", otp_enabled_content)
-      );
-      cont_otp++;
-    }
-  }
-
-  if (twofactor_status == 0) {
-    const status_content = Joomla.getOptions("securitycheckpro.Common.no2faenabled");
-    if (cont_otp < 2) {
-      document.querySelectorAll(".form-group").forEach((el) =>
-        el.insertAdjacentHTML("afterend", status_content)
-      );
-      cont_otp++;
-    }
-  } else if (twofactor_status == 1) {
-    const status_content = Joomla.getOptions("securitycheckpro.Common.no2fauserenabled");
-    if (cont_otp < 2) {
-      document.querySelectorAll(".form-group").forEach((el) =>
-        el.insertAdjacentHTML("afterend", status_content)
-      );
-      cont_otp++;
-    }
-  }
-}

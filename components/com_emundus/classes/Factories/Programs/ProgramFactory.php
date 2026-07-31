@@ -9,44 +9,37 @@
 
 namespace Tchooz\Factories\Programs;
 
-use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Programs\ProgramEntity;
-use Tchooz\Factories\DBFactory;
+use Tchooz\Factories\AbstractFactory;
 
-class ProgramFactory
+class ProgramFactory extends AbstractFactory
 {
-
-	public static function fromDbObjects(array $dbObjects, $withRelations = true, $exceptRelations = [], ?DatabaseDriver $db = null): array
+	public function buildEntity(object $dbObject, array $relations): ProgramEntity
 	{
-		$programs = [];
-
-		foreach ($dbObjects as $dbObject)
-		{
-			$programs[] = self::fromDbObject($dbObject, $withRelations, $exceptRelations, $db);
-		}
-
-		return $programs;
+		return new ProgramEntity(
+			code: $dbObject->code,
+			label: $dbObject->label,
+			id: (int) $dbObject->id,
+			published: (bool) $dbObject->published,
+			notes: $dbObject->notes,
+			programmes: $dbObject->programmes,
+			synthesis: $dbObject->synthesis,
+			applyOnline: $dbObject->apply_online == 1,
+			ordering: (int) $dbObject->ordering,
+			logo: $dbObject->logo,
+			color: $dbObject->color,
+			longDescription: $dbObject->long_description ?? '',
+			mustOpenRights: $dbObject->must_open_rights == 1,
+		);
 	}
 
-	public static function fromDbObject(object|array $dbObject, $withRelations = true, $exceptRelations = [], ?DatabaseDriver $db = null): ProgramEntity
+	protected function loadRelation(string $relation, object $dbObject): mixed
 	{
-		if(is_object($dbObject))
-		{
-			$dbObject = (array) $dbObject;
-		}
+		return null;
+	}
 
-		return new ProgramEntity(
-			code: $dbObject['code'],
-			label: $dbObject['label'],
-			id: (int) $dbObject['id'],
-			published: (bool) $dbObject['published'],
-			notes: $dbObject['notes'],
-			programmes: $dbObject['programmes'],
-			synthesis: $dbObject['synthesis'],
-			applyOnline: (bool) $dbObject['apply_online'],
-			ordering: (int) $dbObject['ordering'],
-			logo: $dbObject['logo'],
-			color: $dbObject['color']
-		);
+	protected function getRelationCacheKey(string $relation, object $dbObject): string|int
+	{
+		return spl_object_id($dbObject);
 	}
 }

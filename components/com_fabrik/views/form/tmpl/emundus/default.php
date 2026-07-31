@@ -140,6 +140,7 @@ Text::script('COM_EMUNDUS_ONBOARD_CANCEL');
 Text::script('COM_EMUNDUS_ACTIONS_DELETE');
 
 Text::script('COM_FABRIK_NO_REPEAT_GROUP_DATA');
+Text::script('YOUR_FILE_HAS_BEEN_SENT');
 
 if ($pageClass !== '') :
     echo '<div class="' . $pageClass . '">';

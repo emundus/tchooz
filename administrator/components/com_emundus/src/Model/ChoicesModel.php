@@ -102,12 +102,18 @@ class ChoicesModel extends ListModel
 
 	public function getItems(): array
 	{
+		$applicationChoicesRepository = new ApplicationChoicesRepository();
+		$more_form_id = $applicationChoicesRepository->getMoreFormId();
+		$elements   = $applicationChoicesRepository->getChoicesMoreElements($more_form_id);
+		$table_name = $applicationChoicesRepository->getMoreTableName($more_form_id);
+
 		$items = parent::getItems();
 
 		if (!empty($items)) {
 			$factory = new ApplicationChoicesFactory();
 			foreach ($items as &$item) {
-				$application_choices_entity  = $factory->fromDbObject($item);
+				$item->more_data = $applicationChoicesRepository->getMoreData((int) $item->id, $more_form_id, $elements, $table_name);
+				$application_choices_entity  = $factory->fromDbObject($item, true, [], null, $elements);
 				$item = (object)$application_choices_entity->__serialize();
 
 				$item->typeAlias = 'com_emundus.choices';

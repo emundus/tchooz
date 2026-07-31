@@ -13,11 +13,13 @@ import AutomationEventsList from '@/components/Automation/AutomationEventsList.v
 import { newConditionGroup } from '@/components/Automation/conditionGroup.js';
 import { useAutomationStore } from '@/stores/automation.js';
 import Button from '@/components/Atoms/Button.vue';
+import { Alert } from '@emundus/ui';
 
 export default {
 	name: 'AutomationEdit',
 	components: {
 		Button,
+		Alert,
 		AutomationEventsList,
 		AutomationEvent,
 		AutomationActionsList,
@@ -276,7 +278,14 @@ export default {
 
 					if (param.group && param.group.isRepeatable) {
 						if (action.parameter_values[param.group.name]) {
-							action.parameter_values[param.group.name].forEach((row, rowIndex) => {
+							// May arrive as an object ({0:..,1:..}) from PHP when keys are non-sequential.
+							const repeatableRows = Array.isArray(action.parameter_values[param.group.name])
+								? action.parameter_values[param.group.name]
+								: Object.values(action.parameter_values[param.group.name]);
+							repeatableRows.forEach((row, rowIndex) => {
+								if (row === null || row === undefined) {
+									return;
+								}
 								if (
 									param.required &&
 									(row[param.name] === undefined || row[param.name] === null || row[param.name] === '')
@@ -338,6 +347,9 @@ export default {
 	computed: {
 		displayedFields() {
 			return this.fields.filter((field) => field.displayed);
+		},
+		hasMultipleAsynchronousActions() {
+			return this.automation.actions.filter((a) => a.is_asynchronous).length >= 2;
 		},
 		firstLevelConditionGroups() {
 			return this.automation.conditions_groups.filter(
@@ -422,6 +434,12 @@ export default {
 				@remove-action="onRemoveAction"
 			/>
 			<p v-if="automation.actions.length < 1">{{ translate('COM_EMUNDUS_AUTOMATION_NO_ACTIONS') }}</p>
+
+			<Alert
+				v-if="hasMultipleAsynchronousActions"
+				state="info"
+				:text="translate('COM_EMUNDUS_AUTOMATION_MULTIPLE_ASYNC_ACTIONS_WARNING')"
+			/>
 
 			<div class="tw-flex tw-w-full tw-flex-row tw-justify-end">
 				<Button id="add-action" @click="openModal('actionsListModal')" :variant="'info'" class="not-to-close-modal">

@@ -10,11 +10,16 @@
 namespace Unit\Component\Emundus\Class\Repositories\Contacts;
 
 use Joomla\Tests\Unit\UnitTestCase;
+use Tchooz\Entities\Comments\CommentEntity;
 use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Enums\Comments\CommentTargetTypeEnum;
+use Tchooz\Repositories\Comments\CommentRepository;
 use Tchooz\Repositories\Contacts\AddressRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
+use Tchooz\Repositories\Contacts\OrganizationFileRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
 
 /**
@@ -27,10 +32,13 @@ class OrganizationRepositoryTest extends UnitTestCase
 {
 	private array $organizationsFixtures = [];
 
+	private CommentRepository $commentRepository;
+
 	public function setUp(): void
 	{
 		parent::setUp();
 		$this->model = new OrganizationRepository();
+		$this->commentRepository = new CommentRepository();
 		$this->initDataSet();
 	}
 
@@ -95,11 +103,76 @@ class OrganizationRepositoryTest extends UnitTestCase
 		$organizations = $this->model->getAllOrganizations();
 
 		$this->assertIsArray($organizations, 'The result is an array');
-		$this->assertNotEmpty($organizations, 'The result is not empty');
+		$this->assertNotEmpty($organizations['datas'], 'The result is not empty');
+
+		$organization1Id = $this->organizationsFixtures[0]->getId();
+
+		$publicComment = new CommentEntity(
+			id: 0,
+			targetType: CommentTargetTypeEnum::ORGANIZATION,
+			targetId: $organization1Id,
+			content: 'Public comment on organization 1',
+			createdBy: $this->dataset['coordinator'],
+			createdAt: new \DateTime(),
+			isPublic: 1
+		);
+		$this->commentRepository->flush($publicComment);
+
+		$otherUserPrivateComment = new CommentEntity(
+			id: 0,
+			targetType: CommentTargetTypeEnum::ORGANIZATION,
+			targetId: $organization1Id,
+			content: 'Private comment by another user',
+			createdBy: $this->dataset['applicant'],
+			createdAt: new \DateTime(),
+			isPublic: 0
+		);
+		$this->commentRepository->flush($otherUserPrivateComment);
+
+		$organizations = $this->model->getAllOrganizations();
+		$this->assertIsArray($organizations);
+		$this->assertNotEmpty($organizations['datas']);
+
+		$organization1Loaded = null;
+		foreach ($organizations['datas'] as $organization)
+		{
+			if ($organization->getId() === $organization1Id)
+			{
+				$organization1Loaded = $organization;
+				break;
+			}
+		}
+
+		$this->assertNotNull($organization1Loaded, 'Organization 1 should be in the results');
+
+		$organization1Comments = $organization1Loaded->getComments();
+		$this->assertIsArray($organization1Comments, 'Comments should be an array');
+		$this->assertNotEmpty($organization1Comments, 'Organization 1 should have at least one comment loaded');
+
+		$publicCommentFound = false;
+		$privateCommentFound = false;
+		foreach ($organization1Comments as $comment)
+		{
+			if ($comment->id === $publicComment->getId())
+			{
+				$publicCommentFound = true;
+				$this->assertObjectHasProperty('name', $comment, 'Comment should have user name from JOIN');
+				$this->assertNotEmpty($comment->date, 'Comment date should be formatted');
+			}
+			if ($comment->id === $otherUserPrivateComment->getId())
+			{
+				$privateCommentFound = true;
+			}
+		}
+
+		$this->assertTrue($publicCommentFound, 'Public comment should be loaded for organization 1');
+		$this->assertFalse($privateCommentFound, 'Private comment from another user should not be loaded');
+
+		$this->commentRepository->delete($publicComment->getId());
+		$this->commentRepository->delete($otherUserPrivateComment->getId());
 
 		$this->clearFixtures();
 	}
-
 	/**
 	 * @covers \Tchooz\Repositories\Contacts\OrganizationRepository::getById
 	 * @return void
@@ -214,7 +287,30 @@ class OrganizationRepositoryTest extends UnitTestCase
 		$this->assertTrue($result, 'The result should be true');
 		$this->assertGreaterThan(0, $organizationEntity4->getId(), 'The organization has been created with an ID greater than 0');
 		$this->model->delete($organizationEntity4->getId());
-		//
+
+		$fnum                      = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$applicationFileRepository = new ApplicationFileRepository();
+		$applicationFile           = $applicationFileRepository->getByFnum($fnum);
+
+		$organizationEntity5 = new OrganizationEntity(
+			id: 0,
+			name: 'Organization 5',
+			description: 'Description 5',
+			url_website: 'https://www.organization5.com',
+			address: null,
+			identifier_code: 'ORG005',
+			logo: null,
+			application_files: [$applicationFile]
+		);
+		$result = $this->model->flush($organizationEntity5);
+		$this->assertTrue($result, 'The result should be true');
+		$this->assertGreaterThan(0, $organizationEntity5->getId(), 'The organization has been created with an ID greater than 0');
+
+		$organizationFileRepository = new OrganizationFileRepository();
+		$associatedFnums            = $organizationFileRepository->getFilesFnumByOrganizationId($organizationEntity5->getId());
+		$this->assertContains($fnum, $associatedFnums, 'The fnum should be associated to the organization');
+
+		$this->model->delete($organizationEntity5->getId());
 
 		// Invalid organization (missing name)
 		$organizationEntity1 = new OrganizationEntity(
@@ -299,6 +395,146 @@ class OrganizationRepositoryTest extends UnitTestCase
 		$this->assertNotEmpty($found, 'Identifier code ORG001 should be found in the list');
 		$noIdentifierCode = array_filter($result, fn($p) => $p->value === 'no_identifier_code');
 		$this->assertNotEmpty($noIdentifierCode, 'The "no_identifier_code" option should be present');
+
+		$this->clearFixtures();
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Contacts\OrganizationRepository::updateOrganizationFilesByFnums
+	 * @return void
+	 */
+	public function testUpdateOrganizationFilesByFnums()
+	{
+		$organizationEntity = $this->model->getByName('Org Update Files By Fnums');
+		if ($organizationEntity && !empty($organizationEntity->getId())) {
+			$this->model->delete($organizationEntity->getId());
+		}
+		$organizationEntity = new OrganizationEntity(
+			id: 0,
+			name: 'Org Update Files By Fnums',
+			description: 'Test description',
+			url_website: 'https://test.com',
+			address: null,
+			identifier_code: 'ORGUFBF01',
+			logo: null
+		);
+		$this->model->flush($organizationEntity);
+
+		$fnum1 = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$fnum2 = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+
+		$organizationFileRepository = new OrganizationFileRepository();
+
+		$result = $this->model->updateOrganizationFilesByFnums($organizationEntity->getId(), [$fnum1, $fnum2]);
+		$this->assertTrue($result, 'updateOrganizationFilesByFnums should return true');
+		$associatedFnums = $organizationFileRepository->getFilesFnumByOrganizationId($organizationEntity->getId());
+		$this->assertCount(2, $associatedFnums);
+		$this->assertContains($fnum1, $associatedFnums);
+		$this->assertContains($fnum2, $associatedFnums);
+
+		$result = $this->model->updateOrganizationFilesByFnums($organizationEntity->getId(), [$fnum1]);
+		$this->assertTrue($result);
+		$associatedFnums = $organizationFileRepository->getFilesFnumByOrganizationId($organizationEntity->getId());
+		$this->assertCount(1, $associatedFnums);
+		$this->assertContains($fnum1, $associatedFnums);
+		$this->assertNotContains($fnum2, $associatedFnums);
+
+		$result = $this->model->updateOrganizationFilesByFnums($organizationEntity->getId(), []);
+		$this->assertTrue($result);
+		$associatedFnums = $organizationFileRepository->getFilesFnumByOrganizationId($organizationEntity->getId());
+		$this->assertEmpty($associatedFnums);
+
+		$result = $this->model->updateOrganizationFilesByFnums(0, []);
+		$this->assertFalse($result);
+
+		$this->model->delete($organizationEntity->getId());
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Contacts\OrganizationRepository::updateOrganizationFiles
+	 * @return void
+	 */
+	public function testUpdateOrganizationFilesWithEmptyOrganizationId()
+	{
+		$result = $this->model->updateOrganizationFiles(0, []);
+		$this->assertFalse($result, 'Should return false with empty organization id');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Contacts\OrganizationRepository::updateOrganizationFiles
+	 * @covers \Tchooz\Repositories\Contacts\OrganizationRepository::updateOrganizationFilesByFnums
+	 * @return void
+	 */
+	public function testUpdateOrganizationFilesEmptiesAssociations()
+	{
+		$organizationEntity = $this->model->getByName('Org Update Files Empty');
+		if ($organizationEntity && !empty($organizationEntity->getId())) {
+			$this->model->delete($organizationEntity->getId());
+		}
+		$organizationEntity = new OrganizationEntity(
+			id: 0,
+			name: 'Org Update Files Empty',
+			description: 'Test',
+			url_website: 'https://test.com',
+			address: null,
+			identifier_code: 'ORGUFE01',
+			logo: null
+		);
+		$this->model->flush($organizationEntity);
+
+		$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$this->model->updateOrganizationFilesByFnums($organizationEntity->getId(), [$fnum]);
+
+		$organizationFileRepository = new OrganizationFileRepository();
+		$this->assertCount(1, $organizationFileRepository->getFilesFnumByOrganizationId($organizationEntity->getId()));
+
+		$result = $this->model->updateOrganizationFiles($organizationEntity->getId(), []);
+		$this->assertTrue($result);
+		$this->assertEmpty($organizationFileRepository->getFilesFnumByOrganizationId($organizationEntity->getId()));
+
+		$this->model->delete($organizationEntity->getId());
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Contacts\OrganizationRepository::getByName
+	 * @return void
+	 */
+	public function testGetByName()
+	{
+		$this->createFixtures();
+
+		$result = $this->model->getByName('Organization 1');
+		$this->assertInstanceOf(OrganizationEntity::class, $result, 'The result should be an OrganizationEntity');
+		$this->assertEquals($this->organizationsFixtures[0]->getId(), $result->getId(), 'The organization ID matches');
+		$this->assertEquals('Organization 1', $result->getName(), 'The name matches');
+
+		$result = $this->model->getByName('Non Existing Organization');
+		$this->assertNull($result, 'The result should be null for an unknown name');
+
+		$result = $this->model->getByName('');
+		$this->assertNull($result, 'The result should be null for an empty name');
+
+		$this->clearFixtures();
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Contacts\OrganizationRepository::getByIdentifierCode
+	 * @return void
+	 */
+	public function testGetByIdentifierCode()
+	{
+		$this->createFixtures();
+
+		$result = $this->model->getByIdentifierCode('ORG001');
+		$this->assertInstanceOf(OrganizationEntity::class, $result, 'The result should be an OrganizationEntity');
+		$this->assertEquals($this->organizationsFixtures[0]->getId(), $result->getId(), 'The organization ID matches');
+		$this->assertEquals('ORG001', $result->getIdentifierCode(), 'The identifier code matches');
+
+		$result = $this->model->getByIdentifierCode('UNKNOWN_CODE');
+		$this->assertNull($result, 'The result should be null for an unknown identifier code');
+
+		$result = $this->model->getByIdentifierCode('');
+		$this->assertNull($result, 'The result should be null for an empty identifier code');
 
 		$this->clearFixtures();
 	}

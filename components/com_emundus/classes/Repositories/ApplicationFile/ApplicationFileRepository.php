@@ -14,6 +14,7 @@ use Tchooz\Entities\ApplicationFile\StatusEntity;
 use Tchooz\Factories\ApplicationFile\ApplicationFileFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
+use Tchooz\Services\Fabrik\CurrencyStorageFormatter;
 use Tchooz\Traits\TraitDispatcher;
 
 #[TableAttribute(
@@ -40,6 +41,8 @@ use Tchooz\Traits\TraitDispatcher;
 class ApplicationFileRepository extends EmundusRepository implements RepositoryInterface
 {
 	use TraitDispatcher;
+
+	const NAME = 'application_file';
 
 	private QueryInterface $query;
 
@@ -77,7 +80,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 			if (!empty($dbObjects))
 			{
-				$results = $this->factory->fromDbObjects($dbObjects, $this->withRelations);
+				$results = $this->factory->fromDbObjects($dbObjects, $this->withRelations, $this->exceptRelations);
 			}
 		}
 		catch (\Exception $e)
@@ -173,6 +176,26 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 		return (int) $this->db->loadResult() > 0;
 	}
 
+	/**
+	 * Load every non-empty short reference in a single query.
+	 *
+	 * Used for bulk generation to check collisions in-memory instead of running one
+	 * COUNT query per file.
+	 *
+	 * @return array<string>
+	 */
+	public function getAllShortReferences(): array
+	{
+		$this->query->clear()
+			->select($this->db->quoteName('short_reference'))
+			->from($this->db->quoteName($this->tableName))
+			->where($this->db->quoteName('short_reference') . ' IS NOT NULL')
+			->where($this->db->quoteName('short_reference') . ' != ' . $this->db->quote(''));
+		$this->db->setQuery($this->query);
+
+		return $this->db->loadColumn() ?: [];
+	}
+
 	public function getIdByFnum(string $fnum): ?int
 	{
 		$this->query->clear()
@@ -250,6 +273,17 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 			if (empty($applicationFileEntity->getId()))
 			{
+				$this->dispatchJoomlaEvent('onBeforeCampaignCandidature', [
+					'user_id' => $user_id,
+					'connected' => $user_id,
+					'campaign' => $applicationFileEntity->getCampaignId(),
+					'context' => new EventContextEntity(
+						$applicationFileEntity->getUser(),
+						[],
+						[$user_id],
+					)
+				]);
+
 				$ccid = $this->createCampaignCandidature($applicationFileEntity, $user_id);
 				if (empty($ccid))
 				{
@@ -258,6 +292,13 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 				$applicationFileEntity->setId($ccid);
 				$flushed = true;
+
+				// DEPRECATED: Only for backward compatibility
+				$this->dispatchJoomlaEvent('onCreateNewFile', [
+					'user_id' => $applicationFileEntity->getUser()->id,
+					'fnum'    => $applicationFileEntity->getFnum(),
+					'cid'     => $applicationFileEntity->getCampaignId(),
+				]);
 
 				$this->dispatchJoomlaEvent('onAfterCampaignCandidature',
 					[
@@ -280,11 +321,10 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 			}
 			else
 			{
-				$status = $applicationFileEntity->getStatus() instanceof StatusEntity ? $applicationFileEntity->getStatus()->getStep() : $applicationFileEntity->getStatus();
 				$data = (object) [
 					'id'                  => $applicationFileEntity->getId(),
 					'applicant_id'        => $applicationFileEntity->getUser()->id,
-					'status'              => $status,
+					'status'              => $applicationFileEntity->getStatusStep(),
 					'campaign_id'         => $applicationFileEntity->getCampaignId(),
 					'date_submitted'      => $applicationFileEntity->getDateSubmitted()?->format('Y-m-d H:i:s'),
 					'published'           => $applicationFileEntity->getPublished(),
@@ -370,14 +410,13 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 		if (empty($ccid))
 		{
-			$status = $applicationFileEntity->getStatus() instanceof StatusEntity ? $applicationFileEntity->getStatus()->getStep() : $applicationFileEntity->getStatus();
 			$campaign_candidature = [
 				'date_time'           => date('Y-m-d H:i:s'),
 				'applicant_id'        => $applicationFileEntity->getUser()->id,
 				'user_id'             => $user_id,
 				'campaign_id'         => $applicationFileEntity->getCampaignId(),
 				'fnum'                => $applicationFileEntity->getFnum(),
-				'status'              => $status,
+				'status'              => $applicationFileEntity->getStatusStep(),
 				'published'           => $applicationFileEntity->getPublished(),
 				'form_progress'       => 0,
 				'attachment_progress' => 0,
@@ -455,6 +494,8 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 					}
 				}
 			}
+
+			$datas = (new CurrencyStorageFormatter())->format($datas);
 
 			$datas = (object) $datas;
 

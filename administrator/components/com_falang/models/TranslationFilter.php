@@ -960,6 +960,7 @@ class JFContentParams extends CMSObject
      * @update 5.18 add editor custom fields copy/translate (message for original)
      * @update 5.21 skip display of copy/transate/original for JFormFieldACFGAllery
      *              custom fields with a specific language code are not displayed for translation
+     * @update 6.6 add support for Subform hide translation
      * @update remove duplicate test
      * */
     function render($type)
@@ -1096,6 +1097,15 @@ class JFContentParams extends CMSObject
                                         $hide_cf_field = true;
                                     }
                                     $disabledTranslation = $original_cf->params->get('disableTranslation') ?? false;
+                                }
+                            }
+                            //disabled translation for Subform with can't use name and fieldname
+                            if ($field->type == 'Subform'){
+                                foreach ($original_cfs as $original_cf){
+                                    $id = 'jform_com_fields_'.str_replace('-','_',$original_cf->name);
+                                    if ($id == $field->id){ // my-submform  jform_com_fields_my_subform
+                                        $disabledTranslation = $original_cf->params->get('disableTranslation') ?? false;
+                                    }
                                 }
                             }
 

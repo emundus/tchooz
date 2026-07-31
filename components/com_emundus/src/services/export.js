@@ -80,9 +80,9 @@ export default {
 		}
 	},
 
-	async getSettingsSchema() {
+	async getOptionsSchema(format) {
 		try {
-			return await client.get('settings');
+			return await client.get('optionsschema', { format });
 		} catch (e) {
 			return {
 				status: false,
@@ -159,6 +159,7 @@ export default {
 		selectedSynthesisIds,
 		selectedAttachmentIds,
 		id,
+		settings = {},
 	) {
 		try {
 			return await client.post('saveexport', {
@@ -168,6 +169,7 @@ export default {
 				headers: selectedHeadersIds,
 				synthesis: selectedSynthesisIds,
 				attachments: selectedAttachmentIds,
+				settings: JSON.stringify(settings || {}),
 				id: id,
 			});
 		} catch (e) {

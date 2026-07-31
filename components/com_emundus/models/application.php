@@ -32,7 +32,9 @@ use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagRemoveDefinition;
 use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
+use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
@@ -249,7 +251,8 @@ class EmundusModelApplication extends ListModel
 			}
 			$m_sign = new EmundusModelSign();
 			$m_settings = new EmundusModelSettings();
-			$sign_enabled = $m_settings->getAddonStatus('numeric_sign')['enabled'];
+			$numericSignAddon = (new AddonRepository())->getByName('numeric_sign');
+			$sign_enabled = !empty($numericSignAddon) && $numericSignAddon->isActivated();
 			if($sign_enabled && !$app->isClient('cli'))
 			{
 				$emundusUser      = $app->getSession()->get('emundusUser');
@@ -371,6 +374,9 @@ class EmundusModelApplication extends ListModel
 					}
 
 					$attachment->value = Text::_($attachment->value);
+					// Keep the raw ISO datetimes so the frontend can sort chronologically (the display strings are localized and not sortable).
+					$attachment->timedate_sort = $attachment->timedate;
+					$attachment->modified_sort = $attachment->modified;
 					$attachment->timedate = EmundusHelperDate::displayDate($attachment->timedate, 'DATE_FORMAT_LC2', 0);
 					$attachment->modified = EmundusHelperDate::displayDate($attachment->modified, 'DATE_FORMAT_LC2', 0);
 
@@ -955,9 +961,10 @@ class EmundusModelApplication extends ListModel
 
 		try {
 			$query = $this->_db->createQuery();
-			$query->select('*')
-				->from($this->_db->quoteName('#__emundus_uploads'))
-				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($id));
+			$query->select('eu.*, esa.value')
+				->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quoteName('esa.id'))
+				->where($this->_db->quoteName('eu.id') . ' = ' . $this->_db->quote($id));
 			$this->_db->setQuery($query);
 			$upload = $this->_db->loadAssoc();
 		} catch (\Exception $e) {
@@ -2202,13 +2209,12 @@ class EmundusModelApplication extends ListModel
 					$groupes = $this->_db->loadObjectList();
 
 					/*-- Liste des groupes -- */
-					$hidden_group_param_values = [0, '-1', '-2'];
 					foreach ($groupes as $itemg) {
 						$g_params = json_decode($itemg->params);
 
 						if (
 							(($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) || !EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int) $g_params->access)) &&
-							!in_array($g_params->repeat_group_show_first, $hidden_group_param_values)
+							!GroupVisibilityEnum::fromParams($g_params->repeat_group_show_first ?? null)->isHidden()
 						) {
 							$forms .= '<fieldset class="em-personalDetail">
 											<h3 style="font-size: var(--em-coordinator-h3); font-weight: inherit; padding-left: 0;">' . Text::_($itemg->label) . '</h3>
@@ -2692,7 +2698,7 @@ class EmundusModelApplication extends ListModel
 
 								$check_not_empty_group = $this->checkEmptyGroups($elements, $itemt->db_table_name, $fnum);
 
-								if($check_not_empty_group && !in_array($g_params->repeat_group_show_first, $hidden_group_param_values)) {
+								if($check_not_empty_group && !GroupVisibilityEnum::fromParams($g_params->repeat_group_show_first ?? null)->isHidden()) {
 									$forms .= '<table class="em-mt-8 em-mb-16 em-personalDetail-table-inline tw-p-6 tw-border-separate tw-rounded-coordinator-cards tw-shadow-card tw-bg-neutral-0">';
 
 									$forms .= '<div class="tw-flex tw-flex-row tw-justify-between form-group-title">';
@@ -2964,7 +2970,7 @@ class EmundusModelApplication extends ListModel
 												else {
 													$elt = $element->content;
 												}
-												
+
 												if(!empty($params->text_input_mask)) {
 													// Remove underscores from $elt if input mask is used
 													$elt = str_replace('_', '', $elt);
@@ -2981,11 +2987,20 @@ class EmundusModelApplication extends ListModel
 														->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
 														->andWhere($this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quote($params->attachmentId));
 													$this->_db->setQuery($query);
-													$attachment_upload = $this->_db->loadObject();
+													$attachment_uploads = $this->_db->loadObjectList();
 
-													if (!empty($attachment_upload->filename) && (($allowed_attachments !== true && in_array($params->attachmentId, $allowed_attachments)) || $allowed_attachments === true)) {
-														$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
-														$elt  = '<a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a>';
+													if(!empty($attachment_uploads))
+													{
+														$elt = '<ul>';
+														foreach ($attachment_uploads as $attachment_upload)
+														{
+															if (!empty($attachment_upload->filename) && (($allowed_attachments !== true && in_array($params->attachmentId, $allowed_attachments)) || $allowed_attachments === true))
+															{
+																$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
+																$elt  .= '<li><a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a></li>';
+															}
+														}
+														$elt .= '</ul>';
 													}
 													else {
 														$elt = '';
@@ -3178,7 +3193,6 @@ class EmundusModelApplication extends ListModel
 				}
 
 				/*-- Liste des groupes -- */
-				$hidden_group_param_values = [0, '-1', '-2'];
 				foreach ($groupes as $itemg) {
 					$query    = $this->_db->getQuery(true);
 					$g_params = json_decode($itemg->params);
@@ -3190,7 +3204,7 @@ class EmundusModelApplication extends ListModel
 					$g_params->repeated = $g_params->repeated ?? 0;
 
 					if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
-						if(!in_array($g_params->repeat_group_show_first, $hidden_group_param_values) && !empty(Text::_($itemg->label)))
+						if(!GroupVisibilityEnum::fromParams($g_params->repeat_group_show_first ?? null)->isHidden() && !empty(Text::_($itemg->label)))
 						{
 							if(!$page_title_inserted)
 							{
@@ -4239,11 +4253,20 @@ class EmundusModelApplication extends ListModel
 														->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
 														->andWhere($this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quote($params->attachmentId));
 													$this->_db->setQuery($query);
-													$attachment_upload = $this->_db->loadObject();
+													$attachment_uploads = $this->_db->loadObjectList();
 
-													if (!empty($attachment_upload->filename)) {
-														$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
-														$elt  = '<a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a>';
+													if(!empty($attachment_uploads))
+													{
+														$elt = '<ul>';
+														foreach ($attachment_uploads as $attachment_upload)
+														{
+															if (!empty($attachment_upload->filename))
+															{
+																$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
+																$elt  .= '<li><a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a></li>';
+															}
+														}
+														$elt .= '</ul>';
 													}
 													else {
 														$elt = '';
@@ -5933,7 +5956,9 @@ class EmundusModelApplication extends ListModel
 									foreach ($stored as $rowvalues) {
 										unset($rowvalues['id']);
 										$rowvalues['parent_id'] = $id;
-										$arrayValue[]           = '(' . implode(',', $this->_db->quote($rowvalues)) . ')';
+										$arrayValue[]           = implode(',', array_map(function ($value) {
+											return $value === null ? 'NULL' : $this->_db->quote($value);
+										}, $rowvalues));
 									}
 									unset($stored[0]['id']);
 									$q = 4;
@@ -5942,7 +5967,7 @@ class EmundusModelApplication extends ListModel
                                     $query->clear()
                                         ->insert($this->_db->quoteName($d['table']))
                                         ->columns(implode(',', $this->_db->quoteName(array_keys($stored[0]))))
-                                        ->values(implode(',', $arrayValue));
+                                        ->values($arrayValue);
 									$this->_db->setQuery($query);
 									$this->_db->execute();
 								}
@@ -5991,11 +6016,15 @@ class EmundusModelApplication extends ListModel
 						unset($document['id']);
 						unset($document['lbl']);
 
+						$documentValues           = implode(',', array_map(function ($value) {
+							return $value === null ? 'NULL' : $this->_db->quote($value);
+						}, $document));
+
 						try {
 							$query->clear();
 							$query->insert($this->_db->quoteName('#__emundus_uploads'))
 								->columns(array_keys($document))
-								->values(implode(", ", $this->_db->quote($document)));
+								->values($documentValues);
 
 							$this->_db->setQuery($query);
 							$this->_db->execute();
@@ -6836,7 +6865,7 @@ class EmundusModelApplication extends ListModel
 	 *
 	 * @return string preview html tags
 	 */
-	public function getAttachmentPreview($user, $fileName)
+	public function getAttachmentPreview($user, $fileName, $label = '')
 	{
 		$preview   = [
 			'status'    => true,
@@ -6853,9 +6882,10 @@ class EmundusModelApplication extends ListModel
 
 		if ($fileExists) {
 
+			$iframeTitle = !empty($label) ? $label : Text::_('COM_EMUNDUS_IFRAME_ATTACHMENT_TITLE');
 			// create preview based on filetype
 			if ($extension == 'pdf') {
-				$preview['content'] = '<iframe src="/index.php?option=com_emundus&task=getfile&u=images/emundus/files/'. $user . '/' . $fileName . '" style="width:100%;height:100%;" border="0"></iframe>';
+				$preview['content'] = '<iframe title="'.$iframeTitle.'" src="/index.php?option=com_emundus&task=getfile&u=images/emundus/files/'. $user . '/' . $fileName . '" style="width:100%;height:100%;" border="0"></iframe>';
 			}
 			else if ($extension == 'txt') {
 				$content              = file_get_contents($filePath);
@@ -8597,7 +8627,7 @@ class EmundusModelApplication extends ListModel
                 ->set('modified_by = ' . $this->_db->quote($user_id))
                 ->set('modified = ' . $this->_db->quote(date('Y-m-d H:i:s')))
                 ->where('id = ' . $this->_db->quote($id));
-            
+
             $this->_db->setQuery($query);
             $updated = $this->_db->execute();
         }
@@ -8621,7 +8651,7 @@ class EmundusModelApplication extends ListModel
         $data = file_get_contents($logo);
         $logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
         /* END LOGO */
-        
+
         $query = $this->_db->createQuery();
 
         $query->clear()
@@ -8631,32 +8661,46 @@ class EmundusModelApplication extends ListModel
         $this->_db->setQuery($query);
         $name = $this->_db->loadResult();
 
+	    $query->clear()
+		    ->select('date_time')
+		    ->from('data_lots')
+		    ->where('id = ' . $this->_db->quote($id_lot));
+	    $this->_db->setQuery($query);
+	    $date = $this->_db->loadResult();
+
+	    $formattedDate = date('d/m/Y',
+		    strtotime($date));
+
         /* We join only on evaluations_00 because the criteria_854_9071 field is only in this form */
-        $query->clear()
-            ->select('esc.label as campaign_label,ecc.fnum,ess.value as status,dtp.label as prestation,eu.firstname,eu.lastname,eu.birth_date,eu.insee,GROUP_CONCAT(esat.label) as tags,ee.criteria_854_9071 as montant, eu.affectation')
-            ->from($this->_db->quoteName('data_lots_883_repeat', 'dlr'))
-            ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quoteName('dlr.fnum'))
-            ->leftJoin($this->_db->quoteName('#__emundus_evaluations_00', 'ee') . ' ON ' . $this->_db->quoteName('ee.fnum') . ' = ' . $this->_db->quoteName('ecc.fnum'))
-            ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('ecc.campaign_id'))
-            ->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('ecc.applicant_id'))
-            ->leftJoin($this->_db->quoteName('#__emundus_tag_assoc', 'eta') . ' ON ' . $this->_db->quoteName('eta.fnum') . ' = ' . $this->_db->quoteName('ecc.fnum'))
-            ->leftJoin($this->_db->quoteName('#__emundus_setup_action_tag', 'esat') . ' ON ' . $this->_db->quoteName('esat.id') . ' = ' . $this->_db->quoteName('eta.id_tag'))
-            ->leftJoin($this->_db->quoteName('data_type_prestations', 'dtp') . ' ON ' . $this->_db->quoteName('dtp.id') . ' = ' . $this->_db->quoteName('ecc.prestation_id'))
-            ->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $this->_db->quoteName('ess.step') . ' = ' . $this->_db->quoteName('ecc.status'))
-            ->where($this->_db->quoteName('dlr.parent_id') . ' = ' . $this->_db->quote($id_lot))
-            ->group('ecc.fnum')
-            ->order('esc.id ASC, dtp.label ASC, eu.lastname ASC');
-        $this->_db->setQuery($query);
-        $datas = $this->_db->loadObjectList();
+	    $query->clear()
+		    ->select('esc.label as campaign_label,ecc.fnum,ess.value as status,dtp.label as prestation,eu.firstname,eu.lastname,eu.birth_date,eu.insee,GROUP_CONCAT(esat.label) as tags,ee.criteria_854_9071 as montant, eu.affectation, eu.matricule')
+		    ->from($this->_db->quoteName('data_lots_883_repeat', 'dlr'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quoteName('dlr.fnum'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_evaluations_00', 'ee') . ' ON ' . $this->_db->quoteName('ee.fnum') . ' = ' . $this->_db->quoteName('ecc.fnum'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('ecc.campaign_id'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('ecc.applicant_id'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_tag_assoc', 'eta') . ' ON ' . $this->_db->quoteName('eta.fnum') . ' = ' . $this->_db->quoteName('ecc.fnum'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_setup_action_tag', 'esat') . ' ON ' . $this->_db->quoteName('esat.id') . ' = ' . $this->_db->quoteName('eta.id_tag'))
+		    ->leftJoin($this->_db->quoteName('data_type_prestations', 'dtp') . ' ON ' . $this->_db->quoteName('dtp.id') . ' = ' . $this->_db->quoteName('ecc.prestation_id'))
+		    ->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $this->_db->quoteName('ess.step') . ' = ' . $this->_db->quoteName('ecc.status'))
+		    ->where($this->_db->quoteName('dlr.parent_id') . ' = ' . $this->_db->quote($id_lot))
+		    ->group('ecc.fnum')
+		    ->order('esc.id ASC, dtp.label ASC, eu.lastname ASC');
+	    $this->_db->setQuery($query);
+	    $datas = $this->_db->loadObjectList();
 
         $htmldata = '<html>
                 <head>
-                  <title>Dossiers du lot ' . $name . '</title>
+                  <title>Tableau des prestations du lot ' .
+	        $name .
+	        ' créé le '. $formattedDate . '</title>
                   <meta name="author" content="eMundus">
                 </head>
                 <body>';
         $htmldata .= '<header><table style="width: 100%"><tr><td><img src="' . $logo_base64 . '" width="auto" height="60"/></td><td style="text-align: right">';
-        $htmldata .= '<h1>Dossiers du lot ' . $name . '</h1></td></tr></table></header>';
+	    $htmldata .= '<h1>Tableau des prestations du lot ' .
+		    $name .
+		    ' créé le '. $formattedDate . '</h1></td></tr></table></header>';
 
         $htmldata .= "
             <style>
@@ -8774,7 +8818,8 @@ class EmundusModelApplication extends ListModel
         $htmldata .= '<th class="background">Numéro de sécurité sociale</th>';
         $htmldata .= '<th class="background">Affectation</th>';
         $htmldata .= '<th class="background">Montant</th>';
-        $htmldata .= '<th class="background">N°Bdc / N°SIFAC</th>';
+	    $htmldata .= '<th class="background">N°Bdc</th>';
+	    $htmldata .= '<th class="background">N°SIFAC</th>';
         $htmldata .= '</tr></thead>';
         $htmldata .= '<tbody>';
         foreach ($datas as $data) {
@@ -8787,9 +8832,10 @@ class EmundusModelApplication extends ListModel
             $htmldata .= '<td>' . date('d/m/Y', strtotime($data->birth_date)) . '</td>';
             $htmldata .= '<td style="width: 13%">' . $data->insee . '</td>';
             $htmldata .= '<td>' . $data->affectation . '</td>';
-            $htmldata .= '<td>' . $data->montant . '</td>';
-            $htmldata .= '<td></td>';
-            $htmldata .= '</tr>';
+	        $htmldata .= '<td>' . $data->montant . '</td>';
+	        $htmldata .= '<td></td>';$htmldata
+		        .= '<td>' . $data->matricule . '</td>';
+	        $htmldata .= '</tr>';
         }
         $htmldata .= '</tbody>';
         $htmldata .= '</table>';
@@ -8906,6 +8952,6 @@ class EmundusModelApplication extends ListModel
 			}
 		}
 
-		return $file;
-	}
+        return $file;
+    }
 }

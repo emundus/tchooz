@@ -77,7 +77,8 @@
 .view-export_select_columns.layout-exports #g-container-main .g-container,
 .view-application_choices.layout-list #g-container-main .g-container,
 .view-groups #g-container-main .g-container,
-.view-users.layout-exceptions #g-container-main .g-container {
+.view-users.layout-exceptions #g-container-main .g-container,
+.view-polls #g-container-main .g-container {
 	width: auto;
 	position: relative;
 }
@@ -100,7 +101,8 @@
 .view-export_select_columns.layout-exports #g-container-main,
 .view-application_choices.layout-list #g-container-main,
 .view-groups #g-container-main,
-.view-users.layout-exceptions #g-container-main .g-container {
+.view-users.layout-exceptions #g-container-main .g-container,
+.view-polls #g-container-main .g-container {
 	padding-left: 76px;
 }
 

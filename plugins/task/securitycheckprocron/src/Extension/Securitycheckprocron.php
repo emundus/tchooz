@@ -1,54 +1,47 @@
 <?php
-
 /**
  * @package     SecuritycheckPro.Plugins
  * @subpackage  Task.Cron
  *
- * @copyright Copyright (c) 2011 - Jose A. Luque / Securitycheck Extensions
- * @license   GNU General Public License version 3, or later
+ * @copyright   Copyright (c) 2011 - Jose A. Luque / Securitycheck Extensions
+ * @license     GNU General Public License version 3, or later
  */
+
+declare(strict_types=1);
 
 namespace Joomla\Plugin\Task\Securitycheckprocron\Extension;
 
-use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FilemanagerModel;
-use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\CMS\MVC\Factory\MVCFactoryServiceInterface;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\Event\SubscriberInterface;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status as TaskStatus;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Event\SubscriberInterface;
-use Joomla\Filesystem\Folder;
-use Joomla\Filesystem\Path;
+use Joomla\Registry\Registry;
 use LogicException;
-use Joomla\CMS\MVC\Model\BaseDatabaseModel;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Mail\MailerFactoryInterface;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FilemanagerModel;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-/**
- * Task plugin with routines that offer checks on files.
- * At the moment, offers a single routine to check and resize image files in a directory.
- *
- * @since  4.1.0
- */
- 
 final class Securitycheckprocron extends CMSPlugin implements SubscriberInterface
 {
-    use TaskPluginTrait;
+	use TaskPluginTrait;
 
     /**
-	 * @var array<string, array{
-	 *   langConstPrefix: string,
-	 *   form?: string,
-	 *   method: string
-	 * }>
-	 */
+     * @var array<string, array{
+     *   langConstPrefix: string,
+     *   form?: string,
+     *   method: string
+     * }>
+     */
     protected const TASKS_MAP = [
         'securitycheckpro.cron' => [
             'langConstPrefix' => 'PLG_TASK_SECURITYCHECKPROCRON_TASK',
@@ -56,27 +49,35 @@ final class Securitycheckprocron extends CMSPlugin implements SubscriberInterfac
             'method'          => 'launchCron',
         ],
     ];
-	
-	/**
-     * Modelo Basel
-     *
-     * @var BaseModel|null
+
+    /**
+     * @var bool
      */
-	protected $base_model = null;
-	
-	/**
-     * Modelo Filemanager
+    protected $autoloadLanguage = true;
+
+    private ?BaseModel $baseModel = null;
+    private ?FilemanagerModel $filemanagerModel = null;
+
+    /** Evita reintentos innecesarios */
+    private bool $modelsInitialized = false;
+
+    /**
+     * Constructor.
      *
-     * @var FilemanagerModel|null
+     * OJO: NO inicializamos modelos aquí para no romper pantallas como
+     * la lista de tareas del scheduler (se instancia el plugin en backend).
+     *
+     * @param DispatcherInterface      $dispatcher
+     * @param array<string,mixed>      $config
      */
-	protected $filemanager_model = null;
-		
-	/**
-     * @inheritDoc
-     *
-     * @return string[]
-     *
-     * @since 4.1.0
+    public function __construct(DispatcherInterface $dispatcher, array $config = [])
+    {
+		/** @phpstan-ignore-next-line */
+        parent::__construct($dispatcher, $config);
+    }
+
+    /**
+     * @return array<string,string>
      */
     public static function getSubscribedEvents(): array
     {
@@ -88,224 +89,286 @@ final class Securitycheckprocron extends CMSPlugin implements SubscriberInterfac
     }
 
     /**
-     * @var boolean
-     * @since 4.1.0
+     * Inicializa los modelos del componente (lazy).
+     *
+     * @throws LogicException
      */
-    protected $autoloadLanguage = true;
+    private function initModels(): void
+    {
+        if ($this->modelsInitialized) {
+            return;
+        }
 
-    
-    /**
-     * Constructor.
-     *
-     * @param   DispatcherInterface  $dispatcher     The dispatcher
-     * @param   array                $config         An optional associative array of configuration settings
-     *
-     * @since   4.2.0
-     */
-    public function __construct(DispatcherInterface $dispatcher, array $config)
-    {
-        parent::__construct($dispatcher, $config);
-				
-		/** @var \Joomla\CMS\Extension\MVCComponentInterface $component */
-		$component = Factory::getApplication()->bootComponent('com_securitycheckpro');
-		$mvcFactory = $component->getMVCFactory();		
-		/** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel $globalmodel */
-		$globalmodel = $mvcFactory->createModel('Base', 'Administrator');
-		$this->base_model = $globalmodel;
-		
-		/** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FilemanagerModel $filemanagermodel */
-		$filemanagermodel = $mvcFactory->createModel('Filemanager', 'Administrator');
-		$this->filemanager_model = $filemanagermodel;
-    }
-	
-	/**
-	 * Acciones para chequear los permisos de los archivos automáticamente
-	 *
-	 * @return void
-	 */
-    function acciones()
-    {
-		$timestamp = $this->base_model->get_Joomla_timestamp();
-        $this->filemanager_model->setCampoFilemanager('last_check', $timestamp);   
-        $message = Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS');
-        $this->filemanager_model->setCampoFilemanager('estado', 'IN_PROGRESS'); 
-        $this->filemanager_model->scan("permissions");
-		// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
-        $this->filemanager_model->setCampoFilemanager("last_task", 'PERMISSIONS');
-    }
-	
-	/**
-	 * Acciones para chequear la integridad de los archivos automáticamente
-	 *
-	 * @return void
-	 */
-    function acciones_integrity()
-    {
-		$timestamp = $this->base_model->get_Joomla_timestamp();
-        $this->filemanager_model->setCampoFilemanager('last_check_integrity', $timestamp);
-		$message = Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS');
-		$this->filemanager_model->setCampoFilemanager('estado_integrity', 'IN_PROGRESS'); 
-		$this->filemanager_model->scan("integrity");
-		$files_with_bad_integrity = $this->filemanager_model->loadStack("fileintegrity_resume", "files_with_bad_integrity");
-		$this->filemanager_model->setCampoFilemanager("last_task", 'INTEGRITY');
-					
-		// ¿Hemos de analizar los ficheros con integridad modificada en busca de malware?
-		$params = ComponentHelper::getParams('com_securitycheckpro');
-		$look_for_malware = $params->get('look_for_malware', 0);
-		if ($look_for_malware) {
-			$this->filemanager_model->scan("malwarescan_modified");
+        $this->modelsInitialized = true;
+
+        $app = $this->getApplication();
+        if ($app === null) {
+            // Como fallback extremo, usamos Factory (pero con provider corregido no debería ocurrir)
+            $app = Factory::getApplication();
+        }
+
+        $component = $app->bootComponent('com_securitycheckpro');
+
+		if (!$component instanceof MVCFactoryServiceInterface) {
+			throw new LogicException('com_securitycheckpro does not provide an MVC Factory (MVCFactoryServiceInterface expected).');
 		}
-				
-		// Consultamos si hay que mandar un correo cuando se encuentran archivos con integridad incorrecta
-		$number_of_files = $this->consulta_resultado_scan();
-		$send_email = $params->get('send_email_on_wrong_integrity', 1);
-		$email_subject = $params->get('email_subject_on_wrong_integrity', "");
-		
-		// Está la opción de mandar correos deshabilitada?
-		$config = Factory::getConfig();
-		$is_online = $config->get('mailonline', 1);
-						
-		if ( ($is_online) && ($send_email) && ($number_of_files[0] > 0)) {
-			$this-> mandar_correo($number_of_files[0], $number_of_files[1], $look_for_malware, $email_subject);
-		}   
+
+		$mvcFactory = $component->getMVCFactory();
+
+        $base = $mvcFactory->createModel('Base', 'Administrator');
+        $fm   = $mvcFactory->createModel('Filemanager', 'Administrator');
+
+        if (!$base instanceof BaseModel) {
+            throw new LogicException('Could not create BaseModel from com_securitycheckpro MVC factory.');
+        }
+
+        if (!$fm instanceof FilemanagerModel) {
+            throw new LogicException('Could not create FilemanagerModel from com_securitycheckpro MVC factory.');
+        }
+
+        $this->baseModel = $base;
+        $this->filemanagerModel = $fm;
     }
-		
-	/**
-	 * Función para mandar correos electrónicos
-	 *
-	 * @param   int             $with_bad_integrity    		Files with bad integrity
-	 * @param   int             $with_suspicious_patterns   Files with suspicious patterns
-	 * @param   bool            $look_for_malware   		Look for malware?
-	 * @param   string          $subject    				The subject
-	 *
-	 * @return void
-	 */
-    protected function mandar_correo($with_bad_integrity, $with_suspicious_patterns,$look_for_malware,$subject)
+
+    private function acciones(): void
     {
-        
-		// Variables del correo electrónico
-		$email_active = $this->base_model->getValue('email_active', 0, 'pro_plugin');
-        $email_to = $this->base_model->getValue('email_to', '', 'pro_plugin');
-        $to = explode(',', $email_to);
-        $email_from_domain = $this->base_model->getValue('email_from_domain', '', 'pro_plugin');
-        $email_from_name = $this->base_model->getValue('email_from_name', '', 'pro_plugin');
-        $from = array($email_from_domain,$email_from_name);
-		    
-        // Obtenemos el nombre del sitio, que será usado en el asunto del correo
-        $config = Factory::getConfig();
-        $sitename = $config->get('sitename');
-    
-        // Chequeamos si se han establecido los valores para mandar el correo
-        if ($email_active) {        
-        
-            /* Cargamos el lenguaje del sitio */
-            $lang = Factory::getApplication()->getLanguage();
+        $this->initModels();
+
+        if ($this->baseModel === null || $this->filemanagerModel === null) {
+            throw new LogicException('Models not initialized.');
+        }
+
+        $timestamp = $this->baseModel->get_Joomla_timestamp();
+
+        $this->filemanagerModel->setCampoFilemanager('last_check', $timestamp);
+        $this->filemanagerModel->setCampoFilemanager('estado', 'IN_PROGRESS');
+
+        $fm = $this->filemanagerModel;
+        register_shutdown_function(static function () use ($fm): void {
+            try {
+                if ($fm->GetCampoFilemanager('estado') === 'IN_PROGRESS') {
+                    $fm->setCampoFilemanager('estado', 'ENDED');
+                    $fm->setCampoFilemanager('files_scanned', 100);
+                }
+            } catch (\Throwable) {}
+        });
+
+        $this->filemanagerModel->scan('permissions');
+        $this->filemanagerModel->setCampoFilemanager('last_task', 'PERMISSIONS');
+    }
+
+    private function acciones_integrity(): void
+    {
+        $this->initModels();
+
+        if ($this->baseModel === null || $this->filemanagerModel === null) {
+            throw new LogicException('Models not initialized.');
+        }
+
+        $timestamp = $this->baseModel->get_Joomla_timestamp();
+        $params = ComponentHelper::getParams('com_securitycheckpro');
+        $lookForMalware = (bool) $params->get('look_for_malware', 0);
+
+        $this->filemanagerModel->setCampoFilemanager('last_check_integrity', $timestamp);
+        $this->filemanagerModel->setCampoFilemanager('estado_integrity', 'IN_PROGRESS');
+
+        $fm = $this->filemanagerModel;
+        register_shutdown_function(static function () use ($fm, $lookForMalware): void {
+            try {
+                if ($fm->GetCampoFilemanager('estado_integrity') === 'IN_PROGRESS') {
+                    $fm->setCampoFilemanager('estado_integrity', 'ENDED');
+                    $fm->setCampoFilemanager('files_scanned_integrity', 100);
+                }
+                if ($lookForMalware && $fm->GetCampoFilemanager('estado_malwarescan') === 'IN_PROGRESS') {
+                    $fm->setCampoFilemanager('estado_malwarescan', 'ENDED');
+                    $fm->setCampoFilemanager('files_scanned_malwarescan', 100);
+                }
+            } catch (\Throwable) {}
+        });
+
+        $this->filemanagerModel->scan('integrity');
+        $this->filemanagerModel->setCampoFilemanager('last_task', 'INTEGRITY');
+
+        if ($lookForMalware) {
+            $this->filemanagerModel->scan('malwarescan_modified');
+        }
+
+        [$badIntegrity, $suspicious] = $this->consulta_resultado_scan();
+
+        $sendEmail    = (bool) $params->get('send_email_on_wrong_integrity', 1);
+        $emailSubject = (string) $params->get('email_subject_on_wrong_integrity', '');
+
+        $config   = Factory::getConfig();
+        $isOnline = (bool) $config->get('mailonline', 1);
+
+        if ($isOnline && $sendEmail && $badIntegrity > 0) {
+            $this->mandar_correo($badIntegrity, $suspicious, $lookForMalware, $emailSubject);
+        }
+    }
+
+    /**
+     * @param int    $withBadIntegrity
+     * @param int    $withSuspiciousPatterns
+     * @param bool   $lookForMalware
+     * @param string $subject
+     */
+    protected function mandar_correo(
+        int $withBadIntegrity,
+        int $withSuspiciousPatterns,
+        bool $lookForMalware,
+        string $subject
+    ): void {
+        $this->initModels();
+
+        if ($this->baseModel === null) {
+            throw new LogicException('Base model not initialized.');
+        }
+
+        $emailActive = (bool) $this->baseModel->getValue('email_active', 0, 'pro_plugin');
+        if (!$emailActive) {
+            return;
+        }
+
+        $emailToRaw = (string) $this->baseModel->getValue('email_to', '', 'pro_plugin');
+        $to = array_values(array_filter(
+            array_map('trim', explode(',', $emailToRaw)),
+            static fn (string $v): bool => $v !== '' && filter_var($v, FILTER_VALIDATE_EMAIL) !== false
+        ));
+
+        if ($to === []) {
+            $this->logTask('Email enabled but no valid recipients configured.', 'warning');
+            return;
+        }
+
+        $emailFromDomain = (string) $this->baseModel->getValue('email_from_domain', '', 'pro_plugin');
+        $emailFromName   = (string) $this->baseModel->getValue('email_from_name', '', 'pro_plugin');
+
+        /** @var array{0:string,1:string} $from */
+        $from = [$emailFromDomain, $emailFromName];
+
+        $config   = Factory::getConfig();
+        $sitename = (string) $config->get('sitename', '');
+
+        // Asegura strings del componente en admin
+        $lang = $this->getApplication()?->getLanguage();
+        if ($lang !== null) {
             $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
-                                
-            // Creamos el asunto y el cuerpo del mensaje
-            if (empty($subject)) {
-                $subject = Text::sprintf($lang->_('COM_SECURITYCHECKPRO_EMAIL_SITENAME'), $sitename);
-            }        
-            if ($look_for_malware) {
-                $body = Text::sprintf($lang->_('COM_SECURITYCHECKPRO_EMAIL_ALERT_BODY'), $with_bad_integrity, $with_suspicious_patterns);
-            } else
-            {
-                $body = Text::sprintf($lang->_('COM_SECURITYCHECKPRO_EMAIL_ALERT_BODY_NO_MALWARE_SCAN'), $with_bad_integrity);            
-            }
-        
-            $body .= '</br>' . '</br>' . Text::_($lang->_('COM_SECURITYCHECKPRO_EMAIL_ALERT_BODY_ALERT'));
-                    
-            // Invocamos la clase Mail
+        }
+
+        $finalSubject = $subject !== ''
+            ? $subject
+            : Text::sprintf('COM_SECURITYCHECKPRO_EMAIL_SITENAME', $sitename);
+
+        $body = $lookForMalware
+            ? Text::sprintf('COM_SECURITYCHECKPRO_EMAIL_ALERT_BODY', $withBadIntegrity, $withSuspiciousPatterns)
+            : Text::sprintf('COM_SECURITYCHECKPRO_EMAIL_ALERT_BODY_NO_MALWARE_SCAN', $withBadIntegrity);
+
+        $body .= '<br><br>' . Text::_('COM_SECURITYCHECKPRO_EMAIL_ALERT_BODY_ALERT');
+
+        try {
             $mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
-			// Emisor
+
             $mailer->setSender($from);
-            // Destinatario -- es un array de direcciones
             $mailer->addRecipient($to);
-            // Asunto
-            $mailer->setSubject($subject);
-            // Cuerpo
+            $mailer->setSubject($finalSubject);
             $mailer->setBody($body);
-            // Opciones del correo
+
             $mailer->isHtml(true);
             $mailer->Encoding = 'base64';
-            // Enviamos el mensaje
-            try{
-				$send = $mailer->Send();
-			} catch (\Throwable $e)
-            {
-				// The email can not be sent. For example, if the option to send mails is enabled but there is not a valid provider we get a "Could not instantiate mail function" message.
-            }
+
+            $mailer->send();
+        } catch (\Throwable $e) {
+            $this->logTask('Mailer error (' . $e::class . '): ' . $e->getMessage(), 'error');
         }
-            
     }
-	
-	/**
-	 * Función que devuelve el número de archivos con integridad o permisos incorrectos y con patrones sospechosos
-	 *
-	 * @return array<mixed,mixed>
-	 */
-    private function consulta_resultado_scan()
-    {
-        
-        // Inicializamos las variables
-        $result = [];
-          
-        $files_with_bad_integrity = $this->filemanager_model->loadStack("fileintegrity_resume", "files_with_bad_integrity");
-        $files_with_suspicious_patterns = $this->filemanager_model->loadStack("malwarescan_resume", "suspicious_files");
-    
-        // Añadimos los resultados a la variable que será devuelta
-        array_push($result, $files_with_bad_integrity);
-        array_push($result, $files_with_suspicious_patterns);
-        
-        return $result;        
-    
-    }
-		
-	
+
     /**
-     * @param   ExecuteTaskEvent  $event  The onExecuteTask event
-     *
-     * @return integer  The exit code
-     *
-     * @throws \Exception
-     */	
+     * @return array{0:int,1:int}
+     */
+    private function consulta_resultado_scan(): array
+    {
+        $this->initModels();
+
+        if ($this->filemanagerModel === null) {
+            throw new LogicException('Filemanager model not initialized.');
+        }
+
+        $badIntegrity = (int) $this->filemanagerModel->loadStack('fileintegrity_resume', 'files_with_bad_integrity');
+        $suspicious   = (int) $this->filemanagerModel->loadStack('malwarescan_resume', 'suspicious_files');
+
+        return [$badIntegrity, $suspicious];
+    }
+
+    private function resolveTaskToBeLaunched(ExecuteTaskEvent $event): string
+    {
+        $params = $event->getArgument('params');
+
+        $task = 'alternate';
+
+        if ($params instanceof Registry) {
+            $task = (string) $params->get('task_to_be_launched', 'alternate');
+        } elseif (is_object($params) && isset($params->task_to_be_launched)) {
+            /** @var mixed $raw */
+            $raw  = $params->task_to_be_launched;
+            $task = (string) $raw;
+        }
+
+        $task = trim($task);
+
+        $allowed = [
+            'alternate'   => true,
+            'permissions' => true,
+            'integrity'   => true,
+            'both'        => true,
+        ];
+
+        if (!isset($allowed[$task])) {
+            $this->logTask('Invalid task_to_be_launched value: ' . $task, 'warning');
+            return 'alternate';
+        }
+
+        return $task;
+    }
+
     protected function launchCron(ExecuteTaskEvent $event): int
     {
-		try{		
-			
-			$params    = $event->getArgument('params');
-			$tasks = $params->task_to_be_launched;						
-			$timestamp = $this->base_model->get_Joomla_timestamp();
-			
-			switch ($tasks)
-            {
-				case "alternate":
-					$last_task = $this->filemanager_model->GetCampoFilemanager('last_task');
-                    if ($last_task == "INTEGRITY") {
-						$this->acciones();
-					} else if ($last_task == "PERMISSIONS") {
-						$this->acciones_integrity();						
-					}
-					break;
-				case "permissions":						
-					$this->acciones();
-					break;				
-				case "integrity":
-					$this->acciones_integrity();
-					break;
-				case "both":
-					$this->acciones();
-					$this->acciones_integrity();
-					break;
-			}				
-		
-		} catch (\Throwable $e)
-        {
-			$error = $e->getMessage();
-			
-            $this->logTask($error, 'error');	
+        try {
+            $task = $this->resolveTaskToBeLaunched($event);
 
-            return TaskStatus::KNOCKOUT;  
+            switch ($task) {
+                case 'alternate':
+                    $this->initModels();
+                    if ($this->filemanagerModel === null) {
+                        throw new LogicException('Filemanager model not initialized.');
+                    }
+
+                    $lastTask = (string) $this->filemanagerModel->GetCampoFilemanager('last_task');
+
+                    if ($lastTask === 'INTEGRITY') {
+                        $this->acciones();
+                    } elseif ($lastTask === 'PERMISSIONS') {
+                        $this->acciones_integrity();
+                    } else {
+                        $this->acciones_integrity();
+                    }
+                    break;
+
+                case 'permissions':
+                    $this->acciones();
+                    break;
+
+                case 'integrity':
+                    $this->acciones_integrity();
+                    break;
+
+                case 'both':
+                    $this->acciones();
+                    $this->acciones_integrity();
+                    break;
+            }
+        } catch (\Throwable $e) {
+            $this->logTask($e->getMessage(), 'error');
+            return TaskStatus::KNOCKOUT;
         }
 
         return TaskStatus::OK;

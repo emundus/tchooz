@@ -158,14 +158,16 @@
 
 			<!-- EDITOR -->
 			<tip-tap-editor
-				v-else-if="parameter.type === 'wysiwig'"
+				v-else-if="parameter.type === 'wysiwig' && editorReady"
 				v-model="value"
 				:editor-content-height="'20em'"
 				:class="'tw-mt-1 tw-w-full'"
 				:locale="actualLanguage"
-				:preset="'basic'"
+				:preset="parameter.preset ? parameter.preset : 'basic'"
 				:toolbar-classes="['tw-bg-white']"
 				:editor-content-classes="['tw-bg-white']"
+				:suggestions="suggestions"
+				:media-files="medias"
 				@focusout="checkValue(parameter)"
 			>
 			</tip-tap-editor>
@@ -432,11 +434,20 @@
 			<color-picker
 				v-else-if="parameter.type === 'color'"
 				v-model="value"
+				:variant="'field'"
 				:swatches="parameter.swatches ? parameter.swatches : 'dark'"
 				:row-length="8"
 				:id="paramId"
 				:random="true"
 				style="top: -8px"
+			/>
+
+			<autocomplete
+				v-else-if="parameter.type === 'autocomplete'"
+				:id="paramId"
+				@searched="value = $event"
+				:items="parameter.autocompleteItems"
+				:year="value"
 			/>
 
 			<!-- INPUT IN CASE OF SPLIT -->
@@ -481,10 +492,11 @@ import examples from 'libphonenumber-js/mobile/examples';
 import { vMaska } from 'maska/vue';
 import vueDropzone from 'vue2-dropzone-vue3';
 import ColorPicker from '@/components/ColorPicker.vue';
+import Autocomplete from '@/components/autocomplete.vue';
 
 export default {
 	name: 'Parameter',
-	components: { ColorPicker, DatePicker, Multiselect, Modal, TipTapEditor, vueDropzone },
+	components: { Autocomplete, ColorPicker, DatePicker, Multiselect, Modal, TipTapEditor, vueDropzone },
 	directives: {
 		maska: vMaska,
 	},
@@ -580,6 +592,10 @@ export default {
 				uploadMultiple: false,
 			},
 			mediaThumbnail: '',
+
+			editorReady: false,
+			suggestions: [],
+			medias: [],
 		};
 	},
 	async created() {
@@ -680,6 +696,19 @@ export default {
 			this.dropzoneOptions.acceptedFiles = this.parameter.acceptedFiles ? this.parameter.acceptedFiles : 'image/*';
 
 			this.value = this.parameter.value;
+		} else if (this.parameter.type === 'wysiwig') {
+			this.value = this.parameter.value;
+
+			const editorTasks = [];
+			if (this.parameter.displaySuggestions) {
+				editorTasks.push(this.getEditorSuggestions());
+			}
+			if (this.parameter.displayMedias) {
+				editorTasks.push(this.getEditorMedia());
+			}
+
+			await Promise.all(editorTasks);
+			this.editorReady = true;
 		} else if (this.parameter) {
 			this.value = this.parameter.value;
 		}
@@ -897,6 +926,18 @@ export default {
 			}
 		},
 
+		// Wysiwig
+		getEditorSuggestions() {
+			return settingsService.getVariables().then((response) => {
+				this.suggestions = response.data;
+			});
+		},
+		getEditorMedia() {
+			return settingsService.getMedia().then((response) => {
+				this.medias = response.data;
+			});
+		},
+
 		// VALIDATIONS
 		validate() {
 			if (this.parameter.value === '' && this.parameter.optional === true) {
@@ -1050,6 +1091,17 @@ export default {
 					}
 
 					val = this.countryCode + (val ? val.replace(/\s+/g, '') : '');
+				}
+
+				// Live-strip characters the backend would silently drop, so the field shows exactly
+				// what will be kept. sanitizePattern is a regex of DISALLOWED characters to remove.
+				if (this.parameter.sanitizePattern && typeof val === 'string') {
+					const cleaned = val.replace(new RegExp(this.parameter.sanitizePattern, 'g'), '');
+					if (cleaned !== val) {
+						// Reassigning re-triggers this watcher with the cleaned value, which emits cleanly.
+						this.value = cleaned;
+						return;
+					}
 				}
 
 				this.parameter.value = val;

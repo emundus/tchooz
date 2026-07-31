@@ -9,42 +9,14 @@
 
 namespace Tchooz\Factories\Actions;
 
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\Actions\CrudEntity;
-use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Enums\Actions\ActionTypeEnum;
-use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
-use Tchooz\Factories\DBFactory;
-use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Factories\AbstractFactory;
 
-class ActionFactory implements DBFactory
+class ActionFactory extends AbstractFactory
 {
-	public static function fromDbObjects(array $dbObjects, bool|array $withRelations = true, array $exceptRelations = [], ?DatabaseDriver $db = null): array
-	{
-		$entities = [];
-		foreach ($dbObjects as $dbObject)
-		{
-			$entities[] = self::buildEntity($dbObject);
-		}
-
-		return $entities;
-	}
-
-	public function fromDbObject(object|array $dbObject, $withRelations = true, $exceptRelations = [], ?DatabaseDriver $db = null, array $elements = []): ActionEntity
-	{
-		if(is_array($dbObject))
-		{
-			$dbObject = (object) $dbObject;
-		}
-
-		return self::buildEntity($dbObject);
-	}
-
-	public static function buildEntity(object $dbObject): ActionEntity
+	public function buildEntity(object $dbObject, array $relations): ActionEntity
 	{
 		$crud = new CrudEntity($dbObject->multi, $dbObject->c, $dbObject->r, $dbObject->u, $dbObject->d);
 
@@ -58,5 +30,15 @@ class ActionFactory implements DBFactory
 			description: $dbObject->description ?? null,
 			type: ActionTypeEnum::tryFrom($dbObject->type) ?? ActionTypeEnum::FILE
 		);
+	}
+
+	protected function loadRelation(string $relation, object $dbObject): mixed
+	{
+		return null;
+	}
+
+	protected function getRelationCacheKey(string $relation, object $dbObject): string|int
+	{
+		return '';
 	}
 }

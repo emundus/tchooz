@@ -390,6 +390,39 @@ class ApplicationFileRepositoryTest extends UnitTestCase
 		$applicationFile = $repositoryNoRelations->getByFnum($this->dataset['fnum']);
 		$this->assertNotNull($applicationFile, 'Le dossier doit exister même sans relations');
 		$this->assertEquals($this->dataset['fnum'], $applicationFile->getFnum(), 'Le fnum doit correspondre');
+
+		$this->assertEmpty($applicationFile->getCampaign(), 'campaign has not been loaded');
+		$this->assertNotEmpty($applicationFile->getCampaignId(), 'campaign_id should not be empty');
+		$this->assertSame($applicationFile->getCampaignId(), $this->dataset['campaign'], 'campaign_id should be the same');
+	}
+
+	public function testGetByFnumWithRelations(): void
+	{
+		$repositoryWithRelations = new ApplicationFileRepository(true);
+		$applicationFile = $repositoryWithRelations->getByFnum($this->dataset['fnum']);
+		$this->assertNotEmpty($applicationFile->getCampaign(), 'campaign has been loaded');
+		$this->assertSame($applicationFile->getCampaign()->getId(), $this->dataset['campaign'], 'campaign id should be the same');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileRepository::getAllShortReferences
+	 * @return void
+	 */
+	public function testGetAllShortReferences(): void
+	{
+		$applicationFile = $this->repository->getByFnum($this->dataset['fnum']);
+		$applicationFile->setShortReference('Z9X8');
+		$this->repository->flush($applicationFile, $this->dataset['coordinator']);
+
+		$shortReferences = $this->repository->getAllShortReferences();
+
+		$this->assertIsArray($shortReferences, 'Le résultat doit être un tableau');
+		$this->assertContains('Z9X8', $shortReferences, 'La référence courte persistée doit être retournée');
+
+		foreach ($shortReferences as $shortReference)
+		{
+			$this->assertNotEmpty($shortReference, 'Les références courtes vides ne doivent pas être retournées');
+		}
 	}
 
 	/**

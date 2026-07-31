@@ -26,6 +26,7 @@ use Tchooz\Entities\Profile\ProfileEntity;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\Fabrik\FabrikObjectsEnum;
+use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Services\Fabrik\ApplicantTableCreator;
@@ -63,6 +64,8 @@ class FabrikRepository
 		$this->withRelations = $withRelations;
 		$this->db            = Factory::getContainer()->get('DatabaseDriver');
 		$this->user          = empty($user) ? Factory::getApplication()->getIdentity() : $user;
+
+		Log::addLogger(['text_file' => 'com_emundus.repository.fabrik.php'], Log::ALL, ['com_emundus.repository.fabrik']);
 	}
 
 	/**
@@ -244,7 +247,7 @@ class FabrikRepository
 				->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ' . $this->db->quoteName('ff.group_id') . ' = ' . $this->db->quoteName('fg.id'))
 				->where($this->db->quoteName('ff.form_id') . ' = ' . $this->db->quote($formId))
 				->where($this->db->quoteName('fg.published') . ' = 1')
-				->where('JSON_EXTRACT(fg.params,"$.repeat_group_show_first")' . ' = ' . $this->db->quote(1))
+				->where(GroupVisibilityEnum::VISIBLE->toSqlCondition('fg.params'))
 				->order('ff.ordering');
 
 			$this->db->setQuery($query);
@@ -480,7 +483,7 @@ class FabrikRepository
 		$columns = self::FABRIK_ELEMENT_COLUMNS;
 		if ($withJoins)
 		{
-			$columns = array_merge($columns, ['fg.params AS group_params', 'fl.db_table_name', 'fj.table_join']);
+			$columns = array_merge($columns, ['fg.params AS group_params', 'ff.form_id AS form_id', 'fl.db_table_name', 'fj.table_join']);
 		}
 		$query->select($columns)
 			->from($this->db->quoteName('#__fabrik_elements', 'fe'));
@@ -859,7 +862,13 @@ class FabrikRepository
 
 		$groups = $this->duplicateGroups($oldForm->id, $form, $list, $languages);
 
-		$this->duplicateConditions($oldForm, $form);
+		$groupIdMap = [];
+		foreach ($groups as $newGroup)
+		{
+			$groupIdMap[$newGroup->old_id] = $newGroup->id;
+		}
+
+		$this->duplicateConditions($oldForm, $form, $groupIdMap);
 
 		return (object) [
 			'form'   => $form,
@@ -974,7 +983,7 @@ class FabrikRepository
 		$query = $this->db->getQuery(true);
 
 		$query->clear()
-			->select('fg.*')
+			->select('ffg.group_id AS source_group_id, fg.*')
 			->from($this->db->quoteName('#__fabrik_formgroup', 'ffg'))
 			->leftJoin($this->db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $this->db->quoteName('fg.id') . ' = ' . $this->db->quoteName('ffg.group_id'))
 			->where('ffg.form_id = ' . $oldFormId);
@@ -984,8 +993,18 @@ class FabrikRepository
 		$ordering = 0;
 		foreach ($groups as $group)
 		{
+			$sourceGroupId = $group->source_group_id;
+			unset($group->source_group_id);
+
+			if (empty($group->id))
+			{
+				Log::add('Skipping group ' . $sourceGroupId . ' while duplicating form ' . $oldFormId . ': linked in fabrik_formgroup but missing from fabrik_groups', Log::WARNING, 'com_emundus.repository.fabrik');
+				continue;
+			}
+
 			$ordering++;
 			$newGroup = $this->duplicateGroup($group, $list, $form, $oldFormId, true, $languages);
+			$newGroup->old_id = $group->id;
 
 			$insert = [
 				'form_id'  => $form->id,
@@ -1201,6 +1220,20 @@ class FabrikRepository
 		LanguageFactory::translate($labelKey, $labels_to_duplicate, 'fabrik_elements', $element->id, 'label', $this->user->id);
 		//
 
+		if ($element->plugin === ElementPluginEnum::PANEL->value && !empty($element->default))
+		{
+			$newDefaultKey         = 'ELEMENT_' . $element->group_id . '_' . $element->id . '_DEFAULT';
+			$defaults_to_duplicate = array();
+			foreach ($languages as $language)
+			{
+				$translation = LanguageFactory::getTranslation($element->default, $language->lang_code);
+				$defaults_to_duplicate[$language->sef] = $translation !== null ? $translation : $element->default;
+			}
+			LanguageFactory::translate($newDefaultKey, $defaults_to_duplicate, 'fabrik_elements', $element->id, 'default', $this->user->id);
+			$element->default = $newDefaultKey;
+		}
+		//
+
 		$element->label  = $labelKey;
 		$element->params = json_encode($params);
 		$this->flushElement($element);
@@ -1271,8 +1304,22 @@ class FabrikRepository
 			$labels    = [];
 			foreach ($languages as $language)
 			{
-				$labels[$language->sef] = $labelPrefix . LanguageFactory::getTranslation($oldLabel, $language->lang_code);
+				$translation = LanguageFactory::getTranslation($oldLabel, $language->lang_code);
+
+				if ($translation !== null)
+				{
+					$labels[$language->sef] = $labelPrefix . $translation;
+				}
 			}
+
+			if (empty($labels))
+			{
+				foreach ($languages as $language)
+				{
+					$labels[$language->sef] = $labelPrefix . $oldLabel;
+				}
+			}
+
 			$key     = LanguageFactory::translate($newKey, $labels, $referenceTable, $identifier, $referenceField, $this->user->id);
 			$updated = !empty($key);
 		}
@@ -1737,7 +1784,7 @@ class FabrikRepository
 		return $this->db->execute();
 	}
 
-	public function duplicateConditions(object $oldForm, object $form): bool
+	public function duplicateConditions(object $oldForm, object $form, array $groupIdMap = []): bool
 	{
 		$duplicated = false;
 
@@ -1796,9 +1843,15 @@ class FabrikRepository
 
 						foreach ($fields as $field)
 						{
+							$fieldValue = $field->fields;
+							if (in_array($action->action, ['show_group', 'hide_group']) && isset($groupIdMap[$fieldValue]))
+							{
+								$fieldValue = $groupIdMap[$fieldValue];
+							}
+
 							$insert = [
 								'parent_id' => $new_action_id,
-								'fields'    => $field->fields,
+								'fields'    => $fieldValue,
 								'params'    => $field->params
 							];
 							$insert = (object) $insert;

@@ -9,7 +9,7 @@
 					:text="translate('COM_EMUNDUS_CUSTOM_REFERENCE_HELP_TEXT')"
 				></Info>
 
-				<ParameterForm v-if="!loadForm" id="reference-parameters-form" :groups="formGroups" />
+				<ParameterForm v-if="!loadForm" id="reference-parameters-form" ref="parameterForm" :groups="formGroups" />
 
 				<div id="mapping-rows" class="tw-mt-5 tw-w-full">
 					<h4>
@@ -73,12 +73,12 @@ import { VueDraggableNext } from 'vue-draggable-next';
 import mixin from '@/mixins/mixin.js';
 import errors from '@/mixins/errors.js';
 import alerts from '@/mixins/alerts.js';
+import parameterForm from '@/mixins/parameterForm.js';
 
 import { useGlobalStore } from '@/stores/global';
 import Info from '@/components/Utils/Info.vue';
 import MappingRow from '@/components/Mapping/MappingRow.vue';
 import { useMappingStore } from '@/stores/mapping.js';
-import mappingService from '@/services/mapping.js';
 import settingsService from '@/services/settings.js';
 import Button from '@/components/Atoms/Button.vue';
 import Loader from '@/components/Atoms/Loader.vue';
@@ -99,7 +99,7 @@ export default {
 
 	props: {},
 
-	mixins: [mixin, errors, alerts],
+	mixins: [mixin, errors, alerts, parameterForm],
 
 	data() {
 		return {
@@ -364,35 +364,8 @@ export default {
 			}
 		},
 		save() {
-			let reference_form = {};
-
-			// Validate all fields
-			const formValidationFailed = this.formGroups[0].parameters.some((field) => {
-				if (field.displayed) {
-					let ref_name = 'field_' + field.param;
-
-					if (this.$refs[ref_name] && !this.$refs[ref_name][0].validate()) {
-						// Return true to indicate validation failed
-						return true;
-					}
-
-					if (field.type === 'multiselect') {
-						if (field.multiselectOptions.multiple) {
-							reference_form[field.param] = [];
-							field.value.forEach((element) => {
-								reference_form[field.param].push(element[field.multiselectOptions.trackBy]);
-							});
-						} else {
-							reference_form[field.param] = field.value ? field.value[field.multiselectOptions.trackBy] : null;
-						}
-					} else {
-						reference_form[field.param] = field.value;
-					}
-
-					return false;
-				}
-			});
-			if (formValidationFailed) return;
+			const { isValid, form: reference_form } = this.validateParameterForm(this.$refs.parameterForm);
+			if (!isValid) return;
 
 			this.loading = true;
 			settingsService.saveCustomReference(this.referenceFormat, reference_form).then((response) => {

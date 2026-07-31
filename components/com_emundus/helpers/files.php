@@ -708,7 +708,6 @@ class EmundusHelperFiles
 			$plist = $m_profile->getProfileIDByCourse($code, $camps);
 		}
 
-
 		if (!is_null($profile))
 		{
 			/// get profile id from $profile --> using split
@@ -793,18 +792,19 @@ class EmundusHelperFiles
 					}
 				}
 
-				if($evaluation_elements) {
+				if ($evaluation_elements) {
 					require_once JPATH_SITE.DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php';
 					$m_evaluation = new EmundusModelEvaluation();
 					$eval_elements = $m_evaluation->getEvaluationElementsName(0,0,$code,true);
 
-					if(!empty($eval_elements)) {
+					if (!empty($eval_elements)) {
 						// Merge the evaluation elements with the existing elements
 						foreach ($eval_elements as $key => $value) {
 							$value->form_label    = Text::_($value->form_label);
 							$value->table_label   = Text::_($value->table_label);
 							$value->group_label   = Text::_($value->group_label);
 							$value->element_label = Text::_($value->element_label);
+							$value->element_attribs = $value->params;
 							$elts[]               = $value;
 						}
 					}
@@ -917,9 +917,14 @@ class EmundusHelperFiles
 						$elts[]               = $value;
 					}
 				}
+				
 
-				if($evaluation_elements) {
-					require_once JPATH_SITE.DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php';
+				if ($evaluation_elements)
+				{
+					if (!class_exists('EmundusModelEvaluation'))
+					{
+						require_once(JPATH_SITE . '/components/com_emundus/models/evaluation.php');
+					}
 					$m_evaluation = new EmundusModelEvaluation();
 					$eval_elements = $m_evaluation->getEvaluationElementsName(0,0,$code,true);
 
@@ -939,7 +944,7 @@ class EmundusHelperFiles
 			}
 			catch (Exception $e)
 			{
-				echo $e->getMessage();
+				Log::add('getElements failed ' . $e->getMessage(), Log::ERROR, 'com_emundus.helper.files');
 
 				return array();
 			}
@@ -2678,7 +2683,10 @@ class EmundusHelperFiles
 
 			if (!isset($unreadmessagesList[$fnum]))
 			{
-				$unreadmessagesList[$fnum] = '<div class="messenger__notifications_counter"><span class="material-symbols-outlined">chat_bubble</span><span>' . $unread_message['nb'] . '</span></div> ';
+				$unreadmessagesList[$fnum] = '<div class="messenger__notifications_counter">
+					<span class="material-symbols-outlined tw-text-neutral-700">chat_bubble</span>
+					<span>' . $unread_message['nb'] . '</span>
+				</div> ';
 			}
 		}
 
@@ -5392,6 +5400,24 @@ class EmundusHelperFiles
 
 									$where['q'] .= ' AND ' . $this->writeQueryWithOperator($file_access_alias . '.expiration_date', $filter['value'], $filter['operator'], 'date');
 									break;
+								case 'unread_messages':
+									// unread message = a chatroom message of the dossier with state = 0 (same definition as the "unread_messages" list column)
+									$unread_exists = ' EXISTS (SELECT 1
+                                            FROM #__emundus_chatroom AS ec_unread
+                                            JOIN #__messages AS m_unread ON m_unread.page = ec_unread.id AND m_unread.state = 0
+                                            WHERE ec_unread.fnum = jecc.fnum)';
+
+									$unread_values  = is_array($filter['value']) ? $filter['value'] : [$filter['value']];
+									$with_unread    = in_array(1, $unread_values);
+									$without_unread = in_array(0, $unread_values);
+
+									if ($with_unread && !$without_unread) {
+										$where['q'] .= ' AND' . $unread_exists;
+									}
+									elseif ($without_unread && !$with_unread) {
+										$where['q'] .= ' AND NOT' . $unread_exists;
+									}
+									break;
 								default:
 									break;
 							}
@@ -6928,6 +6954,33 @@ class EmundusHelperFiles
 		}
 
 		return $fnum;
+	}
+
+	/**
+	 * Batch resolution of candidature ids into their fnums.
+	 *
+	 * @param   int[]  $ids  Candidature ids
+	 *
+	 * @return string[] List of fnums (empty when no id provided or on error)
+	 */
+	public static function getFnumsFromIds(array $ids): array {
+		if (empty($ids)) {
+			return [];
+		}
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+		$query->select('fnum')
+			->from('#__emundus_campaign_candidature')
+			->where('id IN (' . implode(',', array_map('intval', $ids)) . ')');
+
+		try {
+			$db->setQuery($query);
+			return $db->loadColumn();
+		} catch (Exception $e) {
+			Log::add('Failed to get fnums from ids : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			return [];
+		}
 	}
 
 	/**

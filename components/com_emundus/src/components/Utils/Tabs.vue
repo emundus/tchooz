@@ -1,23 +1,49 @@
 <template>
-	<div :class="classes">
+	<div
+		:class="[
+			classes.length > 0 ? classes : '',
+			{
+				'tw-m-auto tw-mt-4 tw-flex tw-w-fit tw-flex-row tw-items-center tw-justify-center tw-gap-1 tw-rounded-full tw-bg-profile-full tw-p-1':
+					template === 'toggle',
+			},
+		]"
+	>
 		<div v-for="tab in displayedTabs" :key="tab.id">
 			<div
 				@click="changeTab(tab.id)"
-				class="tw-flex tw-cursor-pointer tw-items-center tw-rounded-t-lg tw-border-x tw-border-t tw-px-4 tw-py-2 tw-transition-colors tw-duration-300"
+				class="tw-flex tw-cursor-pointer tw-items-center tw-gap-1 tw-transition"
 				:class="{
-					'tw-border-profile-full tw-bg-white': tab.active,
-					'tw-border-neutral-400 tw-bg-neutral-200': !tab.active,
-					'tw-border-neutral-600 tw-bg-neutral-400': tab.disabled,
+					'tw-rounded-t-lg tw-border-x tw-border-t tw-px-4 tw-py-2': template === 'default',
+					'tw-bg-white': tab.active,
+					'tw-border-profile-full': template === 'default' && tab.active,
+					'tw-border-neutral-400 tw-bg-neutral-200': !tab.active && template === 'default',
+					'tw-border-neutral-600 tw-bg-neutral-400': tab.disabled && template === 'default',
+
+					'tw-rounded-full tw-px-2 tw-py-1': template === 'toggle',
+					'tw-text-profile-full': template === 'toggle' && tab.active,
+					'tw-text-white': template === 'toggle' && !tab.active,
 				}"
 			>
 				<span
 					v-if="tab.icon"
-					class="material-symbols-outlined tw-mr-2"
-					:class="tab.active ? 'tw-text-profile-full' : 'tw-text-neutral-700'"
+					class="material-symbols-outlined"
+					:class="{
+						'tw-text-profile-full': tab.active,
+						'tw-text-neutral-700': !tab.active && template === 'default',
+						'tw-text-neutral-400': tab.disabled && template === 'default',
+
+						'tw-text-white': template === 'toggle' && !tab.active,
+					}"
 					>{{ tab.icon }}</span
 				>
 				<span
-					:class="tab.active ? 'tw-text-profile-full' : 'tw-text-neutral-700'"
+					:class="{
+						'tw-text-profile-full': tab.active,
+						'tw-text-neutral-700': !tab.active && template === 'default',
+						'tw-text-neutral-400': tab.disabled && template === 'default',
+
+						'tw-text-white': template === 'toggle' && !tab.active,
+					}"
 					class="em-profile-font tw-whitespace-nowrap"
 					>{{ tabName(tab) }}</span
 				>
@@ -43,6 +69,10 @@ export default {
 		context: {
 			type: String,
 			default: '',
+		},
+		template: {
+			type: String,
+			default: 'default',
 		},
 	},
 

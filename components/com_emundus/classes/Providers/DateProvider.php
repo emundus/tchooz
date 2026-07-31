@@ -30,4 +30,11 @@ class DateProvider
 
 		return false;
 	}
+
+	public static function convertToDateTime(?string $date): ?\DateTime
+	{
+		if (self::isNullableDate($date)) return null;
+
+		return new \DateTime($date);
+	}
 }

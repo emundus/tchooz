@@ -197,6 +197,8 @@ class CheckHealthJob extends TchoozJob
 	{
 		$checked = false;
 
+		\EmundusHelperUpdate::installExtension('System - OAuth 2 routing', 'oauth2', null, 'plugin', 1, 'system');
+
 		$query = $this->databaseServiceSource->getDatabase()->createQuery();
 
 		$query->clear()
@@ -300,11 +302,11 @@ class CheckHealthJob extends TchoozJob
 						$this->databaseService->getDatabase()->setQuery($query);
 						$checked = $this->databaseService->getDatabase()->execute();
 
-						$casElements = ['mod_emundus_cas', 'emundus_caslogin', 'caslogin'];
+						$casElements = array_map(fn($el) => $this->databaseService->getDatabase()->quote($el), ['mod_emundus_cas', 'emundus_caslogin', 'caslogin']);
 						$query->clear()
 							->update($this->databaseService->getDatabase()->quoteName('jos_extensions'))
 							->set($this->databaseService->getDatabase()->quoteName('enabled') . ' = 0')
-							->whereIn($this->databaseService->getDatabase()->quoteName('element'), $casElements);
+							->where($this->databaseService->getDatabase()->quoteName('element') . ' IN (' . implode(',', $casElements) . ')');
 						$this->databaseService->getDatabase()->setQuery($query);
 						$checked = $this->databaseService->getDatabase()->execute();
 					}

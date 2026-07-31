@@ -262,6 +262,9 @@ class ContentObject
 		}
 	}
 
+    /*
+     * @update 6.7 security fix on query
+     * */
 	public function saveMenuPath(&$path, $fields, $formArray, $prefix, $suffix, $storeOriginalText)
 	{
 		$pathfield = false;
@@ -294,21 +297,21 @@ class ContentObject
 		$pk = (intval($formArray[$prefix . "reference_id" . $suffix]) > 0) ? intval($formArray[$prefix . "reference_id" . $suffix]) : $this->id;
 
 		$table->load($pk);
-		$langid = $alias->translationContent->language_id;
+        $lang_id = $alias->translationContent->language_id;
 		// Get the path from the node to the root (translated)
 		$db     = Factory::getContainer()->get(DatabaseInterface::class);
 		$query  = $db->getQuery(true);
 		$select = 'p.*, jfc.value as jfcvalue';
 		$query->select($select);
 		$query->from('#__menu AS n, #__menu AS p');
-		$query->join('left', "#__falang_content as jfc ON jfc.reference_table='menu' AND jfc.reference_id=p.id AND jfc.language_id='$langid' and jfc.reference_field='alias' ");
+        $query->join('left', "#__falang_content as jfc ON jfc.reference_table= 'menu' AND jfc.reference_id=p.id AND jfc.language_id = ".(int)$lang_id. " AND jfc.reference_field = 'alias' ");
 		$query->where('n.lft BETWEEN p.lft AND p.rgt');
 		$query->where('n.id = ' . (int) $pk);
 		$query->where('p.client_id = 0');
 		$query->order('p.lft');
 
 		$db->setQuery($query);
-		$sql       = (string) $db->getQuery();
+		//$sql       = (string) $db->getQuery();//debug
 		$pathNodes = $db->loadObjectList('', 'stdClass', false);
 
 		$segments = array();

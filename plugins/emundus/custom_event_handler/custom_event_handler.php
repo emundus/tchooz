@@ -13,6 +13,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
@@ -1990,36 +1991,123 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 			return false;
 		}
 
-		if (empty($data['execution_context']) || !assert($data['execution_context'] instanceof AutomationExecutionContext))
+		// Actionlog plugins record the automation history.
+		PluginHelper::importPlugin('actionlog');
+
+		// Action labels are built via Text::_() on com_emundus site language keys, in the site's default
+		// language. CLI (scheduled tasks) never runs that resolution, so its Language object stays on Joomla's
+		// internal default (en-GB) unless we resolve and pass the same site default language explicitly.
+		// Web requests already resolved their own language, loading another one would override it for the
+		// whole request, including the messages returned to the browser.
+		$app = Factory::getApplication();
+		if ($app->isClient('cli'))
 		{
-			$data['execution_context'] = new AutomationExecutionContext();
+			$siteDefaultLanguage = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+			$app->getLanguage()->load('com_emundus', JPATH_SITE . '/components/com_emundus', $siteDefaultLanguage);
 		}
 
-		$repository = new AutomationRepository();
-		$automations = $repository->getAutomationsByEventName($event);
-
-		if (!empty($automations))
+		// Circuit breaker: if we are already nested too deep in automation processing for this
+		// request, abort to avoid runaway recursion (infinite loop protection) and notify the manager.
+		if (AutomationExecutionContext::hasReachedMaxProcessingDepth())
 		{
-			$allRan = [];
-			foreach($automations as $automation)
-			{
-				try {
-					$allRan[] = $automation->process($data['context'], $data['execution_context']);
-				}
-				catch (\Exception $exception)
-				{
-					Log::add('Failed to run automation ' . $automation->getId() . ' on event ' . $event . ' : ' . $exception->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
-				}
-			}
+			Log::add('Automation processing aborted on event ' . $event . ' : maximum processing depth (' . AutomationExecutionContext::MAX_PROCESSING_DEPTH . ') reached, possible infinite loop.', Log::WARNING, 'com_emundus.custom_event_handler');
+			$this->notifyAutomationLoopAborted($event, $data['context'], AutomationExecutionContext::current());
+			return false;
+		}
 
-			if (!empty($allRan) && !in_array(false, $allRan))
+		// Resolve the execution context:
+		//  - an explicit context forwarded by a propagating save path always wins;
+		//  - otherwise reuse the request-scoped chain context. While a chain is already being
+		//    processed, this returns the SAME instance, so hasRun() persists across re-fires that
+		//    dropped the context (transaction update, legacy status change, ...) and a given
+		//    automation runs at most once per top-level chain — generic infinite-loop protection.
+		$executionContext = (!empty($data['execution_context']) && $data['execution_context'] instanceof AutomationExecutionContext)
+			? $data['execution_context']
+			: AutomationExecutionContext::current();
+
+		AutomationExecutionContext::beginProcessing();
+		try
+		{
+			$repository = new AutomationRepository();
+			$automations = $repository->getAutomationsByEventName($event);
+
+			if (!empty($automations))
 			{
+				$allRan = [];
+				foreach($automations as $automation)
+				{
+					try {
+						$allRan[] = $automation->process($data['context'], $executionContext);
+					}
+					catch (\Exception $exception)
+					{
+						Log::add('Failed to run automation ' . $automation->getId() . ' on event ' . $event . ' : ' . $exception->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
+					}
+				}
+
+				if (!empty($allRan) && !in_array(false, $allRan))
+				{
+					$ran = true;
+				}
+			} else {
 				$ran = true;
 			}
-		} else {
-			$ran = true;
+		}
+		finally
+		{
+			AutomationExecutionContext::endProcessing();
 		}
 
 		return $ran;
+	}
+
+	/**
+	 * Surface a critical "automation loop interrupted" alert to managers when the circuit breaker
+	 * aborts processing at the maximum depth. Mirrors the softer onAutomationLoopDetected alert
+	 * (recorded by the actionlog plugin into the automation history) but flags the entry as aborted
+	 * so the UI shows a distinct "loop interrupted" badge. Raised at most once per chain.
+	 *
+	 * @param   string                      $event
+	 * @param   EventContextEntity          $context
+	 * @param   AutomationExecutionContext  $executionContext
+	 *
+	 * @return void
+	 */
+	private function notifyAutomationLoopAborted(string $event, EventContextEntity $context, AutomationExecutionContext $executionContext): void
+	{
+		if ($executionContext->loopAbortAlertWasRaised())
+		{
+			return;
+		}
+		$executionContext->markLoopAbortAlertRaised();
+
+		try
+		{
+			$files          = $context->getFiles();
+			$involvedLabels = $executionContext->getExecutedLabels();
+			$dispatcher     = Factory::getApplication()->getDispatcher();
+
+			$onAutomationLoopDetected = new \Joomla\CMS\Event\GenericEvent('onAutomationLoopDetected', [
+				'context' => new EventContextEntity(
+					$context->getUser(),
+					$files,
+					[],
+					[
+						'automation'      => 0,
+						'automation_name' => !empty($involvedLabels) ? implode(', ', $involvedLabels) : $event,
+						'aborted'         => true,
+						'event'           => $event,
+						'involved_ids'    => $executionContext->getExecutedIds(),
+						'involved_labels' => $involvedLabels,
+						'fnum'            => !empty($files) ? reset($files) : null,
+					]
+				),
+			]);
+			$dispatcher->dispatch('onAutomationLoopDetected', $onAutomationLoopDetected);
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Failed to dispatch loop-aborted alert on event ' . $event . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
+		}
 	}
 }

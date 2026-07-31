@@ -26,8 +26,6 @@ $app       = Factory::getApplication();
 $lang = $app->getLanguage();
 $lang->load('plg_system_securitycheckpro', JPATH_ADMINISTRATOR) || $lang->load('plg_system_securitycheckpro', JPATH_ADMINISTRATOR, 'en-GB');
 
-$site_url = Uri::root();
-
 /** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel $basemodel */
 $basemodel = $this->basemodel;
 
@@ -49,7 +47,18 @@ $action = Route::_('index.php?option=com_securitycheckpro&view=firewallconfig&' 
     if (is_file($navFile)) {
         require $navFile;
     }
+
     ?>
+
+    <!-- Action bar -->
+    <div class="scp-actionbar">
+        <div>
+            <p class="scp-actionbar__title">
+                <i class="fa fa-shield-halved" aria-hidden="true"></i>
+                <?php echo Text::_('COM_SECURITYCHECKPRO_WAF_CONFIG'); ?>
+            </p>
+        </div>
+    </div>
 
     <div class="card mb-3">
         <div class="card-body">
@@ -72,14 +81,6 @@ $action = Route::_('index.php?option=com_securitycheckpro&view=firewallconfig&' 
             // --- Pestaña: Métodos inspeccionados
             echo HTMLHelper::_('uitab.addTab', 'WafConfigurationTabs', 'li_methods_tab', Text::_('PLG_SECURITYCHECKPRO_METHODS_INSPECTED_LABEL'));
             $tabFile = Path::clean(JPATH_ADMINISTRATOR . '/components/com_securitycheckpro/helpers/firewall_config_methods_tab.php');
-            if (is_file($tabFile)) {
-                include $tabFile;
-            }
-            echo HTMLHelper::_('uitab.endTab');
-
-            // --- Pestaña: Modo
-            echo HTMLHelper::_('uitab.addTab', 'WafConfigurationTabs', 'li_mode_tab', Text::_('PLG_SECURITYCHECKPRO_MODE_FIELDSET_LABEL'));
-            $tabFile = Path::clean(JPATH_ADMINISTRATOR . '/components/com_securitycheckpro/helpers/firewall_config_mode_tab.php');
             if (is_file($tabFile)) {
                 include $tabFile;
             }

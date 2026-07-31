@@ -49,6 +49,7 @@ use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterAddUserToGroupDefinition;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Traits\TraitDispatcher;
 
 /**
@@ -1331,39 +1332,23 @@ class EmundusModelUsers extends ListModel
 				$applicationFileRepository = new ApplicationFileRepository();
 
 				foreach ($campaigns as $campaign) {
-					$this->dispatchJoomlaEvent('onBeforeCampaignCandidature', [
-						'user_id' => $user_id,
-						'connected' => $this->user->id,
-						'campaign' => $campaign,
-						'context' => new EventContextEntity(
-							$this->app->getIdentity(),
-							[],
-							[$user_id],
-						)
-					]);
-
 					$fnum = EmundusHelperFiles::createFnum($campaign, $user_id);
 
 					if (!empty($fnum)) {
+						$statusRepository = new StatusRepository();
+						$statusEntity = $statusRepository->getItemByField('step', 0, true);
 						$applicationFileEntity = new ApplicationFileEntity(
 							$applicant,
 							$fnum,
-							0,
+							$statusEntity,
 							$campaign
 						);
-						$applicationFileRepository->flush($applicationFileEntity);
 
-						$this->dispatchJoomlaEvent('onAfterCampaignCandidature', [
-							'user_id' => $user_id,
-							'connected' => $this->user->id,
-							'campaign' => $campaign,
-							'fnum' => $fnum,
-							'context' => new EventContextEntity(
-								$this->app->getIdentity(),
-								[$fnum],
-								[$user_id],
-							)
-						]);
+						if (!$applicationFileRepository->flush($applicationFileEntity, $this->user->id)) {
+							throw new \Exception('Failed to create campaign candidature for user ' . $this->user->id);
+						}
+
+						\EmundusModelLogs::log($this->user->id,$applicationFileEntity->getUser()->id, $applicationFileEntity->getFnum(), 1, 'c', 'COM_EMUNDUS_ACCESS_FILE_CREATE');
 					}
 				}
 			}
@@ -3091,8 +3076,18 @@ class EmundusModelUsers extends ListModel
 						$this->db->setQuery($query);
 						try {
 							$this->db->execute();
+							$cid = $this->db->insertid();
 
-							//TODO: Add log to know who created the application for this user
+							EmundusModelLogs::log($this->user->id, $user['id'], $fnum, 1, 'c', 'COM_EMUNDUS_ACCESS_FILE_CREATE');
+
+							$this->dispatchJoomlaEvent('onAfterCampaignCandidature',
+								[
+									'user_id' => $user['id'],
+									'fnum' => $fnum,
+									'cid' => $cid,
+									'campaign' => $campaign,
+									'connected' => $this->user->id
+								]);
 						}
 						catch (Exception $e) {
 							error_log($e->getMessage(), 0);
@@ -4044,21 +4039,34 @@ class EmundusModelUsers extends ListModel
 		}
 	}
 
+	/**
+	 * Can only delete if the attachment is owned by user
+	 * @param $id
+	 * @param $user_id
+	 *
+	 * @return bool
+	 */
 	public function deleteProfileAttachment($id, $user_id)
 	{
-
 		$query = $this->db->getQuery(true);
 
 		try {
-			$query->select('attachment_id,filename')
+			$query->select('attachment_id, filename')
 				->from($this->db->quoteName('#__emundus_users_attachments'))
-				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($id));
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($id))
+				->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id));
 			$this->db->setQuery($query);
 			$default_attachment = $this->db->loadObject();
 
+			if (empty($default_attachment))
+			{
+				throw new Exception(Text::_('NOT_FOUND'));
+			}
+
 			$query->clear()
 				->delete($this->db->quoteName('#__emundus_users_attachments'))
-				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($id));
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($id))
+				->andWhere($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id));
 			$this->db->setQuery($query);
 			$result = $this->db->execute();
 
@@ -4066,6 +4074,10 @@ class EmundusModelUsers extends ListModel
 
 			$this->app->triggerEvent('onAfterProfileAttachmentDelete', [$user_id, (int) $default_attachment->attachment_id]);
 			$this->app->triggerEvent('onCallEventHandler', ['onAfterProfileAttachmentDelete', ['user_id' => $user_id, 'attachment_id' => (int) $default_attachment->attachment_id, 'filename' => $default_attachment->filename]]);
+
+			if ($result && !empty($default_attachment->filename) && file_exists($default_attachment->filename)) {
+				unlink(JPATH_SITE . DS . $default_attachment->filename);
+			}
 
 			return $result;
 		}

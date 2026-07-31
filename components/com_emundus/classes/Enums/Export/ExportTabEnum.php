@@ -17,6 +17,7 @@ enum ExportTabEnum: string
 	case MANAGEMENT  = 'management';
 	case OTHER       = 'other';
 	case ATTACHMENTS = 'attachments';
+	case OPTIONS     = 'options';
 
 	public function getLabel(): string
 	{
@@ -26,6 +27,7 @@ enum ExportTabEnum: string
 			self::MANAGEMENT  => 'COM_EMUNDUS_EXPORTS_MANAGEMENTS_TAB',
 			self::OTHER       => 'COM_EMUNDUS_EXPORTS_OTHER_TAB',
 			self::ATTACHMENTS => 'COM_EMUNDUS_EXPORTS_ATTACHMENT_TAB',
+			self::OPTIONS     => '',
 		};
 	}
 

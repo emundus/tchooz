@@ -4,6 +4,7 @@ import { useGlobalStore } from '@/stores/global.js';
 
 export default {
 	name: 'Back',
+	emits: ['click'],
 	props: {
 		link: {
 			type: String,
@@ -11,6 +12,13 @@ export default {
 		},
 	},
 	methods: {
+		handleClick() {
+			if (this.link !== '') {
+				this.redirectJRoute();
+			} else {
+				this.$emit('click');
+			}
+		},
 		redirectJRoute() {
 			settingsService.redirectJRoute(this.link, useGlobalStore().getCurrentLang);
 		},
@@ -21,7 +29,7 @@ export default {
 <template>
 	<div
 		class="tw-group tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-font-semibold tw-text-link-regular"
-		@click="redirectJRoute"
+		@click="handleClick"
 	>
 		<span class="material-symbols-outlined tw-mr-1">navigate_before</span>
 		<span class="group-hover:tw-underline">{{ translate('BACK') }}</span>

@@ -30,6 +30,7 @@ export default {
 		Parameter,
 	},
 	mixins: [transformIntoParameterField],
+	emits: ['parameterValueUpdated'],
 	data() {
 		return {
 			initialized: false,
@@ -40,63 +41,193 @@ export default {
 	},
 	methods: {
 		onParameterValueUpdated(parameter, group, rowIndex = null, oldValue = null, newValue = null) {
-			if (oldValue !== null && newValue !== null && oldValue === newValue) {
+			// Skip entirely when both sides were explicitly passed and are equivalent
+			// (covers the [] vs null hydration loop without blocking real clears like "foo" → null).
+			if (oldValue !== null && newValue !== null && this.areValuesEquivalent(oldValue, newValue)) {
 				return;
 			}
 			if (parameter) {
 				this.$emit('parameterValueUpdated', parameter, group, rowIndex);
 			}
 
-			if (this.initialized && oldValue !== null) {
-				this.reloadParametersRules();
+			// Reload the display rules whenever the value actually changed — including the first
+			// change from null to a value, so conditional (hidden) fields appear immediately.
+			// Internal calls (reloadParametersRules) pass no old/new value (both null) and are
+			// filtered by areValuesEquivalent below, which preserves the recursion guard.
+			// Empty-equivalent transitions ([] ↔ null) are also filtered to stop the hydration loop.
+			if (this.initialized && !this.areValuesEquivalent(oldValue, newValue)) {
+				this.reloadParametersRules(parameter);
 
-				this.fields.forEach((field) => {
-					if (field.watchers && field.watchers.length > 0) {
-						field.watchers.forEach(async (watcher) => {
-							if (watcher.field === parameter.param && watcher.events.includes('onChange')) {
-								let values = {};
-								let fieldParameter = this.findParameterByName(field.name);
+				if (oldValue !== null) {
+					this.fields.forEach((field) => {
+						if (field.watchers && field.watchers.length > 0) {
+							field.watchers.forEach(async (watcher) => {
+								if (watcher.field === parameter.param && watcher.events.includes('onChange')) {
+									let values = {};
+									let fieldParameter = this.findParameterByName(field.name);
 
-								if (rowIndex === null) {
-									group.parameters.forEach(function (param) {
-										// key is the parameter name, value is the parameter value
-										values[param.param] = param.value;
-									});
-								} else {
-									// if the parameter is in a repeatable group, we need to get the values of the parameters in the same row
-									group.rows[rowIndex].parameters.forEach(function (param) {
-										// key is the parameter name, value is the parameter value
-										values[param.param] = param.value;
-									});
-								}
-
-								if (fieldParameter.type === 'select') {
-									fieldParameter.options = await this.provideParameterOptions(field, values);
-
-									// force reload of the multiselect, if NaN,
-									if (isNaN(fieldParameter.reload)) {
-										fieldParameter.reload = 1;
+									if (rowIndex === null) {
+										group.parameters.forEach(function (param) {
+											// key is the parameter name, value is the parameter value
+											values[param.param] = param.value;
+										});
 									} else {
-										fieldParameter.reload += 1;
+										// if the parameter is in a repeatable group, we need to get the values of the parameters in the same row
+										group.rows[rowIndex].parameters.forEach(function (param) {
+											// key is the parameter name, value is the parameter value
+											values[param.param] = param.value;
+										});
 									}
-								} else if (fieldParameter.type === 'multiselect' && field.optionsProvider) {
-									fieldParameter.multiselectOptions.options = await this.provideParameterOptions(field, values);
-									fieldParameter.multiselectOptions.optionsProvider = field.optionsProvider;
-									fieldParameter.multiselectOptions.optionsProvider.dependenciesValues =
-										this.getParamDependenciesValues(field, values);
 
-									// force reload of the multiselect, if NaN,
-									if (isNaN(fieldParameter.reload)) {
-										fieldParameter.reload = 1;
-									} else {
-										fieldParameter.reload += 1;
+									if (fieldParameter.type === 'select') {
+										fieldParameter.options = await this.provideParameterOptions(field, values);
+
+										// force reload of the multiselect, if NaN,
+										if (isNaN(fieldParameter.reload)) {
+											fieldParameter.reload = 1;
+										} else {
+											fieldParameter.reload += 1;
+										}
+									} else if (fieldParameter.type === 'multiselect' && field.optionsProvider) {
+										fieldParameter.multiselectOptions.options = await this.provideParameterOptions(field, values);
+										fieldParameter.multiselectOptions.optionsProvider = field.optionsProvider;
+										fieldParameter.multiselectOptions.optionsProvider.dependenciesValues =
+											this.getParamDependenciesValues(field, values);
+
+										// force reload of the multiselect, if NaN,
+										if (isNaN(fieldParameter.reload)) {
+											fieldParameter.reload = 1;
+										} else {
+											fieldParameter.reload += 1;
+										}
 									}
 								}
-							}
-						});
-					}
-				});
+							});
+						}
+					});
+				}
 			}
+		},
+		isEmptyValue(value) {
+			return value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0);
+		},
+		areValuesEquivalent(a, b) {
+			if (this.isEmptyValue(a) && this.isEmptyValue(b)) {
+				return true;
+			}
+			if (Array.isArray(a) && Array.isArray(b)) {
+				return JSON.stringify(a) === JSON.stringify(b);
+			}
+			return a === b;
+		},
+		/**
+		 * Validate every displayed Parameter via its ref and serialize the values.
+		 *
+		 * - Skips fields where `displayed === false`.
+		 * - Calls `validate()` on each Parameter ref (`field_<param>`); aborts on the first failure
+		 *   and scrolls the invalid field into view.
+		 * - For `multiselect` fields, flattens via `multiselectOptions.trackBy`.
+		 *
+		 * @returns {{ isValid: boolean, form: Object }} `form` is empty when `isValid` is false.
+		 */
+		validate() {
+			const form = {};
+
+			for (const group of this.groups) {
+				for (const field of group.parameters) {
+					if (!field.displayed) continue;
+
+					const fieldRef = this.$refs['field_' + field.param];
+					if (fieldRef && fieldRef[0] && !fieldRef[0].validate()) {
+						this.scrollToField(fieldRef[0]);
+						return { isValid: false, form: {} };
+					}
+
+					if (field.type === 'multiselect') {
+						if (field.multiselectOptions.multiple) {
+							form[field.param] = (field.value || []).map((element) => element[field.multiselectOptions.trackBy]);
+						} else {
+							form[field.param] = field.value ? field.value[field.multiselectOptions.trackBy] : null;
+						}
+					} else if (field.type === 'datetime') {
+						form[field.param] = this.normalizeDateValue(field.value);
+					} else {
+						form[field.param] = field.value;
+					}
+				}
+			}
+
+			return { isValid: true, form };
+		},
+		/**
+		 * Smooth-scroll an invalid Parameter component into the viewport.
+		 *
+		 * Wait for nextTick so the Parameter has rendered its error state before measuring.
+		 *
+		 * @param {{ $el?: HTMLElement }} fieldComponent
+		 */
+		scrollToField(fieldComponent) {
+			this.$nextTick(() => {
+				const el = fieldComponent && fieldComponent.$el;
+				if (el && typeof el.scrollIntoView === 'function') {
+					el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				}
+			});
+		},
+		/**
+		 * Normalize a date field value to an ISO 8601 datetime with local timezone offset
+		 * (e.g. `"2026-05-13T00:00:00+02:00"`), using Temporal.
+		 *
+		 * Accepts a `Date` instance, an ISO date / datetime string, a locale string
+		 * (e.g. `"Wed May 13 2026 00:00:00 GMT+0200 (heure d'été d'Europe centrale)"`),
+		 * or a `Temporal.PlainDate` / `Temporal.PlainDateTime` / `Temporal.ZonedDateTime`.
+		 * Local calendar components and the user's resolved timezone are used so the
+		 * value round-trips without the UTC-shift footgun, and both date AND time are
+		 * preserved so the backend can persist either a DATE or DATETIME column.
+		 *
+		 * @param {Date|string|Temporal.ZonedDateTime|Temporal.PlainDateTime|Temporal.PlainDate|null|undefined} value
+		 * @returns {string|null} ISO 8601 datetime with offset, or `null` when empty/invalid.
+		 */
+		normalizeDateValue(value) {
+			if (value === null || value === undefined || value === '') {
+				return null;
+			}
+
+			const tz = Temporal.Now.timeZoneId();
+
+			if (value instanceof Temporal.ZonedDateTime) {
+				return value.toString({ timeZoneName: 'never' });
+			}
+			if (value instanceof Temporal.PlainDateTime) {
+				return value.toZonedDateTime(tz).toString({ timeZoneName: 'never' });
+			}
+			if (value instanceof Temporal.PlainDate) {
+				return value.toZonedDateTime(tz).toString({ timeZoneName: 'never' });
+			}
+
+			// Bare `YYYY-MM-DD` strings: anchor at midnight in the user's timezone
+			// (otherwise `new Date('YYYY-MM-DD')` parses as UTC midnight and shifts).
+			if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+				try {
+					return Temporal.PlainDate.from(value).toZonedDateTime(tz).toString({ timeZoneName: 'never' });
+				} catch {
+					return null;
+				}
+			}
+
+			const date = value instanceof Date ? value : new Date(value);
+			if (Number.isNaN(date.getTime())) return null;
+
+			return Temporal.PlainDateTime.from({
+				year: date.getFullYear(),
+				month: date.getMonth() + 1,
+				day: date.getDate(),
+				hour: date.getHours(),
+				minute: date.getMinutes(),
+				second: date.getSeconds(),
+			})
+				.toZonedDateTime(tz)
+				.toString({ timeZoneName: 'never' });
 		},
 		findParameterByName(name) {
 			for (const group of this.groups) {
@@ -118,7 +249,7 @@ export default {
 			}
 			return null;
 		},
-		reloadParametersRules() {
+		reloadParametersRules(currentParameter = null) {
 			this.groups.forEach((group) => {
 				if (group.isRepeatable) {
 					group.rows.forEach((row, rowIndex) => {
@@ -164,7 +295,11 @@ export default {
 					});
 				} else {
 					group.parameters.forEach((parameter) => {
-						if (parameter.displayRules && parameter.displayRules.length > 0) {
+						if (
+							(currentParameter === null || (currentParameter && currentParameter.param !== parameter.param)) &&
+							parameter.displayRules &&
+							parameter.displayRules.length > 0
+						) {
 							let everyRulesSucceed = parameter.displayRules.every((rule) => {
 								const ruleParameter = this.findParameterByName(rule.field);
 
@@ -178,12 +313,16 @@ export default {
 							});
 
 							if (everyRulesSucceed) {
-								parameter.displayed = true;
-								parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
+								if (parameter.displayed !== true) {
+									parameter.displayed = true;
+									parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
+								}
 							} else {
-								parameter.displayed = false;
-								parameter.value = null;
-								parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
+								if (parameter.displayed !== false || parameter.value !== null) {
+									parameter.displayed = false;
+									parameter.value = null;
+									parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
+								}
 							}
 						}
 					});
@@ -203,10 +342,19 @@ export default {
 			this.reloadParametersRules();
 		},
 		removeRow(group, rowToRemove) {
-			console.log('Removing row', rowToRemove);
-			console.log('group', group);
+			const rowIndex = group.rows.findIndex((row) => row.id === rowToRemove.id);
+			if (rowIndex === -1) {
+				return;
+			}
 
-			group.rows = group.rows.filter((row) => row.id !== rowToRemove.id);
+			group.rows.splice(rowIndex, 1);
+
+			// The parent stores parameter_values[group.id] as a positional array indexed by row.
+			// A removed row must be spliced out there too, otherwise a stale/empty entry lingers
+			// and gets persisted (then breaks backend actions iterating over the rows).
+			this.$emit('rowRemoved', group, rowIndex);
+
+			this.reloadParametersRules();
 		},
 		getRowParameterValue(group, rowIndex, parameterName) {
 			const row = group.rows[rowIndex];
@@ -232,7 +380,7 @@ export default {
 
 <template>
 	<div :id="'form-' + id" class="form-container">
-		<h2 v-if="title">{{ title }}</h2>
+		<h2 v-if="title">{{ translate(title) }}</h2>
 		<p v-if="description">{{ description }}</p>
 		<div v-for="group in groups" :key="group.id" class="form-group tw-mt-4">
 			<div v-if="group.isRepeatable">
@@ -308,6 +456,7 @@ export default {
 								:key="field.param + '-' + rowIndex + '-' + field.reload"
 								:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
 								:parameter-object="row.parameters[index]"
+								:help-text-type="'above'"
 								:asyncAttributes="field.type === 'multiselect' ? field.multiselectOptions.asyncAttributes : null"
 								@valueUpdated="
 									(parameter, oldVal, newVal) =>
@@ -324,13 +473,13 @@ export default {
 				</div>
 			</div>
 			<div v-else>
-				<h3>{{ group.title }}</h3>
+				<h3>{{ translate(group.title) }}</h3>
 				<p v-if="group.description">{{ group.description }}</p>
 				<div class="tw-flex tw-w-full tw-flex-col tw-gap-4">
 					<Parameter
 						v-for="(field, index) in group.parameters"
 						v-show="field.displayed !== false"
-						:help-text-type="group.helpTextType ? group.helpTextType : 'icon'"
+						:help-text-type="group.helpTextType ? group.helpTextType : 'above'"
 						:ref="'field_' + field.param"
 						:key="field.param + '-' + field.reload"
 						:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"

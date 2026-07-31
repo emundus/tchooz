@@ -480,9 +480,17 @@ function openFiles(fnum, page = 0, vue = false) {
     }, 0);
 
     var cid = parseInt(fnum.fnum.substr(14, 7));
-    var sid = parseInt(fnum.fnum.substr(21, 7));
+    // The applicant id is no longer embedded in the fnum (last part is now random),
+    // so retrieve it from the fnum object or the data-applicant_id attribute of the file checkbox.
+    var sid = parseInt(fnum.sid);
+    if (isNaN(sid)) {
+        sid = parseInt($('#' + fnum.fnum + '_check').attr('data-applicant_id'));
+    }
 
     loadAssocFilesSection(fnum.fnum);
+    loadAssocContactsSection(fnum.fnum);
+    loadAssocOrganizationsSection(fnum.fnum);
+
 
     $.ajax({
         type: 'get',
@@ -695,6 +703,54 @@ function loadAssocFilesSection(fnum)
     }
 }
 
+function loadAssocContactsSection(fnum)
+{
+    if (document.getElementById('em-assoc-contacts')) {
+        $('#em-assoc-contacts .panel-body').empty();
+
+        $.ajax({
+            type: 'get',
+            url: '/index.php?option=com_emundus&view=application&fnum=' + fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_contacts',
+            dataType: 'html',
+            success: function (result) {
+                if (result) {
+                    $('#em-assoc-contacts .panel-body').append(result);
+                    document.getElementById('em-assoc-contacts').style.display = 'block';
+                } else {
+                    document.getElementById('em-assoc-contacts').style.display = 'none';
+                }
+            },
+            error: function (jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+}
+
+function loadAssocOrganizationsSection(fnum)
+{
+    if (document.getElementById('em-assoc-organizations')) {
+        $('#em-assoc-organizations .panel-body').empty();
+
+        $.ajax({
+            type: 'get',
+            url: '/index.php?option=com_emundus&view=application&fnum=' + fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_organizations',
+            dataType: 'html',
+            success: function (result) {
+                if (result) {
+                    $('#em-assoc-organizations .panel-body').append(result);
+                    document.getElementById('em-assoc-organizations').style.display = 'block';
+                } else {
+                    document.getElementById('em-assoc-organizations').style.display = 'none';
+                }
+            },
+            error: function (jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+}
+
 
 function menuBar1() {
     $('.nav.navbar-nav').show();
@@ -781,7 +837,7 @@ function getUserCheckArray() {
                 return null;
             } else {
                 var cid = parseInt(fnum.substr(14, 7));
-                var sid = parseInt(fnum.substr(21, 7));
+                var sid = parseInt($('#' + fnum + '_check').attr('data-applicant_id'));
                 fnums.push({fnum: fnum, cid: cid, sid:sid});
             }
         } else {
@@ -790,7 +846,7 @@ function getUserCheckArray() {
             $('.em-check:checked').each(function() {
                 fnum = $(this).attr('id').split('_')[0];
                 cid = parseInt(fnum.substr(14, 7));
-                sid = parseInt(fnum.substr(21, 7));
+                sid = parseInt($(this).attr('data-applicant_id'));
                 fnums.push({fnum: fnum, cid: cid, sid:sid});
             });
         }
@@ -4380,6 +4436,55 @@ $(document).ready(function() {
                 });
                 break;
 
+            case 'contact':
+                fnums = getUserCheckArray();
+
+                swal_popup_class = 'em-w-auto';
+                swal_show_confirm_button = false;
+                swal_show_cancel_button = false;
+                title = 'COM_EMUNDUS_ACCESS_UPDATE_ASSOCIATED_CONTACTS';
+                html = '<div id="data" class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-min-w-[20vw] tw-min-h-[20vh]"><div id="update-associated-contacts-loader" class="em-loader"></div><span id="update-associated-contacts-loader-message" class="tw-mt-1">' + Joomla.Text._('COM_EMUNDUS_UPDATE_ASSOCIATED_CONTACTS_ACCESS_LOADER') + '</span></div>';
+
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({fnums: fnums}),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    cache: "no-cache"
+                }).then(response => response.text()).then(data => {
+                    document.getElementById("update-associated-contacts-loader").remove();
+                    document.getElementById("update-associated-contacts-loader-message").remove();
+                    document.getElementById("data").classList.remove('tw-justify-center');
+                    $('#data').append(data);
+                });
+                break;
+
+            case 'organization':
+                fnums = getUserCheckArray();
+
+                swal_popup_class = 'em-w-auto';
+                swal_show_confirm_button = false;
+                swal_show_cancel_button = false;
+                title = 'COM_EMUNDUS_ACCESS_UPDATE_ASSOCIATED_ORGANIZATIONS';
+                html = '<div id="data" class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-min-w-[20vw] tw-min-h-[20vh]"><div id="update-associated-organizations-loader" class="em-loader"></div><span id="update-associated-organizations-loader-message" class="tw-mt-1">' + Joomla.Text._('COM_EMUNDUS_UPDATE_ASSOCIATED_ORGANIZATIONS_ACCESS_LOADER') + '</span></div>';
+
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({fnums: fnums}),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    cache: "no-cache"
+                }).then(response => response.text()).then(data => {
+                    document.getElementById("update-associated-organizations-loader").remove();
+                    document.getElementById("update-associated-organizations-loader-message").remove();
+                    document.getElementById("data").classList.remove('tw-justify-center');
+                    $('#data').append(data);
+                });
+                break;
+
+
             case 'crm':
                 multipleSteps = true;
                 break;
@@ -4640,7 +4745,7 @@ $(document).ready(function() {
             e.handle = true;
             var fnum = new Object();
             fnum.fnum = $(this).attr('title');
-            fnum.sid = parseInt(fnum.fnum.substr(21, 7));
+            fnum.sid = parseInt($('#' + fnum.fnum + '_check').attr('data-applicant_id'));
             fnum.cid = parseInt(fnum.fnum.substr(14, 7));
             $('.em-check:checked').prop('checked', false);
 
@@ -4651,7 +4756,7 @@ $(document).ready(function() {
                 url: '/index.php?option=com_emundus&controller='+$('#view').val()+'&task=getfnuminfos',
                 dataType:"json",
                 data:({
-                    fnum:fnum.fnum
+                    fnum: fnum.fnum
                 }),
                 success: function(result) {
                     if (result.status) {
@@ -4767,7 +4872,7 @@ $(document).ready(function() {
                     $('#'+fnum.fnum+'_check').prop('checked', true);
 
                     addLoader();
-                    fnum.sid = parseInt(fnum.fnum.substr(21, 7));
+                    fnum.sid = parseInt($('#' + fnum.fnum + '_check').attr('data-applicant_id'));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 
                     page = Array.from(document.querySelector('#em-appli-block .panel[class*="em-container-"]').classList).filter(
@@ -4826,7 +4931,7 @@ $(document).ready(function() {
                     $('#'+fnum.fnum+'_check').prop('checked', true);
 
                     addLoader();
-                    fnum.sid = parseInt(fnum.fnum.substr(21, 7));
+                    fnum.sid = parseInt($('#' + fnum.fnum + '_check').attr('data-applicant_id'));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 
                     if (document.querySelector('#em-appli-block .panel[class*="em-container-"]')) {
@@ -4867,7 +4972,7 @@ $(document).ready(function() {
                     var fnum = new Object();
                     fnum.fnum = $(this).parents('a').attr('href').split('-')[0];
                     fnum.fnum = fnum.fnum.substr(1, fnum.fnum.length);
-                    fnum.sid = parseInt(fnum.fnum.substr(21, 7));
+                    fnum.sid = parseInt($('#' + fnum.fnum + '_check').attr('data-applicant_id'));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
                     $('.em-check:checked').prop('checked', false);
                     $('#'+fnum.fnum+'_check').prop('checked', true);
@@ -4947,8 +5052,8 @@ $(document).ready(function() {
             var fnum = {};
             fnum.fnum = $(this).attr('id');
 
-            var sid = parseInt(fnum.fnum.substr(21, 7));
-            var cid = parseInt(fnum.fnum.substr(14, 7));
+            fnum.sid = parseInt($('#' + fnum.fnum + '_check').attr('data-applicant_id'));
+            fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 
             $('.em-check:checked').prop('checked', false);
             $('#em-check-all:checked').prop('checked', false);
@@ -6141,7 +6246,7 @@ async function sendMailQueue(fnums, nbFiles = 0) {
                     template        : $('#message_template :selected').val(),
                     mail_from_name  : $('#mail_from_name').text(),
                     mail_from       : $('#mail_from').text(),
-                    reply_to_from   : $('#reply_to_from').text(),
+                    reply_to_from   : [],
                     mail_subject    : $('#mail_subject').text(),
                     message         : body,
                     bcc             : [],
@@ -6172,6 +6277,18 @@ async function sendMailQueue(fnums, nbFiles = 0) {
                     }
 
                     if (REGEX_EMAIL.test(val)) { data.bcc.push(val); }
+                });
+
+                // reply to email(s)
+                $('#reply_to_div div[data-value]').each(function () {
+                    var val = $(this).attr('data-value');
+                    var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+                    if (val.split(':')[0] === 'REPLYTO') {
+                        val = $(this).attr('data-value').split('REPLYTO: ')[1];
+                    }
+
+                    if (REGEX_EMAIL.test(val)) { data.reply_to_from.push(val); }
                 });
 
                 // Attachments object used for sorting the different attachment types.

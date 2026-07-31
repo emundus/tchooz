@@ -176,7 +176,7 @@ class WorkflowRepository
 	/**
 	 * @return array<WorkflowEntity>
 	 */
-	public function getWorkflows(): array
+	public function getWorkflows(array $programs_ids = []): array
 	{
 		$workflows = [];
 
@@ -186,6 +186,10 @@ class WorkflowRepository
 				->from($this->db->quoteName($this->getTableName(self::class), 'w'))
 				->leftJoin($this->db->quoteName('jos_emundus_setup_workflows_programs', 'p') . ' ON ' . $this->db->quoteName('w.id') . ' = ' . $this->db->quoteName('p.workflow_id'))
 				->group('w.id');
+			if(!empty($programs_ids))
+			{
+				$query->whereIn($this->db->quoteName('p.program_id'), $programs_ids);
+			}
 
 			$this->db->setQuery($query);
 			$results = $this->db->loadObjectList();

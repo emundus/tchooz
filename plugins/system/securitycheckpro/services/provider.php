@@ -34,10 +34,7 @@ return new class implements ServiceProviderInterface {
 				$config     = (array) PluginHelper::getPlugin('system', 'securitycheckpro');
 				$dispatcher = $container->get(DispatcherInterface::class);
 
-				$plugin = new Securitycheckpro(
-					$dispatcher,
-					$config
-				);
+				$plugin = new Securitycheckpro();
 
 				$plugin->setApplication(Factory::getApplication());
 				

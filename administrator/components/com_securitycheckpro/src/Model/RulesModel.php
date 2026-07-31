@@ -25,43 +25,53 @@ use Joomla\Database\ParameterType;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Application\CMSWebApplicationInterface;
 
 class RulesModel extends BaseDatabaseModel
 {
 
-    /**
-     * Objeto Pagination 
-	 * @var Pagination 
-     */
-    var $_pagination = null;
+    private ?Pagination $_pagination = null;
+
+	/** @var BaseModel */
+	private BaseModel $basemodel;
 
     /**
 	 * Total number of files of Pagination 
      * @var int $total
      */
-    public int $total = 0;
+    public int $total = 0;	
 	
-	public BaseModel $basemodel;
 	
     function __construct()
     {
-        parent::__construct();    
-		/** @var \Joomla\CMS\Application\CMSApplication $mainframe */
-        $mainframe = Factory::getApplication();	
+        parent::__construct();   
 		
-		if ( $mainframe instanceof \Joomla\CMS\Application\CMSWebApplicationInterface ) {		    
-			// Obtenemos las variables de paginación de la petición
-			$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getConfig()->get('list_limit',20), 'int');
-			$limitstart = $mainframe->getInput()->getInt('limitstart', 0);
+		$app = Factory::getApplication();
+		
+		// Inicializamos basemodel
+		$this->basemodel = new BaseModel();
 
-			// En el caso de que los límites hayan cambiado, los volvemos a ajustar
-			$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
-
-			$this->setState('limit', $limit);
-			$this->setState('limitstart', $limitstart);
-			
-			$this->basemodel = new BaseModel();
+		// Evita errores en CLI (no hay request/userstate)
+		if (!($app instanceof CMSWebApplicationInterface)) {
+			return;
 		}
+
+		$defaultLimit = (string) $app->get('list_limit', 20);
+
+		$limit = (int) $app->getUserStateFromRequest(
+			'global.list.limit',
+			'limit',
+			$defaultLimit,
+			'int'
+		);
+
+		$limitstart = $app->getInput()->getInt('limitstart', 0);
+
+		// Ajuste de límites si cambian
+		$limitstart = ($limit !== 0) ? (int) (floor($limitstart / $limit) * $limit) : 0;
+
+		$this->setState('limit', $limit);
+		$this->setState('limitstart', $limitstart);
     }
 
     protected function populateState(): void
@@ -251,7 +261,7 @@ class RulesModel extends BaseDatabaseModel
 					$db->quoteName('#__securitycheckpro_rules'),
 					implode(', ', $columns),
 					$gid,
-					0,
+					1,
 					$db->quote($timestamp),
 					$db->quoteName('last_change'),
 					$db->quoteName('last_change')

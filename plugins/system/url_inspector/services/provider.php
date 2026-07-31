@@ -28,23 +28,19 @@ return new class implements ServiceProviderInterface {
 	 */
 	public function register(Container $container)
 	{
-		//$container->registerServiceProvider(new MVCFactory('\\SecuritycheckExtensions\\Component\\SecuritycheckPro'));
-
 		$container->set(
 			PluginInterface::class,
 			function (Container $container) {
-				$config     = (array) PluginHelper::getPlugin('system', 'url_inspector');
-				$dispatcher = $container->get(DispatcherInterface::class);
+				/** @var array<string,mixed> $config */
+                $config = (array) PluginHelper::getPlugin('system', 'url_inspector');
 
-				$plugin = new Url_inspector(
-					$dispatcher,
-					$config
-				);
+                $dispatcher = $container->get(DispatcherInterface::class);
 
-				$plugin->setApplication(Factory::getApplication());
-				//$plugin->setDatabase($container->get('DatabaseDriver'));
+                $plugin = new Url_inspector($config);
+                $plugin->setDispatcher($dispatcher);
+                $plugin->setApplication(Factory::getApplication());
 
-				return $plugin;
+                return $plugin;
 			}
 		);
 	}

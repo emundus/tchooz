@@ -3,11 +3,13 @@ import Pagination from '@/components/Utils/Pagination.vue';
 import Filters from '@/components/List/Filters.vue';
 import Actions from '@/components/List/Actions.vue';
 import Exports from '@/components/List/Exports.vue';
+import Imports from '@/components/List/Imports.vue';
 
 export default {
 	name: 'Navigation',
 	components: {
 		Exports,
+		Imports,
 		Actions,
 		Filters,
 		Pagination,
@@ -95,6 +97,9 @@ export default {
 		onClickExport(exp) {
 			this.$emit('exp', exp);
 		},
+		onClickImport(imp) {
+			this.$emit('imp', imp);
+		},
 		onChangeCurrentView(view) {
 			this.$emit('update:view', view);
 		},
@@ -163,6 +168,7 @@ export default {
 				v-model:searches="currentSearches"
 				@action="onClickAction"
 				@exp="onClickExport"
+				@imp="onClickImport"
 				@update-items="updateItems"
 				@update:view="onChangeCurrentView"
 			/>

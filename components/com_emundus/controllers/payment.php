@@ -39,6 +39,8 @@ use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Payment\ProductCategoryRepository;
 use Tchooz\Repositories\Payment\ProductRepository;
 use Tchooz\Repositories\Payment\TransactionRepository;
+use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Traits\TraitResponse;
 
 class EmundusControllerPayment extends BaseController
@@ -183,164 +185,156 @@ class EmundusControllerPayment extends BaseController
 		exit;
 	}
 
-	// Ajoute les données du virement aux différents versements sélectionnés (use case FHDP)
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
 	public function insertvirementdata()
 	{
 		$results = array('status' => false, 'msg' => '', 'data' => []);
-		$user = $this->app->getIdentity();
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-			try {
-				$jinput = $this->app->input;
-				$rowids = $jinput->getString('repeat_ids','');
-				$virement_date = $jinput->getString('virement_date','');
-				$virement_number = $jinput->getString('virement_number','');
-				$table_name = $jinput->getString('table_name','');
+		try {
+			$jinput = $this->app->input;
+			$rowids = $jinput->getString('repeat_ids','');
+			$virement_date = $jinput->getString('virement_date','');
+			$virement_number = $jinput->getString('virement_number','');
+			$table_name = $jinput->getString('table_name','');
 
-				if(!empty($rowids) && !empty($virement_date) && !empty($virement_number) && !empty($table_name))
-				{
-					$virement_date   = DateTime::createFromFormat('Y-m-d', $virement_date);
-					$results['data'] = date_format($virement_date,'d/m/Y');
-					$virement_date   = date_format($virement_date,'Y-m-d');
-
-					$model = $this->getModel('payment');
-					$updated = $model->insertVirementData($rowids, $table_name, $virement_date, $virement_number);
-					if (!$updated)
-					{
-						throw new Exception('Une erreur est survenue', 401);
-					}
-
-					$result['msg'] = 'Virement sauvegardé';
-					$results['status'] = true;
-				}
-			}
-			catch (Exception $e)
+			if(!empty($rowids) && !empty($virement_date) && !empty($virement_number) && !empty($table_name))
 			{
-				$results = array('status' => false, 'msg' => JText::_($e->getMessage()), 'data' => [], 'code' => $e->getCode());
+				$virement_date   = DateTime::createFromFormat('Y-m-d', $virement_date);
+				$results['data'] = date_format($virement_date,'d/m/Y');
+				$virement_date   = date_format($virement_date,'Y-m-d');
+
+				$model = $this->getModel('payment');
+				$updated = $model->insertVirementData($rowids, $table_name, $virement_date, $virement_number);
+				if (!$updated)
+				{
+					throw new Exception('Une erreur est survenue', 401);
+				}
+
+				$results['msg'] = 'Virement sauvegardé';
+				$results['status'] = true;
 			}
+		}
+		catch (Exception $e)
+		{
+			$results = array('status' => false, 'msg' => JText::_($e->getMessage()), 'data' => [], 'code' => $e->getCode());
 		}
 
 		echo json_encode((object)$results);
 		exit;
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PAYMENT, 'mode' => CrudEnum::READ]])]
 	public function getdiscounts()
 	{
 		$this->checkToken('get', false);
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id)) {
-			$limit = $this->input->get('limit', 0);
-			$page = $this->input->get('page', 1);
+		$limit = $this->input->get('limit', 0);
+		$page = $this->input->get('page', 1);
 
-			$discount_repository = new DiscountRepository();
-			$discounts = $discount_repository->getDiscounts($limit, $page);
+		$discount_repository = new DiscountRepository();
+		$discounts = $discount_repository->getDiscounts($limit, $page);
 
-			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => [
-				'count' => $discount_repository->countDiscounts(),
-				'datas' => array_map(function ($discount) {
-					return [
-						'id'          => $discount->getId(),
-						'label'       => ['fr' => $discount->getLabel(), 'en' => $discount->getLabel()],
-						'description' => $discount->getDescription(),
-						'value'       => $discount->getValue(),
-						'type'        => $discount->getType(),
-						'published'   => $discount->getPublished(),
-						'additional_columns' => [
-							[
-								'key' => Text::_('COM_EMUNDUS_DISCOUNT_DESCRIPTION'),
-								'value' => $discount->getDescription(),
-								'classes' => '',
-								'display' => 'all'
-							],
-							[
-								'key' => Text::_('COM_EMUNDUS_DISCOUNT_VALUE'),
-								'value' => $discount->getDisplayedValue(),
-								'classes' => '',
-								'display' => 'all'
-							]
+		$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => [
+			'count' => $discount_repository->countDiscounts(),
+			'datas' => array_map(function ($discount) {
+				return [
+					'id'          => $discount->getId(),
+					'label'       => ['fr' => $discount->getLabel(), 'en' => $discount->getLabel()],
+					'description' => $discount->getDescription(),
+					'value'       => $discount->getValue(),
+					'type'        => $discount->getType(),
+					'published'   => $discount->getPublished(),
+					'additional_columns' => [
+						[
+							'key' => Text::_('COM_EMUNDUS_DISCOUNT_DESCRIPTION'),
+							'value' => $discount->getDescription(),
+							'classes' => '',
+							'display' => 'all'
+						],
+						[
+							'key' => Text::_('COM_EMUNDUS_DISCOUNT_VALUE'),
+							'value' => $discount->getDisplayedValue(),
+							'classes' => '',
+							'display' => 'all'
 						]
-					];
-				}, $discounts),
-			]];
-		}
+					]
+				];
+			}, $discounts),
+		]];
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function getfilterproductcategory()
 	{
 		$this->checkToken('get', false);
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id)) {
-			$product_category_repository = new ProductCategoryRepository();
-			$categories = $product_category_repository->getProductCategories();
+		$product_category_repository = new ProductCategoryRepository();
+		$categories = $product_category_repository->getProductCategories();
 
-			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => array_map(function ($category) {
-				return ['value' => $category->getId(), 'label' => $category->getLabel()];
-			}, $categories)];
-		}
+		$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => array_map(function ($category) {
+			return ['value' => $category->getId(), 'label' => $category->getLabel()];
+		}, $categories)];
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PAYMENT, 'mode' => CrudEnum::READ]])]
 	public function getproducts()
 	{
 		$this->checkToken('get', false);
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		$user_id = $this->app->getIdentity()->id;
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id)) {
-			$limit = $this->input->getInt('lim', 0);
-			$page = $this->input->getInt('page', 1);
+		$limit = $this->input->getInt('lim', 0);
+		$page = $this->input->getInt('page', 1);
 
-			$filters = [];
-			$category = $this->input->getInt('category', 0);
-			if (!empty($category)) {
-				$filters['category_id'] = $category;
-			}
-
-			$filters['search'] = $this->input->getString('recherche', '');
-
-
-			$product_repository = new ProductRepository();
-			$products = $product_repository->getProducts($limit, $page, $filters);
-			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => [
-				'count' => $product_repository->countProducts($filters),
-				'datas' => array_map(function ($product) {
-					return [
-						'id'          => $product->getId(),
-						'label'       => ['fr' => $product->label, 'en' => $product->label],
-						'description' => $product->description,
-						'price'       => $product->getDisplayedPrice(),
-						'currency'    => $product->currency->symbol,
-						'category_id' => $product->category?->getId(),
-						'category'    => $product->category?->getLabel(),
-						'additional_columns' => [
-							[
-								'key' => Text::_('COM_EMUNDUS_PRODUCT_DESCRIPTION'),
-								'value' => $product->description,
-								'classes' => '',
-								'display' => 'all'
-							],
-							[
-								'key' => Text::_('COM_EMUNDUS_PRODUCT_PRICE'),
-								'value' => $product->getDisplayedPrice(),
-								'classes' => '',
-								'display' => 'table'
-							],
-							[
-								'key' => Text::_('COM_EMUNDUS_PRODUCT_PRICE'),
-								'value' => '<span class="material-symbols-outlined tw-text-neutral-700">payments</span>' . $product->getDisplayedPrice(),
-								'classes' => 'tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-border tw-rounded-full tw-px-2 tw-py-1 tw-bg-neutral-300 tw-border-neutral-700 tw-text-neutral-700 !tw-m-0',
-								'display' => 'blocs'
-							]
-						]
-					];
-				}, $products),
-			]];
+		$filters = [];
+		$category = $this->input->getInt('category', 0);
+		if (!empty($category)) {
+			$filters['category_id'] = $category;
 		}
+
+		$filters['search'] = $this->input->getString('recherche', '');
+
+
+		$product_repository = new ProductRepository();
+		$products = $product_repository->getProducts($limit, $page, $filters);
+		$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => [
+			'count' => $product_repository->countProducts($filters),
+			'datas' => array_map(function ($product) {
+				return [
+					'id'          => $product->getId(),
+					'label'       => ['fr' => $product->label, 'en' => $product->label],
+					'description' => $product->description,
+					'price'       => $product->getDisplayedPrice(),
+					'currency'    => $product->currency->symbol,
+					'category_id' => $product->category?->getId(),
+					'category'    => $product->category?->getLabel(),
+					'additional_columns' => [
+						[
+							'key' => Text::_('COM_EMUNDUS_PRODUCT_DESCRIPTION'),
+							'value' => $product->description,
+							'classes' => '',
+							'display' => 'all'
+						],
+						[
+							'key' => Text::_('COM_EMUNDUS_PRODUCT_PRICE'),
+							'value' => $product->getDisplayedPrice(),
+							'classes' => '',
+							'display' => 'table'
+						],
+						[
+							'key' => Text::_('COM_EMUNDUS_PRODUCT_PRICE'),
+							'value' => '<span class="material-symbols-outlined tw-text-neutral-700">payments</span>' . $product->getDisplayedPrice(),
+							'classes' => 'tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-border tw-rounded-full tw-px-2 tw-py-1 tw-bg-neutral-300 tw-border-neutral-700 tw-text-neutral-700 !tw-m-0',
+							'display' => 'blocs'
+						]
+					]
+				];
+			}, $products),
+		]];
 
 		$this->sendJsonResponse($response);
 	}
@@ -390,28 +384,22 @@ class EmundusControllerPayment extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PAYMENT, 'mode' => CrudEnum::READ]])]
 	public function getfiltertransactionsapplicants(): void
 	{
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asAccessAction($this->payment_repository->getActionId(), 'r', $this->app->getIdentity()->id)) {
-			$transaction_repository = new TransactionRepository();
-			$applicants = $transaction_repository->getTransactionsApplicants();
-			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $applicants];
-		}
+		$transaction_repository = new TransactionRepository();
+		$applicants = $transaction_repository->getTransactionsApplicants();
+		$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $applicants];
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PAYMENT, 'mode' => CrudEnum::READ]])]
 	public function getfiltertransactionsfiles(): void
 	{
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asAccessAction($this->payment_repository->getActionId(), 'r', $this->app->getIdentity()->id)) {
-			$transaction_repository = new TransactionRepository();
-			$fnums = $transaction_repository->getTransactionsFileNumbers();
-			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $fnums];
-		}
+		$transaction_repository = new TransactionRepository();
+		$fnums = $transaction_repository->getTransactionsFileNumbers();
+		$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $fnums];
 
 		$this->sendJsonResponse($response);
 	}
@@ -517,468 +505,443 @@ class EmundusControllerPayment extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PAYMENT, 'mode' => CrudEnum::READ]])]
 	public function exporttransaction()
 	{
 		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asAccessAction($this->payment_repository->getActionId(), 'r', $this->app->getIdentity()->id))
-		{
-			$transaction_id = $this->input->getInt('id', 0);
-			$transaction_ids = $this->input->getString('ids', '');
+		$transaction_id = $this->input->getInt('id', 0);
+		$transaction_ids = $this->input->getString('ids', '');
 
-			if (!empty($transaction_ids)) {
-				$transaction_ids = explode(',', $transaction_ids);
+		if (!empty($transaction_ids)) {
+			$transaction_ids = explode(',', $transaction_ids);
+		} else {
+			$transaction_ids = [$transaction_id];
+		}
+
+		$transaction_repository = new TransactionRepository();
+		$transactions = $transaction_repository->getTransactions(0, 1, ['id' => $transaction_ids]);
+
+		$lines = $transaction_repository->prepareExport($transactions);
+
+		if (!empty($lines)) {
+			$today  = date("MdYHis");
+			$name   = md5($today.rand(0,10));
+			$name   = 'transactions-' . $name.'.csv';
+			$path = JPATH_SITE . '/tmp/' . $name;
+
+			if (!$csv_file = fopen($path, 'w+')) {
+				$response = [
+					'code' => 500,
+					'message' => Text::_('COM_EMUNDUS_EXPORTS_ERROR'),
+					'status' => false
+				];
 			} else {
-				$transaction_ids = [$transaction_id];
-			}
-
-			$transaction_repository = new TransactionRepository();
-			$transactions = $transaction_repository->getTransactions(0, 1, ['id' => $transaction_ids]);
-
-			$lines = $transaction_repository->prepareExport($transactions);
-
-			if (!empty($lines)) {
-				$today  = date("MdYHis");
-				$name   = md5($today.rand(0,10));
-				$name   = 'transactions-' . $name.'.csv';
-				$path = JPATH_SITE . '/tmp/' . $name;
-
-				if (!$csv_file = fopen($path, 'w+')) {
-					$response = [
-						'code' => 500,
-						'message' => Text::_('COM_EMUNDUS_EXPORTS_ERROR'),
-						'status' => false
-					];
-				} else {
-					fwrite($csv_file, "\xEF\xBB\xBF"); // Ajoute le BOM UTF-8
-					foreach ($lines as $line) {
-						fputcsv($csv_file, $line, ';');
-					}
-					fclose($csv_file);
-					$export_link = JUri::root() . 'tmp/' . $name;
-
-					$response = [
-						'code' => 200,
-						'message' => Text::_('COM_EMUNDUS_EXPORTS_SUCCESS'),
-						'status' => true,
-						'download_file' => $export_link
-					];
+				fwrite($csv_file, "\xEF\xBB\xBF"); // Ajoute le BOM UTF-8
+				foreach ($lines as $line) {
+					fputcsv($csv_file, $line, ';');
 				}
+				fclose($csv_file);
+				$export_link = JUri::root() . 'tmp/' . $name;
+
+				$response = [
+					'code' => 200,
+					'message' => Text::_('COM_EMUNDUS_EXPORTS_SUCCESS'),
+					'status' => true,
+					'download_file' => $export_link
+				];
 			}
 		}
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function getProductById()
 	{
 		$this->checkToken('get', false);
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id)) {
-			$id = $this->input->get('id', 0);
+		$id = $this->input->get('id', 0);
 
-			$product_repository = new ProductRepository();
-			$product_entity = $product_repository->getProductById($id);
+		$product_repository = new ProductRepository();
+		$product_entity = $product_repository->getProductById($id);
 
-			if (!empty($product_entity)) {
-				$product = $product_entity->serialize();
-				$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $product];
-			} else {
-				$response = ['code' => 404, 'message' => Text::_('COM_EMUNDUS_PRODUCT_NOT_FOUND'), 'status' => false];
-			}
+		if (!empty($product_entity)) {
+			$product = $product_entity->serialize();
+			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $product];
+		} else {
+			$response = ['code' => 404, 'message' => Text::_('COM_EMUNDUS_PRODUCT_NOT_FOUND'), 'status' => false];
 		}
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function saveProduct()
 	{
 		$this->checkToken();
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id)) {
-			$payment_repository = new PaymentRepository();
-			$id = $this->input->getInt('id', 0);
-			$label = $this->input->getString('label', '');
-			$description = $this->input->getString('description', '');
-			$price = $this->input->getFloat('price', 0);
-			$currency_id = $this->input->getInt('currency_id', '');
-			$category_id = $this->input->getInt('category_id', 0);
-			$illimited = $this->input->getInt('illimited', 1);
-			$quantity = $this->input->getInt('quantity', 0);
-			$available_from = $this->input->getString('available_from', '');
-			$available_to = $this->input->getString('available_to', '');
-			$campaigns = $this->input->getString('campaigns', '');
-			$campaigns = !empty($campaigns) ? explode(',', $campaigns) : [];
+		$payment_repository = new PaymentRepository();
+		$id = $this->input->getInt('id', 0);
+		$label = $this->input->getString('label', '');
+		$description = $this->input->getString('description', '');
+		$price = $this->input->getFloat('price', 0);
+		$currency_id = $this->input->getInt('currency_id', '');
+		$category_id = $this->input->getInt('category_id', 0);
+		$illimited = $this->input->getInt('illimited', 1);
+		$quantity = $this->input->getInt('quantity', 0);
+		$available_from = $this->input->getString('available_from', '');
+		$available_to = $this->input->getString('available_to', '');
+		$campaigns = $this->input->getString('campaigns', '');
+		$campaigns = !empty($campaigns) ? explode(',', $campaigns) : [];
 
-			$product_entity = new ProductEntity($id, $label, $description, $price);
-			$product_entity->setIllimited($illimited === 1);
-			$product_entity->setQuantity($quantity);
+		$product_entity = new ProductEntity($id, $label, $description, $price);
+		$product_entity->setIllimited($illimited === 1);
+		$product_entity->setQuantity($quantity);
 
-			if (!empty($available_from)) {
-				$product_entity->available_from = new \DateTime($available_from);
-			} else {
-				$product_entity->available_from = null;
-			}
+		if (!empty($available_from)) {
+			$product_entity->available_from = new \DateTime($available_from);
+		} else {
+			$product_entity->available_from = null;
+		}
 
-			if (!empty($available_to)) {
-				$product_entity->available_to = new \DateTime($available_to);
-			} else {
-				$product_entity->available_to = null;
-			}
+		if (!empty($available_to)) {
+			$product_entity->available_to = new \DateTime($available_to);
+		} else {
+			$product_entity->available_to = null;
+		}
 
-			$currency_repository = new CurrencyRepository();
-			if (empty($currency_id))
+		$currency_repository = new CurrencyRepository();
+		if (empty($currency_id))
+		{
+			$addon                 = $payment_repository->getAddon();
+			$payment_configuration = $addon->getParams();
+
+			if (!empty($payment_configuration['currency_id']))
 			{
-				$addon                 = $payment_repository->getAddon();
-				$payment_configuration = $addon->getParams();
-
-				if (!empty($payment_configuration['currency_id']))
-				{
-					$product_entity->currency = $currency_repository->getCurrencyById($payment_configuration['currency_id']);
-				}
-			} else {
-				$product_entity->currency = $currency_repository->getCurrencyById($currency_id);
+				$product_entity->currency = $currency_repository->getCurrencyById($payment_configuration['currency_id']);
 			}
+		} else {
+			$product_entity->currency = $currency_repository->getCurrencyById($currency_id);
+		}
 
-			if (!empty($category_id)) {
-				$product_category_repository = new ProductCategoryRepository();
-				$product_entity->category = $product_category_repository->getProductCategoryById($category_id);
-			}
+		if (!empty($category_id)) {
+			$product_category_repository = new ProductCategoryRepository();
+			$product_entity->category = $product_category_repository->getProductCategoryById($category_id);
+		}
 
-			$product_entity->setCampaigns($campaigns);
+		$product_entity->setCampaigns($campaigns);
 
-			$product_repository = new ProductRepository();
-			$flushed = $product_repository->flush($product_entity);
+		$product_repository = new ProductRepository();
+		$flushed = $product_repository->flush($product_entity);
 
-			if ($flushed) {
-				$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCT_SAVED'), 'status' => true];
-			} else {
-				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PRODUCT_NOT_SAVED'), 'status' => false];
-			}
+		if ($flushed) {
+			$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCT_SAVED'), 'status' => true];
+		} else {
+			$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PRODUCT_NOT_SAVED'), 'status' => false];
 		}
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function getDiscountById()
 	{
 		$this->checkToken('get');
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id)) {
-			$id = $this->input->get('id', 0);
+		$id = $this->input->get('id', 0);
 
-			$discount_repository = new DiscountRepository();
-			$discount_entity = $discount_repository->getDiscountById($id);
+		$discount_repository = new DiscountRepository();
+		$discount_entity = $discount_repository->getDiscountById($id);
 
-			if (!empty($discount_entity)) {
-				$discount = $discount_entity->serialize();
-				$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $discount];
-			} else {
-				$response = ['code' => 404, 'message' => Text::_('COM_EMUNDUS_DISCOUNT_NOT_FOUND'), 'status' => false];
-			}
+		if (!empty($discount_entity)) {
+			$discount = $discount_entity->serialize();
+			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $discount];
+		} else {
+			$response = ['code' => 404, 'message' => Text::_('COM_EMUNDUS_DISCOUNT_NOT_FOUND'), 'status' => false];
 		}
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function saveDiscount()
 	{
 		$this->checkToken();
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id)) {
-			$id = $this->input->getInt('id', 0);
-			$label = $this->input->getString('label', '');
-			$description = $this->input->getString('description', '');
-			$value = $this->input->getFloat('value', 0);
-			$type = $this->input->getString('type', '');
-			$currency_id = $this->input->getInt('currency_id', '');
-			$available_from = $this->input->getString('available_from', '');
-			$available_to = $this->input->getString('available_to', '');
-			$quantity = $this->input->getInt('quantity', 0);
-			$published = $this->input->getInt('published', 1);
+		$id = $this->input->getInt('id', 0);
+		$label = $this->input->getString('label', '');
+		$description = $this->input->getString('description', '');
+		$value = $this->input->getFloat('value', 0);
+		$type = $this->input->getString('type', '');
+		$currency_id = $this->input->getInt('currency_id', '');
+		$available_from = $this->input->getString('available_from', '');
+		$available_to = $this->input->getString('available_to', '');
+		$quantity = $this->input->getInt('quantity', 0);
+		$published = $this->input->getInt('published', 1);
 
-			$discount_entity = new DiscountEntity();
-			$discount_entity->setId($id);
-			$discount_entity->setLabel($label);
-			$discount_entity->setDescription($description);
-			$discount_entity->setValue($value);
-			$discount_entity->setType($type);
-			$discount_entity->setPublished($published);
-			$discount_entity->setQuantity($quantity);
-			$discount_entity->setAvailableFrom(!empty($available_from) ? new \DateTime($available_from) : null);
-			$discount_entity->setAvailableTo(!empty($available_to) ? new \DateTime($available_to) : null);
+		$discount_entity = new DiscountEntity();
+		$discount_entity->setId($id);
+		$discount_entity->setLabel($label);
+		$discount_entity->setDescription($description);
+		$discount_entity->setValue($value);
+		$discount_entity->setType($type);
+		$discount_entity->setPublished($published);
+		$discount_entity->setQuantity($quantity);
+		$discount_entity->setAvailableFrom(!empty($available_from) ? new \DateTime($available_from) : null);
+		$discount_entity->setAvailableTo(!empty($available_to) ? new \DateTime($available_to) : null);
 
-			if (!empty($currency_id)) {
-				$currency_repository = new CurrencyRepository();
-				$currency = $currency_repository->getCurrencyById($currency_id);
+		if (!empty($currency_id)) {
+			$currency_repository = new CurrencyRepository();
+			$currency = $currency_repository->getCurrencyById($currency_id);
 
-				if (!empty($currency)) {
-					$discount_entity->setCurrency($currency);
-				}
+			if (!empty($currency)) {
+				$discount_entity->setCurrency($currency);
 			}
+		}
 
-			try {
-				$discount_repository = new DiscountRepository();
-				$saved = $discount_repository->flush($discount_entity);
+		try {
+			$discount_repository = new DiscountRepository();
+			$saved = $discount_repository->flush($discount_entity);
 
-				if ($saved) {
-					$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_DISCOUNT_SAVED'), 'status' => true];
-				} else {
-					$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_DISCOUNT_NOT_SAVED'), 'status' => false];
-				}
-			} catch (\Exception $e) {
-				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_DISCOUNT_NOT_SAVED') . ': ' . $e->getMessage(), 'status' => false];
+			if ($saved) {
+				$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_DISCOUNT_SAVED'), 'status' => true];
+			} else {
+				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_DISCOUNT_NOT_SAVED'), 'status' => false];
 			}
+		} catch (\Exception $e) {
+			$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_DISCOUNT_NOT_SAVED') . ': ' . $e->getMessage(), 'status' => false];
 		}
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function getCurrencies()
 	{
 		$this->checkToken('get');
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id)) {
-			$currency_repository = new CurrencyRepository();
-			$currencies = $currency_repository->getCurrencies(1000);
+		$currency_repository = new CurrencyRepository();
+		$currencies = $currency_repository->getCurrencies(1000);
 
-			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $currencies];
-		}
+		$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $currencies];
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function getPaymentMethods()
 	{
 		$this->checkToken('get');
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id)) {
-			$payment_repository = new PaymentRepository();
-			$payment_methods = $payment_repository->getPaymentMethods();
+		$payment_repository = new PaymentRepository();
+		$payment_methods = $payment_repository->getPaymentMethods();
 
-			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => array_map(function ($payment_method) {
-				return $payment_method->serialize();
-			}, $payment_methods)];
-		}
+		$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => array_map(function ($payment_method) {
+			return $payment_method->serialize();
+		}, $payment_methods)];
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function getPaymentServices()
 	{
 		$this->checkToken('get');
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id)) {
-			$payment_repository = new PaymentRepository();
-			$payment_services = $payment_repository->getPaymentServices();
+		$payment_repository = new PaymentRepository();
+		$payment_services = $payment_repository->getPaymentServices();
 
-			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $payment_services];
-		}
+		$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $payment_services];
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function savePaymentStepRules()
 	{
 		$this->checkToken();
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
-		{
-			$step_id = $this->input->getInt('id', 0);
+		$step_id = $this->input->getInt('id', 0);
 
-			if (!empty($step_id)) {
-				try {
-					$adjust_balance = $this->input->getInt('adjustBalance', 0);
-					if ($adjust_balance == 0) {
-						$adjust_balance_step_id = 0;
-					} else {
-						$adjust_balance_step_id = $this->input->getInt('adjustBalanceStepId', 0);
+		if (!empty($step_id)) {
+			try {
+				$adjust_balance = $this->input->getInt('adjustBalance', 0);
+				if ($adjust_balance == 0) {
+					$adjust_balance_step_id = 0;
+				} else {
+					$adjust_balance_step_id = $this->input->getInt('adjustBalanceStepId', 0);
 
-						if (empty($adjust_balance_step_id)) {
-							throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_STEP_ADJUST_BALANCE_STEP_ID_REQUIRED'));
-						}
+					if (empty($adjust_balance_step_id)) {
+						throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_STEP_ADJUST_BALANCE_STEP_ID_REQUIRED'));
 					}
-
-					$mandatory_products = $this->input->getString('mandatoryProducts', '');
-					$mandatory_products = !empty($mandatory_products) ? explode(',', $mandatory_products) : [];
-					$optional_products = $this->input->getString('optionalProducts', '');
-					$optional_products = !empty($optional_products) ? explode(',', $optional_products) : [];
-					$payment_methods = $this->input->getString('paymentMethods', '');
-					$payment_methods = !empty($payment_methods) ? explode(',', $payment_methods) : [];
-					$synchronizer_id = $this->input->getInt('synchronizerId', 0);
-					$mandatory_categories = $this->input->getString('mandatoryProductCategories', '');
-					$mandatory_categories = !empty($mandatory_categories) ? explode(',', $mandatory_categories) : [];
-					$optional_categories = $this->input->getString('optionalProductCategories', '');
-					$optional_categories = !empty($optional_categories) ? explode(',', $optional_categories) : [];
-
-					if (empty($synchronizer_id)) {
-						throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_STEP_SYNCHRONIZER_ID_REQUIRED'));
-					}
-
-					$advance_type = $this->input->getInt('advanceType', 0);
-					$advance_amount_editable = $this->input->getInt('advanceAmountEditableByApplicant', 0);
-					$advance_amount = $this->input->getFloat('advanceAmount', 0);
-					$advance_amount_type = $this->input->getString('advanceAmountType', 'fixed');
-					$installment_rules = $this->input->getString('installmentRules', '');
-					$installment_rules = !empty($installment_rules) ? json_decode($installment_rules) : [];
-					$installment_monthday = $this->input->getInt('installmentMonthday', 0);
-					$installment_effect_date = $this->input->getString('installmentEffectDate', '');
-					$description = $this->input->getRaw('description', '');
-
-					$payment_repository = new PaymentRepository();
-					$payment_step_entity = $payment_repository->getPaymentStepById($step_id);
-					$payment_step_entity->setDescription($description);
-					$payment_step_entity->setAdjustBalance($adjust_balance);
-					$payment_step_entity->setAdjustBalanceStepId($adjust_balance_step_id);
-					$payment_step_entity->setAdvanceType($advance_type);
-					$payment_step_entity->setIsAdvanceAmountEditableByApplicant($advance_amount_editable);
-					$payment_step_entity->setAdvanceAmount($advance_amount);
-					$payment_step_entity->setAdvanceAmountType(DiscountType::getInstance($advance_amount_type));
-					$payment_step_entity->setInstallmentMonthday($installment_monthday);
-					if (!empty($installment_effect_date)) {
-						$payment_step_entity->setInstallmentEffectDate($installment_effect_date);
-					} else {
-						$payment_step_entity->setInstallmentEffectDate(null);
-					}
-
-					$products = [];
-					$product_repository = new ProductRepository();
-					if (!empty($mandatory_products)) {
-						foreach ($mandatory_products as $product) {
-							$product_entity = $product_repository->getProductById($product);
-							$product_entity->setMandatory(1);
-							$products[] = $product_entity;
-						}
-					}
-					if (!empty($optional_products)) {
-						foreach ($optional_products as $product) {
-							$product_entity = $product_repository->getProductById($product);
-							$product_entity->setMandatory(0);
-							$products[] = $product_entity;
-						}
-					}
-					$payment_step_entity->setProducts($products);
-
-					if (!empty($mandatory_categories))
-					{
-						$product_category_repository = new ProductCategoryRepository();
-						$mandatory_categories = $product_category_repository->getProductCategories(['id' => $mandatory_categories]);
-					}
-					$payment_step_entity->setMandatoryProductCategories($mandatory_categories);
-
-					if (!empty($optional_categories))
-					{
-						$product_category_repository = new ProductCategoryRepository();
-						$optional_categories = $product_category_repository->getProductCategories(['id' => $optional_categories]);
-					}
-					$payment_step_entity->setOptionalProductCategories($optional_categories);
-
-					$payment_method_entities = [];
-					foreach($payment_methods as $payment_method_id)
-					{
-						$payment_method_entities[] = new PaymentMethodEntity($payment_method_id);
-					}
-					$payment_step_entity->setPaymentMethods($payment_method_entities);
-
-					$found_service = false;
-					$services = $payment_repository->getPaymentServices();
-					foreach($services as $service)
-					{
-						if ($service->id == $synchronizer_id) {
-							$found_service = true;
-							break;
-						}
-					}
-					if (!$found_service)
-					{
-						throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_STEP_SYNCHRONIZER_NOT_FOUND'));
-					}
-
-					$payment_step_entity->setSynchronizerId($synchronizer_id);
-					$payment_step_entity->setInstallmentRules($installment_rules);
-
-					$saved = $payment_repository->flushPaymentStep($payment_step_entity);
-					if ($saved) {
-						$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PAYMENT_STEP_SAVED'), 'status' => true];
-					} else {
-						$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PAYMENT_STEP_NOT_SAVED'), 'status' => false];
-					}
-				} catch (\Exception $e) {
-					$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PAYMENT_STEP_NOT_SAVED') . ': ' . $e->getMessage(), 'status' => false];
 				}
+
+				$mandatory_products = $this->input->getString('mandatoryProducts', '');
+				$mandatory_products = !empty($mandatory_products) ? explode(',', $mandatory_products) : [];
+				$optional_products = $this->input->getString('optionalProducts', '');
+				$optional_products = !empty($optional_products) ? explode(',', $optional_products) : [];
+				$payment_methods = $this->input->getString('paymentMethods', '');
+				$payment_methods = !empty($payment_methods) ? explode(',', $payment_methods) : [];
+				$synchronizer_id = $this->input->getInt('synchronizerId', 0);
+				$mandatory_categories = $this->input->getString('mandatoryProductCategories', '');
+				$mandatory_categories = !empty($mandatory_categories) ? explode(',', $mandatory_categories) : [];
+				$optional_categories = $this->input->getString('optionalProductCategories', '');
+				$optional_categories = !empty($optional_categories) ? explode(',', $optional_categories) : [];
+
+				if (empty($synchronizer_id)) {
+					throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_STEP_SYNCHRONIZER_ID_REQUIRED'));
+				}
+
+				$advance_type = $this->input->getInt('advanceType', 0);
+				$advance_amount_editable = $this->input->getInt('advanceAmountEditableByApplicant', 0);
+				$advance_amount = $this->input->getFloat('advanceAmount', 0);
+				$advance_amount_type = $this->input->getString('advanceAmountType', 'fixed');
+				$installment_rules = $this->input->getString('installmentRules', '');
+				$installment_rules = !empty($installment_rules) ? json_decode($installment_rules) : [];
+				$installment_monthday = $this->input->getInt('installmentMonthday', 0);
+				$installment_effect_date = $this->input->getString('installmentEffectDate', '');
+				$description = $this->input->getRaw('description', '');
+
+				$payment_repository = new PaymentRepository();
+				$payment_step_entity = $payment_repository->getPaymentStepById($step_id);
+				$payment_step_entity->setDescription($description);
+				$payment_step_entity->setAdjustBalance($adjust_balance);
+				$payment_step_entity->setAdjustBalanceStepId($adjust_balance_step_id);
+				$payment_step_entity->setAdvanceType($advance_type);
+				$payment_step_entity->setIsAdvanceAmountEditableByApplicant($advance_amount_editable);
+				$payment_step_entity->setAdvanceAmount($advance_amount);
+				$payment_step_entity->setAdvanceAmountType(DiscountType::getInstance($advance_amount_type));
+				$payment_step_entity->setInstallmentMonthday($installment_monthday);
+				if (!empty($installment_effect_date)) {
+					$payment_step_entity->setInstallmentEffectDate($installment_effect_date);
+				} else {
+					$payment_step_entity->setInstallmentEffectDate(null);
+				}
+
+				$products = [];
+				$product_repository = new ProductRepository();
+				if (!empty($mandatory_products)) {
+					foreach ($mandatory_products as $product) {
+						$product_entity = $product_repository->getProductById($product);
+						$product_entity->setMandatory(1);
+						$products[] = $product_entity;
+					}
+				}
+				if (!empty($optional_products)) {
+					foreach ($optional_products as $product) {
+						$product_entity = $product_repository->getProductById($product);
+						$product_entity->setMandatory(0);
+						$products[] = $product_entity;
+					}
+				}
+				$payment_step_entity->setProducts($products);
+
+				if (!empty($mandatory_categories))
+				{
+					$product_category_repository = new ProductCategoryRepository();
+					$mandatory_categories = $product_category_repository->getProductCategories(['id' => $mandatory_categories]);
+				}
+				$payment_step_entity->setMandatoryProductCategories($mandatory_categories);
+
+				if (!empty($optional_categories))
+				{
+					$product_category_repository = new ProductCategoryRepository();
+					$optional_categories = $product_category_repository->getProductCategories(['id' => $optional_categories]);
+				}
+				$payment_step_entity->setOptionalProductCategories($optional_categories);
+
+				$payment_method_entities = [];
+				foreach($payment_methods as $payment_method_id)
+				{
+					$payment_method_entities[] = new PaymentMethodEntity($payment_method_id);
+				}
+				$payment_step_entity->setPaymentMethods($payment_method_entities);
+
+				$found_service = false;
+				$services = $payment_repository->getPaymentServices();
+				foreach($services as $service)
+				{
+					if ($service->id == $synchronizer_id) {
+						$found_service = true;
+						break;
+					}
+				}
+				if (!$found_service)
+				{
+					throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_STEP_SYNCHRONIZER_NOT_FOUND'));
+				}
+
+				$payment_step_entity->setSynchronizerId($synchronizer_id);
+				$payment_step_entity->setInstallmentRules($installment_rules);
+
+				$saved = $payment_repository->flushPaymentStep($payment_step_entity);
+				if ($saved) {
+					$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PAYMENT_STEP_SAVED'), 'status' => true];
+				} else {
+					$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PAYMENT_STEP_NOT_SAVED'), 'status' => false];
+				}
+			} catch (\Exception $e) {
+				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PAYMENT_STEP_NOT_SAVED') . ': ' . $e->getMessage(), 'status' => false];
 			}
 		}
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function deleteproduct()
 	{
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
+		$id = $this->app->input->getInt('id', 0);
+		$ids = $this->app->input->getString('ids', '');
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
-		{
-			$id = $this->app->input->getInt('id', 0);
-			$ids = $this->app->input->getString('ids', '');
+		if (!empty($id)) {
+			$product_repository = new ProductRepository();
+			$deleted = $product_repository->delete($id);
 
-			if (!empty($id)) {
-				$product_repository = new ProductRepository();
-				$deleted = $product_repository->delete($id);
-
-				if ($deleted) {
-					$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCT_DELETED'), 'status' => true];
-				} else {
-					$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PRODUCT_NOT_DELETED'), 'status' => false];
-				}
+			if ($deleted) {
+				$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCT_DELETED'), 'status' => true];
+			} else {
+				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PRODUCT_NOT_DELETED'), 'status' => false];
 			}
-			else if (!empty($ids))
-			{
-				$ids = explode(',', $ids);
-				$product_repository = new ProductRepository();
+		}
+		else if (!empty($ids))
+		{
+			$ids = explode(',', $ids);
+			$product_repository = new ProductRepository();
 
-				$deleted = [];
-				foreach ($ids as $id) {
-					$deleted[] = $product_repository->delete($id);
-				}
+			$deleted = [];
+			foreach ($ids as $id) {
+				$deleted[] = $product_repository->delete($id);
+			}
 
-				if (!in_array(false, $deleted)) {
-					$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCT_DELETED'), 'status' => true];
-				} else {
-					$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PRODUCT_NOT_DELETED'), 'status' => false];
-				}
+			if (!in_array(false, $deleted)) {
+				$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCT_DELETED'), 'status' => true];
+			} else {
+				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PRODUCT_NOT_DELETED'), 'status' => false];
 			}
 		}
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function duplicateproduct(): void
 	{
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
+		$id = $this->app->input->getInt('id', 0);
+		if (!empty($id))
 		{
-			$id = $this->app->input->getInt('id', 0);
-			if (!empty($id))
-			{
-				$product_repository = new ProductRepository();
-				$product = $product_repository->getProductById($id);
+			$product_repository = new ProductRepository();
+			$product = $product_repository->getProductById($id);
 
-				if (!empty($product)) {
-					$product->setId(0);
+			if (!empty($product)) {
+				$product->setId(0);
 
-					if ($product_repository->flush($product)) {
-						$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCT_DUPLICATED'), 'status' => true];
-					} else {
-						$response = ['code' => 250, 'message' => Text::_('COM_EMUNDUS_PRODUCT_NOT_DUPLICATED'), 'status' => true];
-					}
+				if ($product_repository->flush($product)) {
+					$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCT_DUPLICATED'), 'status' => true];
+				} else {
+					$response = ['code' => 250, 'message' => Text::_('COM_EMUNDUS_PRODUCT_NOT_DUPLICATED'), 'status' => true];
 				}
 			}
 		}
@@ -986,23 +949,19 @@ class EmundusControllerPayment extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function deletediscount()
 	{
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
+		$discount_id = $this->input->getInt('id', 0);
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
-		{
-			$discount_id = $this->input->getInt('id', 0);
+		if (!empty($discount_id)) {
+			$discount_repository = new DiscountRepository();
+			$deleted = $discount_repository->delete($discount_id);
 
-			if (!empty($discount_id)) {
-				$discount_repository = new DiscountRepository();
-				$deleted = $discount_repository->delete($discount_id);
-
-				if ($deleted) {
-					$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_DISCOUNT_DELETED'), 'status' => true];
-				} else {
-					$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_DISCOUNT_NOT_DELETED'), 'status' => false];
-				}
+			if ($deleted) {
+				$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_DISCOUNT_DELETED'), 'status' => true];
+			} else {
+				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_DISCOUNT_NOT_DELETED'), 'status' => false];
 			}
 		}
 
@@ -1368,67 +1327,58 @@ class EmundusControllerPayment extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function getProductCategoryById()
 	{
 		$this->checkToken('get');
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
-		{
-			$id = $this->input->getInt('id', 0);
+		$id = $this->input->getInt('id', 0);
 
-			if (!empty($id)) {
-				try {
-					$product_category_repository = new ProductCategoryRepository();
-					$product_category_entity = $product_category_repository->getProductCategoryById($id);
-					$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $product_category_entity->serialize()];
-				} catch (Exception $e) {
-					$response = ['code' => 404, 'message' => Text::_('COM_EMUNDUS_PRODUCT_CATEGORY_NOT_FOUND'), 'status' => false];
-				}
+		if (!empty($id)) {
+			try {
+				$product_category_repository = new ProductCategoryRepository();
+				$product_category_entity = $product_category_repository->getProductCategoryById($id);
+				$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $product_category_entity->serialize()];
+			} catch (Exception $e) {
+				$response = ['code' => 404, 'message' => Text::_('COM_EMUNDUS_PRODUCT_CATEGORY_NOT_FOUND'), 'status' => false];
 			}
 		}
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PAYMENT, 'mode' => CrudEnum::READ]])]
 	public function getProductCategories()
 	{
 		$this->checkToken('get');
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
-		{
-			$product_category_repository = new ProductCategoryRepository();
-			$product_categories = $product_category_repository->getProductCategories();
+		$product_category_repository = new ProductCategoryRepository();
+		$product_categories = $product_category_repository->getProductCategories();
 
-			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => array_map(function ($category) {
-				return $category->serialize();
-			}, $product_categories)];
-		}
+		$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => array_map(function ($category) {
+			return $category->serialize();
+		}, $product_categories)];
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function saveProductCategory()
 	{
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
+		$id = $this->input->getInt('id', 0);
+		$label = $this->input->getString('label', '');
+		$published = $this->input->getInt('published', 1);
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
+		$product_category_entity = new ProductCategoryEntity($id, $label, $published);
+		$product_category_repository = new ProductCategoryRepository();
+		if ($product_category_repository->flush($product_category_entity))
 		{
-			$id = $this->input->getInt('id', 0);
-			$label = $this->input->getString('label', '');
-			$published = $this->input->getInt('published', 1);
-
-			$product_category_entity = new ProductCategoryEntity($id, $label, $published);
-			$product_category_repository = new ProductCategoryRepository();
-			if ($product_category_repository->flush($product_category_entity))
-			{
-				$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCT_CATEGORY_SAVED'), 'status' => true];
-			}
-			else
-			{
-				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PRODUCT_CATEGORY_NOT_SAVED'), 'status' => false];
-			}
+			$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCT_CATEGORY_SAVED'), 'status' => true];
+		}
+		else
+		{
+			$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PRODUCT_CATEGORY_NOT_SAVED'), 'status' => false];
 		}
 
 		$this->sendJsonResponse($response);
@@ -1681,134 +1631,125 @@ class EmundusControllerPayment extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PAYMENT, 'mode' => CrudEnum::READ]])]
 	public function getproductoptions(): void
 	{
 		$this->checkToken('get');
-		$response = ['code' => 403, 'status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
 
-		if (EmundusHelperAccess::asAccessAction(ActionEnum::PAYMENT->value, CrudEnum::READ->value, $this->app->getIdentity()->id)) {
-			$products = (new ProductRepository())->getProducts(0);
-			$response['data']   = array_map(
-				static fn(ProductEntity $product) => [
-					'value' => $product->getId(),
-					'label' => $product->getLabel(),
-				],
-				$products
-			);
-			$response['status'] = true;
-			$response['code']   = 200;
-			$response['msg']    = '';
-		}
+		$products = (new ProductRepository())->getProducts(0);
+		$response['data']   = array_map(
+			static fn(ProductEntity $product) => [
+				'value' => $product->getId(),
+				'label' => $product->getLabel(),
+			],
+			$products
+		);
+		$response['status'] = true;
+		$response['code']   = 200;
+		$response['msg']    = '';
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function getTransationsQueueHistory()
 	{
 		//$this->checkToken('get');
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
-		{
-			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => []];
-			$synchronizer_id = $this->input->getInt('synchronizer_id', 0);
-			$limit = $this->input->getInt('lim', 0);
-			$page = $this->input->getInt('page', 1);
+		$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => []];
+		$synchronizer_id = $this->input->getInt('synchronizer_id', 0);
+		$limit = $this->input->getInt('lim', 0);
+		$page = $this->input->getInt('page', 1);
 
-			$transaction_repository = new TransactionRepository();
-			$count = $transaction_repository->getTransactionsInQueue(['pending', 'updated'], [], [$synchronizer_id], 0, $page);
-			$transactions = $transaction_repository->getTransactionsInQueue(['pending', 'updated'], [], [$synchronizer_id], $limit, $page);
+		$transaction_repository = new TransactionRepository();
+		$count = $transaction_repository->getTransactionsInQueue(['pending', 'updated'], [], [$synchronizer_id], 0, $page);
+		$transactions = $transaction_repository->getTransactionsInQueue(['pending', 'updated'], [], [$synchronizer_id], $limit, $page);
 
-			if (!class_exists('EmundusHelperDate')) {
-				require_once(JPATH_ROOT . '/components/com_emundus/helpers/date.php');
-			}
-
-			$response['data'] = [
-				'count' => $count,
-				'datas' => array_map(function ($transaction) {
-					$json_data = json_decode($transaction->data, true);
-					$transaction->data = $json_data;
-
-					$transaction->additional_columns = [
-						[
-							'key' => Text::_('COM_EMUNDUS_SOGECOMMERCE_HISTORY_TRANSACTION_ID'),
-							'value' => $transaction->id,
-							'classes' => '',
-							'display' => 'all'
-						],
-						[
-							'key' => Text::_('COM_EMUNDUS_SOGECOMMERCE_HISTORY_TRANSACTION_CREATED_AT'),
-							'value' => EmundusHelperDate::displayDate($transaction->created_at, 'DATE_FORMAT_LC2', 0),
-							'classes' => '',
-							'display' => 'all'
-						],
-						[
-							'key' => Text::_('COM_EMUNDUS_SOGECOMMERCE_HISTORY_STATUS'),
-							'value' => $json_data['vads_trans_status'],
-							'classes' => '',
-							'display' => 'all'
-						],
-					];
-
-					return $transaction;
-				}, $transactions)
-			];
+		if (!class_exists('EmundusHelperDate')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/date.php');
 		}
+
+		$response['data'] = [
+			'count' => $count,
+			'datas' => array_map(function ($transaction) {
+				$json_data = json_decode($transaction->data, true);
+				$transaction->data = $json_data;
+
+				$transaction->additional_columns = [
+					[
+						'key' => Text::_('COM_EMUNDUS_SOGECOMMERCE_HISTORY_TRANSACTION_ID'),
+						'value' => $transaction->id,
+						'classes' => '',
+						'display' => 'all'
+					],
+					[
+						'key' => Text::_('COM_EMUNDUS_SOGECOMMERCE_HISTORY_TRANSACTION_CREATED_AT'),
+						'value' => EmundusHelperDate::displayDate($transaction->created_at, 'DATE_FORMAT_LC2', 0),
+						'classes' => '',
+						'display' => 'all'
+					],
+					[
+						'key' => Text::_('COM_EMUNDUS_SOGECOMMERCE_HISTORY_STATUS'),
+						'value' => $json_data['vads_trans_status'],
+						'classes' => '',
+						'display' => 'all'
+					],
+				];
+
+				return $transaction;
+			}, $transactions)
+		];
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PAYMENT, 'mode' => CrudEnum::UPDATE]])]
 	public function confirmtransaction()
 	{
 		$this->checkToken();
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asAccessAction($this->payment_repository->getActionId(), 'u', $this->app->getIdentity()->id)) {
-			$transaction_repository = new TransactionRepository();
-			$transaction_id = $this->input->getInt('id', 0);
-			$transaction = $transaction_repository->getById($transaction_id);
-			$transaction->setStatus(TransactionStatus::CONFIRMED);
+		$transaction_repository = new TransactionRepository();
+		$transaction_id = $this->input->getInt('id', 0);
+		$transaction = $transaction_repository->getById($transaction_id);
+		$transaction->setStatus(TransactionStatus::CONFIRMED);
 
-			try {
-				$saved = $transaction_repository->saveTransaction($transaction, $this->app->getIdentity()->id);
-			} catch (Exception $e) {
-				Log::add('Error while confirm transaction: ' . $e->getMessage(), Log::ERROR, 'com_emundus.payment');
-				$saved = false;
-			}
+		try {
+			$saved = $transaction_repository->saveTransaction($transaction, $this->app->getIdentity()->id);
+		} catch (Exception $e) {
+			Log::add('Error while confirm transaction: ' . $e->getMessage(), Log::ERROR, 'com_emundus.payment');
+			$saved = false;
+		}
 
-			if ($saved) {
-				$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_TRANSACTION_CONFIRMED'), 'status' => true];
-			} else {
-				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_TRANSACTION_NOT_CONFIRMED'), 'status' => false];
-			}
+		if ($saved) {
+			$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_TRANSACTION_CONFIRMED'), 'status' => true];
+		} else {
+			$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_TRANSACTION_NOT_CONFIRMED'), 'status' => false];
 		}
 
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PAYMENT, 'mode' => CrudEnum::UPDATE]])]
 	public function canceltransaction()
 	{
 		$this->checkToken();
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asAccessAction($this->payment_repository->getActionId(), 'u', $this->app->getIdentity()->id)) {
-			$transaction_repository = new TransactionRepository();
-			$transaction_id = $this->input->getInt('id', 0);
-			$transaction = $transaction_repository->getById($transaction_id);
-			$transaction->setStatus(TransactionStatus::CANCELLED);
+		$transaction_repository = new TransactionRepository();
+		$transaction_id = $this->input->getInt('id', 0);
+		$transaction = $transaction_repository->getById($transaction_id);
+		$transaction->setStatus(TransactionStatus::CANCELLED);
 
-			try {
-				$saved = $transaction_repository->saveTransaction($transaction, $this->app->getIdentity()->id);
-			} catch (Exception $e) {
-				Log::add('Error while cancelling transaction: ' . $e->getMessage(), Log::ERROR, 'com_emundus.payment');
-				$saved = false;
-			}
+		try {
+			$saved = $transaction_repository->saveTransaction($transaction, $this->app->getIdentity()->id);
+		} catch (Exception $e) {
+			Log::add('Error while cancelling transaction: ' . $e->getMessage(), Log::ERROR, 'com_emundus.payment');
+			$saved = false;
+		}
 
-			if ($saved) {
-				$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_TRANSACTION_CONFIRMED'), 'status' => true];
-			} else {
-				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_TRANSACTION_NOT_CONFIRMED'), 'status' => false];
-			}
+		if ($saved) {
+			$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_TRANSACTION_CONFIRMED'), 'status' => true];
+		} else {
+			$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_TRANSACTION_NOT_CONFIRMED'), 'status' => false];
 		}
 
 		$this->sendJsonResponse($response);
@@ -1863,79 +1804,75 @@ class EmundusControllerPayment extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PAYMENT, 'mode' => CrudEnum::UPDATE]])]
 	public function alterFilesProducts(): void
 	{
-		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
+		$fnums = $this->input->getString('fnums', '');
+		$fnums = explode(',', $fnums);
+		$product_ids = $this->input->getString('product_ids', '');
+		$product_ids = explode(',', $product_ids);
+		$addOrRemove = $this->input->getString('action', 'add');
 
-		if (EmundusHelperAccess::asAccessAction($this->payment_repository->getActionId(), 'u', $this->app->getIdentity()->id))
-		{
-			$fnums = $this->input->getString('fnums', '');
-			$fnums = explode(',', $fnums);
-			$product_ids = $this->input->getString('product_ids', '');
-			$product_ids = explode(',', $product_ids);
-			$addOrRemove = $this->input->getString('action', 'add');
+		if (!in_array($addOrRemove, ['add', 'remove'])) {
+			$addOrRemove = 'add';
+		}
 
-			if (!in_array($addOrRemove, ['add', 'remove'])) {
-				$addOrRemove = 'add';
+		if (!empty($fnums) && !empty($product_ids)) {
+			$cart_repository = new CartRepository();
+			$product_repository = new ProductRepository();
+
+			if(!class_exists('EmundusModelWorkflow'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 			}
+			$workflowModel = new EmundusModelWorkflow();
 
-			if (!empty($fnums) && !empty($product_ids)) {
-				$cart_repository = new CartRepository();
-				$product_repository = new ProductRepository();
+			$notAddedToFiles = [];
+			foreach ($fnums as $fnum) {
+				$step = $workflowModel->getPaymentStepFromFnum($fnum);
 
-				if(!class_exists('EmundusModelWorkflow'))
-				{
-					require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
-				}
-				$workflowModel = new EmundusModelWorkflow();
+				if (!empty($step)) {
+					$cart = $cart_repository->getCartByFnum($fnum, $step->id);
 
-				$notAddedToFiles = [];
-				foreach ($fnums as $fnum) {
-					$step = $workflowModel->getPaymentStepFromFnum($fnum);
+					if (!empty($cart)) {
+						foreach ($product_ids as $product_id) {
+							$product = $product_repository->getProductById((int)$product_id);
 
-					if (!empty($step)) {
-						$cart = $cart_repository->getCartByFnum($fnum, $step->id);
-
-						if (!empty($cart)) {
-							foreach ($product_ids as $product_id) {
-								$product = $product_repository->getProductById((int)$product_id);
-
-								if (!empty($product))
-								{
-									switch($addOrRemove)
-									{
-										case 'add':
-											$cart->addProduct($product);
-											break;
-										case 'remove':
-											$cart->removeProduct($product);
-											break;
-									}
-								} else {
-									$notAddedToFiles[] = $fnum;
-								}
-							}
-
-							if (!$cart_repository->saveCart($cart))
+							if (!empty($product))
 							{
+								switch($addOrRemove)
+								{
+									case 'add':
+										$cart->addProduct($product);
+										break;
+									case 'remove':
+										$cart->removeProduct($product);
+										break;
+								}
+							} else {
 								$notAddedToFiles[] = $fnum;
 							}
-						} else {
+						}
+
+						if (!$cart_repository->saveCart($cart))
+						{
 							$notAddedToFiles[] = $fnum;
 						}
 					} else {
 						$notAddedToFiles[] = $fnum;
 					}
-				}
-
-				if (empty($notAddedToFiles)) {
-					$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCTS_ADDED_TO_FILES'), 'status' => true];
 				} else {
-					$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PRODUCTS_NOT_ADDED_TO_FILES') . ': ' . implode(', ', $notAddedToFiles), 'status' => false];
+					$notAddedToFiles[] = $fnum;
 				}
-			} else {
-				$response = ['code' => 400, 'message' => Text::_('COM_EMUNDUS_INVALID_INPUT'), 'status' => false];
 			}
+
+			if (empty($notAddedToFiles)) {
+				$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCTS_ADDED_TO_FILES'), 'status' => true];
+			} else {
+				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PRODUCTS_NOT_ADDED_TO_FILES') . ': ' . implode(', ', $notAddedToFiles), 'status' => false];
+			}
+		} else {
+			$response = ['code' => 400, 'message' => Text::_('COM_EMUNDUS_INVALID_INPUT'), 'status' => false];
 		}
 
 		$this->sendJsonResponse($response);

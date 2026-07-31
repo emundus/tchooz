@@ -13,6 +13,7 @@ use EmundusModelLogs;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
@@ -20,6 +21,7 @@ use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\ApplicationFile\TagsRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Traits\TraitDispatcher;
 
@@ -27,8 +29,86 @@ class ApplicationFileService
 {
 	use TraitDispatcher;
 
+	/**
+	 * @var int[]|null
+	 */
+	private ?array $existingTagIds = null;
+
 	public function __construct(private readonly UploadRepository $uploadRepository = new UploadRepository())
 	{}
+
+	/**
+	 * Associates existing tags to a file. Unknown ids are logged and skipped.
+	 *
+	 * @param   int[]  $tagIds
+	 *
+	 * @return int[] the ids actually associated
+	 * @throws \Exception
+	 */
+	public function assignTags(string $fnum, array $tagIds, int $userId = 0): array
+	{
+		if (empty($fnum) || empty($tagIds))
+		{
+			return [];
+		}
+
+		if (empty($userId))
+		{
+			$userId = Factory::getApplication()->getIdentity()->id;
+		}
+
+		$validIds = [];
+		foreach ($tagIds as $tagId)
+		{
+			if (empty($tagId))
+			{
+				continue;
+			}
+
+			if (!in_array($tagId, $this->getExistingTagIds(), true))
+			{
+				Log::add('Tag id ' . $tagId . ' ignored for file ' . $fnum . ': unknown tag', Log::WARNING, 'com_emundus');
+				continue;
+			}
+
+			$validIds[] = $tagId;
+		}
+
+		$validIds = array_values(array_unique($validIds));
+		if (empty($validIds))
+		{
+			return [];
+		}
+
+		if (!class_exists('EmundusModelFiles'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/models/files.php';
+		}
+
+		$tagged = (new \EmundusModelFiles())->tagFile([$fnum], $validIds, $userId);
+		if (!$tagged)
+		{
+			$validIds = [];
+		}
+
+		return $validIds;
+	}
+
+	/**
+	 * @return int[]
+	 */
+	private function getExistingTagIds(): array
+	{
+		if ($this->existingTagIds === null)
+		{
+			$this->existingTagIds = array_map(
+				static fn($tag) => $tag->getId(),
+				(new TagsRepository(false))->get()
+			);
+		}
+
+		return $this->existingTagIds;
+	}
 	
 	public function updateOwner(ApplicationFileEntity $applicationFile, int $newOwnerId, int $userId = 0): bool
 	{

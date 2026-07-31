@@ -2,8 +2,10 @@
 /**
  * @Scpadmin_quickicions module
  * @copyright Copyright (c) 2011 - Jose A. Luque / Securitycheck Extensions
- * @license   GNU General Public License version 3, or later
+ * @license GNU GPL v3 or later
  */
+
+declare(strict_types=1);
 
 namespace Joomla\Module\Scpadmin_quickicons\Administrator\Helper;
 
@@ -11,418 +13,289 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Router\Route;
-use Joomla\CMS\Session\Session;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Session\Session;
+use Joomla\Database\DatabaseInterface;
 use Joomla\Registry\Registry;
+use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
+use Joomla\CMS\Extension\MVCComponentInterface;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\CpanelModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FilemanagerModel;
-use Joomla\Database\DatabaseDriver;
-use Joomla\Database\DatabaseInterface;
-use Joomla\CMS\Application\CMSApplication;
 
-class Scpadmin_quickiconsHelper
+final class Scpadmin_quickiconsHelper
 {
     /**
-     * Stack to hold buttons
+     * Cache de botones por key
      *
-	 * @var array<string,mixed>
-     * @since 1.6
+     * @var array<string, list<array{link:string,image:string,text:string,id:string,access:bool}>>
      */
-    protected static $buttons = [];
+    protected static array $buttons = [];
 
     /**
      * Helper method to return button list.
      *
-     * This method returns the array by reference so it can be
-     * used to add custom buttons or remove default ones.
-     *
-     * @param Registry   $params	 The module parameters.
-     *
-     * @return array<string,mixed>|null   An array of buttons
-     * @since  1.6
+     * @param Registry $params The module parameters.
+     * @return list<array{link:string,image:string,text:string,id:string,access:bool}>
      */
-    public static function &getButtons($params)
+    public static function getButtons(Registry $params): array
     {
-        
-        // Initialize defaults
-        $media_folder = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'media' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR;  
-        $check_vulnerable_components_image = '';
-        $check_vulnerable_components_label = '';
-        $check_not_readed_logs_image = '';
-        $check_not_readed_logs_label = '';
-        $check_new_versions_image = '';
-        $check_new_versions_label = '';
-        $url_file_permissions = '';
-        $url_file_integrity = '';
-        $check_malwarescan_image = '';
-        $check_malwarescan_label = '';
+        /** @var \Joomla\CMS\Application\CMSApplication $app */
+        $app = Factory::getApplication();
 
-        // Make sure Securitycheck Pro is installed, or quit
-        $installed = @file_exists(JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR . 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . 'provider.php');
-        if(!$installed) { return;
+        // Key estable
+        $key = md5((string) json_encode($params->toArray(), JSON_THROW_ON_ERROR));
+
+        if (isset(self::$buttons[$key])) {
+            return self::$buttons[$key];
         }
 
-        // Make sure Securitycheck Pro Component is enabled
+        // Inicializamos
+        self::$buttons[$key] = [];
+
+        // 1) Comprobar instalación
+        $providerPath = JPATH_ADMINISTRATOR . '/components/com_securitycheckpro/services/provider.php';
+        if (!is_file($providerPath)) {
+            return self::$buttons[$key];
+        }
+
+        // 2) Comprobar que el componente esté habilitado
         if (!ComponentHelper::isEnabled('com_securitycheckpro')) {
-            Factory::getApplication()->enqueueMessage(Text::_('MOD_SECURITYCHECKPRO_NOT_ENABLED'), 'error');
-            return;
+			Log::add('Scpadmin_quickiconsHelper. getButtons function info: SecuritycheckPro is not enabled.', Log::INFO, 'mod_scpadmin_quickicons');
+            $app->enqueueMessage(Text::_('MOD_SECURITYCHECKPRO_NOT_ENABLED'), 'error');
+            return self::$buttons[$key];
         }
 
-        
-        // Set default parameters
-        $params->def('check_vulnerable_extensions', 1); // Check vulnerable components enabled
-        $params->def('check_not_readed_logs', 1); // Check logs not readed
-        $params->def('check_file_permissions', 1); // Check file permissions
-        $params->def('check_file_integrity', 1); // Check file integrity
-        $params->def('check_malwarescan', 1); // Check malwarescan
+        // Parámetros por defecto (tipados como int/bool de facto)
+        $params->def('check_vulnerable_extensions', 1);
+        $params->def('check_not_readed_logs', 1);
+        $params->def('check_file_permissions', 1);
+        $params->def('check_file_integrity', 1);
+        $params->def('check_malwarescan', 1);
 
-        // Load the language files
-		/** @var \Joomla\CMS\Application\CMSApplication $app */
-		$app       = Factory::getApplication();
-        $jlang = $app->getLanguage();
-        $jlang->load('mod_scpadmin_quickicons', JPATH_ADMINISTRATOR, 'en-GB', true);
-        $jlang->load('mod_scpadmin_quickicons', JPATH_ADMINISTRATOR, $jlang->getDefault(), true);
-        $jlang->load('mod_scpadmin_quickicons', JPATH_ADMINISTRATOR, null, true);
+        // Idiomas
+        $lang = $app->getLanguage();
+        $lang->load('mod_scpadmin_quickicons', JPATH_ADMINISTRATOR, 'en-GB', true);
+        $lang->load('mod_scpadmin_quickicons', JPATH_ADMINISTRATOR, $lang->getDefault(), true);
+        $lang->load('mod_scpadmin_quickicons', JPATH_ADMINISTRATOR, null, true);
+		
+		$component = $app->bootComponent('com_securitycheckpro');		
 
-        // Import Securitycheckpros models
-				
-		$component = $app->bootComponent('com_securitycheckpro');
+		if (!method_exists($component, 'getMVCFactory')) {
+			Log::add('Scpadmin_quickiconsHelper. getButtons function error: getMVCFactory method does not exists.', Log::ERROR, 'mod_scpadmin_quickicons');	
+			$app->setUserState('exists_filemanager', false);
+			return self::$buttons[$key];
+		}
+
+		/** @var \Joomla\CMS\Extension\MVCComponent $component */
 		$mvcFactory = $component->getMVCFactory();
 		
-		$cpanel_model = $mvcFactory->createModel('Cpanel', 'Administrator');
-		$filemanager_model = $mvcFactory->createModel('Filemanager', 'Administrator');
+		$cpanelModel = $mvcFactory->createModel('Cpanel', 'Administrator');
+		$fileModel   = $mvcFactory->createModel('Filemanager', 'Administrator');
 
-		if ( ($cpanel_model === null) || ($filemanager_model === null) ) {
-			$app->setUserState("exists_filemanager", false);
-			return;
-		} else {
-			$app->setUserState("exists_filemanager", true);
-		}
-		      
-		$document = $app->getDocument();
-		
-        $key = (string)$params;
-        if (!isset(self::$buttons[$key])) {
-            $context = $params->get('context', 'mod_scpadmin_quickicons');
-            if ($context == 'mod_scpadmin_quickicons') {
-                // Load mod_scpadmin_quickicons language file in case this method is called before rendering the module
-                $app->getLanguage()->load('mod_scpadmin_quickicons');
-            }
-            // Array is empty because we will add icons later
-            self::$buttons[$key] = array();
-			
-			if($params->get('check_vulnerable_extensions', 1) == 1) {    
-			
-				// Check for vulnerable components
-                $cpanel_model->buscarQuickIcons();
-            
-                // Vulnerable components
-                $db = Factory::getContainer()->get(DatabaseInterface::class);
-                $query = "SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable='Si'";
-                $db->setQuery($query);
-                $db->execute();    
-                $vuln_extensions = $db->loadResult();
-				            
-                // Undefined vulnerable components
-                $query = "SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable='Indefinido'";
-                $db->setQuery($query);
-                $db->execute();    
-                $undefined_vuln_extensions = $db->loadResult();				
-				            
-                if ($vuln_extensions > 0) {
-						$check_vulnerable_extensions_image = 'fa fa-exclamation';                        
-                        $document->addScriptDeclaration(
-                            "
-						function scp_vuln_extensions() {
-						var link     = document.getElementById('plg_quickicon_scp_vuln_extensions'),
-										linkSpan = link.querySelectorAll('span.j-links-link');
-						link.classList.add('danger');
-					}
-					
-					document.addEventListener('DOMContentLoaded', function() {
-						setTimeout(scp_vuln_extensions, 2000)
-					});
-					"
-                        );                       
-                
-                    $check_vulnerable_extensions_label = Text::_('MOD_SECURITYCHECKPRO_VULNERABLE_EXTENSIONS');
-                } else if  ($undefined_vuln_extensions > 0) {
-                        $check_vulnerable_extensions_image = 'fa fa-question-circle ';
-                        $document->addScriptDeclaration(
-                            "
-						function scp_vuln_extensions() {
-						var link     = document.getElementById('plg_quickicon_scp_vuln_extensions'),
-										linkSpan = link.querySelectorAll('span.j-links-link');
-						link.classList.add('warning');
-					}
-					
-					document.addEventListener('DOMContentLoaded', function() {
-						setTimeout(scp_vuln_extensions, 2000)
-					});
-					"
-                        );                
-                
-                    $check_vulnerable_extensions_label = Text::_('MOD_SECURITYCHECKPRO_VULNERABLE_EXTENSIONS');
-                } else
-                {
-                        $check_vulnerable_extensions_image = 'fa fa-check-circle ';
-                        $document->addScriptDeclaration(
-                            "
-						function scp_vuln_extensions() {
-						var link     = document.getElementById('plg_quickicon_scp_vuln_extensions'),
-										linkSpan = link.querySelectorAll('span.j-links-link');
-						link.classList.add('success');
-					}
-					
-					document.addEventListener('DOMContentLoaded', function() {
-						setTimeout(scp_vuln_extensions, 2000)
-					});
-					"
-                        );    
-                   
-                    $check_vulnerable_extensions_label = Text::_('MOD_SECURITYCHECKPRO_NO_VULNERABLE_EXTENSIONS');
-                }
-            
-                $array_vuln_extensions = array
-                (
-                'link' => Route::_('index.php?option=com_securitycheckpro&controller=securitycheckpro&view=securitycheckpro&'. Session::getFormToken() .'=1'),
-                'image' => $check_vulnerable_extensions_image,
-                'text' => $check_vulnerable_extensions_label,
-                'id'    => 'plg_quickicon_scp_vuln_extensions',
-                'access' => true
-                );
-                array_push(self::$buttons[$key], $array_vuln_extensions);
-            }
-                
-            if($params->get('check_not_readed_logs', 1) == 1) {
-            
-                // Check for unread logs
-                (int) $logs_pending = $cpanel_model->LogsPending();
-				                
-                if ($logs_pending == 0) {
-                        $check_not_readed_logs_image = 'fa fa-file';                      
-                        $document->addScriptDeclaration(
-                            "
-						function scp_logs() {
-						var link     = document.getElementById('plg_quickicon_scp_logs'),
-										linkSpan = link.querySelectorAll('span.j-links-link');
-						link.classList.add('success');
-					}
-					
-					document.addEventListener('DOMContentLoaded', function() {
-						setTimeout(scp_logs, 2000)
-					});
-					"
-                        );    
-                    
-                    $check_not_readed_logs_label = Text::_('MOD_SECURITYCHECKPRO_NOT_UNREAD_LOGS');
-                } else
-                {
-                        $check_not_readed_logs_image = 'fa fa-file-alt';
-                        $document->addScriptDeclaration(
-                            "
-						function scp_logs() {
-						var link     = document.getElementById('plg_quickicon_scp_logs'),
-										linkSpan = link.querySelectorAll('span.j-links-link');
-						link.classList.add('danger');
-					}
-					
-					document.addEventListener('DOMContentLoaded', function() {
-						setTimeout(scp_logs, 2000)
-					});
-					"
-                        );    
-                        
-                    $check_not_readed_logs_label = Text::_('MOD_SECURITYCHECKPRO_UNREAD_LOGS');
-                }
-            
-                $array_not_readed_logs = array
-                (
-                'link' => Route::_('index.php?option=com_securitycheckpro&controller=securitycheckpro&task=view_logs'),
-                'image' => $check_not_readed_logs_image,
-                'text' => $check_not_readed_logs_label,
-                'id'    => 'plg_quickicon_scp_logs',
-                'access' => true
-                );
-                array_push(self::$buttons[$key], $array_not_readed_logs);
-            }
-
-            if($params->get('check_file_permissions', 1) == 1) {
-            
-                // Get files with incorrect permissions from database
-                $files_with_incorrect_permissions = $filemanager_model->loadStack("filemanager_resume", "files_with_incorrect_permissions");
-				
-				if ($files_with_incorrect_permissions == 0) {
-                        $check_file_permissions_image = 'fa fa-check-square';
-                        $document->addScriptDeclaration(
-                            "
-						function scp_permissions() {
-						var link     = document.getElementById('plg_quickicon_scp_permissions'),
-										linkSpan = link.querySelectorAll('span.j-links-link');
-						link.classList.add('success');
-					}
-					
-					document.addEventListener('DOMContentLoaded', function() {
-						setTimeout(scp_permissions, 2000)
-					});
-					"
-                        );
-                        
-                    $check_file_permissions_label = Text::_('MOD_SECURITYCHECKPRO_FILE_PERMISSIONS_OK');
-                } else
-                {
-                        $check_file_permissions_image = 'fa fa-square';
-                        $document->addScriptDeclaration(
-                            "
-						function scp_permissions() {
-						var link     = document.getElementById('plg_quickicon_scp_permissions'),
-										linkSpan = link.querySelectorAll('span.j-links-link');
-						link.classList.add('danger');
-					}
-					
-					document.addEventListener('DOMContentLoaded', function() {
-						setTimeout(scp_permissions, 2000)
-					});
-					"
-                    ); 
-					$check_file_permissions_label = Text::_('MOD_SECURITYCHECKPRO_FILE_PERMISSIONS_WRONG');
-                }                  
-                
-                $array_check_file_permissions = array
-                (
-                'link' => $url = Route::_('index.php?option=com_securitycheckpro&controller=filemanager&view=filemanager&'. Session::getFormToken() .'=1'),
-                'image' => $check_file_permissions_image,
-                'text' => $check_file_permissions_label,
-                'id'    => 'plg_quickicon_scp_permissions',
-                'access' => true
-                );
-                array_push(self::$buttons[$key], $array_check_file_permissions);
-            }
-        
-            if($params->get('check_file_integrity', 1) == 1) {
-            
-                // Get files with incorrect permissions from database
-                $files_with_bad_integrity = $filemanager_model->loadStack("fileintegrity_resume", "files_with_bad_integrity");
-				                
-                if ($files_with_bad_integrity == 0) {
-                        $check_file_integrity_image = 'fa fa-lock';
-                        $document->addScriptDeclaration(
-                            "
-						function scp_integrity() {
-						var link     = document.getElementById('plg_quickicon_scp_integrity'),
-										linkSpan = link.querySelectorAll('span.j-links-link');
-						link.classList.add('success');
-					}
-					
-					document.addEventListener('DOMContentLoaded', function() {
-						setTimeout(scp_integrity, 2000)
-					});
-					"
-                        );
-                    $check_file_integrity_label = Text::_('MOD_SECURITYCHECKPRO_FILE_INTEGRITY_OK');
-                } else
-                {
-                        $check_file_integrity_image = 'fa fa-unlock';
-                        $document->addScriptDeclaration(
-                            "
-						function scp_integrity() {
-						var link     = document.getElementById('plg_quickicon_scp_integrity'),
-										linkSpan = link.querySelectorAll('span.j-links-link');
-						link.classList.add('danger');
-					}
-					
-					document.addEventListener('DOMContentLoaded', function() {
-						setTimeout(scp_integrity, 2000)
-					});
-					"
-                        );
-                    $check_file_integrity_label = Text::_('MOD_SECURITYCHECKPRO_FILE_INTEGRITY_WRONG');
-                }
-            
-                $array_check_file_integrity = array
-                (
-                'link' => Route::_('index.php?option=com_securitycheckpro&controller=cpanel&task=go_to_fileintegrity()'),
-                'image' => $check_file_integrity_image,
-                'text' => $check_file_integrity_label,
-                'id'    => 'plg_quickicon_scp_integrity',
-                'access' => true
-                );
-                array_push(self::$buttons[$key], $array_check_file_integrity);
-            }
-        
-            if($params->get('check_malwarescan', 1) == 1) {
-            
-                // Get suspicious files from database
-                $suspicious_files = $filemanager_model->loadStack("malwarescan_resume", "suspicious_files");
-				
-                if ($suspicious_files == 0) {
-                        $check_malwarescan_image = 'fa fa-thumbs-up';
-                        $document->addScriptDeclaration(
-                            "
-						function scp_malware() {
-						var link     = document.getElementById('plg_quickicon_scp_malware'),
-										linkSpan = link.querySelectorAll('span.j-links-link');
-						link.classList.add('success');
-					}
-					
-					document.addEventListener('DOMContentLoaded', function() {
-						setTimeout(scp_malware, 2000)
-					});
-					"
-                        );
-                    $check_malwarescan_label = Text::_('MOD_SECURITYCHECKPRO_MALWARESCAN_OK');
-                } else 
-                {
-                        $check_malwarescan_image = 'fa fa-bug';
-                        $document->addScriptDeclaration(
-                            "
-						function scp_malware() {
-						var link     = document.getElementById('plg_quickicon_scp_malware'),
-										linkSpan = link.querySelectorAll('span.j-links-link');
-						link.classList.add('danger');
-					}
-					
-					document.addEventListener('DOMContentLoaded', function() {
-						setTimeout(scp_malware, 2000)
-					});
-					"
-                        );
-                    $check_malwarescan_label = Text::_('MOD_SECURITYCHECKPRO_MALWARESCAN_WRONG');
-                }
-            
-                $array_malwarescan_integrity = array
-                (            
-                'link' => Route::_('index.php?option=com_securitycheckpro&controller=cpanel&task=go_to_malware()'),
-                'image' => $check_malwarescan_image,
-                'text' => $check_malwarescan_label,
-                'id'    => 'plg_quickicon_scp_malware',
-                'access' => true
-                );
-                array_push(self::$buttons[$key], $array_malwarescan_integrity);
-            }
-        
+        if (!$cpanelModel instanceof CpanelModel || !$fileModel instanceof FilemanagerModel) {
+            $app->setUserState('exists_filemanager', false);
+            return self::$buttons[$key];
         }
+		
+        $app->setUserState('exists_filemanager', true);
+
+        $document = $app->getDocument();
+
+        // Carga de idioma por contexto (sin comparación laxa)
+        $context = (string) $params->get('context', 'mod_scpadmin_quickicons');
+        if ($context === 'mod_scpadmin_quickicons') {
+            $lang->load('mod_scpadmin_quickicons');
+        }
+
+        // Helper local para marcar iconos con clase (evita duplicación de JS y reduce errores)
+        $addStatusScript = static function (string $elementId, string $statusClass) use ($document): void {
+            $elementIdJs = json_encode($elementId, JSON_THROW_ON_ERROR);
+            $statusJs    = json_encode($statusClass, JSON_THROW_ON_ERROR);
+
+            $document->addScriptDeclaration(
+                "document.addEventListener('DOMContentLoaded', function () {
+                    window.setTimeout(function () {
+                        var link = document.getElementById($elementIdJs);
+                        if (!link) { return; }
+                        link.classList.add($statusJs);
+                    }, 2000);
+                });"
+            );
+        };
+		
+		$withToken = static function (string $url): string {
+			$token = Session::getFormToken();
+
+			// Si ya trae '?', usamos '&', si no, '?'
+			$sep = str_contains($url, '?') ? '&' : '?';
+
+			return $url . $sep . $token . '=1';
+		};
+		
+        /** @var DatabaseInterface $db */
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+
+        // -------- Vulnerable extensions --------
+        if ((int) $params->get('check_vulnerable_extensions', 1) === 1) {
+            $cpanelModel->buscarQuickIcons();
+
+            $countByStatus = static function (string $status) use ($db): int {
+                $query = $db->getQuery(true)
+                    ->select('COUNT(*)')
+                    ->from($db->quoteName('#__securitycheckpro'))
+                    ->where($db->quoteName('Vulnerable') . ' = ' . $db->quote($status));
+                $db->setQuery($query);
+
+                return (int) $db->loadResult();
+            };
+
+            $vuln = $countByStatus('Si');
+            $undef = $countByStatus('Indefinido');
+
+            if ($vuln > 0) {
+                $image = 'fa fa-exclamation';
+                $text  = Text::_('MOD_SECURITYCHECKPRO_VULNERABLE_EXTENSIONS');
+                $addStatusScript('plg_quickicon_scp_vuln_extensions', 'danger');
+            } elseif ($undef > 0) {
+                $image = 'fa fa-question-circle';
+                $text  = Text::_('MOD_SECURITYCHECKPRO_VULNERABLE_EXTENSIONS');
+                $addStatusScript('plg_quickicon_scp_vuln_extensions', 'warning');
+            } else {
+                $image = 'fa fa-check-circle';
+                $text  = Text::_('MOD_SECURITYCHECKPRO_NO_VULNERABLE_EXTENSIONS');
+                $addStatusScript('plg_quickicon_scp_vuln_extensions', 'success');
+            }
+			
+			$link = $withToken('index.php?option=com_securitycheckpro&view=securitycheckpro');
+
+            self::$buttons[$key][] = [
+                'link'   => Route::_($link),
+                'image'  => $image,
+                'text'   => $text,
+                'id'     => 'plg_quickicon_scp_vuln_extensions',
+                'access' => true,
+            ];
+        }
+
+        // -------- Unread logs --------
+        if ((int) $params->get('check_not_readed_logs', 1) === 1) {
+            $logsPending = (int) $cpanelModel->LogsPending();
+
+            if ($logsPending === 0) {
+                $image = 'fa fa-file';
+                $text  = Text::_('MOD_SECURITYCHECKPRO_NOT_UNREAD_LOGS');
+                $addStatusScript('plg_quickicon_scp_logs', 'success');
+            } else {
+                $image = 'fa fa-file-alt';
+                $text  = Text::_('MOD_SECURITYCHECKPRO_UNREAD_LOGS');
+                $addStatusScript('plg_quickicon_scp_logs', 'danger');
+            }
+
+			$link = $withToken('index.php?option=com_securitycheckpro&task=securitycheckpro.view_logs');
+
+            self::$buttons[$key][] = [
+                'link'   => Route::_($link),
+                'image'  => $image,
+                'text'   => $text,
+                'id'     => 'plg_quickicon_scp_logs',
+                'access' => true,
+            ];
+        }
+
+        // -------- File permissions --------
+        if ((int) $params->get('check_file_permissions', 1) === 1) {
+            $badPerms = (int) $fileModel->loadStack('filemanager_resume', 'files_with_incorrect_permissions');
+
+            if ($badPerms === 0) {
+                $image = 'fa fa-check-square';
+                $text  = Text::_('MOD_SECURITYCHECKPRO_FILE_PERMISSIONS_OK');
+                $addStatusScript('plg_quickicon_scp_permissions', 'success');
+            } else {
+                $image = 'fa fa-square';
+                $text  = Text::_('MOD_SECURITYCHECKPRO_FILE_PERMISSIONS_WRONG');
+                $addStatusScript('plg_quickicon_scp_permissions', 'danger');
+            }
+			
+			$link = $withToken('index.php?option=com_securitycheckpro&view=filemanager');
+
+            self::$buttons[$key][] = [
+                'link'   => Route::_($link),
+                'image'  => $image,
+                'text'   => $text,
+                'id'     => 'plg_quickicon_scp_permissions',
+                'access' => true,
+            ];
+        }
+
+        // -------- File integrity --------
+        if ((int) $params->get('check_file_integrity', 1) === 1) {
+            $badIntegrity = (int) $fileModel->loadStack('fileintegrity_resume', 'files_with_bad_integrity');
+
+            if ($badIntegrity === 0) {
+                $image = 'fa fa-lock';
+                $text  = Text::_('MOD_SECURITYCHECKPRO_FILE_INTEGRITY_OK');
+                $addStatusScript('plg_quickicon_scp_integrity', 'success');
+            } else {
+                $image = 'fa fa-unlock';
+                $text  = Text::_('MOD_SECURITYCHECKPRO_FILE_INTEGRITY_WRONG');
+                $addStatusScript('plg_quickicon_scp_integrity', 'danger');
+            }
+
+			$link = $withToken('index.php?option=com_securitycheckpro&task=cpanel.go_to_fileintegrity');
+            
+            self::$buttons[$key][] = [
+                'link'   => Route::_($link),
+                'image'  => $image,
+                'text'   => $text,
+                'id'     => 'plg_quickicon_scp_integrity',
+                'access' => true,
+            ];
+        }
+
+        // -------- Malware scan --------
+        if ((int) $params->get('check_malwarescan', 1) === 1) {
+            $suspicious = (int) $fileModel->loadStack('malwarescan_resume', 'suspicious_files');
+
+            if ($suspicious === 0) {
+                $image = 'fa fa-thumbs-up';
+                $text  = Text::_('MOD_SECURITYCHECKPRO_MALWARESCAN_OK');
+                $addStatusScript('plg_quickicon_scp_malware', 'success');
+            } else {
+                $image = 'fa fa-bug';
+                $text  = Text::_('MOD_SECURITYCHECKPRO_MALWARESCAN_WRONG');
+                $addStatusScript('plg_quickicon_scp_malware', 'danger');
+            }
+			
+			$link = $withToken('index.php?option=com_securitycheckpro&task=cpanel.go_to_malware');
+
+            self::$buttons[$key][] = [
+                'link'   => Route::_($link),
+                'image'  => $image,
+                'text'   => $text,
+                'id'     => 'plg_quickicon_scp_malware',
+                'access' => true,
+            ];
+        }
+
         return self::$buttons[$key];
     }
 
     /**
      * Get the alternate title for the module
      *
-     * @param Registry    $params	The module parameters.
-     * @param object      $module   The module.
-     *
-     * @return string    The alternate title for the module.
+     * @param Registry $params The module parameters.
+     * @param object{title:string} $module The module object.
      */
-    public static function getTitle($params, $module)
+    public static function getTitle(Registry $params, object $module): string
     {
-        $key = $params->get('context', 'mod_scpadmin_quickicons') . '_title';
+        $key = (string) $params->get('context', 'mod_scpadmin_quickicons') . '_title';
+
         if (Factory::getApplication()->getLanguage()->hasKey($key)) {
             return Text::_($key);
         }
-        else
-        {
-            return $module->title;
-        }
+
+        return (string) $module->title;
     }
 }

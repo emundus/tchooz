@@ -531,10 +531,12 @@ export default {
 			}
 			this.signers.push(new_signer);
 
-			this.thumbnailGrid[new_signer.id] = this.thumbnail;
-
-			const page = new_signer.fields.find((f) => f.param === 'page').value;
-			if (page && page !== 1) this.fetchGridThumbnail(new_signer, page);
+			const pageField = new_signer.fields.find((f) => f.param === 'page');
+			if (pageField) {
+				this.thumbnailGrid[new_signer.id] = this.thumbnail;
+				const page = new_signer.fields.find((f) => f.param === 'page').value;
+				if (page && page !== 1) this.fetchGridThumbnail(new_signer, page);
+			}
 
 			this.applyConnectorRules();
 		},

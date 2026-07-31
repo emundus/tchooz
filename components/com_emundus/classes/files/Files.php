@@ -881,7 +881,8 @@ class Files
 		{
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 		}
-		if(\EmundusHelperAccess::isDataAnonymized($user_id))
+
+		if(\EmundusHelperAccess::isDataAnonymized($user_id) || $file->anonymous == 1)
 		{
 			$file->is_anonym = 1;
 			$file->applicant_name = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');

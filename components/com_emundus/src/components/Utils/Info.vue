@@ -54,6 +54,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		defaultOpen: {
+			type: Boolean,
+			default: false,
+		},
 		bgColor: {
 			type: String,
 			default: 'tw-bg-blue-50',
@@ -86,7 +90,7 @@ export default {
 		return {
 			textValueExtracted: '',
 
-			isOpen: false,
+			isOpen: this.defaultOpen,
 		};
 	},
 	created() {

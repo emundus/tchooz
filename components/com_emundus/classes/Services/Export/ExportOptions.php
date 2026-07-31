@@ -9,8 +9,6 @@
 
 namespace Tchooz\Services\Export;
 
-use Tchooz\Enums\Export\ExportSettingEnum;
-
 class ExportOptions
 {
 	private string $format;
@@ -24,9 +22,11 @@ class ExportOptions
 	private string $lang;
 
 	/**
-	 * Runtime toggles whose keys are declared in {@see ExportSettingEnum}.
-	 * Stored as [enum value => casted value]. Use getSetting() rather than
-	 * touching the array directly — it falls back to the enum default.
+	 * Runtime toggles for the "Options" step. Stored as a flat
+	 * array<string, mixed>; casting + defaults are owned by the per-format
+	 * schema in {@see \Tchooz\Services\Export\OptionsSchema\AbstractOptionsSchema}.
+	 *
+	 * @var array<string, mixed>
 	 */
 	private array $settings = [];
 	//
@@ -112,51 +112,40 @@ class ExportOptions
 		$this->lang = $lang;
 	}
 
-	public function getSetting(ExportSettingEnum $key): mixed
+	public function getSetting(string $key, mixed $default = null): mixed
 	{
-		return $this->settings[$key->value] ?? $key->getDefault();
+		return $this->settings[$key] ?? $default;
 	}
 
-	public function setSetting(ExportSettingEnum $key, mixed $value): void
+	public function setSetting(string $key, mixed $value): void
 	{
-		$this->settings[$key->value] = $key->cast($value);
+		$this->settings[$key] = $value;
 	}
 
 	/**
-	 * Replace the whole bag from raw input (array or stdClass). Unknown keys are
-	 * ignored; known keys are cast through their enum definition.
+	 * Replace the whole bag from already-cast input. Callers (controllers,
+	 * services) should run the raw POST payload through the matching
+	 * {@see \Tchooz\Services\Export\OptionsSchema\AbstractOptionsSchema::cast()}
+	 * before handing it over — this method does not re-cast.
+	 *
+	 * @param   array<string, mixed>|object|null  $raw
 	 */
 	public function setSettings(array|object|null $raw): void
 	{
-		$this->settings = [];
-
 		if (empty($raw))
 		{
+			$this->settings = [];
 			return;
 		}
 
-		$raw = is_object($raw) ? (array) $raw : $raw;
-
-		foreach (ExportSettingEnum::cases() as $case)
-		{
-			if (array_key_exists($case->value, $raw))
-			{
-				$this->settings[$case->value] = $case->cast($raw[$case->value]);
-			}
-		}
+		$this->settings = is_object($raw) ? (array) $raw : $raw;
 	}
 
 	/**
-	 * @return array<string, mixed> Effective settings (stored values + enum defaults for missing keys).
+	 * @return array<string, mixed>
 	 */
 	public function getSettings(): array
 	{
-		$out = [];
-		foreach (ExportSettingEnum::cases() as $case)
-		{
-			$out[$case->value] = $this->settings[$case->value] ?? $case->getDefault();
-		}
-
-		return $out;
+		return $this->settings;
 	}
 }

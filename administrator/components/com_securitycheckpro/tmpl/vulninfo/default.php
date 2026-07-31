@@ -48,10 +48,10 @@ $joomlaVersionBadge = '<i class="icon-joomla" aria-hidden="true"></i> ' . $major
             <!-- Limitbox + contador -->
             <div class="d-flex align-items-center gap-3">
                 <div class="text-muted small">
-					<?php echo $this->pagination ? $this->pagination->getResultsCounter() : ''; ?>
+					<?php echo $this->pagination->getResultsCounter(); ?>
 				</div>
 				<div>
-					<?php echo $this->pagination ? $this->pagination->getLimitBox() : ''; ?>
+					<?php echo $this->pagination->getLimitBox(); ?>
 				</div>
 
             </div>

@@ -49,7 +49,7 @@ class GroupAccessFactoryTest extends UnitTestCase
 	{
 		$dbObject = $this->createDbObject();
 
-		$entity = GroupAccessFactory::buildEntity($dbObject);
+		$entity = $this->factory->buildEntity($dbObject, []);
 
 		$this->assertInstanceOf(GroupAccessEntity::class, $entity);
 	}
@@ -61,7 +61,7 @@ class GroupAccessFactoryTest extends UnitTestCase
 	{
 		$dbObject = $this->createDbObject();
 
-		$entity = GroupAccessFactory::buildEntity($dbObject);
+		$entity = $this->factory->buildEntity($dbObject, []);
 
 		$this->assertNull($entity->getGroup());
 		$this->assertNull($entity->getAction());
@@ -74,7 +74,7 @@ class GroupAccessFactoryTest extends UnitTestCase
 	{
 		$dbObject = $this->createDbObject(['id' => 42]);
 
-		$entity = GroupAccessFactory::buildEntity($dbObject);
+		$entity = $this->factory->buildEntity($dbObject, []);
 
 		$this->assertEquals(42, $entity->getId());
 	}
@@ -91,7 +91,7 @@ class GroupAccessFactoryTest extends UnitTestCase
 			'd' => 1,
 		]);
 
-		$entity = GroupAccessFactory::buildEntity($dbObject);
+		$entity = $this->factory->buildEntity($dbObject, []);
 		$crud   = $entity->getCrud();
 
 		$this->assertInstanceOf(CrudEntity::class, $crud);
@@ -111,13 +111,7 @@ class GroupAccessFactoryTest extends UnitTestCase
 
 		$mockGroup = $this->createMock(GroupEntity::class);
 
-		$groupRepository = $this->createMock(GroupRepository::class);
-		$groupRepository->expects($this->once())
-			->method('getById')
-			->with(10)
-			->willReturn($mockGroup);
-
-		$entity = GroupAccessFactory::buildEntity($dbObject, $groupRepository);
+		$entity = $this->factory->buildEntity($dbObject, [GroupRepository::NAME => $mockGroup]);
 
 		$this->assertSame($mockGroup, $entity->getGroup());
 		$this->assertNull($entity->getAction());
@@ -132,13 +126,7 @@ class GroupAccessFactoryTest extends UnitTestCase
 
 		$mockAction = $this->createMock(ActionEntity::class);
 
-		$actionRepository = $this->createMock(ActionRepository::class);
-		$actionRepository->expects($this->once())
-			->method('getById')
-			->with(20)
-			->willReturn($mockAction);
-
-		$entity = GroupAccessFactory::buildEntity($dbObject, null, $actionRepository);
+		$entity = $this->factory->buildEntity($dbObject, [ActionRepository::NAME => $mockAction]);
 
 		$this->assertNull($entity->getGroup());
 		$this->assertSame($mockAction, $entity->getAction());
@@ -154,19 +142,7 @@ class GroupAccessFactoryTest extends UnitTestCase
 		$mockGroup  = $this->createMock(GroupEntity::class);
 		$mockAction = $this->createMock(ActionEntity::class);
 
-		$groupRepository = $this->createMock(GroupRepository::class);
-		$groupRepository->expects($this->once())
-			->method('getById')
-			->with(5)
-			->willReturn($mockGroup);
-
-		$actionRepository = $this->createMock(ActionRepository::class);
-		$actionRepository->expects($this->once())
-			->method('getById')
-			->with(15)
-			->willReturn($mockAction);
-
-		$entity = GroupAccessFactory::buildEntity($dbObject, $groupRepository, $actionRepository);
+		$entity = $this->factory->buildEntity($dbObject, [GroupRepository::NAME => $mockGroup, ActionRepository::NAME => $mockAction]);
 
 		$this->assertSame($mockGroup, $entity->getGroup());
 		$this->assertSame($mockAction, $entity->getAction());
@@ -179,7 +155,7 @@ class GroupAccessFactoryTest extends UnitTestCase
 	{
 		$dbObject = $this->createDbObject(['id' => 7]);
 
-		$entity = $this->factory->fromDbObject($dbObject);
+		$entity = $this->factory->fromDbObject($dbObject, false);
 
 		$this->assertInstanceOf(GroupAccessEntity::class, $entity);
 		$this->assertEquals(7, $entity->getId());
@@ -200,7 +176,7 @@ class GroupAccessFactoryTest extends UnitTestCase
 			'd'         => 1,
 		];
 
-		$entity = $this->factory->fromDbObject($dbArray);
+		$entity = $this->factory->fromDbObject($dbArray, false);
 
 		$this->assertInstanceOf(GroupAccessEntity::class, $entity);
 		$this->assertEquals(3, $entity->getId());
@@ -228,7 +204,7 @@ class GroupAccessFactoryTest extends UnitTestCase
 	 */
 	public function testFromDbObjectsWithEmptyArrayReturnsEmptyArray(): void
 	{
-		$entities = GroupAccessFactory::fromDbObjects([], false);
+		$entities = $this->factory->fromDbObjects([], false);
 
 		$this->assertIsArray($entities);
 		$this->assertEmpty($entities);
@@ -245,7 +221,7 @@ class GroupAccessFactoryTest extends UnitTestCase
 			$this->createDbObject(['id' => 3]),
 		];
 
-		$entities = GroupAccessFactory::fromDbObjects($dbObjects, false);
+		$entities = $this->factory->fromDbObjects($dbObjects, false);
 
 		$this->assertCount(3, $entities);
 		foreach ($entities as $entity) {
@@ -268,7 +244,7 @@ class GroupAccessFactoryTest extends UnitTestCase
 			$this->createDbObject(['id' => 20, 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0]),
 		];
 
-		$entities = GroupAccessFactory::fromDbObjects($dbObjects, false);
+		$entities = $this->factory->fromDbObjects($dbObjects, false);
 
 		$this->assertEquals(10, $entities[0]->getId());
 		$this->assertEquals(1, $entities[0]->getCrud()->getCreate());
@@ -311,7 +287,7 @@ class GroupAccessFactoryTest extends UnitTestCase
 			$this->createDbObject(['id' => 1, 'group_id' => $groupId, 'action_id' => $actionId, 'c' => 1, 'r' => 1, 'u' => 0, 'd' => 0]),
 		];
 
-		$entities = GroupAccessFactory::fromDbObjects($dbObjects, true);
+		$entities = $this->factory->fromDbObjects($dbObjects);
 
 		$this->assertCount(1, $entities);
 		$this->assertInstanceOf(GroupAccessEntity::class, $entities[0]);
@@ -350,7 +326,7 @@ class GroupAccessFactoryTest extends UnitTestCase
 			$this->createDbObject(['id' => 2, 'group_id' => $groupId, 'action_id' => $actionId, 'c' => 0, 'r' => 0, 'u' => 0, 'd' => 0]),
 		];
 
-		$entities = GroupAccessFactory::fromDbObjects($dbObjects);
+		$entities = $this->factory->fromDbObjects($dbObjects);
 
 		$this->assertCount(2, $entities);
 

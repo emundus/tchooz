@@ -250,7 +250,11 @@ assert($applicationFile instanceof ApplicationFileEntity);
 
 	$file_tags_display = '';
 	if (!empty($file_tags)) {
-	    $m_email = new EmundusModelEmails();
+        if (!class_exists('EmundusModelEmails'))
+        {
+            require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+        }
+        $m_emails = new EmundusModelEmails();
 	    $emundusUser = Factory::getApplication()->getSession()->get('emundusUser');
 
 	    $post = array(
@@ -264,9 +268,9 @@ assert($applicationFile instanceof ApplicationFileEntity);
 		    'FNUM'           => $emundusUser->fnum
 	    );
 
-	    $tags              = $m_email->setTags($user->id, $post, $emundusUser->fnum, '', $file_tags);
-	    $file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
-	    $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($emundusUser->fnum));
+        $tags              = $m_emails->setTags($user->id, $post, $emundusUser->fnum, '', $file_tags);
+        $file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
+        $file_tags_display = $m_emails->setTagsFabrik($file_tags_display, array($emundusUser->fnum));
     }
 
 	?>

@@ -30,7 +30,6 @@ config/default/particles/logo.yaml	805f7f490fb0c576adda2ec484566dc3
 config/default/particles/social.yaml	32d8c08af78ba6d4bed939619b973443
 config/default/particles/totop.yaml	a38dbe0584c37eadda1f0c82bba68070
 error.php	896e47102319f0aebea99713b8002b11
-fields/warning.php	7225ca38f15ec32ac18bf9b4a40db881
 fonts/lato/lato-black/lato-black-webfont.eot	e43203b277294e9d0befb32e5c6f6b22
 fonts/lato/lato-black/lato-black-webfont.svg	46dd77bfc2edd71e8a903b0686205a64
 fonts/lato/lato-black/lato-black-webfont.ttf	95b09be83ceac7912bee39914527a2c0
@@ -137,7 +136,7 @@ fonts/rockettheme-apps/rockettheme-apps.ttf	2185692f8168ab2fa54c0923be97f190
 fonts/rockettheme-apps/rockettheme-apps.woff	f1258374fedaa30401743337048a64bb
 fonts/rockettheme-apps/rockettheme-apps.woff2	0b76f0674592d3d4653e6524045e890e
 gantry/presets.yaml	4edfd8f32f98ba3020831b1ed61db43f
-gantry/theme.yaml	c9e94ebef1630bdbc90586e079ab31e9
+gantry/theme.yaml	c04f363fd9e84c00ff909048e532a460
 html/layouts/chromes/gantry.php	a090d20a4c9e1d0f4a32cba6bd3d79d9
 html/layouts/joomla/system/message.php	cab953d9c507eceb27b1aa9fe63e8c4c
 html/modules.php	3385dcf51856d166be9ef44e0dd34ebe
@@ -159,7 +158,7 @@ images/testimonials/img01.jpg	272ee57acb3c0cc6d863f60001143da6
 includes/gantry.php	2f083f29eaacf41f3abe7efb8ef675c8
 includes/theme.php	d143bdfd5aa94ef1bbcd990c65ff18a2
 index.php	6557d3392fc2ed3e3ac5643acd564105
-install.php	676f7be074fac34df51b7e9b033a55b1
+install.php	fe23bfc6945dd32ec30067a0f2ffca52
 install/menus.yaml	26e60728fc433e111244f9cb4bbe886c
 install/outlines.yaml	0cd298512a3a8a4fec1d079dd0474cee
 install/templates/install.html.twig	00f3ec4cf5803c8d6fb4f9ea6efd33bb
@@ -240,10 +239,10 @@ scss/helium/styles/_fonts.scss	b101ca9e6436bca82ff603915d9e68c8
 scss/helium/styles/_forms.scss	1ea44e837ec68891d9a185c63393a349
 scss/helium/styles/_helium-style.scss	5c4d5b13a0a546742153d94682b7a8cc
 scss/helium/styles/_hyperlinks.scss	043f16f01a82f84565ada8915bb74e1e
-scss/helium/styles/_tables.scss	6e98ce2eec18fb2877cdf0e309e88ae2
+scss/helium/styles/_tables.scss	84e30ada4aa5c38ee47079cfcaaefe3d
 scss/helium/styles/_typography.scss	3ceef80704646c220c50c9f2e9ec5ada
 scss/helium/styles/_utilities.scss	5d8aacbecee8059c244371deac2d938e
 scss/helium/styles/_variations.scss	d0cfbd7f75d8cca38131eeeab0e52de8
-templateDetails.xml	3087cefef0d3b73cd71e0213ab4da1f8
+templateDetails.xml	33b1baa92a8d32e1e304e9bcdf2fec0a
 template_preview.png	ab4cfffd01e4869e58539c047dd9b084
 template_thumbnail.png	927912da2d23c09c87d8613905b38b74

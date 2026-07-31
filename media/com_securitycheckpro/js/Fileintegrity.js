@@ -14,8 +14,30 @@ const qsa = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
 function hideElement(id) { const el = byId(id); if (el) el.style.display = "none"; }
 function showElement(id, display = "block") { const el = byId(id); if (el) el.style.display = display; }
-function setHTML(id, html = "") { const el = byId(id); if (el) el.innerHTML = html; }
+function setText(id, text = "") { const el = byId(id); if (el) el.textContent = text; }
+function setHTML(id, html = "") { const el = byId(id); if (el) el.innerHTML = html; } // only for trusted server HTML
 function setClass(id, className = "") { const el = byId(id); if (el) el.className = className; }
+
+/* ── Scan progress line via CSS custom properties ── */
+function scanLineSet(pct) {
+  const ab = document.querySelector('.scp-actionbar');
+  if (ab) ab.style.setProperty('--scp-scan-pct', pct + '%');
+}
+function scanLineState(state) {
+  const ab = document.querySelector('.scp-actionbar');
+  if (!ab) return;
+  if (state === 'scanning') {
+    ab.style.setProperty('--scp-scan-opacity', '1');
+    ab.style.setProperty('--scp-scan-color', 'var(--bs-info, #0dcaf0)');
+  } else if (state === 'done') {
+    ab.style.setProperty('--scp-scan-color', 'var(--bs-success, #198754)');
+    setTimeout(() => ab.style.setProperty('--scp-scan-opacity', '0'), 1500);
+  } else if (state === 'error') {
+    ab.style.setProperty('--scp-scan-color', 'var(--bs-danger, #dc3545)');
+  } else {
+    ab.style.setProperty('--scp-scan-opacity', '0');
+  }
+}
 
 function getOption(key, fallback = "") {
   try { return Joomla.getOptions(key, fallback); } catch { return fallback; }
@@ -84,10 +106,12 @@ async function get_percent() {
     const val = parseInt(responseText, 10);
     if (!Number.isNaN(val) && val < 100) {
       setHTML("task_status", in_progress_string);
-      setHTML("warning_message2", "");
+      setText("warning_message2", "");
       setClass("error_message", "alert alert-info");
       setHTML("error_message", active_task);
       hideElement("button_start_scan");
+      scanLineSet(val);
+      scanLineState("scanning");
       cont = 3;
       runButton();
     }
@@ -102,12 +126,13 @@ async function estado_integrity_timediff() {
     const estado_integrity = json[0];
     const timediff = parseFloat(json[1]);
 
-    if (((estado_integrity !== "ENDED") && (estado_integrity !== error_string)) && (timediff < 3)) {
+    if (((estado_integrity !== "ENDED") && (estado_integrity !== error_string)) && (timediff < 1)) {
       get_percent();
-    } else if (((estado_integrity !== "ENDED") && (estado_integrity !== error_string)) && (timediff > 3)) {
-      hideElement("button_start_scan");
+    } else if (((estado_integrity !== "ENDED") && (estado_integrity !== error_string)) && (timediff > 1)) {
+      showElement("button_start_scan");
       hideElement("task_status");
       showElement("task_error", "block");
+      scanLineState("error");
       setClass("error_message", "alert alert-danger");
       setHTML("error_message", error_string);
     }
@@ -118,19 +143,22 @@ async function date_time(id) {
   const url = "index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=currentDateTime";
   try {
     const responseText = await httpGet(url, "text");
-    setHTML(id, responseText);
+    setText(id, responseText);
   } catch {}
 }
 
 async function runButton() {
+  const csrfToken = Joomla.getOptions("csrf.token");
+
   if (cont === 0) {
-    showElement("backup-progress", "flex");
-    setHTML("warning_message2", "");
+    scanLineSet(0);
+    scanLineState("scanning");
+    setText("warning_message2", "");
     date_time("start_time");
     percent = 0;
   } else if (cont === 1) {
     setHTML("task_status", in_progress_string);
-    const url = "index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=acciones_integrity";
+    const url = "index.php?option=com_securitycheckpro&controller=filemanager&format=raw&task=acciones_integrity" + "&" + encodeURIComponent(csrfToken) + "=1";
     // fire & forget
     httpGet(url, "text").catch(() => {});
   } else {
@@ -140,25 +168,24 @@ async function runButton() {
       const p = parseInt(responseText, 10);
       percent = Number.isNaN(p) ? 0 : p;
 
-      const bar = byId("bar");
-      if (bar) bar.style.width = percent + "%";
+      scanLineSet(percent);
 
       if (percent === 100) {
         await date_time("end_time");
         hideElement("error_message");
         setHTML("task_status", ended_string2);
-        if (bar) bar.style.width = "100%";
+        scanLineState("done");
         setHTML("completed_message2", process_completed);
         setHTML("warning_message2", updating_stats);
         if (url_to_redirect) window.location.href = url_to_redirect;
       }
     } catch {
       showElement("task_error", "block");
-      hideElement("backup-progress");
+      scanLineState("error");
       hideElement("task_status");
-      setHTML("warning_message2", "");
+      setText("warning_message2", "");
       setClass("error_message", "alert alert-danger");
-      // En el original se asignaba error_button al mensaje; respetamos esa decisión
+      // error_button_html contains trusted server HTML (button markup)
       setHTML("error_message", error_button_html);
     }
   }
@@ -277,12 +304,6 @@ function createPieCharts() {
    DOM Ready
    ======================= */
 document.addEventListener("DOMContentLoaded", () => {
-  // Bootstrap tooltip (si está disponible)
-  const ttEl = byId("extensions_updated_tooltip");
-  if (ttEl && window.bootstrap?.Tooltip) {
-    new bootstrap.Tooltip(ttEl);
-  }
-
   const clearBtn = byId("filter_fileintegrity_search_clear");
   if (clearBtn) {
     clearBtn.addEventListener("click", () => {
@@ -303,6 +324,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (startBtn) {
     startBtn.addEventListener("click", () => {
       hideElement("button_start_scan");
+      hideElement("view_log_button");
       hideElement("container_resultado");
       hideElement("container_repair");
       hideElement("completed_message2");
@@ -315,7 +337,6 @@ document.addEventListener("DOMContentLoaded", () => {
     viewLogBtn.addEventListener("click", () => window.view_modal_log());
   }
 
-  hideElement("backup-progress");
   estado_integrity_timediff();
 
   const btnClose = byId("buttonclose");

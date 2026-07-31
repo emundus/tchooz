@@ -16,6 +16,7 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Router\Route;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -70,6 +71,17 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 		}
 
 		return $params->get($pname);
+	}
+
+	public function onBeforeLoad()
+	{
+		$cid = $this->app->getInput()->getInt('cid');
+
+		$app = Factory::getApplication();
+		if ($app->getIdentity()->guest)
+		{
+			$app->redirect(Route::_('index.php?option=com_users&view=login&cid=' . $cid));
+		}
 	}
 
 	/**

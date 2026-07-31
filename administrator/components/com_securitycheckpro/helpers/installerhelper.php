@@ -1,6 +1,6 @@
 <?php
 
-// Chequeamos si el archivo está incluído en Joomla!
+// Chequeamos si el archivo estï¿½ incluï¿½do en Joomla!
 defined('_JEXEC') or die();
 
 use Joomla\CMS\Factory;
@@ -11,7 +11,7 @@ use Joomla\Database\QueryInterface;
 class installerhelper {
     
 	/**
-	 * Configuración por defecto del firewall.
+	 * Configuraciï¿½n por defecto del firewall.
 	 *
 	 * @var array{
 	 *   blacklist: string,
@@ -24,7 +24,6 @@ class installerhelper {
 	 *   priority2: string,
 	 *   priority3: string,
 	 *   methods: string,
-	 *   mode: int,
 	 *   logs_attacks: int,
 	 *   log_limits_per_ip_and_day: int,
 	 *   redirect_after_attack: int,
@@ -68,7 +67,6 @@ class installerhelper {
     'priority2'        => 'DynamicBlacklist',
     'priority3'        => 'Blacklist',
     'methods'            => 'GET,POST,REQUEST',
-    'mode'            => 1,
     'logs_attacks'            => 1,
     'log_limits_per_ip_and_day'            => 0,
     'redirect_after_attack'            => 0,
@@ -81,7 +79,7 @@ class installerhelper {
     'email_subject'            => 'Securitycheck Pro alert!',
     'email_body'            => 'Securitycheck Pro has generated a new alert. Please, check your logs.',
     'email_add_applied_rule'            => 1,
-    'email_to'            => 'youremail@yourdomain.com',
+    'email_to'            => '',
     'email_from_domain'            => 'me@mydomain.com',
     'email_from_name'            => 'Your name',
     'email_max_number'            => 20,
@@ -96,12 +94,12 @@ class installerhelper {
     'using_integers_exceptions'            => 'com_dms,com_comprofiler,com_jce,com_contactenhanced,com_securitycheckprocontrolcenter',
     'escape_strings_exceptions'            => 'com_kunena,com_jce,com_user',
     'lfi_exceptions'            => '',
-    'second_level_exceptions'            => '',    
+    'second_level_exceptions'            => 'com_securitycheckprocontrolcenter',    
     'session_protection_active'            => 1,
     'session_hijack_protection'            => 1,
     );
 
-    /* Función que modifica los valores del Firewall web para aplicar una configuración básica de los filtros */
+    /* Funciï¿½n que modifica los valores del Firewall web para aplicar una configuraciï¿½n bï¿½sica de los filtros */
     function Set_Easy_Config(): bool
     {
     
@@ -138,11 +136,11 @@ class installerhelper {
 			$previous_params = $decoded;
 			$params = array_replace($this->defaultConfig, $decoded);
 		} else {
-			// previous_params ya está en defaultConfig
+			// previous_params ya estï¿½ en defaultConfig
 			$params = $this->defaultConfig;
 		}
 			        
-        // Parámetros que se desactivan o cuyo valor se deja en blanco para evitar falsos positivos
+        // Parï¿½metros que se desactivan o cuyo valor se deja en blanco para evitar falsos positivos
         $params['check_header_referer'] = 0;
         $params['duplicate_backslashes_exceptions'] = "*";
         $params['line_comments_exceptions'] = "*";
@@ -153,7 +151,7 @@ class installerhelper {
 		$params['session_hijack_protection_what_to_check'] = 0;
         $params['strip_all_tags'] = 0;
 		
-        // Codificamos de nuevo los parámetros y los introducimos en la BBDD
+        // Codificamos de nuevo los parï¿½metros y los introducimos en la BBDD
         $json = json_encode($params, JSON_UNESCAPED_UNICODE);
 
 		if ($json === false) {
@@ -181,7 +179,7 @@ class installerhelper {
             $applied = false;
         }
                 
-        // Actualizamos el valor del campo que contendrá si se ha aplicado o no esta configuración
+        // Actualizamos el valor del campo que contendrï¿½ si se ha aplicado o no esta configuraciï¿½n
 		/** @var QueryInterface $query */
 		$query = $db->getQuery(true);
 		$query->delete($db->quoteName('#__securitycheckpro_storage'));

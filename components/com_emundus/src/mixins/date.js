@@ -25,6 +25,38 @@ export default {
 			return `${day}/${month}/${year} à ${hours}h${minutes}`;
 		},
 
+		formatSlotDay(dateString) {
+			if (!dateString) {
+				return '';
+			}
+
+			const [date] = dateString.split(' ');
+			const [year, month, day] = date.split('-');
+			return `${day}/${month}/${year}`;
+		},
+
+		formatSlotTime(dateString) {
+			if (!dateString) {
+				return '';
+			}
+
+			const [, time] = dateString.split(' ');
+			if (!time) {
+				return '';
+			}
+
+			const [hour, minute] = time.split(':');
+			return `${parseInt(hour, 10)}h${minute}`;
+		},
+
+		formatSlotTimeRange(startString, endString) {
+			if (!startString || !endString) {
+				return '';
+			}
+
+			return `${this.formatSlotTime(startString)} - ${this.formatSlotTime(endString)}`;
+		},
+
 		convertOldDateTimeStringToZonedDateTime(dateString) {
 			const [date, time] = dateString.split(' ');
 			const [year, month, day] = date.split('-');

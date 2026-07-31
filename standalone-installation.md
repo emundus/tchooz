@@ -1,5 +1,11 @@
 # Standalone installation
 
+## Server recommended prerequisites
+- 4 cores (8 vCPU)
+- 8 GB of RAM minimum, 16 GB if possible
+- 50 GB of storage minimum is recommended, but this depends on your usage. We recommend setting up alerts so you can monitor how your storage grows over time.
+
+
 ## Installing the web server: Apache2
 For the Tchooz web application to work properly, which is based on PHP and operates via the HTTP/HTTPS protocols, it is essential to install a web server. You can use Apache or Nginx.
 
@@ -119,44 +125,19 @@ sudo systemctl restart apache2
 
 ## Installing third-party components
 To ensure the proper functioning of certain Tchooz modules, it is necessary to install additional packages. The EMUNDUS support team may need these packages during the :
-- `nodejs`
-- `npm`
-- `yarn`
 - `python3`
 - `python3-mysqldb`
 - `python3-pip`
 In a Debian environment, these packages are usually available in the official repositories. To install them, run the following commands:
 ```bash
-sudo apt update && sudo apt install -y nodejs npm yarn python3 python3-mysqldb python3-pip python3-pymysql
+sudo apt update && sudo apt install -y python3 python3-mysqldb python3-pip python3-pymysql
 ```
 
 ## DBMS installation: MySQL
 For the platform to function properly, a database management system (DBMS) is required. We will use MySQL as the database for our application platform.
 
-### Step 1: Adding the MySQL repository
-Before installing MySQL, you must first add the repository and trust the MySQL key. Depending on your network environment, the commands will vary:
-- without a web proxy on your infrastructure (default) :
-    ```bash
-    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B7B3B788A8D3785C
-    ```
-- with proxy on your infrastructure (customised) :
-    ```bash
-    sudo apt-key adv --keyserver keyserver.ubuntu.com --keyserver-options http-proxy={{ proxy_address }} --recv-keys B7B3B788A8D3785C
-    ```
-  > Replace {{ proxy_address }} with the address of the proxy you wish to use if necessary.
-
-### Step 2: Configuring the MySQL repository
-Next, add the MySQL repository to your list of sources:
-```bash
-echo "deb http://repo.mysql.com/apt/debian/ bookworm mysql-8.0" | sudo tee /etc/apt/sources.list.d/mysql8.list
-```
-
-### Step 3: Installing MySQL
-To install MySQL, first update the repositories, then install the MySQL server using the following commands:
-```bash
-sudo apt update
-sudo apt install mysql-server -y
-```
+### Installing MySQL
+Tchooz need MySQL 8.4 LTS.
 
 ## Installing the Tchooz application components
 After installing the Apache2 web server, PHP and MySQL, we're ready to pick up the Tchooz application components.
@@ -178,11 +159,11 @@ The eMundus application components must be retrieved using the Git protocol, as 
     ```
 - Clone the repository:
     ```bash
-  git clone https://github.com/emundus/tchooz.git
+    git clone https://github.com/emundus/tchooz.git
     ```
 - Move to the project directory:
     ```bash
-  cd /mnt/data/web/tchooz
+    cd /mnt/data/web/tchooz
     ```
   
 ### Step 3: File configuration
@@ -212,35 +193,52 @@ To set up VirtualHost, open a configuration file by running the following comman
 ```bash
 sudo nano /etc/apache2/sites-available/{{ sitename }}.conf
 ```
-> Replace {{ sitename }} with the name of your platform (example: app.example.fr).
+> Replace {{ site_server_name }} with the name of your platform (example: app.example.fr).
+> Replace {{ site_server_path }} with the path of your project (example: mnt/data/web/{{ project }})
 
 ### Step 2: File configuration
 In this file, add the following lines:
 ```apache
 <VirtualHost *:80>
-    ServerAdmin infrastructure@emundus.fr
     ServerName {{ site_server_name }}
-    DocumentRoot {{ project_path }}
-    
+    DocumentRoot {{ site_server_path }}
     <Directory />
         AllowOverride All
     </Directory>
-    
-    <Directory {{ project_path }}>
+    <Directory {{ site_server_path }}>
         Options Indexes FollowSymLinks MultiViews
         AllowOverride all
         Require all granted
     </Directory>
-    
+    ErrorLog /var/log/apache2/{{ site_server_name }}-error.log
+    LogLevel error
+    CustomLog /var/log/apache2/{{ site_server_name }}-access.log combined
+    RewriteEngine on
+    RewriteCond %{SERVER_NAME} ={{ site_server_name }}
+    RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+</VirtualHost>
+
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+    ServerName {{ site_server_name }}
+    DocumentRoot {{ site_server_path }}
+    <Directory />
+        AllowOverride All
+    </Directory>
+    <Directory {{ site_server_path }}>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride all
+        Require all granted
+    </Directory>
     ErrorLog /var/log/apache2/{{ site_server_name }}-error.log
     LogLevel error
     CustomLog /var/log/apache2/{{ site_server_name }}-access.log combined
 </VirtualHost>
+</IfModule>
 ```
-> {{ site_server_name }} : http://app.exemple.fr 
-> {{ project_path }} : /path/project
 
-At this stage, the Apache2 web server is configured to work only on port 80 (HTTP). Later we'll look at configuring SSL to pass the Tchooz platform on port 443 (HTTPS).
+> At this stage, the Apache2 web server is configured.
+> Now generate your SSL certificate and add it to your vhost.
 
 ### Step 3: Activating the configuration
 Now it's time to activate our configuration by executing the following commands:
@@ -260,7 +258,81 @@ sudo systemctl restart apache2
 We're now going to look at the second essential element, which concerns the database.
 
 ## Setting up the database
-To complete...
+
+### Step 1: Create database
+In MySQL CLI :
+```sh
+CREATE DATABASE {{ site_db }};
+CREATE USER '{{ db_user }}'@'{{ db_host }}' IDENTIFIED BY '{{ db_password }}';
+GRANT ALL PRIVILEGES ON {{ site_db }}.* TO '{{ db_user }}'@'{{ db_host }}';
+GRANT PROCESS ON *.* TO '{{ db_user }}'@'{{ db_host }}';
+FLUSH PRIVILEGES;
+```
+
+Here a basic MySQL configuration for Tchooz : 
+```
+[mysqld]
+max_allowed_packet = 256M
+innodb_log_file_size = 1024M
+innodb_log_buffer_size = 80M
+innodb_default_row_format = DYNAMIC
+innodb_strict_mode = 0
+sql_mode = ""
+disable_log_bin
+```
+
+Pour finaliser l'installation vous devez maintenant copier le fichier configuration.php.dist ainsi que le .htaccess
+```sh
+cp configuration.php.dist configuration.php
+cp htaccess.txt .htaccess
+chown www-data: configuration.php
+chown www-data: .htaccess
+```
+
+Remplacer dans le configuration.php les valeurs lié à votre base de données crée précédemment
+```sh
+sed -i "s:\$host = '.*':\$host = '{{ db_host }}':g" configuration.php
+sed -i "s:\$user = '.*':\$user = '{{ db_user }}':g" configuration.php
+sed -i "s:\$password = '.*':\$password = '{{ db_password }}':g" configuration.php
+sed -i "s:\$db = '.*':\$db = '{{ site_db }}':g" configuration.php
+```
+
+Initialisez la db avec les commande suisvantes:
+
+```shell
+php cli/joomla.php database:import --folder=".docker/installation/vanilla" -n
+
+php cli/joomla.php tchooz:vanilla --action="import" --folder=".docker/installation/vanilla" -n
+
+php cli/joomla.php tchooz:vanilla --action="import_foreign_keys" --folder=".docker/installation/vanilla" -n
+
+php cli/joomla.php tchooz:language --job=database -n
+```
+
+### Create an administrator user
+
+```shell
+php cli/joomla.php tchooz:user:add --username="{{admin_user}}" --lastname="{{admin_lastname}}" --firstname="{{admin_firstname}}" --password="{{admin_password}}" --email="{{admin_email}}" --usergroup="Registered,Super Users" --userprofiles="System administrator,Administrateur de plateforme,Formulaire de base" --useremundusgroups="Administrateur de plateforme" -n 2>/dev/null || true
+```
 
 ## Project update
-To complete...
+
+```shell
+
+# to set platform on mode maintenance 
+sudo php cli/joomla.php site:down
+
+sudo git reset --hard
+
+# Git project update
+sudo git fetch --prune
+sudo git pull
+
+# Platform CLI update
+sudo php cli/joomla.php tchooz:update  -n --component=com_emundus,com_hikashop,com_fabrik,com_dropfiles
+sudo php cli/joomla.php maintenance:database --fix
+
+# re open platform to the world
+sudo php cli/joomla.php site:up
+
+```

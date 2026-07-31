@@ -1107,12 +1107,26 @@ footer.sticky-footer {
 .scp-toolbar .btn,.scp-toolbar .dropdown-toggle{white-space:nowrap}
 .scp-toolbar .btn .badge{margin-left:.4rem}
 
-/* XS/Móvil (≤576px) */
-@media (max-width:576px){
+/* Móvil / tablet estrecho (≤767.98px, breakpoint md de Bootstrap).
+   Antes el corte era a 576px, pero entre 576px y 768px el texto de los botones
+   ya es visible (d-sm-inline) mientras la barra seguía en modo fila + wrap,
+   sin sitio para los 6 grupos: se veía apretada y descolocada. */
+@media (max-width:767.98px){
   .scp-toolbar{flex-direction:column;align-items:stretch;gap:.75rem}
   .scp-toolbar .btn-group{flex:1 1 100%;display:flex;flex-direction:column;gap:.5rem}
   .scp-toolbar .btn-group.shrink{flex:1 1 100%}
-  .scp-toolbar .btn,.scp-toolbar .dropdown-toggle{width:100%;justify-content:flex-start}
+  .scp-toolbar .btn,.scp-toolbar .dropdown-toggle{
+    width:100%;
+    justify-content:flex-start;
+    white-space:normal; /* antes forzaba nowrap, y con texto visible + ancho 100% podía desbordar */
+    text-align:left;
+  }
+  /* #com_securitycheckpro .btn fija height:38px; en móvil dejamos que crezca si el texto envuelve */
+  #com_securitycheckpro .scp-toolbar .btn,
+  #com_securitycheckpro .scp-toolbar .dropdown-toggle{
+    height:auto;
+    min-height:38px;
+  }
   .scp-toolbar .dropdown-menu{
     position:static!important; /* se integra en el flujo, no se corta */
     float:none;width:100%;
@@ -1134,15 +1148,6 @@ footer.sticky-footer {
 
 /* Dropdown menu dentro del componente */
 #com_securitycheckpro .dropdown-menu {
-  --bs-dropdown-color: #212529;
-  --bs-dropdown-link-color: #212529;
-  --bs-dropdown-link-hover-bg: #f2f4f7;
-  --bs-dropdown-link-hover-color: #000000;
-  --bs-dropdown-border-color: #d0d7de;
-  --bs-dropdown-header-color: #333333;
-
-  color: var(--bs-dropdown-color) !important;
-  border: 1px solid var(--bs-dropdown-border-color) !important;
   border-radius: .5rem;
   box-shadow: 0 8px 16px rgba(0,0,0,.12);
   z-index: 1080;
@@ -1151,10 +1156,9 @@ footer.sticky-footer {
 
 /* Header dentro del dropdown */
 #com_securitycheckpro .dropdown-menu .dropdown-header {
-  background: #f6f8fa;
-  color: var(--bs-dropdown-header-color) !important;
+  background: var(--bs-tertiary-bg);
   font-weight: 600;
-  border-radius: .5rem .5rem 0 0; /* redondeo arriba */
+  border-radius: .5rem .5rem 0 0;
 }
 
 /* Items del dropdown */
@@ -1165,8 +1169,8 @@ footer.sticky-footer {
 
 #com_securitycheckpro .dropdown-menu .dropdown-item:hover,
 #com_securitycheckpro .dropdown-menu .dropdown-item:focus {
-  background-color: var(--bs-dropdown-link-hover-bg) !important;
-  color: var(--bs-dropdown-link-hover-color) !important;
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-emphasis-color);
 }
 
 /* Botón que abre dropdown */
@@ -1178,13 +1182,14 @@ footer.sticky-footer {
 .scp-grid { display:grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
 @media (max-width: 1199.98px){ .scp-grid{grid-template-columns: repeat(2,1fr);} }
 @media (max-width: 575.98px){ .scp-grid{grid-template-columns: 1fr;} }
+@media (min-width: 1200px){ .scp-grid--3{grid-template-columns: repeat(3,1fr);} }
 
 .scp-card {
-    border:1px solid #e9edf2; border-radius: .75rem;
-    box-shadow: 0 1px 2px rgba(16,24,40,.06);
+    border:1px solid var(--bs-border-color); border-radius: .75rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06);
 }
 .scp-card__body { padding: .85rem .85rem 1rem; text-align:center; }
-.scp-card__icon .fa { font-size:1.5rem; color:#16a34a; }
+.scp-card__icon .fa { font-size:1.5rem; color: var(--bs-success); }
 .scp-card__title { font-weight:600; margin-top:.25rem; }
 .scp-card__status { margin:.45rem 0 .2rem; }
 .scp-card__actions .btn { margin-top:.2rem; }
@@ -1192,11 +1197,17 @@ footer.sticky-footer {
 .scp-chip {
     display:inline-block; padding:.18rem .5rem; border-radius:999px;
     font-size:.78rem; font-weight:600; letter-spacing:.1px;
-    background:#eef2f7; color:#334155;
+    background: var(--bs-secondary-bg); color: var(--bs-secondary-color);
 }
-.scp-chip--ok { background:#e7f6ee; color:#166534; }
-.scp-chip--ko { background:#fde2e1; color:#9b1c1c; }
-.scp-chip--dark { background:#e5e7eb; color:#111827; }
+.scp-chip.scp-chip--ok { background: var(--bs-success, #198754) !important; color: #fff !important; }
+.scp-chip.scp-chip--ko { background: var(--bs-danger, #dc3545) !important; color: #fff !important; }
+.scp-chip--dark { background: var(--bs-tertiary-bg); color: var(--bs-emphasis-color); }
+.scp-chip--outline { background: transparent; color: var(--bs-secondary-color); border:1px solid var(--bs-border-color); display:inline-flex; align-items:center; gap:.35rem; }
+
+/* Bootstrap's .form-select/.form-control default to width:100%, which forces flex children
+   (incl. Joomla's own pagination limitbox) onto their own line inside a flex-wrap row. */
+.scp-filter-row .form-select,
+.scp-filter-row .form-control { width: auto; }
 
 .scp-section { margin-top: .8rem; }
 
@@ -1225,8 +1236,8 @@ footer.sticky-footer {
 @media (max-width: 991.98px){ .scp-two-cols{ grid-template-columns: minmax(0, 1fr) !important; } }
 
 /* Cards estándar */
-.card.shadow-soft { box-shadow: 0 1px 2px rgba(16,24,40,.06); border-radius:.75rem; border:1px solid #e9edf2; }
-.card .card-header { font-weight:600; border-bottom:1px solid #edf1f6; padding:.6rem .9rem; }
+.card.shadow-soft { box-shadow: 0 1px 2px rgba(0,0,0,.06); border-radius:.75rem; border:1px solid var(--bs-border-color); }
+.card .card-header { font-weight:600; border-bottom:1px solid var(--bs-border-color); padding:.6rem .9rem; }
 .card .card-body { padding:.8rem .9rem; }
 
 /* Stats compactas */
@@ -1252,8 +1263,79 @@ footer.sticky-footer {
 }
 
 .sci-box {
-  border:1px solid #e9edf2; border-radius:.6rem; padding: .9rem; 
+  border:1px solid var(--bs-border-color); border-radius:.6rem; padding: .9rem;
 }
 .sci-box .sci-title { font-weight:600; margin-bottom:.4rem; display:flex; align-items:center; gap:.4rem; }
 .sci-box .sci-body  { font-size:.92rem; }
+
+/* ===== Malware scan dashboard: action bar ===== */
+.scp-actionbar {
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    flex-wrap:wrap;
+    padding:.9rem 1.1rem;
+    border:1px solid var(--bs-border-color); border-radius:.75rem;
+    box-shadow: 0 1px 6px rgba(0,0,0,.10), 0 0 0 1px rgba(0,0,0,.04);
+    background:var(--bs-body-bg);
+    margin-bottom:1rem;
+    position: relative;
+    overflow: hidden;
+}
+/* Línea de progreso inset — controlada via CSS custom properties desde JS */
+.scp-actionbar::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 3px;
+    width: var(--scp-scan-pct, 0%);
+    opacity: var(--scp-scan-opacity, 0);
+    background: var(--scp-scan-color, var(--bs-info, #0dcaf0));
+    transition: width .4s ease, background .3s ease, opacity .8s ease;
+    pointer-events: none;
+}
+.scp-actionbar__title { font-weight:700; font-size:1.1rem; margin:0; display:flex; align-items:center; gap:.5rem; }
+.scp-actionbar__subtitle { color:var(--bs-secondary-color); font-size:.85rem; margin:.15rem 0 0; }
+.scp-actionbar__actions { display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; }
+@media (max-width:575.98px){
+  .scp-actionbar { flex-direction:column; align-items:stretch; }
+  .scp-actionbar__actions { width:100%; }
+  .scp-actionbar__actions .btn { flex:1 1 auto; }
+}
+
+/* ===== Callout (aviso con borde izquierdo, sin fondo agresivo) ===== */
+.scp-callout {
+    padding:.75rem 1rem;
+    border-left:4px solid var(--bs-border-color);
+    border-radius:0 .5rem .5rem 0;
+    background: var(--bs-tertiary-bg);
+    font-size:.9rem;
+    margin-bottom:1rem;
+}
+.scp-callout--warning { border-left-color: var(--bs-warning, #ffc107); background: var(--bs-warning-bg-subtle, #fff3cd); }
+.scp-callout--danger  { border-left-color: var(--bs-danger, #dc3545); background: var(--bs-danger-bg-subtle, #f8d7da); }
+.scp-callout--info    { border-left-color: var(--bs-info, #0dcaf0); background: var(--bs-info-bg-subtle, #cff4fc); }
+.scp-callout__detail  { font-size:.82rem; color: var(--bs-secondary-color, #6c757d); margin-top:.4rem; }
+
+/* ===== Tabla responsive (reflow a tarjetas en móvil, sin JS) =====
+   Uso: añadir la clase .scp-table-responsive a la <table> y un atributo
+   data-label="<etiqueta de columna>" a cada <td> de cuerpo. */
+@media (max-width:767.98px){
+  .scp-table-responsive thead { display:none; }
+  .scp-table-responsive, .scp-table-responsive tbody, .scp-table-responsive tr, .scp-table-responsive td {
+    display:block; width:100%;
+  }
+  .scp-table-responsive tbody tr {
+    border:1px solid var(--bs-border-color); border-radius:.6rem;
+    margin-bottom:.6rem; padding:.4rem .6rem;
+  }
+  .scp-table-responsive tbody td {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:.75rem; border:0 !important; padding:.4rem .1rem;
+    text-align:right; white-space:normal;
+  }
+  .scp-table-responsive tbody td::before {
+    content: attr(data-label);
+    font-weight:600; text-align:left; margin-right:auto;
+    color: var(--bs-secondary-color); font-size:.82rem;
+  }
+}
 

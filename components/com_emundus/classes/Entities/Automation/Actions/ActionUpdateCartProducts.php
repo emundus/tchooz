@@ -75,7 +75,7 @@ class ActionUpdateCartProducts extends ActionEntity
 
 			if (!empty($step->id))
 			{
-				$cart = $cartRepository->getCartByFnum($fnum, $step->id, $this->getAutomatedTaskUserId());
+				$cart = $cartRepository->getCartByFnum($fnum, $step->id, $this->getAutomatedTaskUserId(), $executionContext);
 
 				if (!empty($cart)) {
 					$actionProducts = (array) $this->getParameterValue('products');

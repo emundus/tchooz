@@ -1,0 +1,24 @@
+{
+  "en-GB": {
+    "ACCEPT_THE_TERMS": "I hereby give my consent to the processing of my personal data to create my user account.",
+    "BACK_TO_LOGIN": "<br />Already have an account? <a href=\"/en/connexion\">Log in</a>",
+    "DATA_PRIVACY_POLICY_REGISTRATION_LINK": "Please refer to the <a href=\"en/politique-de-confidentialite-des-donnees\" target=\"_blank\">Data Privacy Policy</a> for further information.",
+    "JLOGIN_DESC": "To access your personal space",
+    "USER_PASSWORD_MIN_INT": "%s number(s)",
+    "USER_PASSWORD_MIN_LENGTH": "Minimum %s characters",
+    "USER_PASSWORD_MIN_LOWER": "%s lowercase letter(s)",
+    "USER_PASSWORD_MIN_SYM": "%s symbol(s)",
+    "USER_PASSWORD_MIN_UPPER": "%s uppercase letter(s)"
+  },
+  "fr-FR": {
+    "ACCEPT_THE_TERMS": "Je consens à l'exploitation de mes données personnelles afin de créer mon compte utilisateur.",
+    "BACK_TO_LOGIN": "<br />Déjà un compte ? <a href=\"connexion\">Connectez-vous</a>",
+    "DATA_PRIVACY_POLICY_REGISTRATION_LINK": "Pour en savoir plus, consultez la <a href=\"fr/politique-de-confidentialite-des-donnees\" target=\"blank\">politique de confidentialité des données</a>.",
+    "JLOGIN_DESC": "Pour accéder à votre espace personnel",
+    "USER_PASSWORD_MIN_INT": "%s chiffre(s)",
+    "USER_PASSWORD_MIN_LENGTH": "Minimum %s caractères",
+    "USER_PASSWORD_MIN_LOWER": "%s lettre(s) minuscule",
+    "USER_PASSWORD_MIN_SYM": "%s symbole(s)",
+    "USER_PASSWORD_MIN_UPPER": "%s lettre(s) majuscule"
+  }
+}

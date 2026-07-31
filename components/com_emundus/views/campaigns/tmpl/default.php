@@ -72,6 +72,7 @@ Text::script('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_OPTIONS_STATUS');
 Text::script('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_OPTIONS_FORMS');
 Text::script('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_OPTIONS_EVALUATION_FORMS');
 Text::script('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_OPTIONS_VALIDATORS');
+Text::script('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_OPTIONS_TAGS');
 Text::script('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_RESULT_TITLE');
 Text::script('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_RESULT_ROWS');
 Text::script('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_RESULT_CLOSE');
@@ -248,6 +249,7 @@ if ($addonAnonymous->isActivated())
     );
 }
 $data['publicAddonActivated'] = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value)->isActivated();
+$data['useOldProgramForm'] = $this->useOldProgramForm;
 ?>
 
 <?php echo LayoutHelper::render('emundus.vue-mount', [

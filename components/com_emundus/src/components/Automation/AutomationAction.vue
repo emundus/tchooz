@@ -3,6 +3,7 @@ import fromAutomationFieldToParameter from '@/mixins/transformIntoParameterField
 import Parameter from '@/components/Utils/Parameter.vue';
 import AutomationActionTargets from '@/components/Automation/AutomationActionTargets.vue';
 import ParameterForm from '@/components/Utils/Form/ParameterForm.vue';
+import { Icon } from '@emundus/ui';
 
 export default {
 	name: 'AutomationAction',
@@ -25,7 +26,7 @@ export default {
 		},
 	},
 	mixins: [fromAutomationFieldToParameter],
-	components: { AutomationActionTargets, Parameter, ParameterForm },
+	components: { AutomationActionTargets, Parameter, ParameterForm, Icon },
 	data() {
 		return {
 			formGroups: [],
@@ -36,7 +37,29 @@ export default {
 	},
 	methods: {
 		async mountForm() {
+			this.normalizeRepeatableGroups();
 			this.formGroups = await this.fieldsToParameterFormGroups(this.action.parameters, this.action.parameter_values);
+		},
+		normalizeRepeatableGroups() {
+			if (!this.action.parameter_values || typeof this.action.parameter_values !== 'object') {
+				return;
+			}
+
+			const repeatableGroups = new Set();
+			(this.action.parameters || []).forEach((param) => {
+				if (param.group && param.group.isRepeatable) {
+					repeatableGroups.add(param.group.name);
+				}
+			});
+
+			repeatableGroups.forEach((groupName) => {
+				const value = this.action.parameter_values[groupName];
+				// PHP serializes non-sequential numeric keys as an object ({0:..,2:..}); the form treats
+				// repeatable group values as a positional array, so normalize (and compact) back to one.
+				if (value && typeof value === 'object' && !Array.isArray(value)) {
+					this.action.parameter_values[groupName] = Object.values(value);
+				}
+			});
 		},
 		removeAction(action) {
 			this.$emit('remove-action', action);
@@ -81,6 +104,15 @@ export default {
 				}
 			}
 		},
+		onRowRemoved(group, rowIndex) {
+			if (group && group.isRepeatable && Array.isArray(this.action.parameter_values[group.id])) {
+				this.action.parameter_values[group.id].splice(rowIndex, 1);
+
+				if (this.action.parameter_values[group.id].length === 0) {
+					delete this.action.parameter_values[group.id];
+				}
+			}
+		},
 	},
 };
 </script>
@@ -99,9 +131,18 @@ export default {
 				</div>
 				<h3 class="tw-text-lg tw-font-medium">{{ translate(action.label) }}</h3>
 			</div>
-			<span class="material-symbols-outlined tw-cursor-pointer tw-text-red-500" @click="removeAction(action)">
-				close
-			</span>
+			<div class="tw-mb-4 tw-flex tw-flex-row tw-items-center tw-gap-2">
+				<Icon
+					v-if="action.is_asynchronous"
+					name="pending_actions"
+					:size="20"
+					:title="translate('COM_EMUNDUS_AUTOMATION_ACTION_ASYNCHRONOUS')"
+					class="tw-text-neutral-500"
+				/>
+				<span class="material-symbols-outlined tw-cursor-pointer tw-text-red-500" @click="removeAction(action)">
+					close
+				</span>
+			</div>
 		</div>
 		<p class="tw-mb-2">{{ translate(action.description) }}</p>
 
@@ -112,6 +153,7 @@ export default {
 			:groups="formGroups"
 			:fields="this.action.parameters"
 			@parameterValueUpdated="onParameterValueUpdated"
+			@rowRemoved="onRowRemoved"
 		>
 		</ParameterForm>
 

@@ -8,7 +8,6 @@ use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterEmundusCartUpdateDefinition;
 use Tchooz\Entities\Payment\AlterationEntity;
 use Tchooz\Entities\Payment\AlterationType;
-use Tchooz\Entities\Payment\PaymentMethodEntity;
 use Tchooz\Exception\EmundusAdjustBalanceAlreadyAddedException;
 use Tchooz\Exception\EmundusInvalidAmountException;
 use Tchooz\Repositories\Contacts\ContactRepository;
@@ -17,14 +16,14 @@ use Tchooz\Entities\Payment\CartEntity;
 use Tchooz\Entities\Payment\TransactionEntity;
 use Tchooz\Entities\Payment\TransactionStatus;
 use Tchooz\Entities\Contacts\ContactEntity;
-use Tchooz\Synchronizers\Payment\Sogecommerce;
+use Tchooz\Enums\Payment\PaymentGatewayEnum;
+use Tchooz\Synchronizers\Payment\Lyra;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Event\GenericEvent;
-use Tchooz\Synchronizers\Payment\Stripe;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
 
@@ -180,7 +179,7 @@ class CartRepository
 		return $cart_id;
 	}
 
-	public function fillCart(CartEntity $cart_entity, int $step_id = 0): ?CartEntity
+	public function fillCart(CartEntity $cart_entity, int $step_id = 0, ?AutomationExecutionContext $executionContext = null): ?CartEntity
 	{
 		$payment_repository = new PaymentRepository();
 		$query = $this->db->createQuery();
@@ -250,9 +249,11 @@ class CartRepository
 				$cart_entity->setCustomer($contact_entity);
 
 				if (!empty($cart->payment_method_id)) {
-					$cart_entity->setSelectedPaymentMethod(new PaymentMethodEntity($cart->payment_method_id));
+					$paymentMethodRepository = new PaymentMethodRepository();
+					$paymentMethod = $paymentMethodRepository->getById($cart->payment_method_id);
+					$cart_entity->setSelectedPaymentMethod($paymentMethod);
 
-					if ($cart_entity->getSelectedPaymentMethod()->getName() === 'sepa') {
+					if (!empty($paymentMethod) && $paymentMethod->getName() === 'sepa') {
 						try {
 							$cart_entity->setNumberInstallmentDebit($cart->number_installment_debit);
 						} catch (\Exception $e) {
@@ -301,7 +302,7 @@ class CartRepository
 		}
 
 		if (!empty($step_id)) {
-			$payment_step = $payment_repository->getPaymentStepById($step_id, $cart_entity->getFnum());
+			$payment_step = $payment_repository->getPaymentStepById($step_id, $cart_entity->getFnum(), $executionContext);
 
 			if (!empty($payment_step)) {
 				$file_campaign_id = $this->getCampaignIdFromCart($cart_entity);
@@ -699,7 +700,7 @@ class CartRepository
 		return $saved;
 	}
 
-	public function getCartByFnum(string $fnum, int $step_id, int $user_id = 0): ?CartEntity
+	public function getCartByFnum(string $fnum, int $step_id, int $user_id = 0, ?AutomationExecutionContext $executionContext = null): ?CartEntity
 	{
 		$cart = null;
 
@@ -717,27 +718,27 @@ class CartRepository
 
 			if (!empty($cart_data['id'])) {
 				$cart = new CartEntity($cart_data['id'], $fnum);
-				$cart = $this->fillCart($cart, $step_id);
+				$cart = $this->fillCart($cart, $step_id, $executionContext);
 
 				if (empty($cart_data['step_id'])) {
 					$cart->setStepId($step_id);
-					$this->saveCart($cart);
+					$this->saveCart($cart, 0, $executionContext);
 				} else if ($cart_data['step_id'] != $step_id) {
-					$this->resetCart($cart, $user_id);
+					$this->resetCart($cart, $user_id, $executionContext);
 					$cart->setStepId($step_id);
-					$this->saveCart($cart);
-					$cart = $this->fillCart($cart, $step_id);
+					$this->saveCart($cart, 0, $executionContext);
+					$cart = $this->fillCart($cart, $step_id, $executionContext);
 				}
 			} else {
 				$cart_id = $this->createCart($fnum, $step_id);
-				$cart = $this->getCartById($cart_id);
+				$cart = $this->getCartById($cart_id, 0, 0, $executionContext);
 			}
 		}
 
 		return $cart;
 	}
 
-	public function getCartById(int $cart_id, int $step_id = 0, int $user_id = 0): ?CartEntity
+	public function getCartById(int $cart_id, int $step_id = 0, int $user_id = 0, ?AutomationExecutionContext $executionContext = null): ?CartEntity
 	{
 		$cart = null;
 
@@ -768,19 +769,19 @@ class CartRepository
 
 				$cart = new CartEntity($cart_id, $cart_data['fnum']);
 				if (!empty($step_id)) {
-					$cart = $this->fillCart($cart, $step_id);
+					$cart = $this->fillCart($cart, $step_id, $executionContext);
 
 					if (empty($cart_data['step_id'])) {
 						$cart->setStepId($step_id);
-						$this->saveCart($cart);
+						$this->saveCart($cart, 0, $executionContext);
 					} else if ($cart_data['step_id'] != $step_id) {
-						$this->resetCart($cart, $user_id);
+						$this->resetCart($cart, $user_id, $executionContext);
 						$cart->setStepId($step_id);
-						$this->saveCart($cart);
-						$cart = $this->fillCart($cart, $step_id);
+						$this->saveCart($cart, 0, $executionContext);
+						$cart = $this->fillCart($cart, $step_id, $executionContext);
 					}
 				} else {
-					$cart = $this->fillCart($cart);
+					$cart = $this->fillCart($cart, 0, $executionContext);
 				}
 			}
 		}
@@ -1107,26 +1108,16 @@ class CartRepository
 			$this->db->setQuery($query);
 			$sync_type = $this->db->loadResult();
 
-			$synchronizer = null;
-			switch ($sync_type) {
-				case 'sogecommerce':
-					$synchronizer = new Sogecommerce();
+			$synchronizer = PaymentGatewayEnum::tryFrom($sync_type)?->getSynchronizer();
 
-					if (!in_array($cart->getSelectedPaymentMethod()->getName(), $manual_payment_methods))
-					{
-						// in case of an invalid custom reference passed, replace it with a valid one
-						$valid = $synchronizer->verifyReference($transaction->getExternalReference());
-						if (!$valid) {
-							$transaction->generateExternalReference(6);
-							$transaction_repository->saveTransaction($transaction, $current_user_id);
-						}
-					}
-
-					break;
-				case 'stripe':
-					$synchronizer = new Stripe();
-				default:
-					break;
+			if ($synchronizer instanceof Lyra && !in_array($cart->getSelectedPaymentMethod()->getName(), $manual_payment_methods))
+			{
+				// in case of an invalid custom reference passed, replace it with a valid one
+				$valid = $synchronizer->verifyReference($transaction->getExternalReference());
+				if (!$valid) {
+					$transaction->generateExternalReference(6);
+					$transaction_repository->saveTransaction($transaction, $current_user_id);
+				}
 			}
 
 			if (!empty($synchronizer)) {
@@ -1266,7 +1257,7 @@ class CartRepository
 	 *
 	 * @return bool
 	 */
-	public function resetCart(CartEntity $cart, int $user_id): bool
+	public function resetCart(CartEntity $cart, int $user_id, ?AutomationExecutionContext $executionContext = null): bool
 	{
 		$reset = false;
 
@@ -1280,7 +1271,7 @@ class CartRepository
 			$cart->setSelectedPaymentMethod(null);
 			$cart->setInstallmentMonthday(1);
 
-			$reset = $this->saveCart($cart, $user_id);
+			$reset = $this->saveCart($cart, $user_id, $executionContext);
 		}
 
 		return $reset;

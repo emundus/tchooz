@@ -11,13 +11,16 @@ namespace Tchooz\Factories\Contacts;
 
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Contacts\ContactEntity;
+use Tchooz\Enums\Comments\CommentTargetTypeEnum;
 use Tchooz\Enums\Contacts\GenderEnum;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 use Tchooz\Factories\DBFactory;
 use Tchooz\Factories\EmundusFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Comments\CommentRepository;
 use Tchooz\Repositories\Contacts\ContactAddressRepository;
 use Tchooz\Repositories\Contacts\ContactCountryRepository;
+use Tchooz\Repositories\Contacts\ContactFileRepository;
 use Tchooz\Repositories\Contacts\ContactOrganizationRepository;
 
 class ContactFactory extends EmundusFactory implements DBFactory
@@ -27,11 +30,20 @@ class ContactFactory extends EmundusFactory implements DBFactory
 	private const ORGANIZATIONS = 'organizations';
 	private const APPLICATION_FILES = 'application_files';
 
+	private const COMMENTS = 'comments';
+
+	/**
+	 * Id of the user requesting the contacts, used to filter visible comments.
+	 * Must be transmitted by the caller (controller) — never resolved from the global application here.
+	 */
+	private int $currentUserId = 0;
+
 	protected const RELATIONS = [
 		self::ADDRESSES,
 		self::COUNTRIES,
 		self::ORGANIZATIONS,
 		self::APPLICATION_FILES,
+		self::COMMENTS,
 	];
 
 	public function fromDbObject(object|array $dbObject, bool|array $withRelations = true, array $exceptRelations = [], ?DatabaseDriver $db = null): ContactEntity
@@ -57,22 +69,23 @@ class ContactFactory extends EmundusFactory implements DBFactory
 			service: $dbObject['service'] ?? null,
 			countries: $relations[self::COUNTRIES] ?? [],
 			organizations: $relations[self::ORGANIZATIONS] ?? [],
-			// If user_id is set, we can retrieve application files via applicant_id
 			application_files: $relations[self::APPLICATION_FILES] ?? [],
 			profile_picture: $dbObject['profile_picture'] ?? null,
 			published: (bool) $dbObject['published'],
 			status: !empty($dbObject['status']) ? VerifiedStatusEnum::from($dbObject['status']) : null,
+			comments: $relations[self::COMMENTS] ?? []
 		);
 	}
 
-	protected function loadRelation(string $relation, array $object): array
+	protected function loadRelationFromArray(string $relation, array $object): array
 	{
 		return match ($relation)
 		{
 			self::ADDRESSES => $this->loadAddresses($object['id']),
 			self::COUNTRIES => $this->loadCountries($object['id']),
 			self::ORGANIZATIONS => $this->loadOrganizations($object['id']),
-			self::APPLICATION_FILES => $this->loadApplicationFiles($object['user_id'] ?? null),
+			self::APPLICATION_FILES => $this->loadApplicationFiles($object['id'] ?? null),
+			self::COMMENTS => $this->loadComments($object['id'] ?? null),
 			default => [],
 		};
 	}
@@ -98,14 +111,32 @@ class ContactFactory extends EmundusFactory implements DBFactory
 		return $contactOrganizationRepository->getOrganizationsByContactId($contactId);
 	}
 
-	private function loadApplicationFiles(int|null $userId): array
+	private function loadApplicationFiles(?int $contactId): array
 	{
-		if (empty($userId))
+		if (empty($contactId))
 		{
 			return [];
 		}
-		$applicationFileRepository = new ApplicationFileRepository();
 
-		return $applicationFileRepository->getApplicationFilesByApplicantId($userId);
+		$contactFileRepository = new ContactFileRepository(false);
+
+		return $contactFileRepository->getFilesByContactId($contactId);
+	}
+
+	public function setCurrentUserId(int $currentUserId): void
+	{
+		$this->currentUserId = $currentUserId;
+	}
+
+	private function loadComments(?int $contactId): array
+	{
+		if (empty($contactId) || empty($this->currentUserId))
+		{
+			return [];
+		}
+
+		$commentRepository = new CommentRepository();
+
+		return $commentRepository->getCommentsByTarget($contactId, CommentTargetTypeEnum::CONTACT, $this->currentUserId);
 	}
 }

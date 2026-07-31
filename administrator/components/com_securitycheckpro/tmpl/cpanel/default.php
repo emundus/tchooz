@@ -15,14 +15,24 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\Input\Input;
 use Joomla\Filesystem\Path;
 use Joomla\CMS\Application\CMSApplication;
-
-/** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\View\Cpanel\HtmlView $this */
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\View\Cpanel\HtmlView as CpanelHtmlView;
 
 // ---------- Escapers ----------
-function e($v): string { return htmlspecialchars((string) $v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
-function a($v): string { return htmlspecialchars((string) $v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
+/**
+ * Escape HTML.
+ */
+function scp_e(string|int|float|bool|null $v): string
+{
+    return htmlspecialchars(
+        (string) $v,
+        ENT_QUOTES | ENT_SUBSTITUTE,
+        'UTF-8'
+    );
+}
 /** URL SIN ESCAPAR; opcionalmente pasa por Route::_ */
 function u(string $url, bool $route = true): string { return $route ? Route::_($url) : $url; }
+
+/** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\View\Cpanel\HtmlView $this */
 
 HTMLHelper::_('bootstrap.tooltip', '.hasTooltip');
 
@@ -48,15 +58,15 @@ $lastYear = gmdate('Y', strtotime('-1 year'));
 function chip(bool $ok, string $tOk, string $tKo): string {
     $cls = $ok ? 'scp-chip scp-chip--ok' : 'scp-chip scp-chip--ko';
     $tx  = $ok ? $tOk : $tKo;
-    return '<span class="' . $cls . '">' . e($tx) . '</span>';
+    return '<span class="' . $cls . '">' . scp_e($tx) . '</span>';
 }
 
 /** Card simple (Mockup 1) */
 function renderSimpleStatusCard(string $title, bool $enabled, string $icon, string $actionsHtml = ''): void { ?>
     <div class="card shadow-soft compact">
         <div class="scp-card__body">
-            <div class="scp-card__icon"><span class="fa <?php echo a($icon); ?>"></span></div>
-            <div class="scp-card__title"><?php echo e($title); ?></div>
+            <div class="scp-card__icon"><span class="fa <?php echo scp_e($icon); ?>"></span></div>
+            <div class="scp-card__title"><?php echo scp_e($title); ?></div>
             <div class="scp-card__status"><?php echo chip($enabled, Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED'), Text::_('COM_SECURITYCHECKPRO_PLUGIN_DISABLED')); ?></div>
             <?php if ($actionsHtml): ?>
                 <div class="scp-card__actions"><?php echo $actionsHtml; ?></div>
@@ -65,6 +75,9 @@ function renderSimpleStatusCard(string $title, bool $enabled, string $icon, stri
     </div>
 <?php }
 
+/**
+ * @param array{disable?: string, enable?: string, more?: string} $buttons
+ */
 function renderExistsStatusCard(string $title, bool $exists, bool $enabled, string $icon, array $buttons): void {
     $statusHtml = !$exists
         ? '<span class="scp-chip scp-chip--dark">' . Text::_('COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED') . '</span>'
@@ -76,8 +89,8 @@ function renderExistsStatusCard(string $title, bool $exists, bool $enabled, stri
     ?>
     <div class="card shadow-soft compact">
         <div class="scp-card__body">
-            <div class="scp-card__icon"><span class="fa <?php echo a($icon); ?>"></span></div>
-            <div class="scp-card__title"><?php echo e($title); ?></div>
+            <div class="scp-card__icon"><span class="fa <?php echo scp_e($icon); ?>"></span></div>
+            <div class="scp-card__title"><?php echo scp_e($title); ?></div>
             <div class="scp-card__status"><?php echo $statusHtml; ?></div>
             <?php if ($actionHtml): ?>
                 <div class="scp-card__actions"><?php echo $actionHtml; ?></div>
@@ -87,7 +100,10 @@ function renderExistsStatusCard(string $title, bool $exists, bool $enabled, stri
 <?php }
 
 /** Selección aleatoria de periodo con dato > 0 */
-function pickRandomPeriod($view): array {
+/**
+ * @return array{0:int, 1:string}
+ */
+function pickRandomPeriod(CpanelHtmlView $view): array {
     $candidates = [
         ['value' => (int) $view->this_year_logs,  'label' => Text::_('COM_SECURITYCHECKPRO_CPANEL_THIS_YEAR')],
         ['value' => (int) $view->last_month_logs, 'label' => Text::_('COM_SECURITYCHECKPRO_CPANEL_LAST_MONTH')],
@@ -134,7 +150,7 @@ if ($valorMostrar && is_null($cookieVal)) {
 
     <?php if ($valorMostrar && is_null($cookieVal)) : ?>
         <div id="mensaje_informativo" class="alert alert-success">
-            <strong><?php echo Text::sprintf('COM_SECURITYCHECKPRO_INFO_MESSAGE', e($valorMostrar), e($periodLabel)); ?></strong>
+            <strong><?php echo Text::sprintf('COM_SECURITYCHECKPRO_INFO_MESSAGE', scp_e($valorMostrar), scp_e($periodLabel)); ?></strong>
         </div>
     <?php endif; ?>
 
@@ -153,14 +169,14 @@ if ($valorMostrar && is_null($cookieVal)) {
             </div>
             <p class="scp-hero__subtitle mb-2">
                 <?php echo Text::_('COM_SECURITYCHECKPRO_UPDATE_DATE'); ?>:
-                <?php echo e(date('Y-m-d H:i:s')); ?>
+                <?php echo scp_e(date('Y-m-d H:i:s')); ?>
             </p>
             <button id="go_system_info_buton" class="btn btn-sm btn-warning btn-hero" type="button">
 				<?php echo Text::_('COM_SECURITYCHECKPRO_CHECK_STATUS'); ?>
 			</button>
         </div>
         <div class="scp-hero__gauge">
-            <div class="<?php echo a($class); ?>">
+            <div class="<?php echo scp_e($class); ?>">
                 <span><?php echo $overall . '%'; ?></span>
                 <div class="slice"><div class="bar"></div><div class="fill"></div></div>
             </div>
@@ -222,7 +238,7 @@ if ($valorMostrar && is_null($cookieVal)) {
 
 			$expired   = false;
 			// SCP core
-			$scpVer       = e($this->version_scp);
+			$scpVer       = scp_e($this->version_scp);
 			$scpSubStatus = $mainframe->getUserState('scp_subscription_status', Text::_('COM_SECURITYCHECKPRO_NOT_DEFINED'));
 			$scpBadge     = 'bg-dark';
 			if ($scpSubStatus === Text::_('COM_SECURITYCHECKPRO_ACTIVE')) { $scpBadge = 'bg-success'; }
@@ -232,7 +248,7 @@ if ($valorMostrar && is_null($cookieVal)) {
 			$updBadge = 'bg-dark';
 			if (!$existsUpdateDb) { $updLabel = Text::_('COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED'); $updVer=''; }
 			else {
-				$updVer   = e($this->version_update_database);
+				$updVer   = scp_e($this->version_update_database);
 				$updLabel = $mainframe->getUserState('scp_update_database_subscription_status', Text::_('COM_SECURITYCHECKPRO_NOT_DEFINED'));
 				if ($updLabel === Text::_('COM_SECURITYCHECKPRO_ACTIVE')) { $updBadge = 'bg-success'; }
 				elseif ($updLabel === Text::_('COM_SECURITYCHECKPRO_EXPIRED')) { $updBadge = 'bg-danger'; $expired = true; }
@@ -242,14 +258,14 @@ if ($valorMostrar && is_null($cookieVal)) {
 			$trkBadge = 'bg-dark';
 			if (!$existsTrack) { $trkLabel = Text::_('COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED'); $trkVer=''; }
 			else {
-				$trkVer   = e($this->version_trackactions);
+				$trkVer   = scp_e($this->version_trackactions);
 				$trkLabel = $mainframe->getUserState('trackactions_subscription_status', Text::_('COM_SECURITYCHECKPRO_NOT_DEFINED'));
 				if ($trkLabel === Text::_('COM_SECURITYCHECKPRO_ACTIVE')) { $trkBadge = 'bg-success'; }
 				elseif ($trkLabel === Text::_('COM_SECURITYCHECKPRO_EXPIRED')) { $trkBadge = 'bg-danger'; $expired = true; }
 			}
 
 			// Enlace para editar Download ID
-			$downloadIdLink = u('index.php?option=com_config&view=component&component=com_securitycheckpro&path=&return=' . base64_encode(Uri::getInstance()->toString()), false);
+			$downloadIdLink = u('index.php?option=com_installer&view=updatesites', false);
 			?>
 
 			<?php if (empty($this->downloadid)) : ?>
@@ -274,7 +290,7 @@ if ($valorMostrar && is_null($cookieVal)) {
 									   title="<?php echo Text::_('COM_SECURITYCHECKPRO_VERSION_INSTALLED') . ': ' . $scpVer; ?>">
 									<?php echo $scpVer; ?>
 								</span>)
-								&nbsp;<span class="badge <?php echo a($scpBadge); ?>"><?php echo e($scpSubStatus); ?></span>
+								&nbsp;<span class="badge <?php echo scp_e($scpBadge); ?>"><?php echo scp_e($scpSubStatus); ?></span>
 							</p>
 							<p class="mb-2">
 								Securitycheck Pro Update Database
@@ -285,7 +301,7 @@ if ($valorMostrar && is_null($cookieVal)) {
 										<?php echo $updVer; ?>
 									</span>)
 								<?php endif; ?>
-								&nbsp;<span class="badge <?php echo a($updBadge); ?>"><?php echo e($updLabel); ?></span>
+								&nbsp;<span class="badge <?php echo scp_e($updBadge); ?>"><?php echo scp_e($updLabel); ?></span>
 							</p>
 							<p class="mb-0">
 								Track Actions
@@ -296,7 +312,7 @@ if ($valorMostrar && is_null($cookieVal)) {
 										<?php echo $trkVer; ?>
 									</span>)
 								<?php endif; ?>
-								&nbsp;<span class="badge <?php echo a($trkBadge); ?>"><?php echo e($trkLabel); ?></span>
+								&nbsp;<span class="badge <?php echo scp_e($trkBadge); ?>"><?php echo scp_e($trkLabel); ?></span>
 							</p>
 
 							<?php if ($expired): ?>
@@ -344,7 +360,7 @@ if ($valorMostrar && is_null($cookieVal)) {
 								   title="<?php echo Text::_('COM_SECURITYCHECKPRO_VERSION_INSTALLED') . ': ' . $scpVer; ?>">
 								<?php echo $scpVer; ?>
 							</span>)
-							&nbsp;<span class="badge <?php echo a($scpBadge); ?>"><?php echo e($scpSubStatus); ?></span>
+							&nbsp;<span class="badge <?php echo scp_e($scpBadge); ?>"><?php echo scp_e($scpSubStatus); ?></span>
 						</p>
 
 						<p class="mb-2">
@@ -356,7 +372,7 @@ if ($valorMostrar && is_null($cookieVal)) {
 									<?php echo $updVer; ?>
 								</span>)
 							<?php endif; ?>
-							&nbsp;<span class="badge <?php echo a($updBadge); ?>"><?php echo e($updLabel); ?></span>
+							&nbsp;<span class="badge <?php echo scp_e($updBadge); ?>"><?php echo scp_e($updLabel); ?></span>
 						</p>
 
 						<p class="mb-0">
@@ -368,7 +384,7 @@ if ($valorMostrar && is_null($cookieVal)) {
 									<?php echo $trkVer; ?>
 								</span>)
 							<?php endif; ?>
-							&nbsp;<span class="badge <?php echo a($trkBadge); ?>"><?php echo e($trkLabel); ?></span>
+							&nbsp;<span class="badge <?php echo scp_e($trkBadge); ?>"><?php echo scp_e($trkLabel); ?></span>
 						</p>
 
 						<?php if ($expired): ?>
@@ -579,8 +595,8 @@ if ($valorMostrar && is_null($cookieVal)) {
                                 </tr>
                                 <tr>
                                     <td>
-                                        <?php if ($black - 1 >= 0): ?><span class="badge bg-danger"><?php echo e($this->blacklist_elements[$black - 1] ?? ''); ?></span><?php endif; ?>
-                                        <?php if ($black - 2 >= 0): ?><span class="badge bg-danger"><?php echo e($this->blacklist_elements[$black - 2] ?? ''); ?></span><?php endif; ?>
+                                        <?php if ($black - 1 >= 0): ?><span class="badge bg-danger"><?php echo scp_e($this->blacklist_elements[$black - 1] ?? ''); ?></span><?php endif; ?>
+                                        <?php if ($black - 2 >= 0): ?><span class="badge bg-danger"><?php echo scp_e($this->blacklist_elements[$black - 2] ?? ''); ?></span><?php endif; ?>
                                         <?php if ($black - 3 >= 0): ?><span class="badge bg-danger"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE'); ?></span><?php endif; ?>
                                     </td>
                                     <td></td>
@@ -591,8 +607,8 @@ if ($valorMostrar && is_null($cookieVal)) {
                                 </tr>
                                 <tr>
                                     <td>
-                                        <?php if ($dynamic - 1 >= 0): ?><span class="badge bg-warning"><?php echo e($this->dynamic_blacklist_elements[$dynamic - 1] ?? ''); ?></span><?php endif; ?>
-                                        <?php if ($dynamic - 2 >= 0): ?><span class="badge bg-warning"><?php echo e($this->dynamic_blacklist_elements[$dynamic - 2] ?? ''); ?></span><?php endif; ?>
+                                        <?php if ($dynamic - 1 >= 0): ?><span class="badge bg-warning"><?php echo scp_e($this->dynamic_blacklist_elements[$dynamic - 1] ?? ''); ?></span><?php endif; ?>
+                                        <?php if ($dynamic - 2 >= 0): ?><span class="badge bg-warning"><?php echo scp_e($this->dynamic_blacklist_elements[$dynamic - 2] ?? ''); ?></span><?php endif; ?>
                                         <?php if ($dynamic - 3 >= 0): ?><span class="badge bg-warning"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE'); ?></span><?php endif; ?>
                                     </td>
                                     <td></td>
@@ -603,8 +619,8 @@ if ($valorMostrar && is_null($cookieVal)) {
                                 </tr>
                                 <tr>
                                     <td>
-                                        <?php if ($white - 1 >= 0): ?><span class="badge bg-success"><?php echo e($this->whitelist_elements[$white - 1] ?? ''); ?></span><?php endif; ?>
-                                        <?php if ($white - 2 >= 0): ?><span class="badge bg-success"><?php echo e($this->whitelist_elements[$white - 2] ?? ''); ?></span><?php endif; ?>
+                                        <?php if ($white - 1 >= 0): ?><span class="badge bg-success"><?php echo scp_e($this->whitelist_elements[$white - 1] ?? ''); ?></span><?php endif; ?>
+                                        <?php if ($white - 2 >= 0): ?><span class="badge bg-success"><?php echo scp_e($this->whitelist_elements[$white - 2] ?? ''); ?></span><?php endif; ?>
                                         <?php if ($white - 3 >= 0): ?><span class="badge bg-success"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE'); ?></span><?php endif; ?>
                                     </td>
                                     <td></td>
@@ -635,7 +651,7 @@ if ($valorMostrar && is_null($cookieVal)) {
         <div class="card-body text-center">
             <h5 class="card-title mb-2"><i class="fa fa-thumbs-up"></i> <?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_HELP_US'); ?></h5>
             <p class="card-text mb-2"><?php echo $review; ?></p>
-            <p class="mb-0"><i class="fa fa-language"></i> <a href="<?php echo a($translatorUrl); ?>" target="_blank" rel="noopener noreferrer"><?php echo e($translatorName); ?></a></p>
+            <p class="mb-0"><i class="fa fa-language"></i> <a href="<?php echo scp_e($translatorUrl); ?>" target="_blank" rel="noopener noreferrer"><?php echo scp_e($translatorName); ?></a></p>
         </div>
     </div>
 
@@ -643,4 +659,5 @@ if ($valorMostrar && is_null($cookieVal)) {
     <input type="hidden" name="task" value="" />
     <input type="hidden" name="boxchecked" value="1" />
     <input type="hidden" name="controller" value="cpanel" />
+	<?php echo HTMLHelper::_('form.token'); ?>
 </form>

@@ -300,7 +300,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 			}
 		}
 
-		$application_choices_entity  = $this->factory->fromDbObjects($applicationChoicesObjects, $this->withRelations, [], null, $elements);
+		$application_choices_entity  = $this->factory->fromDbObjects($applicationChoicesObjects, $this->withRelations, $this->exceptRelations, null, $elements);
 
 		$result->setItems($application_choices_entity);
 		$result->setTotalItems($application_choices_count);

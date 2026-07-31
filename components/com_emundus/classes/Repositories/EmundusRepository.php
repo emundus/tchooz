@@ -16,14 +16,29 @@ use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\QueryInterface;
 use Tchooz\Entities\List\ListResult;
+use Tchooz\Traits\TraitDispatcher;
 use Tchooz\Traits\TraitTable;
 
 class EmundusRepository
 {
 	use TraitTable;
 
+	use TraitDispatcher;
+
 	protected bool $withRelations;
 	protected array $exceptRelations = [];
+
+	// ...existing code...
+
+	public function getWithRelations(): bool|array
+	{
+		return $this->withRelations;
+	}
+
+	public function getExceptRelations(): array
+	{
+		return $this->exceptRelations;
+	}
 
 	protected DatabaseInterface $db;
 
@@ -31,6 +46,7 @@ class EmundusRepository
 	protected string $primaryKey = 'id';
 	protected string $alias = 't';
 	protected array $columns = [];
+	protected array $columnsNoAlias = [];
 
 	protected array $searchableColumns = [];
 
@@ -54,6 +70,7 @@ class EmundusRepository
 		$this->tableName = $this->getTableName($className);
 		$this->alias 	 = $this->getTableAlias($className);
 		$this->columns   = $this->getTableColumns($className);
+		$this->columnsNoAlias = $this->getTableColumnsNoPrefix($className);
 
 		$this->withRelations   = $withRelations;
 		$this->exceptRelations = $exceptRelations;
@@ -91,8 +108,8 @@ class EmundusRepository
 			$this->db->setQuery($query);
 			$item = $this->db->loadObject();
 
-			if ($item && $returnEntity && !empty($this->getFactory()) && method_exists($this->getFactory(), 'fromDbObject')) {
-				$item = $this->getFactory()->fromDbObject($item, $this->withRelations);
+			if ($item && $returnEntity && !empty($this->getFactory())) {
+				$item = $this->callFactory('fromDbObject', [$item, $this->withRelations, $this->exceptRelations]);
 			}
 		} catch (\Exception $e) {
 			Log::add('Error on fetching item by field ' . $field . ' for table ' . $this->tableName . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository');
@@ -125,8 +142,8 @@ class EmundusRepository
 			$this->db->setQuery($query);
 			$items = $this->db->loadObjectList();
 
-			if ($items && $returnEntity && !empty($this->getFactory()) && method_exists($this->getFactory(), 'fromDbObjects')) {
-				$items = $this->getFactory()::fromDbObjects($items, $this->withRelations);
+			if ($items && $returnEntity && !empty($this->getFactory())) {
+				$items = $this->callFactory('fromDbObjects', [$items, $this->withRelations, $this->exceptRelations]);
 			}
 		} catch (\Exception $e) {
 			Log::add('Error on fetching items by field ' . $field . ' for table ' . $this->tableName . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository');
@@ -145,8 +162,9 @@ class EmundusRepository
 		$items = [];
 
 		$query = $this->db->getQuery(true)
-			->select($this->alias . '.*')
+			->select($this->columns)
 			->from($this->db->quoteName($this->tableName, $this->alias));
+		$this->buildLeftJoin($query);
 
 		foreach ($fields as $field => $value) {
 			if (!in_array($field, $this->columns) && !in_array($this->alias . '.' . $field, $this->columns))
@@ -165,8 +183,8 @@ class EmundusRepository
 			$this->db->setQuery($query);
 			$items = $this->db->loadObjectList();
 
-			if ($items && $returnEntity && !empty($this->getFactory()) && method_exists($this->getFactory(), 'fromDbObjects')) {
-				$items = $this->getFactory()::fromDbObjects($items, $this->withRelations);
+			if ($items && $returnEntity && !empty($this->getFactory())) {
+				$items = $this->callFactory('fromDbObjects', [$items, $this->withRelations, $this->exceptRelations]);
 			}
 		} catch (\Exception $e) {
 			Log::add('Error on fetching items by fields for table ' . $this->tableName . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository');
@@ -207,11 +225,13 @@ class EmundusRepository
 	}
 
 	/**
-	 * @param   array   $filters
-	 * @param   int     $limit
-	 * @param   int     $page
+	 * @param   array         $filters
+	 * @param   int           $limit
+	 * @param   int           $page
 	 * @param   string|array  $select
-	 * @param   string  $order
+	 * @param   string        $order
+	 * @param   string        $search
+	 * @param   bool          $buildEntity
 	 *
 	 * @return array
 	 */
@@ -295,8 +315,8 @@ class EmundusRepository
 		$this->db->setQuery($query);
 		$objects = $this->db->loadObjectList();
 
-		if ($objects && $buildEntity && !empty($this->getFactory()) && method_exists($this->getFactory(), 'fromDbObjects')) {
-			$objects = $this->getFactory()::fromDbObjects($objects, $this->withRelations);
+		if ($objects && $buildEntity && !empty($this->getFactory())) {
+			$objects = $this->callFactory('fromDbObjects', [$objects, $this->withRelations, $this->exceptRelations]);
 		}
 
 		return $objects;
@@ -454,5 +474,33 @@ class EmundusRepository
 	public function getFactory(): ?object
 	{
 		return null;
+	}
+
+	/**
+	 * Calls a method of the factory in a compatible manner,
+	 * whether it is a static or instance method.
+	 *
+	 * @param string $method    Method name (ex: 'fromDbObject', 'fromDbObjects')
+	 * @param array  $args      Arguments to pass to the method
+	 *
+	 * @return mixed
+	 */
+	protected function callFactory(string $method, array $args): mixed
+	{
+		$factory = $this->getFactory();
+
+		if ($factory === null || !method_exists($factory, $method))
+		{
+			return $args[0] ?? null;
+		}
+
+		$ref = new \ReflectionMethod($factory, $method);
+
+		if ($ref->isStatic())
+		{
+			return $factory::$method(...$args);
+		}
+
+		return $factory->$method(...$args);
 	}
 }

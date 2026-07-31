@@ -273,9 +273,7 @@ class HtmlView extends BaseHtmlView {
         $this->dynamic_blacklist_elements= $model->getTableData("dynamic_blacklist");
         // Lista blanca
 		$this->whitelist_elements = $model->getTableData("whitelist");		
-		
-
-        
+		        
         $this->firewall_plugin_enabled = $model->PluginStatus(1);
         $this->cron_plugin_enabled = $model->PluginStatus(2);
         $this->update_database_plugin_enabled = $model->PluginStatus(3);
@@ -315,34 +313,49 @@ class HtmlView extends BaseHtmlView {
         $overall_info = $overall_model->getInfo(); 
         $this->overall = $overall_model->getOverall($overall_info,1);
 		
-		// Download id 
-		// Get download id stored in component
-		$app = ComponentHelper::getParams('com_securitycheckpro');
-		$this->downloadid = $app->get('downloadid');
-		
-		$downloadData = $model->get_extra_query_update_sites_table('com_securitycheckpro');
+		// Download id desde el update site del paquete
+		$this->downloadid = '';
 
-		if ($downloadData === 'error') {			
-			return;
-		}
+		$downloadData = $model->get_extra_query_update_sites_table('pkg_securitycheckpro');
 
-		// Extra_query remoto (puede ser null)
-		$remoteDlid = $downloadData?->extra_query ?? null;
-		$siteId     = isset($downloadData->update_site_id) ? (int) $downloadData->update_site_id : 0;
-
-		if (!empty($this->downloadid)) {
-			// Tengo DLID en el componente
-			if ($siteId > 0 && $this->downloadid !== $remoteDlid) {
-				// Si el remoto está vacío o es distinto, subimos el DLID del componente a la tabla update_sites
-				$model->update_extra_query_update_sites_table($siteId, $this->downloadid);
-			}
-		} else {
-			// No tengo DLID en el componente: si hay uno remoto, lo importo
-			if ($remoteDlid !== null && $remoteDlid !== '') {
-				$this->downloadid = $remoteDlid;
+		if ($downloadData !== 'error' && $downloadData !== null) {
+			$remoteDlid = $downloadData->extra_query ?? '';
+			if ($remoteDlid !== '') {
+				$this->downloadid = trim((string) $remoteDlid);
 			}
 		}
-		
+
+		// Fallback al componente (instalaciones anteriores a la migracion)
+		if ($this->downloadid === '') {
+			$appParams = ComponentHelper::getParams('com_securitycheckpro');
+			$componentDlid = trim((string) $appParams->get('downloadid', ''));
+			if ($componentDlid !== '') {
+				$this->downloadid = $componentDlid;
+			}
+		}
+
+		// Fallback al update site del plugin Update Database
+		if ($this->downloadid === '') {
+			$updateDbData = $model->get_extra_query_update_sites_table('securitycheckpro_update_database');
+			if ($updateDbData !== 'error' && $updateDbData !== null) {
+				$remoteDlid = $updateDbData->extra_query ?? '';
+				if ($remoteDlid !== '') {
+					$this->downloadid = trim((string) $remoteDlid);
+				}
+			}
+		}
+
+		// Fallback al update site del paquete Track Actions
+		if ($this->downloadid === '') {
+			$trackData = $model->get_extra_query_update_sites_table('pkg_trackactions');
+			if ($trackData !== 'error' && $trackData !== null) {
+				$remoteDlid = $trackData->extra_query ?? '';
+				if ($remoteDlid !== '') {
+					$this->downloadid = trim((string) $remoteDlid);
+				}
+			}
+		}
+
         $this->lock_status = $model->lockStatus();
 		
 		// Also comes common data from SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\DisplayController

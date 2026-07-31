@@ -132,6 +132,7 @@ class Falang {
      *       4.11 add onBeforeFieldTranslation trigger
      * @update 5.4 use main query without alias to allow tables locking
      *             rewrite this query
+     * @update 6.7 security fix in query
 	 */
 	public static function translateListWithIDs( &$rows, $ids, $reference_table, $language, & $tableArray, $querySQL, $refTablePrimaryKey="id", $allowfallback=true )
 	{
@@ -229,7 +230,7 @@ class Falang {
             $query = $db->getQuery(true);
             $query->select('reference_field, value, reference_id, original_value')
                 ->from($db->quoteName('#__falang_content'))
-                ->where($db->quoteName('language_id').'='.$languages[$language]->lang_id)
+                ->where($db->quoteName('language_id').'='.(int)$languages[$language]->lang_id)
                 ->where($db->quoteName('published').'= 1')
                 ->where($db->quoteName('reference_id').'IN ('.$ids.')')
                 ->where($db->quoteName('reference_table').'= '.$db->quote($reference_table));
