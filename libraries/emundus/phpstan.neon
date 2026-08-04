@@ -1,6 +1,7 @@
 parameters:
   bootstrapFiles:
     - phpstanbootstrap.php
+    - phpstanfabrik.php
   scanDirectories:
     - ../../components/com_emundus/models
     - ../../components/com_emundus/helpers
