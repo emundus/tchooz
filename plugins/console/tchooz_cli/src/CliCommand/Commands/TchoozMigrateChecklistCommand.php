@@ -15,6 +15,7 @@ use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\MigrateWorkflowsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckJumiJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckFabrikListsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckFabrikFieldsJob;
+use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckLegacyEvaluationStructuresJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Joomla\Database\DatabaseAwareTrait;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -108,6 +109,11 @@ class TchoozMigrateChecklistCommand extends TchoozCommand
 
 			CheckCustomApplicationActionsJob::getJobName() => (new JobDefinition(
 				CheckCustomApplicationActionsJob::class,
+				[$this->databaseServiceSource, $this->databaseService]
+			)),
+
+			CheckLegacyEvaluationStructuresJob::getJobName() => (new JobDefinition(
+				CheckLegacyEvaluationStructuresJob::class,
 				[$this->databaseServiceSource, $this->databaseService]
 			)),
 		];
