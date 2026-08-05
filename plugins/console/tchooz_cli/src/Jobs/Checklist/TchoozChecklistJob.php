@@ -114,9 +114,9 @@ class TchoozChecklistJob extends TchoozJob
 		}
 
 		// 1. Écrire le code dans un fichier temporaire
-		// Les balises Fabrik sont neutralisées pour l'analyse seulement : $code reste intact pour la recherche de mots-clés
+		// Les balises sont neutralisées pour l'analyse seulement : $code reste intact pour la recherche de mots-clés
 		$tmpFile = tempnam(sys_get_temp_dir(), 'event_handler_') . '.php';
-		file_put_contents($tmpFile, "<?php\n" . $this->neutralizeFabrikPlaceholders($code));
+		file_put_contents($tmpFile, "<?php\n" . $this->neutralizePlaceholders($code));
 
 		// 2. Lancer PHPStan sur ce fichier
 		$phpstanCmd = 'libraries/emundus/vendor/bin/phpstan analyse -c "libraries/emundus/phpstan.neon" --error-format=table --memory-limit=1G ' . escapeshellarg($tmpFile);
@@ -173,25 +173,33 @@ class TchoozChecklistJob extends TchoozJob
 	}
 
 	/**
-	 * Remplace les balises Fabrik quotées par un appel à fabrikPlaceholder().
+	 * Remplace les valeurs substituées à l'exécution par un appel de fonction dont PHPStan ignore la valeur :
+	 * les balises Fabrik '{table___element}' et les tags eMundus '[FNUM]'.
 	 *
-	 * Sans ça, '{table___element}' est vu par PHPStan comme une chaîne littérale : tout test dessus
-	 * (empty, strpos, comparaison) est jugé toujours vrai ou toujours faux, alors que Fabrik y injecte
-	 * une valeur à l'exécution. Seules les balises entourées de quotes sont remplacées, pour ne jamais
-	 * casser la syntaxe d'une balise utilisée à l'intérieur d'une chaîne.
+	 * Sans ça, PHPStan les voit comme des chaînes littérales : tout test dessus (empty, strpos, comparaison)
+	 * est jugé toujours vrai ou toujours faux, alors qu'elles reçoivent une valeur à l'exécution.
+	 * Seules les occurrences entourées de quotes sont remplacées, pour ne jamais casser la syntaxe
+	 * d'une balise utilisée à l'intérieur d'une chaîne.
 	 *
 	 * @param string $code
 	 *
 	 * @return string
 	 */
-	private function neutralizeFabrikPlaceholders(string $code): string
+	private function neutralizePlaceholders(string $code): string
 	{
-		$neutralized = preg_replace(
-			'/([\'"])\{([a-zA-Z0-9_]+___[a-zA-Z0-9_.]+)\}\1/',
-			'fabrikPlaceholder(\'$2\')',
-			$code
-		);
+		$patterns = [
+			'/([\'"])\{([a-zA-Z0-9_]+___[a-zA-Z0-9_.]+)\}\1/' => 'fabrikPlaceholder(\'$2\')',
+			'/([\'"])\[([A-Z0-9_]+)\]\1/'                     => 'emundusTag(\'$2\')',
+		];
 
-		return $neutralized ?? $code;
+		foreach ($patterns as $pattern => $replacement) {
+			$neutralized = preg_replace($pattern, $replacement, $code);
+
+			if ($neutralized !== null) {
+				$code = $neutralized;
+			}
+		}
+
+		return $code;
 	}
 }

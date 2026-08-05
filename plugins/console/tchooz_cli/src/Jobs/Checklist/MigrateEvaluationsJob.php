@@ -27,6 +27,7 @@ use Tchooz\Entities\Workflow\WorkflowEntity;
 use Joomla\CMS\Language\LanguageHelper;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
+use Tchooz\Services\Fabrik\EvaluationTableCreator;
 use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Repositories\Workflow\StepTypeRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
@@ -85,6 +86,7 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 		if ($migrated) {
 			$this->databaseService->commitTransaction();
 			$this->deleteDeprecatedFabrikLists();
+			$this->allowNullStudentIdOnEvaluationTables();
 		} else {
 			$this->databaseService->rollbackTransaction();
 			throw new \Exception('Failed to migrate evaluations');
@@ -112,6 +114,54 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 				$this->output->writeln('Deprecated evaluation Fabrik lists deleted successfully for table ' . $table . '.');
 			} else {
 				$this->output->writeln('<error>Failed to delete deprecated Fabrik lists for table ' . $table . '.</error>');
+			}
+		}
+	}
+
+	private function allowNullStudentIdOnEvaluationTables(): void
+	{
+		$db    = $this->databaseService->getDatabase();
+		$query = $db->createQuery();
+
+		$query->select($db->quoteName('TABLE_NAME', 'table_name') . ', ' . $db->quoteName('COLUMN_TYPE', 'column_type'))
+			->from($db->quoteName('information_schema.COLUMNS'))
+			->where($db->quoteName('TABLE_SCHEMA') . ' = DATABASE()')
+			->andWhere($db->quoteName('COLUMN_NAME') . ' = ' . $db->quote('student_id'))
+			->andWhere($db->quoteName('IS_NULLABLE') . ' = ' . $db->quote('NO'));
+
+		try {
+			$db->setQuery($query);
+			$columns = $db->loadObjectList();
+		}
+		catch (\Exception $e) {
+			$this->output->writeln('<error>Failed to read student_id columns: ' . $e->getMessage() . '</error>');
+
+			return;
+		}
+
+		if (empty($columns)) {
+			$this->output->writeln('No evaluation table with a NOT NULL student_id column found.');
+
+			return;
+		}
+
+		$evaluationTableCreator = new EvaluationTableCreator();
+
+		foreach ($columns as $column) {
+			if (!$evaluationTableCreator->supports($column->table_name)) {
+				continue;
+			}
+
+			$alter = 'ALTER TABLE ' . $db->quoteName($column->table_name)
+				. ' MODIFY ' . $db->quoteName('student_id') . ' ' . $column->column_type . ' NULL';
+
+			try {
+				$db->setQuery($alter);
+				$db->execute();
+				$this->output->writeln('<info>NOT NULL removed on student_id for table ' . $column->table_name . '.</info>');
+			}
+			catch (\Exception $e) {
+				$this->output->writeln('<error>Failed to remove NOT NULL on student_id for table ' . $column->table_name . ': ' . $e->getMessage() . '</error>');
 			}
 		}
 	}
