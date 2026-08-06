@@ -8,6 +8,7 @@ use Joomla\CMS\Router\Route;
 use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
+use Tchooz\Entities\Automation\RedirectIntent;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Fields\FieldGroup;
@@ -16,6 +17,7 @@ use Tchooz\Entities\Fields\StringField;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\ConditionOperatorEnum;
+use Tchooz\Services\Automation\RedirectIntentRegistry;
 use Tchooz\Services\Field\DisplayRule;
 
 class ActionRedirect extends ActionEntity
@@ -61,24 +63,19 @@ class ActionRedirect extends ActionEntity
 			return ActionExecutionStatusEnum::FAILED;
 		}
 
-		$app = Factory::getApplication();
-		if ($app->isClient('site'))
+		// L'action décide de l'URL mais ne transporte pas la redirection : elle l'enregistre. Le
+		// transport (réponse fetch ou $app->redirect() pleine page) est décidé au point d'entrée
+		// HTTP, ce qui couvre aussi les automations déclenchées dans un contexte AJAX où un
+		// $app->redirect() serait avalé (ex. onAfterStatusChange via custom_event_handler).
+		$url = $this->getUrl($context);
+		if (empty($url))
 		{
-			$url = $this->getUrl($context);
-
-			if (!empty($url))
-			{
-				if ($url !== '/' . $app->getMenu()->getActive()->route)
-				{
-					// Perform the redirect
-					$app->redirect($url);
-				}
-			}
-
-			return ActionExecutionStatusEnum::COMPLETED;
+			return ActionExecutionStatusEnum::FAILED;
 		}
 
-		return ActionExecutionStatusEnum::FAILED;
+		RedirectIntentRegistry::request(new RedirectIntent($url, self::getType()));
+
+		return ActionExecutionStatusEnum::COMPLETED;
 	}
 
 	public function getUrl(ActionTargetEntity|array $context): string

@@ -52,6 +52,7 @@ use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Controller\EmundusController;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
+use Tchooz\Services\Automation\RedirectIntentRegistry;
 use Tchooz\Traits\TraitDispatcher;
 use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 
@@ -3649,7 +3650,16 @@ class EmundusControllerApplication extends EmundusController
 					{
 						$data = [];
 
-						if (method_exists($foundAction, 'getRedirectUrl'))
+						// Canal unifié : une action (ou une automation déclenchée en aval) qui redirige
+						// enregistre son URL dans RedirectIntentRegistry. On la consomme ici pour la
+						// renvoyer au front. Les actions de fichier non-automation (Print, Copy, Delete)
+						// n'enregistrent rien et exposent leur URL via getRedirectUrl().
+						$redirectIntent = RedirectIntentRegistry::consume();
+						if ($redirectIntent !== null)
+						{
+							$data['redirect'] = $redirectIntent->getUrl();
+						}
+						else if (method_exists($foundAction, 'getRedirectUrl'))
 						{
 							$data['redirect'] = $foundAction->getRedirectUrl($applicationFile, $parameters, $this->app->getIdentity());
 						}

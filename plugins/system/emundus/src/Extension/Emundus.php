@@ -12,6 +12,7 @@ namespace Joomla\Plugin\System\Emundus\Extension;
 
 use EmundusModelForm;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Event\Application\AfterDispatchEvent;
 use Joomla\CMS\Event\Application\AfterInitialiseEvent;
 use Joomla\CMS\Event\Application\AfterRenderEvent;
 use Joomla\CMS\Event\GenericEvent;
@@ -36,6 +37,7 @@ use Tchooz\Entities\Emails\TagModifierRegistry;
 use Tchooz\Enums\User\AuthenticationModeEnum;
 use Tchooz\Providers\DbLanguageProvider;
 use Tchooz\Providers\EmundusSubscriberProvider;
+use Tchooz\Services\Automation\RedirectIntentRegistry;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -84,6 +86,12 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			$mapping['onComUsersCaptiveValidateSuccess'] = 'onComUsersCaptiveValidateSuccess';
 		}
 
+		if ($app->isClient('site'))
+		{
+			// Transport pleine page du canal de redirection unifié (voir RedirectIntentRegistry).
+			$mapping['onAfterDispatch'] = 'onAfterDispatch';
+		}
+
 		return $mapping;
 	}
 
@@ -113,6 +121,42 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		}
 
 		$this->getApplication()->redirect($returnUrl);
+	}
+
+	/**
+	 * Transport pleine page du canal de redirection unifié : une action d'automation qui redirige
+	 * n'appelle plus $app->redirect() elle-même, elle enregistre son URL dans RedirectIntentRegistry.
+	 * On la consomme ici, une fois la requête traitée, et on effectue la redirection réelle — mais
+	 * uniquement sur le client site et hors réponse AJAX/raw (le endpoint fetch consomme déjà l'intent
+	 * pour le renvoyer dans sa réponse JSON).
+	 */
+	public function onAfterDispatch(AfterDispatchEvent $event): void
+	{
+		$app = $this->getApplication();
+
+		if (!$app->isClient('site'))
+		{
+			return;
+		}
+
+		$format = $app->getInput()->get('format', 'html');
+		if (in_array($format, ['json', 'raw'], true))
+		{
+			return;
+		}
+
+		$intent = RedirectIntentRegistry::consume();
+		if ($intent === null || empty($intent->getUrl()))
+		{
+			return;
+		}
+
+		$active       = $app->getMenu()->getActive();
+		$currentRoute = !empty($active) ? '/' . $active->route : '';
+		if ($intent->getUrl() !== $currentRoute)
+		{
+			$app->redirect($intent->getUrl());
+		}
 	}
 
 	public function onAfterInitialise(AfterInitialiseEvent $event): void
