@@ -210,6 +210,11 @@ class EmundusHelperMenu
 		return $formIds;
 	}
 
+	public static function getHomepageItemId(): int
+	{
+		return (int) ComponentHelper::getParams('com_emundus')->get('logged_homepage_link', 0);
+	}
+
 	public static function getHomepageLink($default_link = null): string
 	{
 		$app  = Factory::getApplication();
@@ -228,7 +233,7 @@ class EmundusHelperMenu
 			$sef = $languages[$activeLanguage]->sef;
 		}
 
-		$homepage_itemId = ComponentHelper::getParams('com_emundus')->get('logged_homepage_link', '');
+		$homepage_itemId = self::getHomepageItemId();
 
 		if (!empty($homepage_itemId))
 		{

@@ -151,9 +151,11 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			return;
 		}
 
-		$active       = $app->getMenu()->getActive();
-		$currentRoute = !empty($active) ? '/' . $active->route : '';
-		if ($intent->getUrl() !== $currentRoute)
+		// Built like ActionRedirect::route() does, otherwise the comparison fails as soon as a language segment is present.
+		$active     = $app->getMenu()->getActive();
+		$currentUrl = !empty($active) ? Route::_('index.php?Itemid=' . $active->id, false) : '';
+
+		if ($intent->getUrl() !== $currentUrl)
 		{
 			$app->redirect($intent->getUrl());
 		}
@@ -278,7 +280,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		// Add configuration options
 		$currentLanguage = $this->getApplication()->getLanguage()->getTag();
 		$defaultLanguage = ComponentHelper::getParams('com_languages')->get('site', 'fr-FR');
-		if ($currentLanguage !== $defaultLanguage)
+		if ($currentLanguage !== $defaultLanguage && $this->getApplication()->isClient('site'))
 		{
 			$currentLangPath = '/' . substr($currentLanguage, 0, 2);
 		}

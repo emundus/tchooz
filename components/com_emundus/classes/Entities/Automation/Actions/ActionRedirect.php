@@ -90,37 +90,18 @@ class ActionRedirect extends ActionEntity
 		{
 			$url = $this->getKnownUrl($knownUrl, $context);
 		}
-		else
+		elseif (!empty($customUrl))
 		{
-			if (!empty($customUrl))
-			{
-				if (str_starts_with($customUrl, 'http://'))
-				{
-					$url = str_replace('http://', 'https://', $customUrl);
-				}
-				else
-				{
-					$url = $customUrl;
-				}
-			}
-			else
-			{
-				if (!empty($internUrl))
-				{
-					$url = Route::_('index.php?Itemid=' . $internUrl);
-				}
-			}
+			$url = str_starts_with($customUrl, 'http://') ? str_replace('http://', 'https://', $customUrl) : $customUrl;
+		}
+		elseif (!empty($internUrl))
+		{
+			$url = $this->routeMenuItem((int) $internUrl);
 		}
 
 		return $url;
 	}
 
-	/**
-	 * Build the target URL for a known-url abstraction. Menu-page destinations
-	 * are resolved through EmundusHelperMenu (never hardcoded routes); the
-	 * applicant campaign catalog has no fixed route and is resolved from the
-	 * menu item carrying the mod_emundus_campaign module.
-	 */
 	private function getKnownUrl(string $knownUrl, ActionTargetEntity|array $context): string
 	{
 		if (!class_exists('EmundusHelperMenu'))
@@ -134,20 +115,42 @@ class ActionRedirect extends ActionEntity
 				$fnum = $this->resolveContextFnum($context);
 
 				return !empty($fnum)
-					? Route::_('/index.php?option=com_emundus&task=openfile&fnum=' . $fnum)
+					? $this->route('index.php?option=com_emundus&task=openfile&fnum=' . $fnum)
 					: '';
 			case 'my_applications':
-				return \EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=application_choices');
+				return $this->routeMenuLink('index.php?option=com_emundus&view=application_choices');
 			case 'campaigns_catalog':
-				return $this->getCampaignCatalogUrl();
+				$menuId = $this->getCampaignCatalogMenuId();
+
+				return $this->routeMenuItem(!empty($menuId) ? $menuId : \EmundusHelperMenu::getHomepageItemId());
 			case 'home':
-				return \EmundusHelperMenu::getHomepageLink();
+				return $this->routeMenuItem(\EmundusHelperMenu::getHomepageItemId());
 			case 'files_list':
-				return \EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=files');
+				return $this->routeMenuLink('index.php?option=com_emundus&view=files');
 			default:
 				// TODO(redirect-known-urls): open_file_manager (files-list menu route + '#'.fnum, per messenger::gotofile) not handled yet.
 				return '';
 		}
+	}
+
+	/**
+	 * $xhtml = false: the URL is redirected to as-is, never embedded in HTML, so & must not become &amp;.
+	 */
+	private function route(string $internalUrl): string
+	{
+		return Route::_($internalUrl, false);
+	}
+
+	private function routeMenuItem(int $menuId): string
+	{
+		return $this->route(!empty($menuId) ? 'index.php?Itemid=' . $menuId : 'index.php');
+	}
+
+	private function routeMenuLink(string $link): string
+	{
+		$item = Factory::getApplication()->getMenu()->getItems('link', $link, true);
+
+		return !empty($item) ? $this->routeMenuItem((int) $item->id) : $this->route($link);
 	}
 
 	/**
@@ -165,13 +168,9 @@ class ActionRedirect extends ActionEntity
 	}
 
 	/**
-	 * Resolve the applicant campaign catalog URL. That catalog has no fixed
-	 * route: it is a menu item carrying the mod_emundus_campaign module (tchooz
-	 * default template). We route to the menu item the module is bound to, and
-	 * fall back to the configured home page when it is not bound to a specific
-	 * item (e.g. published on all pages).
+	 * The campaign catalog has no fixed route: it is the menu item mod_emundus_campaign is bound to.
 	 */
-	private function getCampaignCatalogUrl(): string
+	private function getCampaignCatalogMenuId(): int
 	{
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->createQuery()
@@ -188,14 +187,8 @@ class ActionRedirect extends ActionEntity
 			->order($db->quoteName('mm.menuid') . ' ASC');
 
 		$db->setQuery($query, 0, 1);
-		$menuId = (int) $db->loadResult();
 
-		if (empty($menuId))
-		{
-			return \EmundusHelperMenu::getHomepageLink();
-		}
-
-		return Route::_('index.php?Itemid=' . $menuId);
+		return (int) $db->loadResult();
 	}
 
 	public function getParameters(): array
