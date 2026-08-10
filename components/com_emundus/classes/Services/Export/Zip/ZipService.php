@@ -318,7 +318,7 @@ class ZipService extends Export implements ExportInterface
 
 		foreach ($fnums as $fnum)
 		{
-			if (is_string($fnum) && \EmundusHelperAccess::asAccessAction($accessName, CrudEnum::CREATE->value, $this->user->id, $fnum))
+			if (is_string($fnum) && \EmundusHelperAccess::asAccessAction($accessName, CrudEnum::CREATE->value, $this->user->id, $fnum) || \EmundusHelperAccess::isFnumMine($fnum, $this->user->id))
 			{
 				$valid[] = $fnum;
 			}

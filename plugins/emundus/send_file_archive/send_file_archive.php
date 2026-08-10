@@ -11,7 +11,9 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Services\Export\Zip\ZipService;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -90,6 +92,7 @@ class plgEmundusSend_file_archive extends CMSPlugin {
 	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
 	private function sendEmailArchive($fnum, $email) {
+		$sent = false;
 
 		if (!extension_loaded('zip')) {
 			Log::add('Error: ZIP extension not loaded.', Log::ERROR, 'com_emundus');
@@ -145,14 +148,23 @@ class plgEmundusSend_file_archive extends CMSPlugin {
 		}
 
 		if (!defined(EMUNDUS_PATH_ABS)) {
-			define('EMUNDUS_PATH_ABS',     JPATH_ROOT.DIRECTORY_SEPARATOR.'images/emundus/files/');
+			define('EMUNDUS_PATH_ABS', JPATH_ROOT.DIRECTORY_SEPARATOR.'images/emundus/files/');
 		}
 
-		$zip_name = $m_files->exportZip([$fnum], 1, $zip_attachments, $eval_steps, 0, null, null, null, true);
-		$file = JPATH_SITE.'/tmp/'.$zip_name;
+		try {
+			$zipService = new ZipService([$fnum], Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(1));
+			$export = $zipService->export('tmp/', null);
 
-		$m_emails->sendEmail($fnum, $email, null, $file, false, 2);
-		return true;
+			$sent = $m_emails->sendEmail($fnum, $email, null, $export->getFilePath(), false, 2);
+		} catch (\Exception $e) {
+			Log::add('Error: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		if (!$sent && Factory::getApplication()->isClient('site')) {
+			Factory::getApplication()->enqueueMessage('Error sending email to ' . $email, 'error');
+		}
+
+		return $sent;
 	}
 
 }

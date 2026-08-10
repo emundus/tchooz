@@ -4576,7 +4576,6 @@ class EmundusModelFiles extends JModelLegacy
 				Log::add(Uri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 
-
 			// Remove all files linked to the fnum.
 			$fileUserId = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
 			if (!empty($fileUserId))
