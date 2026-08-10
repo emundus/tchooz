@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Factory;
@@ -38,6 +39,7 @@ class FabrikControllerImport extends BaseController
 
 	public function display($cachable = false, $urlparams = array())
 	{
+		Html::validateRequest($this->taskMap);
 		$app   = Factory::getApplication();
 		$input = $app->getInput();
 		$this->getModel('Importcsv', 'FabrikFEModel')->clearSession();
@@ -66,6 +68,7 @@ class FabrikControllerImport extends BaseController
 	 */
 	public function doimport()
 	{
+		Html::validateRequest($this->taskMap);
 		$app   = Factory::getApplication();
 		$input = $app->getInput();
 

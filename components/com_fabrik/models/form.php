@@ -729,7 +729,7 @@ class FabrikFEModelForm extends FabModelForm
 		}
 		elseif (File::exists(COM_FABRIK_FRONTEND . '/js/custom_' . $view . '.js'))
 		{
-			$scripts[$scriptsKey] = 'components/com_fabrik/js/custom_' . $view . '.js?'.$hash;
+			$scripts[$scriptsKey] = 'components/com_fabrik/js/custom_' . $view . '.js?' . $hash;
 		}
 	}
 
@@ -3211,10 +3211,12 @@ class FabrikFEModelForm extends FabModelForm
 				else
 				{
 					if (is_array($value)) {
-						$newValue = [];
-						foreach ($value as $key => $item) {
-							$newValue[$key] = urldecode($item);
-						}
+						$newValue = $value;
+						array_walk_recursive($newValue, function(&$item) {
+							if (is_string($item)) {
+								$item = urldecode($item);
+							}
+						});
 					} else {
 						$newValue = urldecode($value);
 					}
@@ -5200,8 +5202,13 @@ class FabrikFEModelForm extends FabModelForm
 		{
 			if (array_key_exists('apply', $this->formData))
 			{
+			
+				// The url that called the form; keep it also with "Apply", so that a subsequent Submit or Goback can leave the form; double urlencode to get it through
+				$fabrik_ref_url = urlencode(urldecode($input->post->get('fabrik_referrer', 'index.php', 'string')));
+			
 				$url = 'index.php?option=com_fabrik&view=form&formid=' . $input->getInt('formid') . '&rowid=' . $input->getString('rowid', '', 'string')
-					. '&listid=' . $input->getInt('listid');
+					. '&listid=' . $input->getInt('listid')
+					. '&fabrik_referrer=' . $fabrik_ref_url;
 				$itemId = (int) FabrikWorker::itemId();
 				if ($itemId !== 0)
 					$url = $url . '&Itemid=' . $itemId;

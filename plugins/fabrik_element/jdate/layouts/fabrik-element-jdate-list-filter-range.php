@@ -21,7 +21,7 @@ if ($d->filterType === 'range-hidden') :
 		id="<?php echo $d->htmlId; ?>-1" />
 <?php
 else :
-    ?>
+	?>
     <div class="fabrikDateListFilterRange tw-flex tw-flex-col tw-gap-2" >
         <div class="row">
             <div class="tw-w-1/4 tw-p-0 tw-flex tw-items-center">
