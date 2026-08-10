@@ -78,7 +78,8 @@ if (!empty($campaign) && !empty($type) && !empty($file_type)) {
 		->select('fnum')
 		->from($db->quoteName('#__emundus_campaign_candidature'))
 		->where($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign))
-		->andWhere('published = 1');
+		->andWhere('published = 1')
+		->andWhere('status IN (14,16)');
 
 	if (!empty($voies_d_acces)) {
 		$query->andWhere($db->quoteName('data_voie_d_acces') . ' IN (' . implode(', ', $voies_d_acces) . ')');

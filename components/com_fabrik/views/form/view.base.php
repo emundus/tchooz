@@ -1156,7 +1156,7 @@ class FabrikViewFormBase extends FabrikView
 				'class' => $params->get('goback_button_class', 'btn-outline-dark') . ' button',
 				'name' => 'Goback',
 				'label' => $goBackLabel,
-				'attributes' => $model->isAjax() ? '' : FabrikWorker::goBackAction(),
+				'attributes' => $model->isAjax() ? '' : FabrikWorker::goBackAction($refer),
 				'formModel' => $model
 			);
 

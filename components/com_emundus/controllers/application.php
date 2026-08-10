@@ -2040,6 +2040,29 @@ class EmundusControllerApplication extends EmundusController
 			return;
 		}
 
+		if (!class_exists('EmundusModelGroups'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/models/groups.php';
+		}
+		if (!class_exists('EmundusModelFiles'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/models/files.php';
+		}
+		$m_files = new EmundusModelFiles();
+		$m_groups            = new EmundusModelGroups();
+		$eMConfig            = ComponentHelper::getParams('com_emundus');
+		$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
+		$groups = $m_groups->getGroupsIdByCourse($applicationChoicesEntity->getCampaign()->getProgram()->getCode());
+		$groups = array_column($groups, 'id');
+		$groups = array_diff($groups, [$all_rights_group_id]);
+		if (!empty($groups))
+		{
+			$actions = [
+				['id' => 1, 'r' => 1, 'c' => 0, 'u' => 0, 'd' => 0],
+			];
+			$m_files->shareGroups($groups, $actions, [$current_fnum]);
+		}
+
 		EmundusModelLogs::log($this->_user->id, $this->_user->id, $current_fnum, $this->applicationChoicesAction->getId(), 'c', 'COM_EMUNDUS_LOGS_ADD_CHOICE', json_encode(['created' => [$applicationChoicesEntity->getCampaign()->getLabel()]]));
 
 		$entityObject               = $applicationChoicesEntity->__serialize();

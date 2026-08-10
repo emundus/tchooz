@@ -351,7 +351,7 @@ class MigrateJoomlaJob extends TchoozJob
 		$main_menus = $this->databaseService->getDatabase()->loadAssocList();
 
 		// Fix collation of alias
-		$queryString = 'ALTER TABLE jos_menu MODIFY COLUMN alias VARCHAR(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_ci;';
+		$queryString = 'ALTER TABLE jos_menu MODIFY COLUMN alias VARCHAR(400) CHARACTER SET utf8mb4;';
 		$this->databaseService->getDatabase()->setQuery($queryString);
 		$this->databaseService->getDatabase()->execute();
 

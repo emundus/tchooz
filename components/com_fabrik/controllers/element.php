@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Factory;
 
@@ -53,6 +55,7 @@ class FabrikControllerElement extends BaseController
 	 */
 	public function display()
 	{
+		Html::validateRequest($this->taskMap);
 		$document = Factory::getDocument();
 		$app = Factory::getApplication();
 		$input = $app->getInput();
@@ -80,6 +83,7 @@ class FabrikControllerElement extends BaseController
 	 */
 	public function save()
 	{
+		Html::validateRequest($this->taskMap);
 		$app = Factory::getApplication();
 		$input = $app->getInput();
 		$listModel = $this->getModel('list', 'FabrikFEModel');

@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Router\Route;
@@ -45,6 +46,7 @@ class FabrikControllerForm extends BaseController
 	 */
 	public function display()
 	{
+		Html::validateRequest($this->taskMap);
 		$app = Factory::getApplication();
 		$session = Factory::getSession();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
@@ -96,6 +98,7 @@ class FabrikControllerForm extends BaseController
 	 */
 	public function process()
 	{
+		Html::validateRequest($this->taskMap);
 		$app = Factory::getApplication();
 		$session = Factory::getSession();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');

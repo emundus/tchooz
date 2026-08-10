@@ -151,6 +151,11 @@ class DbLanguage extends Language
 
 				foreach ($parsed_file as $key => $val)
 				{
+					if(strlen($key) > 255)
+					{
+						continue;
+					}
+
 					if (isset($index) && isset($length) && Factory::getApplication()->isClient('cli'))
 					{
 						$index++;

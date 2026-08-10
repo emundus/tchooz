@@ -3259,5 +3259,70 @@ EOT;
 		}
 		return '';
 	}
+	/**
+	 * validate the request
+	 *
+	 * returns or exits
+	 */
+	public static function validateRequest($taskMap) { return;
 
+		$valid = false;
+		$app = Factory::getApplication();
+		$input = $app->getInput();
+		$client = $app->isClient('site') ? 'Site' : ($app->isClient('administrator') ? 'Administrator' : null);
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		do {
+			
+			if ($_SERVER['REQUEST_METHOD'] !== 'GET' && !Session::checkToken()) break;
+
+			// Make sure we are in Site or Admin
+			if (empty($client)) break;
+
+			// Test for query items that need to be there and need to be valid
+			$task = $input->get('task', null);
+			If (!empty($task)) {
+				$task = $taskMap[$task];
+			}
+
+			$controller = $input->get('controller');
+			
+			if (!empty($controller)) {
+				$controllerClass = 'FabrikController' . ucfirst($controller);
+				if (class_exists($controllerClass) === false) break;
+				if (!empty($task)) {
+					$theController = new $controllerClass;
+					if (!method_exists($theController, $task)) break;
+				}
+			}
+
+			// Test for various optional items and make sure that their values are valid
+			$items = ["formid" => "#__fabrik_forms", "listid" => "#__fabrik_lists", "element_id" => "#__fabrik_elements"];
+			foreach ($items as $item => $table) {
+				$value = $input->get($item, 'not found');
+				if ($value == 'not found' || $value == '0') continue;
+				$query->clear()->select('*')->from($table)->where("id=$value");
+				$result = $db->setQuery($query)->loadResult();
+				if (empty($result)) break 2;
+			}
+			// Test for a valid plugin
+			$plugin = $input->get('plugin', 'not found');
+			if ($plugin !=  'not found') {
+				$query->clear()->select('extension_id')->from('#__extensions')->where("type='plugin'")->where("element='$plugin'");
+				if (empty($db->setQuery($query)->loadResult())) break;
+			}
+			$valid = true;
+		} while (0);
+
+		if (!$valid) {
+		    // Send a 404 status
+		    http_response_code(404);
+
+		    // Redirect to a custom error page
+		    header('Location: /errors/404.php');
+
+		    exit;
+		}
+	}
 }

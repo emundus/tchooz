@@ -155,6 +155,26 @@ class ProgramRepository extends EmundusRepository
 		return $program_entity;
 	}
 
+	public function codeExists(string $code, array $excludedIds = []): bool
+	{
+		$query = $this->db->getQuery(true);
+
+		$query->select('COUNT(' . $this->db->quoteName('id') . ')')
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->where($this->db->quoteName('code') . ' = ' . $this->db->quote($code));
+
+		$excludedIds = array_filter(array_map('intval', $excludedIds), fn(int $id): bool => $id > 0);
+
+		if (!empty($excludedIds))
+		{
+			$query->where($this->db->quoteName('id') . ' NOT IN (' . implode(',', $excludedIds) . ')');
+		}
+
+		$this->db->setQuery($query);
+
+		return (int) $this->db->loadResult() > 0;
+	}
+
 	public function getCodesByIds(array $ids): array
 	{
 		$codes = [];

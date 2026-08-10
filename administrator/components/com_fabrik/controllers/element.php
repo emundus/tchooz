@@ -154,7 +154,7 @@ class FabrikAdminControllerElement extends FabControllerForm
 		$model = $pluginManager->getPlugIn('field', 'element');
 		$model->setId($input->getInt('id'));
 		$element = $model->getElement();
-		$element->name = $input->getWord('oldname');
+		$element->name = $input->getCmd('oldname');
 		$element->plugin = $input->getWord('origplugin');
 		$element->store();
 

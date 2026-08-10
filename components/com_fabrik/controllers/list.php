@@ -22,6 +22,7 @@ use Fabrik\Helpers\Html;
 use Fabrik\Helpers\Worker;
 use Joomla\CMS\Uri\Uri;
 
+
 /**
  * Fabrik List Controller
  *
@@ -50,6 +51,7 @@ class FabrikControllerList extends BaseController
 
 	public function display($model = false, $urlparams = false)
 	{
+		Html::validateRequest($this->taskMap);
 		$document = Factory::getDocument();
 		$app = Factory::getApplication();
 		$input = $app->getInput();
@@ -194,6 +196,7 @@ class FabrikControllerList extends BaseController
 	 */
 	public function delete()
 	{
+		Html::validateRequest($this->taskMap);
 		// Check for request forgeries
 		Session::checkToken() or die('Invalid Token');
 		$app = Factory::getApplication();
@@ -265,6 +268,7 @@ class FabrikControllerList extends BaseController
 	 */
 	public function doempty()
 	{
+		Html::validateRequest($this->taskMap);
 		$model = $this->getModel('list', 'FabrikFEModel');
 		$model->truncate();
 		$this->display();
@@ -277,6 +281,7 @@ class FabrikControllerList extends BaseController
 	 */
 	public function doPlugin()
 	{
+		Html::validateRequest($this->taskMap);
 		$app = Factory::getApplication();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
 		$input = $app->getInput();
