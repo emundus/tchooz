@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Enums\PluginStructure;
+use Fabrik\Helpers\Html;
 
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -48,6 +49,7 @@ class FabrikControllerPlugin extends BaseController
 	 */
 	public function pluginAjax()
 	{
+		Html::validateRequest($this->taskMap);
 		$app    = Factory::getApplication();
 		$input  = $app->getInput();
 		$pluginType = $input->get('plugin', '');
@@ -93,6 +95,7 @@ class FabrikControllerPlugin extends BaseController
 	 */
 	public function userAjax()
 	{
+		Html::validateRequest($this->taskMap);
 		$db = FabrikWorker::getDbo();
 		require_once COM_FABRIK_FRONTEND . '/user_ajax.php';
 		$app      = Factory::getApplication();
@@ -115,6 +118,7 @@ class FabrikControllerPlugin extends BaseController
 	 */
 	public function doCron(&$pluginManager)
 	{
+		Html::validateRequest($this->taskMap);
 		$db    = FabrikWorker::getDbo();
 		$app   = Factory::getApplication();
 		$input = $app->getInput();

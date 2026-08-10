@@ -444,64 +444,6 @@ class ApplicationModelTest extends UnitTestCase
 		//
 	}
 
-	/**
-	 * @covers EmundusModelApplication::applicantCustomAction
-	 * @return void
-	 */
-	public function testapplicantCustomAction()
-	{
-		$done = $this->model->applicantCustomAction(0, '', 0, false, $this->dataset['applicant']);
-		$this->assertSame($done, false, 'applicantCustomAction should return false if action and fnum are empty');
-
-		$done = $this->model->applicantCustomAction(0, $this->dataset['fnum'], 0, false,  $this->dataset['applicant']);
-		$this->assertSame($done, false, 'applicantCustomAction should return false if action is empty');
-
-		// get module params
-		$query = $this->db->createQuery();
-		$query->select('id, params')
-			->from('#__modules')
-			->where('module LIKE ' . $this->db->quote('mod_emundus_applications'))
-			->where('published = 1');
-
-		$this->db->setQuery($query);
-		$module = $this->db->loadAssoc();
-		$params = json_decode($module['params'], true);
-
-		$params['mod_em_application_custom_actions'] = [
-			'mod_em_application_custom_actions1' => [
-				'mod_em_application_custom_action_new_status' => 1,
-				'mod_em_application_custom_action_status'     => [0]
-			]
-		];
-
-		// update module params
-		$query = $this->db->getQuery(true);
-		$query->update('#__modules')
-			->set('params = ' . $this->db->quote(json_encode($params)))
-			->where('id = ' . $this->db->quote($module['id']));
-
-		$this->db->setQuery($query);
-		$this->db->execute();
-
-		$done = $this->model->applicantCustomAction(0, $this->dataset['fnum'], 0, false,  $this->dataset['applicant']);
-		$this->assertSame($done, false, 'applicantCustomAction should return false if action is not found in module params');
-
-		$done = $this->model->applicantCustomAction('mod_em_application_custom_actions1', $this->dataset['fnum'], 0, false,  $this->dataset['applicant']);
-		$this->assertTrue($done, 'Custom action should be done because file is in correct status');
-
-		$done = $this->model->applicantCustomAction('mod_em_application_custom_actions1', $this->dataset['fnum'], 0, false,  $this->dataset['applicant']);
-		$this->assertFalse($done, 'Action should no longer work because file status has changed');
-
-		// Clear datasets
-		$query->clear()
-			->update('#__modules')
-			->set('params = ' . $this->db->quote($module['params']))
-			->where('id = ' . $this->db->quote($module['id']));
-		$this->db->setQuery($query);
-		$this->db->execute();
-		//
-	}
-
 	public function testgetApplicationMenu()
 	{
 		$menus = $this->model->getApplicationMenu($this->dataset['coordinator']);

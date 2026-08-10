@@ -761,9 +761,14 @@ class DocaposteSynchronizer extends Api
 
 	private function onAfterRequestCompleted(Request $request): void
 	{
-		// Allow to translate keys when this runs from CLI (scheduled task).
-		$siteDefaultLanguage = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
-		Factory::getApplication()->getLanguage()->load('com_emundus', JPATH_SITE . '/components/com_emundus', $siteDefaultLanguage);
+		// Allow to translate keys when this runs from CLI (scheduled task). Web requests already resolved their
+		// own language, loading another one would override it for the whole request.
+		$app = Factory::getApplication();
+		if ($app->isClient('cli'))
+		{
+			$siteDefaultLanguage = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+			$app->getLanguage()->load('com_emundus', JPATH_SITE . '/components/com_emundus', $siteDefaultLanguage);
+		}
 
 		$pdfContent = $this->getFinalDocument($request);
 

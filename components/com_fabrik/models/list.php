@@ -8849,7 +8849,7 @@ class FabrikFEModelList extends FormModel
 		}
 		else
 		{
-			$fieldParts = explode('___', $field);
+			$fieldParts = preg_split('/___(?!_)/', $field, 2);
 			$table = array_shift($fieldParts);
 		}
 

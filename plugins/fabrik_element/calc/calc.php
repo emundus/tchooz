@@ -487,7 +487,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 		// $$$ hugh - trying to standardize on $data so scripts know where data is
 		$data = $d;
         $calc = $w->parseMessageForRepeats($calc, $data, $this, $repeatCounter);
-        $calc = $w->parseMessageForPlaceHolder($calc, $d);
+        $calc = $w->parseMessageForPlaceHolder($calc, $d,true,true);
 		FabrikWorker::clearEval();
 		$c 	  = Php::Eval(['code' => $calc, 'vars'=>['data'=>$data, 'd'=>$data, 'repeatCounter'=>$repeatCounter, 'formModel'=>$formModel]]);
 		FabrikWorker::logEval($c, 'Caught exception on ajax eval of calc ' . $this->getElement()->name . ': %s');

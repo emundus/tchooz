@@ -10,6 +10,7 @@
 namespace Tchooz\Repositories\NumericSign;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Reference\ExternalReferenceEntity;
 use Tchooz\Entities\NumericSign\Request;
@@ -369,12 +370,12 @@ class RequestRepository
 				return $this->db->loadResult();
 			}
 			else {
-				throw new \Exception('Signed upload id not set.', 400);
+				throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_REQUEST_GET_SIGNED_DOCUMENT_ERROR'), 400);
 			}
 		}
 		catch (\Exception $e)
 		{
-			throw new \Exception('Failed to get signed document : ' . $e->getMessage(), $e->getCode());
+			throw new \Exception( Text::_('COM_EMUNDUS_ONBOARD_REQUEST_GET_SIGNED_DOCUMENT_ERROR_2').' : ' . $e->getMessage(), $e->getCode());
 		}
 
 	}

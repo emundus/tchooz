@@ -52,6 +52,7 @@ class FabrikControllerVisualization extends BaseController
 	 */
 	public function display($cachable = false, $urlparams = array())
 	{
+		Html::validateRequest($this->taskMap);
 		$document = Factory::getDocument();
 		$input = $this->input;
 		$viewName = str_replace('FabrikControllerVisualization', '', get_class($this));
