@@ -370,7 +370,7 @@ class EmundusModelSign extends ListModel
 
 			if(empty($request))
 			{
-				throw new \Exception('Request not found.', 404);
+				throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_REQUEST_NOT_FOUND_ERROR'), 404);
 			}
 
 			$signed_file = $request_repository->getSignedDocument($request);

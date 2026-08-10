@@ -3913,6 +3913,15 @@ class EmundusControllersettings extends EmundusController
 		$index = 1;
 		foreach ($config->get('custom_actions', []) as $action)
 		{
+			if (!empty($action->label) && is_string($action->label))
+			{
+				$decodedLabel = json_decode($action->label, true);
+				if (json_last_error() === JSON_ERROR_NONE && is_array($decodedLabel))
+				{
+					$action->label = $decodedLabel;
+				}
+			}
+
 			if (!empty($action->conditions))
 			{
 				$action->conditions = json_decode($action->conditions, true);
@@ -4029,8 +4038,19 @@ class EmundusControllersettings extends EmundusController
 				throw new \Exception('Invalid action type');
 			}
 
+			$label = $action['label'];
+			if (is_array($label))
+			{
+				$label = array_map(fn($value) => $sanitizer->sanitizeNoHtml($value ?? ''), $label);
+				$label = json_encode($label);
+			}
+			else
+			{
+				$label = $sanitizer->sanitizeNoHtml($label);
+			}
+
 			$configCustomActions['custom_actions' . $index] = (object)[
-				'label' => $sanitizer->sanitizeNoHtml($action['label']),
+				'label' => $label,
 				'icon' => $sanitizer->sanitizeNoHtml($action['icon']),
 				'conditions' => json_encode($action['conditions']),
 				'action' => json_encode([

@@ -56,6 +56,7 @@ class FabrikControllerCron extends BaseController
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
+		Html::validateRequest($this->taskMap);
 		$document = Factory::getDocument();
 		$viewName = $this->getViewName();
 		$viewType = $document->getType();

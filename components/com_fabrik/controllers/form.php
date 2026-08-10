@@ -94,6 +94,7 @@ class FabrikControllerForm extends BaseController
 	 */
 	public function display($cachable = false, $urlparams = array())
 	{
+		Html::validateRequest($this->taskMap);
 		$app = Factory::getApplication();
 		$input = $app->getInput();
 		$package = $app->getUserState('com_fabrik.package', 'fabrik');
@@ -220,6 +221,7 @@ class FabrikControllerForm extends BaseController
 	 */
 	public function process()
 	{
+		Html::validateRequest($this->taskMap);
 		$profiler = Profiler::getInstance('Application');
 		JDEBUG ? $profiler->mark('controller process: start') : null;
 
@@ -574,6 +576,7 @@ class FabrikControllerForm extends BaseController
 	 */
 	public function ajax_validate()
 	{
+		Html::validateRequest($this->taskMap);
 		$app = Factory::getApplication();
 		$input = $app->getInput();
 
@@ -603,6 +606,7 @@ class FabrikControllerForm extends BaseController
 	 */
 	public function savepage()
 	{
+		Html::validateRequest($this->taskMap);
 		$app = Factory::getApplication();
 		$input = $app->getInput();
 		$model = $this->getModel('Formsession', 'FabrikFEModel');
@@ -669,6 +673,7 @@ class FabrikControllerForm extends BaseController
 	 */
 	public function delete()
 	{
+		Html::validateRequest($this->taskMap);
 		// Check for request forgeries
 		Session::checkToken() or die('Invalid Token');
 		$app = Factory::getApplication();
