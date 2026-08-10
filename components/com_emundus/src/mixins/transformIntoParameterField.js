@@ -21,6 +21,7 @@ export default {
 				displayRules: field.displayRules ? field.displayRules : null,
 				hideLabel: false,
 				watchers: field.watchers ? field.watchers : [],
+				translatable: field.translatable || false,
 			};
 
 			switch (field.type) {

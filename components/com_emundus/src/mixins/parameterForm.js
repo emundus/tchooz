@@ -1,3 +1,19 @@
+/**
+ * Reduce a translatable parameter value (a per-language object) to its first filled translation,
+ * so emptiness checks apply to it. Non-translatable parameters are returned unchanged.
+ *
+ * @param {{ translatable?: boolean }} parameter
+ * @param {*} value
+ * @returns {*} '' when a translatable value has no filled language.
+ */
+export function resolveParameterValue(parameter, value) {
+	if (!parameter || !parameter.translatable || !value || typeof value !== 'object') {
+		return value;
+	}
+
+	return Object.values(value).find((translation) => translation) ?? '';
+}
+
 export default {
 	methods: {
 		/**

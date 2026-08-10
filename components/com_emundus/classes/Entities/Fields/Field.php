@@ -10,6 +10,12 @@ abstract class Field
 {
 	protected mixed $defaultValue = null;
 
+	/**
+	 * When true, the field value is stored as a per-language object (keyed by language sef)
+	 * so it can be translated in every active platform language.
+	 */
+	protected bool $translatable = false;
+
 	public function __construct(
 		protected string       $name,
 		protected string       $label,
@@ -139,6 +145,18 @@ abstract class Field
 		return $this;
 	}
 
+	public function isTranslatable(): bool
+	{
+		return $this->translatable;
+	}
+
+	public function setTranslatable(bool $translatable): self
+	{
+		$this->translatable = $translatable;
+
+		return $this;
+	}
+
 	public function getDefaultValue(): mixed
 	{
 		return $this->defaultValue;
@@ -165,6 +183,7 @@ abstract class Field
 			'originalType' => $this->originalType,
 			'helpText'     => $this->helpText,
 			'defaultValue' => $this->defaultValue,
+			'translatable' => $this->translatable,
 		];
 	}
 }

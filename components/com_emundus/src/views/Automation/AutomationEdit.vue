@@ -4,6 +4,7 @@ import Back from '@/components/Utils/Back.vue';
 import automationService from '@/services/automation.js';
 import alert from '@/mixins/alerts.js';
 import AlertError from '@/errors/AlertError';
+import { resolveParameterValue } from '@/mixins/parameterForm.js';
 import AutomationAction from '@/components/Automation/AutomationAction.vue';
 import AutomationActionsList from '@/components/Automation/AutomationActionsList.vue';
 import AutomationConditionGroup from '@/components/Automation/AutomationConditionGroup.vue';
@@ -286,10 +287,9 @@ export default {
 								if (row === null || row === undefined) {
 									return;
 								}
-								if (
-									param.required &&
-									(row[param.name] === undefined || row[param.name] === null || row[param.name] === '')
-								) {
+								const rowValue = resolveParameterValue(param, row[param.name]);
+
+								if (param.required && (rowValue === undefined || rowValue === null || rowValue === '')) {
 									throw new AlertError(
 										'COM_EMUNDUS_AUTOMATION_ACTION_PARAM_REQUIRED_ERROR',
 										`${param.label} (Row ${rowIndex + 1})`,
@@ -297,13 +297,12 @@ export default {
 								}
 							});
 						}
-					} else if (
-						param.required &&
-						(action.parameter_values[param.name] === undefined ||
-							action.parameter_values[param.name] === null ||
-							action.parameter_values[param.name] === '')
-					) {
-						throw new AlertError('COM_EMUNDUS_AUTOMATION_ACTION_PARAM_REQUIRED_ERROR', param.label);
+					} else {
+						const value = resolveParameterValue(param, action.parameter_values[param.name]);
+
+						if (param.required && (value === undefined || value === null || value === '')) {
+							throw new AlertError('COM_EMUNDUS_AUTOMATION_ACTION_PARAM_REQUIRED_ERROR', param.label);
+						}
 					}
 				});
 
