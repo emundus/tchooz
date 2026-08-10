@@ -17,8 +17,40 @@ if($announcement_type === 'info') {
 }
 ?>
 
+<?php if($announcement_type === 'urgency') : ?>
+<style>
+    @media (max-width: 767px) {
+        .alerte-message-container .em-announcement-scroll {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        /* !important pour passer devant le style inline (16pt) du span. */
+        .alerte-message-container .em-announcement-scroll > span {
+            display: inline-block;
+            font-size: 14px !important;
+            padding-left: 100%;
+            animation: em-announcement-marquee 15s linear infinite;
+        }
+
+        @keyframes em-announcement-marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-100%); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .alerte-message-container .em-announcement-scroll > span {
+                animation: none;
+                padding-left: 0;
+                white-space: normal;
+            }
+        }
+    }
+</style>
+<?php endif; ?>
+
 <div class="alerte-message-container tw-text-center tw-w-full <?php echo $class; ?>" style="padding: 8px 24px;">
-    <p style="font-weight: 500; color: #fff;">
+    <p <?php if($announcement_type === 'urgency') : ?>class="em-announcement-scroll"<?php endif; ?> style="font-weight: 500; color: #fff;">
         <span style="font-size: 16pt;"><?php echo $announcement_content ?></span>
     </p>
     <span id="close-preprod-alerte-container" aria-hidden="true" class="material-symbols-outlined em-pointer"
