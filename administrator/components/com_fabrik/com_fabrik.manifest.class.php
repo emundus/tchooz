@@ -125,7 +125,7 @@ class Com_FabrikInstallerScript
 
 			if (isset($params->plugins))
 			{
-				if(is_object($params->plugins)) {
+				if (is_object($params->plugins)) {
 					$params->plugins = (array) $params->plugins;
 					$params->plugins = array_values($params->plugins);
 				}
@@ -376,12 +376,12 @@ class Com_FabrikInstallerScript
 	/* Copy our admin template overrides to the site admin template */
 	protected function templateOverride($install = true)
 	{
-		if(Factory::getApplication()->isClient('cli'))
+		if (Factory::getApplication()->isClient('cli'))
 		{
 			/* We are running from the command line, so we don't need to do anything */
 			return true;
 		}
-		
+
 		/* Get the current admin template, probably atum for J4 */
 		$templateName = Factory::getApplication()->getTemplate();
 		/* We will do some validation before we blindly overwrite anything */
