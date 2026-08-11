@@ -33,6 +33,7 @@ use Tchooz\Services\Export\HeadersEnum;
 use Tchooz\Services\Export\Pdf\PdfMerger;
 use Tchooz\Services\Export\Pdf\PdfOptions;
 use Tchooz\Services\Export\Pdf\PdfService;
+use Tchooz\Traits\TraitAutomatedTask;
 use ZipArchive;
 
 /**
@@ -51,6 +52,8 @@ use ZipArchive;
  */
 class ZipService extends Export implements ExportInterface
 {
+	use TraitAutomatedTask;
+
 	/**
 	 * Max number of fnums processed per export() invocation when running asynchronously.
 	 */
@@ -309,6 +312,9 @@ class ZipService extends Export implements ExportInterface
 	}
 
 	/**
+	 * @todo: this is weird that we controll the access on files here, it should be done in controller, now
+	 *       that we are here, it should mean that access controll has already been done.
+	 *       For now, I have to allow automated task user access here which is a weird behaviour as well
 	 * @return string[] fnums the user is allowed to export.
 	 */
 	private function filterAccessibleFnums(array $fnums): array
@@ -318,7 +324,13 @@ class ZipService extends Export implements ExportInterface
 
 		foreach ($fnums as $fnum)
 		{
-			if (is_string($fnum) && \EmundusHelperAccess::asAccessAction($accessName, CrudEnum::CREATE->value, $this->user->id, $fnum) || \EmundusHelperAccess::isFnumMine($fnum, $this->user->id))
+			if (
+				is_string($fnum)
+				&& (
+					$this->isAutomatedTaskUser((int) $this->user->id)
+					|| \EmundusHelperAccess::asAccessAction($accessName, CrudEnum::CREATE->value, $this->user->id, $fnum)
+				)
+			)
 			{
 				$valid[] = $fnum;
 			}
@@ -569,7 +581,7 @@ class ZipService extends Export implements ExportInterface
 
 		if (!empty($explicit) || !empty($synthesis))
 		{
-			return [$explicit, $synthesis, $displayHeader];
+			return [$this->normalizeHeaders($explicit), $this->normalizeHeaders($synthesis), $displayHeader];
 		}
 
 		$legacyOptions = $this->options->getLegacyHeaderOptions();
@@ -582,6 +594,19 @@ class ZipService extends Export implements ExportInterface
 		$displayHeader                    = $displayHeader && HeadersEnum::isLegacyHeaderEnabled($legacyOptions);
 
 		return [$pageHeaders, $firstPageHeaders, $displayHeader];
+	}
+
+	/**
+	 * @param   array<HeadersEnum|int|string>  $headers
+	 *
+	 * @return array<int|string>
+	 */
+	private function normalizeHeaders(array $headers): array
+	{
+		return array_values(array_map(
+			static fn($header) => $header instanceof HeadersEnum ? $header->value : $header,
+			$headers
+		));
 	}
 
 	/**
@@ -648,7 +673,8 @@ class ZipService extends Export implements ExportInterface
 				null,
 				$elements,
 				false,
-				'_evaluations'
+				'_evaluations',
+				$this->user->id
 			);
 
 			if (empty($evalPath) || !file_exists($evalPath))

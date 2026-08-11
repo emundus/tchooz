@@ -11,14 +11,15 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Factory;
-use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Services\Export\Zip\ZipOptions;
 use Tchooz\Services\Export\Zip\ZipService;
+use Tchooz\Traits\TraitAutomatedTask;
 
 defined('_JEXEC') or die('Restricted access');
 
 class plgEmundusSend_file_archive extends CMSPlugin {
+	use TraitAutomatedTask;
 
 	function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);
@@ -147,28 +148,20 @@ class plgEmundusSend_file_archive extends CMSPlugin {
 			}
 		}
 
-		if (!defined(EMUNDUS_PATH_ABS)) {
+		if (!defined('EMUNDUS_PATH_ABS')) {
 			define('EMUNDUS_PATH_ABS', JPATH_ROOT.DIRECTORY_SEPARATOR.'images/emundus/files/');
 		}
 
 		try {
 			$zipService = new ZipService(
 				[$fnum],
-				Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(1),
+				$this->getAutomatedTaskUser(),
 				[
-					'displayHeader' => true,
-					'synthesis' => [],
-					'headers' => ZipOptions::DEFAULT_HEADERS,
-					'attachments' => $zip_attachments ? ['all'] : [],
-					'formIds' => [],
-					'attachIds' => [],
-					'evalSteps' => $eval_steps,
-					'legacyHeaderOptions' => [],
-					'concatAttachmentsWithForm' => false,
-					'convertDocxToPdf' => false,
-					'displayPageNumbers' => true,
-					'formPost' => 1,
-					'attachmentDefault' => 1
+					'synthesis'  => ZipOptions::DEFAULT_HEADERS,
+					'headers'    => [],
+					'eval_steps' => $eval_steps,
+					'forms'      => 1,
+					'attachment' => $zip_attachments ? 1 : 0,
 				]
 			);
 			$export = $zipService->export('tmp/', null);
