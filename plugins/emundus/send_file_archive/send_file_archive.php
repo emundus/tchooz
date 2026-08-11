@@ -13,6 +13,7 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Services\Export\Zip\ZipOptions;
 use Tchooz\Services\Export\Zip\ZipService;
 
 defined('_JEXEC') or die('Restricted access');
@@ -107,7 +108,6 @@ class plgEmundusSend_file_archive extends CMSPlugin {
 		$zip_attachments = $this->params->get('zip_attachments',1);
 		$zip_evaluation = $this->params->get('zip_evaluation', 0);
 
-
 		$eval_steps = [];
 		if ($zip_evaluation) {
 			$db = Factory::getContainer()->get('DatabaseDriver');
@@ -152,7 +152,25 @@ class plgEmundusSend_file_archive extends CMSPlugin {
 		}
 
 		try {
-			$zipService = new ZipService([$fnum], Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(1));
+			$zipService = new ZipService(
+				[$fnum],
+				Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(1),
+				[
+					'displayHeader' => true,
+					'synthesis' => [],
+					'headers' => ZipOptions::DEFAULT_HEADERS,
+					'attachments' => $zip_attachments ? ['all'] : [],
+					'formIds' => [],
+					'attachIds' => [],
+					'evalSteps' => $eval_steps,
+					'legacyHeaderOptions' => [],
+					'concatAttachmentsWithForm' => false,
+					'convertDocxToPdf' => false,
+					'displayPageNumbers' => true,
+					'formPost' => 1,
+					'attachmentDefault' => 1
+				]
+			);
 			$export = $zipService->export('tmp/', null);
 
 			$sent = $m_emails->sendEmail($fnum, $email, null, $export->getFilePath(), false, 2);
