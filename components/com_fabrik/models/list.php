@@ -5672,7 +5672,7 @@ class FabrikFEModelList extends FormModel
 			$value = $this->prefilterParse($value);
 
 			// add false for 'safe' so we include things like session data
-			$value = $w->parseMessageForPlaceHolder($value, null, true, false, null, false);
+			$value = $w->parseMessageForPlaceHolder($value, null, true, true, null, false);
 
 			if (!is_a($elementModel, 'PlgFabrik_Element'))
 			{
