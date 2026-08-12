@@ -118,7 +118,8 @@ class ActionRedirect extends ActionEntity
 					? $this->route('index.php?option=com_emundus&task=openfile&fnum=' . $fnum)
 					: '';
 			case 'my_applications':
-				return $this->routeMenuLink('index.php?option=com_emundus&view=application_choices');
+				// it's equal to homepage for applicants
+				return $this->route('/');
 			case 'campaigns_catalog':
 				$menuId = $this->getCampaignCatalogMenuId();
 
