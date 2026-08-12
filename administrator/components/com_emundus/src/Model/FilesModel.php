@@ -180,6 +180,18 @@ class FilesModel extends ListModel
 			$query->andWhere($db->quoteName('cc.status') . ' = ' . $db->quote($status));
 		}
 
+		// Filter by campaign
+		$campaign = $this->getState('filter.campaign');
+		if ($campaign !== null && $campaign !== '') {
+			$query->andWhere($db->quoteName('cc.campaign_id') . ' = ' . $db->quote((int) $campaign));
+		}
+
+		// Filter by fnum
+		$fnum = $this->getState('filter.fnum');
+		if ($fnum !== null && $fnum !== '') {
+			$query->andWhere($db->quoteName('cc.fnum') . ' = ' . $db->quote($fnum));
+		}
+
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering', 'cc.id');
 		$orderDirn = $this->state->get('list.direction', 'DESC');

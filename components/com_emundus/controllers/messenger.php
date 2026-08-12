@@ -16,6 +16,7 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Tchooz\Services\FileSecurityService;
 use Tchooz\Traits\TraitResponse;
 
 /**
@@ -104,9 +105,9 @@ class EmundusControllerMessenger extends BaseController
 
 	public function createchatroom()
 	{
-		$response = ['data' => null, 'status' => false, 'msg' => Text::_('BAD_REQUEST'), 'code' => 403];
+		$response = ['data' => null, 'status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
 
-		$fnum = $this->input->getString('fnum');
+		$fnum = $this->input->getString('fnum', '');
 
 		if (!empty($fnum)) {
 			$response['msg'] = Text::_('ACCESS_DENIED');
@@ -302,6 +303,15 @@ class EmundusControllerMessenger extends BaseController
 
 				if (($this->user->id == $applicant_id || EmundusHelperAccess::asAccessAction(36, 'c', $this->user->id, $fnum)) && isset($file)) {
 					$path     = $file['name'];
+
+					if (!FileSecurityService::isAllowedUploadExtension($path)) {
+						$response['msg']    = Text::_('COM_EMUNDUS_ERROR_INVALID_FILETYPE');
+						$response['status'] = false;
+						$response['code']   = 400;
+						echo json_encode($response);
+						exit;
+					}
+
 					$ext      = pathinfo($path, PATHINFO_EXTENSION);
 					$filename = pathinfo($path, PATHINFO_FILENAME);
 

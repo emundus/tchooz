@@ -96,8 +96,16 @@ export default {
 		}
 	},
 	methods: {
-		nameWithYear({ label, program, year }) {
-			return `${label} (${program} - ${year})`;
+		nameWithYear({ label, program, year, fnum, reference, short_reference }) {
+			let shownIdentifier = fnum;
+
+			if (reference && reference.length > 0) {
+				shownIdentifier = reference;
+			} else if (short_reference && short_reference.length > 0) {
+				shownIdentifier = '#' + short_reference;
+			}
+
+			return `${shownIdentifier} - ${label} (${program} - ${year})`;
 		},
 
 		async getMessagesByFnum(loader = true, scroll = true) {
@@ -382,6 +390,13 @@ export default {
 				return this.messages[this.messages.length - 1].me === false;
 			}
 		},
+		onClickCreateNewChatroom() {
+			if (this.files.length > 1) {
+				this.createNewChatroom = true;
+			} else {
+				this.createChatroom();
+			}
+		},
 	},
 	watch: {
 		currentChatroom: {
@@ -511,6 +526,13 @@ export default {
 										</div>
 
 										<p class="tw-text-sm tw-italic">{{ chatroom.program }} - {{ chatroom.year }}</p>
+										<p class="tw-text-sm tw-italic" v-if="chatroom.reference">
+											{{ chatroom.reference }}
+										</p>
+										<p v-else-if="chatroom.short_reference" class="tw-text-sm tw-italic">
+											#{{ chatroom.short_reference }}
+										</p>
+										<p v-else class="tw-text-sm tw-italic">N° {{ chatroom.fnum }}</p>
 									</div>
 								</div>
 							</div>
@@ -547,6 +569,13 @@ export default {
 										<div class="tw-w-full">
 											<label class="tw-font-semibold">{{ chatroom.campaign }}</label>
 											<p class="tw-text-sm tw-italic">{{ chatroom.program }} - {{ chatroom.year }}</p>
+											<p class="tw-text-sm tw-italic" v-if="chatroom.reference">
+												{{ chatroom.reference }}
+											</p>
+											<p v-else-if="chatroom.short_reference" class="tw-text-sm tw-italic">
+												#{{ chatroom.short_reference }}
+											</p>
+											<p class="tw-text-sm tw-italic" v-else>N° {{ chatroom.fnum }}</p>
 										</div>
 									</div>
 								</div>
@@ -555,7 +584,7 @@ export default {
 					</div>
 
 					<div class="tw-w-full tw-px-4" v-if="currentChatroom">
-						<button type="button" class="tw-btn-primary tw-w-full" @click="createNewChatroom = true">
+						<button type="button" class="tw-btn-primary tw-w-full" @click="onClickCreateNewChatroom">
 							{{ translate('COM_EMUNDUS_MESSENGER_CREATE_CHATROOM') }}
 						</button>
 					</div>
@@ -566,7 +595,13 @@ export default {
 					<div class="tw-px-2">
 						<label class="tw-font-semibold">{{ currentChatroom.campaign }}</label>
 						<p class="tw-text-sm tw-italic">{{ currentChatroom.year }}</p>
-						<p class="tw-text-sm tw-italic">N° {{ currentChatroom.fnum }}</p>
+						<p class="tw-text-sm tw-italic" v-if="currentChatroom.reference">
+							{{ currentChatroom.reference }}
+						</p>
+						<p v-else-if="currentChatroom.short_reference" class="tw-text-sm tw-italic">
+							#{{ currentChatroom.short_reference }}
+						</p>
+						<p class="tw-text-sm tw-italic" v-else>N° {{ currentChatroom.fnum }}</p>
 					</div>
 
 					<div class="tw-relative tw-mt-2 tw-h-full tw-bg-neutral-300" :class="{ 'tw-rounded': applicant == true }">
@@ -744,7 +779,7 @@ export default {
 					<p v-else class="tw-text-neutral-500">
 						{{ translate('COM_EMUNDUS_MESSENGER_NO_MESSAGES_COORDINATOR') }}
 					</p>
-					<button v-if="applicant" type="button" class="tw-btn-primary !tw-w-auto" @click="createNewChatroom = true">
+					<button v-if="applicant" type="button" class="tw-btn-primary !tw-w-auto" @click="createChatroom">
 						{{ translate('COM_EMUNDUS_MESSENGER_CREATE_CHATROOM') }}
 					</button>
 					<button v-else type="button" class="tw-btn-primary !tw-w-auto" @click="createChatroom">

@@ -31,6 +31,7 @@ class CampaignControllerTest extends TestCase
 	private MockObject $controller;
 	private MockObject $mockInput;
 	private MockObject $mockCampaignModel;
+	private MockObject $mockCampaignRepository;
 	private MockObject $mockUser;
 
 	protected function setUp(): void
@@ -40,7 +41,7 @@ class CampaignControllerTest extends TestCase
 			->disableOriginalConstructor()
 			->addMethods(['getInt', 'getString'])  // declares methods that don't formally exist
 			->getMock();
-		$mockCampaignRepository  = $this->createMock(CampaignRepository::class);
+		$this->mockCampaignRepository  = $this->createMock(CampaignRepository::class);
 		$this->mockCampaignModel = $this->createMock(\EmundusModelCampaign::class);
 		$this->mockUser          = $this->createMock(User::class);
 		$this->mockUser->id      = 42;
@@ -65,10 +66,11 @@ class CampaignControllerTest extends TestCase
 		// Inject into controller
 		$this->controller->setInput($this->mockInput);
 		$this->controller->setMCampaign($this->mockCampaignModel);
-		$this->controller->setCampaignRepository($mockCampaignRepository);
+		$this->controller->setCampaignRepository($this->mockCampaignRepository);
 		$this->controller->setUser($this->mockUser);
 
-		$mockCampaignRepository->method('getById')->willReturn($mockCampaign);
+		$this->mockCampaignRepository->method('getById')->willReturn($mockCampaign);
+		$this->mockCampaignRepository->method('getItemsByField')->with('program_id', 123)->willReturn(['foo']);
 	}
 
 	/**
@@ -148,7 +150,7 @@ class CampaignControllerTest extends TestCase
 	public function testDeleteCampaignThrowsWhenModelFails(): void
 	{
 		$this->mockInput->method('getInt')->with('id', 0)->willReturn(123);
-		$this->mockCampaignModel->method('deleteCampaign')->with(123, true)->willReturn(false);
+		$this->mockCampaignRepository->method('deleteBatch')->with([123])->willReturn([]);
 
 		$this->expectException(\RuntimeException::class);
 		$this->expectExceptionCode(EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
@@ -162,7 +164,7 @@ class CampaignControllerTest extends TestCase
 	public function testDeleteCampaignSucceeds(): void
 	{
 		$this->mockInput->method('getInt')->with('id', 0)->willReturn(123);
-		$this->mockCampaignModel->method('deleteCampaign')->with(123, true)->willReturn(true);
+		$this->mockCampaignRepository->method('deleteBatch')->with([123])->willReturn([123]);
 
 		$response = $this->controller->deletecampaign();
 
@@ -534,7 +536,6 @@ class CampaignControllerTest extends TestCase
 	public function testGetCampaignsByProgramIdReturnsOk(): void
 	{
 		$this->mockInput->method('getInt')->with('program_id', 0)->willReturn(123);
-		$this->mockCampaignModel->method('getCampaignsByProgramId')->with(123)->willReturn(['foo']);
 
 		$response = $this->controller->getCampaignsByProgramId();
 

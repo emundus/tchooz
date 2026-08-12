@@ -26,11 +26,15 @@ use Joomla\CMS\Uri\Uri;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 use Joomla\CMS\Language\Text;
+use Tchooz\Entities\Workflow\StepEntity;
+use Tchooz\Entities\Workflow\WorkflowEntity;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\TransformerFactory;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
+use Tchooz\Repositories\Profile\ProfileRepository;
 
 /**
  * Emundus Fabrik Helper
@@ -1898,7 +1902,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $element;
 	}
 
-	public static function searchFabrikElements(string $searchName, array $formIds = [], array $excludedPlugins = [], int $limit = 0): array
+	public static function searchFabrikElements(string $searchName, array $formIds = [], array $excludedPlugins = [], int $limit = 0, bool $excludeHiddenElements = true): array
 	{
 		$elements = [];
 
@@ -1937,10 +1941,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
 			->join('inner', 'jos_fabrik_lists as jfl ON jff.id = jfl.form_id')
 			->where('jfe.published = 1')
-			->andWhere('jfe.hidden = 0')
 			->andWhere('jfg.published = 1')
 			->andWhere('jff.published = 1')
 			->andWhere('jfl.published = 1');
+
+		if($excludeHiddenElements) {
+			$query->andWhere('jfe.hidden = 0');
+		}
 
 		if (!empty($searchName)) {
 			$query->andWhere($searchCondition);
@@ -2364,28 +2371,110 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	/**
 	 * @return array
 	 */
-	public static function getFabrikFormsListIntendedToFiles(): array
+	public static function getFabrikFormsListIntendedToFiles(array $workflows = [], array $campaignsIds = []): array
 	{
 		$h_cache = new EmundusHelperCache();
-		$cached_forms = $h_cache->get('forms_intended_to_files');
+
+		$workflowIds = array_map(static fn($workflow) => $workflow->getId(), $workflows);
+		sort($workflowIds);
+		sort($campaignsIds);
+		$cache_key = 'forms_intended_to_files_' . md5(implode(',', $workflowIds) . '|' . implode(',', $campaignsIds));
+
+		$cached_forms = $h_cache->get($cache_key);
 
 		if (empty($cached_forms))
 		{
-			$menu_form_ids = EmundusHelperMenu::getApplicantFormsInMenus();
-			if (!class_exists('EmundusModelWorkflow'))
+			$step_form_ids = [];
+			$menu_form_ids = [];
+
+			$menuTypes = [];
+			if (!empty($campaignsIds))
 			{
-				require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
+				$campaignRepository = new CampaignRepository();
+				$menuTypes = $campaignRepository->getMenuTypesByCampaigns($campaignsIds);
 			}
-			$step_form_ids = EmundusModelWorkflow::getFormsInSteps();
+
+			if (!empty($workflows))
+			{
+				[$step_form_ids, $stepMenuTypes] = self::getFormsAndMenuTypesFromWorkflows($workflows);
+				$menuTypes                       = array_merge($menuTypes, $stepMenuTypes);
+			}
+			else
+			{
+				// todo: use workflow repository
+				if (!class_exists('EmundusModelWorkflow'))
+				{
+					require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
+				}
+				$step_form_ids = EmundusModelWorkflow::getFormsInSteps();
+			}
+
+			if (!empty($menuTypes))
+			{
+				$menuTypes = array_unique($menuTypes);
+			}
+			$menu_form_ids = EmundusHelperMenu::getApplicantFormsInMenus($menuTypes);
 
 			$form_ids = array_unique(array_merge($menu_form_ids, $step_form_ids));
 
-			$h_cache->set('forms_intended_to_files', $form_ids);
-		} else {
+			$h_cache->set($cache_key, $form_ids);
+		}
+		else
+		{
 			$form_ids = $cached_forms;
 		}
 
 		return $form_ids;
+	}
+
+	/**
+	 * Collects, from the published workflows' active steps, the form ids that carry a form
+	 * and the menutypes of the profiles referenced by steps without a form.
+	 *
+	 * @param   array<WorkflowEntity>  $workflows
+	 *
+	 * @return array{0: array<int>, 1: array<string>} [step form ids, profile menutypes]
+	 */
+	private static function getFormsAndMenuTypesFromWorkflows(array $workflows): array
+	{
+		$step_form_ids = [];
+		$menuTypes     = [];
+
+		$profileRepository = new ProfileRepository();
+
+		foreach ($workflows as $workflow)
+		{
+			assert($workflow instanceof WorkflowEntity);
+			if (!$workflow->isPublished() || empty($workflow->getSteps()))
+			{
+				continue;
+			}
+
+			foreach ($workflow->getSteps() as $workflowStep)
+			{
+				assert($workflowStep instanceof StepEntity);
+
+				if ($workflowStep->getState() !== 1 || (empty($workflowStep->getFormId()) && empty($workflowStep->getProfileId())))
+				{
+					continue;
+				}
+
+				if (empty($workflowStep->getFormId()))
+				{
+					$profile = $profileRepository->getItemByField('id', $workflowStep->getProfileId());
+					if (!empty($profile))
+					{
+						$menuTypes[] = $profile->menutype;
+					}
+				}
+				else
+				{
+					$step_form_ids[] = $workflowStep->getFormId();
+				}
+			}
+		}
+
+		return [$step_form_ids, $menuTypes];
 	}
 
 
@@ -3151,7 +3240,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					}
 					elseif (!$isRaw)
 					{
-						$formatted_values[] = $transformer->transform($_value);
+						// Dates are already transformed
+						$formatted_values[] = !$plugin->isDateField() ? $transformer->transform($_value) : $_value;
 					}
 				}
 

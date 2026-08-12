@@ -14,6 +14,7 @@
 
 use Http\Discovery\Exception\NotFoundException;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -457,9 +458,14 @@ class EmundusControllerCampaign extends EmundusController
 			throw new \InvalidArgumentException(Text::_('MISSING_PARAMETERS'), EmundusResponse::HTTP_BAD_REQUEST);
 		}
 
-		if (!$this->m_campaign->deleteCampaign($data, true))
+		$data = !is_array($data) ? [$data] : $data;
+
+		$deletedCampaigns = $this->campaignRepository->deleteBatch($data);
+
+		if (sizeof($deletedCampaigns) !== sizeof($data))
 		{
-			throw new \RuntimeException(Text::_('ERROR_CANNOT_DELETE_CAMPAIGN'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
+			$failedCampaigns = array_diff(array_map('intval', $data), $deletedCampaigns);
+			throw new \RuntimeException(Text::sprintf('ERROR_CANNOT_DELETE_CAMPAIGN', implode(', ', $failedCampaigns)), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 		}
 
 		return EmundusResponse::ok(true);
@@ -682,13 +688,14 @@ class EmundusControllerCampaign extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'campaign', 'mode' => CrudEnum::READ]])]
 	public function getcampaignbyid(): EmundusResponse
 	{
-		$id = $this->input->getInt('id', 0);
+		$id   = $this->input->getInt('id', 0);
+		$lang = $this->input->getString('lang', null);
 		if (empty($id))
 		{
 			throw new \InvalidArgumentException(Text::_('MISSING_PARAMETERS'), EmundusResponse::HTTP_BAD_REQUEST);
 		}
 
-		$campaign = $this->m_campaign->getCampaignDetailsById($id);
+		$campaign = $this->m_campaign->getCampaignDetailsById($id, $lang);
 		if (empty($campaign))
 		{
 			throw new \RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_CAMPAIGN'), EmundusResponse::HTTP_NOT_FOUND);
@@ -975,7 +982,7 @@ class EmundusControllerCampaign extends EmundusController
 			throw new \InvalidArgumentException(Text::_('MISSING_PARAMETERS'), EmundusResponse::HTTP_BAD_REQUEST);
 		}
 
-		$campaigns = $this->m_campaign->getCampaignsByProgramId($program_id);
+		$campaigns = $this->campaignRepository->getItemsByField('program_id', $program_id);
 
 		return EmundusResponse::ok($campaigns, Text::_('CAMPAIGNS_RETRIEVED'));
 	}
@@ -1033,6 +1040,7 @@ class EmundusControllerCampaign extends EmundusController
 		$forms         = $this->input->getString('forms', 0);
 		$evaluations   = $this->input->getString('evaluations', 0);
 		$validators    = $this->input->getString('validators', 0);
+		$tags          = $this->input->getString('tags', 0);
 		$format        = $this->input->getString('format', 'xlsx');
 
 		if (empty($campaign_id))
@@ -1052,6 +1060,7 @@ class EmundusControllerCampaign extends EmundusController
 			'forms'       => $forms === 'true',
 			'evaluations' => $evaluations === 'true',
 			'validators'  => $validators === 'true',
+			'tags'        => $tags === 'true',
 		];
 		$xlsx_path = $m_campaign->generateModel($campaign, $options, $format);
 		if (empty($xlsx_path))
@@ -1129,7 +1138,7 @@ class EmundusControllerCampaign extends EmundusController
 		try
 		{
 			$m_campaign = $this->getModel('Campaign');
-			$results     = $m_campaign->importFiles($file, $campaign_id, $send_email, $create_new_fnum);
+			$results     = $m_campaign->importFiles($file, $campaign_id, $send_email, $create_new_fnum, $this->user->id);
 		}
 		catch (\Exception $e)
 		{

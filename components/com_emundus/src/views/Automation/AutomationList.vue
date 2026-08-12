@@ -34,6 +34,7 @@ export default {
 									controller: 'automation',
 									name: 'add',
 									type: 'redirect',
+									iconLabel: 'control_point',
 								},
 								{
 									action: 'index.php?option=com_emundus&view=automation&layout=history',

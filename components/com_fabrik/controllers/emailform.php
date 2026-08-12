@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Factory;
@@ -37,6 +38,7 @@ class FabrikControllerEmailform extends BaseController
 	 */
 	public function display($cachable = false, $urlparams = array())
 	{
+		Html::validateRequest($this->taskMap);
 		$document = Factory::getDocument();
 		$app = Factory::getApplication();
 		$input = $app->getInput();

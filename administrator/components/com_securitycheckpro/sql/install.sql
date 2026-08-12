@@ -78,7 +78,33 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('Joomla!','core','5.2.3','<=','5','>=','Joomla! core','One vulnerability','Feb 19 2025','Joomla 5.0.0 to 5.2.3','update','5.2.4'),
 ('com_convertforms','component','4.4.7','<=','4','>=','Convert Forms Component','File upload and XSS vulnerabilities','Feb 25 2025','Version 1.0.0 to 4.4.7','update','4.4.9'),
 ('com_convertforms','component','4.4.7','<=','5','>=','Convert Forms Component','File upload and XSS vulnerabilities','Feb 25 2025','Version 1.0.0 to 4.4.7','update','4.4.9'),
-('com_kunena','component','6.4.2','<=','5','>=','Kunena Component','Not defined high vulnerability','May 31 2025','Version 6.4.2 and maybe lower','update','6.4.3');
+('com_kunena','component','6.4.2','<=','5','>=','Kunena Component','Not defined high vulnerability','May 31 2025','Version 6.4.2 and maybe lower','update','6.4.3'),
+('com_acym','component','10.8.1','<=','5','>=','Acymailing Component','User creation vulnerability','Mar 17 2026','Versions 9.11.0 to 10.8.1','update','10.8.2'),
+('com_acym','component','10.8.1','<=','6','>=','Acymailing Component','User creation vulnerability','Mar 17 2026','Versions 9.11.0 to 10.8.1','update','10.8.2'),
+('nrframework','plugin','6.0.61','<=','5','>=','Tassos Framework','Sql injection vulnerability','Mar 17 2026','Versions 6.0.61 and loweer','update','6.0.62'),
+('nrframework','plugin','6.0.61','<=','6','>=','Tassos Framework','Sql injection vulnerability','Mar 17 2026','Versions 6.0.61 and loweer','update','6.0.62'),
+('astroid','plugin','3.3.10','<=','5','>=','Astroid Framework','Unauthenticated Remote Code Execution vulnerability','Mar 19 2026','Versions 2.0.0 to 3.3.10','update','3.3.12'),
+('astroid','plugin','3.3.10','<=','6','>=','Astroid Framework','Unauthenticated Remote Code Execution vulnerability','Mar 19 2026','Versions 2.0.0 to 3.3.10','update','3.3.12'),
+('Joomla!','core','5.4.3','<=','5','>=','Joomla! core','Six vulnerabilities','Mar 31 2026','Joomla 3.0.0 to 5.4.3','update','5.4.4'),
+('Joomla!','core','6.0.3','<=','6','>=','Joomla! core','Six vulnerabilities','Mar 31 2026','Joomla 6.0.0 to 6.0.3','update','6.0.4'),
+('com_smartslider3','component','3.5.1.35','==','5','>=','SmartSlider3 Component','Security breach affecting the update infrastructure','Apr 08 2026','Version 3.5.1.35','update','3.5.1.36'),
+('com_smartslider3','component','3.5.1.35','==','6','>=','SmartSlider3 Component','Security breach affecting the update infrastructure','Apr 08 2026','Version 3.5.1.35','update','3.5.1.36'),
+('com_convertforms','component','5.1.5','<=','5','>=','Convert Forms Component','File upload vulnerability','May 15 2025','Version 5.1.5 and maybe lower','update','5.1.6'),
+('com_convertforms','component','5.1.5','<=','6','>=','Convert Forms Component','File upload vulnerability','May 15 2025','Version 5.1.5 and maybe lower','update','5.1.6'),
+('com_kunena','component','6.4.10','<=','5','>=','Kunena Component','Several vulnerabilities','May 19 2026','Version 6.4.10 and lower','update','6.4.11'),
+('com_kunena','component','7.0.4','<=','6','>=','Kunena Component','Several vulnerabilities','May 19 2026','Version 7.0.4 and lower','update','7.0.5'),
+('Joomla!','core','5.4.5','<=','5','>=','Joomla! core','Twenty vulnerabilities','May 27 2026','Joomla 3.0.0 to 5.4.5','update','5.4.6'),
+('Joomla!','core','6.1.0','<=','6','>=','Joomla! core','Twenty vulnerabilities','May 27 2026','Joomla 6.0.0 to 6.1.0','update','6.1.1'),
+('com_jce','component','2.9.99.4','<=','5','>=','JCE Editor Component','Critical File upload vulnerability','Jun 03 2026','Versions prior to 2.9.99.5','update','2.9.99.5'),
+('com_jce','component','2.9.99.4','<=','6','>=','JCE Editor Component','Critical File upload vulnerability','Jun 03 2026','Versions prior to 2.9.99.5','update','2.9.99.5'),
+('com_kunena','component','6.4.11','<=','5','>=','Kunena Component','Several vulnerabilities','Jun 09 2026','Version 6.4.11 and lower','update','6.4.12'),
+('com_kunena','component','7.0.5','<=','6','>=','Kunena Component','Several vulnerabilities','Jun 09 2026','Version 7.0.5 and lower','update','7.0.6'),
+('com_sppagebuilder','component','6.6.1','<=','5','>=','SP Page Builder Component','Undefined vulnerability','Jun 15 2026','Version 6.6.1 and maybe lower','update','6.6.2'),
+('com_sppagebuilder','component','6.6.1','<=','6','>=','SP Page Builder Component','Undefined vulnerability','Jun 15 2026','Version 6.6.1 and maybe lower','update','6.6.2'),
+('com_icagenda','component','4.0.7','<=','5','>=','Icagenda Component','Unauthenticated file upload to remote code execution','Jun 16 2026','Version 4.0.7 and maybe lower','update','4.0.8'),
+('com_icagenda','component','4.0.7','<=','6','>=','Icagenda Component','Unauthenticated file upload to remote code execution','Jun 16 2026','Version 4.0.7 and maybe lower','update','4.0.8'),
+('com_splms','component','4.1.3','<=','5','>=','SP LMS Component','Object injection vulnerability','Jun 17 2026','Version 4.1.3 and lower','update','4.1.4'),
+('com_splms','component','4.1.3','<=','6','>=','SP LMS Component','Object injection vulnerability','Jun 17 2026','Version 4.1.3 and lower','update','4.1.4');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -110,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_sessions` (
 `userid` INT(4) UNSIGNED NOT NULL,
 `session_id` VARCHAR(200) NOT NULL,
 `username` VARCHAR(150) NOT NULL,
-`ip` VARCHAR(255) NOT NULL,
+`ip` VARCHAR(100) NOT NULL,
 `user_agent` VARCHAR(300) NOT NULL,
 PRIMARY KEY (`userid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -167,7 +193,7 @@ INSERT INTO `#__securitycheckpro_storage` (`storage_key`,`storage_value`) VALUES
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_rules` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `group_id` INT(10),
-`rules_applied` TINYINT(1) DEFAULT 0,
+`rules_applied` TINYINT(1) DEFAULT 1,
 `last_change` DATETIME,
 PRIMARY KEY (`id`),
 UNIQUE KEY `idx_rules_group_id` (`group_id`)
@@ -202,7 +228,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.30');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.44');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (
@@ -235,7 +261,8 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_trackactions_extensions` (
  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
  `extension` VARCHAR(100) NOT NULL DEFAULT '',
-PRIMARY KEY (`id`)
+PRIMARY KEY (`id`),
+UNIQUE KEY `idx_extension` (`extension`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 INSERT IGNORE INTO `#__securitycheckpro_trackactions_extensions` (`id`, `extension`) VALUES
 (1, 'com_banners'),
@@ -254,7 +281,11 @@ INSERT IGNORE INTO `#__securitycheckpro_trackactions_extensions` (`id`, `extensi
 (14, 'com_redirect'),
 (15, 'com_tags'),
 (16, 'com_templates'),
-(17, 'com_users');
+(17, 'com_users'),
+(18, 'com_akeebabackup'),
+(19, 'com_acym'),
+(20, 'com_securitycheckpro'),
+(21, 'com_securitycheckprocontrolcenter');
 
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_trackactions_tables_data` (
 `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,

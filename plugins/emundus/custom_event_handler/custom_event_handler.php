@@ -13,6 +13,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
@@ -1988,6 +1989,21 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		if (empty($data['context']) || !assert($data['context'] instanceof EventContextEntity))
 		{
 			return false;
+		}
+
+		// Actionlog plugins record the automation history.
+		PluginHelper::importPlugin('actionlog');
+
+		// Action labels are built via Text::_() on com_emundus site language keys, in the site's default
+		// language. CLI (scheduled tasks) never runs that resolution, so its Language object stays on Joomla's
+		// internal default (en-GB) unless we resolve and pass the same site default language explicitly.
+		// Web requests already resolved their own language, loading another one would override it for the
+		// whole request, including the messages returned to the browser.
+		$app = Factory::getApplication();
+		if ($app->isClient('cli'))
+		{
+			$siteDefaultLanguage = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+			$app->getLanguage()->load('com_emundus', JPATH_SITE . '/components/com_emundus', $siteDefaultLanguage);
 		}
 
 		// Circuit breaker: if we are already nested too deep in automation processing for this

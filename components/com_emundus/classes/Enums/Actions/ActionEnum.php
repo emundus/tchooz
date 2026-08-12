@@ -59,6 +59,7 @@ enum ActionEnum: string
 	case ORGANIZATION = 'organization';
 	case APPLICATION_CHOICES = 'application_choices';
 	case LOGS = 'logs';
+	case POLLS = 'poll';
 
 	// Users actions
 	case USER = 'user';
@@ -126,6 +127,7 @@ enum ActionEnum: string
 			self::CONTACT => Text::_('COM_EMUNDUS_ACL_CONTACT'),
 			self::ORGANIZATION => Text::_('COM_EMUNDUS_ACL_ORGANIZATION'),
 			self::APPLICATION_CHOICES => Text::_('COM_EMUNDUS_ACL_APPLICATION_CHOICES'),
+			self::POLLS => Text::_('COM_EMUNDUS_ACL_POLL'),
 
 			// Users actions
 			self::USER => Text::_('COM_EMUNDUS_ACCESS_USER'),
@@ -193,6 +195,7 @@ enum ActionEnum: string
 			self::CONTACT => Text::_('COM_EMUNDUS_ACL_CONTACT_DESC'),
 			self::ORGANIZATION => Text::_('COM_EMUNDUS_ACL_ORGANIZATION_DESC'),
 			self::APPLICATION_CHOICES => Text::_('COM_EMUNDUS_ACL_APPLICATION_CHOICES_DESC'),
+			self::POLLS => Text::_('COM_EMUNDUS_ACL_POLL_DESC'),
 
 			// Users actions
 			self::USER => Text::_('COM_EMUNDUS_ACCESS_USER_DESC'),
@@ -257,7 +260,8 @@ enum ActionEnum: string
 			self::CRM,
 			self::CONTACT,
 			self::ORGANIZATION,
-			self::APPLICATION_CHOICES => ActionTypeEnum::PLATFORM,
+			self::APPLICATION_CHOICES,
+			self::POLLS => ActionTypeEnum::PLATFORM,
 
 			self::USER,
 			self::ADD_USER,
@@ -323,6 +327,7 @@ enum ActionEnum: string
 			self::CONTACT => 112,
 			self::ORGANIZATION => 113,
 			self::APPLICATION_CHOICES => 114,
+			self::POLLS => 115,
 
 			// Users actions
 			self::USER => 200,

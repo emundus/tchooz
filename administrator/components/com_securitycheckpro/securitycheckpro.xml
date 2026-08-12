@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" method="upgrade" version="5.0">
 <name>Securitycheck Pro</name>
-<creationDate>23-02-2026</creationDate>
+<creationDate>30-06-2026</creationDate>
 <author>Jose A. Luque</author>
 <authorEmail>contacto@protegetuordenador.com</authorEmail>
 <authorUrl>securitycheck.protegetuordenador.com</authorUrl>
 <copyright>Copyright www.protegetuordenador.com</copyright>
 <license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
-<version>5.0.3</version>
+<version>5.1.0</version>
 <description>COM_SECURITYCHECKPRO_DESCRIPTION</description>
 <namespace path="src">SecuritycheckExtensions\Component\SecuritycheckPro</namespace>
-<dlid prefix="dlid=" suffix=""/>
-
 <!-- Public front end files  -->
 <files folder="frontend">	
 	<folder>src</folder>
@@ -32,13 +30,14 @@
 </menu>
 
 <submenu>
-    <menu link="option=com_securitycheckpro">COM_SECURITYCHECKPRO_CPANEL_MAIN_MENU</menu>
+    <menu link="option=com_securitycheckpro">COM_SECURITYCHECKPRO_CPANEL_MAIN_MENU</menu>	
+	<menu link="option=com_securitycheckpro&amp;controller=securitycheckpro&amp;view=logs">COM_SECURITYCHECKPRO_CPANEL_VIEW_FIREWALL_LOGS</menu>	
 	<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_vulnerabilities()">COM_SECURITYCHECKPRO_VULNERABILITIES</menu>
 	<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_filemanager()">COM_SECURITYCHECKPRO_CPANEL_FILE_MANAGER_TEXT</menu>
-	<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_fileintegrity()">COM_SECURITYCHECKPRO_CPANEL_FILE_INTEGRITY_TEXT</menu>
-	<menu link="option=com_securitycheckpro&amp;controller=securitycheckpro&amp;view=logs">COM_SECURITYCHECKPRO_CPANEL_VIEW_FIREWALL_LOGS</menu>		
+	<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_fileintegrity()">COM_SECURITYCHECKPRO_CPANEL_FILE_INTEGRITY_TEXT</menu>		
 	<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_htaccess()">COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT</menu>
-	<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_malware()">COM_SECURITYCHECKPRO_MALWARESCAN</menu>		
+	<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_malware()">COM_SECURITYCHECKPRO_MALWARESCAN</menu>
+	<menu link="option=com_securitycheckpro&amp;controller=cpanel&amp;task=manage_lists()">COM_SECURITYCHECKPRO_WAF_CONFIG</menu>
 </submenu>
 	
 <!-- Administration Main File Copy Section -->
@@ -105,10 +104,6 @@
 </administration>
 
 <changelogurl>https://securitycheck.protegetuordenador.com/update/updates_securitycheckpro_changelog.xml</changelogurl>
-	
-<updateservers>
-	<server type="extension" priority="1" name="Securitycheck Pro Update Site"><![CDATA[https://securitycheck.protegetuordenador.com/update/updates_securitycheckpro.xml]]></server>	
-</updateservers>
 
 <!-- Runs on install/uninstall/update -->
 <scriptfile>install.php</scriptfile>

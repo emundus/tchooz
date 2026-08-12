@@ -8,16 +8,27 @@ use Tchooz\Services\Field\FieldWatcher;
 
 abstract class Field
 {
+	protected mixed $defaultValue = null;
+
+	/**
+	 * When true, the field value is stored as a per-language object (keyed by language sef)
+	 * so it can be translated in every active platform language.
+	 */
+	protected bool $translatable = false;
+
 	public function __construct(
-		protected string $name,
-		protected string $label,
-		protected bool $required = false,
-		protected ?FieldGroup $group = null,
+		protected string       $name,
+		protected string       $label,
+		protected bool         $required = false,
+		protected ?FieldGroup  $group = null,
 		private ?FieldResearch $research = null,
-		private array $displayRules = [],
-		private array $watchers = [],
-		private ?string $originalType = null
-	) {}
+		private array          $displayRules = [],
+		private array          $watchers = [],
+		private ?string        $originalType = null,
+		protected ?string      $helpText = null
+	)
+	{
+	}
 
 	public function getName(): string
 	{
@@ -113,6 +124,7 @@ abstract class Field
 	public function setOriginalType(?string $type): self
 	{
 		$this->originalType = $type;
+
 		return $this;
 	}
 
@@ -121,18 +133,57 @@ abstract class Field
 		return $this->originalType;
 	}
 
+	public function getHelpText(): ?string
+	{
+		return $this->helpText;
+	}
+
+	public function setHelpText(?string $helpText): self
+	{
+		$this->helpText = $helpText;
+
+		return $this;
+	}
+
+	public function isTranslatable(): bool
+	{
+		return $this->translatable;
+	}
+
+	public function setTranslatable(bool $translatable): self
+	{
+		$this->translatable = $translatable;
+
+		return $this;
+	}
+
+	public function getDefaultValue(): mixed
+	{
+		return $this->defaultValue;
+	}
+
+	public function setDefaultValue(mixed $defaultValue): self
+	{
+		$this->defaultValue = $defaultValue;
+
+		return $this;
+	}
+
 	public function defaultSchema(): array
 	{
 		return [
-			'name' => $this->name,
-			'label' => $this->label,
-			'type' => static::getType(),
-			'required' => $this->required,
-			'group' => $this->getGroup()?->toSchema(),
-			'research' => $this->getResearch()?->toSchema(),
+			'name'         => $this->name,
+			'label'        => $this->label,
+			'type'         => static::getType(),
+			'required'     => $this->required,
+			'group'        => $this->getGroup()?->toSchema(),
+			'research'     => $this->getResearch()?->toSchema(),
 			'displayRules' => array_map(fn($rule) => $rule->toSchema(), $this->getDisplayRules()),
-			'watchers' => array_map(fn($watcher) => $watcher->toSchema(), $this->getWatchers()),
+			'watchers'     => array_map(fn($watcher) => $watcher->toSchema(), $this->getWatchers()),
 			'originalType' => $this->originalType,
+			'helpText'     => $this->helpText,
+			'defaultValue' => $this->defaultValue,
+			'translatable' => $this->translatable,
 		];
 	}
 }

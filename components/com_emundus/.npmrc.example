@@ -1,0 +1,2 @@
+@emundus:registry=https://git.emundus.io/api/v4/packages/npm/
+//git.emundus.io/:_authToken=${GITLAB_TOKEN}

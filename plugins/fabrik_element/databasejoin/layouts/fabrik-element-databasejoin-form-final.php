@@ -3,7 +3,7 @@ defined('JPATH_BASE') or die;
 
 $d = $displayData;
 
-if (isset($d->control)) :
+if (!empty($d->control)) :
     echo $d->control . "<br />\n";
 endif;
 

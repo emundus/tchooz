@@ -11,8 +11,9 @@ namespace Tchooz\Enums;
 
 enum CrudEnum: string
 {
-	case CREATE = 'c';
-	case READ   = 'r';
-	case UPDATE = 'u';
-	case DELETE = 'd';
+	case CREATE           = 'c';
+	case READ             = 'r';
+	case UPDATE           = 'u';
+	case DELETE           = 'd';
+	case CREATE_OR_UPDATE = 'cu';
 }

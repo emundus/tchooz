@@ -2451,26 +2451,18 @@ class Worker
 	}
 
 	/**
-	 * Get a JS go back action e.g 'onclick="history.back()"
+	 * Get a JS go back action for given URL or "where I came from" if empty
 	 *
-	 * @return string
+	 * @param   string $url		The URL to go back to
+	 * @return	string
 	 */
-	public static function goBackAction()
-	{
-		jimport('joomla.environment.browser');
-		$uri = Uri::getInstance();
-
-		$url = filter_var(ArrayHelper::getValue($_SERVER, 'HTTP_REFERER'), FILTER_SANITIZE_URL);
-
-		if ($uri->getScheme() === 'https')
-		{
-			$goBackAction = 'onclick="parent.location=\'' . $url . '\'"';
+	public static function goBackAction($url=null)
+	{		
+		if (empty($url)) {
+			$url = filter_var(ArrayHelper::getValue($_SERVER, 'HTTP_REFERER'), FILTER_SANITIZE_URL);
 		}
-		else
-		{
-			$goBackAction = 'onclick="parent.location=\'' . $url . '\'"';
-		}
-
+		
+		$goBackAction = 'onclick="parent.location=\'' . $url . '\'"';
 		return $goBackAction;
 	}
 
@@ -2566,7 +2558,7 @@ class Worker
 
             $val = $input->get($name, $val, 'string');
 
-            if (!$app->isClient('administrator') && !$app->isCli())
+	        if (!$app->isClient('administrator') && !$app->isCli())
             {
                 if (!$mambot)
                 {
@@ -2598,7 +2590,7 @@ class Worker
         }
         else
         {
-            if (!$app->isClient('administrator') && !$app->isCli())
+	        if (!$app->isClient('administrator') && !$app->isCli())
             {
                 $menus = $app->getMenu();
                 $menu  = $menus->getActive();

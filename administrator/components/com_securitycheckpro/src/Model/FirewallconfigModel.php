@@ -9,7 +9,7 @@ declare(strict_types=1);
  
 namespace SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model;
 
-// Chequeamos si el archivo está incluído en Joomla!
+// Chequeamos si el archivo estï¿½ incluï¿½do en Joomla!
 defined('_JEXEC') or die();
 
 use Joomla\CMS\Pagination\Pagination;
@@ -37,11 +37,11 @@ class FirewallconfigModel extends BaseModel
 	// Ajusta a tus tablas reales permitidas:
     private const ALLOWED_LISTS = ['whitelist', 'blacklist'];
 
-    // Límite de subida (2 MB)
+    // Lï¿½mite de subida (2 MB)
     private const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
 	
-    protected function populateState()
-    {
+    protected function populateState(): void
+	{
         // Inicializamos las variables
 		/** @var \Joomla\CMS\Application\CMSApplicationInterface $app */
         $app = Factory::getApplication();
@@ -55,7 +55,7 @@ class FirewallconfigModel extends BaseModel
     }
 	
 	/**
-	 * Limitbox genérico para una pestaña (blacklist|dynamic_blacklist|whitelist)
+	 * Limitbox genï¿½rico para una pestaï¿½a (blacklist|dynamic_blacklist|whitelist)
 	 * @param array<string, mixed>|null $options 
 	 */
 	public function getLimitBox(string $contextKey, ?\Joomla\CMS\Pagination\Pagination $pagination = null, ?array $options = null): string
@@ -106,7 +106,7 @@ class FirewallconfigModel extends BaseModel
 
 
 	/**
-	 * Listado + paginación con filtro global "filter.lists_search"
+	 * Listado + paginaciï¿½n con filtro global "filter.lists_search"
 	 * @param string   $contextKey      blacklist|dynamic_blacklist|whitelist
 	 * @param string   $tableName       base de tabla (sin prefijo)
 	 * @param string[] $searchColumns   columnas donde aplicar el LIKE (por defecto ['ip'])
@@ -141,7 +141,7 @@ class FirewallconfigModel extends BaseModel
 		}
 		$limit = max(0, (int) $limit);
 
-		// ---- START: primero {$prefix}limitstart (propio de la paginación con prefix)
+		// ---- START: primero {$prefix}limitstart (propio de la paginaciï¿½n con prefix)
 		$start = $input->get($prefix . 'limitstart', null);
 		if ($start === null) {
 			$start = $input->get($startKey, null); // por si haces submit manual (hidden)
@@ -163,7 +163,7 @@ class FirewallconfigModel extends BaseModel
 		));
 
 		/** @var DatabaseInterface $db */
-		$db      = $this->getDatabase();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$qnTable = $db->quoteName("#__securitycheckpro_{$tableName}");
 
 		// WHERE (OR sobre columnas indicadas)
@@ -216,22 +216,22 @@ class FirewallconfigModel extends BaseModel
 		$app->setUserState($stateKey . '.limit', $limit);
 		$app->setUserState($stateKey . '.start', $start);
 
-		// ---- Paginación con {$prefix}limitstart en los enlaces
+		// ---- Paginaciï¿½n con {$prefix}limitstart en los enlaces
 		$pagination = new Pagination($total, $start, $limit, $prefix);
 
-		// Conserva pestaña activa y filtro
+		// Conserva pestaï¿½a activa y filtro
 		$pagination->setAdditionalUrlParam('active_tab', $contextKey);
 		if ($search !== '') {
 			$pagination->setAdditionalUrlParam('filter_lists_search', $search);
 		}
-		// Opcional: conserva también el limit namespaced
+		// Opcional: conserva tambiï¿½n el limit namespaced
 		$pagination->setAdditionalUrlParam($limitKey, $limit);
 
 		return [$rows, $pagination];
 	}
 
     /**
-     * Función que elimina IPs de la lista negra dinámica
+     * Funciï¿½n que elimina IPs de la lista negra dinï¿½mica
      *
      *
      * @return  void
@@ -247,7 +247,7 @@ class FirewallconfigModel extends BaseModel
 		/** @var \Joomla\CMS\Application\CMSApplication $jinput */
         $jinput = Factory::getApplication();
     
-        // Obtenemos los valores de las IPs que serán eliminados de la lista negra dinámica
+        // Obtenemos los valores de las IPs que serï¿½n eliminados de la lista negra dinï¿½mica
         $uids = $jinput->getInput()->get('dynamic_blacklist_cid', [], 'array');
 		        
         foreach($uids as $uid) {
@@ -265,7 +265,7 @@ class FirewallconfigModel extends BaseModel
     }
 
    /**
-     * Función que chequea si la opción de control center está habilitada en el firewall
+     * Funciï¿½n que chequea si la opciï¿½n de control center estï¿½ habilitada en el firewall
      *
      *
      * @return  bool
@@ -300,7 +300,7 @@ class FirewallconfigModel extends BaseModel
     }
 
     /**
-     * Función que añade una ip al fichero que será consumido por el control center si el plugin 'Connect' está habilitado
+     * Funciï¿½n que aï¿½ade una ip al fichero que serï¿½ consumido por el control center si el plugin 'Connect' estï¿½ habilitado
      *
 	 * @param   string             $ip    	  The IP to add
 	 * @param   string             $option    The option
@@ -308,9 +308,9 @@ class FirewallconfigModel extends BaseModel
      * @return  bool|void
      *     
      */
-    function añadir_info_control_center($ip,$option) 
+    function add_info_control_center($ip,$option) 
     {
-        // Ruta al fichero de información
+        // Ruta al fichero de informaciï¿½n
         $folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans';
         
         if (@file_exists(($folder_path . DIRECTORY_SEPARATOR . 'cc_info.php'))) {            
@@ -364,7 +364,7 @@ class FirewallconfigModel extends BaseModel
     }
 
     /**
-     * Función para añadir/borrar una ip a una lista
+     * Funciï¿½n para aï¿½adir/borrar una ip a una lista
      *
 	 * @param   string           $type    	  The name of the database (blacklist_whitelist...)
 	 * @param   string           $action      The action (add,delete)
@@ -417,7 +417,7 @@ class FirewallconfigModel extends BaseModel
             
             // Chequeamos el formato de la entrada
             //IPv4
-            if (strstr($ip_to_add, '*')) { // Si existe algún comodín, lo reemplazamos por el dígito '0'
+            if (strstr($ip_to_add, '*')) { // Si existe algï¿½n comodï¿½n, lo reemplazamos por el dï¿½gito '0'
                 $ip_to_add_filtered= str_replace('*', '0', $ip_to_add);
                 $ip_valid = filter_var($ip_to_add_filtered, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
             } //IPv4/IPv6 CIDR
@@ -441,7 +441,7 @@ class FirewallconfigModel extends BaseModel
 			// Get the client IP to see if the user wants to block his own IP
             $client_ip = $ipmodel->getClientIpForSecuritycheckPro();
                                     
-            // Si la IP es la del cliente no la añadimos para no bloquearnos, excepto cuando la petición provenga del url inspector
+            // Si la IP es la del cliente no la aï¿½adimos para no bloquearnos, excepto cuando la peticiï¿½n provenga del url inspector
             if ($check_own) {
                 if (($ip_to_add == $client_ip) && ($type == 'blacklist')) {
                     if (is_null($ip)) {
@@ -475,10 +475,10 @@ class FirewallconfigModel extends BaseModel
             if ($added_elements > 0) {                
                 if (!$remote) {
                     Factory::getApplication()->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_ADDED_TO_LIST', $added_elements));
-                    // Chequeamos si hemos de añadir la ip al fichero que será consumido por el plugin 'connect'
+                    // Chequeamos si hemos de aï¿½adir la ip al fichero que serï¿½ consumido por el plugin 'connect'
                     $control_center_enabled = $this->control_center_enabled();                
                     if ($control_center_enabled) {						
-                         $this->añadir_info_control_center($ip_to_add, $type);
+                         $this->add_info_control_center($ip_to_add, $type);
                     }
                 } 
             } else {
@@ -490,7 +490,7 @@ class FirewallconfigModel extends BaseModel
             }
             break;
         case "delete":
-            // Obtenemos los valores de las IPs que serán introducidas en la lista negra
+            // Obtenemos los valores de las IPs que serï¿½n introducidas en la lista negra
             if ($type == 'blacklist') {
                 $uids = $jinput->getInput()->get('cid', '0', 'array');
             } else if ($type == 'whitelist') {
@@ -518,7 +518,7 @@ class FirewallconfigModel extends BaseModel
     }   
 
    	/**
-     * Función que sube un fichero de IPs de la extensión Securitycheck Pro (previamente exportado) y lo añade a la bbdd
+     * Funciï¿½n que sube un fichero de IPs de la extensiï¿½n Securitycheck Pro (previamente exportado) y lo aï¿½ade a la bbdd
      *
      * @return  bool
      *     
@@ -556,7 +556,7 @@ class FirewallconfigModel extends BaseModel
             return false;
         }
 
-        // Campo de archivo dinámico
+        // Campo de archivo dinï¿½mico
         $fileField = 'file_to_import_' . $lista;
         $userfile  = $input->files->get($fileField);
 
@@ -575,13 +575,13 @@ class FirewallconfigModel extends BaseModel
             return false;
         }
 
-        // Extensión y nombre seguro
+        // Extensiï¿½n y nombre seguro
         $ext = strtolower((string) pathinfo((string) $userfile['name'], PATHINFO_EXTENSION));
         if ($ext !== 'txt' && $ext !== 'csv') {
             $app->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_INVALID_FILE_EXTENSION'), 'warning');
             return false;
         }
-        $safeName = File::makeSafe((string) $userfile['name']) ?: ('ips_' . uniqid('', true) . '.txt');
+        $safeName = File::makeSafe((string) $userfile['name']) ?: ('ips_' . bin2hex(random_bytes(16)) . '.txt');
 
         // MIME real
         $tmpSrc = $userfile['tmp_name'];
@@ -590,7 +590,6 @@ class FirewallconfigModel extends BaseModel
             $f = finfo_open(FILEINFO_MIME_TYPE);
             if ($f) {
                 $mime = (string) finfo_file($f, $tmpSrc);
-                finfo_close($f);
             }
         }
         $allowedMimes = ['text/plain', 'text/csv', 'application/octet-stream'];
@@ -599,9 +598,9 @@ class FirewallconfigModel extends BaseModel
             return false;
         }
 
-        // Destino temporal único
+        // Destino temporal ï¿½nico
         $tmpPath = rtrim((string) $app->getConfig()->get('tmp_path'), '/\\');
-        $tmpDest = $tmpPath . DIRECTORY_SEPARATOR . uniqid('ips_', true) . '_' . $safeName;
+        $tmpDest = $tmpPath . DIRECTORY_SEPARATOR . 'ips_' . bin2hex(random_bytes(16)) . '_' . $safeName;
 
         if (!File::upload($tmpSrc, $tmpDest, false)) {
             $app->enqueueMessage(Text::_('COM_INSTALLER_MSG_INSTALL_WARNINSTALLUPLOADERROR'), 'warning');
@@ -657,7 +656,7 @@ class FirewallconfigModel extends BaseModel
                 return false;
             }
 
-            // Transacción + inserciones por lotes
+            // Transacciï¿½n + inserciones por lotes
             $db->transactionStart();
 
             $chunkSize = 500;
@@ -666,7 +665,7 @@ class FirewallconfigModel extends BaseModel
             for ($i = 0, $n = count($validIps); $i < $n; $i += $chunkSize) {
                 $chunk = array_slice($validIps, $i, $chunkSize);
 
-                // Intento de inserción por lote (portátil). Si hay conflictos por PK, degradamos a per-row.
+                // Intento de inserciï¿½n por lote (portï¿½til). Si hay conflictos por PK, degradamos a per-row.
                 $query = $db->getQuery(true)
                     ->insert($db->quoteName($table))
                     ->columns([$db->quoteName('ip')]);
@@ -679,7 +678,7 @@ class FirewallconfigModel extends BaseModel
                     $db->setQuery($query)->execute();
                     $inserted += count($chunk);
                 } catch (\Throwable $e) {
-                    // Degradar a inserción individual; los duplicados se omiten (PK)
+                    // Degradar a inserciï¿½n individual; los duplicados se omiten (PK)
                     foreach ($chunk as $ip) {
                         $q = $db->getQuery(true)
                             ->insert($db->quoteName($table))
@@ -726,7 +725,7 @@ class FirewallconfigModel extends BaseModel
     }
 	
 	/**
-     * Función que manda un email de prueba utilizando los parámetros establecidos
+     * Funciï¿½n que manda un email de prueba utilizando los parï¿½metros establecidos
      *
      *
      * @return  void
@@ -743,8 +742,17 @@ class FirewallconfigModel extends BaseModel
         $subject = htmlspecialchars($data['email_subject']);
         $body = Text::_('COM_SECURITYCHECKPRO_EMAIL_TEST_BODY');
     
-        $email_to = $data['email_to'];
-        $to = explode(',', $email_to);
+        $email_to = (string)($data['email_to'] ?? '');
+        $to = array_values(array_filter(
+            array_map('trim', explode(',', $email_to)),
+            static fn(string $v): bool => $v !== ''
+                && filter_var($v, FILTER_VALIDATE_EMAIL) !== false
+                && !in_array(strtolower(substr($v, (int)strpos($v, '@') + 1)), ['yourdomain.com', 'mydomain.com'], true)
+        ));
+        if ($to === []) {
+            Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_EMAIL_NO_VALID_RECIPIENTS'), 'warning');
+            return;
+        }
     
         $email_from_domain = filter_var($data['email_from_domain'], FILTER_SANITIZE_EMAIL);
         $email_from_name = htmlspecialchars($data['email_from_name']);
@@ -773,14 +781,14 @@ class FirewallconfigModel extends BaseModel
             $send = false;
         }
                     
-        // Añadimos un mensaje de que todo ha funcionado correctamente
+        // Aï¿½adimos un mensaje de que todo ha funcionado correctamente
         if ($send === true) {
             Factory::getApplication()->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_EMAIL_SENT_SUCCESSFULLY', $email_to));
         }
     }
 
     /**
-     * Función que chequea si el plugin pasado como argumento está instalado
+     * Funciï¿½n que chequea si el plugin pasado como argumento estï¿½ instalado
      *
 	 * @param   string             $folder  	  The path to the folder
 	 * @param   string             $plugin_name   The name of the plugin
@@ -795,7 +803,7 @@ class FirewallconfigModel extends BaseModel
     
         $plugin = PluginHelper::getPlugin($folder, $plugin_name);
     
-        // Si el valor devuelto es un array, entonces el plugin no existe o no está habilitado
+        // Si el valor devuelto es un array, entonces el plugin no existe o no estï¿½ habilitado
         if (!is_array($plugin)) {
             $installed = true;        
         }

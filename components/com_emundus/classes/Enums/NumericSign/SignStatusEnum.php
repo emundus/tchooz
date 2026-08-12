@@ -20,6 +20,7 @@ enum SignStatusEnum: string
 	case DECLINED = 'declined';
 	case CANCELLED = 'cancelled';
 	case FINISHING = 'finishing';
+	case FAILED = 'failed';
 
 	public function getLabel(): string
 	{
@@ -32,6 +33,7 @@ enum SignStatusEnum: string
 			self::DECLINED => Text::_('SIGN_STATUS_DECLINED'),
 			self::CANCELLED => Text::_('SIGN_STATUS_CANCELLED'),
 			self::FINISHING => Text::_('SIGN_STATUS_FINISHING'),
+			self::FAILED => Text::_('SIGN_STATUS_FAILED'),
 		};
 	}
 
@@ -44,6 +46,7 @@ enum SignStatusEnum: string
 			'Signed'        => self::SIGNED->value,
 			'Declined'      => self::DECLINED->value,
 			'Finishing'     => self::FINISHING->value,
+			'Failed'        => self::FAILED->value,
 		];
 	}
 
@@ -54,7 +57,7 @@ enum SignStatusEnum: string
 			self::AWAITING => ['tw-bg-yellow-500', 'tw-text-black'],
 			self::TO_SIGN, self::REMINDER_SENT, self::FINISHING => ['tw-bg-blue-700', 'tw-text-white'],
 			self::SIGNED => ['tw-bg-green-600', 'tw-text-white'],
-			self::DECLINED, self::CANCELLED => ['tw-bg-red-600', 'tw-text-white'],
+			self::DECLINED, self::CANCELLED, self::FAILED => ['tw-bg-red-600', 'tw-text-white'],
 		};
 
 		$label = $this->getLabel();
@@ -74,7 +77,7 @@ enum SignStatusEnum: string
 			self::AWAITING => ['tw-text-yellow-500', 'schedule'],
 			self::TO_SIGN, self::REMINDER_SENT, self::FINISHING => ['tw-text-blue-700', 'pending'],
 			self::SIGNED => ['tw-text-green-600', 'check_circle'],
-			self::DECLINED, self::CANCELLED => ['tw-text-red-600', 'cancel'],
+			self::DECLINED, self::CANCELLED, self::FAILED => ['tw-text-red-600', 'cancel'],
 		};
 
 		return sprintf(
@@ -91,7 +94,7 @@ enum SignStatusEnum: string
 			self::AWAITING => 'tw-bg-yellow-500',
 			self::TO_SIGN, self::REMINDER_SENT, self::FINISHING => 'tw-bg-blue-700',
 			self::SIGNED => 'tw-bg-green-600',
-			self::DECLINED, self::CANCELLED => 'tw-bg-red-600',
+			self::DECLINED, self::CANCELLED, self::FAILED => 'tw-bg-red-600',
 		};
 	}
 }

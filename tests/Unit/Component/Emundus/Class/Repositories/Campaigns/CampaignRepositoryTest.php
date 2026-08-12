@@ -498,4 +498,285 @@ class CampaignRepositoryTest extends UnitTestCase
 		$this->assertIsArray($tables, 'The getDbTablesByCampaignId method should return an array');
 		$this->assertNotEmpty($tables, 'The getDbTablesByCampaignId method should return an array with at least one element');
 	}
+
+	// =====================
+	// delete tests
+	// =====================
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::delete
+	 */
+	public function testDeleteThrowsExceptionForNonExistentCampaign(): void
+	{
+		$this->expectException(\InvalidArgumentException::class);
+		$this->repository->delete(0);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::delete
+	 */
+	public function testDeleteCampaignWithNoFilesReturnsTrueAndRemovesCampaign(): void
+	{
+		$campaignId = $this->h_dataset->createSampleCampaign($this->dataset['program']);
+		$this->assertGreaterThan(0, $campaignId, 'Sample campaign should be created successfully');
+
+		$deleted = $this->repository->delete($campaignId);
+
+		$this->assertTrue($deleted, 'delete() should return true when campaign has no application files');
+		$this->assertNull($this->repository->getById($campaignId), 'Campaign should no longer exist in database after deletion');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::delete
+	 */
+	public function testDeleteCampaignWithFilesReturnsTrueAndUnpublishesCampaign(): void
+	{
+		$campaignId = $this->h_dataset->createSampleCampaign($this->dataset['program']);
+		$this->assertGreaterThan(0, $campaignId, 'Sample campaign should be created successfully');
+
+		$fnum = $this->h_dataset->createSampleFile($campaignId, $this->dataset['applicant']);
+		$this->assertNotEmpty($fnum, 'Sample application file should be created successfully');
+
+		$result = $this->repository->delete($campaignId);
+
+		$this->assertTrue($result, 'delete() should return true even when campaign has application files');
+
+		$campaign = $this->repository->getById($campaignId);
+		$this->assertNotNull($campaign, 'Campaign should still exist when it has application files attached');
+		$this->assertFalse($campaign->isPublished(), 'Campaign should be unpublished when it has application files attached');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::delete
+	 */
+	public function testDeleteCampaignWithFilesKeepsCampaignInDatabase(): void
+	{
+		$campaignId = $this->h_dataset->createSampleCampaign($this->dataset['program']);
+		$this->assertGreaterThan(0, $campaignId, 'Sample campaign should be created successfully');
+
+		$fnum = $this->h_dataset->createSampleFile($campaignId, $this->dataset['applicant']);
+		$this->assertNotEmpty($fnum, 'Sample application file should be created successfully');
+
+		$this->repository->delete($campaignId);
+
+		$campaign = $this->repository->getById($campaignId);
+		$this->assertNotNull($campaign, 'Campaign should remain in the database because it has linked application files');
+		$this->assertEquals($campaignId, $campaign->getId(), 'Campaign ID should be unchanged after soft-delete');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::delete
+	 */
+	public function testDeletePublishedCampaignWithNoFilesRemovesItFromDatabase(): void
+	{
+		$programRepository = new ProgramRepository();
+		$program           = $programRepository->getById($this->dataset['program']['programme_id']);
+		$campaign          = new CampaignEntity('Campaign to delete', new \DateTime(), new \DateTime(), $program, '2050');
+		$campaign->setPublished(true);
+		$this->repository->flush($campaign);
+		$this->assertGreaterThan(0, $campaign->getId(), 'Campaign should be persisted before deletion');
+
+		$deleted = $this->repository->delete($campaign->getId());
+
+		$this->assertTrue($deleted, 'delete() should return true for a published campaign with no files');
+		$this->assertNull($this->repository->getById($campaign->getId()), 'Published campaign with no files should be physically deleted');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::delete
+	 */
+	public function testDeleteAlreadyUnpublishedCampaignWithFilesRemainsUnpublished(): void
+	{
+		$campaignId = $this->h_dataset->createSampleCampaign($this->dataset['program']);
+		$this->assertGreaterThan(0, $campaignId, 'Sample campaign should be created successfully');
+
+		$campaign = $this->repository->getById($campaignId);
+		$campaign->setPublished(false);
+		$this->repository->flush($campaign);
+
+		$fnum = $this->h_dataset->createSampleFile($campaignId, $this->dataset['applicant']);
+		$this->assertNotEmpty($fnum, 'Sample application file should be created successfully');
+
+		$result = $this->repository->delete($campaignId);
+
+		$this->assertTrue($result, 'delete() should return true for an already-unpublished campaign with files');
+		$updatedCampaign = $this->repository->getById($campaignId);
+		$this->assertNotNull($updatedCampaign, 'Campaign should still exist in database');
+		$this->assertFalse($updatedCampaign->isPublished(), 'Campaign should remain unpublished');
+	}
+
+	// =====================
+	// deleteBatch tests
+	// =====================
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::deleteBatch
+	 */
+	public function testDeleteBatchWithMultipleCampaignsWithNoFilesReturnsAllIdsAndRemovesThem(): void
+	{
+		$campaignId1 = $this->h_dataset->createSampleCampaign($this->dataset['program']);
+		$campaignId2 = $this->h_dataset->createSampleCampaign($this->dataset['program']);
+		$this->assertGreaterThan(0, $campaignId1, 'First sample campaign should be created successfully');
+		$this->assertGreaterThan(0, $campaignId2, 'Second sample campaign should be created successfully');
+
+		$deletedCampaigns = $this->repository->deleteBatch([$campaignId1, $campaignId2]);
+
+		$this->assertIsArray($deletedCampaigns, 'deleteBatch() should return an array');
+		$this->assertContains($campaignId1, $deletedCampaigns, 'First campaign id should be in the returned deleted ids');
+		$this->assertContains($campaignId2, $deletedCampaigns, 'Second campaign id should be in the returned deleted ids');
+		$this->assertNull($this->repository->getById($campaignId1), 'First campaign should no longer exist in database');
+		$this->assertNull($this->repository->getById($campaignId2), 'Second campaign should no longer exist in database');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::deleteBatch
+	 */
+	public function testDeleteBatchWithEmptyArrayReturnsEmptyArray(): void
+	{
+		$deletedCampaigns = $this->repository->deleteBatch([]);
+
+		$this->assertIsArray($deletedCampaigns, 'deleteBatch() should return an array');
+		$this->assertEmpty($deletedCampaigns, 'deleteBatch() should return an empty array when given no ids');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::deleteBatch
+	 */
+	public function testDeleteBatchSkipsNonExistentIdsAndDeletesValidOnes(): void
+	{
+		$campaignId = $this->h_dataset->createSampleCampaign($this->dataset['program']);
+		$this->assertGreaterThan(0, $campaignId, 'Sample campaign should be created successfully');
+
+		// 0 does not exist: delete() throws InvalidArgumentException, deleteBatch must catch and continue
+		$deletedCampaigns = $this->repository->deleteBatch([0, $campaignId]);
+
+		$this->assertContains($campaignId, $deletedCampaigns, 'The valid campaign id should be in the returned deleted ids');
+		$this->assertNotContains(0, $deletedCampaigns, 'The non-existent id should not be in the returned deleted ids');
+		$this->assertNull($this->repository->getById($campaignId), 'The valid campaign should be removed from database despite the invalid id in the batch');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::deleteBatch
+	 */
+	public function testDeleteBatchWithCampaignWithFilesReturnsIdAndUnpublishesIt(): void
+	{
+		$campaignId = $this->h_dataset->createSampleCampaign($this->dataset['program']);
+		$this->assertGreaterThan(0, $campaignId, 'Sample campaign should be created successfully');
+
+		$fnum = $this->h_dataset->createSampleFile($campaignId, $this->dataset['applicant']);
+		$this->assertNotEmpty($fnum, 'Sample application file should be created successfully');
+
+		$deletedCampaigns = $this->repository->deleteBatch([$campaignId]);
+
+		$this->assertContains($campaignId, $deletedCampaigns, 'Campaign with files should be reported as deleted (soft-delete returns true)');
+
+		$campaign = $this->repository->getById($campaignId);
+		$this->assertNotNull($campaign, 'Campaign with files should still exist in database after batch delete');
+		$this->assertFalse($campaign->isPublished(), 'Campaign with files should be unpublished after batch delete');
+	}
+
+
+	public function testGetCampaignWithRelations(): void
+	{
+		$repository = new CampaignRepository(true);
+		$campaign = $repository->getById($this->dataset['campaign']);
+
+		$this->assertNotEmpty($campaign);
+		$this->assertNotEmpty($campaign->getProgram());
+		$this->assertSame($campaign->getProgram()->getId(), $this->dataset['program']['programme_id']);
+	}
+
+	public function testGetCampaignWithoutRelations(): void
+	{
+		$repository = new CampaignRepository(false);
+		$campaign = $repository->getById($this->dataset['campaign']);
+
+		$this->assertNotEmpty($campaign);
+		$this->assertEmpty($campaign->getProgram());
+	}
+
+	public function testGetCampaignWithEveryRelationMinusProgram(): void
+	{
+		$repository = new CampaignRepository(true, [ProgramRepository::NAME]);
+		$campaign = $repository->getById($this->dataset['campaign']);
+
+		$this->assertNotEmpty($campaign);
+		$this->assertEmpty($campaign->getProgram());
+	}
+
+	public function testGetChildCampaignLoadParentRelation(): void
+	{
+		$campaign = $this->repository->getById($this->dataset['campaign']);
+		$childCampaign = new CampaignEntity('Child campaign', new \DateTime(), new \DateTime(), $campaign->getProgram(), '2050', 'Campaign test description', 'Short campaign test description', 1000, true, false, '', true, $campaign);
+		$flushed = $this->repository->flush($childCampaign);
+		$this->assertTrue($flushed);
+		$this->assertNotEmpty($childCampaign->getParent());
+
+		$repository = new CampaignRepository(true);
+		$repository->getById($childCampaign->getId());
+		$this->assertNotEmpty($childCampaign->getParent());
+		$this->assertSame($childCampaign->getParent()->getId(), $this->dataset['campaign']);
+	}
+
+	public function testGetChildCampaignWithoutRelations(): void
+	{
+		$campaign = $this->repository->getById($this->dataset['campaign']);
+		$childCampaign = new CampaignEntity('Child campaign 2', new \DateTime(), new \DateTime(), $campaign->getProgram(), '2050', 'Campaign test description', 'Short campaign test description', 1000, true, false, '', true, $campaign);
+		$flushed = $this->repository->flush($childCampaign);
+		$this->assertTrue($flushed);
+
+		$repository = new CampaignRepository(false);
+		$childCampaignLoaded = $repository->getById($childCampaign->getId());
+		$this->assertEmpty($childCampaignLoaded->getParent());
+	}
+
+	public function testGetChildCampaignWithEveryRelationMinusParent(): void
+	{
+		$campaign = $this->repository->getById($this->dataset['campaign']);
+		$childCampaign = new CampaignEntity('Child campaign 3', new \DateTime(), new \DateTime(), $campaign->getProgram(), '2050', 'Campaign test description', 'Short campaign test description', 1000, true, false, '', true, $campaign);
+		$flushed = $this->repository->flush($childCampaign);
+		$this->assertTrue($flushed);
+
+		$repository = new CampaignRepository(true, [CampaignRepository::NAME]);
+		$childCampaignLoaded = $repository->getById($childCampaign->getId());
+		$this->assertEmpty($childCampaignLoaded->getParent());
+		$this->assertNotEmpty($childCampaignLoaded->getProgram());
+		$this->assertSame($childCampaignLoaded->getProgram()->getId(), $this->dataset['program']['programme_id']);
+	}
+
+	public function testGetMultipleCampaignsWithDifferentPrograms(): void
+	{
+		$campaign1 = $this->repository->getById($this->dataset['campaign']);
+		$program2 = $this->h_dataset->createSampleProgram('Programme pour tester la gestion des relations abstractFactory');
+		$campaignid2 = $this->h_dataset->createSampleCampaign($program2);
+		$campaign2 =  $this->repository->getById($campaignid2);
+
+		$campaigns = $this->repository->get([
+			'id' => [$campaign1->getId(), $campaign2->getId()],
+		]);
+		$this->assertNotEmpty($campaigns);
+		$this->assertCount(2, $campaigns);
+
+		foreach ($campaigns as $campaign) {
+			$this->assertInstanceOf(CampaignEntity::class, $campaign);
+
+			if ($campaign->getId() === $campaign1->getId()) {
+				$this->assertSame($campaign->getProgram()->getId(), $this->dataset['program']['programme_id']);
+			} else {
+				$this->assertSame($campaign->getProgram()->getId(), $program2['programme_id']);
+			}
+		}
+
+		$noRelationsRepository = new CampaignRepository(false);
+		$noRelationsCampaigns = $noRelationsRepository->get([
+			'id' => [$campaign1->getId(), $campaign2->getId()]
+		]);
+		$this->assertNotEmpty($noRelationsCampaigns);
+		$this->assertCount(2, $noRelationsCampaigns);
+
+		foreach ($noRelationsCampaigns as $campaign) {
+			$this->assertInstanceOf(CampaignEntity::class, $campaign);
+			$this->assertEmpty($campaign->getProgram());
+		}
+	}
 }

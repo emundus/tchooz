@@ -191,11 +191,9 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
     <h1 class="tw-mb-2"><?php echo $program_label; ?></h1>
 <?php endif; ?>
 
-<?php if (in_array('intro', $mod_em_campaign_list_sections)): ?>
-    <div class="mod_emundus_campaign__intro">
-		<?= $mod_em_campaign_intro; ?>
-    </div>
-<?php endif; ?>
+<div class="mod_emundus_campaign__intro">
+    <?= $mod_em_campaign_intro; ?>
+</div>
 
 <?php if($mod_em_campaign_display_campaigns == 1) : ?>
 <form action="<?php echo $CurPageURL ?>" method="post" id="search_program">

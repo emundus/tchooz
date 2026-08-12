@@ -8,7 +8,6 @@ use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterEmundusCartUpdateDefinition;
 use Tchooz\Entities\Payment\AlterationEntity;
 use Tchooz\Entities\Payment\AlterationType;
-use Tchooz\Entities\Payment\PaymentMethodEntity;
 use Tchooz\Exception\EmundusAdjustBalanceAlreadyAddedException;
 use Tchooz\Exception\EmundusInvalidAmountException;
 use Tchooz\Repositories\Contacts\ContactRepository;
@@ -17,14 +16,14 @@ use Tchooz\Entities\Payment\CartEntity;
 use Tchooz\Entities\Payment\TransactionEntity;
 use Tchooz\Entities\Payment\TransactionStatus;
 use Tchooz\Entities\Contacts\ContactEntity;
-use Tchooz\Synchronizers\Payment\Sogecommerce;
+use Tchooz\Enums\Payment\PaymentGatewayEnum;
+use Tchooz\Synchronizers\Payment\Lyra;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Event\GenericEvent;
-use Tchooz\Synchronizers\Payment\Stripe;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
 
@@ -1109,26 +1108,16 @@ class CartRepository
 			$this->db->setQuery($query);
 			$sync_type = $this->db->loadResult();
 
-			$synchronizer = null;
-			switch ($sync_type) {
-				case 'sogecommerce':
-					$synchronizer = new Sogecommerce();
+			$synchronizer = PaymentGatewayEnum::tryFrom($sync_type)?->getSynchronizer();
 
-					if (!in_array($cart->getSelectedPaymentMethod()->getName(), $manual_payment_methods))
-					{
-						// in case of an invalid custom reference passed, replace it with a valid one
-						$valid = $synchronizer->verifyReference($transaction->getExternalReference());
-						if (!$valid) {
-							$transaction->generateExternalReference(6);
-							$transaction_repository->saveTransaction($transaction, $current_user_id);
-						}
-					}
-
-					break;
-				case 'stripe':
-					$synchronizer = new Stripe();
-				default:
-					break;
+			if ($synchronizer instanceof Lyra && !in_array($cart->getSelectedPaymentMethod()->getName(), $manual_payment_methods))
+			{
+				// in case of an invalid custom reference passed, replace it with a valid one
+				$valid = $synchronizer->verifyReference($transaction->getExternalReference());
+				if (!$valid) {
+					$transaction->generateExternalReference(6);
+					$transaction_repository->saveTransaction($transaction, $current_user_id);
+				}
 			}
 
 			if (!empty($synchronizer)) {

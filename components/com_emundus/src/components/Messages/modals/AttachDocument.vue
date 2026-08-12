@@ -133,7 +133,6 @@ export default {
 		if (fileTypes) {
 			this.dropzoneOptions.acceptedFiles = fileTypes.map((type) => type.mimeType).join(',');
 		}
-		console.log(this.dropzoneOptions.acceptedFiles);
 	},
 	methods: {
 		beforeClose() {},

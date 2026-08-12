@@ -529,7 +529,11 @@ export default {
 					<span class="material-symbols-outlined">close</span>
 				</button>
 			</div>
-			<iframe :src="fabrikFormUrl" class="tw-h-full tw-w-full"></iframe>
+			<iframe
+				:src="fabrikFormUrl"
+				class="tw-h-full tw-w-full"
+				:title="translate('COM_EMUNDUS_IFRAME_APPLICATION_CHOICES_FORM_TITLE')"
+			></iframe>
 		</modal>
 
 		<Back class="tw-mb-4" link="index.php" v-if="!$props.fnum" />

@@ -493,7 +493,7 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 
 						$evaluation_data['fnum'] = $old_evaluation->fnum;
 						$evaluation_data['ccid'] = \EmundusHelperFiles::getIdFromFnum($old_evaluation->fnum);
-						$evaluation_data['evaluator'] = $old_evaluation->user ?? null;
+						$evaluation_data['evaluator'] = $old_evaluation->evaluator ?? null;
 						$evaluation_data['step_id'] = $evaluation_step_id;
 
 						unset($evaluation_data['id']);

@@ -82,6 +82,7 @@ import EditStatus from '@/components/Settings/Files/EditStatus.vue';
 import EditTags from '@/components/Settings/Files/EditTags.vue';
 import MultifactorAuthentication from '@/components/Settings/Users/MultifactorAuthentication.vue';
 import SecurityRules from '@/components/Settings/Users/SecurityRules.vue';
+import LoginRestriction from '@/components/Settings/Users/LoginRestriction.vue';
 import Categories from '@/components/Settings/Users/Categories.vue';
 import General from '@/components/Settings/Style/General.vue';
 import Orphelins from '@/components/Settings/TranslationTool/Orphelins.vue';
@@ -117,6 +118,7 @@ export default {
 		Tile,
 		MultifactorAuthentication,
 		SecurityRules,
+		LoginRestriction,
 		Categories,
 		ApplicationFileActionsSettings,
 	},

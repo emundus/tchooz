@@ -16,6 +16,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\User;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -33,7 +34,6 @@ use Tchooz\Enums\Filters\FilterModeEnum;
 use Tchooz\Factories\Filters\FilterFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
-use Tchooz\Repositories\ApplicationFile\TagsRepository;
 use Tchooz\Repositories\Filters\FilterRepository;
 use Tchooz\Repositories\Label\LabelRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
@@ -1402,16 +1402,16 @@ class EmundusControllerFiles extends EmundusController
 	}
 
 	/**
-	 *
+	 * @deprecated
 	 */
 	public function unlinkevaluators()
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			$fnum  = $this->input->getString('fnum', null);
-			$id    = $this->input->getint('id', null);
-			$group = $this->input->getString('group', null);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$fnum  = $this->input->getString('fnum', '');
+			$id    = $this->input->getInt('id', 0);
+			$group = $this->input->getString('group', false);
 
 			$m_files = $this->getModel('Files');
 
@@ -1548,61 +1548,92 @@ class EmundusControllerFiles extends EmundusController
 
 
 	/**
+	 * Legacy ZIP export endpoint. Delegates to Tchooz\Services\Export\Zip\ZipService.
 	 *
+	 * Preserves the {status, name, msg} response shape consumed by media/com_emundus/js/mixins/exports.js
+	 * so that no frontend change is required. The resulting archive is dropped under JPATH_SITE/tmp/ so the
+	 * legacy controller=files&task=download endpoint can serve it as-is.
 	 */
 	public function zip()
 	{
-		$response = ['status' => false, 'msg' => Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS')];
+		$response = ['status' => false, 'name' => '', 'msg' => Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS')];
 
-		require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
-		$current_user = JFactory::getUser();
+		try {
+			$current_user = $this->app->getIdentity();
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-			$forms      = $this->input->getInt('forms', 0);
-			$attachment = $this->input->getInt('attachment', 0);
-			$eval_steps = $this->input->getString('eval_steps', '');
-			$eval_steps = !empty($eval_steps) ? json_decode($eval_steps, true) : [];
-			$formids    = $this->input->getVar('formids', null);
-			$attachids  = $this->input->getVar('attachids', null);
-			$options    = $this->input->getVar('options', null);
-			$params     = $this->input->getString('params', null);
-			$params     = !empty($params) ? json_decode($params, true) : [];
-
-			$m_files = $this->getModel('Files');
-
-			$fnums_post  = $this->input->getVar('fnums', null);
-			$fnums_array = ($fnums_post == 'all') ? 'all' : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
-
-			if ($fnums_array == 'all') {
-				$fnums = $m_files->getAllFnums();
-			}
-			else {
-				$fnums = array();
-				foreach ($fnums_array as $key => $value) {
-					$fnums[] = $value;
-				}
+			if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+				throw new Exception(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 			}
 
-			$validFnums = array();
-			foreach ($fnums as $fnum) {
-				if (EmundusHelperAccess::asAccessAction(6, 'c', $this->_user->id, $fnum)) {
-					$validFnums[] = $fnum;
-				}
+			if (!extension_loaded('zip')) {
+				$name = $this->export_zip_pcl($this->resolveLegacyZipFnums($current_user));
+				echo json_encode((object) ['status' => true, 'name' => $name, 'msg' => '']);
+				exit();
 			}
 
-
-			if (extension_loaded('zip')) {
-				$name = $m_files->exportZip($validFnums, $forms, $attachment, $eval_steps, $formids, $attachids, $options, false, $current_user, $params);
-			}
-			else {
-				$name = $this->export_zip_pcl($validFnums);
+			$validFnums = $this->resolveLegacyZipFnums($current_user);
+			if (empty($validFnums)) {
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NO_FILES_SELECTED'));
 			}
 
-			$response = ['status' => true, 'name' => $name, 'msg' => ''];
+			$params = $this->input->getString('params', null);
+			$params = !empty($params) ? json_decode($params, true) : [];
+
+			$evalStepsRaw = $this->input->getString('eval_steps', '');
+			$evalSteps    = !empty($evalStepsRaw) ? (json_decode($evalStepsRaw, true) ?: []) : [];
+
+			$options = [
+				'forms'                        => $this->input->getInt('forms', 0),
+				'attachment'                   => $this->input->getInt('attachment', 0),
+				'form_ids'                     => $this->input->getVar('formids', []),
+				'attach_ids'                   => $this->input->getVar('attachids', []),
+				'eval_steps'                   => $evalSteps,
+				'legacy_header_options'        => $this->input->getVar('options', []),
+				'concat_attachments_with_form' => !empty($params['concat_attachments_with_form']),
+				'convert_docx_to_pdf'          => !empty($params['convert_docx_to_pdf']),
+				'lang'                         => $this->app->getLanguage()->getTag(),
+			];
+
+			$service = new \Tchooz\Services\Export\Zip\ZipService($validFnums, $current_user, $options);
+			$result  = $service->export('tmp/', null, $options['lang']);
+
+			if (!$result->isStatus() || empty($result->getFilePath())) {
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_EXECUTE_EXPORT'));
+			}
+
+			$response = ['status' => true, 'name' => basename($result->getFilePath()), 'msg' => ''];
+		} catch (Exception $e) {
+			Log::add('Legacy ZIP export failed: ' . $e->getMessage(), Log::ERROR, 'com_emundus.export.zip');
+			$response = ['status' => false, 'name' => '', 'msg' => $e->getMessage()];
 		}
 
 		echo json_encode((object) $response);
 		exit();
+	}
+
+	private function resolveLegacyZipFnums(User $current_user): array
+	{
+		$m_files     = $this->getModel('Files');
+		$fnums_post  = $this->input->getVar('fnums', null);
+		$fnums_array = ($fnums_post == 'all') ? 'all' : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
+
+		if ($fnums_array == 'all') {
+			$fnums = $m_files->getAllFnums();
+		} else {
+			$fnums = [];
+			foreach ($fnums_array as $value) {
+				$fnums[] = $value;
+			}
+		}
+
+		$validFnums = [];
+		foreach ($fnums as $fnum) {
+			if (EmundusHelperAccess::asAccessAction(6, 'c', $current_user->id, $fnum)) {
+				$validFnums[] = $fnum;
+			}
+		}
+
+		return $validFnums;
 	}
 
 	/**
@@ -3494,9 +3525,13 @@ class EmundusControllerFiles extends EmundusController
 			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
-		$name = $this->input->getString('name', null);
-
-		$file = JPATH_SITE . DS . 'tmp' . DS . $name;
+		$name = basename($this->input->getString('name', '')); // supprime tout composant de chemin (e.g. : "../")
+		$base = realpath(JPATH_SITE . '/tmp');
+		$file = realpath($base . '/' . $name);
+		if ($file === false || !str_starts_with($file, $base . DIRECTORY_SEPARATOR))
+		{
+			die(Text::_('ACCESS_DENIED'));
+		}
 
 		if (file_exists($file)) {
 			$mime_type = $this->get_mime_type($file);
@@ -3515,7 +3550,8 @@ class EmundusControllerFiles extends EmundusController
 			exit;
 		}
 		else {
-			echo Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND') . ' : ' . $file;
+			Log::add('File not found: ' . $file, Log::ERROR, 'com_emundus');
+			echo Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND');
 		}
 	}
 
@@ -3646,8 +3682,9 @@ class EmundusControllerFiles extends EmundusController
 		exit();
 	}
 
-	//todo: jeremy stopped here
-
+	#[AccessAttribute(AccessLevelEnum::PARTNER,
+		[['id' => ActionEnum::EXPORT_ZIP, 'mode' => CrudEnum::CREATE],]
+	)]
 	public function exportzipdoc()
 	{
 		$idFiles = $this->input->getString('ids', '');
@@ -3715,6 +3752,7 @@ class EmundusControllerFiles extends EmundusController
 		}
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getPDFProgrammes()
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
@@ -3756,6 +3794,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getPDFCampaigns()
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
@@ -3801,6 +3840,7 @@ class EmundusControllerFiles extends EmundusController
 	}
 
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getProgrammes()
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
@@ -3829,6 +3869,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getProgramCampaigns()
 	{
 		$html = '';
@@ -3852,6 +3893,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function saveExcelFilter()
 	{
 		$current_user = JFactory::getUser();
@@ -3874,6 +3916,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function savePdfFilter()
 	{
 
@@ -3899,6 +3942,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function deletePdfFilter()
 	{
 
@@ -3910,6 +3954,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getExportExcelFilter()
 	{
 		$response = array('status' => false, 'filter' => []);
@@ -3928,6 +3973,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getAllExportPdfFilter()
 	{
 		$user_id = JFactory::getUser()->id;
@@ -3939,6 +3985,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getExportPdfFilterById()
 	{
 		$modelId = $this->input->getRaw('id');
@@ -3950,6 +3997,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getExportExcelFilterById()
 	{
 		$user_id = JFactory::getUser()->id;
@@ -3963,6 +4011,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getAllLetters()
 	{
 		$h_files = new EmundusHelperFiles;
@@ -3972,6 +4021,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getexcelletter()
 	{
 		$h_files = new EmundusHelperFiles;
@@ -4021,7 +4071,10 @@ class EmundusControllerFiles extends EmundusController
 
 	/**
 	 * Generates or (if it exists already) loads the PDF for a certain GesCOF product.
+	 * todo: check whatever we do of this function
+	 * @deprecated
 	 */
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getproductpdf()
 	{
 
@@ -4181,7 +4234,6 @@ class EmundusControllerFiles extends EmundusController
 
 	}
 
-
 	public function getValueByFabrikElts($fabrikElts, $fnumsArray)
 	{
 		$m_files = $this->getModel('Files');
@@ -4259,6 +4311,7 @@ class EmundusControllerFiles extends EmundusController
 		return $fabrikValues;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function exportfile()
 	{
 
@@ -4291,6 +4344,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getfabrikdatabyelements()
 	{
 		$h_files = new EmundusHelperFiles;
@@ -4302,6 +4356,7 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function getselectedelements()
 	{
 		$h_files   = new EmundusHelperFiles;
@@ -4588,6 +4643,30 @@ class EmundusControllerFiles extends EmundusController
 		$user = $app->getIdentity();
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+
+			$session              = $app->getSession();
+			$session_filters      = $session->get('em-applied-filters', []);
+
+			$campaignFilter = null;
+			$programFilter = null;
+			foreach ($session_filters as $sessionFilter)
+			{
+				if($sessionFilter['id'] === 'programs')
+				{
+					$programFilter = $sessionFilter;
+				}
+				if($sessionFilter['id'] === 'campaigns')
+				{
+					$campaignFilter = $sessionFilter;
+				}
+			}
+			$campaignsIdsFiltered = array_filter($campaignFilter['value'] ?? [], function ($value) {
+				return !empty($value) && $value !== 'all';
+			});
+			$programsIdsFiltered = array_filter($programFilter['value'] ?? [], function ($value) {
+				return !empty($value) && $value !== 'all';
+			});
+
 			$response['msg'] = Text::_('MISSING_PARAMS');
 			$menu_id = $app->input->getInt('menu_id', 0);
 			$search_query = $app->input->getString('search_query', '');
@@ -4611,7 +4690,7 @@ class EmundusControllerFiles extends EmundusController
 						require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php');
 					}
 					$m_filters = new EmundusFiltersFiles($menu_params, true, true);
-					$filters = $m_filters->getFilters($search_query);
+					$filters = $m_filters->getFilters($search_query, $campaignsIdsFiltered, $programsIdsFiltered);
 
 					$response['data'] = $filters;
 					$response['status'] = true;

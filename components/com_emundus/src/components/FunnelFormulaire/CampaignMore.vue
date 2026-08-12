@@ -1,6 +1,12 @@
 <template>
 	<div>
-		<iframe v-if="formUrl.length > 0" id="more-form-iframe" :src="formUrl" width="100%"></iframe>
+		<iframe
+			v-if="formUrl.length > 0"
+			id="more-form-iframe"
+			:src="formUrl"
+			width="100%"
+			:title="translate('COM_EMUNDUS_IFRAME_CAMPAIGN_FORM_ADVANCED_TITLE')"
+		></iframe>
 	</div>
 </template>
 

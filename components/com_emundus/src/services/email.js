@@ -145,8 +145,6 @@ export default {
 	},
 
 	async saveTrigger(trigger) {
-		console.log(trigger);
-
 		try {
 			trigger.profile_ids = trigger.profile_ids.map(function (item) {
 				return item.id;
@@ -154,8 +152,6 @@ export default {
 			trigger.group_ids = trigger.group_ids.map(function (item) {
 				return item.id;
 			});
-
-			console.log(trigger);
 
 			return await client.post('savetrigger', {
 				trigger: JSON.stringify(trigger),

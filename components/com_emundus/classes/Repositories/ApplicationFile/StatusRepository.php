@@ -24,11 +24,13 @@ use Tchooz\Repositories\RepositoryInterface;
 ])]
 class StatusRepository extends EmundusRepository implements RepositoryInterface
 {
+	const NAME = 'status';
+
 	private StatusFactory $factory;
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		parent::__construct($withRelations, $exceptRelations, 'status', self::class);
+		parent::__construct($withRelations, $exceptRelations, self::NAME, self::class);
 
 		$this->factory = new StatusFactory();
 	}

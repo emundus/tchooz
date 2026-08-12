@@ -12,6 +12,7 @@ defined('_JEXEC') or die();
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Session\Session;
+use Joomla\CMS\Language\Text;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\SecuritycheckproBaseController;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\UploadModel;
 
@@ -23,6 +24,10 @@ class UploadController extends SecuritycheckproBaseController
      * @return void
      */
     function read_file():void {
+		if (!Session::checkToken()) {
+			throw new \RuntimeException(Text::_('JINVALID_TOKEN'), 403);
+		}
+		
 		$model = $this->getModel('Upload');
 		if (!$model instanceof UploadModel) {
 			Factory::getApplication()->enqueueMessage('Upload model not found', 'error');

@@ -18,7 +18,8 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
-use Joomla\Plugin\System\Securitycheckpro\Extension\Securitycheckpro;
+use Joomla\CMS\Application\CMSApplicationInterface;
+use Joomla\Plugin\System\Securitycheckpro\Helper\SecuritycheckProHelper;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FirewallconfigModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\IpModel;
@@ -35,9 +36,9 @@ final class Url_inspector extends CMSPlugin
     /**
      * Firewall class object
      *
-     * @var Securitycheckpro|null
+     * @var bool
      */
-    private static ?Securitycheckpro $objeto = null;
+    private static bool $proAvailable = false;
 
     /**
      * Language object (may be null if not available)
@@ -56,12 +57,11 @@ final class Url_inspector extends CMSPlugin
     /**
      * Constructor.
      *
-     * @param object $subject The object to observe
      * @param array<string,mixed> $config
      */
-    public function __construct(&$subject, $config)
+    public function __construct(array $config = [])
     {
-        parent::__construct($subject, $config);
+        parent::__construct($config);
 
         // Only run if Securitycheck Pro component exists (pro services provider file)
         $providerPath = JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components'
@@ -75,8 +75,7 @@ final class Url_inspector extends CMSPlugin
 
         self::$parameters = $this->load('pro_plugin');
 
-        // Create a new object to use Securitycheck Pro functions
-        self::$objeto = new Securitycheckpro($subject, $config);
+        self::$proAvailable = class_exists(SecuritycheckProHelper::class);
 
         // Get language safely (Joomla 5/6)
         $lang = null;
@@ -87,11 +86,9 @@ final class Url_inspector extends CMSPlugin
                 /** @var Language $lang */
                 $lang = $container->get(Language::class);
             } else {
-                $app = Factory::getApplication();
-                if (method_exists($app, 'getLanguage')) {
-                    /** @var Language $lang */
-                    $lang = $app->getLanguage();
-                }
+               /** @var CMSApplicationInterface $app */
+				$app = Factory::getApplication();
+				$lang = $app->getLanguage(); // Language
             }
         } catch (\Throwable $e) {
 			Log::add('Url_inspector. Error retrieving the language: ' . $e->getMessage(), Log::ERROR, 'plg_url_inspector');
@@ -113,20 +110,17 @@ final class Url_inspector extends CMSPlugin
      */
     public function onAfterInitialise(): void
     {
-        // Ensure firewall object exists (component missing / not initialized)
-        if (!(self::$objeto instanceof Securitycheckpro)) {
+        if (!self::$proAvailable) {
             return;
         }
 
         // Ensure language is loaded (extra safety)
         if (!(self::$lang_firewall instanceof Language)) {
-            $app = Factory::getApplication();
-            if (method_exists($app, 'getLanguage')) {
-                /** @var Language $lang */
-                $lang = $app->getLanguage();
-                self::$lang_firewall = $lang;
-                self::$lang_firewall->load('com_securitycheckpro', JPATH_ADMINISTRATOR, null, true);
-            }
+            /** @var CMSApplicationInterface $app */
+			$app = Factory::getApplication();
+			$lang = $app->getLanguage(); // Language
+            self::$lang_firewall = $lang;
+            self::$lang_firewall->load('com_securitycheckpro', JPATH_ADMINISTRATOR, null, true);           
         }
 
         /** @var DatabaseInterface $db */
@@ -167,44 +161,73 @@ final class Url_inspector extends CMSPlugin
             $decoded = mb_convert_encoding($decoded, 'UTF-8', 'UTF-8');
         }
 
-        $url = htmlspecialchars($decoded, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-
         // Params with defaults
-        $write_log_inspector = (int) ($this->getParam('write_log_inspector', 1));
+        $write_log_inspector = (bool) ($this->getParam('write_log_inspector', 1));
         $inspector_forbidden_words = (string) ($this->getParam(
             'inspector_forbidden_words','wp-login.php,.git,owl.prev,tmp.php,home.php,Guestbook.php,aska.cgi,default.asp,jax_guestbook.php,bbs.cg,gastenboek.php,light.cgi,yybbs.cgi,wsdl.php,wp-content,cache_aqbmkwwx.php,.suspected,seo-joy.cgi,google-assist.php,wp-main.php,sql_dump.php,xmlsrpc.php'
         ));
         $action_inspector = (int) ($this->getParam('action_inspector', 2));
 
-        $inspector_forbidden_words_array = array_filter(
-            array_map('trim', explode(',', $inspector_forbidden_words)),
-            static fn(string $v): bool => $v !== ''
-        );
+        // Normalizamos URL para detectar
+		$urlForDetect = $decoded;
 
-        $found = false;
-        $forbidden_word_found = '';
+		// Lista de palabras prohibidas (list<non-empty-string>)
+		/** @var list<non-empty-string> $inspector_forbidden_words_array */
+		$inspector_forbidden_words_array = array_values(array_filter(
+			array_map('trim', explode(',', $inspector_forbidden_words)),
+			static fn(string $v): bool => $v !== ''
+		));
 
-        foreach ($inspector_forbidden_words_array as $word) {
-            $safeWord = htmlspecialchars($word, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+		$found = false;
+		$forbidden_word_found = null;
 
-            // Match substring
-            if ($safeWord !== '' && str_contains($url, $safeWord)) {
-                $found = true;
-                $forbidden_word_found = $safeWord;
-                break;
-            }
+		foreach ($inspector_forbidden_words_array as $word) {
+			if (str_contains($urlForDetect, $word)) {
+				$found = true;
+				$forbidden_word_found = $word;
+				break;
+			}
+		}
+
+		if (!$found || $forbidden_word_found === null) {
+			return;
+		}
+
+		//Para almacenar/mostrar en HTML, escapamos
+		$urlForStore = htmlspecialchars($urlForDetect, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+		$wordForStore = htmlspecialchars($forbidden_word_found, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+        // Throttle: skip DB insert if this IP was logged in the last 5 seconds
+        $throttleSeconds = 5;
+        try {
+            $throttleQuery = $db->getQuery(true)
+                ->select('COUNT(*)')
+                ->from($db->quoteName('#__securitycheckpro_url_inspector_logs'))
+                ->where($db->quoteName('ip') . ' = ' . $db->quote($remote_ip))
+                ->where($db->quoteName('date_added') . ' > DATE_SUB(NOW(), INTERVAL ' . $throttleSeconds . ' SECOND)');
+            $db->setQuery($throttleQuery);
+            $recentCount = (int) $db->loadResult();
+        } catch (\Throwable $e) {
+            $recentCount = 0;
         }
 
-        // Forbidden words found; take actions
-        if (!$found) {
+        if ($recentCount > 0) {
+            if ($action_inspector === 1) {
+                SecuritycheckProHelper::actualizarListaDinamica($remote_ip);
+            } elseif ($action_inspector === 2) {
+                $firewallconfig_object = new FirewallconfigModel();
+                $firewallconfig_object->manage_list('blacklist', 'add', $remote_ip, false);
+                $error_403 = Text::_('COM_SECURITYCHECKPRO_403_ERROR');
+                SecuritycheckProHelper::redirection(403, $error_403, true);
+            }
             return;
         }
 
         // Adds IP, uri and date to url_inspector database
         $data = (object) [
             'ip'              => $remote_ip,
-            'uri'             => $url,
-            'forbidden_words' => $forbidden_word_found,
+            'uri'             => $urlForStore,
+            'forbidden_words' => $wordForStore,
             'date_added'      => Factory::getDate()->toSql(),
         ];
 
@@ -212,20 +235,19 @@ final class Url_inspector extends CMSPlugin
             $db->insertObject('#__securitycheckpro_url_inspector_logs', $data, 'id');
         } catch (\Throwable $e) {
 			Log::add('Url_inspector. onAfterInitialise method. Error inserting data into the securitycheckpro_url_inspector_logs table: ' . $e->getMessage(), Log::ERROR, 'plg_url_inspector');
-            // ignore DB insertion errors (do not break request)
         }
 
         // Write a log in Securitycheck Pro logs       
         $not_applicable = Text::_('COM_SECURITYCHECKPRO_NOT_APPLICABLE');
 
         // Grabar log en el firewall
-        self::$objeto->grabar_log(
+        SecuritycheckProHelper::grabarLog(
             $write_log_inspector,
             $remote_ip,
             'URL_FORBIDDEN_WORDS',
-            $forbidden_word_found,
+            $wordForStore,
             'URL_INSPECTOR',
-            $url,
+            $urlForStore,
             $not_applicable,
             '---',
             '---'
@@ -234,7 +256,7 @@ final class Url_inspector extends CMSPlugin
         // Actions
         if ($action_inspector === 1) {
             // Add to dynamic blacklist
-            self::$objeto->actualizar_lista_dinamica($remote_ip);
+            SecuritycheckProHelper::actualizarListaDinamica($remote_ip);
             return;
         }
 
@@ -245,7 +267,7 @@ final class Url_inspector extends CMSPlugin
 
             // Redirect to stop request
             $error_403 = Text::_('COM_SECURITYCHECKPRO_403_ERROR');
-            self::$objeto->redirection(403, $error_403, true);
+            SecuritycheckProHelper::redirection(403, $error_403, true);
         }
     }
 

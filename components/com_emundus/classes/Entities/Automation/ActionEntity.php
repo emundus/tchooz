@@ -2,6 +2,7 @@
 
 namespace Tchooz\Entities\Automation;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Fields\ChoiceField;
@@ -217,6 +218,15 @@ abstract class ActionEntity
 			} else
 			{
 				$value = $this->parameterValues[$name] ?? null;
+
+				// Translatable fields are stored as a per-language object (keyed by sef) ;
+				// resolve the value for the current language, with a fallback on the first entry.
+				if ($parameter->isTranslatable() && is_array($value))
+				{
+					$currentLanguage = substr(Factory::getApplication()->getLanguage()->getTag(), 0, 2);
+					$resolved        = $value[$currentLanguage] ?? reset($value);
+					$value           = ($resolved === false) ? '' : $resolved;
+				}
 			}
 		}
 
@@ -431,6 +441,7 @@ abstract class ActionEntity
 			'label' => static::getLabel(),
 			'description' => static::getDescription(),
 			'icon' => static::getIcon(),
+			'is_asynchronous' => static::isAsynchronous(),
 			'parameters' => $this->getParametersSchema(),
 			'parameter_values' => $this->getParameterValues(),
 			'targets' => array_map(fn($target) => $target->serialize(), $this->getTargets()),
@@ -477,6 +488,13 @@ abstract class ActionEntity
 			} else if ($parameter->isRequired() && !isset($this->parameterValues[$parameter->getName()])) {
 				$this->addExecutionMessage(new ActionExecutionMessage(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName(), ActionMessageTypeEnum::WARNING));
 				throw new \RuntimeException(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName());
+			} else if ($parameter->isRequired() && $parameter->isTranslatable()) {
+				$translations = (array) $this->parameterValues[$parameter->getName()];
+
+				if (empty(array_filter($translations, fn($val) => !empty($val)))) {
+					$this->addExecutionMessage(new ActionExecutionMessage(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName(), ActionMessageTypeEnum::WARNING));
+					throw new \RuntimeException(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName());
+				}
 			}
 		}
 	}

@@ -13,8 +13,17 @@
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Component\ComponentHelper;
+use Tchooz\Attributes\AccessAttribute;
+use Tchooz\EmundusResponse;
+use Tchooz\Entities\Comments\CommentEntity;
+use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Enums\Comments\CommentTargetTypeEnum;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Repositories\Comments\CommentRepository;
+use Tchooz\Controller\EmundusController;
+
 
 require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
 
@@ -22,15 +31,9 @@ require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
  * Emundus Comments Controller
  * @package     Emundus
  */
-class EmundusControllerComments extends BaseController
+class EmundusControllerComments extends EmundusController
 {
-	/**
-	 * @var \Joomla\CMS\User\User
-	 * @since version 1.40.0
-	 */
-    private $user;
-
-	private $allow_applicant_to_comment = 0;
+	private int $allow_applicant_to_comment = 0;
 
 	/**
 	 * Constructor.
@@ -47,31 +50,7 @@ class EmundusControllerComments extends BaseController
         $this->user = $this->app->getIdentity();
 	    $emundus_config = ComponentHelper::getParams('com_emundus');
 
-		$this->allow_applicant_to_comment = $emundus_config->get('allow_applicant_to_comment', 0);
-    }
-
-	/**
-	 * Send JSON response.
-	 *
-	 * @param $response
-	 *
-	 *
-	 * @since version 1.40.0
-	 */
-    private function sendJsonResponse($response)
-    {
-        if ($response['code'] === 403) {
-            header('HTTP/1.1 403 Forbidden');
-            echo $response['message'];
-            exit;
-        } else if ($response['code'] === 500) {
-            header('HTTP/1.1 500 Internal Server Error');
-            echo $response['message'];
-            exit;
-        }
-
-        echo json_encode($response);
-        exit;
+		$this->allow_applicant_to_comment = (int)$emundus_config->get('allow_applicant_to_comment', 0);
     }
 
 	/**
@@ -289,4 +268,166 @@ class EmundusControllerComments extends BaseController
 
         $this->sendJsonResponse($response);
     }
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::COMMENT_FILE, 'mode' => CrudEnum::READ],
+	])]
+	public function getCommentsByTarget(): EmundusResponse
+	{
+		$this->checkToken('get');
+		$response = EmundusResponse::fail(Text::_('NOT_FOUND'), 404);
+
+		$targetType = $this->app->getInput()->getString('targetType', '');
+		$targetId = $this->app->getInput()->getInt('targetId', 0);
+		$targetType = CommentTargetTypeEnum::tryFrom($targetType);
+
+		if ($targetType !== null && !empty($targetId))
+		{
+			$commentRepository = new CommentRepository();
+			$comments = $commentRepository->getCommentsByTarget($targetId, $targetType, $this->user->id);
+			$response = EmundusResponse::ok(array_map(function($comment) {
+				$data = $comment->__serialize();
+				$data['date'] = EmundusHelperDate::displayDate($data['date'], 'Y-m-d H:i', 0);
+				if (!empty($data['updated']))
+				{
+					$data['updated'] = EmundusHelperDate::displayDate($data['updated'], 'Y-m-d H:i', 0);
+				}
+
+				return $data;
+			}, $comments));
+		}
+
+		return $response;
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::COMMENT_FILE, 'mode' => CrudEnum::CREATE],
+		['id' => ActionEnum::COMMENT_FILE, 'mode' => CrudEnum::UPDATE],
+	])]
+	public function savecomment(): EmundusResponse
+	{
+		$this->checkToken();
+
+		$id = $this->app->getInput()->getInt('id', 0);
+		$targetType = $this->app->getInput()->getString('targetType', '') ?? null;
+		$targetId = $this->app->getInput()->getInt('targetId', 0);
+		$content = $this->app->getInput()->getString('content', '') ?? null;
+		$isPublic = $this->app->getInput()->getInt('isPublic', 1) == 1;
+		$parentId = $this->app->getInput()->getInt('parentId', 0);
+
+		try
+		{
+			$commentRepository = new CommentRepository();
+
+			if (!empty($parentId) || !empty($id))
+			{
+				$parentToCheck = null;
+
+				if (!empty($parentId))
+				{
+					$parentToCheck = $commentRepository->getById($parentId);
+				}
+				elseif (!empty($id))
+				{
+					$existingComment = $commentRepository->getById($id);
+					if ($existingComment && $existingComment->getParentId())
+					{
+						$parentToCheck = $commentRepository->getById($existingComment->getParentId());
+					}
+				}
+
+				if ($parentToCheck && !$parentToCheck->isPublic())
+				{
+					$isPublic = false;
+				}
+			}
+
+			if (!empty($id))
+			{
+				$comment = $commentRepository->getById($id);
+
+				if (empty($comment))
+				{
+					throw new Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_COMMENT_NOT_FOUND'));
+				}
+
+				if ($comment->getCreatedBy() !== $this->user->id && !EmundusHelperAccess::asAccessAction(ActionEnum::COMMENT_FILE->value, CrudEnum::UPDATE->value, $this->user->id))
+				{
+					throw new Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_COMMENT_FORBIDDEN'));
+				}
+
+				$comment->setContent($content);
+				$comment->setIsPublic($isPublic);
+				$comment->setUpdatedAt(new DateTime());
+				$comment->setUpdatedBy($this->user->id);
+			}
+			else
+			{
+				$comment = new CommentEntity(
+					id: 0,
+					targetType: $targetType,
+					targetId: $targetId,
+					content: $content,
+					createdBy: $this->user->id,
+					createdAt: new DateTime(),
+					isPublic: $isPublic,
+					parentId: $parentId
+				);
+			}
+
+
+			if ($commentRepository->flush($comment))
+			{
+				$response = EmundusResponse::ok();
+			}
+			else
+			{
+				$response = EmundusResponse::fail(Text::_('COM_EMUNDUS_ONBOARD_CRC_COMMENT_SAVE_COMMENT_ERROR'));
+			}
+		}
+		catch (Exception $e)
+		{
+			$response = EmundusResponse::fail(Text::_($e->getMessage()));
+		}
+
+		return $response;
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function removecomment(): EmundusResponse
+	{
+		$this->checkToken();
+		$id = $this->app->getInput()->getInt('commentId', 0);
+
+		try
+		{
+			$commentRepository = new CommentRepository();
+
+			$comment = $commentRepository->getById($id);
+
+			if (empty($comment))
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_COMMENT_NOT_FOUND'));
+			}
+
+			if ($comment->getCreatedBy() !== $this->user->id && !EmundusHelperAccess::asAccessAction(ActionEnum::COMMENT_FILE->value, CrudEnum::DELETE->value, $this->user->id))
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_COMMENT_FORBIDDEN'));
+			}
+
+			if ($commentRepository->delete($id))
+			{
+				$response = EmundusResponse::ok([], Text::_('COM_EMUNDUS_ONBOARD_CRC_COMMENT_REMOVE_COMMENT_SUCCESS'));
+			} else
+			{
+				$response = EmundusResponse::fail(Text::_('COM_EMUNDUS_ONBOARD_CRC_COMMENT_REMOVE_COMMENT_ERROR'));
+			}
+		}
+		catch (Exception $e)
+		{
+			$response = EmundusResponse::fail(Text::_('COM_EMUNDUS_ONBOARD_CRC_COMMENT_REMOVE_COMMENT_ERROR'));
+		}
+
+		return $response;
+	}
 }

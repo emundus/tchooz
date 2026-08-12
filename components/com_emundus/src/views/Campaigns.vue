@@ -23,6 +23,10 @@ export default {
 			type: Object,
 			default: [],
 		},
+		useOldProgramForm: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	components: {
 		list,
@@ -50,6 +54,7 @@ export default {
 									label: 'COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN',
 									controller: 'campaign',
 									name: 'add',
+									iconLabel: 'control_point',
 									type: 'redirect',
 									acl: 'campaign|c',
 								},
@@ -82,11 +87,6 @@ export default {
 									method: 'delete',
 									confirm: 'COM_EMUNDUS_ONBOARD_CAMPDELETE',
 									showon: [
-										{
-											key: 'nb_files',
-											operator: '<',
-											value: '1',
-										},
 										{
 											key: 'can_edit',
 											operator: '=',
@@ -198,11 +198,12 @@ export default {
 							acl: 'program|r',
 							actions: [
 								{
-									action: 'index.php?option=com_fabrik&view=form&formid=108',
+									action: 'index.php?option=com_emundus&view=programme&layout=add',
 									controller: 'programme',
 									label: 'COM_EMUNDUS_ONBOARD_ADD_PROGRAM',
 									name: 'add',
 									type: 'redirect',
+									iconLabel: 'control_point',
 									acl: 'program|c',
 								},
 								{
@@ -212,6 +213,34 @@ export default {
 									type: 'redirect',
 									name: 'edit',
 									acl: 'program|u',
+								},
+								{
+									action: 'unpublishprogram',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH',
+									controller: 'programme',
+									name: 'unpublish',
+									multiple: true,
+									method: 'post',
+									acl: 'program|u',
+									showon: {
+										key: 'published',
+										operator: '=',
+										value: '1',
+									},
+								},
+								{
+									action: 'publishprogram',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_PUBLISH',
+									controller: 'programme',
+									name: 'publish',
+									multiple: true,
+									method: 'post',
+									acl: 'program|u',
+									showon: {
+										key: 'published',
+										operator: '=',
+										value: '0',
+									},
 								},
 								{
 									action: 'show',
@@ -249,6 +278,10 @@ export default {
 	},
 	created() {
 		const promises = [];
+
+		if (this.useOldProgramForm) {
+			this.config.campaigns.tabs[1].actions[0].action = 'index.php?option=com_fabrik&view=form&formid=108';
+		}
 
 		if (useCampaignStore().getActivated === null) {
 			promises.push(

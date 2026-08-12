@@ -12,6 +12,7 @@ namespace Tchooz\Services\Export\Pdf;
 use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Services\Export\ExportOptions;
 use Tchooz\Services\Export\HeadersEnum;
+use Tchooz\Services\Export\OptionsSchema\PdfOptionsSchema;
 
 class PdfOptions extends ExportOptions
 {
@@ -69,7 +70,6 @@ class PdfOptions extends ExportOptions
 		$elements           = $options->elements ? explode(',', $options->elements) : [];
 		$lang               = $options->lang ?? 'en-GB';
 
-		$displayHeader      = $options->displayHeader ?? true;
 		if(!empty($options->headers) && is_string($options->headers)) {
 			$options->headers = explode(',', $options->headers);
 		}
@@ -87,8 +87,23 @@ class PdfOptions extends ExportOptions
 			$options->attachments = explode(',', $options->attachments);
 		}
 		$attachments          = $options->attachments ?: [];
-		
-		$displayPageNumbers = $options->displayPageNumbers ?? true;
+
+		$rawSettings = $options->settings ?? null;
+		if (is_string($rawSettings))
+		{
+			$rawSettings = json_decode($rawSettings, true);
+		}
+		if (is_object($rawSettings))
+		{
+			$rawSettings = (array) $rawSettings;
+		}
+		$schema   = new PdfOptionsSchema();
+		$settings = $schema->cast(is_array($rawSettings) ? $rawSettings : []);
+
+		// Typed properties stay the canonical source for service callers; settings
+		// payload supersedes the legacy raw $options->displayHeader/... fallbacks.
+		$displayHeader      = $settings[PdfOptionsSchema::DISPLAY_HEADER]       ?? ($options->displayHeader ?? true);
+		$displayPageNumbers = $settings[PdfOptionsSchema::DISPLAY_PAGE_NUMBERS] ?? ($options->displayPageNumbers ?? true);
 
 		$pdfOptions = new PdfOptions($displayHeader, $synthesis, $headers, $displayPageNumbers, $attachments);
 
@@ -105,13 +120,10 @@ class PdfOptions extends ExportOptions
 			$application_form_name = $application_form_name . '_[FNUM]';
 		}
 
-		$pdfOptions->setFilename($application_form_name);
+		$filename = $settings[PdfOptionsSchema::FILENAME] ?? '';
+		$pdfOptions->setFilename($filename !== '' ? $filename : $application_form_name);
 
-		if (isset($options->settings))
-		{
-			$rawSettings = is_string($options->settings) ? json_decode($options->settings, true) : $options->settings;
-			$pdfOptions->setSettings($rawSettings);
-		}
+		$pdfOptions->setSettings($settings);
 
 		return $pdfOptions;
 	}

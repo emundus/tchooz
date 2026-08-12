@@ -116,30 +116,53 @@ function muestra_progreso() {
 
 // ---- Set Easy Config ----
 async function Set_Easy_Config() {
-  const url =
-    "index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Easy_Config";
-  try {
-    await fetch(url, { method: "GET", cache: "no-store" });
-  } catch (e) {    
-  } finally {
-    location.reload();
-  }
+    const csrfToken = Joomla.getOptions("csrf.token");
+
+    const formData = new FormData();
+    formData.append(csrfToken, "1");
+
+    try {
+        await fetch(
+            "index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Easy_Config",
+            {
+                method: "POST",
+                body: formData,
+                cache: "no-store",
+                credentials: "same-origin"
+            }
+        );
+    } catch (e) {
+        console.error(e);
+    } finally {
+        location.reload();
+    }
 }
 
 // ---- Set Default Config con confirm ----
 async function Set_Default_Config() {
-  const message = Joomla.getOptions("securitycheckpro.Cpanel.setdefaultconfigconfirmText");
-  const answer = window.confirm(message);
-  if (!answer) return;
+	const message = Joomla.getOptions("securitycheckpro.Cpanel.setdefaultconfigconfirmText");
+	const answer = window.confirm(message);
+	if (!answer) return;
+  
+	const csrfToken = Joomla.getOptions("csrf.token");
+	const formData = new FormData();
+    formData.append(csrfToken, "1");
 
-  const url =
-    "index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Default_Config";
-  try {
-    await fetch(url, { method: "GET", cache: "no-store" });
-  } catch (e) {    
-  } finally {
-    location.reload();
-  }
+    try {
+        await fetch(
+            "index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Default_Config",
+            {
+                method: "POST",
+                body: formData,
+                cache: "no-store",
+                credentials: "same-origin"
+            }
+        );
+    } catch (e) {
+        console.error(e);
+    } finally {
+        location.reload();
+    }
 }
 
 // ---- Persistencia de pestañas (localStorage) ----

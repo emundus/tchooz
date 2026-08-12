@@ -235,9 +235,60 @@ class InternalReferenceService
 	 */
 	public function generateShortReference(ApplicationFileEntity $applicationFile): string
 	{
+		return $this->buildUniqueShortReference(
+			$applicationFile->getCampaignId(),
+			$applicationFile->getUser()->id ?? 0,
+			$applicationFile->getId(),
+			fn(string $shortReference): bool => $this->applicationFileRepository->checkShortReferenceExists($shortReference)
+		);
+	}
+
+	/**
+	 * Bulk generation of short references for a large set of application files (migration / backfill).
+	 *
+	 * Loads every existing short reference once and checks collisions in-memory, avoiding one
+	 * COUNT query per file. Newly generated references are reserved as they are produced so the
+	 * whole batch stays unique.
+	 *
+	 * @param   array  $rows  Rows exposing id, campaign_id and applicant_id (objects or arrays).
+	 *
+	 * @return array<int, string> Map of application file id => generated short reference.
+	 */
+	public function generateShortReferences(array $rows): array
+	{
+		$existing = array_fill_keys($this->applicationFileRepository->getAllShortReferences(), true);
+
+		$generated = [];
+		foreach ($rows as $row)
+		{
+			$row    = (object) $row;
+			$fileId = (int) ($row->id ?? 0);
+			if (empty($fileId))
+			{
+				continue;
+			}
+
+			$shortReference = $this->buildUniqueShortReference(
+				(int) ($row->campaign_id ?? 0),
+				(int) ($row->applicant_id ?? 0),
+				$fileId,
+				static fn(string $candidate): bool => isset($existing[$candidate])
+			);
+
+			$existing[$shortReference] = true;
+			$generated[$fileId]        = $shortReference;
+		}
+
+		return $generated;
+	}
+
+	/**
+	 * @param   callable  $existsCheck  fn(string $shortReference): bool — true when the reference is already taken.
+	 */
+	private function buildUniqueShortReference(int $campaignId, int $userId, int $fileId, callable $existsCheck): string
+	{
 		// Exclude confusing characters: O, I, L
-		$alphabet = array_diff(range('A', 'Z'), ['O', 'I', 'L']);
-		$alphabet = array_values($alphabet);
+		$alphabet = array_values(array_diff(range('A', 'Z'), ['O', 'I', 'L']));
 
 		// Digits 1-9 (excluding 0 to avoid confusion with O)
 		$digits = range('1', '9');
@@ -246,18 +297,17 @@ class InternalReferenceService
 		$prefix = $alphabet[array_rand($alphabet)];
 
 		// First attempt: deterministic suffix based on application file properties
-		$deterministicRef = $prefix . $this->generateDeterministicSuffix($applicationFile, $digits, $alphabet);
-		if (!$this->applicationFileRepository->checkShortReferenceExists($deterministicRef)) {
+		$deterministicRef = $prefix . $this->generateDeterministicSuffix($campaignId, $userId, $fileId, $digits, $alphabet);
+		if (!$existsCheck($deterministicRef)) {
 			return $deterministicRef;
 		}
 
 		// If deterministic reference exists, try random generation with a weighted approach
 		$maxAttempts = 20;
 		for ($i = 0; $i < $maxAttempts; $i++) {
-			$suffix = $this->generateWeightedSuffix($digits, $alphabet);
-			$shortRef = $prefix . $suffix;
+			$shortRef = $prefix . $this->generateWeightedSuffix($digits, $alphabet);
 
-			if (!$this->applicationFileRepository->checkShortReferenceExists($shortRef)) {
+			if (!$existsCheck($shortRef)) {
 				return $shortRef;
 			}
 		}
@@ -284,13 +334,9 @@ class InternalReferenceService
 		return $suffix;
 	}
 
-	private function generateDeterministicSuffix(ApplicationFileEntity $applicationFile, array $digits, array $alphabet): string
+	private function generateDeterministicSuffix(int $campaignId, int $userId, int $fileId, array $digits, array $alphabet): string
 	{
-		$seed = implode('-', [
-			$applicationFile->getCampaignId() ?? 0,
-			$applicationFile->getUser()->id ?? 0,
-			$applicationFile->getId() ?? 0,
-		]);
+		$seed = implode('-', [$campaignId, $userId, $fileId]);
 
 		$hash = hash('sha256', $seed);
 		$suffix = '';

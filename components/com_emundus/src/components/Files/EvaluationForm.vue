@@ -6,7 +6,7 @@
 			class="iframe-evaluation"
 			id="iframe-evaluation"
 			@load="iframeLoaded"
-			title="Evaluation form"
+			:title="translate('COM_EMUNDUS_IFRAME_EVALUATION_FORM_TITLE')"
 		/>
 		<div class="em-page-loader" v-if="loading"></div>
 	</div>

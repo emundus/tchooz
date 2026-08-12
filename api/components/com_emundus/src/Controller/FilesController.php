@@ -75,6 +75,16 @@ class FilesController extends ApiController
 			$this->modelState->set('filter.status', InputFilter::getInstance()->clean($filters['status'], 'INT'));
 		}
 
+		if (\array_key_exists('campaign', $filters))
+		{
+			$this->modelState->set('filter.campaign', InputFilter::getInstance()->clean($filters['campaign'], 'INT'));
+		}
+
+		if (\array_key_exists('fnum', $filters))
+		{
+			$this->modelState->set('filter.fnum', InputFilter::getInstance()->clean($filters['fnum'], 'STRING'));
+		}
+
 		return parent::displayList();
 	}
 
@@ -235,6 +245,22 @@ class FilesController extends ApiController
 			if (empty($applicationFileEntity))
 			{
 				throw new InvalidParameterException('The provided application file does not exist.', 400);
+			}
+		}
+		//
+		
+		// Maybe campaign has been updated
+		if(!empty($campaign) && ($campaign->getId() !== $applicationFileEntity->getCampaignId()))
+		{
+			// Move file of campaign
+			if (!class_exists('EmundusModelApplication'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+			}
+			$m_application = new \EmundusModelApplication();
+			if(!$m_application->moveApplication($applicationFileEntity->getFnum(), $applicationFileEntity->getFnum(), $campaign->getId()))
+			{
+				throw new \RuntimeException('Error when try to move file of ' . $applicationFileEntity->getUser()->name . ' from campaign ' . $applicationFileEntity->getCampaign()->getLabel() . ' to ' . $campaign->getLabel());
 			}
 		}
 		//

@@ -22,6 +22,7 @@ use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Repositories\Export\ExportRepository;
 use Tchooz\Repositories\Task\TaskRepository;
 use Tchooz\Services\Export\ExportRegistry;
+use Tchooz\Services\Language\DbLanguage;
 
 class ActionExport extends ActionEntity
 {
@@ -93,8 +94,12 @@ class ActionExport extends ActionEntity
 
 			$lang = Factory::$language;
 			$lang->setDefault($langCode);
-			$lang->load('com_emundus', JPATH_SITE . '/components/com_emundus', $langCode);
+			$lang->load('com_emundus', JPATH_SITE . '/components/com_emundus', $langCode, true);
 			$lang->load('', JPATH_SITE, $langCode);
+			if($lang instanceof DbLanguage)
+			{
+				$lang->reloadOverrides($langCode);
+			}
 
 			$exportRepository = new ExportRepository();
 			$exportEntity     = null;

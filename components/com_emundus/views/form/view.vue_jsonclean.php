@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 
 
@@ -54,13 +55,28 @@ class EmundusViewForm extends JsonView
 			$data = new stdClass();
 
 			$app    = Factory::getApplication();
-			$formid = $app->input->getString('formid', null);
+			$formid = $app->input->getInt('formid', 0);
+
+			if (empty($formid))
+			{
+				Log::add('component/com_emundus/views/view.vue_jsonclean | Missing or invalid formid: ' . $app->input->getString('formid', ''), Log::ERROR, 'com_emundus');
+
+				return 0;
+			}
 
 			$fabrikRepository = new FabrikRepository(true);
 			$fabrikFactory    = new FabrikFactory($fabrikRepository);
 			$fabrikRepository->setFactory($fabrikFactory);
 
-			$form          = $fabrikRepository->getFormById($formid);
+			$form = $fabrikRepository->getFormById($formid);
+
+			if (empty($form))
+			{
+				Log::add('component/com_emundus/views/view.vue_jsonclean | Form ' . $formid . ' not found or unpublished', Log::ERROR, 'com_emundus');
+
+				return 0;
+			}
+
 			$data->id      = $form->getId();
 			$data->menu_id = $fabrikRepository->getMenuItemIdByFormId($form->getId());
 
@@ -624,7 +640,7 @@ class EmundusViewForm extends JsonView
 		}
 		catch (Exception $e)
 		{
-			JLog::add('component/com_emundus/views/view.vue_jsonclean | Cannot getting the form datas : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/views/view.vue_jsonclean | Cannot getting the form datas : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return 0;
 		}

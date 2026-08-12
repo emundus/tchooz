@@ -1,6 +1,12 @@
 <script>
+import { Button, Icon } from '@emundus/ui';
+
 export default {
 	name: 'Head',
+	components: {
+		Button,
+		Icon,
+	},
 	props: {
 		title: {
 			type: String,
@@ -45,13 +51,12 @@ export default {
 				>
 					{{ translate(secondaryAction.label) }}
 				</a>
-				<a
-					v-if="primaryAction"
-					id="primary-action-btn"
-					class="tw-btn-primary tw-w-auto tw-cursor-pointer tw-rounded-coordinator"
-					@click="onClickAction(primaryAction)"
-					>{{ translate(primaryAction.label) }}</a
-				>
+				<Button v-if="primaryAction" @click="onClickAction(primaryAction)">
+					<template #leading v-if="primaryAction.iconLabel">
+						<Icon :name="primaryAction.iconLabel" />
+					</template>
+					{{ translate(primaryAction.label) }}
+				</Button>
 			</div>
 		</div>
 

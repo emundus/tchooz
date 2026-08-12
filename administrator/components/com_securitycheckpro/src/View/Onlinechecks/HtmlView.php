@@ -17,9 +17,10 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Pagination\Pagination;
 use Joomla\Registry\Registry;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\OnlinechecksModel;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 
 class HtmlView extends BaseHtmlView {
-    
+
 	/**
 	 * The model state
 	 *
@@ -27,28 +28,75 @@ class HtmlView extends BaseHtmlView {
 	 * @var    Registry
 	 */
 	public $state;
-	
+
 	/**
 	 * Pagination object
 	 *
 	 * @var Pagination
 	 */
 	public $pagination = null;
-	
+
 	/**
 	 * Los items a mostrar
 	 *
 	 * @var list<\stdClass>
 	 */
     public $items = [];
-	
+
 	/**
 	 * Array de rutas
 	 *
 	 * @var array<it,string>
 	 */
     public $logPaths = [];
-	
+
+	/**
+	 * @var BaseModel
+	 */
+	public $basemodel;
+
+	/**
+	 * Clave OPSWAT
+	 *
+	 * @var string
+	 */
+	public string $opswat_key = '';
+
+	/**
+	 * Tipo de envío configurado ('Hashes' | 'Files')
+	 *
+	 * @var string
+	 */
+	public string $online_submission_type = '';
+
+	/**
+	 * Número total de envíos registrados (sin filtrar por búsqueda)
+	 *
+	 * @var int
+	 */
+	public int $submissions_total = 0;
+
+	/**
+	 * Número total de archivos comprobados en todos los envíos (sin filtrar por búsqueda)
+	 *
+	 * @var int
+	 */
+	public int $files_total = 0;
+
+	/**
+	 * Número total de amenazas encontradas en todos los envíos (sin filtrar por búsqueda)
+	 *
+	 * @var int
+	 */
+	public int $threats_total = 0;
+
+	/**
+	 * Fecha del envío más reciente ('' si no hay ninguno)
+	 *
+	 * @var string
+	 */
+	public string $last_submission = '';
+
     /**
      * Display the main view
      *
@@ -82,7 +130,22 @@ class HtmlView extends BaseHtmlView {
 		$this->items       = $this->get('Items');
 		$this->pagination    = $model->getPagination();
 		$this->state         = $model->getState();
-				
+
+		// BaseModel (helpers compartidos: relativeTime, renderSelect...)
+		$this->basemodel = new BaseModel();
+
+		// Configuración relevante (igual que en la vista de Malware scan)
+		$params = ComponentHelper::getParams('com_securitycheckpro');
+		$this->opswat_key = (string) $params->get('opswat_key', '');
+		$this->online_submission_type = (string) $params->get('online_submission_type', 'Hashes');
+
+		// Métricas globales (no afectadas por el filtro de búsqueda de la tabla)
+		$stats = $model->getSubmissionStats();
+		$this->submissions_total = $stats['total'];
+		$this->files_total       = $stats['files'];
+		$this->threats_total     = $stats['threats'];
+		$this->last_submission   = !empty($this->items) ? (string) ($this->items[0]->scan_date ?? '') : '';
+
 		// Filtro
         $managedevices_search = $this->state->get('filter.onlinechecks_search');
 
@@ -91,7 +154,7 @@ class HtmlView extends BaseHtmlView {
 			$id = $row->id; // id del escaneo
 			$this->logPaths[$id] = $row->filename; // nombre del fichero de escaneo online
 		}
-		
+
 		Text::script('JLIB_HTML_PLEASE_MAKE_A_SELECTION');
 		Text::script('JLIB_HTML_PLEASE_SELECT_ONLY_ONE_ITEM');
 		Text::script('JLOADING');

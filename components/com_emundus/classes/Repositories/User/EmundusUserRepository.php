@@ -49,6 +49,11 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 		$this->factory = new EmundusUserFactory();
 	}
 
+	public function getFactory(): EmundusUserFactory
+	{
+		return $this->factory;
+	}
+
 	public function flush(EmundusUserEntity $emundusUserEntity): bool
 	{
 		$flushed = false;
@@ -312,6 +317,73 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 		}
 
 		return $applicants;
+	}
+
+	public function getUsersNoApplicants(string $search = '', int $limit = 0): array
+	{
+		$users = [];
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__emundus_setup_profiles'))
+				->where($this->db->quoteName('published') . ' = 0')
+				->where($this->db->quoteName('status') . ' = 1');
+			$this->db->setQuery($query);
+			$no_applicant_profiles = array_map('intval', (array) $this->db->loadColumn());
+			// Guard against an empty list rendering an invalid "IN ()" clause; [0] matches no profile id.
+			if (empty($no_applicant_profiles))
+			{
+				$no_applicant_profiles = [0];
+			}
+
+			$query->clear()
+				->select($this->columns)
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName($this->alias . '.user_id'))
+				->leftJoin($this->db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $this->db->quoteName('eup.user_id') . ' = ' . $this->db->quoteName($this->alias . '.user_id'))
+				->where($this->db->quoteName('u.block') . ' = 0');
+			$query->extendWhere(
+				'AND',
+				[
+					$this->db->quoteName('eu.profile') . ' IN (' . implode(',', $no_applicant_profiles) . ')',
+					$this->db->quoteName('eup.profile_id') . ' IN (' . implode(',', $no_applicant_profiles) . ')',
+				],
+				'OR'
+			);
+			if (!empty($search))
+			{
+				$searchEscaped = $this->db->quote('%' . $this->db->escape($search, true) . '%');
+				$query->extendWhere(
+					'AND',
+					[
+						$this->db->quoteName($this->alias . '.lastname') . ' LIKE ' . $searchEscaped,
+						$this->db->quoteName($this->alias . '.firstname') . ' LIKE ' . $searchEscaped,
+						$this->db->quoteName('u.email') . ' LIKE ' . $searchEscaped,
+					],
+					'OR'
+				);
+			}
+
+			$query->group([$this->db->quoteName('u.id'), $this->db->quoteName('u.name')]);
+			$query->order($this->db->quoteName('u.name') . ' ASC');
+			$this->db->setQuery($query, 0, $limit);
+			$noApplicantsObjects = $this->db->loadObjectList();
+
+			if (!empty($noApplicantsObjects))
+			{
+				$users = $this->factory->fromDbObjects($noApplicantsObjects, $this->withRelations);
+			}
+		}
+		catch (\Exception $e)
+		{
+			throw new \Exception('Error fetching applicants: ' . $e->getMessage());
+		}
+
+		return $users;
 	}
 
 	/**

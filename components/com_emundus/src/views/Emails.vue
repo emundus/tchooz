@@ -48,6 +48,7 @@ export default {
 									label: 'COM_EMUNDUS_ONBOARD_ADD_EMAIL',
 									name: 'add',
 									type: 'redirect',
+									iconLabel: 'control_point',
 									acl: 'email|c',
 								},
 								{

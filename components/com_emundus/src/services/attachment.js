@@ -1,7 +1,7 @@
 export default {
 	async getAttachmentProgress(fnum) {
 		if (fnum !== '') {
-			return fetch('index.php?option=com_emundus&controller=files&task=getattachmentprogress&fnum=' + fnum)
+			return fetch('/index.php?option=com_emundus&controller=files&task=getattachmentprogress&fnum=' + fnum)
 				.then((response) => {
 					if (response.ok) {
 						return response.json();
@@ -30,7 +30,7 @@ export default {
 	},
 
 	async getAttachmentsByFnum(fnum) {
-		return fetch('index.php?option=com_emundus&controller=application&task=getattachmentsbyfnum&fnum=' + fnum)
+		return fetch('/index.php?option=com_emundus&controller=application&task=getattachmentsbyfnum&fnum=' + fnum)
 			.then((response) => {
 				if (response.ok) {
 					return response.json();
@@ -78,7 +78,7 @@ export default {
 	},
 
 	async getAttachmentCategories() {
-		return fetch('index.php?option=com_emundus&controller=files&task=getattachmentcategories')
+		return fetch('/index.php?option=com_emundus&controller=files&task=getattachmentcategories')
 			.then((response) => {
 				if (response.ok) {
 					return response.json();
@@ -106,7 +106,7 @@ export default {
 		formData.append('fnum', fnum);
 		formData.append('student_id', student_id);
 
-		return fetch(`index.php?option=com_emundus&controller=application&task=deleteattachement`, {
+		return fetch(`/index.php?option=com_emundus&controller=application&task=deleteattachement`, {
 			method: 'POST',
 			body: formData,
 		})
@@ -131,7 +131,7 @@ export default {
 			});
 	},
 	async updateAttachment(formData) {
-		return fetch('index.php?option=com_emundus&controller=application&task=updateattachment', {
+		return fetch('/index.php?option=com_emundus&controller=application&task=updateattachment', {
 			method: 'POST',
 			body: formData,
 		})
@@ -158,7 +158,7 @@ export default {
 
 	async getPreview(user, filename, upload_id) {
 		return fetch(
-			'index.php?option=com_emundus&controller=application&task=getattachmentpreview&user=' +
+			'/index.php?option=com_emundus&controller=application&task=getattachmentpreview&user=' +
 				user +
 				'&filename=' +
 				filename +
@@ -194,7 +194,7 @@ export default {
 			formData.append('ids[]', id);
 		});
 
-		return fetch('index.php?option=com_emundus&controller=application&task=exportpdf', {
+		return fetch('/index.php?option=com_emundus&controller=application&task=exportpdf', {
 			method: 'POST',
 			body: formData,
 		})
@@ -220,7 +220,7 @@ export default {
 	},
 
 	async getProfileAttachments() {
-		return fetch('index.php?option=com_emundus&controller=users&task=getprofileattachments')
+		return fetch('/index.php?option=com_emundus&controller=users&task=getprofileattachments')
 			.then((response) => {
 				if (response.ok) {
 					return response.json();
@@ -243,7 +243,7 @@ export default {
 	},
 
 	async getProfileAttachmentsAllowed() {
-		return fetch('index.php?option=com_emundus&controller=users&task=getprofileattachmentsallowed')
+		return fetch('/index.php?option=com_emundus&controller=users&task=getprofileattachmentsallowed')
 			.then((response) => {
 				if (response.ok) {
 					return response.json();
@@ -270,7 +270,7 @@ export default {
 		formData.append('id', id);
 		formData.append('filename', filename);
 
-		return fetch('index.php?option=com_emundus&controller=users&task=deleteprofileattachment', {
+		return fetch('/index.php?option=com_emundus&controller=users&task=deleteprofileattachment', {
 			method: 'POST',
 			body: formData,
 		})
@@ -296,7 +296,7 @@ export default {
 	},
 
 	async isExpiresDateDisplayed() {
-		return fetch('index.php?option=com_emundus&controller=settings&task=isexpiresdatedisplayed')
+		return fetch('/index.php?option=com_emundus&controller=settings&task=isexpiresdatedisplayed')
 			.then((response) => {
 				if (response.ok) {
 					return response.json();

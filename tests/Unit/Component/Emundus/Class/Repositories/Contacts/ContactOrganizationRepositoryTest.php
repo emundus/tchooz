@@ -164,44 +164,44 @@ class ContactOrganizationRepositoryTest extends UnitTestCase
 	/**
 	 * 2 next tests are currently failing because of dynamic property creation which is deprecated ($contact->value and $contact->name)
 	 */
-//	/**
-//	 * @covers \Tchooz\Repositories\Contacts\ContactOrganizationRepository::getOrganizationsByContactId
-//	 */
-//	public function testGetOrganizationsByContactId(): void
-//	{
-//		$this->createFixtures();
-//
-//		$contactId = $this->contacts[0]->getId();
-//		$result = $this->model->getOrganizationsByContactId($contactId);
-//
-//		$this->assertIsArray($result, 'Result should be an array');
-//		$this->assertNotEmpty($result, 'At least one organization should be returned');
-//		$this->assertInstanceOf(OrganizationEntity::class, $result[0], 'Returned objects should be OrganizationEntity');
-//
-//		$this->clearFixtures();
-//	}
-//
-//	/**
-//	 * @covers \Tchooz\Repositories\Contacts\ContactOrganizationRepository::getContactsByOrganizationId
-//	 */
-//	public function testGetContactsByOrganizationId(): void
-//	{
-//		$this->createFixtures();
-//
-//		$organizationId = $this->organizations[0]->getId();
-//		$result = $this->model->getContactsByOrganizationId($organizationId);
-//
-//		$this->assertIsArray($result, 'Result should be an array');
-//		$this->assertNotEmpty($result, 'Should return at least one contact');
-//		$this->assertInstanceOf(ContactEntity::class, $result[0], 'Returned objects should be ContactEntity');
-//		$this->assertEquals('Org', $result[0]->getLastname(), 'Lastname should match the contact');
-//
-//		// Filter by is_referent = 1
-//		$referents = $this->model->getContactsByOrganizationId($organizationId, 1);
-//		$this->assertNotEmpty($referents, 'Referent contacts should be found');
-//
-//		$this->clearFixtures();
-//	}
+	/**
+	 * @covers \Tchooz\Repositories\Contacts\ContactOrganizationRepository::getOrganizationsByContactId
+	 */
+	public function testGetOrganizationsByContactId(): void
+	{
+		$this->createFixtures();
+
+		$contactId = $this->contacts[0]->getId();
+		$result = $this->model->getOrganizationsByContactId($contactId);
+
+		$this->assertIsArray($result, 'Result should be an array');
+		$this->assertNotEmpty($result, 'At least one organization should be returned');
+		$this->assertInstanceOf(OrganizationEntity::class, $result[0], 'Returned objects should be OrganizationEntity');
+
+		$this->clearFixtures();
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Contacts\ContactOrganizationRepository::getContactsByOrganizationId
+	 */
+	public function testGetContactsByOrganizationId(): void
+	{
+		$this->createFixtures();
+
+		$organizationId = $this->organizations[0]->getId();
+		$result = $this->model->getContactsByOrganizationId($organizationId);
+
+		$this->assertIsArray($result, 'Result should be an array');
+		$this->assertNotEmpty($result, 'Should return at least one contact');
+		$this->assertInstanceOf(ContactEntity::class, $result[0], 'Returned objects should be ContactEntity');
+		$this->assertEquals('Org', $result[0]->getLastname(), 'Lastname should match the contact');
+
+		// Filter by is_referent = 1
+		$referents = $this->model->getContactsByOrganizationId($organizationId, 1);
+		$this->assertNotEmpty($referents, 'Referent contacts should be found');
+
+		$this->clearFixtures();
+	}
 
 	/**
 	 * @covers \Tchooz\Repositories\Contacts\ContactOrganizationRepository::detachContactFromOrganization

@@ -12,10 +12,12 @@ namespace Joomla\Plugin\Actionlog\Emundus\Extension;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Installer\Installer;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Factory\MVCFactoryServiceInterface;
 use Joomla\CMS\Table\Table;
+use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryAwareTrait;
 use Joomla\Component\Actionlogs\Administrator\Helper\ActionlogsHelper;
 use Joomla\Component\Actionlogs\Administrator\Plugin\ActionLogPlugin;
@@ -55,6 +57,10 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	public static function getSubscribedEvents(): array
 	{
+		if (Factory::getApplication()->isClient('cli') && \defined('PHPUNIT_COMPOSER_INSTALL')) {
+			return [];
+		}
+
 		return [
 			'onAfterCampaignUpdate'          => 'onAfterCampaignUpdate',
 			'onAfterCampaignCreate'          => 'onAfterCampaignCreate',
@@ -76,7 +82,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 			'onYousignError'                 => 'onYousignError',
 			'onYousignSendReminder'          => 'onYousignSendReminder',
 			'onYousignRequestCancelled'      => 'onYousignRequestCancelled',
-			'onAfterAutomationProcessed' 	 => 'onAfterAutomationProcessed',
+			'onAfterAutomationProcessed'     => 'onAfterAutomationProcessed',
 			'onAutomationLoopDetected'       => 'onAutomationLoopDetected',
 		];
 	}
@@ -90,7 +96,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$user_id  = $arguments['user_id'] ?? 0;
 		if (empty($user_id))
 		{
-			$user_id = $this->getApplication()->getIdentity()->id;
+			$user_id = $this->getActingUser()->id;
 		}
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CAMPAIGN';
@@ -107,7 +113,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	public function onAfterCampaignCreate($data)
 	{
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_CREATE_CAMPAIGN';
 		$context            = 'com_emundus.campaign';
@@ -129,7 +135,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$status   = $arguments['status'];
 		$context  = $arguments['context'] ?: 'com_emundus.configuration';
 
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CONFIGURATION';
 
@@ -155,7 +161,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$status   = $arguments['status'];
 		$context  = $arguments['context'] ?: 'com_emundus.configuration';
 
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_2FA';
 
@@ -176,7 +182,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		$arguments = $event->getArguments();
 
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_CREATE';
 		$context            = 'com_emundus.microsoftdynamics';
@@ -194,7 +200,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		$arguments = $event->getArguments();
 
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_UPDATE';
 		$context            = 'com_emundus.microsoftdynamics';
@@ -210,7 +216,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	public function onAfterAmmonRegistration(GenericEvent $event): void
 	{
-		$arguments = $event->getArguments();
+		$arguments           = $event->getArguments();
 		$automated_task_user = ComponentHelper::getParams('com_emundus')->get('automated_task_user', 0);
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_AMMON_REGISTRATION';
@@ -226,8 +232,8 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 			$title = 'PLG_ACTIONLOG_EMUNDUS_AMMON_REGISTRATION_ERROR';
 		}
 
-        Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
-        Log::add('Registration successful for fnum ' . $arguments['fnum'] . ' on session ' . $arguments['session_id'] . ' -> ' . $arguments['message'], Log::INFO, 'plugin.emundus.ammon');
+		Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
+		Log::add('Registration successful for fnum ' . $arguments['fnum'] . ' on session ' . $arguments['session_id'] . ' -> ' . $arguments['message'], Log::INFO, 'plugin.emundus.ammon');
 
 		$message = $this->setMessage('ammon', 'create', $title, $arguments['status'], [], $arguments['data'], $more_data, $automated_task_user);
 		$this->addLog([$message], $messageLanguageKey, $context, $automated_task_user);
@@ -235,7 +241,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	public function onAfterAmmonApplicantCreate(GenericEvent $event): void
 	{
-		$arguments          = $event->getArguments();
+		$arguments           = $event->getArguments();
 		$automated_task_user = ComponentHelper::getParams('com_emundus')->get('automated_task_user', 0);
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_AMMON_APPLICANT';
@@ -250,10 +256,10 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	public function onAmmonFoundSimilarName(GenericEvent $event): void
 	{
-		$arguments          = $event->getArguments();
+		$arguments           = $event->getArguments();
 		$automated_task_user = ComponentHelper::getParams('com_emundus')->get('automated_task_user', 0);
-		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_AMMON_FOUND_SIMILAR_NAME';
-		$context            = 'com_emundus.ammon';
+		$messageLanguageKey  = 'PLG_ACTIONLOG_EMUNDUS_AMMON_FOUND_SIMILAR_NAME';
+		$context             = 'com_emundus.ammon';
 
 		$more_data['fnum']    = $arguments['fnum'];
 		$more_data['name']    = $arguments['name'];
@@ -265,10 +271,10 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	public function onAmmonSync(GenericEvent $event): void
 	{
-		$arguments          = $event->getArguments();
+		$arguments           = $event->getArguments();
 		$automated_task_user = ComponentHelper::getParams('com_emundus')->get('automated_task_user', 0);
-		$messageLanguageKey = $arguments['message_key'];
-		$context            = 'com_emundus.ammon';
+		$messageLanguageKey  = $arguments['message_key'];
+		$context             = 'com_emundus.ammon';
 
 		$old_data  = $arguments['old_data'] ?? [];
 		$new_data  = $arguments['new_data'] ?? [];
@@ -283,7 +289,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		$arguments = $event->getArguments();
 
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_EMUNDUS_WEBHOOK_CALLBACK_FAILED';
 		$context            = 'com_emundus.webhook.' . $arguments['type'];
@@ -297,7 +303,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		$arguments = $event->getArguments();
 
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_IMPORT_ROW';
 		$context            = 'com_emundus.import';
@@ -313,7 +319,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		$arguments = $event->getArguments();
 
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_REQUEST_INITIATED';
 		$context            = 'com_emundus.yousign';
@@ -329,7 +335,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		$arguments = $event->getArguments();
 
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_DOCUMENT_ADDED';
 		$context            = 'com_emundus.yousign';
@@ -345,7 +351,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		$arguments = $event->getArguments();
 
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_SIGNERS_UPDATED';
 		$context            = 'com_emundus.yousign';
@@ -361,7 +367,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		$arguments = $event->getArguments();
 
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_REQUEST_ACTIVATED';
 		$context            = 'com_emundus.yousign';
@@ -377,7 +383,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		$arguments = $event->getArguments();
 
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_REQUEST_COMPLETED';
 		$context            = 'com_emundus.yousign';
@@ -393,7 +399,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		$arguments = $event->getArguments();
 
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_ERROR';
 		$context            = 'com_emundus.yousign';
@@ -409,7 +415,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		$arguments = $event->getArguments();
 
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_SEND_REMINDER';
 		$context            = 'com_emundus.yousign';
@@ -425,7 +431,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		$arguments = $event->getArguments();
 
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = $this->getActingUser();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_REQUEST_CANCELLED';
 		$context            = 'com_emundus.yousign';
@@ -465,9 +471,42 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$this->addLog([$message], 'PLG_ACTIONLOG_EMUNDUS_AUTOMATION_LOOP_DETECTED', 'com_emundus.automation', $userId);
 	}
 
+	private function getAutomatedTaskUserId(): int
+	{
+		return (int) ComponentHelper::getParams('com_emundus')->get('automated_task_user', 1);
+	}
+
+	/**
+	 * Returns: the current identity when one exists (web requests),
+	 * otherwise the automated task user (CLI, scheduled tasks).
+	 */
+	private function getActingUser(): User
+	{
+		if ($this->getApplication()->isClient('cli'))
+		{
+			return $this->getUserFactory()->loadUserById($this->getAutomatedTaskUserId());
+		}
+
+		return $this->getApplication()->getIdentity();
+	}
+
+	/**
+	 * Fallback to the automated task user if current userId is null
+	 * so log entries are always attributed to a valid user.
+	 */
+	protected function addLog($messages, $messageLanguageKey, $context, $userId = null): void
+	{
+		if (empty($userId))
+		{
+			$userId = $this->getAutomatedTaskUserId();
+		}
+
+		parent::addLog($messages, $messageLanguageKey, $context, $userId);
+	}
+
 	private function setMessage($id = 0, $action = 'update', $title = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CONFIGURATION_TITLE', $status = 'done', $old_data = [], $new_data = [], $more_data = [], int $userId = 0)
 	{
-		$jUser = !empty($userId) ? $this->getUserFactory()->loadUserById($userId) : $this->getApplication()->getIdentity();
+		$jUser = !empty($userId) ? $this->getUserFactory()->loadUserById($userId) : $this->getActingUser();
 
 		$message = [
 			'id'          => $id,

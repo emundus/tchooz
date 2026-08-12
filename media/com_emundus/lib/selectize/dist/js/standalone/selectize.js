@@ -2287,6 +2287,9 @@
 				} else if (input_id === 'bcc-mails') {
 					$dropdown_content.prepend(self.render('option_create', {input: query}, 'BCC'));
 				}
+				else if (input_id === 'replyto-mails') {
+					$dropdown_content.prepend(self.render('option_create', {input: query}, 'REPLYTO'));
+				}
 				else if (input_id === 'action-tags') {
 					$dropdown_content.prepend(self.render('option_create', {input: query}, 'TAGS'));
 				}

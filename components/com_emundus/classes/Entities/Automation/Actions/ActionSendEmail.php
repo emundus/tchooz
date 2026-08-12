@@ -45,8 +45,23 @@ class ActionSendEmail extends ActionEntity
 	 */
 	public function execute(ActionTargetEntity|array $context, ?AutomationExecutionContext $executionContext = null): ActionExecutionStatusEnum
 	{
-		$this->verifyRequiredParameters();
 		$emailId = $this->getParameterValue(self::EMAIL_TO_SEND_PARAMETER);
+
+		// No email template selected: send a raw email (subject/body carried by the target parameters).
+		if (empty($emailId))
+		{
+			$contexts = is_array($context) ? $context : [$context];
+			$allSent  = true;
+			foreach ($contexts as $ctx)
+			{
+				if ($this->executeRawEmail($ctx) !== ActionExecutionStatusEnum::COMPLETED)
+				{
+					$allSent = false;
+				}
+			}
+
+			return $allSent ? ActionExecutionStatusEnum::COMPLETED : ActionExecutionStatusEnum::FAILED;
+		}
 
 		if (!class_exists('EmundusModelEmails')) {
 			require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
@@ -107,6 +122,7 @@ class ActionSendEmail extends ActionEntity
 
 	public function getParameters(): array
 	{
+		// TODO: Allow to set email parameters without templates ? (subject, body, replyto,...)
 		if (empty($this->parameters))
 		{
 			$this->parameters = [
@@ -115,6 +131,69 @@ class ActionSendEmail extends ActionEntity
 		}
 
 		return $this->parameters;
+	}
+
+	/**
+	 * Send a raw email (no template) for the given target. Subject, body and reply-to are read from the
+	 * target parameters ('subject', 'body', 'reply_to'); the recipient is the target user or custom address.
+	 */
+	private function executeRawEmail(ActionTargetEntity $context): ActionExecutionStatusEnum
+	{
+		$params  = $context->getParameters();
+		$subject = $params['subject'] ?? '';
+		$body    = $params['body'] ?? '';
+		$replyTo = $params['reply_to'] ?? null;
+
+		$to     = null;
+		$userId = null;
+		if (!empty($context->getUserId()))
+		{
+			$userId = $context->getUserId();
+			$user   = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+			$to     = $user->email ?? null;
+		}
+		elseif (!empty($context->getCustom()))
+		{
+			$to = $context->getCustom();
+		}
+
+		if (empty($to) || empty($body))
+		{
+			$this->addExecutionMessage(new ActionExecutionMessage('Raw email skipped: missing recipient or body.', \Tchooz\Enums\Automation\ActionMessageTypeEnum::ERROR));
+
+			return ActionExecutionStatusEnum::FAILED;
+		}
+
+		$fnum = $context->getFile();
+		if (empty($fnum) && !empty($context->getOriginalContext()))
+		{
+			$fnum = $context->getOriginalContext()->getFile();
+		}
+
+		try
+		{
+			(new \Tchooz\Services\Emails\EmailService())->resetMailer()->sendEmailWithoutTemplate(
+				$to,
+				$subject,
+				$body,
+				null,
+				$userId,
+				[],
+				$fnum,
+				[],
+				$this->getAutomatedTaskUserId(),
+				$replyTo
+			);
+			$this->addExecutionMessage(new ActionExecutionMessage('Raw email sent to ' . $to));
+
+			return ActionExecutionStatusEnum::COMPLETED;
+		}
+		catch (\Throwable $e)
+		{
+			$this->addExecutionMessage(new ActionExecutionMessage('Failed to send raw email to ' . $to . ': ' . $e->getMessage(), \Tchooz\Enums\Automation\ActionMessageTypeEnum::ERROR));
+
+			return ActionExecutionStatusEnum::FAILED;
+		}
 	}
 
 	/**

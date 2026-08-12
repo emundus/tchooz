@@ -158,14 +158,16 @@
 
 			<!-- EDITOR -->
 			<tip-tap-editor
-				v-else-if="parameter.type === 'wysiwig'"
+				v-else-if="parameter.type === 'wysiwig' && editorReady"
 				v-model="value"
 				:editor-content-height="'20em'"
 				:class="'tw-mt-1 tw-w-full'"
 				:locale="actualLanguage"
-				:preset="'basic'"
+				:preset="parameter.preset ? parameter.preset : 'basic'"
 				:toolbar-classes="['tw-bg-white']"
 				:editor-content-classes="['tw-bg-white']"
+				:suggestions="suggestions"
+				:media-files="medias"
 				@focusout="checkValue(parameter)"
 			>
 			</tip-tap-editor>
@@ -282,6 +284,28 @@
 					:placeholder="translate(parameter.placeholder)"
 					:maxlength="parameter.maxlength"
 					:readonly="parameter.editable === false"
+				/>
+			</div>
+
+			<!-- TRANSLATABLE INPUT -->
+			<div v-else-if="parameter.translatable" class="tw-flex tw-w-full tw-flex-col tw-gap-2">
+				<Slider
+					class="tw-w-fit"
+					v-if="translationLanguageOptions.length > 1"
+					v-model="selectedTranslationLang"
+					:options="translationLanguageOptions"
+				/>
+				<input
+					type="text"
+					class="form-control !tw-mb-0 tw-min-w-[30%]"
+					style="box-shadow: none"
+					:class="errors[parameter.param] ? 'tw-rounded-lg !tw-border-red-500' : ''"
+					:placeholder="translate(parameter.placeholder)"
+					:id="paramId"
+					:value="value[selectedTranslationLang]"
+					:maxlength="parameter.maxlength"
+					:readonly="parameter.editable === false"
+					@input="onTranslationInput($event.target.value)"
 				/>
 			</div>
 
@@ -432,11 +456,20 @@
 			<color-picker
 				v-else-if="parameter.type === 'color'"
 				v-model="value"
+				:variant="'field'"
 				:swatches="parameter.swatches ? parameter.swatches : 'dark'"
 				:row-length="8"
 				:id="paramId"
 				:random="true"
 				style="top: -8px"
+			/>
+
+			<autocomplete
+				v-else-if="parameter.type === 'autocomplete'"
+				:id="paramId"
+				@searched="value = $event"
+				:items="parameter.autocompleteItems"
+				:year="value"
 			/>
 
 			<!-- INPUT IN CASE OF SPLIT -->
@@ -481,10 +514,13 @@ import examples from 'libphonenumber-js/mobile/examples';
 import { vMaska } from 'maska/vue';
 import vueDropzone from 'vue2-dropzone-vue3';
 import ColorPicker from '@/components/ColorPicker.vue';
+import Autocomplete from '@/components/autocomplete.vue';
+import { Slider } from '@emundus/ui';
+import { resolveParameterValue } from '@/mixins/parameterForm.js';
 
 export default {
 	name: 'Parameter',
-	components: { ColorPicker, DatePicker, Multiselect, Modal, TipTapEditor, vueDropzone },
+	components: { Autocomplete, ColorPicker, DatePicker, Multiselect, Modal, TipTapEditor, vueDropzone, Slider },
 	directives: {
 		maska: vMaska,
 	},
@@ -556,6 +592,10 @@ export default {
 
 			actualLanguage: 'fr-FR',
 
+			// Translatable field (per-language value keyed by sef)
+			translationLanguages: [],
+			selectedTranslationLang: '',
+
 			// Phonenumber countries
 			country: {},
 			countryCode: '',
@@ -580,6 +620,10 @@ export default {
 				uploadMultiple: false,
 			},
 			mediaThumbnail: '',
+
+			editorReady: false,
+			suggestions: [],
+			medias: [],
 		};
 	},
 	async created() {
@@ -680,6 +724,28 @@ export default {
 			this.dropzoneOptions.acceptedFiles = this.parameter.acceptedFiles ? this.parameter.acceptedFiles : 'image/*';
 
 			this.value = this.parameter.value;
+		} else if (this.parameter.type === 'wysiwig') {
+			this.value = this.parameter.value;
+
+			const editorTasks = [];
+			if (this.parameter.displaySuggestions) {
+				editorTasks.push(this.getEditorSuggestions());
+			}
+			if (this.parameter.displayMedias) {
+				editorTasks.push(this.getEditorMedia());
+			}
+
+			await Promise.all(editorTasks);
+			this.editorReady = true;
+		} else if (this.parameter.translatable) {
+			let translations = this.parameter.value;
+			// Legacy scalar value -> convert to a per-language object keyed by the language sef.
+			if (typeof translations !== 'object' || translations === null) {
+				translations = translations ? { [this.actualLanguage]: translations } : {};
+			}
+			this.value = translations;
+			this.selectedTranslationLang = this.actualLanguage;
+			this.loadTranslationLanguages();
 		} else if (this.parameter) {
 			this.value = this.parameter.value;
 		}
@@ -716,6 +782,25 @@ export default {
 		this.initValue = this.value;
 	},
 	methods: {
+		onTranslationInput(text) {
+			// Reassign a NEW object so the value watcher sees a changed reference ; a deep mutation
+			// would keep the same reference and be filtered out as "unchanged" downstream.
+			this.value = { ...this.value, [this.selectedTranslationLang]: text };
+		},
+		loadTranslationLanguages() {
+			settingsService.getActiveLanguages().then((response) => {
+				if (response && response.data) {
+					this.translationLanguages = response.data;
+
+					// Ensure every active language has a (possibly empty) entry so v-model stays reactive.
+					this.translationLanguages.forEach((language) => {
+						if (typeof this.value[language.sef] === 'undefined') {
+							this.value[language.sef] = '';
+						}
+					});
+				}
+			});
+		},
 		displayHelp(message) {
 			Swal.fire({
 				title: this.translate('COM_EMUNDUS_SWAL_HELP_TITLE'),
@@ -897,31 +982,45 @@ export default {
 			}
 		},
 
+		// Wysiwig
+		getEditorSuggestions() {
+			return settingsService.getVariables().then((response) => {
+				this.suggestions = response.data;
+			});
+		},
+		getEditorMedia() {
+			return settingsService.getMedia().then((response) => {
+				this.medias = response.data;
+			});
+		},
+
 		// VALIDATIONS
 		validate() {
-			if (this.parameter.value === '' && this.parameter.optional === true) {
+			const value = this.valueToValidate;
+
+			if (value === '' && this.parameter.optional === true) {
 				delete this.errors[this.parameter.param];
 				return true;
-			} else if (this.parameter.value === '') {
+			} else if (value === '') {
 				this.errors[this.parameter.param] = 'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL';
 				return false;
 			} else {
 				if (this.parameter.type === 'email') {
-					if (!this.validateEmail(this.parameter.value)) {
+					if (!this.validateEmail(value)) {
 						this.errors[this.parameter.param] = 'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL_NO';
 						return false;
 					}
 				} else if (this.parameter.type === 'url') {
 					const urlPattern = '^(https?:\\/\\/)?([A-Za-z0-9-]+\\.)+[A-Za-z]{2,}(\\/.*)?$';
 					const regex = new RegExp(urlPattern);
-					if (!regex.test(this.parameter.value)) {
+					if (!regex.test(value)) {
 						this.errors[this.parameter.param] = 'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_URL_CHECK_INPUT_URL_NO';
 						return false;
 					}
 				} else if (this.parameter.type === 'secure_url') {
 					const urlPattern = '^([A-Za-z0-9-]+\\.)+[A-Za-z]{2,}(\\/.*)?$';
 					const regex = new RegExp(urlPattern);
-					if (!regex.test(this.parameter.value)) {
+					if (!regex.test(value)) {
 						this.errors[this.parameter.param] =
 							'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_VALID_DOMAIN_NAME_CHECK_INPUT_URL_NO';
 						return false;
@@ -1052,6 +1151,17 @@ export default {
 					val = this.countryCode + (val ? val.replace(/\s+/g, '') : '');
 				}
 
+				// Live-strip characters the backend would silently drop, so the field shows exactly
+				// what will be kept. sanitizePattern is a regex of DISALLOWED characters to remove.
+				if (this.parameter.sanitizePattern && typeof val === 'string') {
+					const cleaned = val.replace(new RegExp(this.parameter.sanitizePattern, 'g'), '');
+					if (cleaned !== val) {
+						// Reassigning re-triggers this watcher with the cleaned value, which emits cleanly.
+						this.value = cleaned;
+						return;
+					}
+				}
+
 				this.parameter.value = val;
 
 				if (this.parameter.splitField) {
@@ -1136,8 +1246,23 @@ export default {
 			return (
 				['text', 'email', 'number', 'password', 'secure_url'].includes(this.parameter.type) &&
 				this.parameter.displayed &&
-				this.parameter.editable !== 'semi'
+				this.parameter.editable !== 'semi' &&
+				!this.parameter.translatable
 			);
+		},
+		valueToValidate() {
+			return resolveParameterValue(this.parameter, this.parameter.value);
+		},
+		translationLanguageOptions() {
+			return this.translationLanguages.map((language) => {
+				const countryCode = language.lang_code.split('-')[1]?.toLowerCase();
+				return {
+					label: language.title_native ? language.title_native.replace(/\s*\([^)]*\)\s*$/, '') : language.title_native,
+					value: language.sef,
+					lang_id: language.lang_id,
+					icon: `flag_round_${countryCode}`,
+				};
+			});
 		},
 		paramId() {
 			return 'param_' + this.parameter.param + '_' + Math.floor(Math.random() * 10000);

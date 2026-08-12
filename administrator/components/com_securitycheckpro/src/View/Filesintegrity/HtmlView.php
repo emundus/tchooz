@@ -13,7 +13,6 @@ use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Pagination\Pagination;
@@ -108,12 +107,8 @@ class HtmlView extends BaseHtmlView {
 	 */
     public $database_error = '';
 	
-	/**
-	 * Extensiones instaladas desde el último escaneo de integridad
-	 *
-	 * @var array<string,string>|bool|null
-	 */
-    public $installs = [];
+	/** @var list<array{name:string, type:string}> */
+	public array $installs = [];
 	
 	/**
 	 * Algoritmo usado
@@ -135,7 +130,14 @@ class HtmlView extends BaseHtmlView {
 	 * @var int
 	 */
     public $checkbox_position = 0;
-	
+
+	/**
+	 * Estado actual del escaneo de integridad ('IN_PROGRESS' | 'ENDED' | 'ERROR' | 'DATABASE_ERROR' | '')
+	 *
+	 * @var string
+	 */
+	public string $scan_state = '';
+
 	/**
 	 * Pagination object
 	 *
@@ -143,10 +145,7 @@ class HtmlView extends BaseHtmlView {
 	 */
 	public $pagination = null;
 	
-	/**
-	 * @var BaseModel
-	 */
-	public $basemodel;
+	public ?BaseModel $basemodel = null;
 	
     /**
      * Display the main view
@@ -166,15 +165,10 @@ class HtmlView extends BaseHtmlView {
 		// Obtenemos el modelo de esta vista (Filesintegrity)
 		/** @var FilesintegrityModel $model */
        	$model               = $this->getModel();
-		
-		$component = Factory::getApplication()->bootComponent('com_securitycheckpro');
-        /** @var MVCFactoryInterface $factory */
-        $factory = $component->getMVCFactory();
 
-        /** @var BaseModel $baseModel */
-        $baseModel = $factory->createModel('Base', 'Administrator', ['ignore_request' => true]);
-        $this->basemodel = $baseModel;
-		
+		// BaseModel
+		$this->basemodel = new BaseModel();
+
 		$this->state         = $model->getState();
 				
         $this->last_check_integrity = $model->loadStack("fileintegrity_resume", "last_check_integrity");
@@ -185,7 +179,7 @@ class HtmlView extends BaseHtmlView {
         $this->log_filename = $model->get_log_filename("fileintegrity_log", true);
 		$this->message_info = Text::sprintf('COM_SECURITYCHECKPRO_SCAN_INFO_MESSAGE',  Text::_('COM_SECURITYCHECKPRO_SCAN_ALL_FILES_INFO_MESSAGE'));
 								
-        $task_ended = $model->GetCampoFilemanager("estado_integrity");
+        $this->scan_state = (string) $model->GetCampoFilemanager("estado_integrity");
 
         // Obtenemos el algoritmo seleccionado para crear el valor hash y si está habilitada la opción para escanear sólo ficheros ejecutables
         $params = ComponentHelper::getParams('com_securitycheckpro');

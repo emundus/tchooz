@@ -24,6 +24,15 @@
 
 		<div>
 			<form @submit.prevent="submit" v-if="ready" class="emundus-form fabrikForm">
+				<div
+					v-if="languages.length > 1 && typeof campaignId !== 'undefined' && campaignId != 0"
+					class="tw-mb-4 tw-flex tw-items-center tw-gap-3"
+				>
+					<label class="tw-mb-0 tw-whitespace-nowrap tw-font-medium">
+						{{ translate('COM_EMUNDUS_CAMPAIGN_TRANSLATION') }}
+					</label>
+					<Slider v-model="selectedLang" :options="languageOptions" />
+				</div>
 				<div class="tw-flex tw-flex-col tw-gap-4">
 					<div id="campaign-label-wrapper">
 						<label for="campLabel" class="tw-font-medium"
@@ -32,7 +41,7 @@
 						<input
 							id="campLabel"
 							type="text"
-							v-model="form.label[actualLanguage]"
+							v-model="form.label[selectedLang]"
 							required
 							:class="{ 'is-invalid !tw-border-red-600': errors.label }"
 							class="form-control fabrikinput tw-mt-1 tw-w-full"
@@ -193,6 +202,53 @@
 						<div class="em-toggle">
 							<input
 								type="checkbox"
+								true-value="1"
+								false-value="0"
+								class="em-toggle-check tw-mt-2"
+								id="limit"
+								name="limit"
+								v-model="form.is_limited"
+							/>
+							<strong class="b em-toggle-switch"></strong>
+							<strong class="b em-toggle-track"></strong>
+						</div>
+						<span for="limit" class="tw-ml-2">{{ translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT') }}</span>
+					</div>
+
+					<transition name="'slide-down'">
+						<div v-if="form.is_limited == 1" class="tw-flex tw-flex-col tw-gap-4">
+							<div>
+								<label for="limitNumber"
+									>{{ translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER') }}
+									<span class="tw-text-red-600">*</span></label
+								>
+								<div>
+									<span class="tw-text-base tw-text-neutral-600">
+										{{ translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER_HELPTEXT') }}
+									</span>
+									<input
+										id="limitNumber"
+										type="number"
+										class="form__input field-general w-input"
+										v-model="form.limit"
+										:class="{ 'is-invalid !tw-border-red-600': errors.limit_files_number }"
+									/>
+									<div
+										v-if="errors.limit_files_number"
+										id="error-campaign-name"
+										class="tw-mb-1 tw-mt-1 tw-text-red-600"
+									>
+										<span>{{ translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED') }}</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</transition>
+
+					<div class="tw-flex tw-items-center">
+						<div class="em-toggle">
+							<input
+								type="checkbox"
 								true-value="0"
 								false-value="1"
 								class="em-toggle-check tw-mt-2"
@@ -336,10 +392,11 @@
 							>
 						</div>
 						<tip-tap-editor
+							:key="'short_description_' + selectedLang"
 							v-model="form.short_description"
 							:editor-content-height="'5em'"
 							:class="'tw-mt-1'"
-							:locale="'fr'"
+							:locale="selectedLang"
 							:preset="'basic'"
 							:toolbar-classes="['tw-bg-white']"
 							:editor-content-classes="['tw-bg-white']"
@@ -361,15 +418,15 @@
 								>help_outline</span
 							>
 						</div>
-						<div id="campDescription" v-if="typeof form.description != 'undefined'">
+						<div id="campDescription" v-if="form.description !== null && form.description !== undefined">
 							<tip-tap-editor
+								:key="'description_' + selectedLang"
 								v-model="form.description"
 								:upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"
 								:editor-content-height="'30em'"
 								:class="'tw-mt-1'"
-								:locale="'fr'"
-								:preset="'custom'"
-								:plugins="editorPlugins"
+								:locale="selectedLang"
+								:preset="'full'"
 								:toolbar-classes="['tw-bg-white']"
 								:editor-content-classes="['tw-bg-white']"
 								:placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION')"
@@ -530,7 +587,7 @@
 						<multiselect
 							v-model="campaignLanguages"
 							label="label"
-							track-by="value"
+							track-by="lang_id"
 							:options="languageOptions"
 							:multiple="true"
 							:taggable="false"
@@ -546,6 +603,7 @@
 					<button
 						id="save-btn"
 						type="button"
+						:disabled="submitted"
 						class="tw-btn-primary tw-w-auto tw-rounded-coordinator"
 						@click="
 							quit = 1;
@@ -584,11 +642,13 @@ import formService from '@/services/form.js';
 
 import { useGlobalStore } from '@/stores/global.js';
 import { useCampaignStore } from '@/stores/campaign.js';
+import { Slider } from '@emundus/ui';
 
 export default {
 	name: 'addCampaign',
 
 	components: {
+		Slider,
 		Multiselect,
 		TipTapEditor,
 		Autocomplete,
@@ -620,6 +680,8 @@ export default {
 		// props
 		campaignId: 0,
 		actualLanguage: '',
+		selectedLang: '',
+		langCache: {},
 		coordinatorAccess: 0,
 		quit: 1,
 
@@ -665,7 +727,7 @@ export default {
 			start_date: '',
 			end_date: '',
 			short_description: '',
-			description: null,
+			description: '',
 			training: '',
 			year: '',
 			published: 1,
@@ -723,6 +785,7 @@ export default {
 		}
 
 		this.actualLanguage = globalStore.getShortLang;
+		this.selectedLang = this.actualLanguage;
 		this.coordinatorAccess = globalStore.hasCoordinatorAccess;
 
 		this.getLanguages().then(() => {
@@ -761,6 +824,10 @@ export default {
 		});
 	},
 	methods: {
+		stripLanguageSuffix(label) {
+			return label ? label.replace(/\s*\([^)]*\)\s*$/, '') : label;
+		},
+
 		changed() {
 			console.debug('changed');
 			throw new Error("It's not an Error, please ignore.");
@@ -854,7 +921,12 @@ export default {
 		getCampaignLanguages() {
 			if (this.campaignId) {
 				campaignService.getCampaignLanguages(this.campaignId).then((response) => {
-					this.campaignLanguages = response.data;
+					this.campaignLanguages = response.data.map((language) => ({
+						lang_id: language.value,
+						label: this.stripLanguageSuffix(
+							this.languages.find((l) => l.lang_id == language.value)?.title_native ?? language.label,
+						),
+					}));
 				});
 			}
 		},
@@ -920,7 +992,7 @@ export default {
 		createCampaign(form_data) {
 			form_data.start_date = this.formatDate(new Date(this.form.start_date));
 			form_data.end_date = this.formatDate(new Date(this.form.end_date));
-			form_data.languages = this.campaignLanguages.map((language) => language.value);
+			form_data.languages = this.campaignLanguages.map((language) => language.lang_id);
 			form_data.usercategories = this.userCategoryEnabled
 				? this.campaignUsercategories.map((category) => category.value)
 				: [];
@@ -935,7 +1007,7 @@ export default {
 		},
 
 		createCampaignWithNoExistingProgram(programForm) {
-			programmeService.createProgram(programForm).then((response) => {
+			programmeService.saveProgram(programForm).then((response) => {
 				if (response.status) {
 					this.form.progid = response.data.programme_id;
 					this.form.training = response.data.programme_code;
@@ -963,6 +1035,10 @@ export default {
 		},
 
 		submit() {
+			if (this.submitted) {
+				return;
+			}
+
 			const campaignStore = useCampaignStore();
 			campaignStore.setUnsavedChanges(true);
 
@@ -1080,20 +1156,50 @@ export default {
 		},
 
 		updateCampaign() {
-			let form_data = this.form;
-			form_data.training = this.programForm.code;
-			form_data.start_date = this.formatDate(new Date(this.form.start_date));
-			form_data.end_date = this.formatDate(new Date(this.form.end_date));
-			form_data.languages = this.campaignLanguages.map((language) => language.value);
-			form_data.usercategories = this.userCategoryEnabled
-				? this.campaignUsercategories.map((category) => category.value)
-				: [];
-			form_data.parent_id = this.choicesModuleEnabled && form_data.parent_id ? form_data.parent_id.value : null;
+			// Ajoute/met à jour la langue courante dans le cache avant de sauvegarder
+			this.langCache[this.selectedLang] = {
+				label: this.form.label[this.selectedLang],
+				description: this.form.description,
+				short_description: this.form.short_description,
+			};
 
-			campaignService
-				.updateCampaign(form_data, this.campaignId)
-				.then((response) => {
-					if (!response.status) {
+			const baseFormData = {
+				...this.form,
+				training: this.programForm.code,
+				start_date: this.formatDate(new Date(this.form.start_date)),
+				end_date: this.formatDate(new Date(this.form.end_date)),
+				languages: this.campaignLanguages.map((language) => language.lang_id),
+				usercategories: this.userCategoryEnabled ? this.campaignUsercategories.map((category) => category.value) : [],
+				parent_id: this.choicesModuleEnabled && this.form.parent_id ? this.form.parent_id.value : null,
+			};
+
+			// Remove langCache entries with empty key
+			this.langCache = Object.fromEntries(Object.entries(this.langCache).filter(([lang]) => lang !== ''));
+
+			// Envoie une requête par langue ayant des modifications en cache
+			const savePromises = Object.entries(this.langCache).map(([lang, cached]) => {
+				const payload = {
+					...baseFormData,
+					lang,
+					description: cached.description,
+					short_description: cached.short_description,
+					label: { [lang]: cached.label },
+				};
+
+				// languages/usercategories sont partagés par toute la campagne : une seule des
+				// requêtes parallèles par langue doit les synchroniser, sinon chaque requête fait
+				// sa propre suppression/insertion en parallèle sur les mêmes tables pivot.
+				if (lang !== this.selectedLang) {
+					delete payload.languages;
+					delete payload.usercategories;
+				}
+
+				return campaignService.updateCampaign(payload, this.campaignId);
+			});
+
+			Promise.all(savePromises)
+				.then((responses) => {
+					if (responses.some((r) => !r.status)) {
 						Swal.fire({
 							icon: 'error',
 							title: this.translate('COM_EMUNDUS_ADD_CAMPAIGN_ERROR'),
@@ -1105,11 +1211,12 @@ export default {
 							},
 						});
 						this.submitted = false;
-						return 0;
-					} else {
-						this.$emit('nextSection');
-						this.$emit('updateHeader', this.form);
+						return;
 					}
+
+					this.langCache = {};
+					this.$emit('nextSection');
+					this.$emit('updateHeader', this.form);
 				})
 				.catch((error) => {
 					console.log(error);
@@ -1216,9 +1323,12 @@ export default {
 		},
 		languageOptions() {
 			return this.languages.map((language) => {
+				const countryCode = language.lang_code.split('-')[1]?.toLowerCase();
 				return {
-					label: language.title,
-					value: language.lang_id,
+					label: this.stripLanguageSuffix(language.title_native),
+					value: language.sef,
+					lang_id: language.lang_id,
+					icon: `flag_round_${countryCode}`,
 				};
 			});
 		},
@@ -1232,7 +1342,6 @@ export default {
 		},
 		campaignsOptions() {
 			return this.otherCampaigns.map((campaign) => {
-				console.log(campaign.label[this.actualLanguage]);
 				return {
 					label: campaign.label[this.actualLanguage] || campaign.label['fr'] || campaign.label['en'] || 'No title',
 					value: campaign.id,
@@ -1275,6 +1384,34 @@ export default {
 	},
 
 	watch: {
+		selectedLang(newLang, oldLang) {
+			if (newLang === oldLang || !oldLang || !this.campaignId) return;
+
+			// Sauvegarde les valeurs de l'ancienne langue en mémoire avant de switcher
+			this.langCache[oldLang] = {
+				label: this.form.label[oldLang],
+				description: this.form.description,
+				short_description: this.form.short_description,
+			};
+
+			// Si la nouvelle langue est déjà en cache, on restaure sans appel réseau
+			if (this.langCache[newLang]) {
+				this.form.label[newLang] = this.langCache[newLang].label;
+				this.form.description = this.langCache[newLang].description;
+				this.form.short_description = this.langCache[newLang].short_description;
+				return;
+			}
+
+			// Sinon on fetch depuis la BDD
+			campaignService.getCampaignById(this.campaignId, newLang).then((response) => {
+				if (response.status) {
+					this.form.description = response.data.campaign.description;
+					this.form.short_description = response.data.campaign.short_description;
+					this.form.label[newLang] = response.data.label[newLang] ?? this.form.label[newLang];
+				}
+			});
+		},
+
 		'form.start_date': function (val) {
 			if (typeof val === 'object') {
 				let startDate = new Date(val);

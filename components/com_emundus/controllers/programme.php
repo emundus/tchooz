@@ -14,22 +14,30 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\Plugin\User\Emundus\Extension\Emundus;
+use Joomla\CMS\Uri\Uri;
+use Symfony\Component\OptionsResolver\Exception\AccessException;
 use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Controller\EmundusController;
+use Tchooz\EmundusResponse;
+use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\Programs\ProgramEntity;
 use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
-use Tchooz\EmundusResponse;
-use Tchooz\Traits\TraitResponse;
-use Tchooz\Controller\EmundusController;
+use Tchooz\Services\UploadService;
 
 class EmundusControllerProgramme extends EmundusController
 {
 	private EmundusModelProgramme $m_programme;
+
+	private ProgramRepository $programRepository;
+
+	private ActionEntity $programAction;
 
 	function __construct($config = array())
 	{
@@ -40,6 +48,11 @@ class EmundusControllerProgramme extends EmundusController
 			require_once JPATH_SITE . '/components/com_emundus/models/programme.php';
 		}
 		$this->m_programme = new EmundusModelProgramme();
+
+		$this->programRepository = new ProgramRepository();
+
+		$actionRepository    = new ActionRepository();
+		$this->programAction = $actionRepository->getByName('program');
 	}
 
 	function display($cachable = false, $urlparams = false): void
@@ -55,7 +68,7 @@ class EmundusControllerProgramme extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
-	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'program', 'mode' => CrudEnum::READ]])]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::READ]])]
 	public function getprogrammes(): EmundusResponse
 	{
 		$programmes = $this->m_programme->getProgrammes();
@@ -64,7 +77,7 @@ class EmundusControllerProgramme extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
-	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'program', 'mode' => CrudEnum::CREATE]])]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::CREATE]])]
 	public function addprogrammes(): EmundusResponse
 	{
 		$data = $this->input->get('data', null, 'POST', 'none', 0);
@@ -80,7 +93,7 @@ class EmundusControllerProgramme extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
-	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'program', 'mode' => CrudEnum::UPDATE]])]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::UPDATE]])]
 	public function editprogrammes(): EmundusResponse
 	{
 		$data = $this->input->get('data', null, 'POST', 'none', 0);
@@ -95,7 +108,7 @@ class EmundusControllerProgramme extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
-	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'program', 'mode' => CrudEnum::READ]])]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::READ]])]
 	public function getallprogramforfilter(): EmundusResponse
 	{
 		$programRepository     = new ProgramRepository();
@@ -137,10 +150,13 @@ class EmundusControllerProgramme extends EmundusController
 		$order_by  = $this->input->getString('order_by', 'p.id');
 		$order_by  = $order_by == 'label' ? 'p.label' : $order_by;
 
-		$actionRepository = new ActionRepository();
-		$campaignAction = $actionRepository->getByName('campaign');
-		$campaignAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::READ->value, $this->user->id);
+		$actionRepository   = new ActionRepository();
+		$campaignAction     = $actionRepository->getByName('campaign');
+		$campaignAccess     = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::READ->value, $this->user->id);
 		$campaignEditAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::UPDATE->value, $this->user->id);
+
+		$emConfig = ComponentHelper::getParams('com_emundus');
+		$prestationSociales = $emConfig->get('prestations_sociales', 0) == 1;
 
 		$programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche, $this->user, $category, $order_by);
 
@@ -148,7 +164,7 @@ class EmundusControllerProgramme extends EmundusController
 		{
 			$programs['datas'][$key]->label = ['fr' => Text::_($program->label), 'en' => Text::_($program->label)];
 
-			if($campaignAccess)
+			if ($campaignAccess)
 			{
 				if (!empty($program->nb_campaigns))
 				{
@@ -251,7 +267,18 @@ class EmundusControllerProgramme extends EmundusController
 				]
 			];
 
-			if($campaignAccess)
+			if($prestationSociales)
+			{
+				$programs['datas'][$key]->additional_columns[] = [
+					'key'      => Text::_('COM_EMUNDUS_PROGRAM_MUST_OPEN_RIGHTS_LABEL'),
+					'value'    => $program->must_open_rights == 1 ? Text::_('JYES') : Text::_('JNO'),
+					'classes'  => '',
+					'display'  => 'table',
+					'order_by' => 'p.must_open_rights'
+				];
+			}
+
+			if ($campaignAccess)
 			{
 				$programs['datas'][$key]->additional_columns[] = $campaigns_assiocated_column;
 			}
@@ -261,38 +288,161 @@ class EmundusControllerProgramme extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
-	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'program', 'mode' => CrudEnum::CREATE]])]
-	public function createprogram(): EmundusResponse
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::CREATE],
+		['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::UPDATE],
+	])]
+	public function saveprogram(): EmundusResponse
 	{
+		$this->checkToken();
 		$data = $this->input->getRaw('body');
-		if(empty($data))
+		$id   = $this->input->getInt('id', 0);
+
+		$logoPath   = '';
+		$logo       = null;
+		$handleLogo = false;
+		if (empty($data))
 		{
-			throw new InvalidArgumentException(Text::_("MISSING_PARAMS"));
+			$label           = $this->input->getString('label');
+			$code            = $this->input->getString('code');
+			$programmes      = $this->input->getString('programmes');
+			$description     = $this->input->getRaw('notes');
+			$description     = (is_null($description) || $description === 'null') ? '' : $description;
+			$longDescription = $this->input->getRaw('long_description');
+			$longDescription = (is_null($longDescription) || $longDescription === 'null') ? '' : $longDescription;
+			$synthesis       = $this->input->getRaw('synthesis');
+			$logo            = $this->input->files->get('logo');
+			$logoPath        = $this->input->getString('logo');
+			$applyOnline     = $this->input->getInt('apply_online', 1) === 1;
+			$mustOpenRights  = $this->input->getInt('must_open_rights', 0) === 1;
+			$handleLogo      = true;
+		}
+		else
+		{
+			// Backward compatibility: legacy JSON callers do not manage the logo
+			$data  = json_decode($data, true);
+			$label = $data['label'];
+			$code  = $data['code'];
+			if (empty($code) && !empty($label))
+			{
+				$code = preg_replace('/[^A-Za-z0-9]/', '', $label);
+				$code = str_replace(' ', '_', $code);
+				$code = substr($code, 0, 10);
+				$code = strtolower($code);
+				$code = uniqid($code . '-');
+			}
+			$programmes  = $data['programmes'] ?? '';
+			$longDescription = $data['long_description'] ?? '';
+			$description = $data['notes'] ?? '';
+			$synthesis   = $data['synthesis'] ?? '<p><strong>[APPLICANT_NAME]</strong></p><p><a href="mailto:[EMAIL]">[EMAIL]</a></p>';
+			$applyOnline = $data['apply_online'] ?? true;
+			$mustOpenRights = $data['must_open_rights'] ?? false;
 		}
 
-		$data = json_decode($data, true);
-		$result = $this->m_programme->addProgram($data);
-		if(!is_array($result))
+		if (empty($label) || empty($code))
 		{
-			throw new RuntimeException(Text::_('ERROR_CANNOT_ADD_PROGRAMS'));
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_PROGRAM_FORM_MISSING_REQUIRED_FIELDS'));
 		}
 
-		return EmundusResponse::ok($result, Text::_('PROGRAMS_ADDED'));
+		if ($this->programRepository->codeExists($code, [$id]))
+		{
+			throw new RuntimeException(Text::sprintf('COM_EMUNDUS_PROGRAM_FORM_ERROR_CODE_ALREADY_EXISTS', $code), EmundusResponse::HTTP_CONFLICT);
+		}
+
+		if ($handleLogo && (!empty($logo) && $logo['error'] === 0 || $logoPath === 'null' || empty($logoPath)))
+		{
+			// Delete old logo if exists
+			if ($id > 0)
+			{
+				$this->programRepository->deleteLogo($id);
+			}
+
+			$upload_dir = 'images/emundus/programs/';
+			$uploader   = new UploadService($upload_dir);
+
+			if ((!empty($logo) && $logo['error'] === 0))
+			{
+				$length   = rand(5, 10);
+				$random   = bin2hex(random_bytes($length));
+				$random   = substr($random, 0, $length);
+				$logoPath = $uploader->upload($logo, $label . '_' . $random, 'program');
+			}
+			else
+			{
+				$logoPath = null;
+			}
+		}
+
+		// Remove Uri::base from logoPath
+		if (!empty($logoPath))
+		{
+			$logoPath = str_replace(Uri::base(), '', $logoPath);
+		}
+
+		if ($id > 0)
+		{
+			// Update: load the existing program so we don't clobber the fields the form does not send (published, apply_online, ordering, color)
+			$programEntity = $this->programRepository->getById($id);
+			if (empty($programEntity))
+			{
+				throw new RuntimeException(Text::_('ERROR_CANNOT_FIND_PROGRAM'));
+			}
+
+			$programEntity->setCode($code);
+			$programEntity->setLabel($label);
+			$programEntity->setNotes($description ?? '');
+			$programEntity->setLongDescription($longDescription ?? '');
+			$programEntity->setProgrammes($programmes ?? '');
+			$programEntity->setSynthesis($synthesis ?? '');
+			$programEntity->setApplyOnline($applyOnline);
+			$programEntity->setMustOpenRights($mustOpenRights);
+
+			if ($handleLogo)
+			{
+				$programEntity->setLogo($logoPath);
+			}
+		}
+		else
+		{
+			$programEntity = new ProgramEntity(
+				code: $code,
+				label: $label,
+				notes: $description,
+				programmes: $programmes,
+				synthesis: $synthesis,
+				applyOnline: $applyOnline,
+				logo: $logoPath,
+				longDescription: $longDescription,
+				mustOpenRights: $mustOpenRights,
+			);
+		}
+
+		if (!$this->programRepository->flush($programEntity))
+		{
+			throw new RuntimeException(Text::_('COM_EMUNDUS_PROGRAM_FORM_ERROR'));
+		}
+
+		$successMessage = !empty($id) ? Text::_('COM_EMUNDUS_PROGRAM_FORM_SUCCESS_SAVED') : Text::_('COM_EMUNDUS_PROGRAM_FORM_SUCCESS_ADD');
+
+		return EmundusResponse::ok([
+			'programme_id'   => $programEntity->getId(),
+			'programme_code' => $programEntity->getCode(),
+		], $successMessage);
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
-	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'program', 'mode' => CrudEnum::UPDATE]])]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::UPDATE]])]
 	public function updateprogram(): EmundusResponse
 	{
 		$data = $this->input->getRaw('body');
 		$id   = $this->input->getString('id');
-		if(empty($id) || empty($data))
+		if (empty($id) || empty($data))
 		{
 			throw new InvalidArgumentException(Text::_("MISSING_PARAMS"));
 		}
 
 		$result = $this->m_programme->updateProgram($id, $data);
-		if(!$result)
+		if (!$result)
 		{
 			throw new RuntimeException(Text::_('ERROR_CANNOT_EDIT_PROGRAMS'));
 		}
@@ -301,22 +451,96 @@ class EmundusControllerProgramme extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
-	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'program', 'mode' => CrudEnum::DELETE]])]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::DELETE]])]
 	public function deleteprogram(): EmundusResponse
 	{
-		$data   = $this->input->getInt('id');
-		if(empty($data))
+		$data = $this->input->getInt('id');
+		if (empty($data))
 		{
 			throw new InvalidArgumentException(Text::_("MISSING_PARAMS"));
 		}
 
 		$result = $this->m_programme->deleteProgram($data);
-		if(!$result)
+		if (!$result)
 		{
 			throw new RuntimeException(Text::_('ERROR_CANNOT_DELETE_PROGRAMS'));
 		}
 
 		return EmundusResponse::ok($result, Text::_('PROGRAMMES_DELETED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::UPDATE]])]
+	public function publishprogram(): EmundusResponse
+	{
+		$data = $this->getProgramIdsFromInput();
+
+		$result = $this->m_programme->publishProgram($data);
+		if ($result !== true)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_PUBLISH_PROGRAMS'));
+		}
+
+		$this->cleanProgramCache();
+
+		return EmundusResponse::ok($result, Text::_('PROGRAMMES_PUBLISHED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::UPDATE]])]
+	public function unpublishprogram(): EmundusResponse
+	{
+		$data = $this->getProgramIdsFromInput();
+
+		$result = $this->m_programme->unpublishProgram($data);
+		if ($result !== true)
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_UNPUBLISH_PROGRAMS'));
+		}
+
+		$this->cleanProgramCache();
+
+		return EmundusResponse::ok($result, Text::_('PROGRAMMES_UNPUBLISHED'));
+	}
+
+	/**
+	 * Read one program id (`id`) or a list of ids (`ids`, comma-separated) from the request.
+	 *
+	 * @return int[]
+	 */
+	private function getProgramIdsFromInput(): array
+	{
+		$data = $this->input->getInt('id', 0);
+		if (empty($data))
+		{
+			$data = array_filter(explode(',', $this->input->getString('ids', '')));
+		}
+
+		if (!is_array($data))
+		{
+			$data = [$data];
+		}
+
+		$data = array_map('intval', $data);
+		$data = array_filter($data);
+
+		if (empty($data))
+		{
+			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Clear the eMundus output cache so program list changes are reflected immediately.
+	 *
+	 * @return void
+	 */
+	private function cleanProgramCache(): void
+	{
+		$hCache = new \EmundusHelperCache();
+		$hCache->clean(false);
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
@@ -342,12 +566,32 @@ class EmundusControllerProgramme extends EmundusController
 	public function getcampaignsbyprogram(): EmundusResponse
 	{
 		$program = $this->input->getInt('pid');
-		if(empty($program))
+		if (empty($program))
 		{
 			throw new InvalidArgumentException(Text::_("MISSING_PARAMS"));
 		}
 
 		$campaigns = $this->m_programme->getCampaignsByProgram($program);
+
 		return EmundusResponse::ok($campaigns);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::READ]])]
+	public function getprogram(): EmundusResponse
+	{
+		$id = $this->input->getInt('id');
+		if (empty($id))
+		{
+			throw new InvalidArgumentException(Text::_("MISSING_PARAMS"));
+		}
+
+		$program = $this->programRepository->getItemByField('id', $id, true);
+		if (empty($program))
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_FIND_PROGRAM'));
+		}
+
+		return EmundusResponse::ok($program->__serialize());
 	}
 }

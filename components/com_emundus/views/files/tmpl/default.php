@@ -103,6 +103,22 @@ $datas = [
                 </div>
             </div>
 
+            <div class="panel panel-info em-hide" id="em-assoc-contacts">
+                <div class="panel-heading em-hide-heading !tw-bg-profile-full">
+                    <h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_APPLICATION_CONTACTS'); ?></h3>
+                </div>
+                <div class="panel-body em-hide-body">
+                </div>
+            </div>
+
+            <div class="panel panel-info em-hide" id="em-assoc-organizations">
+                <div class="panel-heading em-hide-heading !tw-bg-profile-full">
+                    <h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_APPLICATION_ORGANIZATIONS'); ?></h3>
+                </div>
+                <div class="panel-body em-hide-body">
+                </div>
+            </div>
+
             <div class="panel panel-info em-hide" id="em-assoc-files">
                 <div class="panel-heading em-hide-heading !tw-bg-profile-full">
                     <h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_ACCESS_LINKED_APPLICATION_FILES'); ?></h3>

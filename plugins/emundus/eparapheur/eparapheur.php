@@ -1,40 +1,45 @@
 <?php
 /**
- * @package	eMundus
- * @version	0.0.1
- * @author	eMundus.fr
+ * @package       eMundus
+ * @version       0.0.1
+ * @author        eMundus.fr
  * @copyright (C) 2022 eMundus SOFTWARE. All rights reserved.
- * @license	GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @license       GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 use Tchooz\api\FileSynchronizer;
 
 defined('_JEXEC') or die('Restricted access');
 
-require_once JPATH_SITE.'/components/com_emundus/classes/api/Api.php';
-require_once JPATH_SITE.'/components/com_emundus/classes/api/IxParapheur.php';
+require_once JPATH_SITE . '/components/com_emundus/classes/api/Api.php';
+require_once JPATH_SITE . '/components/com_emundus/classes/api/IxParapheur.php';
 
 use Tchooz\api\IxParapheur;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 
-class plgEmundusEparapheur extends CMSPlugin {
+class plgEmundusEparapheur extends CMSPlugin
+{
 
 	private $db;
 	private $user;
 
-	function __construct(&$subject, $config) {
+	function __construct(&$subject, $config)
+	{
 		parent::__construct($subject, $config);
 
 		jimport('joomla.log.log');
 		Log::addLogger(array('text_file' => 'com_emundus.eparapheur.php'), Log::ALL, array('com_emundus_eparapheur'));
 
-		if(version_compare(JVERSION, '4.0', '>')) {
-			$this->db = Factory::getContainer()->get('DatabaseDriver');
+		if (version_compare(JVERSION, '4.0', '>'))
+		{
+			$this->db   = Factory::getContainer()->get('DatabaseDriver');
 			$this->user = Factory::getApplication()->getIdentity();
-		} else {
-			$this->db = Factory::getDbo();
+		}
+		else
+		{
+			$this->db   = Factory::getDbo();
 			$this->user = Factory::getUser();
 		}
 	}
@@ -48,24 +53,35 @@ class plgEmundusEparapheur extends CMSPlugin {
 	 */
 	function onSyncEparapheur($args): void
 	{
-		if (!isset($args['fnum']) && !isset($args['signer_email']) && !isset($args['attachment_id']) && !isset($args['file'])) {
+		if ((!isset($args['fnum']) || !isset($args['fnums'])) && !isset($args['signer_email']) && !isset($args['attachment_id']) && !isset($args['file']))
+		{
 			Log::add('Missing parameters', Log::ERROR, 'com_emundus_eparapheur');
+
 			return;
 		}
 
-		try {
+		try
+		{
 			$api = new IxParapheur();
 
-			$nature = $args['nature'] ?? $api->getNatures()[0]->identifiant;
-			$name   = $args['name'] ?? 'Signature pour le dossier ';
+			$nature   = $args['nature'] ?? $api->getNatures()[0]->identifiant;
+			$name     = $args['name'] ?? 'Signature pour le dossier ';
+			$filepath = null;
+			if (isset($args['filepath']))
+			{
+				$filepath = $args['filepath'];
+			}
 
-			if (!empty($nature)) {
+			if (!empty($nature))
+			{
 				$uid = $args['signer_id'];
-				if(empty($uid)) {
+				if (empty($uid))
+				{
 					$uid = $api->getUtilisateurs($args['signer_email'])[0]->identifiant;
 				}
 
-				if (!empty($uid)) {
+				if (!empty($uid))
+				{
 					$datas = [
 						'nom'    => $name,
 						'nature' => $nature,
@@ -80,46 +96,67 @@ class plgEmundusEparapheur extends CMSPlugin {
 
 					$result = $api->createDossier($datas);
 
-					if ($result['data']->message == 'ok') {
+					if ($result['data']->message == 'ok')
+					{
 						$idDossier = $result['data']->payload->identifiant;
 
-						require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+						require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 						$m_files = new EmundusModelFiles();
 
-						$fnumInfos = $m_files->getFnumInfos($args['fnum']);
-
-						$query = $this->db->getQuery(true);
-
-						$query->select('id')
-							->from($this->db->quoteName('#__emundus_files_request'))
-							->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($args['fnum']))
-							->where($this->db->quoteName('attachment_id') . ' = ' . $args['attachment_id']);
-						$this->db->setQuery($query);
-						$files_request_id = $this->db->loadResult();
-
-						if (empty($files_request_id)) {
-							$insert = [
-								'time_date'     => date('Y-m-d H:i:s'),
-								'student_id'    => $fnumInfos['applicant_id'],
-								'fnum'          => $args['fnum'],
-								'keyid'         => '',
-								'attachment_id' => $args['attachment_id'],
-								'uploaded'      => 0,
-								'email'         => $args['signer_email'],
-								'signer_id'     => $idDossier
-							];
-							$insert = (object) $insert;
-
-							$this->db->insertObject('#__emundus_files_request', $insert);
+						$fnums = [];
+						if (!empty($args['fnums']))
+						{
+							$fnums = $args['fnums'];
 						}
-						else {
-							$update = [
-								'id'        => $files_request_id,
-								'signer_id' => $idDossier
-							];
-							$update = (object) $update;
+						else
+						{
+							$fnums[] = $args['fnum'];
+						}
 
-							$this->db->updateObject('#__emundus_files_request', $update, 'id');
+						foreach ($fnums as $fnum)
+						{
+							$fnumInfos = $m_files->getFnumInfos($fnum);
+
+							$query = $this->db->getQuery(true);
+
+							$query->select('id')
+								->from($this->db->quoteName('#__emundus_files_request'))
+								->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum))
+								->where($this->db->quoteName('attachment_id') . ' = ' . $args['attachment_id']);
+							$this->db->setQuery($query);
+							$files_request_id = $this->db->loadResult();
+
+							if (empty($files_request_id))
+							{
+								$insert = [
+									'time_date'     => date('Y-m-d H:i:s'),
+									'student_id'    => $fnumInfos['applicant_id'],
+									'fnum'          => $fnum,
+									'keyid'         => '',
+									'attachment_id' => $args['attachment_id'],
+									'uploaded'      => 0,
+									'email'         => $args['signer_email'],
+									'signer_id'     => $idDossier
+								];
+								$insert = (object) $insert;
+
+								$this->db->insertObject('#__emundus_files_request', $insert);
+							}
+							else
+							{
+								$update = [
+									'id'        => $files_request_id,
+									'signer_id' => $idDossier
+								];
+								$update = (object) $update;
+
+								$this->db->updateObject('#__emundus_files_request', $update, 'id');
+							}
+
+							if (empty($filepath))
+							{
+								$filepath = JPATH_SITE . '/images/emundus/files/' . $fnumInfos['applicant_id'] . '/' . $args['file'];
+							}
 						}
 
 						$datas = [
@@ -128,38 +165,50 @@ class plgEmundusEparapheur extends CMSPlugin {
 							'estPublique' => true
 						];
 
-						$document_added = $api->addDocument($idDossier, $datas, $args['file'], JPATH_SITE . '/images/emundus/files/' . $fnumInfos['applicant_id'] . '/' . $args['file']);
+						$document_added = $api->addDocument($idDossier, $datas, $args['file'], $filepath);
 
-						if ($document_added['data']->message == 'ok') {
+						if ($document_added['data']->message == 'ok')
+						{
 							$transmis = $api->actionDossier($idDossier);
 
-							if ($transmis['status'] == 200) {
-								$logs_params = ['created' => ['signer_id' => 'N°' . $idDossier, 'signer' => $args['signer_email']]];
-								EmundusModelLogs::log($this->user->id, (int)$fnumInfos['applicant_id'], $args['fnum'], 33, 'c', 'COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+							if ($transmis['status'] == 200)
+							{
+								foreach ($fnums as $fnum)
+								{
+									$fnumInfos   = $m_files->getFnumInfos($fnum);
+									$logs_params = ['created' => ['signer_id' => 'N°' . $idDossier, 'signer' => $args['signer_email']]];
+									EmundusModelLogs::log($this->user->id, (int) $fnumInfos['applicant_id'], $fnum, 33, 'c', 'COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+								}
 							}
-							else {
-								throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_TRANSMIS',500);
+							else
+							{
+								throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_TRANSMIS', 500);
 							}
 						}
-						else {
-							throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_DOCUMENT',500);
+						else
+						{
+							throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_DOCUMENT', 500);
 						}
 					}
-					else {
-						throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_DOSSIER',500);
+					else
+					{
+						throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_DOSSIER', 500);
 					}
 				}
-				else {
-					throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_SIGNER',500);
+				else
+				{
+					throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_SIGNER', 500);
 				}
 			}
-			else {
-				throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_NATURE',500);
+			else
+			{
+				throw new Exception('COM_EMUNDUS_ACCESS_SYNC_EPARAPHEUR_FAILED_NATURE', 500);
 			}
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add($e->getMessage(), Log::ERROR, 'com_emundus_eparapheur');
-			$logs_params = ['created' => ['signer_id' => !empty($idDossier) ? $idDossier : '','signer' => $args['signer_email']]];
+			$logs_params = ['created' => ['signer_id' => !empty($idDossier) ? $idDossier : '', 'signer' => $args['signer_email']]];
 			EmundusModelLogs::log($this->user->id, (int) substr($args['fnum'], -7), $args['fnum'], 33, 'c', $e->getMessage(), json_encode($logs_params, JSON_UNESCAPED_UNICODE));
 		}
 	}

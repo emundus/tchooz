@@ -4,6 +4,7 @@ import Back from '@/components/Utils/Back.vue';
 import automationService from '@/services/automation.js';
 import alert from '@/mixins/alerts.js';
 import AlertError from '@/errors/AlertError';
+import { resolveParameterValue } from '@/mixins/parameterForm.js';
 import AutomationAction from '@/components/Automation/AutomationAction.vue';
 import AutomationActionsList from '@/components/Automation/AutomationActionsList.vue';
 import AutomationConditionGroup from '@/components/Automation/AutomationConditionGroup.vue';
@@ -13,11 +14,13 @@ import AutomationEventsList from '@/components/Automation/AutomationEventsList.v
 import { newConditionGroup } from '@/components/Automation/conditionGroup.js';
 import { useAutomationStore } from '@/stores/automation.js';
 import Button from '@/components/Atoms/Button.vue';
+import { Alert } from '@emundus/ui';
 
 export default {
 	name: 'AutomationEdit',
 	components: {
 		Button,
+		Alert,
 		AutomationEventsList,
 		AutomationEvent,
 		AutomationActionsList,
@@ -284,10 +287,9 @@ export default {
 								if (row === null || row === undefined) {
 									return;
 								}
-								if (
-									param.required &&
-									(row[param.name] === undefined || row[param.name] === null || row[param.name] === '')
-								) {
+								const rowValue = resolveParameterValue(param, row[param.name]);
+
+								if (param.required && (rowValue === undefined || rowValue === null || rowValue === '')) {
 									throw new AlertError(
 										'COM_EMUNDUS_AUTOMATION_ACTION_PARAM_REQUIRED_ERROR',
 										`${param.label} (Row ${rowIndex + 1})`,
@@ -295,13 +297,12 @@ export default {
 								}
 							});
 						}
-					} else if (
-						param.required &&
-						(action.parameter_values[param.name] === undefined ||
-							action.parameter_values[param.name] === null ||
-							action.parameter_values[param.name] === '')
-					) {
-						throw new AlertError('COM_EMUNDUS_AUTOMATION_ACTION_PARAM_REQUIRED_ERROR', param.label);
+					} else {
+						const value = resolveParameterValue(param, action.parameter_values[param.name]);
+
+						if (param.required && (value === undefined || value === null || value === '')) {
+							throw new AlertError('COM_EMUNDUS_AUTOMATION_ACTION_PARAM_REQUIRED_ERROR', param.label);
+						}
 					}
 				});
 
@@ -345,6 +346,9 @@ export default {
 	computed: {
 		displayedFields() {
 			return this.fields.filter((field) => field.displayed);
+		},
+		hasMultipleAsynchronousActions() {
+			return this.automation.actions.filter((a) => a.is_asynchronous).length >= 2;
 		},
 		firstLevelConditionGroups() {
 			return this.automation.conditions_groups.filter(
@@ -429,6 +433,12 @@ export default {
 				@remove-action="onRemoveAction"
 			/>
 			<p v-if="automation.actions.length < 1">{{ translate('COM_EMUNDUS_AUTOMATION_NO_ACTIONS') }}</p>
+
+			<Alert
+				v-if="hasMultipleAsynchronousActions"
+				state="info"
+				:text="translate('COM_EMUNDUS_AUTOMATION_MULTIPLE_ASYNC_ACTIONS_WARNING')"
+			/>
 
 			<div class="tw-flex tw-w-full tw-flex-row tw-justify-end">
 				<Button id="add-action" @click="openModal('actionsListModal')" :variant="'info'" class="not-to-close-modal">

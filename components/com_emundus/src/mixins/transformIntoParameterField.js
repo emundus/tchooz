@@ -7,15 +7,21 @@ export default {
 				return null;
 			}
 
+			if (!value && field.defaultValue) {
+				value = field.defaultValue;
+			}
+
 			let parameter = {
 				param: field.name,
 				label: field.label,
+				helptext: field.helpText,
 				optional: !field.required,
 				value: value,
 				displayed: true,
 				displayRules: field.displayRules ? field.displayRules : null,
 				hideLabel: false,
 				watchers: field.watchers ? field.watchers : [],
+				translatable: field.translatable || false,
 			};
 
 			switch (field.type) {
@@ -109,6 +115,16 @@ export default {
 					parameter.type = 'toggle';
 					parameter.hideLabel = true;
 					break;
+				case 'color':
+					parameter.type = 'color';
+					break;
+				case 'textarea':
+					parameter.type = 'textarea';
+					parameter.rows = field.rows ? field.rows : 3;
+					break;
+				case 'wysiwig':
+					parameter.type = 'wysiwig';
+					break;
 				default:
 					parameter.type = 'text';
 					break;
@@ -134,7 +150,28 @@ export default {
 
 			const asyncRequests = [];
 
+			const getOrCreateGroup = (param) => {
+				let group = groups.find((g) => g.id === param.group.name);
+				if (!group) {
+					group = {
+						id: param.group.name,
+						title: param.group.label || '',
+						description: param.group.description || '',
+						parameters: [],
+						isRepeatable: param.group.isRepeatable || false,
+						display: display,
+						rows: [],
+					};
+					groups.push(group);
+				}
+				return group;
+			};
+
 			fields.forEach((param) => {
+				const targetParameters = param.group ? getOrCreateGroup(param).parameters : defaultGroup.parameters;
+				const slotIndex = targetParameters.length;
+				targetParameters.push(null);
+
 				if (param.type === 'choice' && param.choices.length === 0 && param.optionsProvider) {
 					let dependenciesValues = {};
 					if (param.optionsProvider.dependencies.length > 0) {
@@ -167,58 +204,27 @@ export default {
 									param.choices = [];
 								}
 
-								if (param.group) {
-									// group is an object with name, label and isRepeatable
-									let group = groups.find((g) => g.id === param.group.name);
-									if (!group) {
-										group = {
-											id: param.group.name,
-											title: param.group.label || '',
-											description: param.group.description || '',
-											parameters: [],
-											isRepeatable: param.group.isRepeatable || false,
-											display: display,
-											rows: [],
-										};
-										groups.push(group);
-									}
-
-									group.parameters.push(this.fromFieldEntityToParameter(param, values[param.name] ?? null));
-								} else {
-									defaultGroup.parameters.push(this.fromFieldEntityToParameter(param, values[param.name] ?? null));
-								}
+								targetParameters[slotIndex] = this.fromFieldEntityToParameter(param, values[param.name] ?? null);
 							})
 							.catch((error) => {
 								console.error(error);
 							});
 
 						asyncRequests.push(req);
+					} else {
+						targetParameters[slotIndex] = this.fromFieldEntityToParameter(param, values[param.name] ?? null);
 					}
 				} else {
-					if (param.group) {
-						// group is an object with name, label and isRepeatable
-						let group = groups.find((g) => g.id === param.group.name);
-						if (!group) {
-							group = {
-								id: param.group.name,
-								title: param.group.label || '',
-								description: param.group.description || '',
-								parameters: [],
-								isRepeatable: param.group.isRepeatable || false,
-								display: display,
-								rows: [],
-							};
-							groups.push(group);
-						}
-
-						group.parameters.push(this.fromFieldEntityToParameter(param, values[param.name] ?? null));
-					} else {
-						defaultGroup.parameters.push(this.fromFieldEntityToParameter(param, values[param.name] ?? null));
-					}
+					targetParameters[slotIndex] = this.fromFieldEntityToParameter(param, values[param.name] ?? null);
 				}
 			});
 
 			await Promise.all(asyncRequests);
+
+			defaultGroup.parameters = defaultGroup.parameters.filter((p) => p !== null);
+			groups.forEach((g) => {
+				g.parameters = g.parameters.filter((p) => p !== null);
+			});
 
 			if (defaultGroup.parameters.length > 0) {
 				groups.unshift(defaultGroup);

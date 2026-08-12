@@ -24,13 +24,17 @@ use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
+use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Services\Reference\InternalReferenceService;
 
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
 
 class EmundusModelMessenger extends ListModel
 {
 	private $db;
+
+	private bool $showReference = false;
 
 	public function __construct($config = array())
 	{
@@ -40,6 +44,9 @@ class EmundusModelMessenger extends ListModel
 		if (!class_exists('HtmlSanitizerSingleton')) {
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
 		}
+
+		$internalReferenceService = new InternalReferenceService(new DateProvider(), new ApplicationFileRepository());
+		$this->showReference      = $internalReferenceService->getCustomReferenceFormatEntity()->isShowToApplicant();
 	}
 
 	public function checkMessengerState(): bool
@@ -211,6 +218,12 @@ class EmundusModelMessenger extends ListModel
 			->where($this->db->quoteName('ec.id') . ' = ' . $id);
 		$this->db->setQuery($query);
 
+		if ($this->showReference)
+		{
+			$query->select($this->db->quoteName('ecc.short_reference', 'short_reference') . ', ' . $this->db->quoteName('eir.reference', 'reference'))
+				->leftJoin($this->db->quoteName('#__emundus_internal_reference', 'eir') . ' ON ' . $this->db->quoteName('eir.ccid') . ' = ' . $this->db->quoteName('ec.ccid') . ' AND ' . $this->db->quoteName('eir.active') . ' = 1');
+		}
+
 		try
 		{
 			return $this->db->loadObject();
@@ -242,6 +255,12 @@ class EmundusModelMessenger extends ListModel
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
 				->where($this->db->quoteName('ecc.applicant_id') . ' = ' . $user_id);
+
+			if ($this->showReference)
+			{
+				$query->select($this->db->quoteName('ecc.short_reference', 'short_reference') . ', ' . $this->db->quoteName('eir.reference', 'reference'))
+					->leftJoin($this->db->quoteName('#__emundus_internal_reference', 'eir') . ' ON ' . $this->db->quoteName('eir.ccid') . ' = ' . $this->db->quoteName('ec.ccid') . ' AND ' . $this->db->quoteName('eir.active') . ' = 1');
+			}
 
 			if (EmundusPublicAccess::isPublicAccessSession())
 			{
@@ -343,6 +362,12 @@ class EmundusModelMessenger extends ListModel
 			{
 				$query->andWhere($this->db->quoteName('cc.fnum') . ' = ' . $this->db->quote(EmundusPublicAccess::getPublicAccessFnum()));
  			}
+
+			if ($this->showReference)
+			{
+				$query->select($this->db->quoteName('cc.short_reference', 'short_reference') . ', ' . $this->db->quoteName('eir.reference', 'reference'))
+					->leftJoin($this->db->quoteName('#__emundus_internal_reference', 'eir') . ' ON ' . $this->db->quoteName('eir.ccid') . ' = ' . $this->db->quoteName('cc.id') . ' AND ' . $this->db->quoteName('eir.active') . ' = 1');
+			}
 
 			try
 			{

@@ -2,12 +2,15 @@
 
 namespace Joomla\Plugin\User\Emundus\Extension;
 
+use Joomla\CMS\Authentication\Authentication;
+use Joomla\CMS\Authentication\AuthenticationResponse;
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Event\User\AfterDeleteEvent;
 use Joomla\CMS\Event\User\AfterResetCompleteEvent;
 use Joomla\CMS\Event\User\AfterSaveEvent;
+use Joomla\CMS\Event\User\AuthorisationEvent;
 use Joomla\CMS\Event\User\BeforeSaveEvent;
 use Joomla\CMS\Event\User\LoginEvent;
 use Joomla\CMS\Event\User\LogoutEvent;
@@ -29,6 +32,7 @@ use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Enums\User\AuthenticationModeEnum;
+use Tchooz\Services\Authentication\LoginExclusionService;
 use Tchooz\Traits\TraitVersion;
 
 require_once JPATH_SITE . '/components/com_emundus/classes/Traits/TraitVersion.php';
@@ -55,6 +59,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			'onUserBeforeSave'         => 'onUserBeforeSave',
 			'onUserAfterDelete'        => 'onUserAfterDelete',
 			'onUserAfterSave'          => 'onUserAfterSave',
+			'onUserAuthorisation'      => 'onUserAuthorisation',
 			'onUserLogin'              => 'onUserLogin',
 			'onUserLogout'             => 'onUserLogout',
 			'onUserAfterResetComplete' => 'onUserAfterResetComplete',
@@ -573,6 +578,51 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			];
 			$db->updateObject('#__users', $update, 'id');
 		}
+	}
+
+	/**
+	 * Denies authorisation for users matching a configured login exclusion pattern.
+	 *
+	 * This runs during the authorisation phase, before onUserLogin and before any
+	 * session is opened, so an excluded user is never logged in. Returning a denied
+	 * AuthenticationResponse here makes CMSApplication::login() abort cleanly —
+	 * this is preventive, not a logout.
+	 *
+	 * @param   AuthorisationEvent  $event
+	 *
+	 * @return void
+	 */
+	public function onUserAuthorisation(AuthorisationEvent $event): void
+	{
+		if ($this->getApplication()->isClient('cli') || $this->getApplication()->isClient('api'))
+		{
+			return;
+		}
+
+		$response       = $event->getAuthenticationResponse();
+		$loginExclusion = new LoginExclusionService();
+
+		if (!$loginExclusion->isExcluded($response->username ?? '', $response->email ?? ''))
+		{
+			return;
+		}
+
+		$this->loadLanguage();
+
+		Log::addLogger(['text_file' => 'com_emundus.auth.php'], Log::ALL, ['com_emundus.auth']);
+		Log::add(($response->username ?? '') . ' login denied by exclusion rule.', Log::WARNING, 'com_emundus.auth');
+
+		$message = Text::_($loginExclusion->getRejectionMessage());
+		$this->getApplication()->enqueueMessage($message, 'error');
+
+		$denied                = new AuthenticationResponse();
+		$denied->status        = Authentication::STATUS_DENIED;
+		$denied->type          = !empty($response->type) ? $response->type : 'Emundus';
+		$denied->username      = $response->username ?? '';
+		$denied->email         = $response->email ?? '';
+		$denied->error_message = $message;
+
+		$event->addResult($denied);
 	}
 
 	public function onUserLogin(LoginEvent $event): void

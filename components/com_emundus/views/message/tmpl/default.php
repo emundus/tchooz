@@ -310,13 +310,11 @@ $alias_menu = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emundus
         <div id="replyto-box" class="form-group em-form-sender em-mt-12">
             <div id="replyto-box-label" class="em-flex-row em-pointer" onclick="openReplyTo()">
                 <label class="em-mb-0-important"
-                       for="reply_to_from"><?= Text::_('COM_EMUNDUS_EMAILS_FROM_REPLY_TO'); ?></label>
+                       for="replyto-mails"><?= Text::_('COM_EMUNDUS_EMAILS_FROM_REPLY_TO'); ?></label>
                 <span id="replyto-icon" class="material-symbols-outlined">chevron_right</span>
             </div>
             <div id="reply_to_div" style="display: none">
-                <div id="reply_to_block" class="em-border-radius-8 em-mb-4 email-input-block em-cursor-text">
-                    <div id="reply_to_from" class="em-p-4-6 em-cursor-text" contenteditable="true"></div>
-                </div>
+                <input type="text" id="replyto-mails" class="cc-bcc-mails">
                 <span class="em-font-size-14"><?= Text::_('COM_EMUNDUS_EMAILS_REPLY_TO_HELP_TEXT') ?></span>
             </div>
         </div>
@@ -490,9 +488,36 @@ $alias_menu = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emundus
         }
     });
 
+    $("#replyto-mails").selectize({
+        plugins: ["remove_button"],
+        create: true,
+        preload: true,
+        placeholder: '',
+        render: {
+            item: function (data, escape) {
+                var val = data.value;
+                return '<div>' +
+                    '<span class="title">' +
+                    '<span class="name">' + escape(val.substring(val.indexOf(":") + 1)) + '</span>' +
+                    '</span>' +
+                    '</div>';
+            }
+        },
+        onItemAdd: function (value, $item) {
+            var email = value.substring(value.indexOf(":") + 1);
+            email = email.trim();
+
+            const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
+            if (!regex.test(email)) {
+                this.removeItem(value);
+            }
+        }
+    });
+
     // update css
     document.getElementById('cc-mails-selectized').style.verticalAlign = '-10px';
     document.getElementById('bcc-mails-selectized').style.verticalAlign = '-10px';
+    document.getElementById('replyto-mails-selectized').style.verticalAlign = '-10px';
 
     // get attachments by profiles (fnums)
     var fnums = document.getElementById('fnums').value;
@@ -536,7 +561,12 @@ $alias_menu = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emundus
 		<?php endif; ?>
 
 		<?php if(!empty($this->data['reply_to_from'])) : ?>
-        document.getElementById('reply_to_from').innerText = "<?= $this->data['reply_to_from'] ?>";
+        var selectize_replyto_init = $(document.getElementById('replyto-mails'))[0].selectize;
+        selectize_replyto_init.addOption({
+            value: "REPLYTO: <?= $this->data['reply_to_from'] ?>",
+            text: "<?= $this->data['reply_to_from'] ?>"
+        });
+        selectize_replyto_init.addItem("REPLYTO: <?= $this->data['reply_to_from'] ?>");
 		<?php endif; ?>
     });
 
@@ -609,6 +639,10 @@ $alias_menu = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emundus
         var selectize_bcc = $select_bcc[0].selectize;
         selectize_bcc.clear();
 
+        var $select_replyto = $(document.getElementById('replyto-mails'));
+        var selectize_replyto = $select_replyto[0].selectize;
+        selectize_replyto.clear();
+
         document.querySelector('.cc-bcc-mails .plugin-remove_button').innerHTML = '';
 
         // clear em-attachment-list
@@ -647,7 +681,14 @@ $alias_menu = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emundus
                         var email = data.data.email;
 
                         document.getElementById('mail_subject').innerText = email.subject;
-                        document.getElementById('reply_to_from').innerText = email.emailfrom;
+
+                        if (email.emailfrom !== '' && email.emailfrom != null) {
+                            selectize_replyto.addOption({
+                                value: "REPLYTO: " + email.emailfrom,
+                                text: email.emailfrom
+                            });
+                            selectize_replyto.addItem("REPLYTO: " + email.emailfrom);
+                        }
 
                         if (email.name !== '') {
                             document.getElementById('mail_from_name').innerText = email.name;
@@ -818,7 +859,7 @@ $alias_menu = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emundus
                 });
         } else {
             document.getElementById("mail_subject").innerText = "<?= $config->get('sitename'); ?>";
-            document.getElementById("reply_to_from").innerText = '';
+            selectize_replyto.clear();
             document.getElementById("mail_from_name").innerText = "<?= $config->get('fromname'); ?>";
             document.getElementById('mail_body').value = '<p>Bonjour [NAME],</p>';
             const event = new Event("input");

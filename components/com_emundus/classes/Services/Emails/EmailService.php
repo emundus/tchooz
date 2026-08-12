@@ -19,9 +19,15 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Mail\MailerInterface;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Registry\Registry;
 use Symfony\Component\Yaml\Yaml;
+use Tchooz\Entities\Automation\ActionTargetEntity;
+use Tchooz\Entities\Automation\Actions\ActionSendEmail;
+use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Entities\User\EmundusUserEntity;
+use Tchooz\Enums\Task\TaskStatusEnum;
+use Tchooz\Repositories\Task\TaskRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 
 class EmailService
@@ -42,6 +48,13 @@ class EmailService
 			require_once JPATH_SITE . '/components/com_emundus/models/emails.php';
 		}
 		$this->mEmails = new \EmundusModelEmails();
+	}
+
+	public function resetMailer(): self
+	{
+		$this->mailer = $mailer ?? Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
+
+		return $this;
 	}
 
 	public function correctEmail($email): bool
@@ -200,7 +213,7 @@ class EmailService
 
 	}
 
-	public function sendEmailWithoutTemplate(string $to, string $subject, string $body, ?array $post = null, ?int $user_id = null, ?array $attachments = [], ?string $fnum = null, array $emails_cc = [], ?int $user_id_from = null): void
+	public function sendEmailWithoutTemplate(string $to, string $subject, string $body, ?array $post = null, ?int $user_id = null, ?array $attachments = [], ?string $fnum = null, array $emails_cc = [], ?int $user_id_from = null, ?string $reply_to_override = null): void
 	{
 		if(empty($to) || empty($body))
 		{
@@ -223,8 +236,8 @@ class EmailService
 		// Get default mail sender info
 		$mail_from = $config->get('mailfrom');
 		$mail_from_name = $config->get('fromname');
-		$reply_to = $config->get('replyto', $mail_from);
-		$reply_to_name = $config->get('replytoname', $mail_from_name);
+		$reply_to = !empty($reply_to_override) ? $reply_to_override : $config->get('replyto', $mail_from);
+		$reply_to_name = !empty($reply_to_override) ? $reply_to_override : $config->get('replytoname', $mail_from_name);
 
 		$post = $this->preparePost($to, $fnum);
 
@@ -294,6 +307,53 @@ class EmailService
 			];
 			$this->mEmails->logEmail($log);
 		}
+	}
+
+	/**
+	 * Queue a raw email (no template) for asynchronous delivery by the Emundus task worker.
+	 *
+	 * The email is wrapped in a self-contained ActionSendEmail (serialized into the task metadata,
+	 * mirroring the async export in controllers/export.php) and picked up by the scheduler.
+	 *
+	 * @return  TaskEntity|null  The queued task, or null when queuing failed.
+	 */
+	public function sendEmailWithoutTemplateAsync(string $to, string $subject, string $body, ?int $user_id = null, ?string $fnum = null, ?int $user_id_from = null, ?string $reply_to_override = null): ?TaskEntity
+	{
+		if (empty($to) || empty($body))
+		{
+			throw new \InvalidArgumentException('To and Body fields are required.');
+		}
+
+		$triggeredById = $user_id_from;
+		if (empty($triggeredById))
+		{
+			$identity      = Factory::getApplication()->getIdentity();
+			$triggeredById = !empty($identity->id) ? (int) $identity->id : (int) $this->emConfig->get('automated_task_user', 1);
+		}
+
+		$triggeredBy = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($triggeredById);
+
+		$action  = new ActionSendEmail();
+		$context = new ActionTargetEntity(
+			$triggeredBy,
+			$fnum,
+			$user_id,
+			['subject' => $subject, 'body' => $body, 'reply_to' => $reply_to_override],
+			$to
+		);
+
+		$task = new TaskEntity(
+			0,
+			TaskStatusEnum::PENDING,
+			null,
+			$triggeredById,
+			['actionEntity' => $action->serialize(), 'actionTargetEntity' => $context->serialize()]
+		);
+		$task->setPriority($action->getPriority());
+
+		$taskRepository = new TaskRepository();
+
+		return $taskRepository->saveTask($task) ? $task : null;
 	}
 
 	public function sendEmail(string $to, string $subject, string $body, string $from, string $fromName, array $attachments = [], array $cc= [], array $bcc = [], string $replyTo = '', string $replyToName = '', bool $isHtml = true, string $encoding = 'base64'): bool

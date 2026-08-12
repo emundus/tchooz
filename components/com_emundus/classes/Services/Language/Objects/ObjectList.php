@@ -11,6 +11,7 @@ namespace Tchooz\Services\Language\Objects;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Services\Language\Objects\Definition\ObjectDefinition;
 use Tchooz\Services\Language\Objects\Definition\ObjectDefinitionFields;
@@ -198,7 +199,7 @@ class ObjectList implements ObjectInterface
 
 			if ($reference_table == 'fabrik_groups')
 			{
-				$query->where('JSON_EXTRACT(rt.params,"$.repeat_group_show_first")' . ' = ' . $db->quote(1))
+				$query->where(GroupVisibilityEnum::VISIBLE->toSqlCondition('rt.params'))
 					->where($db->quoteName('rt.published') . ' = 1');
 			}
 

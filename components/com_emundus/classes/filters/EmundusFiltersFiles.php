@@ -6,6 +6,9 @@ require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\Programs\ProgramRepository;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
 
 class EmundusFiltersFiles extends EmundusFilters
 {
@@ -311,7 +314,7 @@ class EmundusFiltersFiles extends EmundusFilters
 		$this->filters = $this->createFiltersFromFabrikElements($elements);
 	}
 
-	public function getFilters(string $search = ''): array
+	public function getFilters(string $search = '', array $campaignsIds = [], array $programsIds = []): array
 	{
 		if (!empty($this->filters))
 		{
@@ -336,7 +339,24 @@ class EmundusFiltersFiles extends EmundusFilters
 		}
 		else
 		{
-			$formIds = \EmundusHelperFabrik::getFabrikFormsListIntendedToFiles();
+			$campaignRepository = new CampaignRepository();
+
+			$filteredWorkflows = [];
+			if(!empty($campaignsIds))
+			{
+				$programsIds = array_merge($programsIds, $campaignRepository->getProgramsIds($campaignsIds));
+			}
+			if(!empty($programsIds))
+			{
+				if(empty($campaignsIds))
+				{
+					$campaignsIds = $campaignRepository->getCampaignIdsByPrograms($programsIds);
+				}
+				$workflowRepository = new WorkflowRepository();
+				$filteredWorkflows  = $workflowRepository->getWorkflows($programsIds);
+			}
+
+			$formIds = \EmundusHelperFabrik::getFabrikFormsListIntendedToFiles($filteredWorkflows, $campaignsIds);
 			$fabrikElements = \EmundusHelperFabrik::searchFabrikElements($search, $formIds, ['panel', 'display']);
 
 			$elements = [];
@@ -932,6 +952,27 @@ class EmundusFiltersFiles extends EmundusFilters
 				'andorOperators' => [],
 				'operator'       => 'IN',
 				'operators'      => ['IN', 'NOT IN']
+			];
+		}
+
+		if (!empty($config['filter_unread_messages'])) {
+			$this->applied_filters[] = [
+				'uid'            => 'unread_messages',
+				'id'             => 'unread_messages',
+				'label'          => Text::_('MOD_EMUNDUS_FILTERS_UNREAD_MESSAGES'),
+				'type'           => 'select',
+				'values'         => [
+					['value' => 1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_WITH_UNREAD_MESSAGES')],
+					['value' => 0, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_WITHOUT_UNREAD_MESSAGES')]
+				],
+				'value'          => [],
+				'default'        => true,
+				'available'      => true,
+				'order'          => $config['filter_unread_messages_order'] ?? 0,
+				'andorOperator'  => 'OR',
+				'andorOperators' => [],
+				'operator'       => 'IN',
+				'operators'      => ['IN']
 			];
 		}
 

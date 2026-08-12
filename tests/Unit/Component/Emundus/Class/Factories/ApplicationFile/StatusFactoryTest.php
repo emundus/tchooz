@@ -40,7 +40,7 @@ class StatusFactoryTest extends UnitTestCase
 	{
 		$dbObject = $this->createDbObject();
 
-		$entity = StatusFactory::buildEntity($dbObject);
+		$entity = $this->factory->buildEntity($dbObject, []);
 
 		$this->assertInstanceOf(StatusEntity::class, $entity);
 	}
@@ -52,7 +52,7 @@ class StatusFactoryTest extends UnitTestCase
 	{
 		$dbObject = $this->createDbObject(['id' => 42]);
 
-		$entity = StatusFactory::buildEntity($dbObject);
+		$entity = $this->factory->buildEntity($dbObject, []);
 
 		$this->assertEquals(42, $entity->getId());
 	}
@@ -64,7 +64,7 @@ class StatusFactoryTest extends UnitTestCase
 	{
 		$dbObject = $this->createDbObject(['step' => 3]);
 
-		$entity = StatusFactory::buildEntity($dbObject);
+		$entity = $this->factory->buildEntity($dbObject, []);
 
 		$this->assertEquals(3, $entity->getStep());
 	}
@@ -76,7 +76,7 @@ class StatusFactoryTest extends UnitTestCase
 	{
 		$dbObject = $this->createDbObject(['value' => 'Validé']);
 
-		$entity = StatusFactory::buildEntity($dbObject);
+		$entity = $this->factory->buildEntity($dbObject, []);
 
 		$this->assertEquals('Validé', $entity->getLabel());
 	}
@@ -88,7 +88,7 @@ class StatusFactoryTest extends UnitTestCase
 	{
 		$dbObject = $this->createDbObject(['ordering' => 5]);
 
-		$entity = StatusFactory::buildEntity($dbObject);
+		$entity = $this->factory->buildEntity($dbObject, []);
 
 		$this->assertEquals(5, $entity->getOrdering());
 	}
@@ -100,7 +100,7 @@ class StatusFactoryTest extends UnitTestCase
 	{
 		$dbObject = $this->createDbObject(['class' => '#00FF00']);
 
-		$entity = StatusFactory::buildEntity($dbObject);
+		$entity = $this->factory->buildEntity($dbObject, []);
 
 		$this->assertEquals('#00FF00', $entity->getColor());
 	}
@@ -118,7 +118,7 @@ class StatusFactoryTest extends UnitTestCase
 			'class'    => '#0000FF',
 		]);
 
-		$entity = StatusFactory::buildEntity($dbObject);
+		$entity = $this->factory->buildEntity($dbObject, []);
 
 		$this->assertEquals(10, $entity->getId());
 		$this->assertEquals(2, $entity->getStep());
@@ -187,7 +187,7 @@ class StatusFactoryTest extends UnitTestCase
 	 */
 	public function testFromDbObjectsWithEmptyArrayReturnsEmptyArray(): void
 	{
-		$entities = StatusFactory::fromDbObjects([]);
+		$entities = $this->factory->fromDbObjects([]);
 
 		$this->assertIsArray($entities);
 		$this->assertEmpty($entities);
@@ -204,7 +204,7 @@ class StatusFactoryTest extends UnitTestCase
 			$this->createDbObject(['id' => 3, 'value' => 'Refusé']),
 		];
 
-		$entities = StatusFactory::fromDbObjects($dbObjects);
+		$entities = $this->factory->fromDbObjects($dbObjects);
 
 		$this->assertCount(3, $entities);
 		foreach ($entities as $entity) {
@@ -225,7 +225,7 @@ class StatusFactoryTest extends UnitTestCase
 			$this->createDbObject(['id' => 20, 'step' => 2, 'value' => 'Deuxième', 'ordering' => 2, 'class' => '#222222']),
 		];
 
-		$entities = StatusFactory::fromDbObjects($dbObjects);
+		$entities = $this->factory->fromDbObjects($dbObjects);
 
 		$this->assertEquals(10, $entities[0]->getId());
 		$this->assertEquals(1, $entities[0]->getStep());
@@ -249,11 +249,57 @@ class StatusFactoryTest extends UnitTestCase
 			$this->createDbObject(['id' => 99, 'value' => 'Unique']),
 		];
 
-		$entities = StatusFactory::fromDbObjects($dbObjects);
+		$entities = $this->factory->fromDbObjects($dbObjects);
 
 		$this->assertCount(1, $entities);
 		$this->assertEquals(99, $entities[0]->getId());
 		$this->assertEquals('Unique', $entities[0]->getLabel());
+	}
+
+	// ------------------------------------------------------------------
+	//  Protected methods coverage (via Reflection)
+	// ------------------------------------------------------------------
+
+	/**
+	 * @covers \Tchooz\Factories\ApplicationFile\StatusFactory::loadRelation
+	 */
+	public function testLoadRelationAlwaysReturnsNull(): void
+	{
+		$method = new \ReflectionMethod(StatusFactory::class, 'loadRelation');
+
+		$dbObject = $this->createDbObject();
+
+		$this->assertNull($method->invoke($this->factory, 'anything', $dbObject));
+		$this->assertNull($method->invoke($this->factory, '', $dbObject));
+		$this->assertNull($method->invoke($this->factory, 'campaign', $dbObject));
+	}
+
+	/**
+	 * @covers \Tchooz\Factories\ApplicationFile\StatusFactory::getRelationCacheKey
+	 */
+	public function testGetRelationCacheKeyAlwaysReturnsEmptyString(): void
+	{
+		$method = new \ReflectionMethod(StatusFactory::class, 'getRelationCacheKey');
+
+		$dbObject = $this->createDbObject();
+
+		$result = $method->invoke($this->factory, 'anything', $dbObject);
+
+		$this->assertSame('', $result);
+	}
+
+	/**
+	 * @covers \Tchooz\Factories\ApplicationFile\StatusFactory::getRelationCacheKey
+	 */
+	public function testGetRelationCacheKeyReturnsEmptyStringRegardlessOfRelationName(): void
+	{
+		$method = new \ReflectionMethod(StatusFactory::class, 'getRelationCacheKey');
+
+		$dbObject = $this->createDbObject(['id' => 99]);
+
+		$this->assertSame('', $method->invoke($this->factory, 'campaign', $dbObject));
+		$this->assertSame('', $method->invoke($this->factory, 'program', $dbObject));
+		$this->assertSame('', $method->invoke($this->factory, '', $dbObject));
 	}
 }
 

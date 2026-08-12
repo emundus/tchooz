@@ -13,9 +13,10 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\Filesystem\Path;
-use Joomla\CMS\Uri\Uri;
 
 /** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\View\Logs\HtmlView $this */
+
+HTMLHelper::_('bootstrap.tooltip', '[data-bs-toggle="tooltip"]');
 
 // Cargar idioma del plugin en el backend (evita null en Joomla 5/6)
 $lang = Factory::getApplication()->getLanguage();
@@ -26,29 +27,28 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 
 
-// Prefijos/paths
-$mediaBase = rtrim(Uri::root(), '/') . '/media/com_securitycheckpro/images';
-
-// Mapeo de tipo->icono
-$iconMap = [
-    'XSS'                    => 'xss.png',
-    'XSS_BASE64'             => 'xss_base64.png',
-    'SQL_INJECTION'          => 'sql_injection.png',
-    'SQL_INJECTION_BASE64'   => 'sql_injection_base64.png',
-    'LFI'                    => 'local_file_inclusion.png',
-    'LFI_BASE64'             => 'local_file_inclusion_base64.png',
-    'IP_PERMITTED'           => 'permitted.png',
-    'IP_BLOCKED'             => 'blocked.png',
-    'IP_BLOCKED_DINAMIC'     => 'dinamically_blocked.png',
-    'SECOND_LEVEL'           => 'second_level.png',
-    'USER_AGENT_MODIFICATION'=> 'http.png',
-    'REFERER_MODIFICATION'   => 'http.png',
-    'SESSION_PROTECTION'     => 'session_protection.png',
-    'SESSION_HIJACK_ATTEMPT' => 'session_hijack.png',
-    'MULTIPLE_EXTENSIONS'    => 'upload_scanner.png',
-    'FORBIDDEN_EXTENSION'    => 'upload_scanner.png',
-    'SPAM_PROTECTION'        => 'spam_protection.png',
-    'URL_INSPECTOR'          => 'url_inspector.png',
+// Mapeo de tipo → [clase badge, etiqueta corta]
+$badgeMap = [
+    'XSS'                     => ['bg-danger',    'XSS'],
+    'XSS_BASE64'              => ['bg-danger',    'XSS (b64)'],
+    'SQL_INJECTION'           => ['bg-danger',    'SQL Injection'],
+    'SQL_INJECTION_BASE64'    => ['bg-danger',    'SQL Inj. (b64)'],
+    'CMD_INJECTION'           => ['bg-danger',    'CMD Injection'],
+    'CRLF_INJECTION'          => ['bg-danger',    'CRLF Injection'],
+    'LFI'                     => ['bg-warning',   'LFI'],
+    'LFI_BASE64'              => ['bg-warning',   'LFI (b64)'],
+    'MULTIPLE_EXTENSIONS'     => ['bg-warning',   'Upload'],
+    'FORBIDDEN_EXTENSION'     => ['bg-warning',   'Upload'],
+    'SECOND_LEVEL'            => ['bg-warning',   '2nd Level'],
+    'IP_BLOCKED'              => ['bg-dark',      'IP Blocked'],
+    'IP_BLOCKED_DINAMIC'      => ['bg-dark',      'IP Blocked (dyn)'],
+    'SESSION_PROTECTION'      => ['bg-dark',      'Session'],
+    'SESSION_HIJACK_ATTEMPT'  => ['bg-dark',      'Session Hijack'],
+    'USER_AGENT_MODIFICATION' => ['bg-secondary', 'HTTP'],
+    'REFERER_MODIFICATION'    => ['bg-secondary', 'HTTP'],
+    'SPAM_PROTECTION'         => ['bg-secondary', 'Spam'],
+    'URL_INSPECTOR'           => ['bg-secondary', 'URL'],
+    'IP_PERMITTED'            => ['bg-success',   'IP Permitted'],
 ];
 
 // Claves permitidas para tag_description (evita concatenaciones peligrosas)
@@ -71,7 +71,9 @@ $allowedTagKeys = [
 	'URL_FORBIDDEN_WORDS',
 	'HEURISTIC_SQL',
 	'SPAM_PROTECTION',
-	'URL_FORBIDDEN_WORDS'
+	'URL_FORBIDDEN_WORDS',
+	'CMD_INJECTION',
+	'CRLF_INJECTION'
 ];
 
 // Función utilitaria: sanitiza texto plano con sustitución
@@ -79,16 +81,15 @@ $esc = static function ($value): string {
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 };
 
-// Función utilitaria: decodifica base64 de forma segura y limita longitud
+// Decodifica base64 de forma segura y limita longitud
 $safeBase64 = static function (?string $b64, int $max = 4000) use ($esc): string {
     if ($b64 === null || $b64 === '') {
         return '';
     }
-    $decoded = base64_decode($b64, true); // strict
+    $decoded = base64_decode($b64, true);
     if ($decoded === false) {
-        return Text::_('COM_SECURITYCHECKPRO_INVALID_BASE64');
+        return '';
     }
-    // Limitar tamaño para evitar payloads enormes en el DOM
     if (mb_strlen($decoded, 'UTF-8') > $max) {
         $decoded = mb_substr($decoded, 0, $max, 'UTF-8') . '…';
     }
@@ -114,6 +115,16 @@ $safeBase64 = static function (?string $b64, int $max = 4000) use ($esc): string
         </div>
     <?php endif; ?>
 
+    <!-- Action bar -->
+    <div class="scp-actionbar">
+        <div>
+            <p class="scp-actionbar__title">
+                <i class="fa fa-shield-alt" aria-hidden="true"></i>
+                <?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_FIREWALL_LOGS_TEXT'); ?>
+            </p>
+        </div>
+    </div>
+
     <div class="card mb-3">
         <div class="card-body">
             <?php echo LayoutHelper::render('joomla.searchtools.default', ['view' => $this]); ?>
@@ -132,10 +143,10 @@ $safeBase64 = static function (?string $b64, int $max = 4000) use ($esc): string
                         <th class="text-center">
                             <?php echo Text::_('COM_SECURITYCHECKPRO_USER'); ?>
                         </th>
-                        <th class="text-center">
+                        <th class="text-center" style="min-width:220px;">
                             <?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_DESCRIPTION', 'a.description', $listDirn, $listOrder); ?>
                         </th>
-                        <th class="text-center width-35">
+                        <th class="text-center" style="width:20%;">
                             <?php echo Text::_('COM_SECURITYCHECKPRO_LOG_URI'); ?>
                         </th>
                         <th class="text-center">
@@ -185,31 +196,21 @@ $safeBase64 = static function (?string $b64, int $max = 4000) use ($esc): string
 							? Text::_('COM_SECURITYCHECKPRO_' . $tagKey)
 							: Text::_('COM_SECURITYCHECKPRO_UNKNOWN_EVENT');
 
-                        // original_string (base64) a texto seguro, acotado
+                        // Payload del ataque (decodificado de base64)
                         $decodedOriginal = $safeBase64($row->original_string ?? '', 4000);
 
-                        // Icono por tipo
-                        $iconFile = $iconMap[$type] ?? null;
-                        $iconHtml = $iconFile
-                            ? HTMLHelper::_(
-                                'image',
-                                $mediaBase . '/' . $iconFile,
-                                $esc(Text::_('COM_SECURITYCHECKPRO_TITLE_' . $type)),
-                                [
-                                    'title' => $esc(Text::_('COM_SECURITYCHECKPRO_TITLE_' . $type)),
-                                    'loading' => 'lazy',
-                                    'decoding' => 'async',
-                                    'class' => 'img-fluid',
-                                ]
-                              )
-                            : $esc($type); // fallback textual si no hay icono
+                        // Badge por tipo
+                        $badgeEntry = $badgeMap[$type] ?? null;
+                        $badgeHtml  = $badgeEntry
+                            ? '<span class="badge ' . $badgeEntry[0] . '" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-theme="dark" title="' . $esc(Text::_('COM_SECURITYCHECKPRO_TITLE_' . $type)) . '">' . $badgeEntry[1] . '</span>'
+                            : '<span class="badge bg-secondary">' . $esc($type) . '</span>';
                     ?>
                     <tr>
                         <td class="text-center">
                             <?php if ($whoisHref) : ?>
                                 <a href="<?php echo $whoisHref; ?>" class="whois-link"
                                    target="_blank" rel="noopener noreferrer"
-                                   data-bs-toggle="tooltip"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-theme="dark"
                                    title="<?php echo $esc(Text::_('COM_SECURITYCHECKPRO_WHOIS')); ?>">
                                     <?php echo $ip; ?>
                                 </a>
@@ -226,25 +227,29 @@ $safeBase64 = static function (?string $b64, int $max = 4000) use ($esc): string
                             <?php echo $username !== '' ? $username : '—'; ?>
                         </td>
 
-                        <td class="text-center">
-                            <div>
-                                <strong><?php echo $tagTxt; ?></strong>
-                                <?php if ($desc !== '') : ?>
-                                    <?php echo ': ' . $desc; ?>
-                                <?php endif; ?>
-                            </div>
-                            <div class="mt-2">
-                                <label class="visually-hidden" for="orig_<?php echo (int) ($row->id ?? $i); ?>">
-                                    <?php echo Text::_('COM_SECURITYCHECK_ORIGINAL_STRING'); ?>
-                                </label>
-                                <textarea id="orig_<?php echo (int) ($row->id ?? $i); ?>"
-                                          cols="30" rows="2" readonly
-                                          class="form-control form-control-sm"><?php echo $decodedOriginal; ?></textarea>
-                            </div>
+                        <td style="max-width:25rem;">
+                            <div class="fw-semibold"><?php echo $tagTxt; ?></div>
+                            <?php if ($desc !== '') : ?>
+                                <div class="text-muted small"><?php echo $desc; ?></div>
+                            <?php endif; ?>
+                            <?php if ($decodedOriginal !== '') : ?>
+                                <details class="mt-1">
+                                    <summary class="text-muted small" style="cursor:pointer;"><?php echo Text::_('COM_SECURITYCHECKPRO_ORIGINAL_STRING_CSV'); ?></summary>
+                                    <div class="text-muted small font-monospace mt-1" style="word-break:break-all;max-height:6rem;overflow-x:hidden;overflow-y:auto;"><?php echo $decodedOriginal; ?></div>
+                                </details>
+                            <?php endif; ?>
                         </td>
 
-                        <td class="text-center" style="word-break: break-all;">
-                            <?php echo $uri !== '' ? $uri : '—'; ?>
+                        <?php
+                        $uriShort = mb_strlen($row->uri ?? '', 'UTF-8') > 70
+                            ? mb_substr($row->uri ?? '', 0, 70, 'UTF-8') . '…'
+                            : ($row->uri ?? '');
+                        ?>
+                        <td class="text-center" style="word-break:break-all;"
+                            <?php if ($uri !== '' && mb_strlen($row->uri ?? '', 'UTF-8') > 70) : ?>
+                                title="<?php echo $uri; ?>"
+                            <?php endif; ?>>
+                            <?php echo $uri !== '' ? $esc($uriShort) : '—'; ?>
                         </td>
 
                         <td class="text-center">
@@ -252,22 +257,15 @@ $safeBase64 = static function (?string $b64, int $max = 4000) use ($esc): string
                         </td>
 
                         <td class="text-center">
-                            <?php echo $iconHtml; ?>
+                            <?php echo $badgeHtml; ?>
                         </td>
 
                         <td class="text-center">
-                            <?php
-                            echo HTMLHelper::_(
-                                'image',
-                                $mediaBase . '/' . ($marked ? 'read.png' : 'no_read.png'),
-                                $marked ? Text::_('COM_SECURITYCHECKPRO_LOG_READ') : Text::_('COM_SECURITYCHECKPRO_LOG_UNREAD'),
-                                [
-                                    'title' => $marked ? Text::_('COM_SECURITYCHECKPRO_LOG_READ') : Text::_('COM_SECURITYCHECKPRO_LOG_UNREAD'),
-                                    'loading' => 'lazy',
-                                    'decoding' => 'async',
-                                ]
-                            );
-                            ?>
+                            <?php if ($marked) : ?>
+                                <span class="badge bg-success"><?php echo Text::_('COM_SECURITYCHECKPRO_LOG_READ'); ?></span>
+                            <?php else : ?>
+                                <span class="badge bg-warning"><?php echo Text::_('COM_SECURITYCHECKPRO_LOG_UNREAD'); ?></span>
+                            <?php endif; ?>
                         </td>
 
                         <td class="text-center">
@@ -294,12 +292,6 @@ $safeBase64 = static function (?string $b64, int $max = 4000) use ($esc): string
             </div>
         <?php endif; ?>
 
-        <div class="col-md-6 col-lg-8 mb-md-0 mb-4 margin-top-10">
-            <p class="mb-0">
-                <?php echo Text::_('COM_SECURITYCHECKPRO_COPYRIGHT'); ?>
-                | <?php echo Text::_('COM_SECURITYCHECKPRO_ICONS_ATTRIBUTION'); ?>
-            </p>
-        </div>
     </div>
 
     <input type="hidden" name="option" value="com_securitycheckpro">

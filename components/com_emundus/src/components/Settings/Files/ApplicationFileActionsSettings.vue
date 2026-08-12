@@ -51,7 +51,7 @@ export default {
 		addCustomAction() {
 			this.customActions.push({
 				id: Math.floor(Math.random() * 1000000000),
-				label: '',
+				label: {},
 				icon: '',
 				conditions: newConditionGroup(0),
 				action: null,

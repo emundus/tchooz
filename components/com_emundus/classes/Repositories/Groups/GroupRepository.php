@@ -32,11 +32,13 @@ use Tchooz\Repositories\RepositoryInterface;
 ])]
 class GroupRepository extends EmundusRepository implements RepositoryInterface
 {
+	const NAME = 'groups';
+
 	private GroupFactory $factory;
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		parent::__construct($withRelations, $exceptRelations, 'groups', self::class);
+		parent::__construct($withRelations, $exceptRelations, self::NAME, self::class);
 
 		$this->factory = new GroupFactory();
 

@@ -23,7 +23,7 @@
 		<span
 			v-else
 			@click="onClickToggle"
-			class="material-symbols-outlined popover-toggle-btn not-to-close-modal !tw-flex tw-h-full tw-items-center tw-rounded-coordinator-form tw-p-1 hover:tw-bg-neutral-300"
+			class="material-symbols-outlined popover-toggle-btn not-to-close-modal !tw-flex tw-h-full tw-items-center tw-rounded-coordinator-form tw-p-1 hover:tw-bg-profile-full hover:tw-text-white"
 			:class="[iconClass, disabledClass]"
 		>
 			{{ icon }}

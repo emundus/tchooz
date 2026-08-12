@@ -67,9 +67,10 @@ class YousignSynchronizer extends Api
 		
 		try
 		{
-			$response = $this->post('signature_requests', json_encode($payload));
+			$encodedPayload = json_encode($payload);
+			$response = $this->post('signature_requests', $encodedPayload);
 
-			if ($this->isThrowed($response))
+			if ($this->isThrowed($response, 'POST signature_requests', $encodedPayload))
 			{
 				throw new \Exception($response['message'], $response['status']);
 			}
@@ -90,7 +91,7 @@ class YousignSynchronizer extends Api
 		{
 			$response = $this->post('signature_requests/' . $procedure_id . '/activate');
 
-			if ($this->isThrowed($response))
+			if ($this->isThrowed($response, 'POST signature_requests/' . $procedure_id . '/activate'))
 			{
 				throw new \Exception($response['message'], $response['status']);
 			}
@@ -118,9 +119,10 @@ class YousignSynchronizer extends Api
 
 		try
 		{
-			$response = $this->post('signature_requests/' . $procedure_id . '/cancel', json_encode($payload));
+			$encodedPayload = json_encode($payload);
+			$response = $this->post('signature_requests/' . $procedure_id . '/cancel', $encodedPayload);
 
-			if ($this->isThrowed($response))
+			if ($this->isThrowed($response, 'POST signature_requests/' . $procedure_id . '/cancel', $encodedPayload))
 			{
 				throw new \Exception($response['message'], $response['status']);
 			}
@@ -141,7 +143,7 @@ class YousignSynchronizer extends Api
 		{
 			$response = $this->delete('signature_requests/' . $procedure_id);
 
-			if ($this->isThrowed($response))
+			if ($this->isThrowed($response, 'DELETE signature_requests/' . $procedure_id))
 			{
 				throw new \Exception($response['message'], $response['status']);
 			}
@@ -164,7 +166,7 @@ class YousignSynchronizer extends Api
 		{
 			$response = $this->get('signature_requests/' . $procedure_id);
 
-			if ($this->isThrowed($response))
+			if ($this->isThrowed($response, 'GET signature_requests/' . $procedure_id))
 			{
 				throw new \Exception($response['message'], $response['status']);
 			}
@@ -202,7 +204,7 @@ class YousignSynchronizer extends Api
 
 			$response = $this->get('signature_requests', $params);
 
-			if ($this->isThrowed($response))
+			if ($this->isThrowed($response, 'GET signature_requests'))
 			{
 				throw new \Exception($response['message'], $response['status']);
 			}
@@ -263,7 +265,7 @@ class YousignSynchronizer extends Api
 		{
 			$response = $this->post('signature_requests/' . $procedure_id . '/documents', $payload, [], true);
 
-			if ($this->isThrowed($response))
+			if ($this->isThrowed($response, 'POST signature_requests/' . $procedure_id . '/documents'))
 			{
 				throw new \Exception($response['message'], $response['status']);
 			}
@@ -289,7 +291,7 @@ class YousignSynchronizer extends Api
 			];
 			$response = $this->get('signature_requests/' . $procedure_id . '/documents/' . $document_id . '/download', [], $headers);
 
-			if ($this->isThrowed($response))
+			if ($this->isThrowed($response, 'GET signature_requests/' . $procedure_id . '/documents/' . $document_id . '/download'))
 			{
 				throw new \Exception($response['message'], $response['status']);
 			}
@@ -323,7 +325,7 @@ class YousignSynchronizer extends Api
 		{
 			$response = $this->get('signature_requests/' . $procedure_id . '/signers/' . $signer_id . '/audit_trails');
 
-			if ($this->isThrowed($response))
+			if ($this->isThrowed($response, 'GET signature_requests/' . $procedure_id . '/signers/' . $signer_id . '/audit_trails'))
 			{
 				throw new \Exception($response['message'], $response['status']);
 			}
@@ -357,7 +359,7 @@ class YousignSynchronizer extends Api
 		{
 			$response = $this->get('signature_requests/' . $procedure_id . '/signers');
 
-			if ($this->isThrowed($response))
+			if ($this->isThrowed($response, 'GET signature_requests/' . $procedure_id . '/signers'))
 			{
 				throw new \Exception($response['message'], $response['status']);
 			}
@@ -464,8 +466,9 @@ class YousignSynchronizer extends Api
 
 		try
 		{
-			$response = $this->post('signature_requests/' . $procedure_id . '/signers', json_encode($payload));
-			if ($this->isThrowed($response))
+			$encodedPayload = json_encode($payload);
+			$response = $this->post('signature_requests/' . $procedure_id . '/signers', $encodedPayload);
+			if ($this->isThrowed($response, 'POST signature_requests/' . $procedure_id . '/signers', $encodedPayload))
 			{
 				throw new \Exception($response['message'], $response['status']);
 			}
@@ -486,7 +489,7 @@ class YousignSynchronizer extends Api
 		{
 			$response = $this->post('signature_requests/' . $procedure_id . '/signers/' . $signer_id . '/send_reminder');
 
-			if ($this->isThrowed($response))
+			if ($this->isThrowed($response, 'POST signature_requests/' . $procedure_id . '/signers/' . $signer_id . '/send_reminder'))
 			{
 				throw new \Exception($response['message'], $response['status']);
 			}
@@ -557,9 +560,10 @@ class YousignSynchronizer extends Api
 
 		try
 		{
-			$response = $this->post('webhooks', json_encode($payload));
+			$encodedPayload = json_encode($payload);
+			$response = $this->post('webhooks', $encodedPayload);
 
-			if ($this->isThrowed($response))
+			if ($this->isThrowed($response, 'POST webhooks', $encodedPayload))
 			{
 				throw new \Exception($response['message'], $response['status']);
 			}
@@ -582,9 +586,10 @@ class YousignSynchronizer extends Api
 				'enabled' => $enable
 			];
 
-			$response = $this->patch('webhooks/' . $webhookId, json_encode($payload));
+			$encodedPayload = json_encode($payload);
+			$response = $this->patch('webhooks/' . $webhookId, $encodedPayload);
 
-			if ($this->isThrowed($response))
+			if ($this->isThrowed($response, 'PATCH webhooks/' . $webhookId, $encodedPayload))
 			{
 				throw new \Exception($response['message'], $response['status']);
 			}
@@ -654,7 +659,7 @@ class YousignSynchronizer extends Api
 		return $auth;
 	}
 
-	private function isThrowed($response): bool
+	private function isThrowed($response, string $endpoint = '', string $payload = ''): bool
 	{
 		$throwException = false;
 
@@ -669,7 +674,20 @@ class YousignSynchronizer extends Api
 			case 500:
 			case 503:
 				$throwException = true;
-				Log::add('Error on Yousign api : ' . $response['message'], Log::ERROR, 'com_emundus.yousign');
+				$log = 'Error on Yousign api [HTTP ' . $response['status'] . '] : ' . $response['message'];
+				if (!empty($endpoint))
+				{
+					$log .= ' — endpoint: ' . $endpoint;
+				}
+				if (!empty($payload))
+				{
+					$log .= ' — payload: ' . $payload;
+				}
+				if (!empty($response['data']))
+				{
+					$log .= ' — details: ' . json_encode($response['data']);
+				}
+				Log::add($log, Log::ERROR, 'com_emundus.yousign');
 
 				$this->dispatchJoomlaEvent('onYousignError', [
 					'status'  => $response['status'],

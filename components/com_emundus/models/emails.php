@@ -27,6 +27,8 @@ use Tchooz\Entities\Messages\TriggerEntity;
 use Tchooz\Enums\Emails\TagTypeEnum;
 use Tchooz\Repositories\Reference\InternalReferenceRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Entities\Emails\TagContext;
+use Tchooz\Entities\Emails\TagProviderRegistry;
 
 class EmundusModelEmails extends JModelList
 {
@@ -639,7 +641,7 @@ class EmundusModelEmails extends JModelList
 	 * @throws Exception
 	 * @since version v6
 	 */
-	public function setConstants(?int $user_id, ?array $post = null, string $passwd = '', ?string $fnum = null, string $content = ''): array
+	public function setConstants(?int $user_id, ?array $post = null, ?string $passwd = '', ?string $fnum = null, string $content = ''): array
 	{
 		$patterns = array();
 		$replacements = array();
@@ -689,6 +691,8 @@ class EmundusModelEmails extends JModelList
 				$base_url .= '/';
 			}
 
+			$passwd = is_null($passwd) ? '' : $passwd;
+
 			$activation = $user->get('activation');
 
 			$timezone = $app->get('offset', 'Europe/Paris');
@@ -717,6 +721,11 @@ class EmundusModelEmails extends JModelList
 			);
 
 			if (!empty($fnum)) {
+				if (!class_exists('EmundusHelperFiles'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+				}
+
 				$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
 
 				require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
@@ -845,6 +854,28 @@ class EmundusModelEmails extends JModelList
 						$replacements[] = '';
 					}
 				}
+			}
+		}
+
+		// Constant tags resolved by registered providers (extensible structure: one class per tag group).
+		if (!class_exists('EmundusHelperTags')) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/tags.php');
+		}
+		$tags_in_content = !empty($content) ? (new EmundusHelperTags())->getVariables($content, 'SQUARE') : [];
+		$tag_context     = new TagContext($user_id ?? 0, $fnum, null, $passwd, $content, false);
+		foreach (TagProviderRegistry::all() as $provider) {
+			// Cheap string check first: when a content is given, only consider providers whose tags appear in it.
+			if (!empty($content) && empty(array_intersect($provider->getProvidedTags(), $tags_in_content))) {
+				continue;
+			}
+
+			if (!$provider->supports($tag_context)) {
+				continue;
+			}
+
+			foreach ($provider->provide($tag_context) as $tag => $value) {
+				$patterns[]     = '/\[' . $tag . '\]/';
+				$replacements[] = $value;
 			}
 		}
 
@@ -1228,7 +1259,16 @@ class EmundusModelEmails extends JModelList
 
 			$preg = array('patterns' => array(), 'replacements' => array());
 
+			$m_application = null;
+			if (!empty($aliasFabrik)) {
+				require_once(JPATH_SITE . DS . 'components/com_emundus/models/application.php');
+				$m_application = new EmundusModelApplication();
+			}
+
 			foreach ($fnumsArray as $fnum) {
+				// restrict the alias resolution to the elements belonging to this file's current
+				// campaign forms.
+				$fnumFormElements = !empty($m_application) ? $m_application->getFabrikDataByFnum($fnum, 'element') : [];
 				foreach ($idFabrik as $id) {
 					$preg['patterns'][] = '/\$\{' . $id . '\}/';
 					if (isset($fabrikValues[$id][$fnum])) {
@@ -1243,7 +1283,11 @@ class EmundusModelEmails extends JModelList
 				foreach ($aliasFabrik as $alias => $ids) {
 					$value_found = false;
 					$preg['patterns'][] = '/\$\{' . $alias . '\}/';
-					foreach($ids as $id) {
+
+					// Keep only the alias elements that belong to this file's current campaign forms.
+					$scopedIds = $this->scopeAliasElementsToFnumForms($ids, $fnumFormElements);
+
+					foreach($scopedIds as $id) {
 						if (!empty($fabrikValues[$id][$fnum]) && !empty($fabrikValues[$id][$fnum]['val'])) {
 							$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
 							$value_found = true;
@@ -1277,6 +1321,33 @@ class EmundusModelEmails extends JModelList
 		else {
 			return $str;
 		}
+	}
+
+	/**
+	 * Restrict the elements sharing an alias to those belonging to a file's current campaign forms.
+	 *
+	 * Several elements can share the same alias across different forms/campaigns while writing to
+	 * the same data table. Without scoping, a file moved to another campaign would resolve the alias
+	 * to the first element found (its original campaign form) instead of the current one.
+	 *
+	 * @param   array  $ids               The element ids sharing the alias.
+	 * @param   array  $fnumFormElements  The element ids belonging to the file's current campaign forms.
+	 *
+	 * @return  array  The scoped element ids, or every id when no scope could be resolved.
+	 *
+	 * @since   version 2.0.0
+	 */
+	public function scopeAliasElementsToFnumForms(array $ids, array $fnumFormElements): array
+	{
+		if (empty($fnumFormElements)) {
+			return $ids;
+		}
+
+		$filteredIds = array_values(array_filter($ids, function ($id) use ($fnumFormElements) {
+			return in_array($id, $fnumFormElements);
+		}));
+
+		return !empty($filteredIds) ? $filteredIds : $ids;
 	}
 
 
@@ -1620,7 +1691,7 @@ class EmundusModelEmails extends JModelList
 	 * @throws Exception
 	 * @since version v6
 	 */
-	public function sendExpertMail(array $fnums, int $sender_id, string $mail_subject, string $mail_from_name, string $mail_from, array $mail_to, string $mail_body, int $mail_id = 0): array
+	public function sendExpertMail(array $fnums, int $sender_id, string $mail_subject, string $mail_from_name, array $mail_from, array $mail_to, string $mail_body, int $mail_id = 0): array
 	{
 		$sent          = [];
 		$failed        = [];
@@ -1817,7 +1888,7 @@ class EmundusModelEmails extends JModelList
 					// If the email sender has the same domain as the system sender address.
 					$mail_from_address = $email_from_sys;
 					if(empty($mail_from)) {
-						$mail_from = $reply_to;
+						$mail_from = [$reply_to];
 					}
 					if(empty($mail_from_name)) {
 						$mail_from_name = $mail_from_sys_name;

@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_sessions` (
 `userid` INT(4) UNSIGNED NOT NULL,
 `session_id` VARCHAR(200) NOT NULL,
 `username` VARCHAR(150) NOT NULL,
-`ip` VARCHAR(26) NOT NULL,
+`ip` VARCHAR(100) NOT NULL,
 `user_agent` VARCHAR(300) NOT NULL,
 PRIMARY KEY (`userid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

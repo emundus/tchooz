@@ -26,15 +26,10 @@ class StringField extends Field
 	 */
 	public function toSchema(): array
 	{
-		return [
-			'type' => StringField::getType(),
-			'name' => $this->getName(),
-			'label' => $this->getLabel(),
-			'required' => $this->isRequired(),
-			'group' => $this->getGroup()?->toSchema(),
-			'minLength' => $this->minLength,
-			'maxLength' => $this->maxLength,
-			'displayRules' => array_map(fn($rule) => $rule->toSchema(), $this->getDisplayRules())
-		];
+		$schema              = $this->defaultSchema();
+		$schema['minLength'] = $this->minLength;
+		$schema['maxLength'] = $this->maxLength;
+
+		return $schema;
 	}
 }

@@ -59,6 +59,7 @@ class FabrikControllerDetails extends BaseController
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
+		Html::validateRequest($this->taskMap);
 		$session = Factory::getSession();
 		$document = Factory::getDocument();
 		$app = Factory::getApplication();
@@ -132,6 +133,7 @@ class FabrikControllerDetails extends BaseController
 	 */
 	public function process()
 	{
+		Html::validateRequest($this->taskMap);
 		@set_time_limit(300);
 		$app = Factory::getApplication();
 		$session = Factory::getSession();
@@ -409,6 +411,7 @@ class FabrikControllerDetails extends BaseController
 /* Details view should not do any validation*/
 	public function ajax_validate()
 	{
+		Html::validateRequest($this->taskMap);
 		$app = Factory::getApplication();
 		$input = $app->getInput();
 		$model = $this->getModel('form', 'FabrikFEModel');
@@ -484,6 +487,7 @@ class FabrikControllerDetails extends BaseController
 	 */
 	public function delete()
 	{
+		Html::validateRequest($this->taskMap);
 		// Check for request forgeries
 		Session::checkToken() or die('Invalid Token');
 		$app = Factory::getApplication();

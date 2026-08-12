@@ -65,7 +65,7 @@ export default {
 						const newStepIndex = index.offsetWidth;
 
 						if (newContainerWidth > 0 && newStepIndex > 0) {
-							this.calculatedWidth = newContainerWidth / 2 - (newStepIndex / 2 + 2) + 'px';
+							this.calculatedWidth = Math.ceil(newContainerWidth / 2 - (newStepIndex / 2 + 2)) + 1 + 'px';
 							resizeObserver.disconnect();
 						}
 					});
@@ -73,7 +73,7 @@ export default {
 					resizeObserver.observe(container);
 				}
 
-				this.calculatedWidth = containerWidth / 2 - (stepIndex / 2 + 2) + 'px';
+				this.calculatedWidth = Math.ceil(containerWidth / 2 - (stepIndex / 2 + 2)) + 1 + 'px';
 			});
 		},
 	},
@@ -97,7 +97,7 @@ export default {
 	<div class="tw-grid" :class="gridCols">
 		<div
 			v-for="(step, index) in steps"
-			class="step-container tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-3"
+			class="step-container tw-flex tw-flex-col tw-items-center tw-justify-start tw-gap-3"
 		>
 			<div class="tw-relative tw-flex tw-items-center">
 				<div
@@ -126,8 +126,13 @@ export default {
 					:class="bgClass(step)"
 				></div>
 			</div>
-			<div>
-				{{ this.translate(step.label) }}
+			<div class="tw-text-center">
+				<strong v-if="step.active">
+					{{ this.translate(step.label) }}
+				</strong>
+				<span v-else>
+					{{ this.translate(step.label) }}
+				</span>
 			</div>
 		</div>
 	</div>

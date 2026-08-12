@@ -114,6 +114,17 @@ trait TraitTable
 		return $prefixed;
 	}
 
+	public function getTableColumnsNoPrefix(string $class): array
+	{
+		$columns = $this->getTableColumns($class);
+		$prefixed = [];
+		foreach ($columns as $col) {
+			$prefixed[] = str_replace($this->getTableAlias($class) . '.', '', $col);
+		}
+
+		return $prefixed;
+	}
+
 	public static function clearTableAttributeCache(?string $class = null): void
 	{
 		if ($class === null) {

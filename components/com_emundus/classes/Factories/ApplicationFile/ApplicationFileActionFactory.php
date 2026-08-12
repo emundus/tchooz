@@ -3,6 +3,7 @@
 namespace Tchooz\Factories\ApplicationFile;
 
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Joomla\CMS\Factory;
 use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
 use Tchooz\Factories\Automation\ActionFactory;
 use Tchooz\Factories\Automation\ConditionGroupFactory;
@@ -65,9 +66,30 @@ class ApplicationFileActionFactory
 			}
 			$sanitizer = HtmlSanitizerSingleton::getInstance();
 
+			$label = $customActionConfig->label;
+			if (is_string($label))
+			{
+				$decodedLabel = json_decode($label, true);
+				if (json_last_error() === JSON_ERROR_NONE && is_array($decodedLabel))
+				{
+					$label = $decodedLabel;
+				}
+			}
+
+			// The label can be a per-language object (keyed by sef) or a legacy plain string.
+			if (is_array($label))
+			{
+				$currentLanguage = substr(Factory::getApplication()->getLanguage()->getTag(), 0, 2);
+				$label           = $label[$currentLanguage] ?? reset($label);
+				if ($label === false)
+				{
+					$label = '';
+				}
+			}
+
 			$action = new CustomApplicationFileAction(
 				$id,
-				$sanitizer->sanitizeNoHtml($customActionConfig->label),
+				$sanitizer->sanitizeNoHtml($label),
 				$sanitizer->sanitizeNoHtml($customActionConfig->icon) ?? '',
 				$conditionGroup,
 				$actionInstance

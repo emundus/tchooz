@@ -11,9 +11,14 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Application\CMSApplication;
+use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\SysinfoModel;
 
 /** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\View\Sysinfo\HtmlView $this */
-/** @var \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\SysinfoModel $model */
+$model = $this->model;
+
+if (!$model instanceof SysinfoModel) {
+    return;
+}
 
 // Behaviors
 HTMLHelper::_('behavior.keepalive');
@@ -30,7 +35,7 @@ $tabSetId  = 'scp-systeminfo-tabs';
 $activeTab = (string) $app->getUserStateFromRequest('com_securitycheckpro.' . $tabSetId . '.active', 'active_tab', 'overall');
 
 // Porcentaje de la barra de estado overall
-$value = (int) ($this->model->getOverall($this->system_info,1));
+$value = (int) ($model->getOverall($this->system_info,1));
 
 // Porcentaje de la barra de estado de la extensión
 $wf = (int) ($this->system_info['overall_web_firewall'] ?? 0);
@@ -62,10 +67,24 @@ switch (true) {
     ?>
 
 	
-	<h3 class="mb-3">
-		<span class="icon-grid" aria-hidden="true"></span>
-		<?php echo Text::_('COM_SECURITYCHECKPRO_SYSTEM_INFORMATION'); ?>
-	</h3>
+	<div class="scp-actionbar">
+		<div>
+			<p class="scp-actionbar__title">
+				<i class="fa fa-shield-alt" aria-hidden="true"></i>
+				<?php echo Text::_('COM_SECURITYCHECKPRO_SYSTEM_INFORMATION'); ?>
+			</p>
+			<p class="scp-actionbar__subtitle">
+				<?php echo Text::_('COM_SECURITYCHECKPRO_SECURITY_OVERALL_STATUS'); ?>
+				&middot; <span class="badge <?php echo $barClass; ?>"><?php echo $value; ?>%</span>
+			</p>
+		</div>
+		<div class="scp-actionbar__actions">
+			<div class="form-check form-switch mb-0">
+				<input class="form-check-input" type="checkbox" id="filter_only_problems">
+				<label class="form-check-label small" for="filter_only_problems"><?php echo Text::_('COM_SECURITYCHECKPRO_SYSINFO_ONLY_PROBLEMS'); ?></label>
+			</div>
+		</div>
+	</div>
 
 	<?php
 	echo HTMLHelper::_(
@@ -98,7 +117,7 @@ switch (true) {
 		<?php
 		$kickstartExists = !empty($this->system_info['kickstart_exists']);
 
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 			'title'      => Text::_('COM_SECURITYCHECKPRO_AKEEBA_RESTORATION_FILES_FOUND'),
 			'ok'         => !$kickstartExists,
 			'problems'   => 1,
@@ -110,7 +129,7 @@ switch (true) {
 		$installed = (string) ($this->system_info['coreinstalled'] ?? '');
 		$latest    = (string) ($this->system_info['corelatest'] ?? '');
 
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 			'title'      => Text::_('COM_SECURITYCHECKPRO_SECURITY_UP_TO_DATE'),
 			'ok'         => ($installed !== '' && $latest !== '' && version_compare($installed, $latest, '==')),
 			'problems'   => 1,
@@ -120,7 +139,7 @@ switch (true) {
 		]);
 
 		$vuln = intval($this->system_info['vuln_extensions'] ?? 0);
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 			'title'      => Text::_('COM_SECURITYCHECKPRO_SECURITY_VULNERABLE_EXTENSIONS'),
 			'ok'         => ($vuln === 0),
 			'problems'   => $vuln,
@@ -130,7 +149,7 @@ switch (true) {
 		]);
 
 		$logs_pending = isset($logs_pending) && is_numeric($logs_pending) ? (int) $logs_pending : 0;
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 			'title'      => Text::_('COM_SECURITYCHECKPRO_UNREAD_LOGS'),
 			'ok'         => ($logs_pending <= 10),
 			'problems'   => 1,
@@ -140,7 +159,7 @@ switch (true) {
 		]);
 
 		$suspicious = intval($this->system_info['suspicious_files'] ?? 0);
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 			'title'      => Text::_('COM_SECURITYCHECKPRO_SECURITY_MALWARE_FOUND'),
 			'ok'         => ($suspicious === 0),
 			'problems'   => $suspicious,
@@ -150,7 +169,7 @@ switch (true) {
 		]);
 
 		$badIntegrity = intval($this->system_info['files_with_bad_integrity'] ?? 0);
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 			'title'      => Text::_('COM_SECURITYCHECKPRO_SECURITY_NO_FILES_MODIFIED'),
 			'ok'         => ($badIntegrity === 0),
 			'problems'   => $badIntegrity,
@@ -160,7 +179,7 @@ switch (true) {
 		]);
 
 		$badPerms = intval($this->system_info['files_with_incorrect_permissions'] ?? 0);
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 			'title'      => Text::_('COM_SECURITYCHECKPRO_SECURITY_PERMISSIONS'),
 			'ok'         => ($badPerms === 0),
 			'problems'   => $badPerms,
@@ -170,7 +189,7 @@ switch (true) {
 		]);
 
 		$backendProtection = !empty($this->system_info['backend_protection']);
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 			'title'      => Text::_('COM_SECURITYCHECKPRO_SECURITY_HIDE_BACKEND'),
 			'ok'         => $backendProtection,
 			'problems'   => 1,
@@ -180,7 +199,7 @@ switch (true) {
 		]);
 
 		$forbidNewAdmins = intval($this->system_info['firewall_options']['forbid_new_admins'] ?? 0) === 1;
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 			'title'      => Text::_('COM_SECURITYCHECKPRO_FORBID_NEW_ADMINS_LABEL'),
 			'ok'         => $forbidNewAdmins,
 			'problems'   => 1,
@@ -190,7 +209,7 @@ switch (true) {
 		]);
 
 		$twoFactorEnabled = intval($this->system_info['twofactor_enabled'] ?? 0) > 1;
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 			'title'      => Text::_('COM_SECURITYCHECKPRO_TWO_FACTOR_ENABLED_LABEL'),
 			'ok'         => $twoFactorEnabled,
 			'problems'   => 1,
@@ -208,7 +227,7 @@ switch (true) {
 			intval($headers['referrer_policy']       ?? 0) > 0 &&
 			intval($headers['prevent_mime_attacks']  ?? 0) > 0
 		);
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 			'title'      => Text::_('COM_SECURITYCHECKPRO_HTTP_HEADERS_LABEL'),
 			'ok'         => $headersOk,
 			'problems'   => 1,
@@ -245,7 +264,7 @@ switch (true) {
 		echo '<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">';
 
 		// -------------------- Grupo: Firewall (header "dark") --------------------
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-dark',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_FIREWALL_ENABLED'),
 		  'ok'             => $fwEnabled,
@@ -257,7 +276,7 @@ switch (true) {
 
 		// Dynamic blacklist
 		if (!$fwEnabled) {
-		  echo $this->model->renderStatusItem([
+		  echo $model->renderStatusItem([
 			'headerItemClass'=> 'list-group-item-dark',
 			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_DYNAMIC_BLACKLIST'),
 			'ok'             => true, // no problema: mostramos aviso
@@ -265,7 +284,7 @@ switch (true) {
 			'valueBadgeClass'=> 'bg-warning',
 		  ]);
 		} else {
-		  echo $this->model->renderStatusItem([
+		  echo $model->renderStatusItem([
 			'headerItemClass'=> 'list-group-item-dark',
 			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_DYNAMIC_BLACKLIST'),
 			'ok'             => !empty($opts['dynamic_blacklist']),
@@ -278,7 +297,7 @@ switch (true) {
 
 		// Logs attacks
 		if (!$fwEnabled) {
-		  echo $this->model->renderStatusItem([
+		  echo $model->renderStatusItem([
 			'headerItemClass'=> 'list-group-item-dark',
 			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_LOGS'),
 			'ok'             => true,
@@ -286,7 +305,7 @@ switch (true) {
 			'valueBadgeClass'=> 'bg-warning',
 		  ]);
 		} else {
-		  echo $this->model->renderStatusItem([
+		  echo $model->renderStatusItem([
 			'headerItemClass'=> 'list-group-item-dark',
 			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_LOGS'),
 			'ok'             => !empty($opts['logs_attacks']),
@@ -299,7 +318,7 @@ switch (true) {
 
 		// Second level
 		if (!$fwEnabled) {
-		  echo $this->model->renderStatusItem([
+		  echo $model->renderStatusItem([
 			'headerItemClass'=> 'list-group-item-dark',
 			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SECOND_LEVEL'),
 			'ok'             => true,
@@ -307,7 +326,7 @@ switch (true) {
 			'valueBadgeClass'=> 'bg-warning',
 		  ]);
 		} else {
-		  echo $this->model->renderStatusItem([
+		  echo $model->renderStatusItem([
 			'headerItemClass'=> 'list-group-item-dark',
 			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SECOND_LEVEL'),
 			'ok'             => !empty($opts['second_level']),
@@ -320,7 +339,7 @@ switch (true) {
 
 		// Exclude exceptions if vulnerable
 		if (!$fwEnabled) {
-		  echo $this->model->renderStatusItem([
+		  echo $model->renderStatusItem([
 			'headerItemClass'=> 'list-group-item-dark',
 			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_EXCLUDE_EXCEPTIONS'),
 			'ok'             => true,
@@ -328,7 +347,7 @@ switch (true) {
 			'valueBadgeClass'=> 'bg-warning',
 		  ]);
 		} else {
-		  echo $this->model->renderStatusItem([
+		  echo $model->renderStatusItem([
 			'headerItemClass'=> 'list-group-item-dark',
 			'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_EXCLUDE_EXCEPTIONS'),
 			'ok'             => !empty($opts['exclude_exceptions_if_vulnerable']),
@@ -341,7 +360,7 @@ switch (true) {
 
 		// XSS filter
 		$xssOk = $fwEnabled && (strpos((string)($opts['strip_tags_exceptions'] ?? ''), '*') === false);
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-dark',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_XSS_FILTER'),
 		  'ok'             => $xssOk ?: (!$fwEnabled),
@@ -355,7 +374,7 @@ switch (true) {
 
 		// SQL filter
 		$sqlOk = $fwEnabled && (strpos((string)($opts['sql_pattern_exceptions'] ?? ''), '*') === false);
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-dark',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SQL_FILTER'),
 		  'ok'             => $sqlOk ?: (!$fwEnabled),
@@ -369,7 +388,7 @@ switch (true) {
 
 		// LFI filter
 		$lfiOk = $fwEnabled && (strpos((string)($opts['lfi_exceptions'] ?? ''), '*') === false);
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-dark',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_LFI_FILTER'),
 		  'ok'             => $lfiOk ?: (!$fwEnabled),
@@ -387,7 +406,7 @@ switch (true) {
 		$params = $app->getConfig();
 		$shared = (bool) $params->get('shared_session');
 		$sessOk = $fwEnabled && !empty($opts['session_protection_active']) && !$shared;
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-dark',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SESSION_PROTECTION'),
 		  'ok'             => $sessOk ?: (!$fwEnabled),
@@ -401,7 +420,7 @@ switch (true) {
 
 		// Session hijack
 		$hijackOk = $fwEnabled && !empty($opts['session_hijack_protection']) && !$shared;
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-dark',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SESSION_HIJACK_PROTECTION'),
 		  'ok'             => $hijackOk ?: (!$fwEnabled),
@@ -415,7 +434,7 @@ switch (true) {
 
 		// Upload scanner
 		$uploadOk = $fwEnabled && !empty($opts['upload_scanner_enabled']);
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-dark',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_UPLOAD_SCANNER'),
 		  'ok'             => $uploadOk ?: (!$fwEnabled),
@@ -427,9 +446,8 @@ switch (true) {
 		  'valueBadgeClass'=> !$fwEnabled ? 'bg-warning' : null,
 		]);
 
-		// Cron enabled (ajusta la condición real si tienes flag específico)
-		$cronOk = $fwEnabled && !empty($this->system_info['cron_enabled']); // <-- ajusta a tu key real
-		echo $this->model->renderStatusItem([
+		$cronOk = $fwEnabled && !empty($this->system_info['cron_plugin_enabled']);
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-dark',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_CRON_ENABLED'),
 		  'ok'             => $cronOk ?: (!$fwEnabled),
@@ -445,7 +463,7 @@ switch (true) {
 		$last = (string) ($this->system_info['last_check'] ?? '');
 		$now  = (new \SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel())->get_Joomla_timestamp();
 		$interval = ($now && $last) ? (int) ((strtotime($now) - strtotime($last)) / 86400) : 100;
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-dark',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_CRON_LAST_FILEMANAGER_CHECK'),
 		  'ok'             => ($interval < 2),
@@ -460,7 +478,7 @@ switch (true) {
 		// Last fileintegrity check
 		$lastI = (string) ($this->system_info['last_check_integrity'] ?? '');
 		$intervalI = ($now && $lastI) ? (int) ((strtotime($now) - strtotime($lastI)) / 86400) : 100;
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-dark',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_CRON_LAST_FILEINTEGRITY_CHECK'),
 		  'ok'             => ($intervalI < 2),
@@ -473,7 +491,7 @@ switch (true) {
 		]);
 
 		// Spam protection plugin
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-dark',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_EXTENSION_STATUS_SPAM_PROTECTION_ENABLED'),
 		  'ok'             => !empty($this->system_info['spam_protection_plugin_enabled']),
@@ -484,7 +502,7 @@ switch (true) {
 		]);
 
 		// -------------------- Grupo: .htaccess (header "danger") --------------------
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-danger',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT'),
 		  'ok'             => !empty($ht['prevent_access']),
@@ -494,7 +512,7 @@ switch (true) {
 		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_PREVENT_ACCESS_EXPLAIN'),
 		]);
 
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-danger',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_PREVENT_UNAUTHORIZED_BROWSING_TEXT'),
 		  'ok'             => !empty($ht['prevent_unauthorized_browsing']),
@@ -504,7 +522,7 @@ switch (true) {
 		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_PREVENT_UNAUTHORIZED_BROWSING_EXPLAIN'),
 		]);
 
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-danger',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_FILE_INJECTION_PROTECTION_TEXT'),
 		  'ok'             => !empty($ht['file_injection_protection']),
@@ -514,7 +532,7 @@ switch (true) {
 		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_FILE_INJECTION_PROTECTION_EXPLAIN'),
 		]);
 
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-danger',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_SELF_ENVIRON_EXPLAIN'),
 		  'ok'             => !empty($ht['self_environ']),
@@ -524,7 +542,7 @@ switch (true) {
 		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_SELF_ENVIRON_EXPLAIN'),
 		]);
 
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-danger',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_TEXT'),
 		  'ok'             => !empty($ht['xframe_options']),
@@ -534,7 +552,7 @@ switch (true) {
 		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_EXPLAIN'),
 		]);
 
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-danger',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_TEXT'),
 		  'ok'             => !empty($ht['prevent_mime_attacks']),
@@ -544,7 +562,7 @@ switch (true) {
 		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_EXPLAIN'),
 		]);
 
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-danger',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_TEXT'),
 		  'ok'             => !empty($ht['default_banned_list']),
@@ -554,7 +572,7 @@ switch (true) {
 		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_INFO'),
 		]);
 
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-danger',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_DISABLE_SERVER_SIGNATURE_TEXT'),
 		  'ok'             => !empty($ht['disable_server_signature']),
@@ -564,7 +582,7 @@ switch (true) {
 		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_DISABLE_SERVER_SIGNATURE_EXPLAIN'),
 		]);
 
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-danger',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_TEXT'),
 		  'ok'             => !empty($ht['disallow_php_eggs']),
@@ -574,7 +592,7 @@ switch (true) {
 		  'modalText'      => Text::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_EXPLAIN'),
 		]);
 
-		echo $this->model->renderStatusItem([
+		echo $model->renderStatusItem([
 		  'headerItemClass'=> 'list-group-item-danger',
 		  'title'          => Text::_('COM_SECURITYCHECKPRO_DISALLOW_SENSIBLE_FILES_ACCESS_TEXT'),
 		  'ok'             => !empty($ht['disallow_php_eggs']), // ajusta si tienes key específica
@@ -593,12 +611,12 @@ switch (true) {
 	?>
 		<div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
 		<?php
-		echo $this->model->renderInfoItem([
+		echo $model->renderInfoItem([
 			'title' => Text::_('COM_SECURITYCHECKPRO_SYSINFO_JOOMLAVERSION'),
 			'value' => $this->system_info['version'] ?? '',
 		]);
 
-		echo $this->model->renderInfoItem([
+		echo $model->renderInfoItem([
 			'title' => Text::_('COM_SECURITYCHECKPRO_SYSINFO_JOOMLAPLATFORM'),
 			'value' => $this->system_info['platform'] ?? '',
 		]);
@@ -612,7 +630,7 @@ switch (true) {
 	?>
 		 <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
 			<?php
-			echo $this->model->renderInfoItem([
+			echo $model->renderInfoItem([
 			  'headerItemClass' => 'list-group-item-warning',
 			  'title'           => Text::_('COM_SECURITYCHECKPRO_SYSINFO_MAX_ALLOWED_PACKET'),
 			  'value'           => $this->system_info['max_allowed_packet'] ?? '',
@@ -630,19 +648,18 @@ switch (true) {
 	?>
 		<div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
 		  <?php
-		  echo $this->model->renderInfoItem([
+		  echo $model->renderInfoItem([
 			'headerItemClass' => 'list-group-item-secondary',
 			'title'           => Text::_('COM_SECURITYCHECKPRO_SYSINFO_PHPVERSION'),
 			'value'           => $this->system_info['phpversion'] ?? '',
 			'valueClass'      => '',
 		  ]);
 
-		  echo $this->model->renderInfoItem([
+		  echo $model->renderInfoItem([
 			'headerItemClass' => 'list-group-item-secondary',
 			'title'           => Text::_('COM_SECURITYCHECKPRO_SYSINFO_MEMORY_LIMIT'),
-			'value'           => $this->system_info['memory_limit'] ?? '', // p.ej. "256M"
+			'value'           => (string) ($this->system_info['memory_limit']['local_human'] ?? ''), // p.ej. "256 MB"
 			'valueClass'      => '',
-			'isHtml'      => true,
 		  ]);
 		  ?>
 		</div>

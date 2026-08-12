@@ -49,7 +49,7 @@ class LabelAssociationFactory implements DBFactory
 			$dbObject->fnum ?? 0,
 			!empty($dbObject->date_time) ? new \DateTimeImmutable($dbObject->date_time) : new \DateTimeImmutable(),
 			!empty($dbObject->user_id) ? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($dbObject->user_id) : null,
-			!empty($labelEntityObject) ? LabelFactory::buildEntity((object)$labelEntityObject) : null
+			!empty($labelEntityObject) ? (new LabelFactory())->buildEntity((object)$labelEntityObject, []) : null
 		);
 	}
 }

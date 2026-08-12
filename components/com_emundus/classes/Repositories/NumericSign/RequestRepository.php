@@ -10,6 +10,7 @@
 namespace Tchooz\Repositories\NumericSign;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Reference\ExternalReferenceEntity;
 use Tchooz\Entities\NumericSign\Request;
@@ -145,6 +146,7 @@ class RequestRepository
 				$request->setSubject($request_db['subject'] ?? '');
 				$ordered = $request_db['ordered'] == 1;
 				$request->setOrdered($ordered);
+				$request->setFailedAttempts($request_db['failed_attempts'] ?? 0);
 				$request->setExternalReference($request_db['reference'] ?? null);
 
 				return $request;
@@ -185,6 +187,7 @@ class RequestRepository
 				$this->db->quoteName('esr.status'),
 				$this->db->quoteName('esr.connector'),
 				$this->db->quoteName('esr.fnum'),
+				$this->db->quoteName('esr.created_at'),
 				$this->db->quoteName('esr.last_reminder_at'),
 				$this->db->quoteName('esr.cancel_reason'),
 				$this->db->quoteName('esr.cancel_at'),
@@ -367,12 +370,12 @@ class RequestRepository
 				return $this->db->loadResult();
 			}
 			else {
-				throw new \Exception('Signed upload id not set.', 400);
+				throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_REQUEST_GET_SIGNED_DOCUMENT_ERROR'), 400);
 			}
 		}
 		catch (\Exception $e)
 		{
-			throw new \Exception('Failed to get signed document : ' . $e->getMessage(), $e->getCode());
+			throw new \Exception( Text::_('COM_EMUNDUS_ONBOARD_REQUEST_GET_SIGNED_DOCUMENT_ERROR_2').' : ' . $e->getMessage(), $e->getCode());
 		}
 
 	}
@@ -482,6 +485,52 @@ class RequestRepository
 		}
 	}
 
+	public function incrementFailedAttempts(int $id): int
+	{
+		try
+		{
+			$query = $this->db->createQuery();
+
+			$query->update($this->getTableName(self::class))
+				->set($this->db->quoteName('failed_attempts') . ' = ' . $this->db->quoteName('failed_attempts') . ' + 1')
+				->where($this->db->quoteName('id') . ' = :id')
+				->bind(':id', $id, ParameterType::INTEGER);
+			$this->db->setQuery($query)->execute();
+
+			$query->clear()
+				->select($this->db->quoteName('failed_attempts'))
+				->from($this->db->quoteName($this->getTableName(self::class)))
+				->where($this->db->quoteName('id') . ' = :id')
+				->bind(':id', $id, ParameterType::INTEGER);
+			$this->db->setQuery($query);
+
+			return (int) $this->db->loadResult();
+		}
+		catch (\Exception $e)
+		{
+			throw new \Exception('Failed to increment request failed attempts : ' . $e->getMessage(), $e->getCode());
+		}
+	}
+
+	public function resetFailedAttempts(int $id): bool
+	{
+		try
+		{
+			$query = $this->db->createQuery();
+
+			$query->update($this->getTableName(self::class))
+				->set($this->db->quoteName('failed_attempts') . ' = 0')
+				->where($this->db->quoteName('id') . ' = :id')
+				->bind(':id', $id, ParameterType::INTEGER);
+
+			return $this->db->setQuery($query)->execute();
+		}
+		catch (\Exception $e)
+		{
+			throw new \Exception('Failed to reset request failed attempts : ' . $e->getMessage(), $e->getCode());
+		}
+	}
+
 	public function uploadFile(string $filename, Request $request, array $application_file, User $user, int $filesize): int
 	{
 		$upload_id = 0;
@@ -550,14 +599,17 @@ class RequestRepository
 		}
 	}
 
-	public function setFilters(string $search = '', ?string $status = '', ?int $attachment = 0, ?int $applicant = 0, ?string $signed_date = ''): array
+	public function setFilters(string $search = '', ?string $status = '', ?int $attachment = 0, ?int $applicant = 0, ?string $signed_date = '', ?string $creation_date = '', ?string $reminder_date = '', ?string $connector = ''): array
 	{
 		$this->filters = [
 			'search'      => $search,
 			'status'      => $status,
 			'attachment'  => $attachment,
 			'applicant'   => $applicant,
-			'signed_date' => $signed_date
+			'signed_date' => $signed_date,
+			'created_at' => $creation_date,
+			'last_reminder_at' => $reminder_date,
+			'connector' => $connector
 		];
 
 		return $this->filters;
@@ -604,6 +656,34 @@ class RequestRepository
 		{
 			$query->where('DATE('.$this->db->quoteName('esrs.signed_at') . ') = :signed_date')
 				->bind(':signed_date', $this->filters['signed_date']);
+		}
+
+		if(!empty($this->filters['created_at']))
+		{
+			$query->where('DATE('.$this->db->quoteName('esr.created_at') . ') = :creation_date')
+				->bind(':creation_date', $this->filters['created_at']);
+		}
+
+		if(!empty($this->filters['last_reminder_at']))
+		{
+			$query->where('DATE('.$this->db->quoteName('esr.last_reminder_at') . ') = :reminder_date')
+				->bind(':reminder_date', $this->filters['last_reminder_at']);
+		}
+
+		if(!empty($this->filters['connector']))
+		{
+			$connector = $this->filters['connector'];
+			if (is_string($connector))
+			{
+				$connector = [$connector];
+			}
+
+			if (!is_array($connector))
+			{
+				throw new \Exception('Connector must be a string or an array of strings.', 400);
+			}
+
+			$query->whereIn($this->db->quoteName('esr.connector'), $connector, ParameterType::STRING);
 		}
 
 		return $query;
