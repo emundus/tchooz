@@ -34,8 +34,33 @@
     top: 2px;
 }
 
-@media all and (max-width: 479px) {
+@media all and (max-width: 767px) {
     #header-b {
         justify-content: center;
+    }
+
+    #em_user_menu {
+        gap: 4px 6px;
+    }
+
+    #em_user_menu li {
+        padding: 4px 8px;
+    }
+
+    #em_user_menu li > a {
+        font-size: 14px;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    /* font-size et margin posés en style inline sur l'icône (cf. tmpl/default_url.php) */
+    #em_user_menu li > a .material-symbols-outlined {
+        font-size: 14px !important;
+        margin-right: 2px !important;
+    }
+
+    .em-applicant #em_user_menu li > a[target="_blank"]::after {
+        margin-left: 4px;
+        top: 3px;
     }
 }
