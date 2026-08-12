@@ -166,7 +166,7 @@ class plgEmundusSend_file_archive extends CMSPlugin {
 			);
 			$export = $zipService->export('tmp/', null);
 
-			$sent = $m_emails->sendEmail($fnum, $email, null, $export->getFilePath(), false, 2);
+			$sent = $m_emails->sendEmail($fnum, $email, null, JPATH_SITE . '/' . $export->getFilePath(), false, 2);
 		} catch (\Exception $e) {
 			Log::add('Error: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
