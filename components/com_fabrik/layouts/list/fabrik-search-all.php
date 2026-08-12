@@ -31,7 +31,7 @@ $d = $displayData;
 </div>
 <?php
 if ($d->advanced) :
-	echo '<div class="col-sm-7 ps-1">';
-	echo HTMLHelper::_('select.genericList', $d->searchOpts, 'search-mode-advanced', "class='form-select'", 'value', 'text', $d->mode);
+	echo '<div class=" ps-1">';
+	echo HTMLHelper::_('select.genericList', $d->searchOpts, 'search-mode-advanced', "class='form-select-sm'", 'value', 'text', $d->mode);
 	echo '</div>';
 endif;

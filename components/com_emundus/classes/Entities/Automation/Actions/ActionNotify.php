@@ -68,7 +68,7 @@ class ActionNotify extends ActionEntity
 		if (empty($this->parameters))
 		{
 			$this->parameters = [
-				new StringField('message', Text::_('TCHOOZ_AUTOMATION_ACTION_NOTIFY_MESSAGE_LABEL'), true),
+				(new StringField('message', Text::_('TCHOOZ_AUTOMATION_ACTION_NOTIFY_MESSAGE_LABEL'), true))->setTranslatable(true),
 				new ChoiceField('type', Text::_('TCHOOZ_AUTOMATION_ACTION_NOTIFY_TYPE_LABEL'), [
 					new ChoiceFieldValue('info', Text::_('TCHOOZ_AUTOMATION_ACTION_NOTIFY_TYPE_INFO')),
 					new ChoiceFieldValue('warning', Text::_('TCHOOZ_AUTOMATION_ACTION_NOTIFY_TYPE_WARNING')),
