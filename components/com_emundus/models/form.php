@@ -2833,6 +2833,119 @@ class EmundusModelForm extends ListModel
 	}
 
 	/**
+	 * Build the option list (sub_values / sub_labels) used to render a JS condition
+	 * value as a human-readable label, from a Fabrik element's plugin and params.
+	 *
+	 * Returns null for plugins that carry no fixed option list.
+	 *
+	 * @param   string  $plugin  Fabrik element plugin name.
+	 * @param   object  $params  Decoded element params.
+	 *
+	 * @return  stdClass|null
+	 */
+	private function getConditionOptionsFromElement(string $plugin, $params): ?stdClass
+	{
+		$choices_plugin = ['checkbox', 'dropdown', 'radiobutton'];
+
+		if (in_array($plugin, $choices_plugin)) {
+			if (empty($params->sub_options)) {
+				return null;
+			}
+
+			foreach ($params->sub_options->sub_labels as $key => $sub_label) {
+				$params->sub_options->sub_labels[$key] = Text::_($sub_label);
+			}
+
+			return $params->sub_options;
+		}
+
+		if ($plugin === 'yesno') {
+			$options             = new stdClass();
+			$options->sub_values = [0, 1];
+			$options->sub_labels = [Text::_('JNO'), Text::_('JYES')];
+
+			return $options;
+		}
+
+		if ($plugin === 'databasejoin') {
+			$options             = new stdClass();
+			$options->sub_values = [];
+			$options->sub_labels = [];
+
+			$databasejoin_options = $this->getDatabaseJoinOptions($params->join_db_name, $params->join_key_column, $params->join_val_column, $params->join_val_column_concat, null, true);
+			foreach ($databasejoin_options as $databasejoin_option) {
+				$options->sub_values[] = $databasejoin_option->primary_key;
+				$options->sub_labels[] = $databasejoin_option->value;
+			}
+
+			return $options;
+		}
+
+		return null;
+	}
+
+	/**
+	 * When a JS condition targets an emundusreadonly element, the value the
+	 * client can reliably read is the source element's formatted label (the raw
+	 * key held in data-raw-value is fragile). Resolve the source element and
+	 * return its definition data (plugin + option keys/labels) so the client can
+	 * map the displayed label back to the key the condition compares against.
+	 *
+	 * Returns null when the field is not a read-only element or the source can
+	 * not be resolved.
+	 *
+	 * @param   string      $fieldName  Condition field (element name).
+	 * @param   int|string  $form_id    Form the condition belongs to.
+	 *
+	 * @return  stdClass|null
+	 */
+	private function getReadonlySourceData(string $fieldName, $form_id): ?stdClass
+	{
+		$query = $this->db->createQuery();
+		$query->select($this->db->quoteName(['jfe.plugin', 'jfe.params']))
+			->from($this->db->quoteName('#__fabrik_elements', 'jfe'))
+			->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->db->quoteName('jffg.group_id') . ' = ' . $this->db->quoteName('jfe.group_id'))
+			->where($this->db->quoteName('jfe.name') . ' = ' . $this->db->quote($fieldName))
+			->where($this->db->quoteName('jffg.form_id') . ' = ' . $this->db->quote($form_id));
+		$this->db->setQuery($query);
+		$elt = $this->db->loadObject();
+
+		if (empty($elt) || $elt->plugin !== ElementPluginEnum::EMUNDUSREADONLY->value) {
+			return null;
+		}
+
+		$eltParams = is_string($elt->params) ? json_decode($elt->params) : $elt->params;
+		$sourceId  = (int) ($eltParams->source_element_id ?? 0);
+		if (empty($sourceId)) {
+			return null;
+		}
+
+		$query = $this->db->createQuery();
+		$query->select($this->db->quoteName(['plugin', 'params']))
+			->from($this->db->quoteName('#__fabrik_elements'))
+			->where($this->db->quoteName('id') . ' = ' . $sourceId);
+		$this->db->setQuery($query);
+		$sourceElt = $this->db->loadObject();
+
+		if (empty($sourceElt)) {
+			return null;
+		}
+
+		$sourceParams = is_string($sourceElt->params) ? json_decode($sourceElt->params) : $sourceElt->params;
+
+		$data         = new stdClass();
+		$data->plugin = $sourceElt->plugin;
+
+		$options = $this->getConditionOptionsFromElement($sourceElt->plugin, $sourceParams);
+		if ($options !== null) {
+			$data->sub_values = $options->sub_values ?? [];
+			$data->sub_labels = $options->sub_labels ?? [];
+		}
+
+		return $data;
+	}
+
+	/**
 	 * TODO: refactor JS conditions system to manipulate more than just form data, and avoid weird code like for authentication_mode case
 	 */
 	public function getJSConditionsByForm($form_id, $format = 'raw')
@@ -2871,6 +2984,26 @@ class EmundusModelForm extends ListModel
 				$this->db->setQuery($query);
 				$js_condition->conditions = $this->db->loadObjectList();
 
+				if($format == 'raw')
+				{
+					// For read-only condition fields, embed the source element's data in params
+					// so the client can compare on the source's option keys/labels.
+					foreach ($js_condition->conditions as $condition)
+					{
+						$sourceData = $this->getReadonlySourceData($condition->field, $form_id);
+						if ($sourceData !== null)
+						{
+							$params = json_decode($condition->params ?? '{}');
+							if (!($params instanceof stdClass))
+							{
+								$params = new stdClass();
+							}
+							$params->source   = $sourceData;
+							$condition->params = json_encode($params);
+						}
+					}
+				}
+
 				if($format == 'view')
 				{
 					$tmp_conditions = [];
@@ -2902,36 +3035,33 @@ class EmundusModelForm extends ListModel
 							$elt = $this->db->loadObject();
 						}
 						$condition->elt_label = Text::_($elt->label);
-						$choices_plugin = ['checkbox','dropdown','radiobutton'];
 						$params = is_string($elt->params) ? json_decode($elt->params) : $elt->params;
 
-						if(in_array($elt->plugin, $choices_plugin)) {
-							// Get values
-							foreach ($params->sub_options->sub_labels as $key => $sub_label) {
-								$params->sub_options->sub_labels[$key] = Text::_($sub_label);
-							}
+						if ($elt->plugin === ElementPluginEnum::EMUNDUSREADONLY->value) {
+							// A read-only element mirrors a source element: resolve the source so the
+							// condition value is displayed with the source's option labels rather than its raw key.
+							$sourceId = (int) ($params->source_element_id ?? 0);
+							if (!empty($sourceId)) {
+								$query->clear()
+									->select($this->db->quoteName(['label', 'plugin', 'params']))
+									->from($this->db->quoteName('#__fabrik_elements'))
+									->where($this->db->quoteName('id') . ' = ' . $sourceId);
+								$this->db->setQuery($query);
+								$sourceElt = $this->db->loadObject();
 
-							$condition->options = $params->sub_options;
+								if (!empty($sourceElt)) {
+									$sourceParams = is_string($sourceElt->params) ? json_decode($sourceElt->params) : $sourceElt->params;
+									$options      = $this->getConditionOptionsFromElement($sourceElt->plugin, $sourceParams);
+									if ($options !== null) {
+										$condition->options = $options;
+									}
+								}
+							}
 						}
-						elseif ($elt->plugin == 'yesno') {
-							$condition->options = new stdClass();
-							$condition->options->sub_values = [
-								0,
-								1
-							];
-							$condition->options->sub_labels = [
-								Text::_('JNO'),
-								Text::_('JYES')
-							];
-						}
-						elseif ($elt->plugin == 'databasejoin') {
-							$condition->options = new stdClass();
-							$condition->options->sub_values = [];
-							$condition->options->sub_labels = [];
-							$databasejoin_options = $this->getDatabaseJoinOptions($params->join_db_name, $params->join_key_column, $params->join_val_column, $params->join_val_column_concat, null, true);
-							foreach ($databasejoin_options as $databasejoin_option) {
-								$condition->options->sub_values[] = $databasejoin_option->primary_key;
-								$condition->options->sub_labels[] = $databasejoin_option->value;
+						else {
+							$options = $this->getConditionOptionsFromElement($elt->plugin, $params);
+							if ($options !== null) {
+								$condition->options = $options;
 							}
 						}
 
