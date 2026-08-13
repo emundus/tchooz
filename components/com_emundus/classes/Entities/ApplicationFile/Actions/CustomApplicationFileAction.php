@@ -122,35 +122,15 @@ class CustomApplicationFileAction
 	{
 		$executed = false;
 
-		$target = new ActionTargetEntity($currentUser, $applicationFileEntity->getFnum(), $applicationFileEntity->getUser()->id);
+		$target = new ActionTargetEntity($currentUser, $applicationFileEntity->getFnum(), $applicationFileEntity->getUser()->id, $parameters);
 		if (empty($this->getConditionGroup()) || $this->getConditionGroup()->isSatisfied($target))
 		{
-			if ($this->getAction() instanceof ActionRedirect)
-			{
-				$executed = true;
-			}
-			else if ($this->getAction()->execute($target) === ActionExecutionStatusEnum::COMPLETED)
+			if ($this->getAction()->execute($target) === ActionExecutionStatusEnum::COMPLETED)
 			{
 				$executed = true;
 			}
 		}
 
 		return $executed;
-	}
-
-	public function getRedirectUrl(ApplicationFileEntity $applicationFileEntity, array $parameters = [], ?User $currentUser = null): string
-	{
-		$url = '';
-
-		if ($this->getAction() instanceof ActionRedirect)
-		{
-			$target = new ActionTargetEntity($currentUser, $applicationFileEntity->getFnum(), $applicationFileEntity->getUser()->id);
-			if (empty($this->getConditionGroup()) || $this->getConditionGroup()->isSatisfied($target))
-			{
-				$url = $this->getAction()->getUrl();
-			}
-		}
-
-		return $url;
 	}
 }

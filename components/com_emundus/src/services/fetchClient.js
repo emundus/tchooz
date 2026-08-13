@@ -1,6 +1,12 @@
 export class FetchClient {
 	constructor(controller) {
-		this.baseUrl = '/index.php?option=com_emundus&controller=' + controller;
+		// Joomla resolves a request without language segment in the default language.
+		const language =
+			typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions
+				? Joomla.getOptions('plg_system_emundus.language', {})
+				: {};
+
+		this.baseUrl = (language.currentPath || '') + '/index.php?option=com_emundus&controller=' + controller;
 	}
 
 	async get(task, params, signal = null) {

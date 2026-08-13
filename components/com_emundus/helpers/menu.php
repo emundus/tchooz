@@ -210,6 +210,44 @@ class EmundusHelperMenu
 		return $formIds;
 	}
 
+	public static function getHomepageItemId(): int
+	{
+		return (int) ComponentHelper::getParams('com_emundus')->get('logged_homepage_link', 0);
+	}
+
+	/**
+	 * The menu item id a site module is published on, 0 when it is bound to none. Some destinations
+	 * have no route of their own and are only reachable through the menu item carrying their module.
+	 *
+	 * @param   string  $module        Module element name, e.g. mod_emundus_campaign.
+	 * @param   array   $moduleParams  Params the module must carry, e.g. ['mod_em_campaign_layout' => 'default_tchooz'].
+	 */
+	public static function getMenuIdForModule(string $module, array $moduleParams = []): int
+	{
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery()
+			->select($db->quoteName('mm.menuid'))
+			->from($db->quoteName('#__modules', 'm'))
+			->join('INNER', $db->quoteName('#__modules_menu', 'mm') . ' ON ' . $db->quoteName('mm.moduleid') . ' = ' . $db->quoteName('m.id'))
+			->join('INNER', $db->quoteName('#__menu', 'menu') . ' ON ' . $db->quoteName('menu.id') . ' = ' . $db->quoteName('mm.menuid'))
+			->where($db->quoteName('m.module') . ' = :module')
+			->andWhere($db->quoteName('m.published') . ' = 1')
+			->andWhere($db->quoteName('mm.menuid') . ' > 0')
+			->andWhere($db->quoteName('menu.published') . ' = 1')
+			->andWhere($db->quoteName('menu.access') . ' != 1')
+			->order($db->quoteName('mm.menuid') . ' ASC')
+			->bind(':module', $module);
+
+		foreach ($moduleParams as $param => $value)
+		{
+			$query->andWhere('JSON_EXTRACT(' . $db->quoteName('m.params') . ', ' . $db->quote('$.' . $param) . ') = ' . $db->quote($value));
+		}
+
+		$db->setQuery($query, 0, 1);
+
+		return (int) $db->loadResult();
+	}
+
 	public static function getHomepageLink($default_link = null): string
 	{
 		$app  = Factory::getApplication();
@@ -228,7 +266,7 @@ class EmundusHelperMenu
 			$sef = $languages[$activeLanguage]->sef;
 		}
 
-		$homepage_itemId = ComponentHelper::getParams('com_emundus')->get('logged_homepage_link', '');
+		$homepage_itemId = self::getHomepageItemId();
 
 		if (!empty($homepage_itemId))
 		{
