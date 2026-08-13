@@ -16,14 +16,14 @@ header('Content-Type: text/html; charset=utf-8');
         color: var(--blue-500);
     }
 
+    .alerte-message-container .em-browser-copy + .em-browser-copy {
+        display: none;
+    }
+
     @media (max-width: 767px) {
         .alerte-message-container .em-browser-scroll span {
             display: inline-block;
             font-size: 14px !important;
-        }
-
-        .alerte-message-container .em-browser-copy + .em-browser-copy {
-            display: none;
         }
 
         .alerte-message-container .em-browser-scroll.is-scrolling {

@@ -19,14 +19,14 @@ if($announcement_type === 'info') {
 
 <?php if($announcement_type === 'urgency') : ?>
 <style>
+    .alerte-message-container .em-announcement-copy + .em-announcement-copy {
+        display: none;
+    }
+
     @media (max-width: 767px) {
         .alerte-message-container .em-announcement-scroll span {
             display: inline-block;
             font-size: 14px !important;
-        }
-
-        .alerte-message-container .em-announcement-copy + .em-announcement-copy {
-            display: none;
         }
 
         .alerte-message-container .em-announcement-scroll.is-scrolling {
