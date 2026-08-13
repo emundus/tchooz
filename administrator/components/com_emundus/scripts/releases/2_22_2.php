@@ -36,7 +36,6 @@ class Release2_22_2Installer extends ReleaseInstaller
 			$mustOpenRightsProgrammeColumn = \EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes', 'must_open_rights', 'INT', 11);
 			$this->tasks[] = $mustOpenRightsProgrammeColumn['status'];
 
-			$this->makeLegacyXreferenceNullable();
 			$this->campaignsLoggedArticle($query);
 
 			$result['status'] = !in_array(false, $this->tasks);
@@ -48,30 +47,6 @@ class Release2_22_2Installer extends ReleaseInstaller
 		}
 
 		return $result;
-	}
-
-	/**
-	 * Reliquat Joomla 3 : #__content.xreference en NOT NULL sans défaut fait échouer toute
-	 * création d'article. La rendre nullable débloque l'INSERT. Sinon, ne fait rien.
-	 */
-	private function makeLegacyXreferenceNullable(): void
-	{
-		$this->db->setQuery(
-			'SELECT ' . $this->db->quoteName('COLUMN_NAME')
-			. ' FROM ' . $this->db->quoteName('information_schema.COLUMNS')
-			. ' WHERE ' . $this->db->quoteName('TABLE_SCHEMA') . ' = DATABASE()'
-			. ' AND ' . $this->db->quoteName('TABLE_NAME') . ' = ' . $this->db->quote('jos_content')
-			. ' AND ' . $this->db->quoteName('COLUMN_NAME') . ' = ' . $this->db->quote('xreference')
-			. ' AND ' . $this->db->quoteName('IS_NULLABLE') . ' = ' . $this->db->quote('NO')
-			. ' AND ' . $this->db->quoteName('COLUMN_DEFAULT') . ' IS NULL'
-		);
-
-		if (empty($this->db->loadResult()))
-		{
-			return;
-		}
-
-		$this->tasks[] = \EmundusHelperUpdate::alterColumn('jos_content', 'xreference', 'VARCHAR', 50, 1)['status'];
 	}
 
 	private function campaignsLoggedArticle(QueryInterface $query): void
