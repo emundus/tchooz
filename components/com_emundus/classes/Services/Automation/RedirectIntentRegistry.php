@@ -6,23 +6,24 @@ use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Automation\RedirectIntent;
 
 /**
- * Collecteur request-scoped de l'intention de redirection courante.
+ * Request-scoped collector for the current redirect intent.
  *
- * Une action redirigeante n'appelle jamais $app->redirect() : elle enregistre son URL ici via
- * request(). Le point d'entrée HTTP (controller fetch ou plugin système pleine page) lit puis vide
- * l'intent via consume() et décide du transport.
+ * A redirecting action never calls $app->redirect() itself: it registers its URL here through
+ * request(). The HTTP entry point (fetch controller or system plugin for full-page requests) reads
+ * and clears the intent through consume() and decides on the transport.
  *
- * Cycle de vie = la requête HTTP, VOLONTAIREMENT découplé de AutomationExecutionContext dont
- * endProcessing() réinitialise l'état à la fin de chaque chaîne d'automations — sinon l'intent
- * serait détruit avant que le point d'entrée puisse le relire.
+ * The lifetime is the HTTP request, deliberately decoupled from AutomationExecutionContext whose
+ * endProcessing() resets its state at the end of each automation chain — the intent would otherwise
+ * be destroyed before the entry point could read it. Actions only register on the site client, where
+ * a transport exists, so nothing accumulates in queued-task batches or CLI runs.
  */
 class RedirectIntentRegistry
 {
 	private static ?RedirectIntent $pending = null;
 
 	/**
-	 * Enregistre une demande de redirection. Politique : premier arrivé gagne. Toute demande
-	 * ultérieure est ignorée et journalisée (jamais de drop silencieux).
+	 * Register a redirect request. Policy: first come, first served. Any later request is ignored
+	 * and logged (never a silent drop).
 	 */
 	public static function request(RedirectIntent $intent): void
 	{
@@ -41,13 +42,8 @@ class RedirectIntentRegistry
 		self::$pending = $intent;
 	}
 
-	public static function peek(): ?RedirectIntent
-	{
-		return self::$pending;
-	}
-
 	/**
-	 * Lit et vide l'intent courant. Appelé par le transport.
+	 * Read and clear the current intent. Called by the transport.
 	 */
 	public static function consume(): ?RedirectIntent
 	{
@@ -57,14 +53,8 @@ class RedirectIntentRegistry
 		return $intent;
 	}
 
-	public static function clear(): void
-	{
-		self::$pending = null;
-	}
-
 	/**
-	 * Réinitialise l'état. Utile pour les tests et les workers CLI qui enchaînent plusieurs items
-	 * dans un même process.
+	 * Test seam: static state survives between test methods, so each one starts from a clean slate.
 	 */
 	public static function reset(): void
 	{

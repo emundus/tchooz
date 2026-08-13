@@ -3,9 +3,9 @@
 namespace Tchooz\Entities\Automation;
 
 /**
- * Intention de redirection émise par une action (la « décision »), sans effet de bord.
- * Le transport (réponse fetch ou $app->redirect() pleine page) est décidé ailleurs, au point
- * d'entrée HTTP, à partir de l'intent collecté dans RedirectIntentRegistry.
+ * A redirect intention emitted by an action (the "decision"), with no side effect. The transport
+ * (fetch response or full-page $app->redirect()) is decided elsewhere, at the HTTP entry point,
+ * from the intent collected in RedirectIntentRegistry.
  */
 class RedirectIntent
 {

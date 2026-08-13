@@ -14,7 +14,7 @@ use Tchooz\Entities\Automation\RedirectIntent;
 class RedirectIntentTest extends TestCase
 {
 	// -------------------------------------------------------------------------
-	// Constructeur / getters
+	// Constructor / getters
 	// -------------------------------------------------------------------------
 
 	/**
@@ -29,7 +29,7 @@ class RedirectIntentTest extends TestCase
 		$this->assertSame(
 			'/index.php?option=com_emundus&task=openfile&fnum=42',
 			$intent->getUrl(),
-			'getUrl() doit renvoyer l\'URL passée au constructeur.'
+			'getUrl() must return the URL passed to the constructor.'
 		);
 	}
 
@@ -44,12 +44,12 @@ class RedirectIntentTest extends TestCase
 		$this->assertSame(
 			'redirect',
 			$intent->getSource(),
-			'getSource() doit renvoyer la source passée au constructeur.'
+			'getSource() must return the source passed to the constructor.'
 		);
 	}
 
 	// -------------------------------------------------------------------------
-	// Valeurs par défaut
+	// Default values
 	// -------------------------------------------------------------------------
 
 	/**
@@ -62,7 +62,7 @@ class RedirectIntentTest extends TestCase
 
 		$this->assertNull(
 			$intent->getSource(),
-			'La source par défaut doit être null.'
+			'The default source must be null.'
 		);
 	}
 }

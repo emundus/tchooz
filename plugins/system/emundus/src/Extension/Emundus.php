@@ -88,7 +88,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		if ($app->isClient('site'))
 		{
-			// Transport pleine page du canal de redirection unifié (voir RedirectIntentRegistry).
+			// Full-page transport of the unified redirect channel (see RedirectIntentRegistry).
 			$mapping['onAfterDispatch'] = 'onAfterDispatch';
 		}
 
@@ -124,11 +124,11 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 	}
 
 	/**
-	 * Transport pleine page du canal de redirection unifié : une action d'automation qui redirige
-	 * n'appelle plus $app->redirect() elle-même, elle enregistre son URL dans RedirectIntentRegistry.
-	 * On la consomme ici, une fois la requête traitée, et on effectue la redirection réelle — mais
-	 * uniquement sur le client site et hors réponse AJAX/raw (le endpoint fetch consomme déjà l'intent
-	 * pour le renvoyer dans sa réponse JSON).
+	 * Full-page transport of the unified redirect channel: an automation action that redirects no
+	 * longer calls $app->redirect() itself, it registers its URL in RedirectIntentRegistry. We
+	 * consume it here once the request has been dispatched and perform the actual redirect — but
+	 * only on the site client and outside AJAX/raw responses (the fetch endpoint already consumes
+	 * the intent to return it in its JSON response).
 	 */
 	public function onAfterDispatch(AfterDispatchEvent $event): void
 	{

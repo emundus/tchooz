@@ -22,12 +22,12 @@ class RedirectIntentRegistryTest extends TestCase
 	{
 		parent::setUp();
 
-		// État statique request-scoped : on repart d'une ardoise vierge à chaque test.
+		// Request-scoped static state: start each test from a clean slate.
 		RedirectIntentRegistry::reset();
 
-		// Le registre journalise quand une demande est ignorée. On fournit une application dont le
-		// log_path est inscriptible pour que le logger fichier de Joomla ne lève pas
-		// "Cannot write to log file." dans un test unitaire pur.
+		// The registry logs when a request is dropped. Provide an application with a writable
+		// log_path so Joomla's file logger does not raise "Cannot write to log file." in a pure
+		// unit test.
 		$this->previousApplication = Factory::$application;
 
 		$logPath = sys_get_temp_dir();
@@ -47,12 +47,12 @@ class RedirectIntentRegistryTest extends TestCase
 	}
 
 	// -------------------------------------------------------------------------
-	// request() — enregistrement et politique "premier arrivé gagne"
+	// request() — registration and "first come, first served" policy
 	// -------------------------------------------------------------------------
 
 	/**
 	 * @covers \Tchooz\Services\Automation\RedirectIntentRegistry::request
-	 * @covers \Tchooz\Services\Automation\RedirectIntentRegistry::peek
+	 * @covers \Tchooz\Services\Automation\RedirectIntentRegistry::consume
 	 * @return void
 	 */
 	public function testRequestWhenNoPendingStoresIntent(): void
@@ -62,8 +62,8 @@ class RedirectIntentRegistryTest extends TestCase
 
 		$this->assertSame(
 			$intent,
-			RedirectIntentRegistry::peek(),
-			'Le premier intent enregistré doit devenir l\'intent courant.'
+			RedirectIntentRegistry::consume(),
+			'The first registered intent must become the current one.'
 		);
 	}
 
@@ -76,8 +76,8 @@ class RedirectIntentRegistryTest extends TestCase
 		RedirectIntentRegistry::request(new RedirectIntent('', 'a'));
 
 		$this->assertNull(
-			RedirectIntentRegistry::peek(),
-			'Un intent avec une URL vide ne doit pas être enregistré.'
+			RedirectIntentRegistry::consume(),
+			'An intent with an empty URL must not be registered.'
 		);
 	}
 
@@ -95,32 +95,28 @@ class RedirectIntentRegistryTest extends TestCase
 
 		$this->assertSame(
 			$first,
-			RedirectIntentRegistry::peek(),
-			'Premier arrivé gagne : une demande ultérieure doit être ignorée.'
+			RedirectIntentRegistry::consume(),
+			'First come, first served: a later request must be ignored.'
 		);
 	}
 
 	// -------------------------------------------------------------------------
-	// consume() / peek()
+	// consume()
 	// -------------------------------------------------------------------------
 
 	/**
 	 * @covers \Tchooz\Services\Automation\RedirectIntentRegistry::consume
 	 * @return void
 	 */
-	public function testConsumeReturnsIntentAndClearsIt(): void
+	public function testConsumeClearsIntentSoSecondCallReturnsNull(): void
 	{
-		$intent = new RedirectIntent('/foo', 'a');
-		RedirectIntentRegistry::request($intent);
+		RedirectIntentRegistry::request(new RedirectIntent('/foo', 'a'));
 
-		$this->assertSame(
-			$intent,
-			RedirectIntentRegistry::consume(),
-			'consume() doit renvoyer l\'intent courant.'
-		);
+		RedirectIntentRegistry::consume();
+
 		$this->assertNull(
-			RedirectIntentRegistry::peek(),
-			'consume() doit vider l\'intent après lecture.'
+			RedirectIntentRegistry::consume(),
+			'consume() must clear the intent after reading it.'
 		);
 	}
 
@@ -132,47 +128,13 @@ class RedirectIntentRegistryTest extends TestCase
 	{
 		$this->assertNull(
 			RedirectIntentRegistry::consume(),
-			'consume() sans intent en attente doit renvoyer null.'
-		);
-	}
-
-	/**
-	 * @covers \Tchooz\Services\Automation\RedirectIntentRegistry::peek
-	 * @return void
-	 */
-	public function testPeekDoesNotClear(): void
-	{
-		$intent = new RedirectIntent('/foo', 'a');
-		RedirectIntentRegistry::request($intent);
-
-		RedirectIntentRegistry::peek();
-
-		$this->assertSame(
-			$intent,
-			RedirectIntentRegistry::peek(),
-			'peek() ne doit pas vider l\'intent (lecture non destructive).'
+			'consume() with no pending intent must return null.'
 		);
 	}
 
 	// -------------------------------------------------------------------------
-	// clear() / reset()
+	// reset()
 	// -------------------------------------------------------------------------
-
-	/**
-	 * @covers \Tchooz\Services\Automation\RedirectIntentRegistry::clear
-	 * @return void
-	 */
-	public function testClearRemovesPending(): void
-	{
-		RedirectIntentRegistry::request(new RedirectIntent('/foo', 'a'));
-
-		RedirectIntentRegistry::clear();
-
-		$this->assertNull(
-			RedirectIntentRegistry::peek(),
-			'clear() doit vider l\'intent en attente.'
-		);
-	}
 
 	/**
 	 * @covers \Tchooz\Services\Automation\RedirectIntentRegistry::reset
@@ -185,8 +147,8 @@ class RedirectIntentRegistryTest extends TestCase
 		RedirectIntentRegistry::reset();
 
 		$this->assertNull(
-			RedirectIntentRegistry::peek(),
-			'reset() doit vider l\'intent en attente.'
+			RedirectIntentRegistry::consume(),
+			'reset() must clear the pending intent.'
 		);
 	}
 }

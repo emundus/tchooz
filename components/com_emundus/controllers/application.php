@@ -3650,10 +3650,10 @@ class EmundusControllerApplication extends EmundusController
 					{
 						$data = [];
 
-						// Canal unifié : une action (ou une automation déclenchée en aval) qui redirige
-						// enregistre son URL dans RedirectIntentRegistry. On la consomme ici pour la
-						// renvoyer au front. Les actions de fichier non-automation (Print, Copy, Delete)
-						// n'enregistrent rien et exposent leur URL via getRedirectUrl().
+						// Unified channel: an action (or an automation triggered downstream) that
+						// redirects registers its URL in RedirectIntentRegistry. We consume it here to
+						// return it to the front. Non-automation file actions (Print, Copy, Delete)
+						// register nothing and expose their URL through getRedirectUrl().
 						$redirectIntent = RedirectIntentRegistry::consume();
 						if ($redirectIntent !== null)
 						{
