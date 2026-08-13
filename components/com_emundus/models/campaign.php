@@ -1795,6 +1795,21 @@ class EmundusModelCampaign extends ListModel
 			$m_emails   = new EmundusModelEmails;
 			$m_form     = new EmundusModelForm;
 
+			$config = (new HtmlSanitizerConfig())
+				->allowSafeElements()
+				->allowElement('a', ['href', 'title', 'target'])
+				->allowElement('img', ['src', 'style', 'alt', 'title', 'width', 'height', 'draggable', 'containerstyle', 'wrapperstyle'])
+				->allowElement('p', ['style', 'class'])
+				->allowElement('span', ['style', 'class'])
+				->allowElement('div', ['data-plugin', 'data-type'])
+				->allowAttribute('img', ['src', 'style', 'alt', 'title', 'width', 'height', 'draggable', 'containerstyle', 'wrapperstyle'])
+				->allowAttribute('*', 'style')
+				->allowRelativeLinks(true)
+				->allowRelativeMedias(true)
+				->forceHttpsUrls(true);
+			$complexHtmlSanitizer = HtmlSanitizerSingleton::getInstance($config);
+			$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
+
 			$lang = $this->app->getLanguage();
 			$actualLanguage = !empty($lang->getTag()) ? substr($lang->getTag(), 0, 2) : 'fr';
 
@@ -1845,7 +1860,7 @@ class EmundusModelCampaign extends ListModel
 					{
 						$labels->fr    = !empty($data['label']['fr']) ? $data['label']['fr'] : '';
 						$labels->en    = !empty($data['label']['en']) ? $data['label']['en'] : '';
-						$data['label'] = $data['label'][$actualLanguage];
+						$data['label'] = $htmlSanitizer->sanitizeNoHtml($data['label'][$actualLanguage]);
 					}
 					if ($key == 'description' && $data['description'] == 'null')
 					{
@@ -1872,10 +1887,9 @@ class EmundusModelCampaign extends ListModel
 				}
 			}
 
-			$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
 			if (isset($data['description']))
 			{
-				$data['description'] = $htmlSanitizer->sanitizeFor('section', $data['description']);
+				$data['description'] = $complexHtmlSanitizer->sanitizeFor('body', $data['description']);
 			}
 			if (isset($data['short_description']))
 			{

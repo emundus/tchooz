@@ -6481,6 +6481,17 @@ screen and (max-height: 769px) {
     margin-top: 0;
   }
 
+  #g-navigation #header-a .logo,
+  #g-header #header-a .logo {
+    max-height: 32px;
+    max-width: 144px;
+  }
+
+  .gantry #g-navigation .g-grid,
+  .gantry #g-header .g-grid {
+    row-gap: 10px;
+  }
+
   #g-navigation .g-container #header-c,
   #g-header .g-container #header-c {
     justify-content: center;
