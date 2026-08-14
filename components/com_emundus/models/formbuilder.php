@@ -4006,24 +4006,27 @@ class EmundusModelFormbuilder extends ListModel
 		}
 	}
 
-	function getDatabaseJoinOrderColumns($database_name)
+	/**
+	 * @param   string  $database_name
+	 *
+	 * @return array
+	 */
+	function getDatabaseJoinOrderColumns(string $database_name): array
 	{
+		$order_columns = [];
 
-
-		$query = "SELECT DISTINCT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'$database_name'";
-
+		$query = "SELECT DISTINCT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = " . $this->db->quote($database_name);
 		try
 		{
 			$this->db->setQuery($query);
-
-			return $this->db->loadObjectList();
+			$order_columns =  $this->db->loadObjectList();
 		}
 		catch (Exception $e)
 		{
 			Log::add('component/com_emundus/models/formbuilder | Error at getting databases references columns : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return false;
 		}
+
+		return $order_columns;
 	}
 
 	function enableRepeatGroup($gid)
