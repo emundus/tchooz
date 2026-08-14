@@ -808,7 +808,7 @@ class EmundusControllerFormbuilder extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
 	public function getDatabaseJoinOrderColumns(): EmundusResponse
 	{
-		$database_name = $this->input->getString('database_name');
+		$database_name = $this->input->getString('database_name', '');
 		if (empty($database_name))
 		{
 			throw new InvalidArgumentException(Text::_('MISSING_PARAMS'));
