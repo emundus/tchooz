@@ -102,7 +102,9 @@ class DocaposteSynchronizer extends Api
 		$conf['emailCancellation'] = $params['configuration']['emailCancellation'];
 		$conf['emailCompletion']   = $params['configuration']['emailCompletion'];
 		$conf['mode']              = $params['configuration']['mode'];
-		$infos['conf']             = $conf;
+		// Not set means the integration was configured before this option existed, proof document was always retrieved
+		$conf['retrieveProofDocument'] = !empty($params['configuration']['retrieveProofDocument'] ?? 1);
+		$infos['conf']                 = $conf;
 
 		return $infos;
 	}
@@ -219,7 +221,27 @@ class DocaposteSynchronizer extends Api
 			    if ($requestSignersSignedCount === count($request->getSigners()) && $request->getStatus() !== SignStatusEnum::SIGNED && $transaction['state'] === 'OPEN')
 				{
 					$request->setStatus(SignStatusEnum::FINISHING);
-					$this->terminateTransaction($request);
+					$terminated = $this->terminateTransaction($request);
+
+					// Only the proof document requires the transaction to be archived, without it the request
+					// can be completed as soon as the transaction is terminated.
+					if ($terminated && !$this->config['retrieveProofDocument'])
+					{
+						try
+						{
+							$this->completeRequest($request);
+						}
+						catch (Exception $e)
+						{
+							Log::add(
+								'Error while completing Docaposte request right after termination : ' . $e->getMessage(),
+								Log::ERROR,
+								'com_emundus.docaposte'
+							);
+
+							$request->setStatus(SignStatusEnum::FINISHING);
+						}
+					}
 				}
 				else
 				{
@@ -228,33 +250,7 @@ class DocaposteSynchronizer extends Api
 						switch ($transaction['state'])
 						{
 							case 'ARCHIVED':
-								$request->setStatus(SignStatusEnum::SIGNED);
-								if ($this->config['emailCompletion'])
-								{
-									$this->sendEmail($request, DocaposteEmailTypeEnum::COMPLETE_TRANSACTION);
-								}
-								$this->onAfterRequestCompleted($request);
-								PluginHelper::importPlugin('emundus');
-
-								// Declare the event
-								$onAfterSignRequestCompletedEventHandler = new GenericEvent(
-									'onCallEventHandler',
-									['onAfterSignRequestCompleted',
-										// Datas to pass to the event
-										['context' => new EventContextEntity(
-											Factory::getApplication()->getIdentity() ?? $this->getAutomatedTaskUser(),
-											[$request->getFnum()],
-											[],
-											['request_id' => $request->getId()]
-										)]
-
-									]
-								);
-
-								$dispatcher = Factory::getApplication()->getDispatcher();
-								// Dispatch the event
-								$dispatcher->dispatch('onCallEventHandler', $onAfterSignRequestCompletedEventHandler);
-
+								$this->completeRequest($request);
 								break;
 							case 'ABANDONED':
 								$request->setStatus(SignStatusEnum::CANCELLED);
@@ -317,6 +313,41 @@ class DocaposteSynchronizer extends Api
 		return $managed;
 	}
 
+	/**
+	 * @throws Exception
+	 */
+	private function completeRequest(Request $request): void
+	{
+		$request->setStatus(SignStatusEnum::SIGNED);
+
+		if ($this->config['emailCompletion'])
+		{
+			$this->sendEmail($request, DocaposteEmailTypeEnum::COMPLETE_TRANSACTION);
+		}
+
+		$this->onAfterRequestCompleted($request);
+
+		PluginHelper::importPlugin('emundus');
+
+		// Declare the event
+		$onAfterSignRequestCompletedEventHandler = new GenericEvent(
+			'onCallEventHandler',
+			['onAfterSignRequestCompleted',
+				// Datas to pass to the event
+				['context' => new EventContextEntity(
+					Factory::getApplication()->getIdentity() ?? $this->getAutomatedTaskUser(),
+					[$request->getFnum()],
+					[],
+					['request_id' => $request->getId()]
+				)]
+
+			]
+		);
+
+		$dispatcher = Factory::getApplication()->getDispatcher();
+		// Dispatch the event
+		$dispatcher->dispatch('onCallEventHandler', $onAfterSignRequestCompletedEventHandler);
+	}
 
 	/**
 	 * @throws Exception
@@ -790,96 +821,113 @@ class DocaposteSynchronizer extends Api
 			throw new \RuntimeException(Text::_('DOCAPOSTE_SYNCHRONIZER_FAILED_TO_WRITE_DOCUMENT'));
 		}
 
+		if (!class_exists('EmundusHelperFiles'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
+		}
+		if (!class_exists('EmundusModelLogs'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/models/logs.php';
+		}
+
+		$attachmentRepository = new AttachmentTypeRepository();
+		$signedAttachment     = $attachmentRepository->get(['id' => $upload->getAttachmentId()])[0];
+
+		$automatedTaskUserId = $this->getAutomatedTaskUserId();
+		$applicantId         = EmundusHelperFiles::getApplicantIdFromFileId($request->getCcid());
+
+		if ($this->config['retrieveProofDocument'])
+		{
+			$this->createProofDocumentUpload($request, $upload, $signedAttachment, $automatedTaskUserId, $applicantId);
+		}
+
+		$upload->setIsSigned(true);
+
+		if (!$uploadRepository->flush($upload))
+		{
+			throw new RuntimeException(Text::_('DOCAPOSTE_SYNCHRONIZER_FAILED_TO_UPDATE_DOCUMENT'));
+		}
+
+		$updatedLog              = new \stdClass();
+		$updatedLog->description = '<b>[' . Text::_($signedAttachment->getName()) . ']</b>';
+		$updatedLog->element     = '<u>' . Text::_('COM_EMUNDUS_DOCAPOSTE_DOCUMENT_SIGNED') . '</u>';
+		$updatedLog->old         = Text::_('COM_EMUNDUS_DOCUMENT_SIGNED_NO');
+		$updatedLog->new         = Text::_('COM_EMUNDUS_DOCUMENT_SIGNED_YES');
+		EmundusModelLogs::log($automatedTaskUserId, $applicantId, $request->getFnum(), 'attachment', 'u', 'COM_EMUNDUS_ACCESS_ATTACHMENT_UPDATE', json_encode(['updated' => [$updatedLog]], JSON_UNESCAPED_UNICODE));
+
+		$request->setSignedUploadId($upload->getId());
+		$requestRepository = new RequestRepository();
+
+		if (!$requestRepository->flush($request))
+		{
+			throw new RuntimeException(Text::_('DOCAPOSTE_SYNCHRONIZER_FAILED_TO_UPDATE_REQUEST'));
+		}
+	}
+
+	/**
+	 * Retrieve the Docaposte proof document and attach it to the file as a new upload.
+	 *
+	 * @throws Exception
+	 */
+	private function createProofDocumentUpload(Request $request, UploadEntity $signedUpload, AttachmentType $signedAttachment, ?int $automatedTaskUserId, int $applicantId): void
+	{
 		$proofDocument = $this->getProofDocument($request);
 
-		if (!empty($proofDocument))
+		if (empty($proofDocument))
 		{
-			$attachmentRepository = new AttachmentTypeRepository();
-			$signedAttachment = $attachmentRepository->get(['id' => $upload->getAttachmentId()])[0];
-			$attachment = $attachmentRepository->get(['lbl' => '_docaposte_proof_document']);
+			return;
+		}
 
-			if (empty($attachment))
-			{
-				$attachment = new AttachmentType(
-					0,
-					'_docaposte_proof_document',
-					Text::_('COM_EMUNDUS_DOCAPOSTE_PROOF_DOCUMENT'),
-					Text::_('COM_EMUNDUS_DOCAPOSTE_PROOF_DOCUMENT_DESCRIPTION'),
-					"pdf",
-					1
-				);
+		$attachmentRepository = new AttachmentTypeRepository();
+		$attachment           = $attachmentRepository->get(['lbl' => '_docaposte_proof_document']);
 
-				$attachmentRepository->flush($attachment);
-			}
-			else
-			{
-				$attachment = $attachment[0];
-			}
-
-			$filename    = $upload->getUserId() . "-" . $upload->getCampaignId() . "-" . "proof_document_" . random_int(100000000, 999999999) . ".pdf";
-			$proofUpload = new UploadEntity(
+		if (empty($attachment))
+		{
+			$attachment = new AttachmentType(
 				0,
-				$request->getCreatedBy(),
-				$request->getFnum(),
-				$attachment->getId(),
-				$filename,
-				null,
-				Text::_('COM_EMUNDUS_DOCAPOSTE_PROOF_DOCUMENT') . ' - ' . $signedAttachment->getName(),
-				$upload->getCampaignId(),
-				null,
-				UploadValidationStatusEnum::TO_BE_VALIDATED,
-				false,
-				null,
-				false,
-				true
+				'_docaposte_proof_document',
+				Text::_('COM_EMUNDUS_DOCAPOSTE_PROOF_DOCUMENT'),
+				Text::_('COM_EMUNDUS_DOCAPOSTE_PROOF_DOCUMENT_DESCRIPTION'),
+				"pdf",
+				1
 			);
 
-			$uploadRepository->flush($proofUpload);
-
-			if (file_put_contents(dirname($upload->getFileInternalPath()) . '/' . $filename, $proofDocument) === false)
-			{
-				throw new \RuntimeException(Text::_('DOCAPOSTE_SYNCHRONIZER_FAILED_TO_WRITE_PROOF_DOCUMENT'));
-			}
-
-			if (!class_exists('EmundusHelperFiles'))
-			{
-				require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
-			}
-			if (!class_exists('EmundusModelLogs'))
-			{
-				require_once JPATH_SITE . '/components/com_emundus/models/logs.php';
-			}
-
-			$automatedTaskUserId = $this->getAutomatedTaskUserId();
-			$applicantId         = EmundusHelperFiles::getApplicantIdFromFileId($request->getCcid());
-
-			$createdLog = new \stdClass();
-			$createdLog->element = '[' . Text::_($attachment->getName()) . ']';
-			$createdLog->details = $filename;
-			EmundusModelLogs::log($automatedTaskUserId, $applicantId, $request->getFnum(), 'attachment', 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE', json_encode(['created' => [$createdLog]], JSON_UNESCAPED_UNICODE));
-
-			$upload->setIsSigned(true);
-
-			if (!$uploadRepository->flush($upload))
-			{
-				throw new \RuntimeException(Text::_('DOCAPOSTE_SYNCHRONIZER_FAILED_TO_UPDATE_DOCUMENT'));
-			}
-
-			$updatedLog = new \stdClass();
-			$updatedLog->description = '<b>[' . Text::_($signedAttachment->getName()) . ']</b>';
-			$updatedLog->element     = '<u>' . Text::_('COM_EMUNDUS_DOCAPOSTE_DOCUMENT_SIGNED') . '</u>';
-			$updatedLog->old         = Text::_('COM_EMUNDUS_DOCUMENT_SIGNED_NO');
-			$updatedLog->new         = Text::_('COM_EMUNDUS_DOCUMENT_SIGNED_YES');
-			EmundusModelLogs::log($automatedTaskUserId, $applicantId, $request->getFnum(), 'attachment', 'u', 'COM_EMUNDUS_ACCESS_ATTACHMENT_UPDATE', json_encode(['updated' => [$updatedLog]], JSON_UNESCAPED_UNICODE));
-
-			$request->setSignedUploadId($upload->getId());
-			$requestRepository = new RequestRepository();
-
-			if (!$requestRepository->flush($request))
-			{
-				throw new \RuntimeException(Text::_('DOCAPOSTE_SYNCHRONIZER_FAILED_TO_UPDATE_REQUEST'));
-			}
+			$attachmentRepository->flush($attachment);
 		}
+		else
+		{
+			$attachment = $attachment[0];
+		}
+
+		$filename    = $signedUpload->getUserId() . "-" . $signedUpload->getCampaignId() . "-" . "proof_document_" . random_int(100000000, 999999999) . ".pdf";
+		$proofUpload = new UploadEntity(
+			0,
+			$request->getCreatedBy(),
+			$request->getFnum(),
+			$attachment->getId(),
+			$filename,
+			null,
+			Text::_('COM_EMUNDUS_DOCAPOSTE_PROOF_DOCUMENT') . ' - ' . $signedAttachment->getName(),
+			$signedUpload->getCampaignId(),
+			null,
+			UploadValidationStatusEnum::TO_BE_VALIDATED,
+			false,
+			null,
+			false,
+			true
+		);
+
+		(new UploadRepository())->flush($proofUpload);
+
+		if (file_put_contents(dirname($signedUpload->getFileInternalPath()) . '/' . $filename, $proofDocument) === false)
+		{
+			throw new RuntimeException(Text::_('DOCAPOSTE_SYNCHRONIZER_FAILED_TO_WRITE_PROOF_DOCUMENT'));
+		}
+
+		$createdLog          = new \stdClass();
+		$createdLog->element = '[' . Text::_($attachment->getName()) . ']';
+		$createdLog->details = $filename;
+		EmundusModelLogs::log($automatedTaskUserId, $applicantId, $request->getFnum(), 'attachment', 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE', json_encode(['created' => [$createdLog]], JSON_UNESCAPED_UNICODE));
 	}
 
 	private function getFinalDocument(Request $request): string
