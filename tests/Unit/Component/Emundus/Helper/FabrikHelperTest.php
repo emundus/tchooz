@@ -156,11 +156,12 @@ class FabrikHelperTest extends UnitTestCase
 				$this->assertTrue($updated, 'The params should be updated in the database');
 			}
 
+			$targeted_value = 'test';
+
 			$value = $this->helper->getValueByAlias($params['alias'], null, $applicant_id);
 			$this->assertEmpty($value['raw'], 'The value obtained should be empty');
 
 			// insert a value in the database
-			$targeted_value = 'test';
 			$query->clear()
 				->insert($db->quoteName($db_table_name))
 				->columns($db->quoteName('fnum') . ', ' . $db->quoteName('e_797_7973') . ', ' . $db->quoteName('user'))
@@ -169,6 +170,9 @@ class FabrikHelperTest extends UnitTestCase
 			$db->setQuery($query);
 			$inserted = $db->execute();
 			$this->assertTrue($inserted, 'The value should be inserted in the database');
+
+			// Track the row so tearDown can remove it and keep the test re-runnable.
+			$this->insertedDataRows[] = ['table' => $db_table_name, 'id' => (int) $db->insertid()];
 
 			$value = $this->helper->getValueByAlias($params['alias'],null, $applicant_id);
 			$this->assertEquals($targeted_value, $value['raw'], 'The value obtained should be the same as the value in the database');
@@ -213,5 +217,221 @@ class FabrikHelperTest extends UnitTestCase
 
 		$fabrik_aliases_grouped = $this->helper::getAllFabrikAliasesGrouped(25, 1, 'alias_that_does_not_exist', '', '', 'ASC', $this->dataset['coordinator']);
 		$this->assertEmpty($fabrik_aliases_grouped['datas'], 'There should be no aliases in the datas group when a non-existing alias is used as filter');
+	}
+
+	// -------------------------------------------------------------------------
+	// sortElementIdsByDataFreshness
+	// -------------------------------------------------------------------------
+
+	/**
+	 * A fnum that no real data belongs to, so only the logs we insert drive the freshness.
+	 */
+	private const FRESHNESS_FNUM = '0000000000unittestfresh';
+
+	/**
+	 * Ids that do not match any fabrik element, so the data-table fallback stays out of the way.
+	 */
+	private const FRESHNESS_ID_A = 999001;
+
+	private const FRESHNESS_ID_B = 999002;
+
+	private const FRESHNESS_ID_C = 999003;
+
+	/**
+	 * @var int[] Ids of the log rows created for the freshness tests, cleaned up in tearDown.
+	 */
+	private array $createdLogIds = [];
+
+	/**
+	 * @var array<int, array{table: string, id: int}> Fabrik data rows inserted by tests, cleaned up in tearDown.
+	 */
+	private array $insertedDataRows = [];
+
+	protected function tearDown(): void
+	{
+		if (!empty($this->insertedDataRows)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+
+			foreach ($this->insertedDataRows as $row) {
+				$query = $db->createQuery();
+				$query->delete($db->quoteName($row['table']))
+					->where($db->quoteName('id') . ' = ' . (int) $row['id']);
+
+				try {
+					$db->setQuery($query);
+					$db->execute();
+				}
+				catch (\Exception) {
+				}
+			}
+
+			$this->insertedDataRows = [];
+		}
+
+		if (!empty($this->createdLogIds)) {
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+			$query->delete($db->quoteName('#__emundus_logs'))
+				->where($db->quoteName('id') . ' IN (' . implode(',', array_map('intval', $this->createdLogIds)) . ')');
+
+			try {
+				$db->setQuery($query);
+				$db->execute();
+			}
+			catch (\Exception) {
+			}
+
+			$this->createdLogIds = [];
+		}
+
+		parent::tearDown();
+	}
+
+	/**
+	 * Inserts a "file update" log carrying the given element id, and returns nothing but records
+	 * the row id for cleanup.
+	 */
+	private function insertUpdateLog(int $elementId, string $timestamp): void
+	{
+		$db     = Factory::getContainer()->get('DatabaseDriver');
+		$params = json_encode(['updated' => [['id' => $elementId, 'element' => 'unit test', 'old' => '', 'new' => 'x']]]);
+
+		$columns = ['timestamp', 'user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
+		$values  = [
+			$db->quote($timestamp),
+			$db->quote($this->dataset['coordinator']),
+			$db->quote($this->dataset['applicant']),
+			$db->quote(self::FRESHNESS_FNUM),
+			1,
+			$db->quote('u'),
+			$db->quote('COM_EMUNDUS_ACCESS_FILE_UPDATE'),
+			$db->quote($params),
+			$db->quote(''),
+		];
+
+		$query = $db->createQuery();
+		$query->insert($db->quoteName('#__emundus_logs'))
+			->columns($db->quoteName($columns))
+			->values(implode(',', $values));
+
+		$db->setQuery($query);
+		$db->execute();
+
+		$this->createdLogIds[] = (int) $db->insertid();
+	}
+
+	/**
+	 * @covers EmundusHelperFabrik::sortElementIdsByDataFreshness
+	 * @return void
+	 */
+	public function testSortElementIdsByDataFreshnessWhenFewerThanTwoIdsReturnsInputAsList()
+	{
+		$this->assertSame([], EmundusHelperFabrik::sortElementIdsByDataFreshness([], self::FRESHNESS_FNUM), 'An empty id list is returned untouched');
+		$this->assertSame([42], EmundusHelperFabrik::sortElementIdsByDataFreshness([42], self::FRESHNESS_FNUM), 'A single id needs no sorting and is returned as-is');
+	}
+
+	/**
+	 * @covers EmundusHelperFabrik::sortElementIdsByDataFreshness
+	 * @return void
+	 */
+	public function testSortElementIdsByDataFreshnessWhenFnumEmptyReturnsReindexedInput()
+	{
+		$sorted = EmundusHelperFabrik::sortElementIdsByDataFreshness([5 => 101, 9 => 202], '');
+		$this->assertSame([101, 202], $sorted, 'With an empty fnum the input order is preserved but keys are reindexed to a plain list');
+	}
+
+	/**
+	 * @covers EmundusHelperFabrik::sortElementIdsByDataFreshness
+	 * @return void
+	 */
+	public function testSortElementIdsByDataFreshnessOrdersFreshestLoggedElementFirst()
+	{
+		$this->insertUpdateLog(self::FRESHNESS_ID_A, '2024-01-01 10:00:00');
+		$this->insertUpdateLog(self::FRESHNESS_ID_B, '2025-01-01 10:00:00');
+
+		$expected = [self::FRESHNESS_ID_B, self::FRESHNESS_ID_A];
+
+		$this->assertSame(
+			$expected,
+			EmundusHelperFabrik::sortElementIdsByDataFreshness([self::FRESHNESS_ID_A, self::FRESHNESS_ID_B], self::FRESHNESS_FNUM),
+			'The element with the most recent update log comes first'
+		);
+
+		$this->assertSame(
+			$expected,
+			EmundusHelperFabrik::sortElementIdsByDataFreshness([self::FRESHNESS_ID_B, self::FRESHNESS_ID_A], self::FRESHNESS_FNUM),
+			'The freshest element wins regardless of the input order'
+		);
+	}
+
+	/**
+	 * @covers EmundusHelperFabrik::sortElementIdsByDataFreshness
+	 * @return void
+	 */
+	public function testSortElementIdsByDataFreshnessPlacesElementsWithoutFreshnessLast()
+	{
+		$this->insertUpdateLog(self::FRESHNESS_ID_A, '2024-01-01 10:00:00');
+
+		// Id C has neither a log nor a matching data table, so it has no known freshness.
+		$sorted = EmundusHelperFabrik::sortElementIdsByDataFreshness([self::FRESHNESS_ID_C, self::FRESHNESS_ID_A], self::FRESHNESS_FNUM);
+
+		$this->assertSame(
+			[self::FRESHNESS_ID_A, self::FRESHNESS_ID_C],
+			$sorted,
+			'An element with a known update timestamp is ordered before one with no known freshness'
+		);
+	}
+
+	/**
+	 * Covers the data-table fallback: a real element with no log entry must still get a freshness
+	 * timestamp resolved from its data table (element -> db_table_name -> MAX(time_date)).
+	 *
+	 * @covers EmundusHelperFabrik::sortElementIdsByDataFreshness
+	 * @return void
+	 */
+	public function testSortElementIdsByDataFreshnessFallsBackToDataTableWhenNoLog()
+	{
+		$form_id = $this->h_dataset->getUnitTestFabrikForm();
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		$query->select('fl.db_table_name, fe.id AS element_id')
+			->from($db->quoteName('#__fabrik_elements', 'fe'))
+			->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+			->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
+			->where($db->quoteName('ffg.form_id') . ' = ' . (int) $form_id)
+			->setLimit(1);
+		$db->setQuery($query);
+		$row = $db->loadObject();
+
+		if (empty($row) || empty($row->db_table_name)) {
+			$this->markTestSkipped('No fabrik data table available for the unit test form');
+		}
+
+		$columns = array_keys($db->getTableColumns($row->db_table_name));
+		if (!in_array('time_date', $columns) || !in_array('fnum', $columns)) {
+			$this->markTestSkipped('The unit test data table has no time_date/fnum column');
+		}
+
+		$realElementId = (int) $row->element_id;
+
+		// A row in the element's own data table, dated, but with no matching update log.
+		$query->clear()
+			->insert($db->quoteName($row->db_table_name))
+			->columns($db->quoteName(['fnum', 'time_date']))
+			->values($db->quote(self::FRESHNESS_FNUM) . ', ' . $db->quote('2025-03-15 09:30:00'));
+		$db->setQuery($query);
+		$db->execute();
+		$this->insertedDataRows[] = ['table' => $row->db_table_name, 'id' => (int) $db->insertid()];
+
+		// Id C is unknown everywhere, so only the real element can resolve a timestamp.
+		$sorted = EmundusHelperFabrik::sortElementIdsByDataFreshness([self::FRESHNESS_ID_C, $realElementId], self::FRESHNESS_FNUM);
+
+		$this->assertSame(
+			[$realElementId, self::FRESHNESS_ID_C],
+			$sorted,
+			'A real element resolves its freshness from the data table and outranks an unknown id'
+		);
 	}
 }

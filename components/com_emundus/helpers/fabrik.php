@@ -28,10 +28,12 @@ use libphonenumber\PhoneNumberFormat;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\WorkflowEntity;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\TransformerFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Profile\ProfileRepository;
@@ -42,6 +44,8 @@ use Tchooz\Repositories\Profile\ProfileRepository;
  */
 class EmundusHelperFabrik
 {
+	private static array $dataTableTimestamps = [];
+
 	public function __construct()
 	{
 		Log::addLogger(['text_file' => 'com_emundus.fabrik.helper.php'], Log::ALL, ['com_emundus.fabrik.helper']);
@@ -1866,6 +1870,193 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $elements;
 	}
 
+	/**
+	 * Sort element ids from the freshest known value to the oldest one, for a given file.
+	 *
+	 * @param   array   $elementIds  The fabrik element ids to sort.
+	 * @param   string  $fnum        The file number the data belongs to.
+	 *
+	 * @return  array   The element ids, freshest data first.
+	 */
+	public static function sortElementIdsByDataFreshness(array $elementIds, string $fnum): array
+	{
+		$elementIds = array_values($elementIds);
+
+		if (count($elementIds) < 2 || empty($fnum))
+		{
+			return $elementIds;
+		}
+
+		$timestamps = self::getElementLogTimestamps($elementIds, $fnum);
+
+		$missingIds = array_diff($elementIds, array_keys($timestamps));
+
+		if (!empty($missingIds))
+		{
+			$tablesByElement = self::getElementsDataTables($missingIds);
+
+			foreach ($missingIds as $elementId)
+			{
+				$tableName = $tablesByElement[$elementId] ?? '';
+
+				if (!empty($tableName))
+				{
+					$timestamps[$elementId] = self::getDataTableTimestamp($tableName, $fnum);
+				}
+			}
+		}
+
+		usort($elementIds, function ($elementA, $elementB) use ($timestamps) {
+			return ($timestamps[$elementB] ?? 0) <=> ($timestamps[$elementA] ?? 0);
+		});
+
+		return $elementIds;
+	}
+
+	/**
+	 * Freshest timestamp per element id, read from the form-modification logs.
+	 *
+	 * @param   array   $elementIds  The fabrik element ids to look for.
+	 * @param   string  $fnum        The file number the data belongs to.
+	 *
+	 * @return  array<int, int>  Element id => unix timestamp of its last logged modification.
+	 */
+	private static function getElementLogTimestamps(array $elementIds, string $fnum): array
+	{
+		$timestamps   = [];
+		$remainingIds = array_flip($elementIds);
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		try
+		{
+			$actionRepository = new ActionRepository();
+			$action = $actionRepository->getByName(ActionEnum::FILE->value);
+
+			$query = $db->createQuery()
+				->select('timestamp, params')
+				->from($db->quoteName('#__emundus_logs'))
+				->where($db->quoteName('fnum_to') . ' = ' . $db->quote($fnum))
+				->where($db->quoteName('action_id') . ' = ' . $action->getId())
+				->where($db->quoteName('verb') . ' = ' . $db->quote('u'))
+				->where($db->quoteName('params') . ' LIKE ' . $db->quote('%"updated"%'))
+				->order($db->quoteName('timestamp') . ' DESC');
+			$db->setQuery($query);
+			$logs = $db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/helpers/fabrik | Cannot retrieve modification logs for fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.fabrik.helper');
+
+			return $timestamps;
+		}
+
+		foreach ($logs as $log)
+		{
+			if (empty($remainingIds))
+			{
+				break;
+			}
+
+			$params = json_decode($log->params, true);
+
+			foreach ($params['updated'] ?? [] as $updatedElement)
+			{
+				$elementId = (int) ($updatedElement['id'] ?? 0);
+
+				if (isset($remainingIds[$elementId]))
+				{
+					$timestamps[$elementId] = strtotime($log->timestamp);
+					unset($remainingIds[$elementId]);
+				}
+			}
+		}
+
+		return $timestamps;
+	}
+
+	/**
+	 * Map fabrik element ids to the name of the data table they are stored in.
+	 *
+	 * @param   array  $elementIds  The fabrik element ids to look for.
+	 *
+	 * @return  array<int, string>  Element id => data table name.
+	 */
+	private static function getElementsDataTables(array $elementIds): array
+	{
+		$tablesByElement = [];
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		try
+		{
+			$query = $db->createQuery()
+				->select('fe.id, fl.db_table_name')
+				->from($db->quoteName('#__fabrik_elements', 'fe'))
+				->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+				->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
+				->where($db->quoteName('fe.id') . ' IN (' . implode(',', array_map('intval', $elementIds)) . ')');
+			$db->setQuery($query);
+			$tablesByElement = $db->loadAssocList('id', 'db_table_name');
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/helpers/fabrik | Cannot retrieve data tables of elements : ' . $e->getMessage(), Log::ERROR, 'com_emundus.fabrik.helper');
+		}
+
+		return $tablesByElement;
+	}
+
+	/**
+	 * Get the submission timestamp of a file row inside a fabrik data table.
+	 *
+	 * @param   string  $tableName  The fabrik data table name.
+	 * @param   string  $fnum       The file number.
+	 *
+	 * @return  int     The unix timestamp of the row, 0 when unknown.
+	 */
+	private static function getDataTableTimestamp(string $tableName, string $fnum): int
+	{
+		$cacheKey = $tableName . '|' . $fnum;
+
+		if (isset(self::$dataTableTimestamps[$cacheKey]))
+		{
+			return self::$dataTableTimestamps[$cacheKey];
+		}
+
+		self::$dataTableTimestamps[$cacheKey] = 0;
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		try
+		{
+			$columns = array_keys($db->getTableColumns($tableName));
+
+			if (!in_array('time_date', $columns) || !in_array('fnum', $columns))
+			{
+				return 0;
+			}
+
+			$query = $db->createQuery()
+				->select('MAX(' . $db->quoteName('time_date') . ')')
+				->from($db->quoteName($tableName))
+				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$timeDate = $db->loadResult();
+
+			if (!empty($timeDate))
+			{
+				self::$dataTableTimestamps[$cacheKey] = (int) strtotime($timeDate);
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/helpers/fabrik | Cannot retrieve data freshness of table ' . $tableName . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.fabrik.helper');
+		}
+
+		return self::$dataTableTimestamps[$cacheKey];
+	}
+
 	static function getElementById(int $id): ?object
 	{
 		$db    = Factory::getContainer()->get('DatabaseDriver');
@@ -2023,6 +2214,17 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					$elements = array_filter($elements, function ($element) use ($fnumElements) {
 						return in_array($element->id, $fnumElements);
 					});
+
+					// Return the value from the freshest element first when the alias maps to several of them.
+					$elementsById = [];
+					foreach ($elements as $element)
+					{
+						$elementsById[$element->id] = $element;
+					}
+					$elements = array_map(
+						fn($id) => $elementsById[$id],
+						self::sortElementIdsByDataFreshness(array_keys($elementsById), $fnum)
+					);
 				}
 
 				try
