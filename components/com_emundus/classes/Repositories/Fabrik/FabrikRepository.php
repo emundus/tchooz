@@ -29,6 +29,7 @@ use Tchooz\Enums\Fabrik\FabrikObjectsEnum;
 use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Factories\Language\LanguageFactory;
+use Tchooz\Repositories\Language\LanguageRepository;
 use Tchooz\Services\Fabrik\ApplicantTableCreator;
 use Tchooz\Services\Fabrik\EvaluationTableCreator;
 
@@ -1300,24 +1301,31 @@ class FabrikRepository
 			$this->db->setQuery($query);
 			$this->db->execute();
 
-			$languages = LanguageHelper::getLanguages();
-			$labels    = [];
+			$languages          = LanguageHelper::getLanguages();
+			$languageRepository = new LanguageRepository();
+			$labels             = [];
+			$rawLabels          = [];
+
 			foreach ($languages as $language)
 			{
-				$translation = LanguageFactory::getTranslation($oldLabel, $language->lang_code);
+				$translation = LanguageFactory::getTranslation($oldLabel, $language->lang_code, $languageRepository);
 
-				if ($translation !== null)
+				// Legacy labels mix free text and translation keys, ex: '2025 - FORM_EVALUATION'
+				$resolved = LanguageFactory::resolveTranslationKeys($translation ?? $oldLabel, $language->lang_code, $languageRepository);
+
+				if ($translation !== null || $resolved !== $oldLabel)
 				{
-					$labels[$language->sef] = $labelPrefix . $translation;
+					$labels[$language->sef] = $labelPrefix . $resolved;
+				}
+				else
+				{
+					$rawLabels[$language->sef] = $labelPrefix . $oldLabel;
 				}
 			}
 
 			if (empty($labels))
 			{
-				foreach ($languages as $language)
-				{
-					$labels[$language->sef] = $labelPrefix . $oldLabel;
-				}
+				$labels = $rawLabels;
 			}
 
 			$key     = LanguageFactory::translate($newKey, $labels, $referenceTable, $identifier, $referenceField, $this->user->id);
