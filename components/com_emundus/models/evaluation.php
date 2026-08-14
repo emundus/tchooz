@@ -4033,7 +4033,8 @@ class EmundusModelEvaluation extends JModelList
 								foreach ($aliasFabrik as $alias => $ids) {
 									$value_found = false;
 									$preg['patterns'][] = '/\$\{' . $alias . '\}/';
-									foreach($ids as $id) {
+									$aliasFabrik[$alias] = EmundusHelperFabrik::sortElementIdsByDataFreshness($ids, $fnum);
+									foreach($aliasFabrik[$alias] as $id) {
 										if (!empty($fabrikValues[$id][$fnum]) && !empty($fabrikValues[$id][$fnum]['val'])) {
 											$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
 											$value_found = true;

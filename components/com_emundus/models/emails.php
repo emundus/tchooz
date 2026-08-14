@@ -1286,8 +1286,10 @@ class EmundusModelEmails extends JModelList
 
 					// Keep only the alias elements that belong to this file's current campaign forms.
 					$scopedIds = $this->scopeAliasElementsToFnumForms($ids, $fnumFormElements);
+					// Resolve the alias with the freshest value submitted for this file.
+					$sortedIds = EmundusHelperFabrik::sortElementIdsByDataFreshness($scopedIds, $fnum);
 
-					foreach($scopedIds as $id) {
+					foreach($sortedIds as $id) {
 						if (!empty($fabrikValues[$id][$fnum]) && !empty($fabrikValues[$id][$fnum]['val'])) {
 							$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
 							$value_found = true;

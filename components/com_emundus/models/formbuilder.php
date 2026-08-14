@@ -1495,6 +1495,11 @@ class EmundusModelFormbuilder extends ListModel
 			//Create element in fabrik_elements
 			$params = $this->h_fabrik->prepareElementParameters($plugin, false);
 
+			if ($name === 'time_date' && in_array($plugin, [ElementPluginEnum::JDATE->value, ElementPluginEnum::DATE->value], true))
+			{
+				$params[$plugin . '_form_format'] = 'd/m/Y H:i:s';
+			}
+
 			$data = array(
 				'name'                 => $name,
 				'group_id'             => $group_id,
