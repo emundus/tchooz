@@ -15,6 +15,7 @@ use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Tchooz\Repositories\Fabrik\FabrikRepository;
 
 class CheckFabrikFieldsJob extends TchoozChecklistJob
 {
@@ -23,7 +24,21 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 	private const IGNORED_TABLES = [
 		'jos_emundus_evaluations',
 		'jos_emundus_final_grade',
-		'jos_emundus_admission'
+		'jos_emundus_admission',
+		'jos_emundus_setup_csv_import',
+		'jos_emundus_jury',
+		'jos_emundus_candidat_meeting',
+		'jos_emundus_logs',
+		'jos_emundus_setup_programmes',
+		'jos_emundus_setup_groups',
+		'jos_emundus_setup_letters',
+		'jos_emundus_setup_campaigns_more',
+		'jos_emundus_uploads',
+		'jos_emundus_setup_exceptions',
+	];
+
+	private const AUTO_DELETE_TABLES = [
+		'jos_emundus_logs',
 	];
 
 	public function __construct(
@@ -39,6 +54,10 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 	{
 		$this->output = $output;
 
+		$this->deleteDeprecatedFabrikLists();
+
+		$this->checkListsUsingInlineEdit();
+
 		$this->checkFnumsFields($input);
 
 		$this->checkCalcFields($input);
@@ -46,6 +65,92 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 		$this->checkDatabaseJoinFields($input);
 
 		$this->checkForms($input);
+	}
+
+	/**
+	 * Supprime les listes Fabrik liées à des tables dépréciées qui peuvent être retirées sans risque.
+	 */
+	private function deleteDeprecatedFabrikLists(): void
+	{
+		$fabrikRepository = new FabrikRepository();
+
+		foreach (self::AUTO_DELETE_TABLES as $table) {
+			// deleteList supprime toute la chaîne (formulaire, groupes, éléments), pas seulement la ligne de #__fabrik_lists
+			if ($fabrikRepository->deleteList($table)) {
+				$this->output->writeln('<info>Deprecated Fabrik list deleted successfully for table ' . $table . '.</info>');
+			} else {
+				$this->output->writeln('<error>Failed to delete deprecated Fabrik list for table ' . $table . '.</error>');
+			}
+		}
+	}
+
+	/**
+	 * Checks for Fabrik lists using inline edit and disables it if found. Inline edit is a deprecated plugin.
+	 *
+	 * @return void
+	 */
+	private function checkListsUsingInlineEdit(): void
+	{
+		$db    = $this->databaseService->getDatabase();
+		$query = $db->createQuery();
+
+		$query->select('id, params')
+			->from($db->quoteName('#__fabrik_lists', 'jfl'))
+			->where($db->quoteName('params') . ' LIKE ' . $db->quote('%inlineedit%'))
+			->andWhere($db->quoteName('published') . ' = 1');
+
+		try {
+			$db->setQuery($query);
+			$lists = $db->loadAssocList();
+
+			if (empty($lists)) {
+				$this->output->writeln('No Fabrik lists using inline edit found.');
+
+				return;
+			}
+
+			$this->output->writeln('There are ' . count($lists) . ' Fabrik lists using inline edit.');
+
+			foreach ($lists as $list) {
+				$params = json_decode($list['params'], true);
+
+				$this->output->writeln('List ID: ' . $list['id']);
+
+				if (empty($params['plugins']) || !is_array($params['plugins'])) {
+					continue;
+				}
+
+				$index = array_search('inlineedit', $params['plugins']);
+
+				if ($index === false) {
+					continue;
+				}
+
+				if ($params['plugin_state'][$index] != 1) {
+					$this->output->writeln('Inline edit is not enabled for this list.');
+
+					continue;
+				}
+
+				$this->output->writeln('Inline edit is enabled for this list.');
+
+				$params['plugin_state'][$index] = 0;
+				$query->clear()
+					->update($db->quoteName('#__fabrik_lists'))
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+					->where($db->quoteName('id') . ' = ' . (int) $list['id']);
+
+				$db->setQuery($query);
+
+				if ($db->execute()) {
+					$this->output->writeln('<info>Inline edit has been disabled for this list.</info>');
+				} else {
+					$this->output->writeln('<error>Failed to disable inline edit for this list.</error>');
+				}
+			}
+		} catch (\Exception $e) {
+			$this->logger->error('Error while checking fabrik lists using inline edit: ' . $e->getMessage());
+		}
 	}
 
 	private function checkFnumsFields(InputInterface $input): void
@@ -72,7 +177,7 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 				$this->output->writeln('Checking fnum fields for PHP 8 compatibility...');
 
 				$query->clear()
-					->select('id, ' . $this->databaseService->getDatabase()->quoteName('default'))
+					->select('id')
 					->from($this->databaseService->getDatabase()->quoteName('jos_fabrik_elements'))
 					->where('name = ' . $this->databaseService->getDatabase()->quote('fnum'))
 					->andWhere('published = 1')
@@ -80,9 +185,21 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 					->andWhere('eval = 1');
 
 				$this->databaseService->getDatabase()->setQuery($query);
-				$fnumElements = $this->databaseService->getDatabase()->loadObjectList();
+				$fnumElementIds = $this->databaseService->getDatabase()->loadColumn();
 
-				foreach ($fnumElements as $fnumElement) {
+				foreach ($fnumElementIds as $fnumElementId) {
+					// Re-fetch chaque élément depuis la base pour prendre en compte les corrections faites en cours d'exécution
+					$freshQuery = $this->databaseService->getDatabase()->createQuery();
+					$freshQuery->select('id, ' . $this->databaseService->getDatabase()->quoteName('default'))
+						->from($this->databaseService->getDatabase()->quoteName('jos_fabrik_elements'))
+						->where('id = ' . (int) $fnumElementId);
+					$this->databaseService->getDatabase()->setQuery($freshQuery);
+					$fnumElement = $this->databaseService->getDatabase()->loadObject();
+
+					if (empty($fnumElement)) {
+						continue;
+					}
+
 					$this->output->writeln('====================================');
 					$this->output->writeln('Fnum Element ID: ' . $fnumElement->id);
 
@@ -152,12 +269,28 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 			$this->output->writeln('Checking calc fields for PHP 8 compatibility...');
 
 			$query->clear('select')
-				->select('jfe.id, jfe.label, jfe.params, jfl.db_table_name');
+				->select('jfe.id');
 
 			$db->setQuery($query);
-			$calcElements = $db->loadObjectList();
+			$calcElementIds = $db->loadColumn();
 
-			foreach ($calcElements as $calcElement) {
+			foreach ($calcElementIds as $calcElementId) {
+				// Re-fetch chaque élément depuis la base pour prendre en compte les corrections faites en cours d'exécution
+				$freshQuery = $db->createQuery();
+				$freshQuery->select('jfe.id, jfe.label, jfe.params, jfl.db_table_name')
+					->from($db->quoteName('jos_fabrik_elements', 'jfe'))
+					->leftJoin($db->quoteName('jos_fabrik_groups', 'jfg') . ' ON jfe.group_id = jfg.id')
+					->leftJoin($db->quoteName('jos_fabrik_formgroup', 'jffg') . ' ON jfg.id = jffg.group_id')
+					->leftJoin($db->quoteName('jos_fabrik_forms', 'jff') . ' ON jffg.form_id = jff.id')
+					->leftJoin($db->quoteName('jos_fabrik_lists', 'jfl') . ' ON jff.id = jfl.form_id')
+					->where('jfe.id = ' . (int) $calcElementId);
+				$db->setQuery($freshQuery);
+				$calcElement = $db->loadObject();
+
+				if (empty($calcElement)) {
+					continue;
+				}
+
 				$this->output->writeln('====================================');
 				$this->output->writeln('Calc Element ID: ' . $calcElement->id);
 				$this->output->writeln('Label: ' . $calcElement->label);
@@ -220,12 +353,28 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 				$this->output->writeln('Checking database join fields for PHP 8 compatibility...');
 
 				$query->clear('select')
-					->select('jfe.id, jfe.label, jfe.params, jfl.db_table_name');
+					->select('jfe.id');
 
 				$db->setQuery($query);
-				$databaseJoinElements = $db->loadObjectList();
+				$databaseJoinElementIds = $db->loadColumn();
 
-				foreach ($databaseJoinElements as $element) {
+				foreach ($databaseJoinElementIds as $databaseJoinElementId) {
+					// Re-fetch chaque élément depuis la base pour prendre en compte les corrections faites en cours d'exécution
+					$freshQuery = $db->createQuery();
+					$freshQuery->select('jfe.id, jfe.label, jfe.params, jfl.db_table_name')
+						->from($db->quoteName('jos_fabrik_elements', 'jfe'))
+						->leftJoin($db->quoteName('jos_fabrik_groups', 'jfg') . ' ON jfe.group_id = jfg.id')
+						->leftJoin($db->quoteName('jos_fabrik_formgroup', 'jffg') . ' ON jfg.id = jffg.group_id')
+						->leftJoin($db->quoteName('jos_fabrik_forms', 'jff') . ' ON jffg.form_id = jff.id')
+						->leftJoin($db->quoteName('jos_fabrik_lists', 'jfl') . ' ON jff.id = jfl.form_id')
+						->where('jfe.id = ' . (int) $databaseJoinElementId);
+					$db->setQuery($freshQuery);
+					$element = $db->loadObject();
+
+					if (empty($element)) {
+						continue;
+					}
+
 					$this->output->writeln('====================================');
 					$this->output->writeln('Database Join Element ID: ' . $element->id);
 					$this->output->writeln('Label: ' . $element->label);
@@ -293,12 +442,24 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 			}
 
 			$query->clear('select')
-				->select('jff.id, jff.label, jff.params');
+				->select('jff.id');
 
 			$this->databaseService->getDatabase()->setQuery($query);
-			$forms = $this->databaseService->getDatabase()->loadObjectList();
+			$formIds = $this->databaseService->getDatabase()->loadColumn();
 
-			foreach ($forms as $form) {
+			foreach ($formIds as $formId) {
+				// Re-fetch chaque formulaire depuis la base pour prendre en compte les corrections faites en cours d'exécution
+				$freshQuery = $this->databaseService->getDatabase()->createQuery();
+				$freshQuery->select('jff.id, jff.label, jff.params')
+					->from($this->databaseService->getDatabase()->quoteName('jos_fabrik_forms', 'jff'))
+					->where('jff.id = ' . (int) $formId);
+				$this->databaseService->getDatabase()->setQuery($freshQuery);
+				$form = $this->databaseService->getDatabase()->loadObject();
+
+				if (empty($form)) {
+					continue;
+				}
+
 				$this->output->writeln('====================================');
 				$this->output->writeln('Form ID: ' . $form->id);
 				$this->output->writeln('Label: ' . $form->label);
@@ -358,7 +519,7 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 	}
 
 	public static function getJobDescription(): ?string {
-		return 'Helps you to standardize Fabrik forms (fnum, calc, custom plugins etc.).';
+		return 'Helps you to standardize Fabrik lists and forms (deprecated lists, inline edit, fnum, calc, custom plugins etc.).';
 	}
 
 	public function isAllowFailure(): bool {

@@ -262,35 +262,12 @@ class EmundusHelperFabrik
 			if ($type == 'eval')
 			{
 				$plugins = [
-					'curl_code'             => [
-						1 => 'use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
-$app = Factory::getApplication();
-$input = $app->getInput();
-
-$student_id = $input->getInt("student_id", null);
-$student = isset($student_id) ? JUser::getInstance($student_id) : JUser::getInstance("{jos_emundus_evaluations___student_id}");
-
-
-echo "<h2>".$student->name."</h2>";
-HTMLHelper::styleSheet(JURI::base() . "media/jui/css/chosen.css");
-HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
-					],
-					'only_process_curl'     => [
-						1 => 'onLoad'
-					],
-					'form_php_file'         => [
-						1 => '-1'
-					],
-					'form_php_require_once' => [
-						1 => '0'
-					],
 					'process-jplugins'      => '2',
-					'plugins'               => array('emundusstepevaluation', 'php'),
-					'plugin_state'          => array('1', '1'),
-					'plugin_locations'      => array('both', 'both'),
-					'plugin_events'         => array('both', 'both'),
-					'plugin_description'    => array('Gestion d\'accès à la phase d\'évaluation', 'css'),
+					'plugins'               => array('emundusstepevaluation'),
+					'plugin_state'          => array('1'),
+					'plugin_locations'      => array('both'),
+					'plugin_events'         => array('both'),
+					'plugin_description'    => array('Gestion d\'accès à la phase d\'évaluation'),
 				];
 			}
 			else
