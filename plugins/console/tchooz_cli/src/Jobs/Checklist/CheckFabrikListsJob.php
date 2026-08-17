@@ -10,7 +10,6 @@
 namespace Emundus\Plugin\Console\Tchooz\Jobs\Checklist;
 
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
-use Gantry\Framework\Exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -89,7 +88,7 @@ class CheckFabrikListsJob extends TchoozChecklistJob
 				$output->writeln('No Fabrik lists using inline edit found.');
 			}
 
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$this->logger->error('Error while checking fabrik lists using inline edit: ' . $e->getMessage());
 			return;
 		}

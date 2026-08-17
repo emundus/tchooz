@@ -1482,6 +1482,8 @@ class FabrikRepository
 	 */
 	public function deleteList(string $tableName): bool
 	{
+		$transactionStarted = false;
+
 		try
 		{
 			$lists = $this->getListsByTableName($tableName);
@@ -1496,6 +1498,11 @@ class FabrikRepository
 			$formIds = array_column($lists, 'form_id');
 
 			$groupIds = $this->getGroupIdsByFormIds($formIds);
+
+			// La chaîne complète est supprimée en une transaction : un échec en cours de route
+			// laisserait sinon des formulaires sans groupes ou des groupes sans éléments
+			$this->db->transactionStart();
+			$transactionStarted = true;
 
 			if (!empty($groupIds))
 			{
@@ -1519,11 +1526,41 @@ class FabrikRepository
 			$this->deleteFormsByIds($formIds);
 			$this->deleteListsByIds($listIds);
 
+			$this->db->transactionCommit();
+			$transactionStarted = false;
+
 			return true;
 		}
-		catch (\Exception $e)
+		catch (\Throwable $e)
 		{
-			Log::add('Failed to delete Fabrik list for table ' . $tableName . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			if ($transactionStarted)
+			{
+				try
+				{
+					$this->db->transactionRollback();
+				}
+				catch (\Throwable $rollbackError)
+				{
+					Log::add(
+						'Rollback failed while deleting Fabrik list for table ' . $tableName . ': ' . $rollbackError->getMessage(),
+						Log::ERROR,
+						'com_emundus.repository.fabrik'
+					);
+				}
+			}
+
+			Log::add(
+				sprintf(
+					'Failed to delete Fabrik list for table %s: %s: %s in %s:%d',
+					$tableName,
+					get_class($e),
+					$e->getMessage(),
+					$e->getFile(),
+					$e->getLine()
+				),
+				Log::ERROR,
+				'com_emundus.repository.fabrik'
+			);
 
 			return false;
 		}

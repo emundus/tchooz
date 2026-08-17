@@ -31,7 +31,6 @@ class CheckJumiJob extends TchoozChecklistJob
 		'Burger menu en mobile'
 	];
 
-
 	public function __construct(
 		private readonly object            $logger,
 		private readonly DatabaseService   $databaseServiceSource,
