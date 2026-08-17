@@ -3197,7 +3197,21 @@ class EmundusControllerApplication extends EmundusController
 
 			if (!empty($applicationFile))
 			{
-				$response = new EmundusResponse(true, Text::_('APPLICATION_FILE_RETRIEVED'), 200, $applicationFile->__serialize());
+				$data = $applicationFile->__serialize();
+
+				if (!class_exists('EmundusHelperFiles'))
+				{
+					require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
+				}
+
+				// Mask the applicant identity when the file/account is anonymous or the viewer is restricted to anonymized data.
+				$data['is_anonym'] = EmundusHelperFiles::isFnumAnonymized($fnum, $this->user->id) ? 1 : 0;
+				if ($data['is_anonym'] === 1)
+				{
+					$data['user'] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+				}
+
+				$response = new EmundusResponse(true, Text::_('APPLICATION_FILE_RETRIEVED'), 200, $data);
 			}
 			else
 			{

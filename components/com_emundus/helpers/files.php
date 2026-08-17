@@ -7015,6 +7015,89 @@ class EmundusHelperFiles
 		return $id;
 	}
 
+	/**
+	 * The single declaration of the "must this data be presented anonymously?" rule.
+	 *
+	 * Combines the three anonymity axes used across the component:
+	 *   - viewer-level: the viewer belongs to a group flagged #__emundus_setup_groups.anonymize (EmundusHelperAccess::isDataAnonymized)
+	 *   - account-level: the applicant account is flagged #__emundus_users.is_anonym
+	 *   - file-level: the application file is flagged #__emundus_campaign_candidature.anonymous
+	 *
+	 * Pure combine: callers pass the file/account flags they already hold, so this never queries them.
+	 * Any code that needs the same decision must go through here (or through isFnumAnonymized() which
+	 * fetches the flags first) instead of re-inlining the OR.
+	 *
+	 * @param   int   $viewer_id         the logged-in user viewing the data
+	 * @param   bool  $is_anonym         applicant account flagged #__emundus_users.is_anonym
+	 * @param   bool  $anonymous         file flagged #__emundus_campaign_candidature.anonymous
+	 * @param   bool  $check_file_flags  false = ignore the file/account axis (the viewer axis still applies)
+	 *
+	 * @return bool
+	 */
+	public static function shouldAnonymize(int $viewer_id, bool $is_anonym, bool $anonymous, bool $check_file_flags = true): bool
+	{
+		if (!class_exists('EmundusHelperAccess'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/access.php';
+		}
+
+		if (EmundusHelperAccess::isDataAnonymized($viewer_id))
+		{
+			return true;
+		}
+
+		return $check_file_flags && ($is_anonym || $anonymous);
+	}
+
+	/**
+	 * Tells whether an application file must be presented anonymously to a given viewer.
+	 *
+	 * Convenience fetcher for fnum-based callers: loads the account/file flags then delegates the
+	 * decision to shouldAnonymize() (the single home for the rule).
+	 *
+	 * @param   string  $fnum       the application file number to test
+	 * @param   int     $viewer_id  the logged-in user viewing the data (0 = current identity)
+	 *
+	 * @return bool
+	 */
+	public static function isFnumAnonymized(string $fnum, int $viewer_id = 0): bool
+	{
+		if (empty($fnum))
+		{
+			return false;
+		}
+
+		if (empty($viewer_id))
+		{
+			$identity  = Factory::getApplication()->getIdentity();
+			$viewer_id = !empty($identity) ? (int) $identity->id : 0;
+		}
+
+		$is_anonym = false;
+		$anonymous = false;
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		try {
+			$query->select('eu.is_anonym, ecc.anonymous')
+				->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+				->leftJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('ecc.applicant_id'))
+				->where($db->quoteName('ecc.fnum') . ' = ' . $db->quote($fnum));
+
+			$db->setQuery($query);
+			$row       = $db->loadAssoc();
+
+			$is_anonym = !empty($row) && (int) $row['is_anonym'] === 1;
+			$anonymous = !empty($row) && (int) $row['anonymous'] === 1;
+		} catch (Exception $e) {
+			Log::add('Failed to check anonymity for fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			return true; // fallback to anonym file in case check failed
+		}
+
+		return self::shouldAnonymize($viewer_id, $is_anonym, $anonymous);
+	}
+
 	public static function getApplicantIdFromFnum(string $fnum): int
 	{
 		$applicant_id = 0;
