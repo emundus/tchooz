@@ -13,7 +13,6 @@ use Emundus\Plugin\Console\Tchooz\Jobs\Definition\JobDefinition;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\MigrateEvaluationsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\MigrateWorkflowsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckJumiJob;
-use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckFabrikListsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckFabrikFieldsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckLegacyEvaluationStructuresJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
@@ -89,11 +88,6 @@ class TchoozMigrateChecklistCommand extends TchoozCommand
 
 			CheckJumiJob::getJobName() => (new JobDefinition(
 				CheckJumiJob::class,
-				[$this->databaseServiceSource, $this->databaseService]
-			)),
-
-			CheckFabrikListsJob::getJobName() => (new JobDefinition(
-				CheckFabrikListsJob::class,
 				[$this->databaseServiceSource, $this->databaseService]
 			)),
 

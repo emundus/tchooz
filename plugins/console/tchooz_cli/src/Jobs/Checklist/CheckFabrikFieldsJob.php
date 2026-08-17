@@ -56,6 +56,8 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 
 		$this->deleteDeprecatedFabrikLists();
 
+		$this->checkListsUsingInlineEdit();
+
 		$this->checkFnumsFields($input);
 
 		$this->checkCalcFields($input);
@@ -79,6 +81,75 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 			} else {
 				$this->output->writeln('<error>Failed to delete deprecated Fabrik list for table ' . $table . '.</error>');
 			}
+		}
+	}
+
+	/**
+	 * Checks for Fabrik lists using inline edit and disables it if found. Inline edit is a deprecated plugin.
+	 *
+	 * @return void
+	 */
+	private function checkListsUsingInlineEdit(): void
+	{
+		$db    = $this->databaseService->getDatabase();
+		$query = $db->createQuery();
+
+		$query->select('id, params')
+			->from($db->quoteName('#__fabrik_lists', 'jfl'))
+			->where($db->quoteName('params') . ' LIKE ' . $db->quote('%inlineedit%'))
+			->andWhere($db->quoteName('published') . ' = 1');
+
+		try {
+			$db->setQuery($query);
+			$lists = $db->loadAssocList();
+
+			if (empty($lists)) {
+				$this->output->writeln('No Fabrik lists using inline edit found.');
+
+				return;
+			}
+
+			$this->output->writeln('There are ' . count($lists) . ' Fabrik lists using inline edit.');
+
+			foreach ($lists as $list) {
+				$params = json_decode($list['params'], true);
+
+				$this->output->writeln('List ID: ' . $list['id']);
+
+				if (empty($params['plugins']) || !is_array($params['plugins'])) {
+					continue;
+				}
+
+				$index = array_search('inlineedit', $params['plugins']);
+
+				if ($index === false) {
+					continue;
+				}
+
+				if ($params['plugin_state'][$index] != 1) {
+					$this->output->writeln('Inline edit is not enabled for this list.');
+
+					continue;
+				}
+
+				$this->output->writeln('Inline edit is enabled for this list.');
+
+				$params['plugin_state'][$index] = 0;
+				$query->clear()
+					->update($db->quoteName('#__fabrik_lists'))
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+					->where($db->quoteName('id') . ' = ' . (int) $list['id']);
+
+				$db->setQuery($query);
+
+				if ($db->execute()) {
+					$this->output->writeln('<info>Inline edit has been disabled for this list.</info>');
+				} else {
+					$this->output->writeln('<error>Failed to disable inline edit for this list.</error>');
+				}
+			}
+		} catch (\Exception $e) {
+			$this->logger->error('Error while checking fabrik lists using inline edit: ' . $e->getMessage());
 		}
 	}
 
@@ -448,7 +519,7 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 	}
 
 	public static function getJobDescription(): ?string {
-		return 'Helps you to standardize Fabrik forms (fnum, calc, custom plugins etc.).';
+		return 'Helps you to standardize Fabrik lists and forms (deprecated lists, inline edit, fnum, calc, custom plugins etc.).';
 	}
 
 	public function isAllowFailure(): bool {
