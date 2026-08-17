@@ -1196,8 +1196,14 @@ class EmundusModelProgramme extends ListModel
 				->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($userid))
 				->andWhere($this->_db->quoteName('group_id') . ' = ' . $this->_db->quote($prog_group));
 			$this->_db->setQuery($query);
+			$removed = $this->_db->execute();
 
-			return $this->_db->execute();
+			// Nothing to invalidate if the model was never loaded: the cache lives on that class.
+			if (class_exists('EmundusModelUsers')) {
+				EmundusModelUsers::clearUserGroupsCache($userid);
+			}
+
+			return $removed;
 		}
 		catch (Exception $e) {
 			Log::add('component/com_emundus/models/program | Cannot remove user ' . $userid . ' from the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');

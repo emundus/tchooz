@@ -154,9 +154,9 @@ if (!empty((array) $this->assoc_files)) :
             </div>
         </div>
 	<?php endforeach; ?>
-<?php endif; ?>
-
+<?php else: ?>
 <p><?= Text::_('COM_EMUNDUS_NO_ASSOC_FILES_FOUND'); ?></p>
+<?php endif; ?>
 
 <script>
 

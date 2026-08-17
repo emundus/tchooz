@@ -313,7 +313,7 @@ export default {
 							applicant_id: result.data.owner_id,
 							applicant_name: result.data.user,
 							campaign: result.campaign_id,
-							is_anonym: 0,
+							is_anonym: result.data.is_anonym,
 							status: result.status.label,
 							status_color: result.status.color,
 						};

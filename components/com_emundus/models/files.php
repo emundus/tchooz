@@ -2259,7 +2259,7 @@ class EmundusModelFiles extends JModelLegacy
 			$this->_db->setQuery($query);
 			$fnumInfos = $this->_db->loadAssoc();
 
-			$anonymize_data = EmundusHelperAccess::isDataAnonymized($user_id) || ($check_is_anonym && ($fnumInfos['is_anonym'] == 1 || $fnumInfos['anonymous'] == 1));
+			$anonymize_data = EmundusHelperFiles::shouldAnonymize($user_id, $fnumInfos['is_anonym'] == 1, $fnumInfos['anonymous'] == 1, $check_is_anonym);
 			if ($anonymize_data) {
 				$fnumInfos['name']  = $fnum;
 				$fnumInfos['email'] = $fnum;
@@ -2435,7 +2435,8 @@ class EmundusModelFiles extends JModelLegacy
 						if ($file['applicant_id'] > 0) {
 							$fnums[] = array('fnum'         => $file['fnum'],
 							                 'applicant_id' => $file['applicant_id'],
-							                 'campaign_id'  => $file['campaign_id']
+							                 'campaign_id'  => $file['campaign_id'],
+							                 'anonymous'    => $file['anonymous'],
 							);
 						}
 					}

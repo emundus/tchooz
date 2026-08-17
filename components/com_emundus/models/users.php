@@ -98,6 +98,14 @@ class EmundusModelUsers extends ListModel
 	private $user;
 
 	/**
+	 * getUserGroups() results for the current request, keyed by "uid|return|current_profile".
+	 * Static because the model is instantiated over and over inside loops (access checks, file lists).
+	 *
+	 * @var array
+	 */
+	private static array $user_groups_cache = [];
+
+	/**
 	 * Constructor
 	 *
 	 * @since 1.0.0
@@ -1307,6 +1315,7 @@ class EmundusModelUsers extends ListModel
 						->values($user_id . ',' . $group);
 					$this->db->setQuery($query);
 					$this->db->execute();
+					self::clearUserGroupsCache($user_id);
 
 					$this->app->triggerEvent('onAfterAddUserToGroup', [$user_id, $group]);
 					$this->app->triggerEvent('onCallEventHandler', ['
@@ -2036,6 +2045,7 @@ class EmundusModelUsers extends ListModel
 				try {
 					$this->db->setQuery($query);
 					$affected = $this->db->execute();
+					self::clearUserGroupsCache(array_column($users, 'user_id'));
 
 					if ($affected)
 					{
@@ -2083,6 +2093,7 @@ class EmundusModelUsers extends ListModel
 					->where('group_id IN (' . implode(',', $groups) . ')');
 				$this->db->setQuery($query);
 				$removed = $this->db->execute();
+				self::clearUserGroupsCache($users);
 			}
 		}
 		catch (Exception $e) {
@@ -2237,6 +2248,11 @@ class EmundusModelUsers extends ListModel
 		$user_groups = [];
 
 		if (!empty($uid)) {
+			$cache_key = $uid . '|' . $return . '|' . $current_profile;
+			if (isset(self::$user_groups_cache[$cache_key])) {
+				return self::$user_groups_cache[$cache_key];
+			}
+
 			try {
 				$query = $this->db->getQuery(true);
 
@@ -2267,12 +2283,41 @@ class EmundusModelUsers extends ListModel
 				} else {
 					$user_groups = $this->db->loadAssocList('id', 'label');
 				}
+
+				// Only cache successful reads, so a failed query is not remembered as "no groups".
+				self::$user_groups_cache[$cache_key] = $user_groups;
 			} catch(Exception $e) {
 				Log::add('Failed to get user groups ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
 		return $user_groups;
+	}
+
+	/**
+	 * Drops the getUserGroups() cache. Must be called by every write to #__emundus_groups, otherwise
+	 * a group change made earlier in the request is invisible to later reads.
+	 *
+	 * @param   int|array  $uid  user id(s) whose entries to drop, 0/empty = flush everything
+	 *
+	 * @return void
+	 */
+	public static function clearUserGroupsCache(mixed $uid = 0): void
+	{
+		if (empty($uid)) {
+			self::$user_groups_cache = [];
+
+			return;
+		}
+
+		foreach ((array) $uid as $id) {
+			$prefix = $id . '|';
+			foreach (array_keys(self::$user_groups_cache) as $cache_key) {
+				if (str_starts_with($cache_key, $prefix)) {
+					unset(self::$user_groups_cache[$cache_key]);
+				}
+			}
+		}
 	}
 
 	/**
@@ -2750,6 +2795,7 @@ class EmundusModelUsers extends ListModel
 						->bind(':group_id', $emundus_groups_to_remove, ParameterType::INTEGER);
 					$this->db->setQuery($query);
 					$this->db->execute();
+					self::clearUserGroupsCache($uid);
 				}
 				//
 			}
@@ -2917,6 +2963,7 @@ class EmundusModelUsers extends ListModel
 						];
 						$inserted = (object) $inserted;
 						$added   = $this->db->insertObject('#__emundus_groups', $inserted);
+						self::clearUserGroupsCache($uid);
 					}
 				}
 			}
@@ -3198,6 +3245,8 @@ class EmundusModelUsers extends ListModel
 						}
 					}
 				}
+
+				self::clearUserGroupsCache($user_id);
 			}
 			catch (Exception $e)
 			{
