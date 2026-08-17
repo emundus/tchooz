@@ -59,7 +59,7 @@
 					v-model="element.params[repeat_name][index_name][param.name]"
 					:key="reloadOptions"
 					:id="param.name"
-					@change="updateDatabasejoinParams"
+					@change="updateDatabasejoinParams()"
 					class="tw-w-full"
 					:class="databasejoin_description ? 'tw-mb-1' : ''"
 				>
@@ -74,7 +74,7 @@
 					v-model="element.params[param.name]"
 					:key="reloadOptions"
 					:id="param.name"
-					@change="updateDatabasejoinParams"
+					@change="updateDatabasejoinParams()"
 					class="tw-w-full"
 					:class="databasejoin_description ? 'tw-mb-1' : ''"
 				>
@@ -389,15 +389,25 @@ export default {
 				if (index !== -1) {
 					let database = this.databases[index];
 					if (!init) {
-						this.element.params['join_key_column'] = database.join_column_id;
-						if (database.translation == 1) {
-							this.element.params['join_val_column'] = database.join_column_val + '_fr';
+						formBuilderService.getDatabaseJoinOrderColumns(this.element.params['join_db_name']).then((response) => {
+							const realColumns = response.data.map((column) => column.COLUMN_NAME);
+
+							this.element.params['join_key_column'] = realColumns.includes(database.join_column_id)
+								? database.join_column_id
+								: response.data[0].COLUMN_NAME;
+
+							const candidates =
+								database.translation == 1
+									? [database.join_column_val + '_fr', database.join_column_val]
+									: [database.join_column_val, database.join_column_val + '_fr'];
+							const resolvedColumn = candidates.find((column) => realColumns.includes(column));
+
 							this.element.params['join_val_column_concat'] =
-								'{thistable}.' + database.join_column_val + '_{shortlang}';
-						} else {
-							this.element.params['join_val_column'] = database.join_column_val;
-							this.element.params['join_val_column_concat'] = '';
-						}
+								resolvedColumn === database.join_column_val + '_fr'
+									? '{thistable}.' + database.join_column_val + '_{shortlang}'
+									: '';
+							this.element.params['join_val_column'] = resolvedColumn || response.data[0].COLUMN_NAME;
+						});
 					}
 					this.databasejoin_description = this.databases[index].description;
 				} else {
@@ -419,30 +429,37 @@ export default {
 						database = this.databases[indexDatabase];
 					}
 
+					const realColumns = response.data.map((column) => column.COLUMN_NAME);
+
 					let index = this.params.map((e) => e.name).indexOf('join_key_column');
 					this.params[index].options = response.data;
 
 					if (!init) {
-						this.element.params['join_key_column'] = database
-							? database.join_column_id
-							: this.params[index].options[0].COLUMN_NAME;
+						this.element.params['join_key_column'] =
+							database && realColumns.includes(database.join_column_id)
+								? database.join_column_id
+								: response.data[0].COLUMN_NAME;
 					}
 
 					index = this.params.map((e) => e.name).indexOf('join_val_column');
 					this.params[index].options = response.data;
 
 					if (!init) {
-						this.element.params['join_val_column'] = database
-							? database.join_column_val
-							: this.params[index].options[0].COLUMN_NAME;
-					}
+						if (database) {
+							const candidates =
+								database.translation == 1
+									? [database.join_column_val + '_fr', database.join_column_val]
+									: [database.join_column_val, database.join_column_val + '_fr'];
+							const resolvedColumn = candidates.find((column) => realColumns.includes(column));
 
-					if (!init) {
-						this.element.params['join_val_column_concat'] = '';
-						if (database && database.translation == 1) {
-							this.element.params['join_val_column'] = database.join_column_val + '_fr';
 							this.element.params['join_val_column_concat'] =
-								'{thistable}.' + database.join_column_val + '_{shortlang}';
+								resolvedColumn === database.join_column_val + '_fr'
+									? '{thistable}.' + database.join_column_val + '_{shortlang}'
+									: '';
+							this.element.params['join_val_column'] = resolvedColumn || response.data[0].COLUMN_NAME;
+						} else {
+							this.element.params['join_val_column'] = response.data[0].COLUMN_NAME;
+							this.element.params['join_val_column_concat'] = '';
 						}
 					}
 

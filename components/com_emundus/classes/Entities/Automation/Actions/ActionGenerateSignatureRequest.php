@@ -404,7 +404,7 @@ class ActionGenerateSignatureRequest extends ActionEntity
 
 	public function getLabelForLog(): string
 	{
-		return '';
+		return $this->getLabel();
 	}
 
 	/**

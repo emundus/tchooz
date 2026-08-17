@@ -52,8 +52,22 @@ class Dispatcher extends AbstractModuleDispatcher
 	public function isCompatible(): bool
 	{
 		$browser = Browser::getInstance();
+		$agent   = $browser->getAgentString();
+
 		if ($browser->isBrowser('msie') || $browser->isBrowser('ie')) {
 			return false;
+		}
+
+		// Sur iOS, Firefox et Edge s'appuient sur le WebKit du systeme. Leur UA ne
+		// porte pas de "Version/x", Browser les identifie donc en safari 0.0.
+		if (preg_match('/(FxiOS|EdgiOS)\//', $agent)) {
+			return true;
+		}
+
+		// Opera mobile a sa propre numerotation, sans rapport avec le desktop :
+		// 86 sur Android quand le desktop est a 116, pour le meme Chromium.
+		if ($browser->isBrowser('opera') && preg_match('/Mobile|Android/i', $agent)) {
+			return $browser->getMajor() >= 76;
 		}
 
 		$minVersions = [

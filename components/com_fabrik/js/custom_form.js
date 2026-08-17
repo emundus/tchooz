@@ -473,6 +473,18 @@ requirejs(['fab/fabrik'], function () {
               if (name == condition.field && elt.getRepeatNum() == element.getRepeatNum()) {
                 let value = elt.get('value');
 
+                // Read-only element (emundusreadonly): its data-raw-value is unreliable, so the backend
+                // provides the source field data in condition.params.source. Use the displayed label(s)
+                // and map them back to the source option keys the condition compares against.
+                if (condition.params && condition.params.source) {
+                  const src = condition.params.source;
+                  const labels = String(elt.element.textContent || '').trim().split(',').map(s => s.trim()).filter(Boolean);
+                  value = labels.map(lbl => {
+                    const idx = (src.sub_labels || []).indexOf(lbl);
+                    return idx !== -1 ? String(src.sub_values[idx]) : lbl;
+                  });
+                }
+
                 // todo: it would be better to check the plugin of the element and transform the value accordingly instead of this workaround for options
                 if (condition.params && condition.params.option)
                 {

@@ -108,6 +108,12 @@ class MigrateExtensionsJob extends TchoozJob
 
 			foreach ($datas as $data)
 			{
+				if (empty($data['reference_table']))
+				{
+					Log::add('Could not find reference table for falang content id '. $data['id'], Log::WARNING, self::getJobName());
+					continue;
+				}
+
 				// Need to find the new reference id
 				$reference_table = 'jos_'.$data['reference_table'];
 				$old_ref_id = $data['reference_id'];
@@ -146,7 +152,7 @@ class MigrateExtensionsJob extends TchoozJob
 						$new_ref_id = $old_ref_id;
 				}
 
-				if(empty($new_ref_id))
+				if (empty($new_ref_id))
 				{
 					Log::add('Could not find new reference id for falang content id '.$data['id'].' with old reference table '.$data['reference_table'].' and old reference id '.$old_ref_id, Log::WARNING, self::getJobName());
 					continue;

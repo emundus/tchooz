@@ -32,9 +32,12 @@ use Tchooz\Services\Export\ExportInterface;
 use Tchooz\Services\Export\ExportResult;
 use Tchooz\Services\Export\FilenameRenderer;
 use Tchooz\Services\Export\HeadersEnum;
+use Tchooz\Traits\TraitAutomatedTask;
 
 class PdfService extends Export implements ExportInterface
 {
+	use TraitAutomatedTask;
+
 	private array $fnums;
 
 	private ?User $user;
@@ -109,7 +112,9 @@ class PdfService extends Export implements ExportInterface
 
 			foreach ($this->fnums as $fnum)
 			{
-				if(!\EmundusHelperAccess::asAccessAction(ExportFormatEnum::PDF->getAccessName(), CrudEnum::CREATE->value, $this->user->id, $fnum))
+				// Automated tasks (plugins, crons) run as the system user, which owns no group nor
+				// fnum association, so the regular ACL check would always drop the fnum.
+				if (!$this->isAutomatedTaskUser((int) $this->user->id) && !\EmundusHelperAccess::asAccessAction(ExportFormatEnum::PDF->getAccessName(), CrudEnum::CREATE->value, $this->user->id, $fnum))
 				{
 					continue;
 				}

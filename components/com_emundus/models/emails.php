@@ -19,6 +19,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
@@ -1286,8 +1287,10 @@ class EmundusModelEmails extends JModelList
 
 					// Keep only the alias elements that belong to this file's current campaign forms.
 					$scopedIds = $this->scopeAliasElementsToFnumForms($ids, $fnumFormElements);
+					// Resolve the alias with the freshest value submitted for this file.
+					$sortedIds = EmundusHelperFabrik::sortElementIdsByDataFreshness($scopedIds, $fnum);
 
-					foreach($scopedIds as $id) {
+					foreach($sortedIds as $id) {
 						if (!empty($fabrikValues[$id][$fnum]) && !empty($fabrikValues[$id][$fnum]['val'])) {
 							$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
 							$value_found = true;
@@ -1996,7 +1999,7 @@ class EmundusModelEmails extends JModelList
 		$values  = [$row['user_id_from'], $row['user_id_to'], $this->_db->quote($now), $this->_db->quote($row['subject']), $this->_db->quote($row['message']), $this->_db->quote($row['email_cc']), $this->_db->quote($row['email_to'])];
 
 		// If we are logging the email type as well, this allows us to put them in separate folders.
-		if (isset($row['type']) && !empty($row['type'])) {
+		if (!empty($row['type'])) {
 			$columns[] = 'folder_id';
 			$values[]  = $row['type'];
 		}
@@ -2021,7 +2024,7 @@ class EmundusModelEmails extends JModelList
 				$this->_db->setQuery($query);
 				$applicant_id = $this->_db->loadResult();
 				if ($applicant_id == $row['user_id_to']) {
-					$email_id = isset($row['email_id']) ? $row['email_id'] : 0;
+					$email_id = $row['email_id'] ?? 0;
 
 					include_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
 					if (class_exists('EmundusModelLogs')) {
@@ -2057,12 +2060,16 @@ class EmundusModelEmails extends JModelList
 	/**
 	 * Gets all emails sent to or from the User id.
 	 *
-	 * @param   Int user ID
+	 * @param   int     $user_id        user ID
+	 * @param   string  $current_fnum   the file being viewed, exempt from the anonymous-file removal below
+	 * @param   bool    $anonymize_all  true = the current file/account is anonymous or the viewer is restricted to
+	 *                                  anonymized data, so keep the current file only and mask its content
 	 *
 	 * @return Mixed Array
 	 * @since v6
 	 */
-	public function get_messages_to_from_user($user_id) {
+	public function get_messages_to_from_user(int $user_id, string $current_fnum = '', bool $anonymize_all = false)
+	{
 		$messages = [];
 
 		if (!empty($user_id)) {
@@ -2126,13 +2133,29 @@ class EmundusModelEmails extends JModelList
 							}
 						}
 
-						// if the user is anonym or the file is anonymous, we hide the email_to field and the content, cause it could contains personal data
-						if ($is_anonym == 1 || $file_anonymous)
+						// A message belonging to an anonymous file is dropped everywhere except on that file itself:
+						// listing it beside the applicant's other files, or showing its fnum as a cross-file link,
+						// is enough to tie the anonymous file back to an identified person. Same reason the whole
+						// history is reduced to the current file when that file is the anonymous one.
+						if (($anonymize_all || $file_anonymous) && $message->fnum_to !== $current_fnum)
 						{
+							unset($messages[$key]);
+							continue;
+						}
+
+						// if the user is anonym, the file is anonymous, or the whole context is anonymized, we hide every field
+						// that could contain personal data (subject, recipients, cc and body).
+						if ($is_anonym == 1 || $file_anonymous || $anonymize_all)
+						{
+							$message->subject  = Text::_('COM_EMUNDUS_ANONYM_EMAIL_SUBJECT');
 							$message->email_to = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+							$message->email_cc = '';
 							$message->message  = Text::_('COM_EMUNDUS_ANONYM_EMAIL_MESSAGE');
 						}
 					}
+
+					// Re-index after any removal so the view iterates a clean list.
+					$messages = array_values($messages);
 				}
 			} catch (Exception $e) {
 				Log::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query, Log::ERROR, 'com_emundus.error');
@@ -2193,7 +2216,7 @@ class EmundusModelEmails extends JModelList
 	public function sendEmailFromPlatform(int $user, object $template, array $attachments): void
 	{
 		require_once(JPATH_SITE . DS . 'components/com_emundus/models/logs.php');
-		$current_user = JFactory::getUser();
+		$current_user = Factory::getApplication()->getIdentity();
 		$user         = JFactory::getUser($user);
 		$toAttach     = [];
 
@@ -2211,7 +2234,7 @@ class EmundusModelEmails extends JModelList
 			}
 			$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
-			$config = JFactory::getConfig();
+			$config = Factory::getApplication()->getConfig();
 			// Get default mail sender info
 			$mail_from_sys      = $config->get('mailfrom');
 			$mail_from_sys_name = $config->get('fromname');
@@ -2222,7 +2245,7 @@ class EmundusModelEmails extends JModelList
 			];
 
 			// Configure email sender
-			$mailer = JFactory::getMailer();
+			$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
 			$mailer->setSender($sender);
 			$mailer->addReplyTo($mail_from_sys, $mail_from_sys_name);
 			$mailer->addRecipient($user->email);
