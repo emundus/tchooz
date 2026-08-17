@@ -1,6 +1,7 @@
 parameters:
   bootstrapFiles:
     - phpstanbootstrap.php
+    - phpstanplaceholders.php
   scanDirectories:
     - ../../components/com_emundus/models
     - ../../components/com_emundus/helpers
@@ -13,6 +14,7 @@ parameters:
   	- '#Binary operation .* between mixed and .* results in an error#'
   	- '#Access to an undefined property .*#'
   	- '#Variable \$data might not be defined.#'
+  	- '#Variable \$formModel might not be defined.#'
   	- '#.*, mixed given.#'
   	- '#Call to an undefined method Joomla\\CMS\\Application\\CMSApplicationInterface::redirect\(\).#'
   level: 5

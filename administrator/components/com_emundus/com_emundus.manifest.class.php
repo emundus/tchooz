@@ -290,7 +290,41 @@ class Com_EmundusInstallerScript
 
 		$updates[] = \EmundusHelperUpdate::makeFromEntity(AddonEntity::class);
 
+		$this->dropLegacyContentXreference();
+
 		return !in_array(false, $updates);
+	}
+
+	/**
+	 * Joomla 3 leftover dropped by Joomla 4 : on databases where the column survived the migration,
+	 * it is NOT NULL without default and no Joomla 5 code fills it, so every article INSERT fails.
+	 */
+	private function dropLegacyContentXreference(): void
+	{
+		$this->db->setQuery(
+			'SELECT ' . $this->db->quoteName('COLUMN_NAME')
+			. ' FROM ' . $this->db->quoteName('information_schema.COLUMNS')
+			. ' WHERE ' . $this->db->quoteName('TABLE_SCHEMA') . ' = DATABASE()'
+			. ' AND ' . $this->db->quoteName('TABLE_NAME') . ' = ' . $this->db->quote('jos_content')
+			. ' AND ' . $this->db->quoteName('COLUMN_NAME') . ' = ' . $this->db->quote('xreference')
+		);
+
+		if (empty($this->db->loadResult()))
+		{
+			return;
+		}
+
+		try
+		{
+			$this->db->setQuery('ALTER TABLE ' . $this->db->quoteName('jos_content') . ' DROP COLUMN ' . $this->db->quoteName('xreference'));
+			$this->db->execute();
+
+			EmundusHelperUpdate::displayMessage('Colonne obsolète ' . $table . '.xreference supprimée.', 'success');
+		}
+		catch (Exception $e)
+		{
+			EmundusHelperUpdate::displayMessage('Suppression de la colonne obsolète ' . $table . '.xreference impossible : ' . $e->getMessage(), 'warning');
+		}
 	}
 
 	private function generateAutoloadTables(): void
