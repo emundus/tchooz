@@ -32,9 +32,45 @@ class WorldlineIntegrationHandler extends AbstractIntegrationHandler
 
 	public function onSetup(object $setup, ?SynchronizerRepository $repository = null): bool
 	{
-		// Set before delegating: the parent persists the entity once, enabled state included.
+		$config = $this->synchronizer->getConfig();
+
+		if (empty($config))
+		{
+			$config = [
+				'authentication' => [
+					'mode'           => $setup->authentication->mode ?? 0,
+					'merchant_id'    => $setup->authentication->merchant_id ?? '',
+					'api_key_id'     => $setup->authentication->api_key_id ?? '',
+					'api_secret'     => isset($setup->authentication->api_secret) ? $this->encrypt($setup->authentication->api_secret) : '',
+					'webhook_key_id' => $setup->authentication->webhook_key_id ?? '',
+					'webhook_secret' => isset($setup->authentication->webhook_secret) ? $this->encrypt($setup->authentication->webhook_secret) : '',
+				]
+			];
+		}
+		else
+		{
+			foreach (['mode', 'merchant_id', 'api_key_id', 'webhook_key_id'] as $key)
+			{
+				if (isset($setup->authentication->$key))
+				{
+					$config['authentication'][$key] = $setup->authentication->$key;
+				}
+			}
+
+			foreach (['api_secret', 'webhook_secret'] as $key)
+			{
+				if (isset($setup->authentication->$key))
+				{
+					$config['authentication'][$key] = $this->encrypt($setup->authentication->$key);
+				}
+			}
+		}
+
+		$this->synchronizer->setConfig($config);
 		$this->synchronizer->setEnabled(true);
 
-		return parent::onSetup($setup, $repository);
+		$repository = $repository ?? new SynchronizerRepository();
+
+		return $repository->flush($this->synchronizer);
 	}
 }
