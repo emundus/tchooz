@@ -14,6 +14,11 @@ trait TraitAutomatedTask
 		return ComponentHelper::getParams('com_emundus')->get('automated_task_user', 1);
 	}
 
+	public function isAutomatedTaskUser(?int $userId): bool
+	{
+		return !empty($userId) && $userId === $this->getAutomatedTaskUserId();
+	}
+
 	public function getAutomatedTaskUser(): ?User
 	{
 		$userId = $this->getAutomatedTaskUserId();

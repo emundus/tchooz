@@ -52,6 +52,7 @@ use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Controller\EmundusController;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
+use Tchooz\Services\Automation\RedirectIntentRegistry;
 use Tchooz\Traits\TraitDispatcher;
 use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 
@@ -3196,7 +3197,21 @@ class EmundusControllerApplication extends EmundusController
 
 			if (!empty($applicationFile))
 			{
-				$response = new EmundusResponse(true, Text::_('APPLICATION_FILE_RETRIEVED'), 200, $applicationFile->__serialize());
+				$data = $applicationFile->__serialize();
+
+				if (!class_exists('EmundusHelperFiles'))
+				{
+					require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
+				}
+
+				// Mask the applicant identity when the file/account is anonymous or the viewer is restricted to anonymized data.
+				$data['is_anonym'] = EmundusHelperFiles::isFnumAnonymized($fnum, $this->user->id) ? 1 : 0;
+				if ($data['is_anonym'] === 1)
+				{
+					$data['user'] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+				}
+
+				$response = new EmundusResponse(true, Text::_('APPLICATION_FILE_RETRIEVED'), 200, $data);
 			}
 			else
 			{
@@ -3649,7 +3664,16 @@ class EmundusControllerApplication extends EmundusController
 					{
 						$data = [];
 
-						if (method_exists($foundAction, 'getRedirectUrl'))
+						// Unified channel: an action (or an automation triggered downstream) that
+						// redirects registers its URL in RedirectIntentRegistry. We consume it here to
+						// return it to the front. Non-automation file actions (Print, Copy, Delete)
+						// register nothing and expose their URL through getRedirectUrl().
+						$redirectIntent = RedirectIntentRegistry::consume();
+						if ($redirectIntent !== null)
+						{
+							$data['redirect'] = $redirectIntent->getUrl();
+						}
+						else if (method_exists($foundAction, 'getRedirectUrl'))
 						{
 							$data['redirect'] = $foundAction->getRedirectUrl($applicationFile, $parameters, $this->app->getIdentity());
 						}

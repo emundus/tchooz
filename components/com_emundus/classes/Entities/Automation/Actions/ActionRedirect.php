@@ -4,10 +4,12 @@ namespace Tchooz\Entities\Automation\Actions;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
 use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
+use Tchooz\Entities\Automation\RedirectIntent;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Fields\FieldGroup;
@@ -16,6 +18,7 @@ use Tchooz\Entities\Fields\StringField;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\ConditionOperatorEnum;
+use Tchooz\Services\Automation\RedirectIntentRegistry;
 use Tchooz\Services\Field\DisplayRule;
 
 class ActionRedirect extends ActionEntity
@@ -58,27 +61,39 @@ class ActionRedirect extends ActionEntity
 	{
 		if (empty($this->getParameterValue(self::KNOWN_URL)) && empty($this->getParameterValue(self::INTERN_URL)) && empty($this->getParameterValue(self::CUSTOM_URL)))
 		{
+			Log::add('Redirect action [' . $this->getId() . '] has no destination configured.', Log::ERROR, 'com_emundus.action');
+
 			return ActionExecutionStatusEnum::FAILED;
 		}
 
-		$app = Factory::getApplication();
-		if ($app->isClient('site'))
+		// Only the site client has a transport able to consume the intent (fetch response or
+		// onAfterDispatch). Registering it anywhere else would leak into whatever runs next in the
+		// same process — a queued task batch, a CLI worker — and first-wins would drop that one.
+		if (!Factory::getApplication()->isClient('site'))
 		{
-			$url = $this->getUrl($context);
+			Log::add('Redirect action [' . $this->getId() . '] skipped: no redirect transport outside the site client.', Log::WARNING, 'com_emundus.action');
 
-			if (!empty($url))
-			{
-				if ($url !== '/' . $app->getMenu()->getActive()->route)
-				{
-					// Perform the redirect
-					$app->redirect($url);
-				}
-			}
+			return ActionExecutionStatusEnum::FAILED;
+		}
+
+		// The action decides the URL but does not perform the redirect: it registers it. The
+		// transport (fetch response or full-page $app->redirect()) is chosen at the HTTP entry
+		// point, which also covers automations triggered in an AJAX context where $app->redirect()
+		// would be swallowed (e.g. onAfterStatusChange via custom_event_handler).
+		$url = $this->getUrl($context);
+		if (empty($url))
+		{
+			// COMPLETED, not FAILED: an unresolvable destination is a configuration gap, not an
+			// execution error. FAILED would surface APPLICATION_ACTION_EXECUTION_FAILED to the
+			// applicant for cases we knowingly do not resolve yet (see the TODO in getKnownUrl()).
+			Log::add('Redirect action [' . $this->getId() . '] resolved no URL, nothing to redirect to.', Log::WARNING, 'com_emundus.action');
 
 			return ActionExecutionStatusEnum::COMPLETED;
 		}
 
-		return ActionExecutionStatusEnum::FAILED;
+		RedirectIntentRegistry::request(new RedirectIntent($url, self::getType()));
+
+		return ActionExecutionStatusEnum::COMPLETED;
 	}
 
 	public function getUrl(ActionTargetEntity|array $context): string
@@ -93,37 +108,18 @@ class ActionRedirect extends ActionEntity
 		{
 			$url = $this->getKnownUrl($knownUrl, $context);
 		}
-		else
+		elseif (!empty($customUrl))
 		{
-			if (!empty($customUrl))
-			{
-				if (str_starts_with($customUrl, 'http://'))
-				{
-					$url = str_replace('http://', 'https://', $customUrl);
-				}
-				else
-				{
-					$url = $customUrl;
-				}
-			}
-			else
-			{
-				if (!empty($internUrl))
-				{
-					$url = Route::_('index.php?Itemid=' . $internUrl);
-				}
-			}
+			$url = str_starts_with($customUrl, 'http://') ? str_replace('http://', 'https://', $customUrl) : $customUrl;
+		}
+		elseif (!empty($internUrl))
+		{
+			$url = $this->routeMenuItem((int) $internUrl);
 		}
 
 		return $url;
 	}
 
-	/**
-	 * Build the target URL for a known-url abstraction. Menu-page destinations
-	 * are resolved through EmundusHelperMenu (never hardcoded routes); the
-	 * applicant campaign catalog has no fixed route and is resolved from the
-	 * menu item carrying the mod_emundus_campaign module.
-	 */
 	private function getKnownUrl(string $knownUrl, ActionTargetEntity|array $context): string
 	{
 		if (!class_exists('EmundusHelperMenu'))
@@ -137,20 +133,51 @@ class ActionRedirect extends ActionEntity
 				$fnum = $this->resolveContextFnum($context);
 
 				return !empty($fnum)
-					? Route::_('/index.php?option=com_emundus&task=openfile&fnum=' . $fnum)
+					? $this->route('index.php?option=com_emundus&task=openfile&fnum=' . $fnum)
 					: '';
 			case 'my_applications':
-				return \EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=application_choices');
+				return $this->routeModuleMenuItem('mod_emundus_applications');
 			case 'campaigns_catalog':
-				return $this->getCampaignCatalogUrl();
+				return $this->routeModuleMenuItem('mod_emundus_campaign', ['mod_em_campaign_layout' => 'default_tchooz']);
 			case 'home':
-				return \EmundusHelperMenu::getHomepageLink();
+				return $this->routeMenuItem(\EmundusHelperMenu::getHomepageItemId());
 			case 'files_list':
-				return \EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=files');
+				return $this->routeMenuLink('index.php?option=com_emundus&view=files');
 			default:
 				// TODO(redirect-known-urls): open_file_manager (files-list menu route + '#'.fnum, per messenger::gotofile) not handled yet.
 				return '';
 		}
+	}
+
+	/**
+	 * $xhtml = false: the URL is redirected to as-is, never embedded in HTML, so & must not become &amp;.
+	 */
+	private function route(string $internalUrl): string
+	{
+		return Route::_($internalUrl, false);
+	}
+
+	private function routeMenuItem(int $menuId): string
+	{
+		return $this->route(!empty($menuId) ? 'index.php?Itemid=' . $menuId : 'index.php');
+	}
+
+	private function routeMenuLink(string $link): string
+	{
+		$item = Factory::getApplication()->getMenu()->getItems('link', $link, true);
+
+		return !empty($item) ? $this->routeMenuItem((int) $item->id) : $this->route($link);
+	}
+
+	/**
+	 * Destinations with no route of their own: route to the menu item their module is published on,
+	 * falling back to the configured home page when the module is bound to none.
+	 */
+	private function routeModuleMenuItem(string $module, array $moduleParams = []): string
+	{
+		$menuId = \EmundusHelperMenu::getMenuIdForModule($module, $moduleParams);
+
+		return $this->routeMenuItem(!empty($menuId) ? $menuId : \EmundusHelperMenu::getHomepageItemId());
 	}
 
 	/**
@@ -165,40 +192,6 @@ class ActionRedirect extends ActionEntity
 		}
 
 		return !empty($context[0]) && !empty($context[0]->getFile()) ? $context[0]->getFile() : null;
-	}
-
-	/**
-	 * Resolve the applicant campaign catalog URL. That catalog has no fixed
-	 * route: it is a menu item carrying the mod_emundus_campaign module (tchooz
-	 * default template). We route to the menu item the module is bound to, and
-	 * fall back to the configured home page when it is not bound to a specific
-	 * item (e.g. published on all pages).
-	 */
-	private function getCampaignCatalogUrl(): string
-	{
-		$db    = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->createQuery()
-			->select($db->quoteName('mm.menuid'))
-			->from($db->quoteName('#__modules', 'm'))
-			->join('INNER', $db->quoteName('#__modules_menu', 'mm') . ' ON ' . $db->quoteName('mm.moduleid') . ' = ' . $db->quoteName('m.id'))
-			->join('INNER', $db->quoteName('#__menu', 'menu') . ' ON ' . $db->quoteName('menu.id') . ' = ' . $db->quoteName('mm.menuid'))
-			->where($db->quoteName('m.module') . ' = ' . $db->quote('mod_emundus_campaign'))
-			->andWhere($db->quoteName('m.published') . ' = 1')
-			->andWhere($db->quoteName('mm.menuid') . ' > 0')
-			->andWhere($db->quoteName('menu.published') . ' = 1')
-			->andWhere($db->quoteName('menu.access') . '!= 1')
-			->andWhere('JSON_EXTRACT(' . $db->quoteName('m.params') . ', "$.mod_em_campaign_layout") = ' . $db->quote('default_tchooz'))
-			->order($db->quoteName('mm.menuid') . ' ASC');
-
-		$db->setQuery($query, 0, 1);
-		$menuId = (int) $db->loadResult();
-
-		if (empty($menuId))
-		{
-			return \EmundusHelperMenu::getHomepageLink();
-		}
-
-		return Route::_('index.php?Itemid=' . $menuId);
 	}
 
 	public function getParameters(): array

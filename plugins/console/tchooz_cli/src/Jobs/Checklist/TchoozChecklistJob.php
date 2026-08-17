@@ -114,11 +114,14 @@ class TchoozChecklistJob extends TchoozJob
 		}
 
 		// 1. Écrire le code dans un fichier temporaire
+		// Les balises sont neutralisées pour l'analyse seulement : $code reste intact pour la recherche de mots-clés
 		$tmpFile = tempnam(sys_get_temp_dir(), 'event_handler_') . '.php';
-		file_put_contents($tmpFile, "<?php\n" . $code);
+		file_put_contents($tmpFile, "<?php\n" . $this->neutralizePlaceholders($code));
 
 		// 2. Lancer PHPStan sur ce fichier
 		$phpstanCmd = 'libraries/emundus/vendor/bin/phpstan analyse -c "libraries/emundus/phpstan.neon" --error-format=table --memory-limit=1G ' . escapeshellarg($tmpFile);
+
+		$hasIssues = false;
 
 		try {
 			$outputStan = shell_exec($phpstanCmd);
@@ -126,10 +129,13 @@ class TchoozChecklistJob extends TchoozJob
 			// 3. Afficher le résultat
 			if (empty($outputStan)) {
 				$output->writeln('<error>PHPStan n\'a rien retourné. Vérifiez la configuration ou les chemins.</error>');
+				$hasIssues = true;
 			} elseif (str_contains($outputStan, 'Result is incomplete because of severe errors')) {
 				$output->writeln('<error>PHPStan: Résultat incomplet à cause d\'erreurs graves:</error>');
+				$hasIssues = true;
 			} elseif (str_contains($outputStan, ' [ERROR] ')) {
 				$output->writeln('<error>PHPStan errors detected for this code:</error>');
+				$hasIssues = true;
 			}
 
 			if (!empty($outputStan)) {
@@ -137,6 +143,7 @@ class TchoozChecklistJob extends TchoozJob
 			}
 		} catch (\Exception $e) {
 			$output->writeln('<error>Error executing PHPStan: ' . $e->getMessage() . '</error>');
+			$hasIssues = true;
 		}
 
 		// 4. Nettoyer le fichier temporaire
@@ -154,11 +161,45 @@ class TchoozChecklistJob extends TchoozJob
 				preg_match_all($pattern, $code, $matches);
 
 				$output->writeln('<' . $keyword['type'] . '> Code [' . implode(',', $matches[0]) . ']: ' . $keyword['advice'] . '</' . $keyword['type'] . '>');
+				$hasIssues = true;
 			}
 		}
 
-		$helper = new QuestionHelper();
-		$question = new ConfirmationQuestion('Press enter to continue', true);
-		$helper->ask($input, $output, $question);
+		if ($hasIssues) {
+			$helper = new QuestionHelper();
+			$question = new ConfirmationQuestion('Press enter to continue', true);
+			$helper->ask($input, $output, $question);
+		}
+	}
+
+	/**
+	 * Remplace les valeurs substituées à l'exécution par un appel de fonction dont PHPStan ignore la valeur :
+	 * les balises Fabrik '{table___element}' et les tags eMundus '[FNUM]'.
+	 *
+	 * Sans ça, PHPStan les voit comme des chaînes littérales : tout test dessus (empty, strpos, comparaison)
+	 * est jugé toujours vrai ou toujours faux, alors qu'elles reçoivent une valeur à l'exécution.
+	 * Seules les occurrences entourées de quotes sont remplacées, pour ne jamais casser la syntaxe
+	 * d'une balise utilisée à l'intérieur d'une chaîne.
+	 *
+	 * @param string $code
+	 *
+	 * @return string
+	 */
+	private function neutralizePlaceholders(string $code): string
+	{
+		$patterns = [
+			'/([\'"])\{([a-zA-Z0-9_]+___[a-zA-Z0-9_.]+)\}\1/' => 'fabrikPlaceholder(\'$2\')',
+			'/([\'"])\[([A-Z0-9_]+)\]\1/'                     => 'emundusTag(\'$2\')',
+		];
+
+		foreach ($patterns as $pattern => $replacement) {
+			$neutralized = preg_replace($pattern, $replacement, $code);
+
+			if ($neutralized !== null) {
+				$code = $neutralized;
+			}
+		}
+
+		return $code;
 	}
 }

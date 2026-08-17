@@ -7,9 +7,10 @@
 				<label class="tw-pl-2 tw-font-medium">Étiquettes</label>
 			</div>
 
-			<draggable v-model="arraySubValues" sort="true" handle=".handle-options">
+			<draggable v-model="arraySubValues" sort="true" handle=".handle-options" filter=".option-locked">
 				<div
 					class="element-option tw-mb-2 tw-mt-2 tw-flex tw-items-center tw-justify-between"
+					:class="{ 'option-locked': isLocked(option) }"
 					v-for="(option, index) in arraySubValues"
 					:key="option"
 					@mouseover="optionHighlight = index"
@@ -17,11 +18,16 @@
 				>
 					<div class="tw-flex tw-w-full tw-items-center tw-gap-1">
 						<div class="tw-flex tw-items-center">
-							<span class="icon-handle" :style="optionHighlight === index ? 'opacity: 1' : 'opacity: 0'">
+							<span
+								v-if="!isLocked(option)"
+								class="icon-handle"
+								:style="optionHighlight === index ? 'opacity: 1' : 'opacity: 0'"
+							>
 								<span class="material-symbols-outlined handle-options tw-cursor-grab" style="font-size: 18px"
 									>drag_indicator</span
 								>
 							</span>
+							<span v-else class="icon-handle"></span>
 						</div>
 
 						<input
@@ -29,10 +35,11 @@
 							:type="type"
 							:name="'element-id-' + element.id"
 							:value="option.sub_label"
+							:disabled="isLocked(option)"
 						/>
 
 						<div class="tw-flex tw-w-full tw-gap-2">
-							<input v-if="displayValues" type="text" v-model="option.sub_value" />
+							<input v-if="displayValues" type="text" v-model="option.sub_value" :disabled="isLocked(option)" />
 
 							<input
 								type="text"
@@ -40,6 +47,7 @@
 								:class="{ 'editable-data editable-data-input tw-ml-1': !displayValues }"
 								:id="'option-' + element.id + '-' + index"
 								v-model="option.sub_label"
+								:disabled="isLocked(option)"
 								@focusout="updateOption(index, option.sub_label)"
 								@keyup.enter="updateOption(index, option.sub_label, true)"
 								@keyup.tab="document.getElementById('new-option-' + element.id).focus()"
@@ -49,6 +57,7 @@
 					</div>
 					<div class="tw-flex tw-items-center">
 						<span
+							v-if="!isLocked(option)"
 							class="material-symbols-outlined tw-cursor-pointer"
 							@click="removeOption(index)"
 							:style="optionHighlight === index ? 'opacity: 1' : 'opacity: 0'"
@@ -167,6 +176,14 @@ export default {
 		removeOption(index) {
 			// Remove the option from the array
 			this.arraySubValues.splice(index, 1);
+		},
+		isLocked(option) {
+			// For dropdown only: an option with an empty or 0 value cannot be edited, removed or moved
+			if (this.type !== 'dropdown') {
+				return false;
+			}
+
+			return option.sub_value === '' || option.sub_value === null || parseInt(option.sub_value) === 0;
 		},
 	},
 };

@@ -136,12 +136,12 @@ class EmundusViewMessage extends JViewLegacy
 						{
 							require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
 						}
-
 						foreach ($fnums as $fnum) {
 							$tmp               = new stdClass();
 							$tmp->fnum         = $fnum;
 							$tmp->cid          = substr($fnum, 14, 7);
 							$tmp->sid          = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
+							$tmp->anonymous    = EmundusHelperFiles::isFnumAnonymized($fnum, $current_user->id);
 							$formatted_fnums[] = $tmp;
 						}
 					}
@@ -153,11 +153,16 @@ class EmundusViewMessage extends JViewLegacy
 				$tables = array('u.name', 'u.username', 'u.email', 'u.id', 'eu.is_anonym');
 				foreach ($fnums as $fnum) {
 					if (EmundusHelperAccess::asAccessAction(9, 'c', $current_user->id, $fnum->fnum) && !empty($fnum->sid)) {
+						if (!isset($fnum->anonymous))
+						{
+							$fnum->anonymous = EmundusHelperFiles::isFnumAnonymized($fnum->fnum, $current_user->id);
+						}
+
 						$user                = $m_application->getApplicantInfos($fnum->sid, $tables);
 						$user['campaign_id'] = $fnum->cid;
 						$fnum_array[]        = $fnum->fnum;
 
-						if ($user['is_anonym'] == 1 || $fnum->anonymous) {
+						if ($user['is_anonym'] == 1 || $fnum->anonymous == 1) {
 							$user['name'] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . ' ' . $user['id'];
 							$user['email'] = Text::_('COM_EMUNDUS_ANONYM_EMAIL');
 							$this->atLeastOneAnonym = true;

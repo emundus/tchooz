@@ -4905,9 +4905,15 @@ class EmundusControllerFiles extends EmundusController
 				$response['code'] = 200;
 				$response['status'] = true;
 				$response['message'] = '';
-				$m_files = $this->getModel('Files');
 
-				$response['data'] = $m_files->getFileSynthesis($fnum);
+				// The synthesis resolves tags with the real applicant identity, so never expose it for anonymous files/accounts or to viewers restricted to anonymized data.
+				if (EmundusHelperFiles::isFnumAnonymized($fnum, $this->_user->id)) {
+					$response['data'] = '';
+				}
+				else {
+					$m_files = $this->getModel('Files');
+					$response['data'] = $m_files->getFileSynthesis($fnum);
+				}
 			}
 		}
 

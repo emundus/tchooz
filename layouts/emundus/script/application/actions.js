@@ -1,4 +1,8 @@
 window.addEventListener('DOMContentLoaded', (event) => {
+    const langPath =
+        (typeof Joomla !== 'undefined' && Joomla.getOptions
+            ? Joomla.getOptions('plg_system_emundus.language', {}).currentPath
+            : '') || '';
 
     function moveContainerToBody(container) {
         if (container.dataset.teleported === '1') return;
@@ -176,7 +180,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
         formData.append('fnum', fnum);
 
-        fetch('/index.php?option=com_emundus&controller=application&task=executeApplicationAction', {
+        fetch(langPath + '/index.php?option=com_emundus&controller=application&task=executeApplicationAction', {
             method: 'POST',
             body: formData,
             headers: {
@@ -196,7 +200,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
                     if (context === 'single')
                     {
-                        window.location.href = '/index.php?option=com_emundus&task=openfile&fnum=' + fnum;
+                        window.location.href = langPath + '/index.php?option=com_emundus&task=openfile&fnum=' + fnum;
                     }
                     else
                     {

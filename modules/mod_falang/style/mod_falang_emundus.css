@@ -125,4 +125,13 @@ div a[title^="Faboba"] {
     div.mod-languages form[name="lang"]{
         margin: 4px 0 !important;
     }
+
+    .mod_falang_emundus___button{
+        font-size: 13px;
+        padding: 0 4px;
+    }
+
+    .mod_falang_emundus___button span.material-symbols-outlined{
+        font-size: 20px !important;
+    }
 }

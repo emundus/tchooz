@@ -224,21 +224,30 @@ class EmundusViewApplication extends HtmlView
 						{
 							$campaignInfo = $m_application->getUserCampaigns($this->sid, null, false);
 
-							$published_campaigns   = array_filter($campaignInfo, function ($campaign) {
-								return $campaign->published == 1;
-							});
-							$unpublished_campaigns = array_filter($campaignInfo, function ($campaign) {
-								return $campaign->published != 1;
-							});
-
 							foreach ($campaignInfo as $key => $campaign)
 							{
+								// An anonymous file must never be listed next to another file of the same applicant: the
+								// link alone ties it back to an identified person. The file being viewed is exempt,
+								// assoc_files.php already empties the whole list when that one is the anonymous file.
+								if ($campaign->anonymous == 1 && $campaign->fnum !== $fnum)
+								{
+									unset($campaignInfo[$key]);
+									continue;
+								}
+
 								if (!EmundusHelperAccess::isUserAllowedToAccessFnum($this->user->id, $campaign->fnum))
 								{
 									unset($campaignInfo[$key]);
 								}
 							}
 
+							// Split after filtering, otherwise neither filter above reaches what the template renders.
+							$published_campaigns   = array_filter($campaignInfo, function ($campaign) {
+								return $campaign->published == 1;
+							});
+							$unpublished_campaigns = array_filter($campaignInfo, function ($campaign) {
+								return $campaign->published != 1;
+							});
 						}
 						else
 						{
@@ -731,8 +740,18 @@ class EmundusViewApplication extends HtmlView
 						{
 							require_once(JPATH_BASE . '/components/com_emundus/models/emails.php');
 						}
+						if (!class_exists('EmundusHelperFiles'))
+						{
+							require_once JPATH_BASE . '/components/com_emundus/helpers/files.php';
+						}
+
+						// When the current file/account is anonymous (or the viewer is restricted to anonymized data), scope
+						// the sent-emails recap to the current file only and hide the "all files of the user" tab.
+						$anonymized           = EmundusHelperFiles::isFnumAnonymized($fnum, $this->user->id);
+						$this->hide_all_files = $anonymized;
+
 						$m_emails       = new EmundusModelEmails();
-						$this->messages = $m_emails->get_messages_to_from_user($this->sid);
+						$this->messages = $m_emails->get_messages_to_from_user($this->sid, $fnum, $anonymized);
 
 					}
 					else
