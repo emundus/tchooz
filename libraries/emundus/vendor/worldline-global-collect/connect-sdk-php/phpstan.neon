@@ -1,0 +1,12 @@
+parameters:
+  paths:
+    - src
+    - lib
+    - tests
+  level: 5
+
+  treatPhpDocTypesAsCertain: false
+
+  ignoreErrors:
+    - message: '#Method .* should return Worldline\\Connect\\Sdk\\V.*\\Domain\\.* but returns Worldline\\Connect\\Sdk\\Domain\\DataObject\|null\.#'
+      path: */Worldline/Connect/Sdk/*

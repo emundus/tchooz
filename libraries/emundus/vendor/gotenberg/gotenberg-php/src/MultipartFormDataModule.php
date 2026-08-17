@@ -10,6 +10,7 @@ use Http\Discovery\Psr17FactoryDiscovery;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
 
+use function count;
 use function json_encode;
 
 trait MultipartFormDataModule
@@ -53,11 +54,18 @@ trait MultipartFormDataModule
     /**
      * Sets the callback and error callback that Gotenberg will use to send
      * respectively the output file and the error response.
+     *
+     * @param string $errorUrl Deprecated: use webhookEventsUrl() instead.
+     *                         If Gotenberg-Webhook-Events-Url is set, this
+     *                         parameter is not required.
      */
-    public function webhook(string $url, string $errorUrl): self
+    public function webhook(string $url, string $errorUrl = ''): self
     {
-        $this->headers['Gotenberg-Webhook-Url']       = $url;
-        $this->headers['Gotenberg-Webhook-Error-Url'] = $errorUrl;
+        $this->headers['Gotenberg-Webhook-Url'] = $url;
+
+        if ($errorUrl !== '') {
+            $this->headers['Gotenberg-Webhook-Error-Url'] = $errorUrl;
+        }
 
         return $this;
     }
@@ -80,6 +88,8 @@ trait MultipartFormDataModule
      * error webhook.
      *
      * Either "POST", "PATCH", or "PUT" - default "POST".
+     *
+     * @deprecated Use webhookEventsUrl() instead.
      */
     public function webhookErrorMethod(string $method): self
     {
@@ -104,6 +114,116 @@ trait MultipartFormDataModule
         }
 
         $this->headers['Gotenberg-Webhook-Extra-Http-Headers'] = $json;
+
+        return $this;
+    }
+
+    /**
+     * Sets the URL that Gotenberg will use to send webhook event
+     * notifications (e.g., success/error events after webhook delivery).
+     */
+    public function webhookEventsUrl(string $url): self
+    {
+        $this->headers['Gotenberg-Webhook-Events-Url'] = $url;
+
+        return $this;
+    }
+
+    /**
+     * Configures watermarking on the resulting PDF(s).
+     * Only non-empty values are set.
+     *
+     * @param array<string,mixed> $options
+     *
+     * @throws NativeFunctionErrored
+     */
+    public function watermarking(string $source, string $expression = '', string $pages = '', array $options = []): self
+    {
+        $this->formValue('watermarkSource', $source);
+
+        if ($expression !== '') {
+            $this->formValue('watermarkExpression', $expression);
+        }
+
+        if ($pages !== '') {
+            $this->formValue('watermarkPages', $pages);
+        }
+
+        if (count($options) > 0) {
+            $json = json_encode($options);
+            if ($json === false) {
+                throw NativeFunctionErrored::createFromLastPhpError();
+            }
+
+            $this->formValue('watermarkOptions', $json);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Adds watermark file.
+     */
+    public function watermarkFile(Stream $file): self
+    {
+        $this->formFile($file->getFilename(), $file->getStream(), 'watermark');
+
+        return $this;
+    }
+
+    /**
+     * Configures stamping on the resulting PDF(s).
+     * Only non-empty values are set.
+     *
+     * @param array<string,mixed> $options
+     *
+     * @throws NativeFunctionErrored
+     */
+    public function stamping(string $source, string $expression = '', string $pages = '', array $options = []): self
+    {
+        $this->formValue('stampSource', $source);
+
+        if ($expression !== '') {
+            $this->formValue('stampExpression', $expression);
+        }
+
+        if ($pages !== '') {
+            $this->formValue('stampPages', $pages);
+        }
+
+        if (count($options) > 0) {
+            $json = json_encode($options);
+            if ($json === false) {
+                throw NativeFunctionErrored::createFromLastPhpError();
+            }
+
+            $this->formValue('stampOptions', $json);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Adds stamp file.
+     */
+    public function stampFile(Stream $file): self
+    {
+        $this->formFile($file->getFilename(), $file->getStream(), 'stamp');
+
+        return $this;
+    }
+
+    /**
+     * Configures rotation on the resulting PDF(s).
+     * Only non-empty values are set.
+     */
+    public function rotating(int $angle, string $pages = ''): self
+    {
+        $this->formValue('rotateAngle', $angle);
+
+        if ($pages !== '') {
+            $this->formValue('rotatePages', $pages);
+        }
 
         return $this;
     }
