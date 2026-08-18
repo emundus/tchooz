@@ -97,17 +97,20 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
          */
         doAjaxBrowse: function (dir) {
             var self = this;
+            var browseData = {
+                'dir'       : dir,
+                'option'    : 'com_fabrik',
+                'format'    : 'raw',
+                'task'      : 'plugin.pluginAjax',
+                'plugin'    : 'fileupload',
+                'g'         : 'element',
+                'method'    : 'ajax_getFolders',
+                'element_id': this.options.id
+            };
+            browseData[Joomla.getOptions('csrf.token')] = 1;
             jQuery.ajax({
                 url       : '',
-                data      : {
-                    'dir'       : dir,
-                    'option'    : 'com_fabrik',
-                    'format'    : 'raw',
-                    'task'      : 'plugin.pluginAjax',
-                    'plugin'    : 'fileupload',
-                    'method'    : 'ajax_getFolders',
-                    'element_id': this.options.id
-                },
+                data      : browseData,
             }).done(function(r) {
                 r = JSON.parse(r);
                 self.folderdiv.empty();

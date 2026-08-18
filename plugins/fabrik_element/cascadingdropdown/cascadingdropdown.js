@@ -102,6 +102,7 @@ define(['jquery', 'element/databasejoin/databasejoin', 'fab/autocomplete-bootstr
                 'format'                    : 'raw',
                 'task'                      : 'plugin.pluginAjax',
                 'plugin'                    : 'cascadingdropdown',
+                'g'                         : 'element',
                 'method'                    : 'ajax_getOptions',
                 'element_id'                : this.options.id,
                 'v'                         : v,
@@ -110,6 +111,7 @@ define(['jquery', 'element/databasejoin/databasejoin', 'fab/autocomplete-bootstr
                 'lang'                      : this.options.lang
             };
             data = Object.append(formData, data);
+            data[Joomla.getOptions('csrf.token')] = 1;
             if (this.myAjax) {
                 // $$$ rob stops ascyro behaviour when older ajax call might take longer than new
                 // call and thus populate the dd with old data.

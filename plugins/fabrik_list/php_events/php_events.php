@@ -271,7 +271,7 @@ class PlgFabrik_ListPhp_Events extends PlgFabrik_List
 	{
 		$model = $this->getModel();
 		$w = new FabrikWorker;
-		$code = $w->parseMessageForPlaceHolder($code);
+		$code = $w->parseMessageForPlaceHolder($code, null, true, true, null, true, true);
 
 		if ($code != '')
 		{

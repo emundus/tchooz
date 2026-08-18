@@ -129,8 +129,11 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
 				return;
 			}
 			Fabrik.loader.start(this.form.getBlock());
+			var paginateData = {};
+			paginateData[Joomla.getOptions('csrf.token')] = 1;
 			var pageNav = new Request({
 				'url'      : this.url + rowid,
+				'data'     : paginateData,
 				evalScripts: true,
 				onComplete : function (json) {
 					this.doUpdate(json);

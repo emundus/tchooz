@@ -65,6 +65,7 @@ var FrontPackage = new Class({
 			'ajaxlinks': 1
 		};
 		data[key] = id;
+		data[Joomla.getOptions('csrf.token')] = 1;
 		var url = 'index.php';
 		var myAjax = new Request.HTML({url: url,
 			'data': data,

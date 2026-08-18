@@ -268,8 +268,16 @@ class FabrikControllerList extends BaseController
 	 */
 	public function doempty()
 	{
-		Html::validateRequest($this->taskMap);
+		Html::validateRequest($this->taskMap, true);
+
+		/** @var FabrikFEModelList $model */
 		$model = $this->getModel('list', 'FabrikFEModel');
+
+		if (!$model->canEmpty())
+		{
+			throw new Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
 		$model->truncate();
 		$this->display();
 	}

@@ -95,18 +95,20 @@ var fabriktablesElement = new Class({
 			this.loader.show();
 		}
 
+		var updateMeData = {
+			'option': 'com_fabrik',
+			'format': 'raw',
+			'task': 'plugin.pluginAjax',
+			'g': 'element',
+			'plugin': 'field',
+			'method': 'ajax_tables',
+			'showf': '1',
+			'cid': cid.toInt()
+		};
+		updateMeData[Joomla.getOptions('csrf.token')] = 1;
 		var myAjax = new Request({
 			url : 'index.php',
-			data: {
-				'option': 'com_fabrik',
-				'format': 'raw',
-				'task': 'plugin.pluginAjax',
-				'g': 'element',
-				'plugin': 'field',
-				'method': 'ajax_tables',
-				'showf': '1',
-				'cid': cid.toInt()
-			},
+			data: updateMeData,
 			onSuccess : function (r) {
 				var opts = JSON.parse(r);
 				if (typeOf(opts) !== 'null') {
@@ -197,6 +199,7 @@ var fabriktablesElement = new Class({
 				opts.each(function (v, k) {
 					ajaxopts[k] = v;
 				});
+				ajaxopts[Joomla.getOptions('csrf.token')] = 1;
 				var myAjax = new Request({
 					'url' : 'index.php',
 					'data' : ajaxopts,

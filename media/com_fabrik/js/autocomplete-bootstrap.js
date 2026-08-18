@@ -128,11 +128,13 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                         this.closeMenu();
                         this.ajax.cancel();
                     }
+                    var acData = {
+                        value: v
+                    };
+                    acData[Joomla.getOptions('csrf.token')] = 1;
                     this.ajax = new Request({
                         url      : this.options.url,
-                        data     : {
-                            value: v
-                        },
+                        data     : acData,
                         onRequest: function () {
                             Fabrik.loader.start(this.getInputElement());
                         }.bind(this),

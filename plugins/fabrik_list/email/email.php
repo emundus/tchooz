@@ -17,6 +17,7 @@ use Joomla\CMS\Editor\Editor;
 use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Client\ClientHelper;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Path;
 use Fabrik\Helpers\Pdf;
@@ -396,6 +397,23 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 		$folder         = JPATH_ROOT . '/images/stories';
 		$this->filepath = array();
 
+		// Extensions the site admin has legalised for upload via com_media - anything else
+		// (php, phtml, htaccess, etc) is rejected outright, regardless of file content.
+		$mediaParams  = ComponentHelper::getParams('com_media');
+		$allowedTypes = array_filter(array_map(
+			function ($ext) {
+				return StringHelper::strtolower(trim($ext));
+			},
+			explode(',', $mediaParams->get('restrict_uploads_extensions', ''))
+		));
+
+		// Belt-and-braces denylist in case a site's legal extensions list is misconfigured.
+		$deniedTypes = array(
+			'php', 'php2', 'php3', 'php4', 'php5', 'php6', 'php7', 'php8', 'phtml',
+			'phar', 'pht', 'inc', 'htaccess', 'htpasswd', 'cgi', 'pl', 'asp', 'aspx',
+			'jsp', 'sh', 'exe', 'dll', 'shtml',
+		);
+
 		foreach ($files as $file)
 		{
 			$name = $file['name'];
@@ -405,9 +423,21 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 				continue;
 			}
 
+			$name = File::makeSafe($name);
+			$ext  = StringHelper::strtolower(File::getExt($name));
+
+			$extRejected = $ext == '' || in_array($ext, $deniedTypes) || !in_array($ext, $allowedTypes);
+
+			if ($name == '' || $extRejected)
+			{
+				JError::raiseWarning(100, Text::_('PLG_LIST_EMAIL_ERR_CANT_UPLOAD_FILE'));
+
+				return false;
+			}
+
 			$path = $folder . '/' . strtolower($name);
 
-			if (!File::upload($file['tmp_name'], $path))
+			if (!File::upload($file['tmp_name'], $path, false, false))
 			{
 				JError::raiseWarning(100, Text::_('PLG_LIST_EMAIL_ERR_CANT_UPLOAD_FILE'));
 
