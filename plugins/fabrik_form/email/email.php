@@ -235,7 +235,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 		if (!empty($emailToEval))
 		{
-			$emailToEval = $w->parseMessageForPlaceholder($emailToEval, $this->data, false);
+			$emailToEval = $w->parseMessageForPlaceholder($emailToEval, $this->data, false, true, null, true, true);
 			Worker::clearEval();
 			$emailToEval = Php::Eval(['code' => $emailToEval, 
 										'vars' => ['formModel'=>$formModel], 
@@ -312,7 +312,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 
 		if (!empty($customHeadersEval))
 		{
-			$customHeadersEval = $w->parseMessageForPlaceholder($customHeadersEval, $this->data, false);
+			$customHeadersEval = $w->parseMessageForPlaceholder($customHeadersEval, $this->data, false, true, null, true, true);
 			$customHeaders = Php::Eval(['code' => $customHeadersEval]);
 			Worker::logEval($customHeaders, 'Caught exception on eval in email custom headers : %s');
 		}
@@ -723,7 +723,7 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		// $$$ hugh - added an optional eval for adding attachments.
 		// Eval'd code should just return an array of file paths which we merge with $this->attachments[]
 		$w               = new Worker;
-		$emailAttachEval = $w->parseMessageForPlaceholder($params->get('email_attach_eval', ''), $this->data, false);
+		$emailAttachEval = $w->parseMessageForPlaceholder($params->get('email_attach_eval', ''), $this->data, false, true, null, true, true);
 
 		if (!empty($emailAttachEval))
 		{

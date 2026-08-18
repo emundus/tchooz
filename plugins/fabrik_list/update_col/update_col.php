@@ -426,7 +426,10 @@ class PlgFabrik_ListUpdate_col extends PlgFabrik_List
 					if ($eval)
 					{
 						FabrikWorker::clearEval();
-						$thisMessage = Php::Eval(['code' => $thisMessage, 'vars'=>['row'=>$row]]);
+						// Re-resolve with forEval=true so substituted row data becomes a safe,
+						// quoted PHP literal instead of text spliced straight into the eval'd code.
+						$evalMessage = $w->parseMessageForPlaceholder($message, $row, true, true, null, true, true);
+						$thisMessage = Php::Eval(['code' => $evalMessage, 'vars'=>['row'=>$row]]);
 						Worker::logEval($thisMessage, 'Caught exception on eval in updatecol::process() : %s');
 					}
 

@@ -241,6 +241,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 					. $db->q('%"' . $originalValue . '"%') . " $glue $key $condition2 " . $db->q('%"' . $originalValue . '"]') . ")";
 					break;
 				default:
+					parent::validateQuerystringCondition($condition, $value, $type);
 					$str = " $key $condition $value ";
 					break;
 			}
@@ -269,7 +270,11 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 		 */
 		if ($evalFilter && ($type === 'prefilter' || $type === 'menuprefilter'))
 		{
-			$originalValue = stripslashes(htmlspecialchars_decode($originalValue, ENT_QUOTES));
+			// $originalValue is the raw pre-filter formula (may contain {table___field} placeholders);
+			// resolve those with forEval=true so any substituted request/row data becomes a safe,
+			// quoted PHP literal rather than text spliced straight into the eval'd code below.
+			$w = new FabrikWorker;
+			$originalValue = $w->parseMessageForPlaceHolder($originalValue, null, true, true, null, false, true);
 			FabrikWorker::clearEval();
 			$originalValue = Php::Eval(['code' => $originalValue]);
 			FabrikWorker::logEval($originalValue, 'Caught exception on eval of elementList::filterQueryMultiValues() ' . $key . ': %s');

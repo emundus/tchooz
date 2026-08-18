@@ -142,18 +142,20 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
                 return;
             }
             elData = this.options.elementMap[v];
+            var elementFilterData = {
+                'element'   : v,
+                'id'        : this.options.listid,
+                'elid'      : elData.id,
+                'plugin'    : elData.plugin,
+                'counter'   : this.options.counter,
+                'listref'   : this.options.listref,
+                'context'   : this.options.controller,
+                'parentView': this.options.parentView
+            };
+            elementFilterData[Joomla.getOptions('csrf.token')] = 1;
             jQuery.ajax({
                 'url' : url,
-                'data': {
-                    'element'   : v,
-                    'id'        : this.options.listid,
-                    'elid'      : elData.id,
-                    'plugin'    : elData.plugin,
-                    'counter'   : this.options.counter,
-                    'listref'   : this.options.listref,
-                    'context'   : this.options.controller,
-                    'parentView': this.options.parentView
-                }
+                'data': elementFilterData
             }).done(function (r) {
                 update.html(r);
                 Fabrik.loader.stop(row[0]);

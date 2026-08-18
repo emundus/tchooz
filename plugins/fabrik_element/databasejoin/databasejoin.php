@@ -156,13 +156,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		// Make sure same connection as this table
 		$fullElName = FArrayHelper::getValue($opts, 'alias', $table . '___' . $element->name);
 
-		$isSameConnection = $params->get('join_conn_id') == $connection->get('id');
-		if(!$isSameConnection && $element->plugin == 'databasejoin' && empty($params->get('join_conn_id')))
-		{
-			$isSameConnection = true;
-		}
-
-		if ($isSameConnection || $element->plugin != 'databasejoin')
+		if ($params->get('join_conn_id') == $connection->get('id') || $element->plugin != 'databasejoin')
 		{
 			$join = $this->getJoin();
 
@@ -2702,8 +2696,10 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 				}
 
 				$this->encryptFieldName($k);
-
-				return "$k $condition $value";
+				
+				parent::validateQuerystringCondition($condition, $value, $type);
+				return " $k $condition $value ";
+				
 			}
 		}
 

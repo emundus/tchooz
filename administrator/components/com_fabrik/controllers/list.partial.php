@@ -299,7 +299,16 @@ class FabrikAdminControllerList extends FabControllerForm
 	 */
 	public function doempty()
 	{
+		Html::validateRequest($this->taskMap, true);
+
+		/** @var FabrikFEModelList $model */
 		$model = $this->getModel('list', 'FabrikFEModel');
+
+		if (!$model->canEmpty())
+		{
+			throw new Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
 		$input = $this->input;
 		$model->truncate();
 		$listId = $input->getInt('listid');

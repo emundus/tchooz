@@ -168,6 +168,7 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
                 'c'               : this.topTotal,
                 'id'              : this.id
             };
+            d[Joomla.getOptions('csrf.token')] = 1;
 
             var request = new Request.HTML({
                 url        : 'index.php',
@@ -263,17 +264,19 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
             }
 
             // Ajax request to load the plugin content
+            var addPluginData = {
+                'option': 'com_fabrik',
+                'view'  : 'plugin',
+                'format': 'raw',
+                'type'  : this.type,
+                'plugin': plugin,
+                'c'     : c,
+                'id'    : this.id
+            };
+            addPluginData[Joomla.getOptions('csrf.token')] = 1;
             var request = new Request.HTML({
                 url        : 'index.php',
-                data       : {
-                    'option': 'com_fabrik',
-                    'view'  : 'plugin',
-                    'format': 'raw',
-                    'type'  : this.type,
-                    'plugin': plugin,
-                    'c'     : c,
-                    'id'    : this.id
-                },
+                data       : addPluginData,
                 update     : document.id('plugins').getElements('.actionContainer')[c].getElement('.pluginOpts'),
                 onRequest  : function () {
                     if (Fabrik.debug) {

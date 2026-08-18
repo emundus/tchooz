@@ -330,7 +330,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 			if ($elementModel)
 			{
 				$w          = new FabrikWorker;
-				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true);
+				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true, null, true, true);
 				FabrikWorker::clearEval();
 				$php_result = Php::Eval(['code' => $code, 'vars' => ['formModel' => $formModel,'elementModel' => $elementModel]]);
 				FabrikWorker::logEval($php_result, 'Caught exception on eval of ' . $formModel->label . ': %s');
@@ -368,7 +368,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 			if ($elementModel)
 			{
 				$w          = new FabrikWorker;
-				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true);
+				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true, null, true, true);
 				FabrikWorker::clearEval();
 				$php_result = Php::Eval(['code' => $code, 'vars' => ['formModel' => $formModel,'elementModel' => $elementModel]]);
 				FabrikWorker::logEval($php_result, 'Caught exception on eval of ' . $formModel->label . ': %s');
@@ -442,7 +442,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 			if ($elementModel)
 			{
 				$w          = new FabrikWorker;
-				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true);
+				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true, null, true, true);
 				FabrikWorker::clearEval();
 				$php_result = Php::Eval(['code' => $code, 'vars' => ['formModel' => $formModel,'elementModel' => $elementModel, 'data' => $data]]);
 				FabrikWorker::logEval($php_result, 'Caught exception on eval of ' . $formModel->label . ': %s');

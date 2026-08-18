@@ -61,16 +61,18 @@ FbGoogleMapViz = new Class({
 			this.container = document.id(this.options.container);
 			this.subContainer = document.id(this.options.container + '_sub');
 
+			var googlemapUpdaterData = {
+				'option'         : 'com_fabrik',
+				'format'         : 'raw',
+				'task'           : 'ajax_getMarkers',
+				'view'           : 'visualization',
+				'controller'     : 'visualization.googlemap',
+				'visualizationid': this.options.id
+			};
+			googlemapUpdaterData[Joomla.getOptions('csrf.token')] = 1;
 			this.updater = new Request.JSON({
 				url      : '',
-				data     : {
-					'option'         : 'com_fabrik',
-					'format'         : 'raw',
-					'task'           : 'ajax_getMarkers',
-					'view'           : 'visualization',
-					'controller'     : 'visualization.googlemap',
-					'visualizationid': this.options.id
-				},
+				data     : googlemapUpdaterData,
 				onSuccess: function (json) {
 					this.clearIcons();
 					this.clearPolyLines();

@@ -32,7 +32,6 @@ class PlgFabrik_ValidationruleNotempty extends PlgFabrik_Validationrule
 	 */
 	protected $pluginName = 'notempty';
 
-
 	/**
 	 * @param string $data
 	 * @param int $repeatCounter
