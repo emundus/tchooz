@@ -742,7 +742,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		
 		$src = COM_FABRIK_LIVESITE .
 			'index.php?option=com_' . $this->package .
-			'&amp;task=plugin.pluginAjax&amp;plugin=field&amp;method=ajax_renderQRCode' .
+			'&amp;task=plugin.pluginAjax&amp;plugin=field&amp;method=ajax_renderQRCode&amp;g=element' .
 			'&amp;format=' . $format . '&amp;element_id=' . $elementId . '&amp;formid=' . $formId .
 			'&amp;rowid=' . $rowId . '&amp;repeatcount=0' . $extraParams;
 

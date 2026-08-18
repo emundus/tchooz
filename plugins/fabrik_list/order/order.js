@@ -73,23 +73,25 @@ define(['jquery', 'fab/list-plugin'], function (jQuery, FbListPlugin) {
 					this.neworder[c] = this.getOrder(sort);
 
 					Fabrik.loader.start('list_' + this.options.ref, 'sorting', true);
+					var orderData = {
+						'option'   : 'com_fabrik',
+						'format'   : 'raw',
+						'task'     : 'plugin.pluginAjax',
+						'plugin'   : 'order',
+						'g'        : 'list',
+						'listref'  : this.options.ref,
+						'method'   : 'ajaxReorder',
+						'order'    : this.neworder[c],
+						'origorder': this.origorder[c],
+						'dragged'  : this.getRowId(element),
+						'listid'   : this.options.listid,
+						'orderelid': this.options.orderElementId,
+						'direction': this.options.direction
+					};
+					orderData[Joomla.getOptions('csrf.token')] = 1;
 					new Request({
 						url         : Fabrik.liveSite + 'index.php',
-						'data'      : {
-							'option'   : 'com_fabrik',
-							'format'   : 'raw',
-							'task'     : 'plugin.pluginAjax',
-							'plugin'   : 'order',
-							'g'        : 'list',
-							'listref'  : this.options.ref,
-							'method'   : 'ajaxReorder',
-							'order'    : this.neworder[c],
-							'origorder': this.origorder[c],
-							'dragged'  : this.getRowId(element),
-							'listid'   : this.options.listid,
-							'orderelid': this.options.orderElementId,
-							'direction': this.options.direction
-						},
+						'data'      : orderData,
 						'onComplete': function (r) {
 							Fabrik.loader.stop('list_' + this.options.ref, null, true);
 							this.origorder[c] = this.neworder[c];

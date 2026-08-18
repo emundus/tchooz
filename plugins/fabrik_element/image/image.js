@@ -90,19 +90,21 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
             var folder = this.imageDir;
             this.selectedFolder = this.getFolderPath();
             folder.empty();
+            var imageData = {
+                'option': 'com_fabrik',
+                'format': 'raw',
+                'task'  : 'plugin.pluginAjax',
+                'g'     : 'element',
+                'plugin': 'image',
+                'method': 'ajax_files',
+                'element_id': this.options.id,
+                'folder': dir
+            };
+            imageData[Joomla.getOptions('csrf.token')] = 1;
             var myAjax = new Request({
                 url   : '',
                 method: 'post',
-                'data': {
-                    'option': 'com_fabrik',
-                    'format': 'raw',
-                    'task'  : 'plugin.pluginAjax',
-                    'g'     : 'element',
-                    'plugin': 'image',
-                    'method': 'ajax_files',
-                    'element_id': this.options.id,
-                    'folder': dir
-                },
+                'data': imageData,
 
                 onComplete: function (r) {
                     var newImages = eval(r);

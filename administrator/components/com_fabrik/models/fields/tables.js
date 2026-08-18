@@ -64,17 +64,19 @@ var tablesElement = new Class({
 		var url = 'index.php';
 		// $$$ hugh - changed this to 'get' method, because some servers barf (Length Required) if
 		// we send it a POST with no postbody.
+		var tablesData = {
+			'option': 'com_fabrik',
+			'format': 'raw',
+			'task': 'plugin.pluginAjax',
+			'g': 'element',
+			'plugin': 'field',
+			'method': 'ajax_tables',
+			'cid': cid.toInt()
+		};
+		tablesData[Joomla.getOptions('csrf.token')] = 1;
 		var myAjax = new Request({
 			url: url,
-			data: {
-				'option': 'com_fabrik',
-				'format': 'raw',
-				'task': 'plugin.pluginAjax',
-				'g': 'element',
-				'plugin': 'field',
-				'method': 'ajax_tables',
-				'cid': cid.toInt()
-			},
+			data: tablesData,
 			onComplete: function (r) {
 				var opts = JSON.parse(r);
 				if (typeOf(opts) !== 'null') {

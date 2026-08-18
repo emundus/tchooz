@@ -20,17 +20,19 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
 			target.addEvent('change', function (e) {
 				notify = document.id(el).checked ? 1 : 0;
 				Fabrik.loader.start(target, Joomla.JText._('COM_FABRIK_LOADING'));
+				var notifyData = {
+					g                  : 'form',
+					format             : 'raw',
+					fabrik_notification: 1,
+					listid             : this.options.listid,
+					formid             : this.options.formid,
+					rowid              : this.options.rowid,
+					notify             : notify
+				};
+				notifyData[Joomla.getOptions('csrf.token')] = 1;
 				var myAjax = new Request({
-					url : 'index.php?option=com_fabrik&task=plugin.pluginAjax&plugin=notification&method=toggleNotification',
-					data: {
-						g                  : 'form',
-						format             : 'raw',
-						fabrik_notification: 1,
-						listid             : this.options.listid,
-						formid             : this.options.formid,
-						rowid              : this.options.rowid,
-						notify             : notify
-					},
+					url : 'index.php?option=com_fabrik&task=plugin.pluginAjax&plugin=notification&method=toggleNotification&g=form',
+					data: notifyData,
 
 					onComplete: function (r) {
 						window.alert(r);

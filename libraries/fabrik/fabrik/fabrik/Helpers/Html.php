@@ -998,6 +998,14 @@ EOD;
 			HTMLHelper::_('bootstrap.framework');
 			self::loadBootstrapCSS();
 
+			// Expose the CSRF token to JS once per page, so any Fabrik AJAX call (plugin.pluginAjax,
+			// userAjax, cron, etc.) can include it and satisfy Html::validateRequest()'s
+			// Session::checkToken() check. Field-based (not header-based) since that's the mechanism
+			// Session::checkToken() actually validates - see plugins/fabrik_element/fileupload's
+			// existing ajaxToken usage for the established pattern.
+			HTMLHelper::_('behavior.core');
+			Factory::getDocument()->addScriptOptions('csrf.token', Session::getFormToken());
+
 			/* Load mootools & jquery-ui as it is not loaded by Joomla any more */
 			if(!self::isDebug()){
 				HTMLHelper::_('script', 'media/com_fabrik/js/lib/jquery-ui/jquery-ui.min.js'); //jquery-ui for fabrik v1.13.2 - 2022-07-14
@@ -3260,34 +3268,121 @@ EOT;
 		return '';
 	}
 	/**
-	 * validate the request
+	 * Validate the request
+	 *
+	 * Sanity-checks that a Fabrik controller/plugin-ajax/cron/view request is well formed and
+	 * carries a valid CSRF token: that any controller/task, formid/listid/element_id/
+	 * visualizationid/view/Itemid it references actually exist, that POST requests are properly
+	 * formed and same-origin, and that a valid Joomla session token is present on every non-GET
+	 * request. Rejects malformed, bot, scanner and CSRF traffic early.
+	 *
+	 * Ported forward from the 5.0dev rewrite (Fabrik\Helpers\FabrikHtml::validateRequest), adapted
+	 * to master's legacy (non-namespaced) controller class naming. Unlike the earlier disabled
+	 * version of this function, the CSRF token check now works: FabrikHelperHTML::framework()
+	 * registers the form token as the 'csrf.token' script option on every Fabrik page, and every
+	 * Fabrik AJAX call site (JS) has been updated to send it as a request field.
+	 *
+	 * @param   array  $taskMap       Task alias map, see above.
+	 * @param   bool   $requireToken  Some actions (list/element/row mutation - anything a bare GET
+	 *                                link must not be able to trigger) need the token checked even
+	 *                                when the request method is GET, since GET is otherwise exempt
+	 *                                below. Pass true for those instead of following this call with
+	 *                                a separate Session::checkToken(). A failure here still exits
+	 *                                via the uniform 404 below, rather than the "Invalid Token"
+	 *                                message checkToken() would produce - deliberately so, to avoid
+	 *                                telling a caller which specific check tripped.
 	 *
 	 * returns or exits
 	 */
-	public static function validateRequest($taskMap) { return;
+	public static function validateRequest($taskMap, $requireToken = false) {
 
 		$valid = false;
 		$app = Factory::getApplication();
 		$input = $app->getInput();
 		$client = $app->isClient('site') ? 'Site' : ($app->isClient('administrator') ? 'Administrator' : null);
 		$db    = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		do {
-			
-			if ($_SERVER['REQUEST_METHOD'] !== 'GET' && !Session::checkToken()) break;
-
 			// Make sure we are in Site or Admin
 			if (empty($client)) break;
 
-			// Test for query items that need to be there and need to be valid
-			$task = $input->get('task', null);
-			If (!empty($task)) {
-				$task = $taskMap[$task];
+			// Enforce session token on all non-GET requests, and on GET too when the caller
+			// passed $requireToken (a GET-reachable action that mutates or discloses something
+			// sensitive), fail hard if missing.
+			//
+			// Deliberately NOT calling Session::checkToken() here. On failure, Joomla's own
+			// implementation checks $app->getSession()->isNew() and, if true (e.g. an expired or
+			// first-touch guest session - not unusual for a page left open a while, or a guest
+			// browsing anonymously), calls $app->redirect('index.php') *itself*, terminating the
+			// request. For an AJAX/format=raw call (which is what's failing here - the redirect
+			// swaps the expected JSON/partial response for the site's home page HTML) that's worse
+			// than useless. Replicate the check manually so a bad/expired token just cleanly falls
+			// through to this function's own 404, instead of Joomla silently redirecting home.
+			if ($_SERVER['REQUEST_METHOD'] !== 'GET' || $requireToken) {
+				$formToken = Session::getFormToken();
+
+				// Header-based token first: easier to spot in devtools (Network > Headers) than the
+				// field-based form below, whose "name" is an opaque hash. hash_equals() avoids a
+				// timing side-channel on the comparison.
+				$headerToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+				$tokenOk = $headerToken !== '' && hash_equals($formToken, $headerToken);
+
+				// Fall back to the classic field-based token (a POST/GET param NAMED after the
+				// token hash, value irrelevant) - what window.js and most of this codebase's JS
+				// currently send via data[Joomla.getOptions('csrf.token')] = 1.
+				if (!$tokenOk) {
+					$tokenOk = (bool) $input->post->get($formToken, '', 'alnum');
+				}
+
+				if (!$tokenOk) {
+					$tokenOk = (bool) $input->get($formToken, '', 'alnum');
+				}
+
+				if (!$tokenOk) break;
 			}
 
-			$controller = $input->get('controller');
-			
+			// Validate Content-Type for POST requests
+			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+				$contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+				if (strpos($contentType, 'application/x-www-form-urlencoded') === false
+					&& strpos($contentType, 'multipart/form-data') === false) {
+					break;
+				}
+			}
+
+			// Validate Referer is from our own domain
+			$httpReferer = $_SERVER['HTTP_REFERER'] ?? '';
+			$serverName  = $_SERVER['SERVER_NAME'] ?? '';
+			if (!empty($httpReferer) && !empty($serverName)) {
+				$refererHost = parse_url($httpReferer, PHP_URL_HOST);
+				if ($refererHost !== $serverName) {
+					// Check if we are being referred from one of our payment gateways
+					if (!in_array($refererHost, ['checkout.stripe.com', 'www.sandbox.paypal.com', 'www.paypal.com'])) break;
+				}
+			}
+
+			// Test for query items that need to be there and need to be valid
+			$task = $input->get('task', null);
+			$controller = explode('.', $input->get('controller'))[0];
+			if ($controller == "visualization") {
+				$controller .= explode('.', $input->get('controller'))[1];
+			}
+
+			if (!empty($task)) {
+				// "controller.task" dot-notation (e.g. task=plugin.pluginAjax) never matches a
+				// $taskMap key as-is - split it out first so the lookup below actually finds it.
+				if (strpos($task, '.') !== false) {
+					list($controller, $task) = explode('.', $task);
+				}
+
+				if ($taskMap && array_key_exists(strtolower($task), $taskMap)) {
+					$task = $taskMap[strtolower($task)];
+				} else {
+					$task = $taskMap['__default'] ?? null;
+				}
+			}
+
 			if (!empty($controller)) {
 				$controllerClass = 'FabrikController' . ucfirst($controller);
 				if (class_exists($controllerClass) === false) break;
@@ -3298,31 +3393,103 @@ EOT;
 			}
 
 			// Test for various optional items and make sure that their values are valid
-			$items = ["formid" => "#__fabrik_forms", "listid" => "#__fabrik_lists", "element_id" => "#__fabrik_elements"];
+			$items = [
+				"formid"           => "#__fabrik_forms",
+				"listid"           => "#__fabrik_lists",
+				"element_id"       => "#__fabrik_elements",
+				"visualizationid"  => "#__fabrik_visualizations",
+			];
 			foreach ($items as $item => $table) {
 				$value = $input->get($item, 'not found');
-				if ($value == 'not found' || $value == '0') continue;
-				$query->clear()->select('*')->from($table)->where("id=$value");
+				if ($value === 'not found' || $value === '0' || $value === '') continue;
+
+				// Ensure value is a positive integer
+				$value = filter_var($value, FILTER_VALIDATE_INT);
+				if ($value === false || $value <= 0) break 2;
+
+				$query->clear()->select('id')->from($table)->where($db->quoteName('id') . ' = ' . $db->quote($value));
 				$result = $db->setQuery($query)->loadResult();
 				if (empty($result)) break 2;
 			}
+
 			// Test for a valid plugin
-			$plugin = $input->get('plugin', 'not found');
-			if ($plugin !=  'not found') {
-				$query->clear()->select('extension_id')->from('#__extensions')->where("type='plugin'")->where("element='$plugin'");
+			$plugin = $input->getCmd('plugin', '');
+			if ($plugin !== '') {
+				$pluginTypes = ["cron", "element", "form", "list", "validationrule", "visualization"];
+				$type = $input->get('g', $input->get('type', $input->get('view', 'not found')));
+				if ($type === 'not found' || !in_array($type, $pluginTypes)) break;
+
+				// Sanitize plugin name to alphanumeric + underscore only (defense in depth on top
+				// of the parameterised query below)
+				if (!preg_match('/^[a-zA-Z0-9_]+$/', $plugin)) break;
+
+				$query->clear()->select('extension_id')->from('#__extensions')
+					->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+					->where($db->quoteName('element') . ' = ' . $db->quote($plugin))
+					->where($db->quoteName('folder') . ' = ' . $db->quote('fabrik_' . $type));
 				if (empty($db->setQuery($query)->loadResult())) break;
 			}
+
+			// Check the view, and that any id it needs actually exists
+			$views = [
+				"article"        => ["table" => "#__content",              "id" => "id"],
+				"connection"     => ["table" => "#__fabrik_connections",    "id" => "id"],
+				"cron"           => ["table" => "#__fabrik_cron",           "id" => "id"],
+				"csv"            => ["table" => "#__fabrik_lists",          "id" => "listid"],
+				"details"        => ["table" => "#__fabrik_lists",          "id" => "listid"],
+				"element"        => ["table" => "#__fabrik_elements",       "id" => "id"],
+				"form"           => ["table" => "#__fabrik_forms",          "id" => "formid"],
+				"group"          => ["table" => "#__fabrik_groups",         "id" => "id"],
+				"list"           => ["table" => "#__fabrik_lists",          "id" => "listid"],
+				"import"         => ["table" => "#__fabrik_lists",          "id" => "listid"],
+				"export"         => ["table" => "#__fabrik_lists",          "id" => "listid"],
+				"visualization"  => ["table" => "#__fabrik_visualizations", "id" => "id"],
+			];
+
+			$skipViews = ["connections", "crons", "elements", "forms", "groups", "home", "languages", "lists", "plugin", "visualizations"];
+			$viewFound = false;
+			$view = explode('.', $input->get('view', 'not found'))[0];
+			if ($view !== 'not found' && !in_array($view, $skipViews, true)) {
+				// Is it one of ours?
+				if (array_key_exists($view, $views) === false) break;
+				$viewFound = true;
+				// Make sure we have an id for the view
+				$inputId = strtolower($client) === 'site' ? $views[$view]['id'] : 'id';
+				$id = $input->get($inputId, 'not found');
+				if ($id !== 'not found') { // no ID probably means a new record
+					$id = filter_var($id, FILTER_VALIDATE_INT);
+					if ($id === false || $id <= 0) break;
+
+					$query->clear()->select('id')->from($views[$view]['table'])
+						->where($db->quoteName('id') . ' = ' . $db->quote($id));
+					$result = $db->setQuery($query)->loadResult();
+					if (empty($result)) break;
+				}
+			}
+
+			// Check the menu
+			$itemid = $input->get('Itemid', 'not found');
+			if (!empty($itemid) && $itemid !== 'not found') {
+				$itemid = filter_var($itemid, FILTER_VALIDATE_INT);
+				if ($itemid === false || $itemid <= 0) break;
+
+				$query->clear()->select('link')->from('#__menu')
+					->where($db->quoteName('id') . ' = ' . $db->quote($itemid));
+				$result = $db->setQuery($query)->loadResult();
+				if (empty($result)) break;
+
+				if (strpos($result, 'com_fabrik') === false) {
+					// It's possible we are rendering a module or content plugin;
+					if (strpos($result, 'com_content') !== false && $input->get('option') === 'com_content' && $viewFound === false) break;
+				}
+			}
+
 			$valid = true;
 		} while (0);
 
 		if (!$valid) {
-		    // Send a 404 status
-		    http_response_code(404);
-
-		    // Redirect to a custom error page
-		    header('Location: /errors/404.php');
-
-		    exit;
+			http_response_code(404);
+			jexit();
 		}
 	}
 }
