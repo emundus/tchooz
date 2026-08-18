@@ -194,7 +194,9 @@ define(['jquery', 'fab/elementlist'], function (jQuery, FbElementList) {
             }
             this._getSubElements().each(function (sub, i) {
                 sub.id = this.options.element + '_input_' + i;
-                var label = sub.getParent('label');
+                // The grid layout renders the label as a sibling of the input, not as its parent,
+                // so getParent() alone leaves cloned repeats pointing at the first group's inputs.
+                var label = sub.getParent('label') || sub.getNext('label');
                 if (label) {
                     label.htmlFor = sub.id;
                 }
@@ -228,7 +230,7 @@ define(['jquery', 'fab/elementlist'], function (jQuery, FbElementList) {
             this._getSubElements().each(function (e) {
                 e.name = this._setName(e.name, repeatCount);
                 e.id = this._setId(e.id, repeatCount, '_input_\\d+');
-                var label = e.getParent('label');
+                var label = e.getParent('label') || e.getNext('label');
                 if (label) {
                     label.htmlFor = e.id;
                 }
