@@ -129,7 +129,7 @@ class PlgFabrik_ListCaneditrow extends PlgFabrik_List
 		{
 			$w = new FabrikWorker;
 			$data = ArrayHelper::fromObject($data);
-			$caneditrow_eval = $w->parseMessageForPlaceHolder($caneditrow_eval, $data);
+			$caneditrow_eval = $w->parseMessageForPlaceHolder($caneditrow_eval, $data, true, true, null, true, true);
 			FabrikWorker::clearEval();
 			$caneditrow_eval = Php::Eval(['code' => $caneditrow_eval, 'vars'=>['data'=>$data]]);
 			FabrikWorker::logEval($caneditrow_eval, 'Caught exception on eval in can edit row : %s');

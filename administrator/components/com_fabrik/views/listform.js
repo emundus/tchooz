@@ -167,9 +167,12 @@ define(['jquery'], function (jQuery) {
                     var table = document.id('tablename').get('value');
                     var url = 'index.php?option=com_fabrik&format=raw&task=list.ajax_updateColumDropDowns&cid=' +
                         cid + '&table=' + table;
+                    var watchTableDdData = {};
+                    watchTableDdData[Joomla.getOptions('csrf.token')] = 1;
                     var myAjax = new Request({
                         url       : url,
                         method    : 'post',
+                        data      : watchTableDdData,
                         onComplete: function (r) {
                             eval(r);
                         }
@@ -344,9 +347,12 @@ define(['jquery'], function (jQuery) {
 
                 var update = row.getElement('td.table_key');
                 var url = 'index.php?option=com_fabrik&format=raw&task=list.ajax_loadTableDropDown&table=' + table + '&conn=' + conn;
+                var joinFromData = {};
+                joinFromData[Joomla.getOptions('csrf.token')] = 1;
                 var myAjax = new Request.HTML({
                     url   : url,
                     method: 'post',
+                    data  : joinFromData,
                     update: update
                 }).send();
             }.bind(this));
@@ -360,9 +366,12 @@ define(['jquery'], function (jQuery) {
                 var url = 'index.php?name=jform[params][table_join_key][]&option=com_fabrik&format=raw&task=list.ajax_loadTableDropDown&table=' + table + '&conn=' + conn;
 
                 var update = row.getElement('td.table_join_key');
+                var joinToData = {};
+                joinToData[Joomla.getOptions('csrf.token')] = 1;
                 var myAjax = new Request.HTML({
                     url   : url,
                     method: 'post',
+                    data  : joinToData,
                     update: update
                 }).send();
             }.bind(this));

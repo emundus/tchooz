@@ -46,19 +46,21 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
 					this.deleteComplete(e);
 				}.bind(this)
 			});
+			var updateCommentData = {
+				'option': 'com_fabrik',
+				'format': 'raw',
+				'task'  : 'plugin.pluginAjax',
+				'plugin': 'comment',
+				'method': 'updateComment',
+				'g'     : 'form',
+				'formid': this.options.formid,
+				'rowid' : this.options.rowid
+			};
+			updateCommentData[Joomla.getOptions('csrf.token')] = 1;
 			this.ajax.updateComment = new Request({
 				'url'   : '',
 				'method': 'post',
-				'data'  : {
-					'option': 'com_fabrik',
-					'format': 'raw',
-					'task'  : 'plugin.pluginAjax',
-					'plugin': 'comment',
-					'method': 'updateComment',
-					'g'     : 'form',
-					'formid': this.options.formid,
-					'rowid' : this.options.rowid
-				}
+				'data'  : updateCommentData
 			});
 			this.watchReply();
 			this.watchInput();

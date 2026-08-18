@@ -151,19 +151,21 @@ define(['jquery', 'fab/list-plugin'], function (jQuery, FbListPlugin) {
 
 						// It looks odd - but to get the element js code to load in correct we need to set the context
 						// to a visualization
+						var updateColData = {
+							'element': v,
+							'id': self.options.listid,
+							'elid': id,
+							'plugin': plugin,
+							'counter': counter,
+							'listref':  self.options.ref,
+							'context': 'visualization',
+							'parentView': 'update_col' + self.options.ref + '_' + self.options.renderOrder,
+							'fabrikIngoreDefaultFilterVal': 1
+						};
+						updateColData[Joomla.getOptions('csrf.token')] = 1;
 						new Request.HTML({'url': url,
 							'update': update,
-							'data': {
-								'element': v,
-								'id': self.options.listid,
-								'elid': id,
-								'plugin': plugin,
-								'counter': counter,
-								'listref':  self.options.ref,
-								'context': 'visualization',
-								'parentView': 'update_col' + self.options.ref + '_' + self.options.renderOrder,
-								'fabrikIngoreDefaultFilterVal': 1
-							},
+							'data': updateColData,
 							'onComplete': function () {
 								Fabrik.loader.stop(row);
 								self.win.fitToContent(false);

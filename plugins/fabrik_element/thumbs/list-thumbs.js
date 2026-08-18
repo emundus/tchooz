@@ -219,6 +219,7 @@ define(['jquery'], function (jQuery) {
 				if (this.options.voteType === 'comment') {
 					data.special = 'comments_' + this.options.formid;
 				}
+				data[Joomla.getOptions('csrf.token')] = 1;
 
 				new Request({
 					url       : '',

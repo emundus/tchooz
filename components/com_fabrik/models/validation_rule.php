@@ -150,7 +150,7 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 
 		// unused by us, but available for user's to use
 		$formModel = $this->elementModel->getFormModel();
-		$condition = trim($w->parseMessageForPlaceHolder($condition, $post));
+		$condition = trim($w->parseMessageForPlaceHolder($condition, $post, true, true, null, true, true));
 		FabrikWorker::clearEval();
 		$res = Php::Eval(['code' => $condition, 'vars'=>['formModel'=>$formModel, 'data'=>$data]]);
 		FabrikWorker::logEval($res, 'Caught exception in elementID ' . $this->elementModel->element->id . ' on eval in ' . $this->pluginName . ' validation condition : %s');
@@ -276,6 +276,7 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 		}
 
 		return !in_array($name, $hiddenElements);
+
 	}
 
 	/**

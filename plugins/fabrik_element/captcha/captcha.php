@@ -278,7 +278,7 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 			$elementId = $this->getId();
 
 			$displayData->url  = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $this->package
-				. '&task=plugin.pluginAjax&plugin=captcha&method=ajax_image&format=raw&element_id='
+				. '&task=plugin.pluginAjax&plugin=captcha&g=element&method=ajax_image&format=raw&element_id='
 				. $elementId . '&formid=' . $formId . '&rowid=' . $rowId . '&repeatcount=' . $repeatCounter;
 
 			$displayData->type = $type;
