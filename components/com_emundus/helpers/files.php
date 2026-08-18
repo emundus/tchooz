@@ -931,11 +931,12 @@ class EmundusHelperFiles
 					if(!empty($eval_elements)) {
 						// Merge the evaluation elements with the existing elements
 						foreach ($eval_elements as $key => $value) {
-							$value->form_label    = Text::_($value->form_label);
-							$value->table_label   = Text::_($value->table_label);
-							$value->group_label   = Text::_($value->group_label);
-							$value->element_label = Text::_($value->element_label);
-							$elts[]               = $value;
+							$value->form_label      = Text::_($value->form_label);
+							$value->table_label     = Text::_($value->table_label);
+							$value->group_label     = Text::_($value->group_label);
+							$value->element_label   = Text::_($value->element_label);
+							$value->element_attribs = $value->params;
+							$elts[]                 = $value;
 						}
 					}
 				}
