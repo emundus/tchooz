@@ -38,9 +38,10 @@ class WorldlineIntegrationHandler extends AbstractIntegrationHandler
 		{
 			$config = [
 				'authentication' => [
-					'mode'           => $setup->authentication->mode ?? 0,
-					'merchant_id'    => $setup->authentication->merchant_id ?? '',
-					'api_key_id'     => $setup->authentication->api_key_id ?? '',
+					'mode'               => $setup->authentication->mode ?? 0,
+					'merchant_id'        => $setup->authentication->merchant_id ?? '',
+					'api_key_id'         => $setup->authentication->api_key_id ?? '',
+					'checkout_subdomain' => $setup->authentication->checkout_subdomain ?? '',
 					'api_secret'     => isset($setup->authentication->api_secret) ? $this->encrypt($setup->authentication->api_secret) : '',
 					'webhook_key_id' => $setup->authentication->webhook_key_id ?? '',
 					'webhook_secret' => isset($setup->authentication->webhook_secret) ? $this->encrypt($setup->authentication->webhook_secret) : '',
@@ -49,7 +50,7 @@ class WorldlineIntegrationHandler extends AbstractIntegrationHandler
 		}
 		else
 		{
-			foreach (['mode', 'merchant_id', 'api_key_id', 'webhook_key_id'] as $key)
+			foreach (['mode', 'merchant_id', 'api_key_id', 'checkout_subdomain', 'webhook_key_id'] as $key)
 			{
 				if (isset($setup->authentication->$key))
 				{
