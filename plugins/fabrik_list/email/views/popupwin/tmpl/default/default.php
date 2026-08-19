@@ -18,6 +18,7 @@ $params = $this->params;
 
 ?>
 <form method="post" enctype="multipart/form-data" action="<?php echo Uri::base(); ?>index.php" name="emailtable" id="emailtable">
+	<?php echo HTMLHelper::_('form.token'); ?>
 	<div class="alert alert-info">
 		<?php echo FabrikHelperHTML::icon('icon-envelope'); ?><?php echo Text::plural('PLG_LIST_EMAIL_N_RECORDS', $this->recordcount) ?>
 	</div>

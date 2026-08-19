@@ -479,7 +479,10 @@ class PlgFabrik_ElementLink extends PlgFabrik_Element
 			if ($element->eval == "1")
 			{
 				FabrikWorker::clearEval();
-				$default = Php::Eval(['code' => $default, 'vars'=>['data'=>$data]]);
+				// Re-resolve with forEval=true so substituted request/row data becomes a safe,
+				// quoted PHP literal instead of text spliced straight into the eval'd code.
+				$evalDefault = $w->parseMessageForPlaceHolder($element->default, $data, true, true, null, true, true);
+				$default = Php::Eval(['code' => $evalDefault, 'vars'=>['data'=>$data]]);
 				FabrikWorker::logEval($default, 'Caught exception on eval of link default on ' . $element->name . ': %s');
 			}
 

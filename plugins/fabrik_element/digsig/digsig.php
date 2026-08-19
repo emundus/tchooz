@@ -94,7 +94,7 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 
 				$layoutData->link = COM_FABRIK_LIVESITE
 					. 'index.php?option=com_' . $this->package
-					. '&amp;task=plugin.pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image&amp;'
+					. '&amp;task=plugin.pluginAjax&amp;plugin=digsig&g=element&amp;method=ajax_signature_to_image&amp;'
 					. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId
 					. '&amp;repeatcount=0&amp;pdf_secret=' . $pdfSecret;
 
@@ -168,8 +168,9 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 		$elementId = $this->getId();
 
 		$link = COM_FABRIK_LIVESITE
-			. 'index.php?option=com_' . $this->package . '&amp;task=plugin.pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image&amp;'
-			. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
+			. 'index.php?option=com_' . $this->package . '&amp;task=plugin.pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image'
+			. '&amp;g=element'
+			. '&ampformat=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
 
 		$layoutData         = new stdClass;
 		$layoutData->width  = $params->get('digsig_list_width', '200');

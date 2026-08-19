@@ -110,7 +110,7 @@ class PlgFabrik_ListCanviewrow extends PlgFabrik_List
 		{
 			$w = new FabrikWorker;
 			$data = ArrayHelper::fromObject($data);
-			$canviewrow_eval = $w->parseMessageForPlaceHolder($canviewrow_eval, $data);
+			$canviewrow_eval = $w->parseMessageForPlaceHolder($canviewrow_eval, $data, true, true, null, true, true);
 			FabrikWorker::clearEval();
 			$canviewrow_eval = Php::Eval(['code' => $canviewrow_eval, 'vars'=>['data'=>$data]]);
 			FabrikWorker::logEval($canviewrow_eval, 'Caught exception on eval in can view row : %s');

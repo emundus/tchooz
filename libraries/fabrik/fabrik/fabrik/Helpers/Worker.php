@@ -89,6 +89,49 @@ class Worker
 	protected $parseAddSlashes = false;
 
 	/**
+	 * If true, parseMessageForPlaceHolder() emits substituted values as safe, quoted PHP literals
+	 * (via var_export) instead of raw/htmlspecialchars'd text - for messages that are going to be
+	 * passed to Php::Eval()
+	 *
+	 * @var bool
+	 */
+	protected $parseForEval = false;
+
+	/**
+	 * If true, parseMessageForPlaceHolder() emits substituted values as safe, quoted SQL literals
+	 * (via the db driver's quote()) instead of raw/htmlspecialchars'd text - for messages that are
+	 * going to be spliced into a raw SQL string (e.g. setPluginQueryWhere())
+	 *
+	 * @var bool
+	 */
+	protected $parseForSql = false;
+
+	/**
+	 * The message string currently being scanned by preg_replace_callback() in
+	 * parseMessageForPlaceHolder(), stashed so replaceWithFormData() can look up the real
+	 * PHP-string-literal context of a {placeholder} match via $parseSourceQuoteMap.
+	 *
+	 * @var string
+	 */
+	protected $parseSourceMsg = '';
+
+	/**
+	 * For forEval/forSql mode: a map of byte ranges in $parseSourceMsg that PHP's own tokenizer
+	 * says are inside a single/double-quoted string literal, built once per parseMessageForPlaceHolder()
+	 * call by tokenizeSourceForQuoteContext(). Each entry is ['start' => int, 'end' => int (exclusive),
+	 * 'quote' => "'" or '"']. A {placeholder} whose full byte range falls inside one of these entries
+	 * is embedded in an existing string literal (anywhere in it, not just quote-adjacent) and must be
+	 * escaped for that quote type rather than wrapped in a brand new self-quoting literal - see
+	 * quoteContextAt(). This replaced an earlier, incorrect character-lookbehind approach that only
+	 * caught the placeholder-*is*-the-entire-string case (e.g. '{ph}') and missed a placeholder
+	 * embedded inside a larger literal (e.g. "Order {ph}"), which remained exploitable via var_export()
+	 * not escaping '"' - a real-world 4.6.9 residual RCE report caught this.
+	 *
+	 * @var array
+	 */
+	protected $parseSourceQuoteMap = [];
+
+	/**
 	 * Search data to replace placeholders
 	 *
 	 * @var array
@@ -779,10 +822,29 @@ class Worker
 	 * @param   object $theirUser        User to use in replaceWithUserData (defaults to logged in user)
 	 * @param   bool   $unsafe           If true (default) will not replace certain placeholders like $jConfig_secret
 	 *                                   must not be shown to users
+	 * @param   bool   $forEval          If true, substituted values are emitted as safe, quoted PHP literals
+	 *                                   (via var_export) instead of raw/htmlspecialchars'd text. Use this for any
+	 *                                   message whose result is subsequently passed to Php::Eval() - textual
+	 *                                   splicing of request/row data into eval'd code is unsafe, htmlspecialchars
+	 *                                   alone does not stop it (e.g. chr()-built payloads need no quotes).
+	 * @param   bool   $forSql           If true, substituted values are emitted as safe, quoted SQL literals
+	 *                                   (via the db driver's quote()) instead of raw/htmlspecialchars'd text. Use
+	 *                                   this for any message whose result is subsequently spliced into a raw SQL
+	 *                                   string/WHERE clause (e.g. via setPluginQueryWhere()) - same rationale as
+	 *                                   $forEval, just for a SQL sink instead of a PHP eval sink.
 	 *
 	 * @return  string  parsed message
 	 */
-	public function parseMessageForPlaceHolder($msg, $searchData = null, $keepPlaceholders = true, $addSlashes = false, $theirUser = null, $unsafe = true)
+	public function parseMessageForPlaceHolder(
+		$msg,
+		$searchData = null,
+		$keepPlaceholders = true,
+		$addSlashes = false,
+		$theirUser = null,
+		$unsafe = true,
+		$forEval = false,
+		$forSql = false
+	)
 	{
 		$returnType = is_array($msg) ? 'array' : 'string';
 		$messages   = (array) $msg;
@@ -790,6 +852,8 @@ class Worker
 		foreach ($messages as &$msg)
 		{
 			$this->parseAddSlashes = $addSlashes;
+			$this->parseForEval = $forEval;
+			$this->parseForSql = $forSql;
 
 			if (!($msg == '' || is_array($msg) || StringHelper::strpos($msg, '{') === false))
 			{
@@ -833,8 +897,13 @@ class Worker
 
 				$msg = preg_replace("/{}/", "", $msg);
 
+				// Stashed so replaceWithFormData() can, in forEval/forSql mode, look up the real
+				// PHP-string-literal context of a placeholder match - see quoteContextAt().
+				$this->parseSourceMsg = $msg;
+				$this->parseSourceQuoteMap = ($forEval || $forSql) ? self::tokenizeSourceForQuoteContext($msg) : [];
+
 				// Replace {element name} with form data
-				$msg = preg_replace_callback("/{([^}\s]+(\|\|[\w|\s]+|<\?php.*\?>)*)}/i", array($this, 'replaceWithFormData'), $msg);
+				$msg = preg_replace_callback("/{([^}\s]+(\|\|[\w|\s]+|<\?php.*\?>)*)}/i", array($this, 'replaceWithFormData'), $msg, -1, $count, PREG_OFFSET_CAPTURE);
 
 				if (!$keepPlaceholders)
 				{
@@ -1210,7 +1279,9 @@ class Worker
 			}
 		}
 
-		$match = $matches[0];
+		// PREG_OFFSET_CAPTURE turns every $matches[n] into a [string, byteOffset] tuple - the
+		// offset is used below (forEval/forSql only) to detect an already-quoted placeholder.
+		list($match, $matchOffset) = $matches[0];
 		$orig  = $match;
 
 		// Strip the {}
@@ -1229,7 +1300,21 @@ class Worker
 
 		if (count($bits) == 2)
 		{
-			$match = self::parseMessageForPlaceHolder('{' . $bits[0] . '}', $this->_searchData, false);
+			// The nested call below re-enters parseMessageForPlaceHolder(), which overwrites
+			// $this->parseAddSlashes / $this->parseForEval / $this->parseForSql / $this->parseSourceMsg /
+			// $this->parseSourceQuoteMap for the duration of that call - save and restore them so
+			// escaping (and quote-context detection) stays correct for the rest of this placeholder pass.
+			$savedAddSlashes = $this->parseAddSlashes;
+			$savedForEval    = $this->parseForEval;
+			$savedForSql     = $this->parseForSql;
+			$savedSourceMsg  = $this->parseSourceMsg;
+			$savedQuoteMap   = $this->parseSourceQuoteMap;
+			$match = self::parseMessageForPlaceHolder('{' . $bits[0] . '}', $this->_searchData, false, $savedAddSlashes, null, true, $savedForEval, $savedForSql);
+			$this->parseAddSlashes = $savedAddSlashes;
+			$this->parseForEval    = $savedForEval;
+			$this->parseForSql     = $savedForSql;
+			$this->parseSourceMsg  = $savedSourceMsg;
+			$this->parseSourceQuoteMap = $savedQuoteMap;
 
 			if (in_array($match, array('', '<ul></ul>', '<ul><li></li></ul>')))
 			{
@@ -1335,29 +1420,188 @@ class Worker
 			$found = true;
 		}
 
-		if (!empty($match) && $this->parseAddSlashes)
+		if ($found && ($this->parseForEval || $this->parseForSql))
+		{
+			// This value is heading into Php::Eval() or a raw SQL string. The default approach is
+			// to emit a brand new, self-contained quoted literal (safe against both quote-based and
+			// quote-free/chr() payloads). But if the admin's own template already embeds this
+			// {placeholder} inside a quoted string - anywhere in it, e.g. $x = '{table___field}';
+			// or return "Order {table___field}"; - adding another layer of quoting either produces
+			// broken output (''value'') or, worse, is not itself escaped for the *outer* quote type
+			// (var_export() only escapes for single-quote safety, so a literal '"' in the value would
+			// close an outer double-quoted string early - a real exploitable gap). In that case,
+			// escape the value so it's safe *inside* the quotes that are already there, instead of
+			// wrapping it in new ones. Uses PHP's own tokenizer (quoteContextAt()) rather than just
+			// checking the immediately adjacent character, since the placeholder may be embedded
+			// anywhere inside a larger string literal, not just be the whole of it.
+			// strlen() (bytes), not StringHelper::strlen() (UTF-8 chars) - $matchOffset is a byte
+			// offset from PREG_OFFSET_CAPTURE, and must be compared in the same units as the byte
+			// map built by tokenizeSourceForQuoteContext().
+			$quoteChar = is_array($match) ? null : $this->quoteContextAt($matchOffset, strlen($orig));
+
+			if ($quoteChar !== null)
+			{
+				$match = $this->escapeForQuoteContext($match, $quoteChar, $this->parseForSql);
+			}
+			elseif ($this->parseForEval)
+			{
+				// "return {table___num} + 0;" becomes "return '5' + 0;" - inert as data, not code.
+				$match = var_export($match, true);
+			}
+			else
+			{
+				$db = self::getDbo();
+				$match = is_array($match) ? implode(',', array_map([$db, 'quote'], $match)) : $db->quote($match);
+			}
+		}
+		elseif (!empty($match) && $this->parseAddSlashes)
 		{
 			$match = htmlspecialchars($match, ENT_QUOTES, 'UTF-8');
 		}
 
-		// Check if value return by user is a function, if so return original string
-		preg_match('/[a-zA-Z_][a-zA-Z0-9_]*\s*(?=\()/', $match, $suspected_functions);
-		foreach ($suspected_functions as $suspected_function)
-		{
-			if (is_callable(preg_replace('/\s+/', '', $suspected_function))) return $orig;
-		}
-
-		// Check php variables that could indicate unsafe user input handling
-		$pattern = '/\$_(POST|GET|REQUEST|COOKIE|SERVER|FILES)\[[^\]]*\]|\bphp:\/\/[a-zA-Z]+/';
-		if (preg_match($pattern, $match, $matches)) {
-			return $orig;
-		}
-
-		// Avoid some unsecure words
-		$match = preg_replace('/\b(?:system|shell_exec|exec|passthru|proc_open|popen|eval|assert|create_function|include|require|include_once|require_once|file_get_contents|fopen|fread|fwrite|unseralize|dl|preg_replace|pcntl_exec|expect_popen|chmod|chown|chgrp|curl_\w+)\s*\([^;]*\);?/i', '', $match);
-		//
-
 		return $found ? $match : $orig;
+	}
+
+	/**
+	 * Tokenizes $source with PHP's own lexer to find every byte range that's genuinely inside a
+	 * single/double-quoted string literal (as opposed to code position, e.g. an unquoted
+	 * {placeholder} in `return {table___num} + 0;`). Used by quoteContextAt() to decide whether a
+	 * placeholder needs to be escaped for an *existing* surrounding quote, or safely self-quoted
+	 * via var_export()/db->quote() because it isn't inside a string literal at all.
+	 *
+	 * A single-character lookbehind (checking only the byte immediately before/after the match)
+	 * was tried first, but only catches the case where the placeholder *is* the entire quoted
+	 * string (e.g. '{ph}'). A placeholder embedded anywhere inside a larger literal - e.g.
+	 * `return "Order {ph}";` - was missed: var_export() only escapes for single-quote safety, so a
+	 * literal '"' in the substituted value closed the *outer* double-quoted string early and
+	 * resumed as live code. Real tokenization (this function) has no such blind spot: PHP's lexer
+	 * folds an entire `"...{ph}..."` (no `$`, so no interpolation triggers) into one
+	 * T_CONSTANT_ENCAPSED_STRING token regardless of where the placeholder sits inside it.
+	 *
+	 * @param   string  $source  The full message being scanned by parseMessageForPlaceHolder()
+	 *
+	 * @return  array  List of ['start' => int, 'end' => int (exclusive), 'quote' => "'"|'"']
+	 */
+	protected static function tokenizeSourceForQuoteContext($source)
+	{
+		if (trim($source) === '')
+		{
+			return [];
+		}
+
+		$prefix = '<?php ';
+
+		// Deliberately no TOKEN_PARSE flag: with it, token_get_all() throws a ParseError on
+		// anything that isn't valid standalone PHP - which includes the single most common calc
+		// formula shape, `return {table___num} + 0;` (a bare, unsubstituted {placeholder} isn't
+		// valid PHP on its own). The default, flag-less mode never throws; it just does its best
+		// lexically, which is all that's needed here - we only care whether a byte range is inside
+		// a string-literal token, not whether the surrounding code is otherwise well-formed.
+		$tokens = @token_get_all($prefix . $source);
+		$map    = [];
+
+		// Tokens are contiguous and cover the whole input in source order, so their lengths sum
+		// to walk byte offsets without token_get_all giving us positions directly. Start negative
+		// by the prefix length so offsets land back in $source's own 0-based coordinate space.
+		// Must be plain strlen() (bytes), not StringHelper::strlen() (UTF-8 characters) - the
+		// $matchOffset this map is compared against (in quoteContextAt(), via PREG_OFFSET_CAPTURE
+		// in replaceWithFormData()) is always a byte offset. A multibyte char anywhere before the
+		// placeholder (e.g. an umlaut in a German comment) would otherwise undercount and desync
+		// the map from the real offset, silently breaking quote-context detection for everything
+		// after it - falling back to var_export() self-quoting inside an already-quoted literal,
+		// e.g. '{ph}' becoming '''' when the value is empty.
+		$pos = -strlen($prefix);
+
+		foreach ($tokens as $token)
+		{
+			$text = is_array($token) ? $token[1] : $token;
+			$id   = is_array($token) ? $token[0] : null;
+			$len  = strlen($text);
+			$start = $pos;
+			$end   = $pos + $len;
+
+			if ($id === T_CONSTANT_ENCAPSED_STRING && $text !== '')
+			{
+				// A complete '...' or "..." literal (no interpolation triggered inside it).
+				$map[] = ['start' => $start, 'end' => $end, 'quote' => $text[0]];
+			}
+			elseif ($id === T_ENCAPSED_AND_WHITESPACE)
+			{
+				// The literal-text portions of a double-quoted/heredoc string that *does* contain
+				// interpolation elsewhere (e.g. "Order {ph}, total: $amount") - still double-quote
+				// context for escaping purposes.
+				$map[] = ['start' => $start, 'end' => $end, 'quote' => '"'];
+			}
+
+			$pos = $end;
+		}
+
+		return $map;
+	}
+
+	/**
+	 * For forEval/forSql mode: looks up whether a {placeholder} match (at $offset in
+	 * $this->parseSourceMsg, $length bytes long) falls entirely inside a string-literal byte range
+	 * found by tokenizeSourceForQuoteContext() - i.e. whether the admin's template already has this
+	 * placeholder embedded inside a quoted string, anywhere in it, not just as the whole of it.
+	 *
+	 * @param   int  $offset  Byte offset of the {placeholder} match within $this->parseSourceMsg
+	 * @param   int  $length  Byte length of the {placeholder} match, braces included
+	 *
+	 * @return  string|null  The quote character ( ' or " ) if the match is inside one, else null
+	 */
+	protected function quoteContextAt($offset, $length)
+	{
+		if ($offset === null || $length <= 0 || empty($this->parseSourceQuoteMap))
+		{
+			return null;
+		}
+
+		$matchEnd = $offset + $length;
+
+		foreach ($this->parseSourceQuoteMap as $range)
+		{
+			if ($offset >= $range['start'] && $matchEnd <= $range['end'])
+			{
+				return $range['quote'];
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Escapes a substituted value so it's safe to sit *inside* a quote character that's already
+	 * present in the source template (see quoteContextAt()), rather than wrapping it in a
+	 * brand new self-quoted literal.
+	 *
+	 * @param   string  $value     The raw substituted value
+	 * @param   string  $quoteChar The quote character already surrounding the placeholder ( ' or " )
+	 * @param   bool    $forSql    True for a SQL sink, false for a PHP eval sink
+	 *
+	 * @return  string
+	 */
+	protected function escapeForQuoteContext($value, $quoteChar, $forSql)
+	{
+		if ($forSql)
+		{
+			// The db driver's escape() (unlike quote()) escapes special characters without adding
+			// surrounding quotes - exactly what's needed to sit inside quotes that already exist.
+			return self::getDbo()->escape($value);
+		}
+
+		$value = str_replace('\\', '\\\\', $value);
+
+		if ($quoteChar === "'")
+		{
+			return str_replace("'", "\\'", $value);
+		}
+
+		// Double-quoted PHP strings interpolate $var and {$expr} - escaping the quote alone isn't
+		// enough, a value like '{$formModel->someMethod()}' would still be live code otherwise.
+		$value = str_replace('"', '\\"', $value);
+
+		return str_replace('$', '\\$', $value);
 	}
 
 	/**
@@ -2558,7 +2802,7 @@ class Worker
 
             $val = $input->get($name, $val, 'string');
 
-	        if (!$app->isClient('administrator') && !$app->isCli())
+            if (!$app->isClient('administrator') && !$app->isCli())
             {
                 if (!$mambot)
                 {
@@ -2590,7 +2834,7 @@ class Worker
         }
         else
         {
-	        if (!$app->isClient('administrator') && !$app->isCli())
+            if (!$app->isClient('administrator') && !$app->isCli())
             {
                 $menus = $app->getMenu();
                 $menu  = $menus->getActive();

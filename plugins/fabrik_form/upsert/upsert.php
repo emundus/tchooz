@@ -175,7 +175,10 @@ class PlgFabrik_FormUpsert extends PlgFabrik_Form
 			if ($upsert->upsert_eval_value[$i] === '1')
 			{
 				FabrikWorker::clearEval();
-				$res = Php::Eval(['code' => $v, 'vars'=>['formModel'=>$formModel]]);
+				// Re-resolve with forEval=true so substituted request/row data becomes a safe,
+				// quoted PHP literal instead of text spliced straight into the eval'd code.
+				$evalV = $w->parseMessageForPlaceholder($upsert->upsert_value[$i], $this->data, true, true, null, true, true);
+				$res = Php::Eval(['code' => $evalV, 'vars'=>['formModel'=>$formModel]]);
 				FabrikWorker::logEval($res, 'Eval exception : upsert : ' . $v . ' : %s');
 
 				// if the eval'ed code returned false, skip this

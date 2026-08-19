@@ -437,8 +437,9 @@ define(['jquery', 'fab/fabrik', 'jQueryUI', 'fab/utils'], function (jQuery, Fabr
                     Fabrik.loader.start(self.contentEl);
                     new jQuery.ajax({
                         'url'   : this.options.contentURL,
-                        'data'  : jQuery.extend(this.options.data, {'fabrik_window_id': this.options.id}),
+                        'data'  : jQuery.extend(this.options.data, {'fabrik_window_id': this.options.id, [Joomla.getOptions('csrf.token')]: 1}),
                         'method': 'post',
+                        'headers': {'X-CSRF-Token': Joomla.getOptions('csrf.token')},
                     'success': function (r) {
                         Fabrik.loader.stop(self.contentEl);
                         self.contentEl.append(r);

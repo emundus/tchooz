@@ -508,6 +508,7 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                 });
 
                 // Append the custom_qs to the URL to enable querystring filtering of the list data
+                opts[Joomla.getOptions('csrf.token')] = 1;
                 var myAjax = new Request.JSON({
                     url       : url,
                     method    : 'post',
@@ -1182,6 +1183,7 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                 {
                     data['group_by'] = this.options.groupedBy;
                 }
+                data[Joomla.getOptions('csrf.token')] = 1;
 
                 new Request({
                     'url'        : url,

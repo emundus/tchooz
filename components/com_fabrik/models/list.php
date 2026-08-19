@@ -806,7 +806,7 @@ class FabrikFEModelList extends FormModel
 
 				// If a menu item specifically sets the # of rows to show this should be stored (and used) in its own session context.
 				// See: http://fabrikar.com/forums/index.php?threads/list-results-split-by-wrong-rows-per-page-number.42182/#post-213703
-				if (!$this->app->isClient('administrator') && !$mambot)
+				if (!$this->app->isClient('administrator') && !$mambot && !$this->app->isCli())
 				{
 					$menus = $this->app->getMenu();
 					$menu = $menus->getActive();
@@ -4570,7 +4570,7 @@ class FabrikFEModelList extends FormModel
 		{
 			$this->access->menu_access = true;
 
-			if (!$this->app->isClient('administrator'))
+			if (!$this->app->isClient('administrator') && !$this->app->isCli())
 			{
 				$params = $this->getParams();
 
@@ -5672,7 +5672,9 @@ class FabrikFEModelList extends FormModel
 			$value = $this->prefilterParse($value);
 
 			// add false for 'safe' so we include things like session data
-			$value = $w->parseMessageForPlaceHolder($value, null, true, true, null, false);
+			// forEval (last arg) must match whether this value is about to be eval'd below - otherwise
+			// substituted values are spliced into the eval'd code as raw text instead of a safe literal.
+			$value = $w->parseMessageForPlaceHolder($value, null, true, true, null, false, $filterEval == '1');
 
 			if (!is_a($elementModel, 'PlgFabrik_Element'))
 			{
@@ -5687,8 +5689,10 @@ class FabrikFEModelList extends FormModel
 			$elementModel->_rawFilter = $raw;
 
 			
-			if ($filterEval == '1') {			
-				$value = htmlspecialchars_decode($value, ENT_QUOTES);
+			if ($filterEval == '1') {
+				// Note: no htmlspecialchars_decode() here - $value was just built with forEval=true above,
+				// meaning any request/row data it contains is already a safe var_export()'d PHP literal.
+				// Decoding it back would strip that protection and reopen the eval injection it prevents.
 				FabrikWorker::clearEval();
 				$value = Php::Eval(['code' => $value, 'vars'=>['elementModel'=>$elementModel]]);
 				FabrikWorker::logEval($value, 'Caught exception on eval of tableModel::getFilterArray() ' . $key . ': %s');
@@ -9413,7 +9417,7 @@ class FabrikFEModelList extends FormModel
 //				$link .= "&format=fabrikfeed";
 //			}
 
-			if (!$this->app->isClient('administrator'))
+			if (!$this->app->isClient('administrator') && !$this->app->isCli())
 			{
 				$link = Route::_($link);
 			}
