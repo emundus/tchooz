@@ -228,7 +228,7 @@ define(['jquery', 'fab/elementlist'], function (jQuery, FbElementList) {
             this._getSubElements().each(function (e) {
                 e.name = this._setName(e.name, repeatCount);
                 e.id = this._setId(e.id, repeatCount, '_input_\\d+');
-                var label = e.getParent('label');
+                var label = e.getParent('label') || e.getNext('label');
                 if (label) {
                     label.htmlFor = e.id;
                 }
