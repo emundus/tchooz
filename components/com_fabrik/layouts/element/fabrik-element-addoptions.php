@@ -39,12 +39,3 @@ $d = $displayData;
 <script>
     let addButton = document.querySelector('.toggle-addoption')
     let iconButton = document.querySelector('.toggle-addoption .material-symbols-outlined');
-
-    addButton.addEventListener('click', function(event) {
-        if (iconButton.textContent.trim() === 'add') {
-            iconButton.textContent = 'close';
-        } else {
-            iconButton.textContent = 'add';
-        }
-    });
-</script>
