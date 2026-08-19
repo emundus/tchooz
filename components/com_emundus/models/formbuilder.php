@@ -1858,6 +1858,8 @@ class EmundusModelFormbuilder extends ListModel
 
 								$this->h_fabrik->addJsAction($elementId, $plugin);
 
+								$this->h_fabrik->checkFabrikJoins($elementId, $name, $plugin, $gid);
+
 								Log::add($user->id . ' Element ' . $elementId . ' created in group ' . $gid, Log::INFO, 'com_emundus.formbuilder');
 							}
 						}

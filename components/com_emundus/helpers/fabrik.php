@@ -951,6 +951,57 @@ class EmundusHelperFabrik
 				return $db->execute();
 			}
 
+			if ($plugin == 'databasejoin')
+			{
+				// Avoid creating a duplicate join record.
+				$query->clear()
+					->select($db->quoteName('id'))
+					->from($db->quoteName('#__fabrik_joins'))
+					->where($db->quoteName('element_id') . ' = ' . $db->quote($eid));
+				$db->setQuery($query);
+				if (!empty($db->loadResult()))
+				{
+					return true;
+				}
+
+				$query->clear()
+					->select($db->quoteName('params'))
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('id') . ' = ' . $db->quote($eid));
+				$db->setQuery($query);
+				$element_params = json_decode($db->loadResult());
+
+				if (!empty($element_params) && !empty($element_params->join_db_name))
+				{
+					$join_key_column = !empty($element_params->join_key_column) ? $element_params->join_key_column : 'id';
+
+					$params = array(
+						'join-label' => $element_params->join_val_column ?? '',
+						'type'       => 'element',
+						'pk'         => $db->quoteName($element_params->join_db_name) . '.' . $db->quoteName($join_key_column),
+					);
+					$data   = array(
+						'list_id'         => 0,
+						'element_id'      => $eid,
+						'join_from_table' => '',
+						'table_join'      => $element_params->join_db_name,
+						'table_key'       => $name,
+						'table_join_key'  => $join_key_column,
+						'join_type'       => 'left',
+						'group_id'        => $group_id,
+						'params'          => json_encode($params),
+					);
+
+					$query->clear()
+						->insert($db->quoteName('#__fabrik_joins'))
+						->columns($db->quoteName(array_keys($data)))
+						->values(implode(',', $db->quote(array_values($data))));
+					$db->setQuery($query);
+
+					return $db->execute();
+				}
+			}
+
 			return true;
 		}
 		catch (Exception $e)
