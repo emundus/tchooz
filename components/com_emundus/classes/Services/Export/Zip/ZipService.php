@@ -460,7 +460,7 @@ class ZipService extends Export implements ExportInterface
 
 	private function renderMainApplicationPdf(ApplicationFileEntity $applicationFile, string $folderName, string $fnumStagingDir): ?string
 	{
-		$pdfOptions = $this->buildPdfOptions($folderName);
+		$pdfOptions = $this->buildPdfOptions($folderName, $applicationFile);
 		$pdfService = new PdfService([$applicationFile->getFnum()], $this->user, $pdfOptions);
 		$pdfResult  = $pdfService->export($fnumStagingDir, null, $this->options->getLang());
 
@@ -477,7 +477,7 @@ class ZipService extends Export implements ExportInterface
 	 */
 	private function renderAttachmentsOnlyPdf(ApplicationFileEntity $applicationFile, string $folderName, string $fnumStagingDir): ?string
 	{
-		$attachmentTypeIds = $this->options->getAttachments();
+		$attachmentTypeIds = $this->resolveAttachmentsToMerge($applicationFile);
 		if (empty($attachmentTypeIds))
 		{
 			return null;
@@ -537,7 +537,7 @@ class ZipService extends Export implements ExportInterface
 		HeadersEnum::FNUM,
 	];
 
-	private function buildPdfOptions(string $folderName): PdfOptions
+	private function buildPdfOptions(string $folderName, ApplicationFileEntity $applicationFile): PdfOptions
 	{
 		[$pageHeaders, $firstPageHeaders, $displayHeader] = $this->resolvePdfHeaders();
 
@@ -547,7 +547,7 @@ class ZipService extends Export implements ExportInterface
 			'elements'           => implode(',', $this->options->getElements()),
 			'lang'               => $this->options->getLang(),
 			'displayHeader'      => $displayHeader,
-			'attachments'        => $this->options->isConcatAttachmentsWithForm() ? $this->options->getAttachments() : [],
+			'attachments'        => $this->options->isConcatAttachmentsWithForm() ? $this->resolveAttachmentsToMerge($applicationFile) : [],
 			'displayPageNumbers' => $this->options->isDisplayPageNumbers(),
 		];
 
@@ -832,6 +832,34 @@ class ZipService extends Export implements ExportInterface
 		}
 
 		return array_values(array_unique($resolved));
+	}
+
+	/**
+	 * Attachment type IDs to merge into the per-fnum PDF: the explicit selection when present,
+	 * otherwise the legacy tokens, otherwise every type the applicant actually uploaded.
+	 *
+	 * @return int[]
+	 */
+	private function resolveAttachmentsToMerge(ApplicationFileEntity $applicationFile): array
+	{
+		$attachments = $this->options->getAttachments();
+		if (!empty($attachments))
+		{
+			return $attachments;
+		}
+
+		$resolved = $this->resolveAttachmentTypeIds($applicationFile);
+		if (!empty($resolved) || $this->options->getAttachmentDefault() === 0)
+		{
+			return $resolved;
+		}
+
+		$uploads = $this->uploadRepository->get(['fnum' => $applicationFile->getFnum()]);
+
+		return array_values(array_unique(array_map(
+			fn(UploadEntity $upload) => $upload->getAttachmentId(),
+			$uploads
+		)));
 	}
 
 	// -----------------------------------------------------------------------
