@@ -96,6 +96,7 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
                 $table_elements = $formModel->getElementOptions(false, 'name', false, false, array(), '', true);
                 $table_elements = json_encode($table_elements);
                 $groups = json_encode($formModel->getFormGroups(true));
+                $ajaxToken = \Joomla\CMS\Session\Session::getFormToken();
 
                 echo "
             <script>
@@ -115,7 +116,7 @@ class PlgFabrik_FormEmundusduplicatedata extends plgFabrik_Form {
                         myFormData.append('groups', JSON.stringify($groups));
                         myFormData.append('table_elements', JSON.stringify($table_elements));
                         
-                        xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&g=form&plugin=emundusduplicatedata&method=ajax_duplicate', true);
+                        xhr.open('POST', 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&g=form&plugin=emundusduplicatedata&method=ajax_duplicate&$ajaxToken=1', true);
                         xhr.onreadystatechange = function() {
                             if (xhr.readyState === 4 && xhr.status === 200) {
                                 if (JSON.parse(xhr.responseText).status === 200) {

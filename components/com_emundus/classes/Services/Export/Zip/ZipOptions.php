@@ -166,8 +166,19 @@ class ZipOptions extends ExportOptions
 		{
 			$rawSettings = (array) $rawSettings;
 		}
+		$rawSettings = is_array($rawSettings) ? $rawSettings : [];
+
+		// Flat toggles are accepted as an alias of their `settings` entry.
+		foreach ([ZipOptionsSchema::CONCAT_ATTACHMENTS_WITH_FORM, ZipOptionsSchema::CONVERT_DOCX_TO_PDF] as $flatKey)
+		{
+			if (isset($options->$flatKey) && !array_key_exists($flatKey, $rawSettings))
+			{
+				$rawSettings[$flatKey] = $options->$flatKey;
+			}
+		}
+
 		$schema   = new ZipOptionsSchema();
-		$settings = $schema->cast(is_array($rawSettings) ? $rawSettings : []);
+		$settings = $schema->cast($rawSettings);
 
 		// The Options schema is the single source of truth for these toggles: cast() always
 		// returns every key (default when absent), so $settings is authoritative.
