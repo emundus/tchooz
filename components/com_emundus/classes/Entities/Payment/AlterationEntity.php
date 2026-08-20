@@ -54,6 +54,11 @@ class AlterationEntity
 		return $this->id;
 	}
 
+	public function setId(int $id): void
+	{
+		$this->id = $id;
+	}
+
 	public function getCartId(): int
 	{
 		return $this->cart_id;
