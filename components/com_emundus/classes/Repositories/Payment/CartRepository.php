@@ -431,6 +431,11 @@ class CartRepository
 				$discount_repository = new DiscountRepository();
 				$product_repository = new ProductRepository();
 				foreach ($data['alterations'] as $alteration) {
+					if ($alteration['type'] === AlterationType::ALTER_ADVANCE_AMOUNT->value || $alteration['type'] === AlterationType::ADJUST_BALANCE->value)
+					{
+						continue;
+					}
+
 					if (!empty($alteration['product_id'])) {
 						$product = $product_repository->getProductById($alteration['product_id']);
 					} else {
@@ -573,7 +578,11 @@ class CartRepository
 							->values($this->db->quote($cart_entity->getId()) . ', ' . $discount_id . ', ' . $this->db->quote($alteration->getAmount()) . ', ' . $this->db->quote($alteration->getDescription()) . ', ' . $this->db->quote($alteration->getType()->value) . ', ' . $this->db->quote($created_at) . ', ' . $this->db->quote($created_by) . ', ' . $product_id . ', ' . $this->db->quote(date('Y-m-d H:i:s')) . ', ' . $this->db->quote($user_id));
 
 						$this->db->setQuery($query);
-						$this->db->execute();
+						if ($this->db->execute()) {
+							// alterations are deleted then re-inserted on every save : without this the entity
+							// would keep an id that no longer exists in database (0 for a brand new one)
+							$alteration->setId((int) $this->db->insertid());
+						}
 					}
 				}
 			}
@@ -660,6 +669,12 @@ class CartRepository
 
 						$this->db->setQuery($query);
 						$added = $this->db->execute();
+
+						if ($added) {
+							// alterations are deleted then re-inserted on every save : without this the entity
+							// would keep an id that no longer exists in database (0 for a brand new one)
+							$alteration->setId((int) $this->db->insertid());
+						}
 					}
 				}
 			}

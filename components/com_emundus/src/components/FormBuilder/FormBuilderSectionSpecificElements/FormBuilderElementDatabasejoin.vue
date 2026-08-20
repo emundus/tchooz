@@ -5,7 +5,9 @@
 				<option v-if="element.params.database_join_show_please_select == 1" value="0">
 					{{ element.please_select_label }}
 				</option>
-				<option v-else :value="element.example_data.value">{{ element.example_data.label }}</option>
+				<option v-else-if="element.example_data" :value="element.example_data.value">
+					{{ element.example_data.label }}
+				</option>
 			</select>
 		</div>
 		<Loader v-else />

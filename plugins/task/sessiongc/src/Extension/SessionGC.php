@@ -15,7 +15,6 @@ use Joomla\CMS\Session\MetadataManager;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
-use Joomla\DI\Container;
 use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -40,8 +39,6 @@ final class SessionGC extends CMSPlugin implements SubscriberInterface
      * @since 4.4.0
      */
     private $metadataManager;
-
-	private ?Container $container;
 
     /**
      * @var string[]
@@ -69,12 +66,11 @@ final class SessionGC extends CMSPlugin implements SubscriberInterface
      *
      * @since   4.4.0
      */
-    public function __construct(array $config, MetadataManager $metadataManager, ?Container $container = null)
+    public function __construct(array $config, MetadataManager $metadataManager)
     {
         parent::__construct($config);
 
         $this->metadataManager = $metadataManager;
-	    $this->container = $container;
     }
 
     /**
@@ -104,20 +100,16 @@ final class SessionGC extends CMSPlugin implements SubscriberInterface
     private function sessionGC(ExecuteTaskEvent $event): int
     {
         $enableGC = (int) $event->getArgument('params')->enable_session_gc ?? 1;
-	    $session = $this->getApplication()->getSession();
-	    if($this->getApplication()->getName() === 'cli' && !empty($this->container))
-	    {
-		    $session = $this->container->get('session.web.site');
-	    }
+        $app      = $this->getApplication();
 
-	    if ($enableGC) {
-		    $session->gc();
+        if ($enableGC) {
+            $app->getSession()->gc();
         }
 
         $enableMetadata = (int) $event->getArgument('params')->enable_session_metadata_gc ?? 1;
 
         if ($enableMetadata) {
-            $this->metadataManager->deletePriorTo(time() - $session->getExpire());
+            $this->metadataManager->deletePriorTo(time() - $app->getSession()->getExpire());
         }
 
         $this->logTask('SessionGC end');

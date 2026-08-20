@@ -37,6 +37,21 @@
 			<p v-html="page.intro"></p>
 		</div>
 
+		<info
+			v-if="configErrors.length > 0"
+			class="tw-mt-2"
+			title="COM_EMUNDUS_FORM_BUILDER_ELEMENT_CONFIG_ERROR_TITLE"
+			icon="warning"
+			icon-color="tw-text-red-500"
+			bg-color="tw-bg-red-50"
+		>
+			<template #content>
+				<ul class="tw-mt-2 tw-list-disc tw-pl-5 tw-text-neutral-900">
+					<li v-for="error in configErrors" :key="error.element">{{ error.message }}</li>
+				</ul>
+			</template>
+		</info>
+
 		<div class="form-builder-page-sections tw-mt-2">
 			<button
 				v-if="canUpdate && sections.length > 0"
@@ -86,6 +101,7 @@ import formBuilderService from '@/services/formbuilder.js';
 import translationService from '@/services/translations.js';
 
 import FormBuilderPageSection from '@/components/FormBuilder/FormBuilderPageSection.vue';
+import Info from '@/components/Utils/Info.vue';
 import formBuilderMixin from '@/mixins/formbuilder.js';
 import globalMixin from '@/mixins/mixin.js';
 import errorMixin from '@/mixins/errors.js';
@@ -95,6 +111,7 @@ import { useFormBuilderStore } from '@/stores/formbuilder.js';
 export default {
 	components: {
 		FormBuilderPageSection,
+		Info,
 	},
 	props: {
 		profile_id: {
@@ -119,6 +136,7 @@ export default {
 		return {
 			fabrikPage: {},
 			sections: [],
+			configErrors: [],
 
 			loading: false,
 		};
@@ -136,6 +154,7 @@ export default {
 				if (response.status && response.data !== '') {
 					this.fabrikPage = response.data;
 					this.title = this.fabrikPage.show_title.label;
+					this.configErrors = response.data.errors || [];
 
 					const groups = Object.values(response.data.Groups);
 					this.sections = groups.filter((group) => group.hidden_group != -1);
