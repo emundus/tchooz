@@ -3,6 +3,7 @@
 use Joomla\CMS\Filter\InputFilter;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Session\Session;
 use Tchooz\Entities\Calculation\Templates\CalculateAverage;
 use Tchooz\Entities\Calculation\Templates\CalculateDatesDiff;
 use Tchooz\Entities\Calculation\Templates\CalculatePercentile;
@@ -118,6 +119,7 @@ class PlgFabrik_ElementEmundus_calculation extends PlgFabrik_Element
 		}
 
 		$opts->id                = $this->getId();
+		$opts->ajaxToken         = Session::getFormToken();
 
 		return array('FbEmundus_Calculation', $id, $opts);
 	}
