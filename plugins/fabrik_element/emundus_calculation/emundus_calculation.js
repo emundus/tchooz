@@ -74,6 +74,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 'option'       : 'com_fabrik',
                 'format'       : 'raw',
                 'task'         : 'plugin.pluginAjax',
+                'g'            : 'element',
                 'plugin'       : 'emundus_calculation',
                 'method'       : 'ajax_emundus_calculation',
                 'element_id'   : this.options.id,
@@ -81,6 +82,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 'repeatCounter': this.options.repeatCounter,
             };
             data = Object.append(formData, data);
+            data[this.options.ajaxToken] = 1;
             Fabrik.loader.start(this.element.getParent(), Joomla.Text._('COM_FABRIK_LOADING'));
             new Request.HTML({
                 'url'     : '',

@@ -59,7 +59,7 @@
 					v-model="element.params[repeat_name][index_name][param.name]"
 					:key="reloadOptions"
 					:id="param.name"
-					@change="updateDatabasejoinParams()"
+					@change="updateDatabasejoinParams(false)"
 					class="tw-w-full"
 					:class="databasejoin_description ? 'tw-mb-1' : ''"
 				>
@@ -74,7 +74,7 @@
 					v-model="element.params[param.name]"
 					:key="reloadOptions"
 					:id="param.name"
-					@change="updateDatabasejoinParams()"
+					@change="updateDatabasejoinParams(false)"
 					class="tw-w-full"
 					:class="databasejoin_description ? 'tw-mb-1' : ''"
 				>

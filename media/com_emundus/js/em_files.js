@@ -466,6 +466,18 @@ function hideItems(selectors){
     }
 }
 
+function removeApplicationBlocks() {
+    document.querySelectorAll('#em-appli-block').forEach(function (block) {
+        const previous = block.previousElementSibling;
+
+        if (previous && previous.classList.contains('clearfix')) {
+            previous.remove();
+        }
+
+        block.remove();
+    });
+}
+
 function openFiles(fnum, page = 0, vue = false) {
     checkIfSomeoneIsEditing(fnum.fnum);
 
@@ -536,6 +548,7 @@ function openFiles(fnum, page = 0, vue = false) {
 
             var panel = result;
             //.main-panel
+            removeApplicationBlocks();
             $('.main-panel').append('<div class="clearfix"></div><div class="col-md-12" style="height: calc(100% - 40px)" id="em-appli-block"></div>');
             if (result.trim() != '') {
                 let panelBody = $('#em-synthesis .panel-body');
@@ -4838,7 +4851,7 @@ $(document).ready(function() {
                     hideItems(['#em-appli-menu', '#em-synthesis', '#em-assoc-files', '.em-hide', '#em-last-open']);
 
                     $.ajaxQ.abortAll();
-                    $('#em-appli-block').remove();
+                    removeApplicationBlocks();
                     $('.em-close-minimise').remove();
                     $('.em-open-files').remove();
                     $('#em-last-open .list-group .list-group-item').removeClass('active');

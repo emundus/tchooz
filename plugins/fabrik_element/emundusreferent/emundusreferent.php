@@ -148,6 +148,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$opts->fullName = $this->getFullName(false, true);
 		$opts->formid = $this->getForm()->getForm()->id;
 		$opts->filterid = $filterid;
+		$opts->ajaxToken = \Joomla\CMS\Session\Session::getFormToken();
 		return array('FbEmundusreferent', $id, $opts);
 	}
 

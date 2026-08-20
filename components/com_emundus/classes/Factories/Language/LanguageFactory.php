@@ -172,6 +172,34 @@ class LanguageFactory implements DBFactory
 		return null;
 	}
 
+	/**
+	 * Replace the translation keys embedded in a text by their translation.
+	 * Legacy labels often mix free text and keys, ex: '2025 - FORM_EVALUATION'.
+	 * Keys without a translation are left untouched.
+	 */
+	public static function resolveTranslationKeys(string $text, ?string $langCode = null, ?LanguageRepository $languageRepository = null): string
+	{
+		if (empty($text))
+		{
+			return $text;
+		}
+
+		if (empty($languageRepository))
+		{
+			$languageRepository = new LanguageRepository();
+		}
+
+		return preg_replace_callback(
+			'/[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+/',
+			static function (array $matches) use ($langCode, $languageRepository) {
+				$translation = self::getTranslation($matches[0], $langCode, $languageRepository);
+
+				return empty($translation) ? $matches[0] : $translation;
+			},
+			$text
+		);
+	}
+
 	public static function getJoomlaTranslations(array $keys): array
 	{
 		$translations = [];
