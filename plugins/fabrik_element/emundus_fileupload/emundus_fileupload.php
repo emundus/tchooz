@@ -15,6 +15,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Session\Session;
 use Joomla\CMS\Uri\Uri;
 use Tchooz\Entities\Upload\UploadEntity;
 use Tchooz\Repositories\Attachments\AttachmentTypeRepository;
@@ -576,6 +577,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 		$opts->fnum          = $fnum;
 		$opts->elid          = $this->getElement()->id;
 		$opts->repeatCounter = $repeatCounter;
+		$opts->ajaxToken     = Session::getFormToken();
 
 		Text::script('PLG_ELEMENT_FIELD_SUCCESS');
 		Text::script('PLG_ELEMENT_FIELD_EXTENSION');
