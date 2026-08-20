@@ -3112,7 +3112,7 @@ class EmundusModelApplication extends ListModel
 											}
 
 											$tds = !empty(Text::_($element->label)) ? '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"><b>' . Text::_($element->label) . '</b></td>' : '';
-											$tds .= '<td class="tw-flex tw-flex-row tw-justify-between tw-w-full tw-items-center" style="width:100%; border-bottom: 1px solid var(--neutral-400);"><span>' . ((!in_array($element->plugin,['field','textarea','calc'])) ? Text::_($elt) : $elt) . '</span>';
+											$tds .= '<td class="tw-w-full" style="width:100%; border-bottom: 1px solid var(--neutral-400); vertical-align: middle;"><div class="tw-flex tw-flex-row tw-justify-between tw-items-center tw-h-full"><span>' . ((!in_array($element->plugin,['field','textarea','calc'])) ? Text::_($elt) : $elt) . '</span>';
 
 											if ($can_comment) {
 												$comment_classes = 'comment-icon material-symbols-outlined tw-cursor-pointer tw-p-1 tw-h-fit';
@@ -3126,7 +3126,7 @@ class EmundusModelApplication extends ListModel
 												$tds .= '<span class="' . $comment_classes . '" title="' . Text::_('COM_EMUNDUS_COMMENTS_ADD_COMMENT') . '" data-target-type="elements" data-target-id="' . $element->id . '">comment</span>';
 											}
 
-											$tds .= '</td>';
+											$tds .= '</div></td>';
 											$forms .= '<tr class="' . $class . '">' . $tds . '</tr>';
 
 											$modulo++;
