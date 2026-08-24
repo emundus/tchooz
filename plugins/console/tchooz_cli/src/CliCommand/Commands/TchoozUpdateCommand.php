@@ -323,6 +323,8 @@ class TchoozUpdateCommand extends AbstractCommand
 
 						}
 						catch (\Throwable $e) {
+							$this->ioStyle->error("-> " . $elementArr['element'] . " update failed : " . $e->getMessage());
+							$this->ioStyle->text("\033[31m-> " . get_class($e) . ' in ' . $e->getFile() . ':' . $e->getLine() . "\033[0m");
 							$success = false;
 						}
 					}
