@@ -13,6 +13,7 @@ use Tchooz\Enums\Import\BooleanValueEnum;
 use Tchooz\Enums\Import\FieldTypeEnum;
 use Tchooz\Services\DateParser;
 use Tchooz\Services\Import\Mapping\FieldDescriptor;
+use Tchooz\Transformers\PhoneNumberTransformer;
 
 /**
  * Generic per-field validator driven by a FieldDescriptor.
@@ -218,11 +219,10 @@ final class TypeValidator
 
 	private function validateE164(string $str, FieldDescriptor $descriptor, mixed $rawValue): array
 	{
-		// Strip spaces (and similar separators) before checking the canonical
-		// E.164 shape: a mandatory + then 1..15 digits, first non-zero.
-		$compact = preg_replace('/[\s.\-()]/', '', $str);
-
-		if (preg_match('/^\+[1-9]\d{1,14}$/', (string) $compact) === 1)
+		// Accepts anything the transformer can turn into a real number: an
+		// optional ISO2 prefix, separators, and an existing country/subscriber
+		// range — a well-shaped but unassigned number is not valid.
+		if (PhoneNumberTransformer::toE164($str) !== null)
 		{
 			return [];
 		}
