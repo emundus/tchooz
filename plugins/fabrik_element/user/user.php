@@ -846,7 +846,9 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 	 * @return  string    sql query part e,g, "key = value"
 	 */
 	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal', $evalFilter = '0')
-	{
+	{	
+		parent::validateCondition($condition, $value, $type);
+
 		if (!$this->inJDb())
 		{
 			return $key . ' ' . $condition . ' ' . $value;
@@ -925,6 +927,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 		}
 
 		$this->encryptFieldName($k);
+
 		$str = $k . ' ' . $condition . ' ' . $value;
 
 		return $str;

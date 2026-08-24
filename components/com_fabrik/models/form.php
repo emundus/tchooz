@@ -710,9 +710,9 @@ class FabrikFEModelForm extends FabModelForm
 		// $$$ hugh - added ability to use form_XX, as am adding custom list_XX
 		$view = $this->isEditable() ? 'form' : 'details';
 
-
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'cache.php');
 		$hash = EmundusHelperCache::getCurrentGitHash();
+
 		/**
 		 * $$$ hugh - need to use an assoc key name for the scripts array, as it gets used in the requirejs
 		 * to pass in as a function arg, which then blows up with "unexpected number" if we don't use a key name
@@ -3037,7 +3037,22 @@ class FabrikFEModelForm extends FabModelForm
 		 * do something funky like change the rowid being loaded.  Not a huge problem, but caught me out
 		 * when a custom PHP onBeforeLoad plugin I'd written for a client suddenly broke.
 		 */
-		$this->checkAccessFromListSettings();
+		$access = $this->checkAccessFromListSettings();
+
+		// Security fix: this return value used to be discarded entirely, so render() would go
+		// on to load and expose row data via getData()/onLoad plugins/output below regardless
+		// of whether the current user has any list-level access to the row at all. 0 means
+		// genuinely no access under any circumstance (see checkAccessFromListSettings()'s
+		// docblock) - other, nonzero levels (e.g. 1 = view-only) are legitimate for some
+		// callers (e.g. the details view), so are left for those callers to gate contextually,
+		// same as before. views/form/view.base.php's display() already treats a false return
+		// from render() as "don't show anything" (if ($model->render() === false) return
+		// false;), so this slots into an existing, already-handled contract.
+		if ($access === 0)
+		{
+			return false;
+		}
+
 		$pluginManager = FabrikWorker::getPluginManager();
 		$res = $pluginManager->runPlugins('onBeforeLoad', $this);
 

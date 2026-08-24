@@ -201,7 +201,8 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                         'element_id': this.options.id,
                         'formid'    : this.form.id,
                         'rowid'     : this.form.options.rowid,
-                        'joinPkVal' : joinPkVal
+                        'joinPkVal' : joinPkVal,
+                        [this.options.ajaxToken]: 1
                     }
                 }).done(function () {
                     Fabrik.trigger('fabrik.fileupload.clearfileref.complete', self);
