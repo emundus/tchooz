@@ -2097,6 +2097,70 @@ class EmundusModelApplication extends ListModel
 		return $form;
 	}
 
+	/**
+	 * Build the list of links to the uploads shown by an emundus_fileupload element.
+	 *
+	 * @param   string       $fnum
+	 * @param   int          $applicantId
+	 * @param   int          $attachmentId
+	 * @param   string|null  $storedValue         Element value of the current repeated row, holding upload ids. Null outside of a repeated group.
+	 * @param   bool|array   $allowedAttachments  True when every attachment type is allowed, an array of allowed ids otherwise.
+	 *
+	 * @return string
+	 */
+	private function getUploadsLinks(string $fnum, int $applicantId, int $attachmentId, ?string $storedValue = null, bool|array $allowedAttachments = true): string
+	{
+		if ($allowedAttachments !== true && !in_array($attachmentId, $allowedAttachments)) {
+			return '';
+		}
+
+		$uploadIds = [];
+
+		if ($storedValue !== null) {
+			$uploadIds = array_filter(array_map('intval', explode(',', $storedValue)));
+
+			if (empty($uploadIds)) {
+				return '';
+			}
+		}
+
+		$links = '';
+
+		try {
+			$query = $this->_db->getQuery(true);
+			$query->select($this->_db->quoteName('esa.value', 'attachment_name') . ',' . $this->_db->quoteName('eu.filename'))
+				->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('eu.attachment_id'))
+				->where($this->_db->quoteName('eu.fnum') . ' = ' . $this->_db->quote($fnum));
+
+			if (!empty($uploadIds)) {
+				$query->andWhere($this->_db->quoteName('eu.id') . ' IN (' . implode(',', $uploadIds) . ')');
+			}
+			else {
+				$query->andWhere($this->_db->quoteName('eu.attachment_id') . ' = ' . $attachmentId);
+			}
+
+			$this->_db->setQuery($query);
+			$uploads = $this->_db->loadObjectList();
+
+			foreach ($uploads as $upload) {
+				if (empty($upload->filename)) {
+					continue;
+				}
+
+				$path  = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $applicantId . DS . $upload->filename;
+				$links .= '<li><a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $upload->attachment_name . '</a></li>';
+			}
+		}
+		catch (Exception $e) {
+			Log::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+
+			return '';
+		}
+
+		return !empty($links) ? '<ul>' . $links . '</ul>' : '';
+	}
+
 	// Get form to display in application page layout view
 	public function getForms($aid, $fnum = 0, $pid = 9)
 	{
@@ -2637,38 +2701,7 @@ class EmundusModelApplication extends ListModel
 													}
 													elseif ($elements[$j]->plugin == 'emundus_fileupload') {
 														$params = json_decode($elements[$j]->params);
-														$query  = $this->_db->getQuery(true);
-
-														try {
-															$query->select('esa.id,esa.value as attachment_name,eu.filename')
-																->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
-																->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('eu.attachment_id'))
-																->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
-																->andWhere($this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quote($params->attachmentId));
-															$this->_db->setQuery($query);
-															$attachment_uploads = $this->_db->loadObjectList();
-
-															if(!empty($attachment_uploads))
-															{
-																$elt = '<ul>';
-																foreach ($attachment_uploads as $attachment_upload)
-																{
-																	if (!empty($attachment_upload->filename) && (($allowed_attachments !== true && in_array($params->attachmentId, $allowed_attachments)) || $allowed_attachments === true))
-																	{
-																		$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
-																		$elt  .= '<li><a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a></li>';
-																	}
-																}
-																$elt .= '</ul>';
-															}
-															else {
-																$elt = '';
-															}
-														}
-														catch (Exception $e) {
-															Log::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-															$elt = '';
-														}
+														$elt    = $this->getUploadsLinks($fnum, (int) $aid, (int) $params->attachmentId, (string) $r_elt, $allowed_attachments);
 													}
 													elseif ($elements[$j]->plugin == 'yesno') {
 														$elt = ($r_elt == 1) ? Text::_("JYES") : Text::_("JNO");
@@ -3013,38 +3046,7 @@ class EmundusModelApplication extends ListModel
 											}
 											elseif ($element->plugin == 'emundus_fileupload') {
 												$params = json_decode($element->params);
-												$query  = $this->_db->getQuery(true);
-
-												try {
-													$query->select('esa.id,esa.value as attachment_name,eu.filename')
-														->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
-														->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('eu.attachment_id'))
-														->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
-														->andWhere($this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quote($params->attachmentId));
-													$this->_db->setQuery($query);
-													$attachment_uploads = $this->_db->loadObjectList();
-
-													if(!empty($attachment_uploads))
-													{
-														$elt = '<ul>';
-														foreach ($attachment_uploads as $attachment_upload)
-														{
-															if (!empty($attachment_upload->filename) && (($allowed_attachments !== true && in_array($params->attachmentId, $allowed_attachments)) || $allowed_attachments === true))
-															{
-																$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
-																$elt  .= '<li><a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a></li>';
-															}
-														}
-														$elt .= '</ul>';
-													}
-													else {
-														$elt = '';
-													}
-												}
-												catch (Exception $e) {
-													Log::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-													$elt = '';
-												}
+												$elt    = $this->getUploadsLinks($fnum, (int) $aid, (int) $params->attachmentId, null, $allowed_attachments);
 											}
 											elseif ($element->plugin == 'emundus_phonenumber') {
 												$elt = substr($element->content, 2, strlen($element->content));
@@ -3593,38 +3595,7 @@ class EmundusModelApplication extends ListModel
 												}
 												elseif ($elements[$j]->plugin == 'emundus_fileupload') {
 													$params = json_decode($elements[$j]->params);
-													$query  = $this->_db->getQuery(true);
-
-													try {
-														$query->select('esa.id,esa.value as attachment_name,eu.filename')
-															->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
-															->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('eu.attachment_id'))
-															->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
-															->andWhere($this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quote($params->attachmentId));
-														$this->_db->setQuery($query);
-														$attachment_uploads = $this->_db->loadObjectList();
-
-														if(!empty($attachment_uploads))
-														{
-															$elt = '<ul>';
-															foreach ($attachment_uploads as $attachment_upload)
-															{
-																if (!empty($attachment_upload->filename))
-																{
-																	$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
-																	$elt  .= '<li><a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a></li>';
-																}
-															}
-															$elt .= '</ul>';
-														}
-														else {
-															$elt = '';
-														}
-													}
-													catch (Exception $e) {
-														Log::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-														$elt = '';
-													}
+													$elt    = $this->getUploadsLinks($fnum, (int) $aid, (int) $params->attachmentId, (string) $r_elt);
 												}
 												elseif ($elements[$j]->plugin == 'yesno') {
 													$elt = ($r_elt == 1) ? Text::_("JYES") : Text::_("JNO");
@@ -3976,38 +3947,7 @@ class EmundusModelApplication extends ListModel
 												}
 												elseif ($elements[$j]->plugin == 'emundus_fileupload') {
 													$params = json_decode($elements[$j]->params);
-													$query  = $this->_db->getQuery(true);
-
-													try {
-														$query->select('esa.id,esa.value as attachment_name,eu.filename')
-															->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
-															->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('eu.attachment_id'))
-															->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
-															->andWhere($this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quote($params->attachmentId));
-														$this->_db->setQuery($query);
-														$attachment_uploads = $this->_db->loadObjectList();
-
-														if(!empty($attachment_uploads))
-														{
-															$elt = '<ul>';
-															foreach ($attachment_uploads as $attachment_upload)
-															{
-																if (!empty($attachment_upload->filename))
-																{
-																	$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
-																	$elt  .= '<li><a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a></li>';
-																}
-															}
-															$elt .= '</ul>';
-														}
-														else {
-															$elt = '';
-														}
-													}
-													catch (Exception $e) {
-														Log::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-														$elt = '';
-													}
+													$elt    = $this->getUploadsLinks($fnum, (int) $aid, (int) $params->attachmentId, (string) $r_elt);
 												}
 												elseif ($elements[$j]->plugin == 'yesno') {
 													$elt = ($r_elt == 1) ? Text::_("JYES") : Text::_("JNO");
@@ -4355,38 +4295,7 @@ class EmundusModelApplication extends ListModel
 											}
 											elseif ($element->plugin == 'emundus_fileupload') {
 												$params = json_decode($element->params);
-												$query  = $this->_db->getQuery(true);
-
-												try {
-													$query->select('esa.id,esa.value as attachment_name,eu.filename')
-														->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
-														->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('eu.attachment_id'))
-														->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
-														->andWhere($this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quote($params->attachmentId));
-													$this->_db->setQuery($query);
-													$attachment_uploads = $this->_db->loadObjectList();
-
-													if(!empty($attachment_uploads))
-													{
-														$elt = '<ul>';
-														foreach ($attachment_uploads as $attachment_upload)
-														{
-															if (!empty($attachment_upload->filename))
-															{
-																$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
-																$elt  .= '<li><a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a></li>';
-															}
-														}
-														$elt .= '</ul>';
-													}
-													else {
-														$elt = '';
-													}
-												}
-												catch (Exception $e) {
-													Log::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-													$elt = '';
-												}
+												$elt    = $this->getUploadsLinks($fnum, (int) $aid, (int) $params->attachmentId, null);
 											} else if ($element->plugin == ElementPluginEnum::NUMERIC->value) {
 												$params = json_decode($element->params);
 												$numberDecimal = $params->decimal ?? 2;

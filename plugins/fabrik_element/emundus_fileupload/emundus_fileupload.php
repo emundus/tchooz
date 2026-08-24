@@ -278,7 +278,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 			$fnumInfos = $m_files->getFnumInfos($fnum);
 
 			$uploads       = $this->app->input->post->getString('uploads', '');
-			$repeatCounter = $this->app->input->post->getString('repeatCounter', 0);
+			$repeatCounter = $this->app->input->post->getInt('repeatCounter', 0);
 			$uploads = !empty($uploads) ? explode(',', $uploads) : [];
 
 			$uploadResult = $this->uploadRepository->getItemsByFields(['fnum' => $fnum, 'id' => $uploads]);
@@ -312,7 +312,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 				$this->updateFormSession($session->id, $data);
 			}
 			
-			if(empty($uploadResult)) {
+			if(empty($uploadResult) && !$this->getGroupModel()->canRepeat()) {
 				// Check if attachment was previously uploaded and saved to database
 				$uploadResult = $this->uploadRepository->getItemsByFields(['attachment_id' => $attachment_id, 'fnum' => $fnum]);
 			}
@@ -482,7 +482,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 			$value = $this->numberFormat($value);
 		}
 
-		if(empty($value) && !empty($this->getFormModel()->data['fnum']) && !empty($params->get('attachmentId')))
+		if(empty($value) && !empty($this->getFormModel()->data['fnum']) && !empty($params->get('attachmentId'))
+			&& !$this->getGroupModel()->canRepeat())
 		{
 			// Check if attachments are already uploaded in application file but not via the element
 			$uploads = $this->uploadRepository->getItemsByFields(['fnum' => $this->getFormModel()->data['fnum'], 'attachment_id' => $params->get('attachmentId')]);
