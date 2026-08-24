@@ -2703,7 +2703,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 				$this->encryptFieldName($k);
 				
-				parent::validateQuerystringCondition($condition, $value, $type);
+				parent::validateCondition($condition, $value, $type);
 				return " $k $condition $value ";
 				
 			}

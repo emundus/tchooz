@@ -15,6 +15,8 @@ use Joomla\CMS\Factory;
 use Joomla\Component\Emundus\Administrator\Attributes\PostflightAttribute;
 use Joomla\Database\DatabaseInterface;
 use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Reference\InternalReferenceEntity;
 use Tchooz\Services\Language\DbLanguage;
 use Tchooz\Traits\TraitVersion;
 
@@ -289,6 +291,11 @@ class Com_EmundusInstallerScript
 		}
 
 		$updates[] = \EmundusHelperUpdate::makeFromEntity(AddonEntity::class);
+
+		// since 2.19.0 : the postflight short reference task reads these. Platforms whose manifest cache
+		// jumped past 2.19.0 never ran the release, so the column and the table are missing.
+		$updates[] = \EmundusHelperUpdate::makeFromEntity(ApplicationFileEntity::class);
+		$updates[] = \EmundusHelperUpdate::makeFromEntity(InternalReferenceEntity::class);
 
 		$this->dropLegacyContentXreference();
 

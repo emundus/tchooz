@@ -174,21 +174,42 @@ class PlgFabrik_ListDownload extends PlgFabrik_List
 		}
 		else
 		{
-			$db = FabrikWorker::getDbo();
-			$query = $db->getQuery(true);
-			$query->select($db->qn($downloadFile))
-				->from($db->qn($downloadTable))
-				->where($db->qn($downloadFk) . ' IN (' . implode(',', $db->q($ids)) . ')');
-			$db->setQuery($query);
-			$results = $db->loadObjectList();
+			// Security fix: $ids comes straight from the request, and this branch used to
+			// query $downloadTable for every one of them with no authorization check at
+			// all - unlike the sibling branch above, which calls canView($row) per id. That
+			// let an attacker request another user's row id and have its FK-joined files
+			// zipped up regardless of view permission. Filter down to viewable ids first,
+			// same as the sibling branch, before ever querying $downloadTable.
+			$viewableIds = array();
 
-			foreach ($results AS $result)
+			foreach ($ids AS $id)
 			{
-				$thisFile = JPATH_SITE . '/' . $result->$downloadFile;
+				$row = $model->getRow($id);
 
-				if (is_file($thisFile))
+				if ($model->canView($row))
 				{
-					$fileList[] = $thisFile;
+					$viewableIds[] = $id;
+				}
+			}
+
+			if (!empty($viewableIds))
+			{
+				$db = FabrikWorker::getDbo();
+				$query = $db->getQuery(true);
+				$query->select($db->qn($downloadFile))
+					->from($db->qn($downloadTable))
+					->where($db->qn($downloadFk) . ' IN (' . implode(',', $db->q($viewableIds)) . ')');
+				$db->setQuery($query);
+				$results = $db->loadObjectList();
+
+				foreach ($results AS $result)
+				{
+					$thisFile = JPATH_SITE . '/' . $result->$downloadFile;
+
+					if (is_file($thisFile))
+					{
+						$fileList[] = $thisFile;
+					}
 				}
 			}
 		}

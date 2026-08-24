@@ -1895,7 +1895,7 @@ class Com_EmundusPostflightTasks
 		$addonRepository = new AddonRepository();
 		$addon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
 
-		if ($addon->getParam('has_been_activated_once', 0) == 1) { // no turning back now
+		if ($addon?->getParam('has_been_activated_once', 0) == 1) { // no turning back now
 			$enabled = \EmundusHelperUpdate::enableEmundusPlugins('emunduspublicaccess', 'system');
 
 			$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
