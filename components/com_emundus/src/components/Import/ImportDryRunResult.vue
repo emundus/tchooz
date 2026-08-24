@@ -43,6 +43,21 @@ export default {
 		failedRows() {
 			return this.report?.rows?.filter((r) => r.status === 'failed') ?? [];
 		},
+		warnings() {
+			return (this.report?.rows ?? [])
+				.filter((r) => Array.isArray(r.warnings) && r.warnings.length > 0)
+				.flatMap((r) => r.warnings.map((message) => ({ row: r.row, message })));
+		},
+		hasWarnings() {
+			return this.warnings.length > 0;
+		},
+	},
+	methods: {
+		rowWarningText(warning) {
+			return this.translate('COM_EMUNDUS_IMPORT_ROW_WARNING')
+				.replace('%1$s', warning.row)
+				.replace('%2$s', warning.message);
+		},
 	},
 };
 </script>
@@ -99,6 +114,18 @@ export default {
 			:bg-color="'tw-bg-red-100'"
 			:icon-color="'tw-text-red-600'"
 		/>
+
+		<template v-if="hasWarnings && !hasGlobalErrors">
+			<Info
+				v-for="(warning, index) in warnings"
+				:key="'warning-' + index"
+				:text="rowWarningText(warning)"
+				class="tw-w-full tw-text-left"
+				:icon="'warning'"
+				:bg-color="'tw-bg-orange-100'"
+				:icon-color="'tw-text-orange-600'"
+			/>
+		</template>
 
 		<ImportFailedRows :rows="failedRows" :entity-term="entityTerm" />
 

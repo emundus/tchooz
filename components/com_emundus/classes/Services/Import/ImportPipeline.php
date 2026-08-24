@@ -36,13 +36,19 @@ use Tchooz\Services\Import\Validation\TypeValidator;
  */
 final class ImportPipeline
 {
-	private DatabaseInterface $db;
-	private TypeValidator     $typeValidator;
+	private DatabaseInterface        $db;
+	private TypeValidator            $typeValidator;
+	private ReferentialValueDecoder  $referentialDecoder;
 
-	public function __construct(?DatabaseInterface $db = null, ?TypeValidator $typeValidator = null)
+	public function __construct(
+		?DatabaseInterface       $db = null,
+		?TypeValidator           $typeValidator = null,
+		?ReferentialValueDecoder $referentialDecoder = null
+	)
 	{
-		$this->db            = $db ?? Factory::getContainer()->get(DatabaseInterface::class);
-		$this->typeValidator = $typeValidator ?? new TypeValidator();
+		$this->db                 = $db ?? Factory::getContainer()->get(DatabaseInterface::class);
+		$this->typeValidator      = $typeValidator ?? new TypeValidator();
+		$this->referentialDecoder = $referentialDecoder ?? new ReferentialValueDecoder();
 	}
 
 	public function run(
@@ -108,6 +114,7 @@ final class ImportPipeline
 
 			$context = new ImportContext($source->getName(), $rowNumber, $options->dryRun, $options->userId);
 			$row     = $mapper->map($rawRow);
+			$row     = $this->referentialDecoder->decode($row, $columnMap, $context);
 
 			if (RowMapper::isRowEmpty($row))
 			{

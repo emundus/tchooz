@@ -5,7 +5,6 @@ use Joomla\Input\Input;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
-use Joomla\CMS\Uri\Uri;
 use Tchooz\Attributes\AccessAttribute;
 use Tchooz\Controller\EmundusController;
 use Tchooz\EmundusResponse;
@@ -89,6 +88,16 @@ class EmundusControllerImport extends EmundusController
 			return EmundusResponse::fail(Text::_('NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
 		}
 
+		$importer = $registry->get($type);
+
+		if (!in_array($mode, $importer->getSupportedModes(), true))
+		{
+			return EmundusResponse::fail(
+				Text::sprintf('COM_EMUNDUS_IMPORT_MODE_NOT_SUPPORTED', $mode->value, $type),
+				EmundusResponse::HTTP_BAD_REQUEST
+			);
+		}
+
 		$uploadedFile = $this->input->files->get('file');
 
 		if (empty($uploadedFile))
@@ -105,14 +114,9 @@ class EmundusControllerImport extends EmundusController
 
 		try
 		{
-			$source   = ImportSourceFactory::fromFile($uploadedFile['tmp_name'], $ext, $uploadedFile['name']);
-			$importer = $registry->get($type);
+			$source = ImportSourceFactory::fromFile($uploadedFile['tmp_name'], $ext, $uploadedFile['name']);
 
-			if (!in_array($mode, $importer->getSupportedModes())) {
-				throw new \Exception('COM_EMUNDUS_IMPORT_UNSUPPORTED_CONFLICT_MODE');
-			}
-
-			$options  = new ImportOptions(
+			$options = new ImportOptions(
 				dryRun: $dryRun,
 				userId: $this->app->getIdentity()->id,
 				conflictMode: $mode
@@ -125,11 +129,29 @@ class EmundusControllerImport extends EmundusController
 		}
 		catch (Throwable $e)
 		{
-			return EmundusResponse::fail($e->getMessage(), EmundusResponse::HTTP_BAD_REQUEST);
+			Log::add(
+				sprintf(
+					'Import failed for type "%s" (mode "%s", dry run: %s): %s %s in %s:%d',
+					$type,
+					$mode->value,
+					$dryRun ? 'yes' : 'no',
+					get_class($e),
+					$e->getMessage(),
+					$e->getFile(),
+					$e->getLine()
+				),
+				Log::ERROR,
+				'com_emundus.import'
+			);
+
+			return EmundusResponse::fail(
+				Text::_('COM_EMUNDUS_IMPORT_UNEXPECTED_ERROR'),
+				EmundusResponse::HTTP_BAD_REQUEST
+			);
 		}
 	}
 
-	#[AccessAttribute(AccessLevelEnum::PARTNER)]
+	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
 	public function getimportmodel(): EmundusResponse
 	{
 		$type = $this->input->getString('type', '');
@@ -147,19 +169,10 @@ class EmundusControllerImport extends EmundusController
 
 		try
 		{
-			$directory = JPATH_ROOT . '/tmp/import_models/';
-			if (!is_dir($directory))
-			{
-				mkdir($directory, 0744, true);
-			}
+			$format  = $this->input->getString('format', 'csv') === 'xlsx' ? 'xlsx' : 'csv';
+			$columns = $registry->get($type)->getColumnMap()->describeWithReferentials();
 
-			$format   = $this->input->getString('format', 'csv') === 'xlsx' ? 'xlsx' : 'csv';
-			$columns  = $registry->get($type)->getColumnMap()->describe();
-
-			$filepath = (new ImportModelGenerator())
-				->build($directory, $type, $format, $this->getModelCacheKey(), $columns);
-
-			return EmundusResponse::ok(Uri::root() . 'tmp/import_models/' . basename($filepath));
+			return EmundusResponse::ok((new ImportModelGenerator())->build($type, $format, $columns));
 		}
 		catch (Throwable $e)
 		{
@@ -176,35 +189,9 @@ class EmundusControllerImport extends EmundusController
 			);
 
 			return EmundusResponse::fail(
-				sprintf('Error while getting import model for %s: %s', $type, $e->getMessage()),
+				Text::_('COM_EMUNDUS_IMPORT_MODEL_GENERATION_ERROR'),
 				EmundusResponse::HTTP_BAD_REQUEST
 			);
 		}
 	}
-
-	/**
-	 * Short, filename-safe identifier of the current code version. Sourced from
-	 * EmundusHelperCache::getCurrentGitHash() — the same helper used by every
-	 * cache-busting view in the project — so a new commit (dev) or a new
-	 * component release (prod) automatically invalidates cached import models.
-	 */
-	private function getModelCacheKey(): string
-	{
-		static $cached = null;
-		if ($cached !== null)
-		{
-			return $cached;
-		}
-
-		if (!class_exists('EmundusHelperCache'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
-		}
-
-		$hash = EmundusHelperCache::getCurrentGitHash();
-		$safe = preg_replace('/[^A-Za-z0-9.\-]/', '_', $hash);
-
-		return $cached = ($safe !== '' ? substr($safe, 0, 12) : 'v0');
-	}
-
 }

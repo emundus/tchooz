@@ -141,6 +141,19 @@ export default {
 									<span v-else> {{ example.value }}</span>
 								</div>
 							</div>
+							<div v-else-if="field.referential" class="tw-flex tw-flex-wrap tw-items-center tw-gap-1">
+								<span class="tw-rounded tw-border tw-border-neutral-300 tw-bg-white tw-p-1 tw-text-xs tw-font-bold">
+									{{ translate('COM_EMUNDUS_IMPORT_REFERENTIAL_EXAMPLE_LABEL') }}
+								</span>
+								<span class="tw-rounded tw-border tw-border-neutral-300 tw-bg-white tw-p-1 tw-text-xs tw-font-bold">
+									{{ translate('COM_EMUNDUS_IMPORT_REFERENTIAL_EXAMPLE_ID') }}
+								</span>
+								<span class="tw-rounded tw-border tw-border-neutral-300 tw-bg-white tw-p-1 tw-text-xs tw-font-bold">
+									{{ translate('COM_EMUNDUS_IMPORT_REFERENTIAL_EXAMPLE_LABEL') }} [{{
+										translate('COM_EMUNDUS_IMPORT_REFERENTIAL_EXAMPLE_ID')
+									}}]
+								</span>
+							</div>
 						</td>
 						<td class="tw-border-t tw-border-neutral-200 tw-p-3 tw-text-sm tw-text-neutral-700">
 							<template v-if="field.required">

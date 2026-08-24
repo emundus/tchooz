@@ -66,4 +66,12 @@ interface ColumnMap
 	 * }>
 	 */
 	public function describe(): array;
+
+	/**
+	 * Same as describe() but enriched with the resolved referential entries for
+	 * each REFERENTIAL field (under `referential.entries`).
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function describeWithReferentials(): array;
 }

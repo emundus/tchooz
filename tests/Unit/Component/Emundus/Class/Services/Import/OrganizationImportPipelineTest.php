@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Entities\Country;
 use Tchooz\Enums\Import\RowStatusEnum;
+use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
 use Tchooz\Repositories\CountryRepository;
 use Tchooz\Services\Import\Entity\OrganizationImporter;
@@ -49,6 +50,7 @@ class OrganizationImportPipelineTest extends TestCase
 
 	private OrganizationRepository $orgRepo;
 	private CountryRepository      $countryRepo;
+	private ContactRepository      $contactRepo;
 	private DatabaseInterface      $db;
 	private ImportPipeline         $pipeline;
 	private OrganizationImporter   $importer;
@@ -58,6 +60,7 @@ class OrganizationImportPipelineTest extends TestCase
 		$this->orgRepo     = $this->createMock(OrganizationRepository::class);
 		$this->countryRepo = $this->createMock(CountryRepository::class);
 		$this->db          = $this->createMock(DatabaseInterface::class);
+		$this->contactRepo = $this->createMock(ContactRepository::class);
 
 		$this->orgRepo->method('getByIdentifierCode')->willReturn(null);
 		$this->orgRepo->method('getByName')->willReturn(null);
@@ -65,7 +68,7 @@ class OrganizationImportPipelineTest extends TestCase
 			static fn (string $iso) => new Country(id: 1, label: $iso, iso2: $iso, iso3: $iso . 'X', country_nb: 0)
 		);
 
-		$this->importer = new OrganizationImporter($this->orgRepo, $this->countryRepo);
+		$this->importer = new OrganizationImporter($this->orgRepo, $this->countryRepo, $this->contactRepo);
 		$this->pipeline = new ImportPipeline($this->db);
 	}
 
@@ -237,7 +240,7 @@ class OrganizationImportPipelineTest extends TestCase
 		$repo->method('getByName')->willReturn(null);
 		$repo->expects($this->once())->method('flush');   // only the second row should flush
 
-		$importer = new OrganizationImporter($repo, $this->countryRepo);
+		$importer = new OrganizationImporter($repo, $this->countryRepo, $this->contactRepo);
 
 		$source = new ArraySource([
 			['Nom' => 'Acme',   'Code identifiant' => 'SIRET-1'],

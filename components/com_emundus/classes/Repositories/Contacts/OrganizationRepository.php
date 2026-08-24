@@ -106,6 +106,9 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 		{
 			$organization_object->status = $entity->getStatus()->value;
 		}
+
+		// insertObject/updateObject quote a PHP false as '', which the column rejects.
+		$organization_object->published = (int) $entity->isPublished();
 		//
 
 		// Then, flush the organization
@@ -654,6 +657,29 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 		$query->select(self::COLUMNS)
 			->from($this->db->quoteName($this->getTableName(self::class), 't'))
 			->where($this->db->quoteName('id') . ' IN (' . implode(',', array_map('intval', $ids)) . ')');
+
+		$this->db->setQuery($query);
+		$organizations = $this->db->loadAssocList();
+
+		return array_map(
+			fn($org) => $this->factory->fromDbObject($org, $this->withRelations, $this->exceptRelations),
+			$organizations
+		);
+	}
+
+	/**
+	 * Flat list of every organization, ordered by name. Tailored for
+	 * option/referential building; use getAllOrganizations() when the
+	 * paginated and filtered shape is needed.
+	 *
+	 * @return array<OrganizationEntity>
+	 */
+	public function getAll(): array
+	{
+		$query = $this->db->getQuery(true);
+		$query->select(self::COLUMNS)
+			->from($this->db->quoteName($this->getTableName(self::class), 't'))
+			->order($this->db->quoteName('t.name') . ' ASC');
 
 		$this->db->setQuery($query);
 		$organizations = $this->db->loadAssocList();
