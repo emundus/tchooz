@@ -2757,7 +2757,7 @@ class EmundusModelApplication extends ListModel
 											continue;
 										}
 
-										if (!empty(trim($element->label))) {
+										if (!empty(trim($element->label)) || $element->plugin === ElementPluginEnum::EMUNDUS_FILEUPLOAD->value) {
 											// TODO : If databasejoin checkbox or multilist get value from children table. Add a query to get join table from jos_fabrik_joins where element_id = $element->id
 											if ($element->plugin == 'databasejoin') {
 												$params = json_decode($element->params);
@@ -3104,6 +3104,12 @@ class EmundusModelApplication extends ListModel
 												$elt = $html_sanitizer->sanitize($elt);
 											}
 
+											$hasContent = is_array($elt) ? !empty($elt) : trim((string) $elt) !== '';
+											if (empty(trim($element->label)) && !$hasContent) {
+												unset($params);
+												continue;
+											}
+
 											if ($modulo % 2) {
 												$class = "table-strip-1";
 											}
@@ -3111,7 +3117,7 @@ class EmundusModelApplication extends ListModel
 												$class = "table-strip-2 !tw-bg-neutral-0";
 											}
 
-											$tds = !empty(Text::_($element->label)) ? '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"><b>' . Text::_($element->label) . '</b></td>' : '';
+											$tds = !empty(Text::_($element->label)) ? '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"><b>' . Text::_($element->label) . '</b></td>' : '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"></td>';
 											$tds .= '<td class="tw-w-full" style="width:100%; border-bottom: 1px solid var(--neutral-400); vertical-align: middle;"><div class="tw-flex tw-flex-row tw-justify-between tw-items-center tw-h-full"><span>' . ((!in_array($element->plugin,['field','textarea','calc'])) ? Text::_($elt) : $elt) . '</span>';
 
 											if ($can_comment) {
