@@ -2087,8 +2087,7 @@ EOD;
 
 		$app       = Factory::getApplication();
 		$package   = $app->getUserState('com_fabrik.package', 'fabrik');
-		//$json->url = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&format=raw';
-		$json->url = 'index.php?option=com_' . $package . '&format=raw';
+		$json->url = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $package . '&format=raw';
 		$json->url .= $app->isClient('administrator') ? '&task=plugin.pluginAjax' : '&view=plugin&task=pluginAjax';
 		$json->url .= '&' . Session::getFormToken() . '=1';
 		$json->url .= '&g=element&element_id=' . $elementId
@@ -3307,9 +3306,15 @@ EOT;
 			// Make sure we are in Site or Admin
 			if (empty($client)) break;
 
-			// Enforce session token on all non-GET requests, and on GET too when the caller
-			// passed $requireToken (a GET-reachable action that mutates or discloses something
-			// sensitive), fail hard if missing.
+			// Enforce session token on all non-GET/HEAD requests, and on GET/HEAD too when the
+			// caller passed $requireToken (a GET-reachable action that mutates or discloses
+			// something sensitive), fail hard if missing.
+			//
+			// HEAD is treated the same as GET here: per HTTP semantics it's a safe, idempotent
+			// method that must return the same status as the corresponding GET (RFC 7231 4.3.2),
+			// and link checkers / uptime monitors rely on that. Excluding it from GET's exemption
+			// made every HEAD request fail the token check below and fall through to the 404 at
+			// the bottom of this function, even though no state-changing action was requested.
 			//
 			// Deliberately NOT calling Session::checkToken() here. On failure, Joomla's own
 			// implementation checks $app->getSession()->isNew() and, if true (e.g. an expired or
@@ -3319,7 +3324,7 @@ EOT;
 			// swaps the expected JSON/partial response for the site's home page HTML) that's worse
 			// than useless. Replicate the check manually so a bad/expired token just cleanly falls
 			// through to this function's own 404, instead of Joomla silently redirecting home.
-			if ($_SERVER['REQUEST_METHOD'] !== 'GET' || $requireToken) {
+			if (!in_array($_SERVER['REQUEST_METHOD'], ['GET', 'HEAD'], true) || $requireToken) {
 				$formToken = Session::getFormToken();
 
 				// Header-based token first: easier to spot in devtools (Network > Headers) than the
@@ -3351,9 +3356,10 @@ EOT;
 				}
 			}
 
-			// Validate Referer is from our own domain
+			// Validate Referer is from our own domain (HTTP_HOST, not SERVER_NAME, which can
+			// diverge from the real hostname depending on vhost config)
 			$httpReferer = $_SERVER['HTTP_REFERER'] ?? '';
-			$serverName  = $_SERVER['SERVER_NAME'] ?? '';
+			$serverName  = strtok($_SERVER['HTTP_HOST'] ?? '', ':');
 			if (!empty($httpReferer) && !empty($serverName)) {
 				$refererHost = parse_url($httpReferer, PHP_URL_HOST);
 				if ($refererHost !== $serverName) {
@@ -3364,9 +3370,9 @@ EOT;
 
 			// Test for query items that need to be there and need to be valid
 			$task = $input->get('task', null);
-			$controller = explode('.', $input->get('controller'))[0];
+			$controller = explode('.', $input->get('controller', ''))[0];
 			if ($controller == "visualization") {
-				$controller .= explode('.', $input->get('controller'))[1];
+				$controller .= explode('.', $input->get('controller', ''))[1];
 			}
 
 			if (!empty($task)) {

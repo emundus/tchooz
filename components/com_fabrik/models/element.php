@@ -3149,8 +3149,14 @@ class PlgFabrik_Element extends FabrikPlugin
 						}
 
 						$js .= "}";
-						$js = addslashes($js);
+						// Security fix: substitute %%REGEX%% BEFORE addslashes(), not after.
+						// $jsAct->js_e_value can contain data resolved from user-submitted form
+						// fields (via parseMessageForPlaceHolder() above). Substituting it in
+						// after addslashes() meant this one piece of the string never got
+						// escaped for the single-quoted JS string it's embedded in below,
+						// letting a crafted value break out and inject arbitrary JS.
 						$js = str_replace('%%REGEX%%', $jsAct->js_e_value, $js);
+						$js = addslashes($js);
 						$js = str_replace(array("\n", "\r"), "", $js);
 						$jsStr .= $jsControllerKey . ".dispatchEvent('$element->plugin', '$elId', '$jsAct->action', '$js');\n";
 					}
@@ -4559,6 +4565,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			{
 				case 'notequals':
 				case '<>':
+				case '!=':
 					$condition = "<>";
 
 					// 2 = sub-query so don't quote
@@ -4628,12 +4635,44 @@ class PlgFabrik_Element extends FabrikPlugin
 					$value = '(' . $value . ')';
 					break;
 				case 'not_in':
+				case 'not in':
 					$condition = 'NOT IN';
 					if ($eval != FABRIKFILTER_QUERY)
 					{
 						$value = FabrikString::safeQuote($value, true);
 					}
 					$value = '(' . $value . ')';
+					break;
+				case 'not like':
+				case 'not_like':
+					// Security fix: previously fell through with no case, so the raw value
+					// reached getFilterQuery()'s default branch unquoted (see 'contains'/'like' above).
+					$condition = 'NOT LIKE';
+
+					switch ($eval)
+					{
+						case FABRIKFILTER_QUERY:
+							$value = '(' . $value . ')';
+							break;
+						case FABRIKFILTER_NOQUOTES:
+							$value = $value;
+							break;
+						default:
+							$value = $db->q('%' . $value . '%');
+							break;
+					}
+					break;
+				case 'is null':
+				case 'is not null':
+					// Security fix: previously not a recognised condition at all (missing
+					// from $allowedConditions), so validateCondition() would reject it -
+					// yet other code (elementlist.php, list.php::groupFilterSQL()) treats
+					// 'IS NULL'/'IS NOT NULL' as legitimate, real conditions. These take no
+					// comparison value by definition, so discard whatever was submitted
+					// rather than trust it - there is nothing legitimate a value could add
+					// here, only room for injection.
+					$condition = ($condition === 'is null') ? 'IS NULL' : 'IS NOT NULL';
+					$value = '';
 					break;
 			}
 
@@ -4666,7 +4705,11 @@ class PlgFabrik_Element extends FabrikPlugin
 
 			if ($condition == '=' && $value == "'_null_'")
 			{
-				$condition = " IS NULL ";
+				// Note: previously " IS NULL " with padding spaces, which would never
+				// match the 'IS NULL' entry in validateCondition()'s whitelist (exact,
+				// case-sensitive-after-strtoupper comparison) - normalised to match the
+				// same canonical form used by the new 'is null'/'is not null' cases above.
+				$condition = 'IS NULL';
 				$value     = '';
 			}
 		}
@@ -4695,7 +4738,7 @@ public function getFilterQuery($key, $condition, $value, $originalValue, $type =
 	// fully attacker-controlled (it comes straight from the URL). Key is
 	// already handled safely for this type; $value is only inspected here
 	// for the BETWEEN case, where its structure matters.
-	$this->validateQuerystringCondition($condition, $value, $type);
+	$this->validateCondition($condition, $value, $type);
 
 	switch ($condition)
 	{
@@ -4762,13 +4805,8 @@ public function getFilterQuery($key, $condition, $value, $originalValue, $type =
 
 /**
  * Validate $condition (and, for BETWEEN, $value) when the filter comes in
- * via the querystring.
  *
- * Only 'querystring' filters can have their condition set directly by an
- * end user through the URL (e.g. ?filter[condition][0]=...) - every other
- * filter $type builds $condition internally, so it doesn't need this check.
- * Key is already handled safely by the caller for this filter type; this
- * method guards:
+ * This method guards:
  *   - the operator/condition itself against being anything other than a
  *     known, whitelisted value, and
  *   - for BETWEEN specifically, that $value has the expected
@@ -4780,19 +4818,14 @@ public function getFilterQuery($key, $condition, $value, $originalValue, $type =
  * @param   string $type      filter type advanced/normal/prefilter/search/querystring/search
  *
  * @return  void
- * @throws  UnexpectedValueException if $type is 'querystring' and $condition is not whitelisted,
+ * @throws  UnexpectedValueException if $condition is not whitelisted,
  *                                    or $condition is BETWEEN and $value is not 'a' AND 'b'
  */
-public function validateQuerystringCondition($condition, $value, $type)
-{
-	if ($type !== 'querystring')
-	{
-		return;
-	}
-
+public function validateCondition($condition, $value, $type) {	
 	static $allowedConditions = array(
 		'=', '!=', '<>', '<', '>', '<=', '>=',
-		'LIKE', 'NOT LIKE', 'IN', 'NOT IN', 'IS', 'IS NOT', 'BETWEEN', 'REGEXP',
+		'LIKE', 'NOT LIKE', 'IN', 'NOT IN', 'BETWEEN', 'REGEXP',
+		'IS NULL', 'IS NOT NULL',
 		'THISYEAR', 'LASTYEAR', 'EARLIERTHISYEAR', 'LATERTHISYEAR',
 		'TODAY', 'YESTERDAY', 'TOMORROW', 'THISMONTH', 'LASTMONTH',
 		'NEXTMONTH', 'NEXTWEEK1', 'BIRTHDAY',
@@ -6045,6 +6078,10 @@ public function validateQuerystringCondition($condition, $value, $type)
 		{
 			return;
 		}
+
+		// Security hardening: cast here too instead of relying solely on the caller,
+		// since $id is spliced straight into the DELETE query below.
+		$id = (int) $id;
 
 		$db    = \FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);

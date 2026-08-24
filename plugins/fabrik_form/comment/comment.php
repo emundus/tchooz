@@ -524,6 +524,12 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 	 */
 	public function onDeleteComment()
 	{
+		if (!$this->setFormModel()->getListModel()->canDelete())
+		{
+			header('HTTP/1.1 403 Forbidden');
+			jexit(Text::_('JERROR_ALERTNOAUTHOR'));
+		}
+
 		$db = FabrikWorker::getDbo();
 		$id = $this->app->input->getInt('comment_id');
 		$query = $db->getQuery(true);
@@ -540,6 +546,12 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 	 */
 	public function onUpdateComment()
 	{
+		if (!$this->setFormModel()->getListModel()->canEdit())
+		{
+			header('HTTP/1.1 403 Forbidden');
+			jexit(Text::_('JERROR_ALERTNOAUTHOR'));
+		}
+
 		$db = FabrikWorker::getDbo();
 		$input = $this->app->input;
 		$id = $input->getInt('comment_id');
@@ -940,6 +952,12 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 	 */
 	public function onGetEmail()
 	{
+		if (!$this->setFormModel()->getListModel()->canEdit())
+		{
+			header('HTTP/1.1 403 Forbidden');
+			jexit(Text::_('JERROR_ALERTNOAUTHOR'));
+		}
+
 		$commentId = $this->app->input->getInt('commentid');
 
 		// TableComment
