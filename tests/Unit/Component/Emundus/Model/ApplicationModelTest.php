@@ -452,4 +452,232 @@ class ApplicationModelTest extends UnitTestCase
 		$menus = $this->model->getApplicationMenu($this->dataset['applicant']);
 		$this->assertEmpty($menus, 'An applicant should not have access to the application menu');
 	}
+
+	// -------------------------------------------------------------------------
+	// getUploadsLinks — repeated group rows must not share their uploads
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @group application
+	 * @covers EmundusModelApplication::getUploadsLinks
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testGetUploadsLinksWithStoredValueReturnsOnlyTheUploadsOfThatRow(): void
+	{
+		$attachmentId = $this->h_dataset->createSampleAttachment();
+		$firstUpload  = $this->h_dataset->createSampleUpload($this->dataset['fnum'], $this->dataset['campaign'], $this->dataset['applicant'], $attachmentId);
+		$secondUpload = $this->h_dataset->createSampleUpload($this->dataset['fnum'], $this->dataset['campaign'], $this->dataset['applicant'], $attachmentId);
+
+		$links = self::callPrivateMethod($this->model, 'getUploadsLinks', [
+			$this->dataset['fnum'],
+			$this->dataset['applicant'],
+			$attachmentId,
+			(string) $firstUpload,
+		]);
+
+		$this->assertStringContainsString($this->getUploadFilename($firstUpload), $links, 'getUploadsLinks should return the upload referenced by the row value');
+		$this->assertStringNotContainsString($this->getUploadFilename($secondUpload), $links, 'getUploadsLinks should not return an upload belonging to another row of the repeated group');
+
+		$this->h_dataset->deleteSampleUpload($firstUpload);
+		$this->h_dataset->deleteSampleUpload($secondUpload);
+		$this->h_dataset->deleteSampleAttachment($attachmentId);
+	}
+
+	/**
+	 * @group application
+	 * @covers EmundusModelApplication::getUploadsLinks
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testGetUploadsLinksWithDecimalStoredValueMatchesTheUploadId(): void
+	{
+		$attachmentId = $this->h_dataset->createSampleAttachment();
+		$upload       = $this->h_dataset->createSampleUpload($this->dataset['fnum'], $this->dataset['campaign'], $this->dataset['applicant'], $attachmentId);
+
+		// A repeated group column typed as DECIMAL stores the upload id as "12.000".
+		$links = self::callPrivateMethod($this->model, 'getUploadsLinks', [
+			$this->dataset['fnum'],
+			$this->dataset['applicant'],
+			$attachmentId,
+			$upload . '.000',
+		]);
+
+		$this->assertStringContainsString($this->getUploadFilename($upload), $links, 'getUploadsLinks should resolve an upload id stored in a decimal format');
+
+		$this->h_dataset->deleteSampleUpload($upload);
+		$this->h_dataset->deleteSampleAttachment($attachmentId);
+	}
+
+	/**
+	 * @group application
+	 * @covers EmundusModelApplication::getUploadsLinks
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testGetUploadsLinksWithEmptyStoredValueReturnsEmptyString(): void
+	{
+		$attachmentId = $this->h_dataset->createSampleAttachment();
+		$upload       = $this->h_dataset->createSampleUpload($this->dataset['fnum'], $this->dataset['campaign'], $this->dataset['applicant'], $attachmentId);
+
+		$links = self::callPrivateMethod($this->model, 'getUploadsLinks', [
+			$this->dataset['fnum'],
+			$this->dataset['applicant'],
+			$attachmentId,
+			'',
+		]);
+
+		$this->assertSame('', $links, 'getUploadsLinks should return nothing for a repeated group row holding no upload');
+
+		$this->h_dataset->deleteSampleUpload($upload);
+		$this->h_dataset->deleteSampleAttachment($attachmentId);
+	}
+
+	/**
+	 * @group application
+	 * @covers EmundusModelApplication::getUploadsLinks
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testGetUploadsLinksWithUnknownStoredValueReturnsEmptyString(): void
+	{
+		$attachmentId = $this->h_dataset->createSampleAttachment();
+		$upload       = $this->h_dataset->createSampleUpload($this->dataset['fnum'], $this->dataset['campaign'], $this->dataset['applicant'], $attachmentId);
+
+		$links = self::callPrivateMethod($this->model, 'getUploadsLinks', [
+			$this->dataset['fnum'],
+			$this->dataset['applicant'],
+			$attachmentId,
+			(string) ($upload + 100000),
+		]);
+
+		$this->assertSame('', $links, 'getUploadsLinks should return nothing when the row value matches no upload');
+
+		$this->h_dataset->deleteSampleUpload($upload);
+		$this->h_dataset->deleteSampleAttachment($attachmentId);
+	}
+
+	/**
+	 * @group application
+	 * @covers EmundusModelApplication::getUploadsLinks
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testGetUploadsLinksWithNullStoredValueReturnsEveryUploadOfTheAttachment(): void
+	{
+		$attachmentId = $this->h_dataset->createSampleAttachment();
+		$firstUpload  = $this->h_dataset->createSampleUpload($this->dataset['fnum'], $this->dataset['campaign'], $this->dataset['applicant'], $attachmentId);
+		$secondUpload = $this->h_dataset->createSampleUpload($this->dataset['fnum'], $this->dataset['campaign'], $this->dataset['applicant'], $attachmentId);
+
+		$links = self::callPrivateMethod($this->model, 'getUploadsLinks', [
+			$this->dataset['fnum'],
+			$this->dataset['applicant'],
+			$attachmentId,
+			null,
+		]);
+
+		$this->assertStringContainsString($this->getUploadFilename($firstUpload), $links, 'Outside of a repeated group, getUploadsLinks should return every upload of the attachment type');
+		$this->assertStringContainsString($this->getUploadFilename($secondUpload), $links, 'Outside of a repeated group, getUploadsLinks should return every upload of the attachment type');
+
+		$this->h_dataset->deleteSampleUpload($firstUpload);
+		$this->h_dataset->deleteSampleUpload($secondUpload);
+		$this->h_dataset->deleteSampleAttachment($attachmentId);
+	}
+
+	/**
+	 * @group application
+	 * @covers EmundusModelApplication::getUploadsLinks
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testGetUploadsLinksWhenAttachmentIsNotAllowedReturnsEmptyString(): void
+	{
+		$attachmentId      = $this->h_dataset->createSampleAttachment();
+		$otherAttachmentId = $this->h_dataset->createSampleAttachment();
+		$upload            = $this->h_dataset->createSampleUpload($this->dataset['fnum'], $this->dataset['campaign'], $this->dataset['applicant'], $attachmentId);
+
+		$links = self::callPrivateMethod($this->model, 'getUploadsLinks', [
+			$this->dataset['fnum'],
+			$this->dataset['applicant'],
+			$attachmentId,
+			(string) $upload,
+			[$otherAttachmentId],
+		]);
+
+		$this->assertSame('', $links, 'getUploadsLinks should return nothing when the user is not allowed to read this attachment type');
+
+		$links = self::callPrivateMethod($this->model, 'getUploadsLinks', [
+			$this->dataset['fnum'],
+			$this->dataset['applicant'],
+			$attachmentId,
+			(string) $upload,
+			[$otherAttachmentId, $attachmentId],
+		]);
+
+		$this->assertStringContainsString($this->getUploadFilename($upload), $links, 'getUploadsLinks should return the upload when its attachment type is allowed');
+
+		$this->h_dataset->deleteSampleUpload($upload);
+		$this->h_dataset->deleteSampleAttachment($attachmentId);
+		$this->h_dataset->deleteSampleAttachment($otherAttachmentId);
+	}
+
+	/**
+	 * @group application
+	 * @covers EmundusModelApplication::getUploadsLinks
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testGetUploadsLinksBuildsLinkWithApplicantPathAndAttachmentLabel(): void
+	{
+		$attachmentId = $this->h_dataset->createSampleAttachment();
+		$upload       = $this->h_dataset->createSampleUpload($this->dataset['fnum'], $this->dataset['campaign'], $this->dataset['applicant'], $attachmentId);
+
+		$links = self::callPrivateMethod($this->model, 'getUploadsLinks', [
+			$this->dataset['fnum'],
+			$this->dataset['applicant'],
+			$attachmentId,
+			(string) $upload,
+		]);
+
+		$expectedPath = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $this->dataset['applicant'] . DS . $this->getUploadFilename($upload);
+
+		$this->assertStringStartsWith('<ul><li><a href="' . $expectedPath . '"', $links, 'getUploadsLinks should link to the file stored in the applicant directory');
+		$this->assertStringContainsString('>' . $this->getAttachmentLabel($attachmentId) . '</a>', $links, 'getUploadsLinks should label the link with the attachment type name');
+		$this->assertStringEndsWith('</li></ul>', $links, 'getUploadsLinks should wrap the links in a list');
+
+		$this->h_dataset->deleteSampleUpload($upload);
+		$this->h_dataset->deleteSampleAttachment($attachmentId);
+	}
+
+	/**
+	 * @param   int  $uploadId
+	 *
+	 * @return string
+	 */
+	private function getUploadFilename(int $uploadId): string
+	{
+		$query = $this->db->getQuery(true);
+		$query->select($this->db->quoteName('filename'))
+			->from($this->db->quoteName('#__emundus_uploads'))
+			->where($this->db->quoteName('id') . ' = ' . $uploadId);
+		$this->db->setQuery($query);
+
+		return (string) $this->db->loadResult();
+	}
+
+	/**
+	 * @param   int  $attachmentId
+	 *
+	 * @return string
+	 */
+	private function getAttachmentLabel(int $attachmentId): string
+	{
+		$query = $this->db->getQuery(true);
+		$query->select($this->db->quoteName('value'))
+			->from($this->db->quoteName('#__emundus_setup_attachments'))
+			->where($this->db->quoteName('id') . ' = ' . $attachmentId);
+		$this->db->setQuery($query);
+
+		return (string) $this->db->loadResult();
+	}
 }
