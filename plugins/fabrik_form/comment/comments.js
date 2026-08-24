@@ -40,7 +40,8 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
 					'method': 'deleteComment',
 					'g'     : 'form',
 					'formid': this.options.formid,
-					'rowid' : this.options.rowid
+					'rowid' : this.options.rowid,
+					[Joomla.getOptions('csrf.token')]: 1
 				},
 				'onComplete': function (e) {
 					this.deleteComplete(e);
@@ -109,7 +110,8 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
 					'g'     : 'form',
 					'formid': this.options.formid,
 					'rowid' : this.options.rowid,
-					'label' : this.options.label
+					'label' : this.options.label,
+					[Joomla.getOptions('csrf.token')]: 1
 				},
 
 				'onSuccess': function (r) {
@@ -326,7 +328,8 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
 								'commentid': commentid,
 								'g'        : 'form',
 								'formid'   : this.options.formid,
-								'rowid'    : this.options.rowid
+								'rowid'    : this.options.rowid,
+								[Joomla.getOptions('csrf.token')]: 1
 							},
 							'onComplete': function (r) {
 								c.getElements('.info').dispose();

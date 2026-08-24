@@ -132,6 +132,30 @@ class Worker
 	protected $parseSourceQuoteMap = [];
 
 	/**
+	 * Placeholder => replacement value map for the preg_replace_callback() pass in
+	 * parseMessageForRepeats(), consulted by its callback method replaceRepeatPlaceholder().
+	 *
+	 * @var array
+	 */
+	protected $repeatReplacements = [];
+
+	/**
+	 * Quote-context byte-range map for the current parseMessageForRepeats() call, same shape and
+	 * purpose as $parseSourceQuoteMap but built from the pre-substitution repeats message.
+	 *
+	 * @var array
+	 */
+	protected $repeatQuoteMap = [];
+
+	/**
+	 * True if parseMessageForRepeats() should emit substituted values as safe, quoted SQL literals
+	 * rather than PHP literals - see $parseForSql.
+	 *
+	 * @var bool
+	 */
+	protected $repeatForSql = false;
+
+	/**
 	 * Search data to replace placeholders
 	 *
 	 * @var array
@@ -770,10 +794,20 @@ class Worker
 	 * @param  array  $searchData    Data to search for placeholders
 	 * @param  object $el            Element model of the element which is doing the replacing
 	 * @param  int    $repeatCounter Repeat instance
+	 * @param  bool   $forEval       If true, substituted values are emitted as safe, quoted PHP literals
+	 *                               (via var_export) instead of raw text - see parseMessageForPlaceHolder().
+	 *                               Must be set whenever the result is subsequently passed to Php::Eval():
+	 *                               this function used to splice values in raw, and ran *before* the
+	 *                               hardened parseMessageForPlaceHolder() call that followed it, so the
+	 *                               placeholder was already gone (and unescaped) by the time the hardened
+	 *                               pass ran - a full eval-sink bypass of that hardening.
+	 * @param  bool   $forSql        If true, substituted values are emitted as safe, quoted SQL literals
+	 *                               (via the db driver's quote()) instead of raw text. Same rationale as
+	 *                               $forEval, just for a SQL sink instead of a PHP eval sink.
 	 *
 	 * @return  string  parsed message
 	 */
-	public function parseMessageForRepeats($msg, $searchData, $el, $repeatCounter)
+	public function parseMessageForRepeats($msg, $searchData, $el, $repeatCounter, $forEval = false, $forSql = false)
 	{
 		if (strstr($msg??'', '{') && !empty($searchData))
 		{
@@ -782,6 +816,10 @@ class Worker
 			{
 				$elementModels = $groupModel->getPublishedElements();
 				$formModel     = $el->getFormModel();
+
+				// Only build the replacement list from placeholders that are actually present and
+				// have repeat data - matches the original per-element strstr()/array_key_exists() gate.
+				$replacements = array();
 
 				foreach ($elementModels as $elementModel)
 				{
@@ -799,9 +837,44 @@ class Worker
 									$tmpVal = implode(',', $tmpVal);
 								}
 
-								$msg    = str_replace('{' . $tmpElName . '}', $tmpVal??'', $msg);
+								$replacements['{' . $tmpElName . '}'] = $tmpVal ?? '';
 							}
 						}
+					}
+				}
+
+				if (!empty($replacements))
+				{
+					if ($forEval || $forSql)
+					{
+						// Single preg_replace_callback pass (like parseMessageForPlaceHolder's
+						// replaceWithFormData) so PREG_OFFSET_CAPTURE offsets, and the quote-context
+						// map built from them, stay valid for every match - unlike sequential
+						// str_replace() calls, where an earlier substitution can shift the byte
+						// offsets that a later one would need.
+						$patternParts = array();
+
+						foreach (array_keys($replacements) as $placeholder)
+						{
+							$patternParts[] = preg_quote($placeholder, '/');
+						}
+
+						$this->repeatReplacements = $replacements;
+						$this->repeatQuoteMap     = self::tokenizeSourceForQuoteContext($msg);
+						$this->repeatForSql       = $forSql;
+
+						$msg = preg_replace_callback(
+							'/' . implode('|', $patternParts) . '/',
+							array($this, 'replaceRepeatPlaceholder'),
+							$msg,
+							-1,
+							$count,
+							PREG_OFFSET_CAPTURE
+						);
+					}
+					else
+					{
+						$msg = str_replace(array_keys($replacements), array_values($replacements), $msg);
 					}
 				}
 			}
@@ -1251,6 +1324,48 @@ class Worker
 	}
 
 	/**
+	 * Called from parseMessageForRepeats() (forEval/forSql mode only) via preg_replace_callback() to
+	 * substitute one {repeat_element} placeholder with its per-repeat value, safely quoted/escaped for
+	 * the eval or SQL sink - mirrors the quote-context handling in replaceWithFormData(), just against
+	 * $repeatReplacements/$repeatQuoteMap/$repeatForSql instead of the parseMessageForPlaceHolder state.
+	 *
+	 * @param   array $matches Regex match, PREG_OFFSET_CAPTURE - [0] is [string, byteOffset]
+	 *
+	 * @return  string  Safely quoted/escaped replacement value
+	 */
+	protected function replaceRepeatPlaceholder($matches)
+	{
+		$placeholder = $matches[0][0];
+		$offset      = $matches[0][1];
+		$value       = $this->repeatReplacements[$placeholder];
+		$quoteChar   = null;
+
+		foreach ($this->repeatQuoteMap as $range)
+		{
+			if ($offset >= $range['start'] && ($offset + strlen($placeholder)) <= $range['end'])
+			{
+				$quoteChar = $range['quote'];
+				break;
+			}
+		}
+
+		if ($quoteChar !== null)
+		{
+			return $this->escapeForQuoteContext($value, $quoteChar, $this->repeatForSql);
+		}
+
+		if ($this->repeatForSql)
+		{
+			$db = self::getDbo();
+
+			return $db->quote($value);
+		}
+
+		// "{table___num}" becomes "'5'" - inert as data, not code.
+		return var_export($value, true);
+	}
+
+	/**
 	 * Called from parseMessageForPlaceHolder to iterate through string to replace
 	 * {placeholder} with posted data
 	 *
@@ -1596,6 +1711,16 @@ class Worker
 		{
 			return str_replace("'", "\\'", $value);
 		}
+
+		// This quote type also covers heredoc bodies (tokenizeSourceForQuoteContext() maps their
+		// T_ENCAPSED_AND_WHITESPACE tokens to '"' too), where a raw newline is structural - the
+		// closing identifier is only recognised at the start of a line - not just data. A value
+		// containing a real newline plus a line matching the closing identifier lets it terminate
+		// the heredoc early and inject arbitrary trailing PHP as live code. Encode newlines as the
+		// \n/\r escape sequences instead: heredocs (and double-quoted strings) interpret those
+		// identically to the literal character, so the value is preserved with no raw byte left to
+		// break out on.
+		$value = str_replace(["\r\n", "\r", "\n"], ['\\r\\n', '\\r', '\\n'], $value);
 
 		// Double-quoted PHP strings interpolate $var and {$expr} - escaping the quote alone isn't
 		// enough, a value like '{$formModel->someMethod()}' would still be live code otherwise.

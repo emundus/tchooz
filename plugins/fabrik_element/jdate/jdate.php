@@ -2319,7 +2319,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 					$value = 'NOW()';
 				}
 
-				parent::validateQuerystringCondition($condition, $value, $type);
+				parent::validateCondition($condition, $value, $type);
 				$query = " $key $condition $value ";
 
 				break;

@@ -204,14 +204,14 @@ class FabrikFEModelElementValidator extends FabModel
 		{
 //			if ($j3)
 //			{
-			if (is_null($c))
-			{
-				return $validations[0]->iconImage();
-			}
-			else
-			{
-				return $validations[$c]->iconImage();
-			}
+				if (is_null($c))
+				{
+					return $validations[0]->iconImage();
+				}
+				else
+				{
+					return $validations[$c]->iconImage();
+				}
 //			}
 		}
 

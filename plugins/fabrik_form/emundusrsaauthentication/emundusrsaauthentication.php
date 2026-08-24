@@ -99,20 +99,23 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 
 	private function manageRSAAuthentication($new_email = null)
 	{
+		Log::addLogger(['text_file' => 'com_emundus.rsaauth.php'], Log::ERROR, ['com_emundus.rsaauth']);
+
 		$app         = Factory::getApplication();
 		$current_url = Uri::getInstance()->toString();
 
-		$datas_key = $this->getParam('datas_key', 'data');
+		$datas_key = $this->getParam('datas_key', 'emundus_rsa_auth');
 
-		if (strpos($current_url, $datas_key) !== false)
+		if ($app->input->exists($datas_key))
 		{
-			$rsa_public_key = $this->getParam('rsa_public_key');
+			$rsa_public_key = $this->getParam('emundusrsaauhtentication_public_key');
 			if (!empty($rsa_public_key) && file_exists(JPATH_SITE . '/plugins/fabrik_form/emundusrsaauthentication/' . $rsa_public_key))
 			{
 				$rsa_public_key = file_get_contents(JPATH_SITE . '/plugins/fabrik_form/emundusrsaauthentication/' . $rsa_public_key);
 			}
 			else
 			{
+				// todo: field content is not encrypted in bdd, bad
 				$rsa_public_key = $this->getParam('emundusrsaauhtentication_public_key_content');
 			}
 
@@ -172,8 +175,7 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 					if (empty(UserHelper::getUserId($username)))
 					{
 						PluginHelper::importPlugin('emundus');
-						$dispatcher = JEventDispatcher::getInstance();
-						$results    = $dispatcher->trigger('onCallEventHandler', ['onGetUsername', ['datas' => $decrypted, 'attributes' => $attributes]]);
+						$results = $app->triggerEvent('onCallEventHandler', ['onGetUsername', ['datas' => $decrypted, 'attributes' => $attributes]]);
 
 						if (is_array($results) && !empty($results[0]['onGetUsername']))
 						{
@@ -193,7 +195,7 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 						if(!empty($existing_username) && $existing_username != $email && $existing_username != $username)
 						{
 							$app->enqueueMessage(Text::_('PLG_FABRIK_FORM_EMUNDUSRSAAUTHENTICATION_EMAIL_ALREADY_USED'), 'error');
-							$app->redirect('modifier-mon-adresse-email?data=' . $app->input->getString($datas_key, ''));
+							$app->redirect('modifier-mon-adresse-email?' . $datas_key . '=' . urlencode($app->input->getString($datas_key, '')));
 						}
 
 						if (!empty($existing_username))
@@ -333,8 +335,9 @@ class PlgFabrik_FormEmundusRsaauthentication extends plgFabrik_Form
 
 					$this->app->redirect('index.php');
 				}
-				catch (Exception $e)
+				catch (\Throwable $e)
 				{
+					Log::add('Failed to create user: ' . Text::_($e->getMessage()), Log::ERROR, 'com_emundus.rsaauth');
 					$app->enqueueMessage(Text::_($e->getMessage()), 'error');
 					$app->redirect('index.php');
 				}

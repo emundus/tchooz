@@ -13,6 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Enums\PluginStructure;
+use Fabrik\Helpers\Html;
 
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Factory;
@@ -47,6 +48,7 @@ class FabrikAdminControllerPlugin extends FabControllerForm
 	 */
 	public function pluginAjax()
 	{
+		Html::validateRequest($this->taskMap, true);
 		$app = Factory::getApplication();
 		$input = $app->input;
 		$pluginType = $input->get('plugin', '');
@@ -92,6 +94,7 @@ class FabrikAdminControllerPlugin extends FabControllerForm
 	 */
 	public function userAjax()
 	{
+		Html::validateRequest($this->taskMap, true);
 		$db = FabrikWorker::getDbo();
 		$app = Factory::getApplication();
 		$input = $app->input;

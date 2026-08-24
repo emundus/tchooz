@@ -241,7 +241,7 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 					. $db->q('%"' . $originalValue . '"%') . " $glue $key $condition2 " . $db->q('%"' . $originalValue . '"]') . ")";
 					break;
 				default:
-					parent::validateQuerystringCondition($condition, $value, $type);
+					parent::validateCondition($condition, $value, $type);
 					$str = " $key $condition $value ";
 					break;
 			}

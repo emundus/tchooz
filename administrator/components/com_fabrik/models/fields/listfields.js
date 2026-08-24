@@ -161,7 +161,8 @@ var ListFieldsElement = new Class({
 			data: {
 				'highlightpk': this.options.highlightpk,
 				'showRaw': this.options.showRaw,
-				'k': 2
+				'k': 2,
+				[Joomla.getOptions('csrf.token')]: 1
 			},
 			onComplete: function (r) {
 				var els;
