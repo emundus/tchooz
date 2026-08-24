@@ -43,11 +43,27 @@ class FabrikFEModelFormInlineEdit extends FabModelForm
 		$this->formModel = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel('Form', 'FabrikFEModel');
 		$input = $this->app->getInput();
 
+		// Security fix: inline edit is specifically an EDIT feature, so require full edit
+		// access (level 2) rather than just any nonzero access - view-only access (level 1)
+		// would otherwise still get served the editable widget pre-populated with the row's
+		// current value, bypassing the list's edit ACL. Same gate display() uses
+		// (controllers/form.php), checked before doing anything with row data.
+		if ($this->formModel->checkAccessFromListSettings() <= 1)
+		{
+			return;
+		}
+
 		// Need to render() with all element ids in case canEditRow plugins etc. use the row data.
 		$elids = $input->get('elementid', array(), 'array');
 		$input->set('elementid', null);
 
-		$this->formModel->render();
+		// Security fix: render()'s return value used to be discarded here, so getGroupView()/
+		// output below would run even if render() itself refused to load the row (e.g. no
+		// list access at all - see form.php's own render()).
+		if ($this->formModel->render() === false)
+		{
+			return;
+		}
 
 		// Set back to original input so we only show the requested elements
 		$input->set('elementid', $elids);

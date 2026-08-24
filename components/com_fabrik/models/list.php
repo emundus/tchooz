@@ -3064,6 +3064,21 @@ class FabrikFEModelList extends FormModel
 
 			$els = $this->getElements('filtername');
 
+			// Security fix: build a whitelist of the CONCAT(...)/CONCAT_WS(...) order-by
+			// expressions our own elements can legitimately generate (e.g. db-join elements
+			// via getOrderByName()). Used below so that a request value merely *containing*
+			// "CONCAT(" can no longer bypass sanitisation and be spliced straight into
+			// ORDER BY - previously an unauthenticated, GET-reachable SQL injection via
+			// e.g. ?order_by=<injected SQL>CONCAT(<injected SQL> (see comment at the old
+			// bypass check below, restored here for context: "$$$ hugh - getOrderByName can
+			// return a CONCAT, ie join element ... we need to test for this twice").
+			$validConcatOrderBys = array();
+
+			foreach ($els as $elementModel)
+			{
+				$validConcatOrderBys[] = $elementModel->getOrderByName();
+			}
+
 			if (!empty($orderBys))
 			{
 				$bits = array();
@@ -3121,12 +3136,25 @@ class FabrikFEModelList extends FormModel
 								$this->orderDirs[] = $dir;
 							}
 						}
-						else
+						elseif (in_array($orderByRaw, $validConcatOrderBys, true))
 						{
-							// If it was a CONCAT(), just add it with no other checks or processing
+							// Security fix: it contains CONCAT(/CONCAT_WS(, but ONLY use it
+							// unsanitised if it's an exact match for a CONCAT(...) expression
+							// one of this list's own elements actually generates - never for
+							// arbitrary request text. Previously ANY value containing that
+							// substring was added "with no other checks or processing",
+							// which let an attacker splice raw SQL into ORDER BY.
 							$bits[] = " $orderByRaw $dir";
 							$this->orderEls[] = $orderByRaw;
 							$this->orderDirs[] = $dir;
+						}
+						else
+						{
+							// Claims to be a CONCAT(...) order-by but doesn't match anything
+							// we generated ourselves - reject it rather than trust it. Silently
+							// skipping this entry is consistent with how other filter/order
+							// input is already validated (ASC/DESC check above, safeColName()
+							// elsewhere) rather than throwing on malformed request data.
 						}
 					}
 
@@ -5680,7 +5708,24 @@ class FabrikFEModelList extends FormModel
 			{
 				if ($this->filters['condition'][$i] == 'exists')
 				{
-					$this->filters['sqlCond'][$i] = 'EXISTS (' . $value . ')';
+					// Security fix: this branch splices $value straight into "EXISTS (...)"
+					// as a raw SQL subquery - by design, since this is the admin-authored
+					// prefilter mechanism for arbitrary EXISTS() conditions, not a per-
+					// element filter. It never goes through validateCondition()/
+					// getFilterValue() at all. But the value CAN contain {placeholder}
+					// tokens resolved from request/form data (see $w->replaceRequest()/
+					// parseMessageForPlaceHolder() above), so re-resolve here with
+					// forSql=true, so any substituted request/row data becomes a safe,
+					// quoted SQL literal instead of text spliced straight into the query -
+					// same rationale as the forEval fixes elsewhere in this codebase, but
+					// for a raw-SQL sink (see Worker.php's $forSql param docblock, which
+					// explicitly names "spliced into a raw SQL string/WHERE clause" as the
+					// use case).
+					$existsValue = $this->filters['value'][$i];
+					$w->replaceRequest($existsValue);
+					$existsValue = $this->prefilterParse($existsValue);
+					$existsValue = $w->parseMessageForPlaceHolder($existsValue, null, true, true, null, false, false, true);
+					$this->filters['sqlCond'][$i] = 'EXISTS (' . $existsValue . ')';
 				}
 
 				continue;
@@ -5740,7 +5785,14 @@ class FabrikFEModelList extends FormModel
 				{
 					foreach ($value as &$v)
 					{
-						$v = $word_start . $v . $word_end;
+						// Security fix: $word_start/$word_end embed literal double-quotes to
+						// build the SQL string boundary manually, but $v itself was never
+						// escaped before being spliced between them - a quote or backslash
+						// in $v could break out of that string. Use $db->escape() (the
+						// driver's real_escape_string-based escaping - see the "why not
+						// addslashes()" note near line 5802 below) rather than addslashes(),
+						// which is not charset-safe.
+						$v = $word_start . $db->escape($v) . $word_end;
 					}
 					if (strtoupper($condition) === 'REGEXP')
 					{
@@ -5750,7 +5802,8 @@ class FabrikFEModelList extends FormModel
 				}
 				else
 				{
-					$value = $word_start . $value . $word_end;
+					// Security fix: see $db->escape() comment in the array branch above.
+					$value = $word_start . $db->escape($value) . $word_end;
 					if (strtoupper($condition) === 'REGEXP')
 					{
 						// $$$ 15/11/2012 - moved from before getFilterValue() to after as otherwise date filters in querystrings created wonky query
@@ -5764,7 +5817,17 @@ class FabrikFEModelList extends FormModel
 				if (strtoupper($condition) === 'REGEXP')
 				{
 					// $$$ 15/11/2012 - moved from before getFilterValue() to after as otherwise date filters in querystrings created wonky query
-					$value = 'LOWER(' . $db->q($value, false) . ')';
+					// Security fix: $db->q($text, $escape) with $escape === false skips
+					// escaping entirely (Joomla\Database\DatabaseDriver::quote() just
+					// returns "'" . $text . "'" - see DatabaseDriver.php) - it does NOT mean
+					// "already escaped, safe to reuse". getFilterValue() has no case for
+					// REGEXP, so $value reaching here is unescaped for 'normal' (non-
+					// querystring) filters, where nothing upstream applies addslashes()
+					// either - i.e. this was a real SQL injection, same class as the
+					// full_words_only branch above. Use the default $escape = true so
+					// $db->q() actually calls the driver's real_escape_string()-based
+					// escape() before quoting.
+					$value = 'LOWER(' . $db->q($value) . ')';
 				}
 
 			}
