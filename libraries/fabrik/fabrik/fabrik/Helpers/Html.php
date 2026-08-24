@@ -3302,6 +3302,12 @@ EOT;
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
+		// The HTTP method token is technically case-sensitive (RFC 7230) and PHP passes through
+		// whatever the front-end server received without normalising it, so a non-conforming
+		// client/proxy sending e.g. "get" instead of "GET" must not slip past checks below that
+		// are keyed on the method.
+		$method = strtoupper($_SERVER['REQUEST_METHOD'] ?? '');
+
 		do {
 			// Make sure we are in Site or Admin
 			if (empty($client)) break;
@@ -3324,7 +3330,7 @@ EOT;
 			// swaps the expected JSON/partial response for the site's home page HTML) that's worse
 			// than useless. Replicate the check manually so a bad/expired token just cleanly falls
 			// through to this function's own 404, instead of Joomla silently redirecting home.
-			if (!in_array($_SERVER['REQUEST_METHOD'], ['GET', 'HEAD'], true) || $requireToken) {
+			if (!in_array($method, ['GET', 'HEAD'], true) || $requireToken) {
 				$formToken = Session::getFormToken();
 
 				// Header-based token first: easier to spot in devtools (Network > Headers) than the
@@ -3347,9 +3353,11 @@ EOT;
 				if (!$tokenOk) break;
 			}
 
-			// Validate Content-Type for POST requests
-			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-				$contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+			// Validate Content-Type for POST requests. Media types are case-insensitive
+			// (RFC 2045 5.1), so compare lower-cased rather than trusting the client to send
+			// the canonical lower-case form.
+			if ($method === 'POST') {
+				$contentType = strtolower($_SERVER['CONTENT_TYPE'] ?? '');
 				if (strpos($contentType, 'application/x-www-form-urlencoded') === false
 					&& strpos($contentType, 'multipart/form-data') === false) {
 					break;
@@ -3357,14 +3365,21 @@ EOT;
 			}
 
 			// Validate Referer is from our own domain (HTTP_HOST, not SERVER_NAME, which can
-			// diverge from the real hostname depending on vhost config)
+			// diverge from the real hostname depending on vhost config). Only meaningful for
+			// non-GET/token-required requests - a plain GET page view routinely arrives with a
+			// foreign Referer (search engines, social apps like Facebook's in-app browser, any
+			// site linking in) and rejecting those 404s ordinary inbound traffic.
+			$checkReferer = !in_array($method, ['GET', 'HEAD'], true) || $requireToken;
 			$httpReferer = $_SERVER['HTTP_REFERER'] ?? '';
-			$serverName  = strtok($_SERVER['HTTP_HOST'] ?? '', ':');
-			if (!empty($httpReferer) && !empty($serverName)) {
-				$refererHost = parse_url($httpReferer, PHP_URL_HOST);
-				if ($refererHost !== $serverName) {
-					// Check if we are being referred from one of our payment gateways
-					if (!in_array($refererHost, ['checkout.stripe.com', 'www.sandbox.paypal.com', 'www.paypal.com'])) break;
+			$serverName  = strtolower(strtok($_SERVER['HTTP_HOST'] ?? '', ':'));
+			if ($checkReferer && !empty($httpReferer) && !empty($serverName)) {
+				// Hostnames are case-insensitive (RFC 3986); parse_url() does not lowercase them,
+				// and neither Referer nor Host is guaranteed to arrive in the same case as the other.
+				$refererHost = strtolower((string) parse_url($httpReferer, PHP_URL_HOST));
+				// Allow a mismatch only when it's one of our payment gateways calling back
+				$paymentGateways = ['checkout.stripe.com', 'www.sandbox.paypal.com', 'www.paypal.com'];
+				if ($refererHost !== $serverName && !in_array($refererHost, $paymentGateways)) {
+					break;
 				}
 			}
 
