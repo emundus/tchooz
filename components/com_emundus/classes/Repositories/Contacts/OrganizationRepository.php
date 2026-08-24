@@ -42,7 +42,7 @@ if (!class_exists('ContactOrganizationRepository'))
 
 require_once JPATH_SITE . '/components/com_emundus/classes/Traits/TraitTable.php';
 
-#[TableAttribute(table: '#__emundus_organizations', columns: [
+#[TableAttribute(table: '#__emundus_organizations', alias: 'organizations', columns: [
 	'id',
 	'name',
 	'description',
@@ -58,18 +58,6 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 	use TraitTable;
 
 	private OrganizationFactory $factory;
-
-	private const COLUMNS = [
-		't.id',
-		't.name',
-		't.description',
-		't.url_website',
-		't.published',
-		't.address',
-		't.identifier_code',
-		't.logo',
-		't.status'
-	];
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
@@ -107,7 +95,7 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 			$organization_object->status = $entity->getStatus()->value;
 		}
 
-		// insertObject/updateObject quote a PHP false as '', which the column rejects.
+		// The column is an integer: a raw false would be quoted as an empty string.
 		$organization_object->published = (int) $entity->isPublished();
 		//
 
@@ -385,7 +373,7 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 		$search = '',
 		$lim = 25,
 		$page = 0,
-		$order_by = 't.id',
+		$order_by = 'id',
 		$published = null,
 		$ids = [],
 		$identifier_code = null,
@@ -419,21 +407,27 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 			$sort = 'DESC';
 		}
 
+		// Some callers may still use the conventional 't.' alias prefix, strip it so the alias is applied once below
+		if (str_starts_with($order_by, 't.'))
+		{
+			$order_by = substr($order_by, 2);
+		}
+
 		$query = $this->db->createQuery();
 
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->leftJoin($this->db->quoteName('#__emundus_organizations_files', 'eof') . ' ON ' . $this->db->quoteName('eof.organization_id') . ' = ' . $this->db->quoteName('t.id'));
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->getTableName(self::class), $this->alias))
+			->leftJoin($this->db->quoteName('#__emundus_organizations_files', 'eof') . ' ON ' . $this->db->quoteName('eof.organization_id') . ' = ' . $this->db->quoteName($this->alias . '.id'));
 
 		// Apply filters if needed
 		if (!empty($search))
 		{
 			$search     = $this->db->quote('%' . $this->db->escape($search, true) . '%', false);
 			$conditions = [
-				$this->db->quoteName('t.name') . ' LIKE ' . $search,
-				$this->db->quoteName('t.description') . ' LIKE ' . $search,
-				$this->db->quoteName('t.url_website') . ' LIKE ' . $search,
-				$this->db->quoteName('t.identifier_code') . ' LIKE ' . $search,
+				$this->db->quoteName($this->alias . '.name') . ' LIKE ' . $search,
+				$this->db->quoteName($this->alias . '.description') . ' LIKE ' . $search,
+				$this->db->quoteName($this->alias . '.url_website') . ' LIKE ' . $search,
+				$this->db->quoteName($this->alias . '.identifier_code') . ' LIKE ' . $search,
 			];
 			$query->where('(' . implode(' OR ', $conditions) . ')');
 		}
@@ -441,29 +435,30 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 		if (!empty($published) && $published !== 'all')
 		{
 			$published = $published == 'true' ? 1 : 0;
-			$query->where($this->db->quoteName('t.published') . ' = ' . $published);
+			$query->where($this->db->quoteName($this->alias . '.published') . ' = ' . $published);
 		}
 
 		if (!empty($ids) && is_array($ids))
 		{
-			$query->where($this->db->quoteName('t.id') . ' IN (' . implode(',', array_map('intval', $ids)) . ')');
+			$query->where($this->db->quoteName($this->alias . '.id') . ' IN (' . implode(',', array_map('intval', $ids)) . ')');
 		}
 
 		if (!empty($identifier_code))
 		{
 			if ($identifier_code === 'no_identifier_code')
 			{
-				$query->having('(t.identifier_code IS NULL OR t.identifier_code = "")');
+				$query->having('(' . $this->alias . '.identifier_code IS NULL OR ' . $this->alias . '.identifier_code = "")');
 			}
 			else
 			{
-				$query->where('t.identifier_code = ' . $this->db->quote($identifier_code));
+				$query->where($this->alias . '.identifier_code = ' . $this->db->quote($identifier_code));
 			}
 		}
 
 		// Apply orders and limits if needed
-		$query->group('t.id')
-			->order($order_by . ' ' . $sort);
+		$query->group($this->alias . '.id')
+			->order($this->alias . '.' . $order_by . ' ' . $sort);
+
 
 		try
 		{
@@ -584,9 +579,10 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 		$organization_entity = null;
 
 		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->getTableName(self::class), $this->alias))
 			->where($this->db->quoteName('id') . ' = ' . $id);
+
 
 		$this->db->setQuery($query);
 		$organization = $this->db->loadAssoc();
@@ -609,9 +605,9 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 		}
 
 		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->where($this->db->quoteName('t.name') . ' = ' . $this->db->quote($name));
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->getTableName(self::class), $this->alias))
+			->where($this->db->quoteName($this->alias . '.name') . ' = ' . $this->db->quote($name));
 
 		$this->db->setQuery($query);
 		$organization = $this->db->loadAssoc();
@@ -634,9 +630,9 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 		}
 
 		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->where($this->db->quoteName('t.identifier_code') . ' = ' . $this->db->quote($identifier_code));
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->getTableName(self::class), $this->alias))
+			->where($this->db->quoteName($this->alias . '.identifier_code') . ' = ' . $this->db->quote($identifier_code));
 
 		$this->db->setQuery($query);
 		$organization = $this->db->loadAssoc();
@@ -654,8 +650,8 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 		$ids = array_filter($ids, fn($id) => !empty($id));
 
 		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->getTableName(self::class), $this->alias))
 			->where($this->db->quoteName('id') . ' IN (' . implode(',', array_map('intval', $ids)) . ')');
 
 		$this->db->setQuery($query);

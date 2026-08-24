@@ -256,14 +256,14 @@ class EmundusControllerCrc extends EmundusController
 								Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_EMAIL'),
 								'',
 								ListDisplayEnum::TABLE,
-								't.email',
+								'email',
 								$contact->getEmail()
 							),
 							new AdditionalColumn(
 								Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_EMAIL'),
 								'',
 								ListDisplayEnum::CARDS,
-								't.email',
+								'email',
 								$email_link
 							),
 							new AdditionalColumn(
@@ -282,7 +282,7 @@ class EmundusControllerCrc extends EmundusController
 								Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_STATUS'),
 								'tw-mr-2 tw-h-max tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-text-white ' . $status->getColorClass(),
 								ListDisplayEnum::CARDS,
-								't.status',
+								'status',
 								$status->getLabel()
 							);
 						}
@@ -1057,7 +1057,7 @@ class EmundusControllerCrc extends EmundusController
 			return;
 		}
 
-		$order_by = $this->input->getString('order_by', 't.id');
+		$order_by = $this->input->getString('order_by', 'id');
 		$sort     = $this->input->getString('sort', '');
 		$search   = $this->input->getString('recherche', '');
 		$lim      = $this->input->getInt('lim', 0);
@@ -1178,7 +1178,7 @@ class EmundusControllerCrc extends EmundusController
 							Text::_('COM_EMUNDUS_ONBOARD_ADD_ORG_IDENTIFIER_CODE'),
 							'',
 							ListDisplayEnum::TABLE,
-							't.identifier_code',
+							'identifier_code',
 							$organization->getIdentifierCode() ?? ''
 						),
 						new AdditionalColumn(
@@ -1205,7 +1205,7 @@ class EmundusControllerCrc extends EmundusController
 							Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_STATUS'),
 							'tw-mr-2 tw-h-max tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-text-white ' . $status->getColorClass(),
 							ListDisplayEnum::CARDS,
-							't.status',
+							'status',
 							$status->getLabel()
 						);
 					}
@@ -1792,7 +1792,7 @@ class EmundusControllerCrc extends EmundusController
 			$response['status']  = true;
 			$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_CRC_EXPORT_CSV_ORGANIZATIONS_SUCCESS');
 
-			$organizations = $this->organizationRepository->getAllOrganizations('ASC', '', 0, 0, 't.id', null, $ids);
+			$organizations = $this->organizationRepository->getAllOrganizations('ASC', '', 0, 0, 'id', null, $ids);
 
 			$excel_filename = 'export_organizations_' . date('Ymd_His') . '.csv';
 			$excel_filepath = JPATH_SITE . '/tmp/' . $excel_filename;
