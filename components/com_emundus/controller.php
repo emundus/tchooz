@@ -38,6 +38,7 @@ use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Export\ExportRepository;
 use Tchooz\Services\FileSecurityService;
+use Tchooz\Services\Import\ImportModelGenerator;
 use Tchooz\Services\PublicAccess\PublicApplicationGuard;
 use Tchooz\Services\Security\AntiBotChallenge;
 use Tchooz\Services\Security\ClientIpResolver;
@@ -1822,6 +1823,8 @@ class EmundusController extends JControllerLegacy
 			'doc'  => 'application/msword',
 			'rtf'  => 'application/rtf',
 			'xls'  => 'application/vnd.ms-excel',
+			'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+			'csv'  => 'text/csv',
 			'ppt'  => 'application/vnd.ms-powerpoint',
 
 			// open office
@@ -1864,6 +1867,16 @@ class EmundusController extends JControllerLegacy
 			$exportRepository = new ExportRepository();
 			$export = $exportRepository->getByFilenameAndUser($url, $user->id);
 			if(empty($export) || $export->getCreatedBy()->id != $user->id || !EmundusHelperAccess::asPartnerAccessLevel($user->id))
+			{
+				die (Text::_('ACCESS_DENIED'));
+			}
+		}
+		// Import models describe referential data (contacts, organizations, ...), so they
+		// are generated inside a directory the .htaccess routes here rather than served
+		// statically, and only coordinators may download them.
+		elseif (str_starts_with($url, ImportModelGenerator::MODEL_DIRECTORY))
+		{
+			if (str_contains($url, '..') || !EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
 			{
 				die (Text::_('ACCESS_DENIED'));
 			}

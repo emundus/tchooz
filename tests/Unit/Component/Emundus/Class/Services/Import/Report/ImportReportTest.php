@@ -192,4 +192,40 @@ class ImportReportTest extends TestCase
 		$this->assertSame('failed',     $out['rows'][1]['status']);
 		$this->assertSame(['oops'],     $out['rows'][1]['reasons']);
 	}
+
+	// --------------------------------------------------------------------
+	// Non-blocking warnings carried from the context
+	// --------------------------------------------------------------------
+
+	public function testContextWarningsArePropagatedToTheRow(): void
+	{
+		$context = new ImportContext('Sheet A', 5);
+		$context->addWarning('label mismatch');
+
+		$report = new ImportReport();
+		$report->add($context, RowStatusEnum::CREATED);
+
+		$this->assertSame(['label mismatch'], $report->getRows()[0]->warnings, 'Row should carry the context warnings');
+		$this->assertSame(['label mismatch'], $report->toArray()['rows'][0]['warnings'], 'toArray should expose the warnings');
+	}
+
+	public function testSummaryCountsRowsThatCarryWarnings(): void
+	{
+		$withWarning = new ImportContext('Sheet A', 2);
+		$withWarning->addWarning('check this');
+
+		$report = new ImportReport();
+		$report->add($withWarning, RowStatusEnum::CREATED);
+		$report->add($this->ctx->withRow(3), RowStatusEnum::CREATED);   // no warning
+
+		$this->assertSame(1, $report->toArray()['summary']['warnings'], 'Summary should count only rows with warnings');
+	}
+
+	public function testRowWithoutWarningsExposesEmptyArray(): void
+	{
+		$report = new ImportReport();
+		$report->add($this->ctx, RowStatusEnum::CREATED);
+
+		$this->assertSame([], $report->toArray()['rows'][0]['warnings'], 'A row without warnings must expose an empty list');
+	}
 }

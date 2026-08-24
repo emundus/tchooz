@@ -9,6 +9,7 @@
 namespace Tchooz\Services\Import\Validation;
 
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\Import\BooleanValueEnum;
 use Tchooz\Enums\Import\FieldTypeEnum;
 use Tchooz\Services\DateParser;
 use Tchooz\Services\Import\Mapping\FieldDescriptor;
@@ -39,18 +40,6 @@ final class TypeValidator
 	];
 
 	/**
-	 * Truthy/falsy tokens accepted for FieldTypeEnum::BOOLEAN.
-	 * Comparison is case-insensitive after trim().
-	 */
-	private const BOOLEAN_TOKENS = [
-		'true', 'false',
-		'1', '0',
-		'yes', 'no',
-		'oui', 'non',
-		'y',   'n',
-	];
-
-	/**
 	 * @return string[] errors (empty array = field is valid)
 	 */
 	public function validate(mixed $value, FieldDescriptor $descriptor): array
@@ -76,6 +65,7 @@ final class TypeValidator
 			FieldTypeEnum::EMAIL   => $this->validateEmail($value, $descriptor),
 			FieldTypeEnum::URL     => $this->validateUrl($value, $descriptor),
 			FieldTypeEnum::ENUM    => $this->validateEnum($value, $descriptor),
+			FieldTypeEnum::REFERENTIAL => $this->validateReferential($value, $descriptor),
 			FieldTypeEnum::STRING  => $this->validateString($value, $descriptor),
 		};
 	}
@@ -108,13 +98,7 @@ final class TypeValidator
 
 	private function validateBoolean(mixed $value, FieldDescriptor $descriptor): array
 	{
-		if (is_bool($value))
-		{
-			return [];
-		}
-
-		$token = strtolower(trim((string) $value));
-		if (in_array($token, self::BOOLEAN_TOKENS, true))
+		if (BooleanValueEnum::tryFromValue($value) !== null)
 		{
 			return [];
 		}
@@ -170,6 +154,37 @@ final class TypeValidator
 			$value,
 			implode(', ', $allowed)
 		)];
+	}
+
+	private function validateReferential(mixed $value, FieldDescriptor $descriptor): array
+	{
+		$referential = $descriptor->referential;
+		if ($referential === null)
+		{
+			return [];
+		}
+
+		$str = trim((string) $value);
+
+		if ($referential->resolve($str) !== null)
+		{
+			return [];
+		}
+
+		if ($referential->isAmbiguousValue($str))
+		{
+			$key = 'COM_EMUNDUS_IMPORT_VALIDATION_REFERENTIAL_VALUE_LABEL_COLLISION';
+		}
+		elseif ($referential->isAmbiguousLabel($str))
+		{
+			$key = 'COM_EMUNDUS_IMPORT_VALIDATION_AMBIGUOUS_REFERENTIAL_VALUE';
+		}
+		else
+		{
+			$key = 'COM_EMUNDUS_IMPORT_VALIDATION_INVALID_REFERENTIAL_VALUE';
+		}
+
+		return [$this->message($key, $descriptor, $value, $referential->getLabel())];
 	}
 
 	private function validateString(mixed $value, FieldDescriptor $descriptor): array

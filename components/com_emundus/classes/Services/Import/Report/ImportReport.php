@@ -40,7 +40,7 @@ final class ImportReport
 	 */
 	public function add(ImportContext $context, RowStatusEnum $status, array $reasons = []): void
 	{
-		$this->rows[] = new RowResult($context->sourceName, $context->rowNumber, $status, $reasons);
+		$this->rows[] = new RowResult($context->sourceName, $context->rowNumber, $status, $reasons, $context->getWarnings());
 		$this->counts[$status->value] = ($this->counts[$status->value] ?? 0) + 1;
 	}
 
@@ -138,6 +138,7 @@ final class ImportReport
 
 		$summary['unknown_headers'] = $this->unknownHeaders;
 		$summary['global_errors']   = $this->globalErrors;
+		$summary['warnings']        = count(array_filter($this->rows, static fn (RowResult $r) => $r->warnings !== []));
 
 		return [
 			'summary' => $summary,

@@ -93,6 +93,9 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 			$contact_object->status = VerifiedStatusEnum::TO_BE_VERIFIED->value;
 		}
 
+		// insertObject/updateObject quote a PHP false as '', which the column rejects.
+		$contact_object->published = (int) $entity->isPublished();
+
 		if (empty($entity->getId()))
 		{
 			$contact_object->user_id = empty($contact_object->user_id) ? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserByUsername($contact_object->email)->id : $contact_object->user_id;
