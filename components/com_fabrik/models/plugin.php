@@ -767,6 +767,12 @@ class FabrikPlugin extends CMSPlugin
 	 */
 	public function ajax_tables()
 	{
+		//Allow for backend only
+		if (!Factory::getApplication()->isClient('administrator')) {
+			header('HTTP/1.1 403 Forbidden');
+			jexit(Text::_('JERROR_ALERTNOAUTHOR').' F1');
+		}
+
 		$input           = $this->app->getInput();
 		$cid             = $input->getInt('cid', -1);
 		$rows            = array();

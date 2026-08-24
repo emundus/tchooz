@@ -44,7 +44,7 @@ class FabrikControllerPlugin extends BaseController
 
 	public function pluginAjax()
 	{
-		Html::validateRequest($this->taskMap);
+		Html::validateRequest($this->taskMap, true);
 		$app = Factory::getApplication();
 		$input = $app->getInput();
 		$plugin = $input->get('plugin', '');
@@ -79,7 +79,7 @@ class FabrikControllerPlugin extends BaseController
 
 	public function userAjax()
 	{
-		Html::validateRequest($this->taskMap);
+		Html::validateRequest($this->taskMap, true);
 		$db = FabrikWorker::getDbo();
 		require_once COM_FABRIK_FRONTEND . '/user_ajax.php';
 		$app = Factory::getApplication();

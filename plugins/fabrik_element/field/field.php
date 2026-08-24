@@ -15,6 +15,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Profiler\Profiler;
 use Joomla\CMS\Helper\MediaHelper;
+use Joomla\CMS\Session\Session;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\String\StringHelper;
 
@@ -744,7 +745,8 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 			'index.php?option=com_' . $this->package .
 			'&amp;task=plugin.pluginAjax&amp;plugin=field&amp;method=ajax_renderQRCode&amp;g=element' .
 			'&amp;format=' . $format . '&amp;element_id=' . $elementId . '&amp;formid=' . $formId .
-			'&amp;rowid=' . $rowId . '&amp;repeatcount=0' . $extraParams;
+			'&amp;rowid=' . $rowId . '&amp;repeatcount=0' . $extraParams .
+			'&amp;' . Session::getFormToken() . '=1';
 
 		$layout = $this->getLayout('qr');
 		$displayData = new stdClass;

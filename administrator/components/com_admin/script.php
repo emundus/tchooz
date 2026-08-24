@@ -2501,8 +2501,6 @@ class JoomlaInstallerScript
             '/administrator/manifests/files/filepatcher.xml',
             '/filepatcher.php',
             '/filepatcher.xml',
-            '/LICENSE',
-            '/README.md',
         ];
 
         $folders = [

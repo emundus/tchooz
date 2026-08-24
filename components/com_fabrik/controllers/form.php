@@ -80,6 +80,11 @@ class FabrikControllerForm extends BaseController
 	 */
 	public function inlineedit()
 	{
+		// Security fix: this action had no CSRF/session-token gate at all, unlike every other
+		// state-changing/data-exposing action in this controller (display(), process(),
+		// ajax_validate(), savepage(), delete()).
+		Html::validateRequest($this->taskMap);
+
 		$model = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel('FormInlineEdit', 'FabrikFEModel');
 		$model->render();
 	}

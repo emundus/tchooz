@@ -113,6 +113,20 @@ class PlgFabrik_ListOrder extends PlgFabrik_List
 	 */
 	public function onAjaxReorder()
 	{
+		// Security fix: this ajax handler performs the actual row-reorder UPDATEs, but never
+		// checked canUse() (the plugin's own order_access ACL param) - only
+		// onLoadJavascriptInstance() did, which merely decides whether to load the drag-and-
+		// drop UI in the browser. The underlying CSRF/session-token requirement on this ajax
+		// call is already enforced centrally (controllers/plugin.php's pluginAjax() calls
+		// validateRequest() with requireToken=true), but that only proves the request is
+		// same-origin - it says nothing about whether this particular user is allowed to
+		// reorder this particular list. Any user able to load the page (and so obtain a valid
+		// token) could otherwise call this directly regardless of the configured ACL level.
+		if (!$this->canUse())
+		{
+			return;
+		}
+
 		// Get list model
 		/** @var FabrikFEModelList $model */
 		$model = BaseDatabaseModel::getInstance('list', 'FabrikFEModel');

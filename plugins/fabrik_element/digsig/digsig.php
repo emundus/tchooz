@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Profiler\Profiler;
+use Joomla\CMS\Session\Session;
 use Joomla\Utilities\ArrayHelper;
 
 jimport('joomla.application.component.model');
@@ -96,7 +97,8 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 					. 'index.php?option=com_' . $this->package
 					. '&amp;task=plugin.pluginAjax&amp;plugin=digsig&g=element&amp;method=ajax_signature_to_image&amp;'
 					. 'format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId
-					. '&amp;repeatcount=0&amp;pdf_secret=' . $pdfSecret;
+					. '&amp;repeatcount=0&amp;pdf_secret=' . $pdfSecret
+					. '&amp;' . Session::getFormToken() . '=1';
 
 				$layout = new FileLayout('fabrik-element-digsig-details-pdf', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
 			}
@@ -170,7 +172,8 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 		$link = COM_FABRIK_LIVESITE
 			. 'index.php?option=com_' . $this->package . '&amp;task=plugin.pluginAjax&amp;plugin=digsig&amp;method=ajax_signature_to_image'
 			. '&amp;g=element'
-			. '&ampformat=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0';
+			. '&amp;format=raw&amp;element_id=' . $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0'
+			. '&amp;' . Session::getFormToken() . '=1';
 
 		$layoutData         = new stdClass;
 		$layoutData->width  = $params->get('digsig_list_width', '200');

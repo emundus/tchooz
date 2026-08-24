@@ -6,6 +6,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\api\Api;
 use Tchooz\Entities\Automation\ActionTargetEntity;
+use Tchooz\Entities\Payment\TransactionStatus;
 use Tchooz\Entities\Reference\ExternalReferenceEntity;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Mapping\AssociationDefinition;
@@ -201,7 +202,7 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 						{
 							// find last transaction attached to this user with this step type
 							$transactionRepository = new TransactionRepository();
-							$transactions          = $transactionRepository->get(['step_id' => $stepIds], 1, 1, '*', 'id DESC');
+							$transactions          = $transactionRepository->get(['step_id' => $stepIds, 'status' => TransactionStatus::CONFIRMED->value, 'fnum' => $context->getFile()], 1, 1, '*', 'id DESC');
 
 							if (!empty($transactions))
 							{
