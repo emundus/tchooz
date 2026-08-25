@@ -409,7 +409,7 @@ class EmundusControllerWebhook extends BaseController
 			$query->clear()
 				->select('COUNT(id)')
 				->from($db->quoteName('#__emundus_uploads'))
-				->where($db->quoteName('fnum') . ' LIKE ' . $webhookDataApplication["fnum"])
+				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($webhookDataApplication["fnum"]))
 				->andWhere($db->quoteName('attachment_id') . ' = ' . $webhookDataApplication['aid']);
 			$db->setQuery($query);
 			$nb = $db->loadResult();

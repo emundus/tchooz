@@ -7104,7 +7104,7 @@ class EmundusModelApplication extends ListModel
 			$query->clear()
 				->select('applicant_id')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
-				->where($this->_db->quoteName('fnum') . ' LIKE ' . $fnum);
+				->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
 			$this->_db->setQuery($query);
 			$aid = $this->_db->loadResult();
 
