@@ -65,6 +65,8 @@ export default {
 					label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_WORLDLINE_SETUP_CHECKOUT_SUBDOMAIN',
 					helptext: 'COM_EMUNDUS_SETTINGS_INTEGRATION_WORLDLINE_SETUP_CHECKOUT_SUBDOMAIN_HELP',
 					displayed: true,
+					// Falls back to "payment" server-side when left empty.
+					optional: true,
 					configEntry: 'authentication',
 				},
 				{
@@ -75,7 +77,6 @@ export default {
 					label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_WORLDLINE_SETUP_WEBHOOK_KEY_ID',
 					helptext: '',
 					displayed: true,
-					optional: true,
 					configEntry: 'authentication',
 				},
 				{
@@ -86,7 +87,6 @@ export default {
 					label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_WORLDLINE_SETUP_WEBHOOK_SECRET',
 					helptext: '',
 					displayed: true,
-					optional: true,
 					configEntry: 'authentication',
 				},
 			],
