@@ -133,6 +133,13 @@ class ExcelService extends Export implements ExportInterface
 				throw new \Exception('Forbidden export path.');
 			}
 
+			// A pivot splits the repeated values of a column back into one row each, so it needs an
+			// aggregate it can cut without ambiguity. fillCsv() puts the readable separator back.
+			if ($this->options->getPivotScope() !== null && $this->options->getPivotTargetId() !== null)
+			{
+				$this->setValueSeparator(\EmundusHelperFabrik::VALUE_SEPARATOR_MARKER);
+			}
+
 			$metadata = [];
 			if (!empty($task))
 			{
@@ -273,6 +280,9 @@ class ExcelService extends Export implements ExportInterface
 
 				$processStartTime = microtime(true);
 				$atLeastOneProcessed = false;
+				// Stopping halfway is only an option when something can pick the export up again: the
+				// state file we persist below, and a task to resume it.
+				$canYield = !empty($task) || $this->isAsyncExportAllowed();
 
 				// Cancel check
 				if (empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId()))
@@ -338,7 +348,7 @@ class ExcelService extends Export implements ExportInterface
 				{
 					if (
 						(empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId())) ||
-						($atLeastOneProcessed && (microtime(true) - $processStartTime) >= self::TIME_LIMIT)
+						($canYield && $atLeastOneProcessed && (microtime(true) - $processStartTime) >= self::TIME_LIMIT)
 					)
 					{
 						// Save state EXACTLY where we are
@@ -388,7 +398,7 @@ class ExcelService extends Export implements ExportInterface
 						{
 							if (
 								(empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId())) ||
-								($atLeastOneProcessed && (microtime(true) - $processStartTime) >= self::TIME_LIMIT)
+								($canYield && $atLeastOneProcessed && (microtime(true) - $processStartTime) >= self::TIME_LIMIT)
 							)
 							{
 								// Save state EXACTLY where we are
@@ -443,7 +453,7 @@ class ExcelService extends Export implements ExportInterface
 						{
 							if (
 								(empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId())) ||
-								($atLeastOneProcessed && (microtime(true) - $processStartTime) >= self::TIME_LIMIT)
+								($canYield && $atLeastOneProcessed && (microtime(true) - $processStartTime) >= self::TIME_LIMIT)
 							)
 							{
 								// Save state EXACTLY where we are
@@ -537,7 +547,13 @@ class ExcelService extends Export implements ExportInterface
 					// `$elementFilters` from earlier getData() calls and would narrow the
 					// pivot lookups (see ExcelPivotProcessor doc).
 					$pivotProcessor = new ExcelPivotProcessor();
-					$json['files']  = $pivotProcessor->process($json['files'], $json['headers'], $pivotScope, $pivotTargetId);
+					$json['files']  = $pivotProcessor->process(
+						$json['files'],
+						$json['headers'],
+						$pivotScope,
+						$pivotTargetId,
+						$this->valueSeparator ?? \EmundusHelperFabrik::VALUE_SEPARATOR
+					);
 				}
 
 				// ----------------------------
@@ -658,7 +674,13 @@ class ExcelService extends Export implements ExportInterface
 			$row = [];
 			foreach ($json['headers'] as $key => $label)
 			{
-				$row[] = $file[$key] ?? '';
+				// Any marker left here belongs to a column the pivot did not split: what stays is
+				// several values in one cell, which a human reads with the readable separator.
+				$row[] = str_replace(
+					\EmundusHelperFabrik::VALUE_SEPARATOR_MARKER,
+					\EmundusHelperFabrik::VALUE_SEPARATOR,
+					$file[$key] ?? ''
+				);
 			}
 
 			$inserted = fputcsv($handle, $row, '	');
