@@ -103,4 +103,25 @@ enum ConditionOperatorEnum: string
 			]
 		];
 	}
+
+	public function sqlOperator(): string
+	{
+		return match($this) {
+			self::EQUALS => '=',
+			self::NOT_EQUALS => '!=',
+			self::GREATER_THAN => '>',
+			self::GREATER_THAN_OR_EQUAL => '>=',
+			self::LESS_THAN => '<',
+			self::LESS_THAN_OR_EQUAL => '<=',
+			self::CONTAINS => 'LIKE',
+			self::NOT_CONTAINS => 'NOT LIKE',
+			self::IS_EMPTY => 'IS NULL',
+			self::IS_NOT_EMPTY => 'IS NOT NULL',
+		};
+	}
+
+	public function noValueNeeded(): bool
+	{
+		return in_array($this, [self::IS_EMPTY, self::IS_NOT_EMPTY]);
+	}
 }

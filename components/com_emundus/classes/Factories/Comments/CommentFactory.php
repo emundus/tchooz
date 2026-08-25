@@ -14,6 +14,7 @@ use DateTimeImmutable;
 use Exception;
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Comments\CommentEntity;
+use Tchooz\Enums\Comments\CommentTargetTypeEnum;
 use Tchooz\Factories\DBFactory;
 use Tchooz\Factories\EmundusFactory;
 
@@ -38,10 +39,21 @@ class CommentFactory extends EmundusFactory implements DBFactory
 			$createdAt = $this->parseDateTime($dbObject['date']) ?? new DateTime();
 			$updatedAt = $this->parseDateTime($dbObject['updated'] ?? null);
 
+			$targetType = $dbObject['target_type'] ?? '';
+			$targetId   = $dbObject['target_id'] ?? 0;
+
+			// Comments written before the target columns existed only carry the file they belong to, so the
+			// file is their target and its ccid the target id.
+			if (empty($targetType) && !empty($dbObject['fnum']))
+			{
+				$targetType = CommentTargetTypeEnum::APPLICATION_FILE;
+				$targetId   = empty($targetId) ? ($dbObject['ccid'] ?? 0) : $targetId;
+			}
+
 			$comment = new CommentEntity(
 				id: $dbObject['id'],
-				targetType: $dbObject['target_type'],
-				targetId: $dbObject['target_id'],
+				targetType: $targetType,
+				targetId: (int) $targetId,
 				content: $dbObject['comment_body'] ?? '',
 				createdBy: $dbObject['user_id'] ?? 0,
 				createdAt: $createdAt,
