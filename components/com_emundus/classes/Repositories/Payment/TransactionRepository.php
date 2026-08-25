@@ -369,7 +369,8 @@ class TransactionRepository extends EmundusRepository
 
 			if (!empty($old_data['status'])
 				&& $old_data['status'] !== $transaction->getStatus()->value
-				&& $transaction->getStatus() === TransactionStatus::CONFIRMED)
+				&& $transaction->getStatus()->isSuccessful()
+				&& !TransactionStatus::from($old_data['status'])->isSuccessful())
 			{
 				try
 				{
