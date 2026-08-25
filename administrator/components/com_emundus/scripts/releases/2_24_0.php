@@ -10,6 +10,8 @@
 
 namespace scripts;
 
+use EmundusHelperUpdate;
+use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterApplicationChoiceUpdateDefinition;
 use Tchooz\Entities\Emails\Providers\ChoiceCommentTagProvider;
 use Tchooz\Enums\Addons\AddonEnum;
@@ -125,6 +127,9 @@ class Release2_24_0Installer extends ReleaseInstaller
 
 			$this->initLanguagesFeature($query);
 
+			$this->createFavoriteFilesTable();
+			$this->registerFavoriteAddon();
+
 			$result['status'] = !in_array(false, $this->tasks, true);
 		}
 		catch (\Exception $e)
@@ -232,5 +237,85 @@ class Release2_24_0Installer extends ReleaseInstaller
 				\EmundusHelperUpdate::insertFalangTranslation(1, $languagesMenuId, 'menu', 'title', 'System translations');
 			}
 		}
+	}
+
+	/**
+	 * Personal favorites on application files: one row per (user, fnum).
+	 */
+	private function createFavoriteFilesTable(): void
+	{
+		$columns = [
+			[
+				'name'   => 'fnum',
+				'type'   => 'VARCHAR',
+				'length' => 28,
+				'null'   => 0,
+			],
+			[
+				'name'   => 'user_id',
+				'type'   => 'INT',
+				'length' => 11,
+				'null'   => 0,
+			],
+			[
+				'name' => 'created',
+				'type' => 'DATETIME',
+				'null' => 0,
+			]
+		];
+
+		$foreign_keys = [
+			[
+				'name'           => 'emundus_favorite_files_fnum_fk',
+				'from_column'    => 'fnum',
+				'ref_table'      => '#__emundus_campaign_candidature',
+				'ref_column'     => 'fnum',
+				'update_cascade' => true,
+				'delete_cascade' => true
+			],
+			[
+				'name'           => 'emundus_favorite_files_user_fk',
+				'from_column'    => 'user_id',
+				'ref_table'      => '#__emundus_users',
+				'ref_column'     => 'user_id',
+				'update_cascade' => true,
+				'delete_cascade' => true
+			]
+		];
+
+		// user_id first: the dominant query is "every favorite of user X" (the filter subquery),
+		// which this index prefix serves directly.
+		$unique_keys = [
+			[
+				'name'    => 'emundus_favorite_files_user_fnum',
+				'columns' => ['user_id', 'fnum']
+			]
+		];
+
+		$created       = EmundusHelperUpdate::createTable('jos_emundus_favorite_files', $columns, $foreign_keys, '', $unique_keys);
+		$this->tasks[] = $created['status'];
+
+		if ($created['status'])
+		{
+			$indexed       = EmundusHelperUpdate::addColumnIndex('jos_emundus_favorite_files', 'fnum');
+			$this->tasks[] = $indexed['status'];
+		}
+	}
+
+	/**
+	 * Registers favorites as a suggested, deactivated addon: the feature must never appear on an
+	 * instance that did not explicitly ask for it.
+	 */
+	private function registerFavoriteAddon(): void
+	{
+		$addonRepository = new AddonRepository();
+
+		if (!empty($addonRepository->getByName(AddonEnum::FAVORITE->value)))
+		{
+			return;
+		}
+
+		$addon         = new AddonEntity(AddonEnum::FAVORITE->value, false, false, true);
+		$this->tasks[] = $addonRepository->flush($addon);
 	}
 }

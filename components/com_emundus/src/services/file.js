@@ -2,7 +2,19 @@ import { FetchClient } from './fetchClient.js';
 
 const client = new FetchClient('files');
 const labelsClient = new FetchClient('labels');
+const favoritesClient = new FetchClient('favorites');
 export default {
+	async isFavorite(fnum) {
+		try {
+			const response = await favoritesClient.get('isfavorite', { fnum: fnum });
+			return response.status ? response.data.favorite : false;
+		} catch (e) {
+			return false;
+		}
+	},
+	async toggleFavorite(fnum) {
+		return await favoritesClient.post('togglefavorite', { fnum: fnum });
+	},
 	async getFnums() {
 		try {
 			return await client.get('getallfnums');

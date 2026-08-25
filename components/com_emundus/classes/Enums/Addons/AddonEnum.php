@@ -28,6 +28,8 @@ enum AddonEnum: string
 
 	case POLL = 'poll';
 
+	case FAVORITE = 'favorite';
+
 	public function getLabel(): string
 	{
 		return match ($this)
@@ -45,6 +47,7 @@ enum AddonEnum: string
 			self::BOOKING => Text::_('COM_EMUNDUS_ADDON_BOOKING'),
 			self::PUBLIC_SESSION => Text::_('COM_EMUNDUS_ADDONS_PUBLIC_SESSION'),
 			self::POLL => Text::_('COM_EMUNDUS_ADDON_POLL'),
+			self::FAVORITE => Text::_('COM_EMUNDUS_ADDON_FAVORITE'),
 		};
 	}
 
@@ -65,6 +68,7 @@ enum AddonEnum: string
 			self::BOOKING => Text::_('COM_EMUNDUS_ADDON_BOOKING_DESC'),
 			self::PUBLIC_SESSION => Text::_('COM_EMUNDUS_ADDONS_PUBLIC_SESSION_DESC'),
 			self::POLL => Text::_('COM_EMUNDUS_ADDON_POLL_DESC'),
+			self::FAVORITE => Text::_('COM_EMUNDUS_ADDON_FAVORITE_DESC'),
 		};
 	}
 
@@ -86,6 +90,7 @@ enum AddonEnum: string
 			self::BOOKING => 'event',
 			self::PUBLIC_SESSION => 'no_accounts',
 			self::POLL => 'voting_chip',
+			self::FAVORITE => 'favorite',
 		};
 	}
 }
