@@ -22,12 +22,15 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Actions\ActionRepository as AccessActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Favorite\FavoriteFileRepository;
 use Tchooz\Services\Reference\InternalReferenceService;
 
 /**
@@ -39,6 +42,8 @@ class EmundusViewFiles extends JViewLegacy
 {
 	private $app;
 	protected $user;
+
+	protected string $favorite_toggle = '';
 
 	protected $itemId;
 	protected $cfnum;
@@ -290,6 +295,19 @@ class EmundusViewFiles extends JViewLegacy
 						<span class="material-symbols-outlined tw-mr-1 -tw-ml-[15px]">chevron_left</span>
 						<span class="group-hover:tw-underline">' . Text::_('GO_BACK') . '</span>
 						</button>';
+					}
+
+					// 1b: the star lives in the action bar so it survives every tab of the file,
+					// unlike the candidate header which is dropped on Documents and Messagerie.
+					$addonRepository = new AddonRepository();
+					$favoriteAddon = $addonRepository->getByName(AddonEnum::FAVORITE->value);
+					if (!empty($fnum) && $fnum !== '0' && $favoriteAddon->isActivated())
+					{
+						$this->favorite_toggle = $h_files->createFavoriteToggle(
+							$fnum,
+							(new FavoriteFileRepository())->isFavorite($fnum, $this->user->id),
+							'bar'
+						);
 					}
 
 					$this->items   = $items;
@@ -597,6 +615,14 @@ class EmundusViewFiles extends JViewLegacy
 						}
 					}
 
+					// Own menu parameter rather than an em_other_columns entry, written by
+					// FavoriteAddonHandler when the addon is toggled.
+					if ($menu_params->get('em_display_favorites', 0))
+					{
+						$data[0]['favorite'] = '';
+						$colsSup['favorite'] = array();
+					}
+
 					$unread_messages = array();
 					if (!class_exists(JPATH_SITE . '/components/com_emundus/models/messenger.php'))
 					{
@@ -737,6 +763,12 @@ class EmundusViewFiles extends JViewLegacy
 						$colsSup['id_tag'] = $h_files->createTagsList($tags);
 					}
 
+					if (isset($colsSup['favorite']))
+					{
+						$favorite_fnums      = (new FavoriteFileRepository())->getFavoriteFnums($fnumArray, $this->user->id);
+						$colsSup['favorite'] = $h_files->createFavoritesList($fnumArray, $favorite_fnums);
+					}
+
 					if (isset($colsSup['access']))
 					{
 						$objAccess = $m_files->getAccessorByFnums($fnumArray);
@@ -803,7 +835,14 @@ class EmundusViewFiles extends JViewLegacy
 						}
 					}
 
-					$this->keys_order = ['check' => -1, 'fnum' => 0];
+					$this->keys_order = ['check' => -1];
+
+					if (isset($colsSup['favorite']))
+					{
+						$this->keys_order['favorite'] = -1;
+					}
+
+					$this->keys_order['fnum'] = 0;
 
 					if (!empty($menu_params->get('em_columns_ordered')))
 					{

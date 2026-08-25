@@ -23,11 +23,14 @@ use Joomla\CMS\User\User;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Reference\InternalReferenceEntity;
 use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
+use Tchooz\Repositories\Favorite\FavoriteFileRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 
 /**
@@ -41,6 +44,8 @@ class EmundusViewApplication extends HtmlView
 
 	private ?User $user;
 	protected ?User $student;
+
+	protected string $favorite_toggle = '';
 
 	protected int $student_id;
 	protected int $sid;
@@ -700,6 +705,17 @@ class EmundusViewApplication extends HtmlView
 						$this->formsProgress = $m_application->getFormsProgress($fnum);
 						$this->forms         = $m_application->getForms($this->sid, $fnum, $this->defaultpid->pid);
 						$this->applicant     = $applicant[0];
+
+						$addonRepository = new AddonRepository();
+						$favoriteAddon = $addonRepository->getByName(AddonEnum::FAVORITE->value);
+						if (!empty($fnum) && $fnum !== '0' && $favoriteAddon->isActivated())
+						{
+							$h_files               = new EmundusHelperFiles();
+							$this->favorite_toggle = $h_files->createFavoriteToggle(
+								$fnum,
+								(new FavoriteFileRepository())->isFavorite($fnum, $this->user->id)
+							);
+						}
 
 					}
 					else
