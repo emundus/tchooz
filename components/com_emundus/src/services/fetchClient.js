@@ -148,8 +148,19 @@ export class FetchClient {
 			}
 		}
 
+		let headers = {};
+		if (typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
+			var csrf = Joomla.getOptions('csrf.token', '');
+			if (csrf) {
+				headers = {
+					'X-CSRF-Token': csrf,
+				};
+			}
+		}
+
 		return fetch(url, {
 			method: 'DELETE',
+			headers: headers,
 		})
 			.then((response) => {
 				if (response.ok) {

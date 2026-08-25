@@ -79,7 +79,8 @@
 .view-application_choices.layout-list #g-container-main .g-container,
 .view-groups #g-container-main .g-container,
 .view-users.layout-exceptions #g-container-main .g-container,
-.view-polls #g-container-main .g-container {
+.view-polls #g-container-main .g-container,
+.view-languages #g-container-main .g-container {
 	width: auto;
 	position: relative;
 }
@@ -104,7 +105,8 @@
 .view-imports.layout-imports #g-container-main,
 .view-groups #g-container-main,
 .view-users.layout-exceptions #g-container-main .g-container,
-.view-polls #g-container-main .g-container {
+.view-polls #g-container-main .g-container,
+.view-languages #g-container-main .g-container {
 	padding-left: 76px;
 }
 
