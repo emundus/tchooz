@@ -347,7 +347,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 			// Conditions for which status should be updated.
 			// We only want to update the user's status to another value if it's 0 (NOT SENT).
 			$conditions = [
-				$db->quoteName('fnum').' LIKE '.$user->fnum,
+				$db->quoteName('fnum').' LIKE '.$db->quote($user->fnum),
 				$db->quoteName('status').' = 0'
 			];
 
