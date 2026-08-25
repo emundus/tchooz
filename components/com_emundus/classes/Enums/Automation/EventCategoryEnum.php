@@ -3,6 +3,7 @@
 namespace Tchooz\Enums\Automation;
 
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\Addons\AddonEnum;
 
 enum EventCategoryEnum: string
 {
@@ -19,6 +20,8 @@ enum EventCategoryEnum: string
 	case LETTERS = 'Files';
 	case JOOMLA = 'Joomla';
 	case SIGN = 'Sign';
+
+	case CHOICES = 'Choices';
 
 	public function getLabel(): string
 	{
@@ -38,11 +41,12 @@ enum EventCategoryEnum: string
 			self::CAMPAIGN => 'layers',
 			self::FORM => 'content_paste',
 			self::EVALUATION => 'grading',
-			self::PAYMENT => 'attach_money',
+			self::PAYMENT => AddonEnum::PAYMENT->getIcon(),
 			self::EMAIL => 'mail',
 			self::LETTERS => 'drafts',
 			self::JOOMLA => 'extension',
-			self::SIGN => 'signature',
+			self::SIGN => AddonEnum::NUMERIC_SIGN->getIcon(),
+			self::CHOICES => AddonEnum::CHOICES->getIcon(),
 		};
 	}
 }

@@ -143,6 +143,13 @@ class ActionRedirect extends ActionEntity
 				return $this->routeMenuItem(\EmundusHelperMenu::getHomepageItemId());
 			case 'files_list':
 				return $this->routeMenuLink('index.php?option=com_emundus&view=files');
+			case 'application_choices':
+				$fnum = $this->resolveContextFnum($context);
+
+				if (!empty($fnum))
+				{
+					return $this->routeMenuLink('index.php?option=com_emundus&view=application_choices') . '&fnum=' . $fnum;
+				}
 			default:
 				// TODO(redirect-known-urls): open_file_manager (files-list menu route + '#'.fnum, per messenger::gotofile) not handled yet.
 				return '';
@@ -238,6 +245,7 @@ class ActionRedirect extends ActionEntity
 		$options[] = new ChoiceFieldValue('my_applications', Text::_('TCHOOZ_AUTOMATION_ACTION_REDIRECT_KNOWN_URLS_MY_APPLICATIONS'), $applicantGroup);
 		$options[] = new ChoiceFieldValue('campaigns_catalog', Text::_('TCHOOZ_AUTOMATION_ACTION_REDIRECT_KNOWN_URLS_CAMPAIGNS_CATALOG'), $applicantGroup);
 		$options[] = new ChoiceFieldValue('home', Text::_('TCHOOZ_AUTOMATION_ACTION_REDIRECT_KNOWN_URLS_HOME'), $applicantGroup);
+		$options[] = new ChoiceFieldValue('application_choices', Text::_('TCHOOZ_AUTOMATION_ACTION_REDIRECT_KNOWN_URLS_APPLICATION_CHOICES'), $applicantGroup);
 
 		// Manager-facing destinations
 		$options[] = new ChoiceFieldValue('files_list', Text::_('TCHOOZ_AUTOMATION_ACTION_REDIRECT_KNOWN_URLS_FILES_LIST'), $managersGroup);

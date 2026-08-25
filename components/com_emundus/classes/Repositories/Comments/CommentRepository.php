@@ -143,6 +143,46 @@ class CommentRepository extends EmundusRepository implements RepositoryInterface
 	}
 
 	/**
+	 * Comments attached to several targets of the same type, most recent first. The caller owns the targets
+	 * and their meaning: this repository only knows about target_type and target_id.
+	 *
+	 * @param   CommentTargetTypeEnum  $targetType
+	 * @param   array<int>             $targetIds
+	 *
+	 * @return array<CommentEntity>
+	 */
+	public function getCommentsByTargetIds(CommentTargetTypeEnum $targetType, array $targetIds): array
+	{
+		$comments = [];
+
+		$targetIds = array_filter(array_map('intval', $targetIds));
+		if (empty($targetIds))
+		{
+			return $comments;
+		}
+
+		$query = $this->db->createQuery();
+		$query->select([$this->alias . '.*', 'u.name'])
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName($this->alias . '.user_id'))
+			->where($this->alias . '.target_type = ' . $this->db->quote($targetType->value))
+			->whereIn($this->db->quoteName($this->alias . '.target_id'), $targetIds)
+			->order($this->alias . '.date DESC');
+
+		try
+		{
+			$this->db->setQuery($query);
+			$comments = $this->factory->fromDbObjects($this->db->loadObjectList(), $this->withRelations, $this->exceptRelations, $this->db);
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error while fetching comments by target ids: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.comment');
+		}
+
+		return $comments;
+	}
+
+	/**
 	 * @param   int                    $targetId
 	 * @param   CommentTargetTypeEnum  $targetType
 	 * @param   int                    $currentUserId

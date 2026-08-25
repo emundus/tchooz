@@ -160,13 +160,12 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 				// Apply filters if needed
 				if (!empty($search))
 				{
-					$search     = $this->db->quote('%' . $this->db->escape($search, true) . '%', false);
-					$conditions = [
-						$this->db->quoteName($this->alias . '.label') . ' LIKE ' . $search,
-						$this->db->quoteName($this->alias . '.description') . ' LIKE ' . $search,
-						$this->db->quoteName($this->alias . '.short_description') . ' LIKE ' . $search,
-					];
-					$query->where('(' . implode(' OR ', $conditions) . ')');
+					$conditions = $this->buildSearchConditions(['label', 'description', 'short_description'], $search);
+
+					if (!empty($conditions))
+					{
+						$query->where($conditions);
+					}
 				}
 
 				if (!empty($published) && $published !== 'all')

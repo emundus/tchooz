@@ -52,11 +52,15 @@ class TagModifierRegistry
 
 	public static function get(string $name): ?TagModifierInterface
 	{
+		self::registerDefaults();
+
 		return self::$modifiers[$name] ?? null;
 	}
 
 	public static function all(): array
 	{
+		self::registerDefaults();
+
 		return self::$modifiers;
 	}
 }

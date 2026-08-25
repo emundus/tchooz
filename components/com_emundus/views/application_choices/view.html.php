@@ -12,8 +12,11 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView;
 use Joomla\CMS\User\User;
+use Symfony\Component\OptionsResolver\Exception\AccessException;
+use Tchooz\EmundusResponse;
 
 class EmundusViewApplication_choices extends HtmlView
 {
@@ -31,6 +34,11 @@ class EmundusViewApplication_choices extends HtmlView
 		$this->fnum = $app->input->getString('fnum', '');
 		if(!empty($this->fnum))
 		{
+			if(!EmundusHelperAccess::isFnumMine($this->user->id, $this->fnum))
+			{
+				throw new AccessException(Text::_('COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC'), EmundusResponse::HTTP_FORBIDDEN);
+			}
+
 			if(!class_exists('EmundusModelProfile'))
 			{
 				require_once JPATH_ROOT . '/components/com_emundus/models/profile.php';

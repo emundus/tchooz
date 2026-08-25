@@ -18,6 +18,7 @@ export default {
 			status: [],
 
 			selectedState: null,
+			comment: '',
 		};
 	},
 	async created() {
@@ -46,7 +47,7 @@ export default {
 			}
 			ids = ids.join(',');
 
-			applicationService.updateStatus(ids, this.selectedState).then(async (res) => {
+			applicationService.updateStatus(ids, this.selectedState, this.comment).then(async (res) => {
 				this.loading = false;
 
 				this.$emit('close');
@@ -82,6 +83,16 @@ export default {
 					</option>
 					<option v-for="(state, index) in status" :key="index" :value="index">{{ state }}</option>
 				</select>
+			</div>
+
+			<div class="tw-flex tw-w-full tw-flex-col">
+				<label for="em-choice-state-comment">
+					{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_COMMENT') }}
+				</label>
+				<textarea id="em-choice-state-comment" v-model="comment" rows="4"></textarea>
+				<p class="tw-mt-1 tw-text-sm tw-text-neutral-600">
+					{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_COMMENT_HELP') }}
+				</p>
 			</div>
 
 			<div class="tw-flex tw-w-full tw-items-center tw-justify-between">

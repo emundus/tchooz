@@ -11,6 +11,8 @@ namespace Tchooz\Services\Addons\Handlers;
 
 use Joomla\CMS\Factory;
 use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Entities\Emails\TagEntity;
+use Tchooz\Enums\Automation\EventCategoryEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Services\Addons\AbstractAddonHandler;
 
@@ -91,6 +93,45 @@ class ChoicesAddonHandler extends AbstractAddonHandler
 
 				$menu->params = json_encode($params);
 				$db->updateObject('#__menu', $menu, 'id');
+			}
+
+			// toggle events of category choices
+			$query->clear()
+				->update($db->quoteName('#__emundus_plugin_events'))
+				->set($db->quoteName('available') . ' = ' . $db->quote($state_integer))
+				->where($db->quoteName('category') . ' = ' . $db->quote(EventCategoryEnum::CHOICES->value));
+
+			$db->setQuery($query);
+			$tasks[] = $db->execute();
+
+			// Toggle the [VOEU] email tag, created on the fly on installations older than the tag
+			$query->clear()
+				->select($db->quoteName('id'))
+				->from($db->quoteName('#__emundus_setup_tags'))
+				->where($db->quoteName('tag') . ' = ' . $db->quote(TagEntity::CHOICES_TAG));
+			$db->setQuery($query);
+			$tag_id = $db->loadResult();
+
+			if (empty($tag_id))
+			{
+				$tag = (object) [
+					'date_time'   => date('Y-m-d H:i:s'),
+					'tag'         => TagEntity::CHOICES_TAG,
+					'request'     => '[' . TagEntity::CHOICES_TAG . ']',
+					'description' => 'Liste des vœux du candidat',
+					'published'   => $state_integer,
+				];
+
+				$tasks[] = $db->insertObject('#__emundus_setup_tags', $tag);
+			}
+			else
+			{
+				$query->clear()
+					->update($db->quoteName('#__emundus_setup_tags'))
+					->set($db->quoteName('published') . ' = ' . $db->quote($state_integer))
+					->where($db->quoteName('tag') . ' = ' . $db->quote(TagEntity::CHOICES_TAG));
+				$db->setQuery($query);
+				$tasks[] = $db->execute();
 			}
 		}
 		catch (\Exception $e)
