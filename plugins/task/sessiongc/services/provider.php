@@ -35,8 +35,7 @@ return new class () implements ServiceProviderInterface {
             function (Container $container) {
                 $plugin = new SessionGC(
                     (array) PluginHelper::getPlugin('task', 'sessiongc'),
-	                $container->get(MetadataManager::class),
-	                $container
+                    $container->get(MetadataManager::class)
                 );
                 $plugin->setApplication(Factory::getApplication());
 

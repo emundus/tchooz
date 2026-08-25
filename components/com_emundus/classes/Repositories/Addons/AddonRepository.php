@@ -89,6 +89,17 @@ class AddonRepository extends EmundusRepository implements RepositoryInterface
 		return null;
 	}
 
+	/**
+	 * Spares every caller the "not null AND activated" dance on a feature gate.
+	 * An addon missing from the table counts as deactivated.
+	 */
+	public function isActivated(string $name): bool
+	{
+		$addon = $this->getByName($name);
+
+		return !empty($addon) && $addon->isActivated();
+	}
+
 	public function getByName(string $name): ?AddonEntity
 	{
 		$addon_entity = null;

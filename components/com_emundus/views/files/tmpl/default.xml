@@ -157,6 +157,21 @@
                     description="FILTER_ORDER_DESC"
                     default="0"
             />
+            <field type="list" name="em_display_favorites" label="DISPLAY_FAVORITES_COLUMN" default="0">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+            <field type="list" name="filter_favorites" label="FILTER_ON_FAVORITES" default="0">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
+            <field
+                    type="text"
+                    name="filter_favorites_order"
+                    label="FILTER_ORDER"
+                    description="FILTER_ORDER_DESC"
+                    default="0"
+            />
             <field type="list" name="filter_published" label="FILTER_ON_PUBLISHED_STATE">
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>

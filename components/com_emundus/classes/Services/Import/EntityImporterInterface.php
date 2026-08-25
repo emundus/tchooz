@@ -51,7 +51,7 @@ interface EntityImporterInterface
 	 *
 	 * @param   array<string, mixed>  $row  Canonicalized row.
 	 *
-	 * @return string[]  Empty array means the row is valid.
+	 * @return \Tchooz\Services\Import\Report\RowError[]  Empty array means the row is valid.
 	 */
 	public function validate(array $row, ImportContext $context): array;
 

@@ -11,6 +11,10 @@ namespace Unit\Component\Emundus\Model;
 
 use Joomla\CMS\Factory;
 use Joomla\Tests\Unit\UnitTestCase;
+use Tchooz\Entities\Emails\Modifiers\ChoiceStatusModifier;
+use Tchooz\Entities\Emails\TagContext;
+use Tchooz\Entities\Emails\TagProviderRegistry;
+use Tchooz\Interfaces\TagProviderInterface;
 
 /**
  * @package     Unit\Component\Emundus\Model
@@ -193,5 +197,106 @@ class EmailsModelTest extends UnitTestCase
 		$scoped = $this->model->scopeAliasElementsToFnumForms($alias_element_ids, $fnum_form_elements);
 
 		$this->assertSame([10, 20], $scoped, 'Si aucun élément de l\'alias n\'est dans le périmètre, tous les éléments sont conservés (repli)');
+	}
+
+	// =====================
+	// setConstants — résolution des balises de provider portant un modificateur
+	// =====================
+
+	/**
+	 * Deux occurrences de la même balise, chacune avec son paramètre, doivent produire deux valeurs.
+	 * C'est ce que le format /\[TAG\]/ ne permettait pas.
+	 *
+	 * @covers EmundusModelEmails::setConstants
+	 */
+	public function testSetConstantsResolvesEachTagOccurrenceWithItsOwnModifierParams()
+	{
+		TagProviderRegistry::register($this->modifierAwareProvider());
+
+		$content = 'A [UNIT_TEST_MODIFIER_TAG:STATUS("rejected")] B [UNIT_TEST_MODIFIER_TAG:STATUS("accepted")] C';
+
+		$constants = $this->model->setConstants($this->dataset['coordinator'], null, '', $this->dataset['fnum'], $content);
+		$resolved  = preg_replace($constants['patterns'], $constants['replacements'], $content);
+
+		$this->assertSame('A state:rejected B state:accepted C', $resolved, 'Chaque occurrence doit être résolue avec les paramètres de son propre modificateur');
+	}
+
+	/**
+	 * @covers EmundusModelEmails::setConstants
+	 */
+	public function testSetConstantsResolvesATagOccurrenceWithoutModifier()
+	{
+		TagProviderRegistry::register($this->modifierAwareProvider());
+
+		$content = 'A [UNIT_TEST_MODIFIER_TAG] B';
+
+		$constants = $this->model->setConstants($this->dataset['coordinator'], null, '', $this->dataset['fnum'], $content);
+		$resolved  = preg_replace($constants['patterns'], $constants['replacements'], $content);
+
+		$this->assertSame('A no-state B', $resolved, 'Une balise nue doit rester résolue après la prise en charge des modificateurs');
+	}
+
+	/**
+	 * Les modificateurs de formatage s'appliquent par-dessus la valeur produite par le provider.
+	 *
+	 * @covers EmundusModelEmails::setConstants
+	 */
+	public function testSetConstantsAppliesFormattingModifiersOnProviderValues()
+	{
+		TagProviderRegistry::register($this->modifierAwareProvider());
+
+		$content = 'A [UNIT_TEST_MODIFIER_TAG:UPPERCASE] B';
+
+		$constants = $this->model->setConstants($this->dataset['coordinator'], null, '', $this->dataset['fnum'], $content);
+		$resolved  = preg_replace($constants['patterns'], $constants['replacements'], $content);
+
+		$this->assertSame('A NO-STATE B', $resolved, 'UPPERCASE doit transformer la valeur résolue par le provider');
+	}
+
+	/**
+	 * Un provider dont la balise n'apparaît pas dans le contenu ne doit pas être interrogé.
+	 *
+	 * @covers EmundusModelEmails::setConstants
+	 */
+	public function testSetConstantsIgnoresProvidersWhoseTagIsAbsentFromContent()
+	{
+		TagProviderRegistry::register($this->modifierAwareProvider());
+
+		$content = 'Aucune balise ici';
+
+		$constants = $this->model->setConstants($this->dataset['coordinator'], null, '', $this->dataset['fnum'], $content);
+
+		$this->assertNotContains('no-state', $constants['replacements'], 'Le provider ne doit pas être appelé quand sa balise est absente');
+	}
+
+	/**
+	 * Provider de test qui expose sa dépendance aux modificateurs de l'occurrence : la valeur reflète
+	 * le paramètre reçu, ce qu'un simple transform() de chaîne ne pourrait pas produire.
+	 */
+	private function modifierAwareProvider(): TagProviderInterface
+	{
+		return new class implements TagProviderInterface {
+			public function getName(): string
+			{
+				return 'unit_test_modifier_aware';
+			}
+
+			public function getProvidedTags(): array
+			{
+				return ['UNIT_TEST_MODIFIER_TAG'];
+			}
+
+			public function supports(TagContext $context): bool
+			{
+				return true;
+			}
+
+			public function provide(TagContext $context): array
+			{
+				$params = $context->getModifierParams(ChoiceStatusModifier::class);
+
+				return ['UNIT_TEST_MODIFIER_TAG' => empty($params[0]) ? 'no-state' : 'state:' . $params[0]];
+			}
+		};
 	}
 }

@@ -4,6 +4,7 @@ namespace Tchooz\Services\Integrations\Configurations;
 
 use EmundusModelEmails;
 use Joomla\CMS\Language\Text;
+use Tchooz\Entities\Fields\BooleanField;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Fields\FieldGroup;
@@ -34,7 +35,8 @@ class DocaposteIntegrationConfiguration extends EmundusIntegrationConfiguration
 			new ChoiceField('mode', Text::_('COM_EMUNDUS_INTEGRATIONS_DOCUPOSTE_MODE_LABEL'), [
 				new ChoiceFieldValue('TEST', 'TEST'),
 				new ChoiceFieldValue('PRODUCTION', 'PRODUCTION')
-			], true, false, $configGroup)
+			], true, false, $configGroup),
+			new BooleanField('retrieveProofDocument', Text::_('COM_EMUNDUS_INTEGRATIONS_DOCAPOSTE_RETRIEVE_PROOF_DOCUMENT_LABEL'), false, $configGroup)
 		];
 	}
 

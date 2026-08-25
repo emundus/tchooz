@@ -33,6 +33,7 @@ use Tchooz\Services\Export\HeadersEnum;
 use Tchooz\Services\Export\Pdf\PdfMerger;
 use Tchooz\Services\Export\Pdf\PdfOptions;
 use Tchooz\Services\Export\Pdf\PdfService;
+use Tchooz\Traits\TraitAutomatedTask;
 use ZipArchive;
 
 /**
@@ -51,6 +52,8 @@ use ZipArchive;
  */
 class ZipService extends Export implements ExportInterface
 {
+	use TraitAutomatedTask;
+
 	/**
 	 * Max number of fnums processed per export() invocation when running asynchronously.
 	 */
@@ -106,13 +109,16 @@ class ZipService extends Export implements ExportInterface
 		$this->bootstrapDependencies();
 		$this->assertExportPreconditions($exportPath, $task);
 
-		$state         = $this->loadOrInitState($exportPath);
-		$totalFnums    = count($state['fnums']);
-		$pending       = array_slice($state['fnums'], $state['processed']);
-		$processStart  = microtime(true);
-		$processedNow  = 0;
-		$isAsync       = !empty($task);
-		$result        = new ExportResult(true);
+		$state        = $this->loadOrInitState($exportPath);
+		$totalFnums   = count($state['fnums']);
+		$pending      = array_slice($state['fnums'], $state['processed']);
+		$processStart = microtime(true);
+		$processedNow = 0;
+		$isAsync      = !empty($task);
+		// Stopping halfway is only an option when something can pick the export up again: an export
+		// record to hold the state path, and a task to resume it.
+		$isResumable = $this->exportEntity !== null && ($isAsync || $this->isAsyncExportAllowed());
+		$result      = new ExportResult(true);
 
 		foreach ($pending as $fnum)
 		{
@@ -121,7 +127,7 @@ class ZipService extends Export implements ExportInterface
 				throw new \Exception('Export has been cancelled.');
 			}
 
-			if ($isAsync && $processedNow > 0 && $this->shouldYield($processedNow, $processStart))
+			if ($isResumable && $processedNow > 0 && $this->shouldYield($processedNow, $processStart, $isAsync))
 			{
 				break;
 			}
@@ -145,6 +151,12 @@ class ZipService extends Export implements ExportInterface
 			$result->setProgress(100.0);
 			$result->setFilePath($zipPath);
 			$this->cleanupStaging($state);
+		}
+		else
+		{
+			// The caller persists this path as the export filename: it is what the next
+			// invocation resumes from.
+			$result->setFilePath($state['state_path']);
 		}
 
 		return $result;
@@ -203,9 +215,13 @@ class ZipService extends Export implements ExportInterface
 		return $this->exportEntity !== null && $this->exportRepository->isCancelled($this->exportEntity->getId());
 	}
 
-	private function shouldYield(int $processedNow, float $processStart): bool
+	/**
+	 * A task keeps its tick short by also stopping on a file count; a request has nobody else to hand
+	 * the work to before its time is up, so it only stops on time and serves small exports inline.
+	 */
+	private function shouldYield(int $processedNow, float $processStart, bool $isAsync): bool
 	{
-		return $processedNow >= self::BATCH_SIZE || (microtime(true) - $processStart) >= self::TIME_LIMIT;
+		return ($isAsync && $processedNow >= self::BATCH_SIZE) || (microtime(true) - $processStart) >= self::TIME_LIMIT;
 	}
 
 	// -----------------------------------------------------------------------
@@ -309,6 +325,9 @@ class ZipService extends Export implements ExportInterface
 	}
 
 	/**
+	 * @todo: this is weird that we controll the access on files here, it should be done in controller, now
+	 *       that we are here, it should mean that access controll has already been done.
+	 *       For now, I have to allow automated task user access here which is a weird behaviour as well
 	 * @return string[] fnums the user is allowed to export.
 	 */
 	private function filterAccessibleFnums(array $fnums): array
@@ -318,7 +337,13 @@ class ZipService extends Export implements ExportInterface
 
 		foreach ($fnums as $fnum)
 		{
-			if (is_string($fnum) && \EmundusHelperAccess::asAccessAction($accessName, CrudEnum::CREATE->value, $this->user->id, $fnum))
+			if (
+				is_string($fnum)
+				&& (
+					$this->isAutomatedTaskUser((int) $this->user->id)
+					|| \EmundusHelperAccess::asAccessAction($accessName, CrudEnum::CREATE->value, $this->user->id, $fnum)
+				)
+			)
 			{
 				$valid[] = $fnum;
 			}
@@ -448,7 +473,7 @@ class ZipService extends Export implements ExportInterface
 
 	private function renderMainApplicationPdf(ApplicationFileEntity $applicationFile, string $folderName, string $fnumStagingDir): ?string
 	{
-		$pdfOptions = $this->buildPdfOptions($folderName);
+		$pdfOptions = $this->buildPdfOptions($folderName, $applicationFile);
 		$pdfService = new PdfService([$applicationFile->getFnum()], $this->user, $pdfOptions);
 		$pdfResult  = $pdfService->export($fnumStagingDir, null, $this->options->getLang());
 
@@ -465,7 +490,7 @@ class ZipService extends Export implements ExportInterface
 	 */
 	private function renderAttachmentsOnlyPdf(ApplicationFileEntity $applicationFile, string $folderName, string $fnumStagingDir): ?string
 	{
-		$attachmentTypeIds = $this->options->getAttachments();
+		$attachmentTypeIds = $this->resolveAttachmentsToMerge($applicationFile);
 		if (empty($attachmentTypeIds))
 		{
 			return null;
@@ -525,7 +550,7 @@ class ZipService extends Export implements ExportInterface
 		HeadersEnum::FNUM,
 	];
 
-	private function buildPdfOptions(string $folderName): PdfOptions
+	private function buildPdfOptions(string $folderName, ApplicationFileEntity $applicationFile): PdfOptions
 	{
 		[$pageHeaders, $firstPageHeaders, $displayHeader] = $this->resolvePdfHeaders();
 
@@ -535,7 +560,7 @@ class ZipService extends Export implements ExportInterface
 			'elements'           => implode(',', $this->options->getElements()),
 			'lang'               => $this->options->getLang(),
 			'displayHeader'      => $displayHeader,
-			'attachments'        => $this->options->isConcatAttachmentsWithForm() ? $this->options->getAttachments() : [],
+			'attachments'        => $this->options->isConcatAttachmentsWithForm() ? $this->resolveAttachmentsToMerge($applicationFile) : [],
 			'displayPageNumbers' => $this->options->isDisplayPageNumbers(),
 		];
 
@@ -569,7 +594,7 @@ class ZipService extends Export implements ExportInterface
 
 		if (!empty($explicit) || !empty($synthesis))
 		{
-			return [$explicit, $synthesis, $displayHeader];
+			return [$this->normalizeHeaders($explicit), $this->normalizeHeaders($synthesis), $displayHeader];
 		}
 
 		$legacyOptions = $this->options->getLegacyHeaderOptions();
@@ -582,6 +607,19 @@ class ZipService extends Export implements ExportInterface
 		$displayHeader                    = $displayHeader && HeadersEnum::isLegacyHeaderEnabled($legacyOptions);
 
 		return [$pageHeaders, $firstPageHeaders, $displayHeader];
+	}
+
+	/**
+	 * @param   array<HeadersEnum|int|string>  $headers
+	 *
+	 * @return array<int|string>
+	 */
+	private function normalizeHeaders(array $headers): array
+	{
+		return array_values(array_map(
+			static fn($header) => $header instanceof HeadersEnum ? $header->value : $header,
+			$headers
+		));
 	}
 
 	/**
@@ -648,7 +686,8 @@ class ZipService extends Export implements ExportInterface
 				null,
 				$elements,
 				false,
-				'_evaluations'
+				'_evaluations',
+				$this->user->id
 			);
 
 			if (empty($evalPath) || !file_exists($evalPath))
@@ -806,6 +845,34 @@ class ZipService extends Export implements ExportInterface
 		}
 
 		return array_values(array_unique($resolved));
+	}
+
+	/**
+	 * Attachment type IDs to merge into the per-fnum PDF: the explicit selection when present,
+	 * otherwise the legacy tokens, otherwise every type the applicant actually uploaded.
+	 *
+	 * @return int[]
+	 */
+	private function resolveAttachmentsToMerge(ApplicationFileEntity $applicationFile): array
+	{
+		$attachments = $this->options->getAttachments();
+		if (!empty($attachments))
+		{
+			return $attachments;
+		}
+
+		$resolved = $this->resolveAttachmentTypeIds($applicationFile);
+		if (!empty($resolved) || $this->options->getAttachmentDefault() === 0)
+		{
+			return $resolved;
+		}
+
+		$uploads = $this->uploadRepository->get(['fnum' => $applicationFile->getFnum()]);
+
+		return array_values(array_unique(array_map(
+			fn(UploadEntity $upload) => $upload->getAttachmentId(),
+			$uploads
+		)));
 	}
 
 	// -----------------------------------------------------------------------

@@ -123,6 +123,7 @@ var FbAutocomplete = new Class({
 	 * Build the ajax Request object and send it.
 	 */
 	makeAjax: function (url, data) {
+		data[Joomla.getOptions('csrf.token')] = 1;
 		return new Request({
 			url: url,
 			data: data,

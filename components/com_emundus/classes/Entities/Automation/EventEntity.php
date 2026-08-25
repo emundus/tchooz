@@ -19,7 +19,7 @@ class EventEntity
 
 	private ?EventCategoryEnum $category = null;
 
-	public function __construct(int $id = 0, string $name = '', string $description = '', ?EventCategoryEnum $category = null)
+	public function __construct(int $id = 0, string $name = '', ?string $description = '', ?EventCategoryEnum $category = null)
 	{
 		$this->id = $id;
 		$this->name = $name;

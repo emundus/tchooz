@@ -84,8 +84,8 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 			// $default = $this->getDefaultValue($data, $repeatCounter);
 			$this->swapValuesForLabels($data);
 			$this->setStoreDatabaseFormat($data, $repeatCounter);
-			$default = $w->parseMessageForRepeats($params->get('calc_calculation'), $data, $this, $repeatCounter);
-			$default = $w->parseMessageForPlaceHolder($default, $data, true, true);
+			$default = $w->parseMessageForRepeats($params->get('calc_calculation'), $data, $this, $repeatCounter, true);
+			$default = $w->parseMessageForPlaceHolder($default, $data, true, true, null, true, true);
 			$formModel = $this->getFormModel();
 
 			//  $$$ hugh - standardizing on $data but need need $d here for backward compat
@@ -296,8 +296,8 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 			//  $$$ hugh - standardizing on $data but need need $d here for backward compat
 			$d = $data;
 			$w = new FabrikWorker;
-			$cal = $w->parseMessageForPlaceHolder($cal, $data, true, true);
-			
+			$cal = $w->parseMessageForPlaceHolder($cal, $data, true, true, null, true, true);
+
 			FabrikWorker::clearEval();
 			$res = Php::Eval(['code' => $cal, 'vars'=>['data'=>$data, 'd'=>$data, 'formModel'=>$formModel]]);
 			FabrikWorker::logEval($res, 'Eval exception : ' . $element->name . ' (id ' . $this->getId() . ')::preFormatFormJoins() : ' . str_replace('%','%%',$cal) . ' : %s');
@@ -472,6 +472,19 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 		$input = $this->app->input;
 		$this->setId($input->getInt('element_id'));
 		$this->loadMeForAjax();
+
+		// Security fix: this ajax handler evals the admin's calc formula with the request's
+		// submitted values substituted in - loadMeForAjax() already computes canUse('form') (it
+		// feeds setEditable()) but never enforced it here, so the CSRF/session-token check alone
+		// (controllers/plugin.php's pluginAjax() -> validateRequest()) was standing in as the only
+		// gate. That only proves same-origin, not that this user is allowed to use this element at
+		// all - any guest able to load the page could call this directly regardless of the
+		// element's configured view-level/edit ACL.
+		if (!$this->canUse())
+		{
+			return;
+		}
+
 		$params        = $this->getParams();
 		$w             = new FabrikWorker;
 		$filter        = InputFilter::getInstance();
@@ -486,8 +499,8 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 
 		// $$$ hugh - trying to standardize on $data so scripts know where data is
 		$data = $d;
-        $calc = $w->parseMessageForRepeats($calc, $data, $this, $repeatCounter);
-        $calc = $w->parseMessageForPlaceHolder($calc, $d,true,true);
+        $calc = $w->parseMessageForRepeats($calc, $data, $this, $repeatCounter, true);
+        $calc = $w->parseMessageForPlaceHolder($calc, $d,true,true,null,true,true);
 		FabrikWorker::clearEval();
 		$c 	  = Php::Eval(['code' => $calc, 'vars'=>['data'=>$data, 'd'=>$data, 'repeatCounter'=>$repeatCounter, 'formModel'=>$formModel]]);
 		FabrikWorker::logEval($c, 'Caught exception on ajax eval of calc ' . $this->getElement()->name . ': %s');

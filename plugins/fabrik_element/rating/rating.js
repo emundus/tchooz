@@ -149,6 +149,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 				'rating'     : this.rating,
 				'listid'     : this.options.listid
 			};
+			data[Joomla.getOptions('csrf.token')] = 1;
 
 			var closeFn = new Request({
 				url       : '',

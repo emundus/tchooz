@@ -11,6 +11,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Fabrik\Helpers\Html;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Factory;
@@ -94,6 +96,8 @@ class FabrikControllerListemail extends BaseController
 	 */
 	public function doemail()
 	{
+		Html::validateRequest($this->taskMap, true);
+
 		$app = Factory::getApplication();
 		$input = $app->input;
 		$pluginManager = BaseDatabaseModel::getInstance('Pluginmanager', 'FabrikFEModel');
@@ -103,6 +107,12 @@ class FabrikControllerListemail extends BaseController
 		$listParams = $listModel->getParams();
 		$model->setParams($listParams, $input->getInt('renderOrder'));
 		$model->listModel = $listModel;
+
+		if (!$model->canUse())
+		{
+			throw new Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
 		/*
 		 * $$$ hugh - for some reason have to do this here, if we don't, it'll
 		 * blow up when it runs later on from within the list model itself.

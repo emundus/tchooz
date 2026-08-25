@@ -407,57 +407,70 @@ if ($user != null)
                 }
                 ?>
 
-                <?php if ($show_update == '1') : ?>
-                    <li>
-                        <?php
-                        echo LayoutHelper::render('emundus.button', [
-                            'variant' => ButtonVariantEnum::PRIMARY,
-                            'icon'    => 'person_outline',
-                            'width'   => ButtonWidthEnum::FULL,
-                            'text'    => Text::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL'),
-                            'href'    => $link_edit_profile,
-                        ]);
-                        ?>
-                    </li>
-                <?php endif; ?>
-                <?php if (!empty($link_exports)) : ?>
+			<?php if ($show_update == '1') : ?>
                 <li>
                     <?php
-                        echo LayoutHelper::render('emundus.button', [
-                            'variant' => ButtonVariantEnum::PRIMARY,
-                            'icon'    => 'archive',
-                            'width'   => ButtonWidthEnum::FULL,
-                            'text'    => Text::_('COM_EMUNDUS_USER_MENU_EXPORTS_LABEL'),
-                            'href'    => $link_exports,
-                        ]);
+                    echo LayoutHelper::render('emundus.button', [
+                        'variant' => ButtonVariantEnum::PRIMARY,
+                        'icon'    => 'person_outline',
+                        'width'   => ButtonWidthEnum::FULL,
+                        'text'    => Text::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL'),
+                        'href'    => $link_edit_profile,
+                    ]);
                     ?>
                 </li>
-                <?php endif; ?>
-                <?php if (!empty($custom_actions))
-                {
-                    foreach ($custom_actions as $custom_action)
-                    {
-                        if (!empty($custom_action->link) || !empty($custom_action->onclick))
-                        {
-                            ?>
-                            <li>
-                                <?php
-                                switch ($custom_action->type)
-                                {
-                                    case 'button':
-                                        echo '<a type="button" onclick="' . $custom_action->onclick . '" class="edit-button-user em-pointer">' . JText::_($custom_action->title) . '</a>';
-                                        break;
-                                    case 'link':
-                                    default:
-                                        echo '<a href="' . $custom_action->link . '" target="_blank" class="edit-button-user em-pointer">' . JText::_($custom_action->title) . '</a>';
-                                        break;
-                                }
-                                ?>
-                            </li>
-                            <?php
-                        }
-                    }
-                } ?>
+			<?php endif; ?>
+            <?php if (!empty($link_exports)) : ?>
+            <li>
+                <?php
+                    echo LayoutHelper::render('emundus.button', [
+                        'variant' => ButtonVariantEnum::PRIMARY,
+                        'icon'    => 'archive',
+                        'width'   => ButtonWidthEnum::FULL,
+                        'text'    => Text::_('COM_EMUNDUS_USER_MENU_EXPORTS_LABEL'),
+                        'href'    => $link_exports,
+                    ]);
+                ?>
+            </li>
+            <?php endif; ?>
+            <?php if (!empty($link_imports)) : ?>
+                <li>
+                    <?php
+                    echo LayoutHelper::render('emundus.button', [
+                        'variant' => ButtonVariantEnum::PRIMARY,
+                        'icon'    => 'download',
+                        'width'   => ButtonWidthEnum::FULL,
+                        'text'    => Text::_('COM_EMUNDUS_USER_MENU_IMPORTS_LABEL'),
+                        'href'    => $link_imports,
+                    ]);
+                    ?>
+                </li>
+            <?php endif; ?>
+			<?php if (!empty($custom_actions))
+			{
+				foreach ($custom_actions as $custom_action)
+				{
+					if (!empty($custom_action->link) || !empty($custom_action->onclick))
+					{
+						?>
+                        <li>
+							<?php
+							switch ($custom_action->type)
+							{
+								case 'button':
+									echo '<a type="button" onclick="' . $custom_action->onclick . '" class="edit-button-user em-pointer">' . JText::_($custom_action->title) . '</a>';
+									break;
+								case 'link':
+								default:
+									echo '<a href="' . $custom_action->link . '" target="_blank" class="edit-button-user em-pointer">' . JText::_($custom_action->title) . '</a>';
+									break;
+							}
+							?>
+                        </li>
+						<?php
+					}
+				}
+			} ?>
 
                 <?php if ($show_logout == '1') : ?>
                     <hr style="width: 100%" aria-hidden="true">

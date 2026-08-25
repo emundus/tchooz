@@ -21,6 +21,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Router\Route;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Repositories\Favorite\FavoriteFileRepository;
 
 if(!class_exists('EmundusHelperCache'))
 {
@@ -931,11 +932,12 @@ class EmundusHelperFiles
 					if(!empty($eval_elements)) {
 						// Merge the evaluation elements with the existing elements
 						foreach ($eval_elements as $key => $value) {
-							$value->form_label    = Text::_($value->form_label);
-							$value->table_label   = Text::_($value->table_label);
-							$value->group_label   = Text::_($value->group_label);
-							$value->element_label = Text::_($value->element_label);
-							$elts[]               = $value;
+							$value->form_label      = Text::_($value->form_label);
+							$value->table_label     = Text::_($value->table_label);
+							$value->group_label     = Text::_($value->group_label);
+							$value->element_label   = Text::_($value->element_label);
+							$value->element_attribs = $value->params;
+							$elts[]                 = $value;
 						}
 					}
 				}
@@ -2617,6 +2619,59 @@ class EmundusHelperFiles
 		}
 
 		return $tagsList;
+	}
+
+	/**
+	 * Builds one favorite toggle. Single source of the markup: every context that shows a favorite
+	 * goes through here, so the icon, the data attributes and the JS hook can never drift apart.
+	 *
+	 * @param   string  $variant  'list' on a dark-on-light row, 'bar' on the dark action bar
+	 */
+	public function createFavoriteToggle(string $fnum, bool $is_favorite, string $variant = 'list'): string
+	{
+		$title = Text::_($is_favorite ? 'COM_EMUNDUS_FAVORITES_REMOVE' : 'COM_EMUNDUS_FAVORITES_ADD');
+
+		// Same icon and same states everywhere, only the palette follows the background: filling is
+		// the primary signal, colour only reinforces it. The frame shows on hover only, in both
+		// contexts, so a row of stars stays quiet until pointed at.
+		$colors = $variant === 'bar'
+			? ($is_favorite ? 'tw-text-white' : 'tw-text-white/60')
+			: ($is_favorite ? 'tw-text-yellow-500' : 'tw-text-neutral-500');
+
+		$hover = $variant === 'bar' ? 'hover:tw-bg-white/30' : 'hover:tw-bg-blue-50';
+
+		return '<span class="!tw-text-2xl !tw-flex tw-items-center tw-justify-center material-icons em-favorite-toggle tw-cursor-pointer tw-rounded-md tw-p-1 tw-transition-colors tw-w-10 tw-h-10 '
+			. $hover . ' '
+			. ($is_favorite ? 'em-favorite-toggle--on ' : '')
+			. $colors
+			. ($variant === 'bar' ? ' tw-ml-2 tw-mr-1 ' : '')
+			. '" role="button" tabindex="0"'
+			. ' data-fnum="' . htmlspecialchars($fnum, ENT_QUOTES, 'UTF-8') . '"'
+			. ' data-favorite="' . ($is_favorite ? 1 : 0) . '"'
+			. ' data-variant="' . htmlspecialchars($variant, ENT_QUOTES, 'UTF-8') . '"'
+			. ' title="' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '"'
+			. ' aria-label="' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '"'
+			. '>' . ($is_favorite ? 'star' : 'star_border') . '</span>';
+	}
+
+	/**
+	 * Builds the favorite toggle of every row of the current page.
+	 *
+	 * @param   array<string>  $fnums           every file number displayed on the page
+	 * @param   array<string>  $favorite_fnums  those the current user marked as favorite
+	 *
+	 * @return array<string, string> fnum => html
+	 */
+	public function createFavoritesList(array $fnums, array $favorite_fnums): array
+	{
+		$favorites_list = [];
+
+		foreach ($fnums as $fnum)
+		{
+			$favorites_list[$fnum] = $this->createFavoriteToggle($fnum, in_array($fnum, $favorite_fnums, true));
+		}
+
+		return $favorites_list;
 	}
 
 	public function createFormProgressList($formsprogress)
@@ -5017,6 +5072,28 @@ class EmundusHelperFiles
 								case 'published':
 									$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', $filter['value'], $filter['operator']);
 									break;
+								case 'favorites':
+									$favorite_values = array_values(array_unique(array_map('intval', (array) $filter['value'])));
+
+									// Picking both "my favorites" and "not my favorites" restricts nothing.
+									if (count($favorite_values) === 1)
+									{
+										$wants_favorites = $favorite_values[0] === 1;
+
+										if (in_array($filter['operator'], ['NOT IN', '!='], true))
+										{
+											$wants_favorites = !$wants_favorites;
+										}
+
+										// Subquery rather than a join: the outer query already groups by
+										// jecc.fnum and counts separately, an extra join would skew both.
+										$where['q'] .= ' AND jecc.fnum ' . ($wants_favorites ? 'IN' : 'NOT IN') . ' ('
+											. ' SELECT ' . $db->quoteName('eff.fnum')
+											. ' FROM ' . $db->quoteName(FavoriteFileRepository::TABLE, 'eff')
+											. ' WHERE ' . $db->quoteName('eff.user_id') . ' = ' . (int) $user->id
+											. ' )';
+									}
+									break;
 								case 'tags':
 									if ($filter['andorOperator'] === 'AND' && is_array($filter['value']) && sizeof($filter['value']) > 1) {
 
@@ -7013,6 +7090,89 @@ class EmundusHelperFiles
 		}
 
 		return $id;
+	}
+
+	/**
+	 * The single declaration of the "must this data be presented anonymously?" rule.
+	 *
+	 * Combines the three anonymity axes used across the component:
+	 *   - viewer-level: the viewer belongs to a group flagged #__emundus_setup_groups.anonymize (EmundusHelperAccess::isDataAnonymized)
+	 *   - account-level: the applicant account is flagged #__emundus_users.is_anonym
+	 *   - file-level: the application file is flagged #__emundus_campaign_candidature.anonymous
+	 *
+	 * Pure combine: callers pass the file/account flags they already hold, so this never queries them.
+	 * Any code that needs the same decision must go through here (or through isFnumAnonymized() which
+	 * fetches the flags first) instead of re-inlining the OR.
+	 *
+	 * @param   int   $viewer_id         the logged-in user viewing the data
+	 * @param   bool  $is_anonym         applicant account flagged #__emundus_users.is_anonym
+	 * @param   bool  $anonymous         file flagged #__emundus_campaign_candidature.anonymous
+	 * @param   bool  $check_file_flags  false = ignore the file/account axis (the viewer axis still applies)
+	 *
+	 * @return bool
+	 */
+	public static function shouldAnonymize(int $viewer_id, bool $is_anonym, bool $anonymous, bool $check_file_flags = true): bool
+	{
+		if (!class_exists('EmundusHelperAccess'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/access.php';
+		}
+
+		if (EmundusHelperAccess::isDataAnonymized($viewer_id))
+		{
+			return true;
+		}
+
+		return $check_file_flags && ($is_anonym || $anonymous);
+	}
+
+	/**
+	 * Tells whether an application file must be presented anonymously to a given viewer.
+	 *
+	 * Convenience fetcher for fnum-based callers: loads the account/file flags then delegates the
+	 * decision to shouldAnonymize() (the single home for the rule).
+	 *
+	 * @param   string  $fnum       the application file number to test
+	 * @param   int     $viewer_id  the logged-in user viewing the data (0 = current identity)
+	 *
+	 * @return bool
+	 */
+	public static function isFnumAnonymized(string $fnum, int $viewer_id = 0): bool
+	{
+		if (empty($fnum))
+		{
+			return false;
+		}
+
+		if (empty($viewer_id))
+		{
+			$identity  = Factory::getApplication()->getIdentity();
+			$viewer_id = !empty($identity) ? (int) $identity->id : 0;
+		}
+
+		$is_anonym = false;
+		$anonymous = false;
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		try {
+			$query->select('eu.is_anonym, ecc.anonymous')
+				->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+				->leftJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('ecc.applicant_id'))
+				->where($db->quoteName('ecc.fnum') . ' = ' . $db->quote($fnum));
+
+			$db->setQuery($query);
+			$row       = $db->loadAssoc();
+
+			$is_anonym = !empty($row) && (int) $row['is_anonym'] === 1;
+			$anonymous = !empty($row) && (int) $row['anonymous'] === 1;
+		} catch (Exception $e) {
+			Log::add('Failed to check anonymity for fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			return true; // fallback to anonym file in case check failed
+		}
+
+		return self::shouldAnonymize($viewer_id, $is_anonym, $anonymous);
 	}
 
 	public static function getApplicantIdFromFnum(string $fnum): int

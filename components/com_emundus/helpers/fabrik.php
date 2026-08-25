@@ -28,10 +28,12 @@ use libphonenumber\PhoneNumberFormat;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\WorkflowEntity;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\TransformerFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Profile\ProfileRepository;
@@ -42,6 +44,22 @@ use Tchooz\Repositories\Profile\ProfileRepository;
  */
 class EmundusHelperFabrik
 {
+	/**
+	 * Separator the repeated values of an element are concatenated with. It is meant to be read by
+	 * a human, so it is also a sequence a value can legitimately contain — a currency element stores
+	 * "1 200,00 € (EUR)" — and an aggregate built with it cannot always be split back apart.
+	 */
+	public const VALUE_SEPARATOR = ', ';
+
+	/**
+	 * Separator for callers that need to split the aggregate back into one value per repetition.
+	 * No element value contains it, so the split is unambiguous; whoever asks for it is responsible
+	 * for replacing what is left of it before the value reaches a human.
+	 */
+	public const VALUE_SEPARATOR_MARKER = '[SEPARATOR]';
+
+	private static array $dataTableTimestamps = [];
+
 	public function __construct()
 	{
 		Log::addLogger(['text_file' => 'com_emundus.fabrik.helper.php'], Log::ALL, ['com_emundus.fabrik.helper']);
@@ -258,35 +276,12 @@ class EmundusHelperFabrik
 			if ($type == 'eval')
 			{
 				$plugins = [
-					'curl_code'             => [
-						1 => 'use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
-$app = Factory::getApplication();
-$input = $app->getInput();
-
-$student_id = $input->getInt("student_id", null);
-$student = isset($student_id) ? JUser::getInstance($student_id) : JUser::getInstance("{jos_emundus_evaluations___student_id}");
-
-
-echo "<h2>".$student->name."</h2>";
-HTMLHelper::styleSheet(JURI::base() . "media/jui/css/chosen.css");
-HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
-					],
-					'only_process_curl'     => [
-						1 => 'onLoad'
-					],
-					'form_php_file'         => [
-						1 => '-1'
-					],
-					'form_php_require_once' => [
-						1 => '0'
-					],
 					'process-jplugins'      => '2',
-					'plugins'               => array('emundusstepevaluation', 'php'),
-					'plugin_state'          => array('1', '1'),
-					'plugin_locations'      => array('both', 'both'),
-					'plugin_events'         => array('both', 'both'),
-					'plugin_description'    => array('Gestion d\'accès à la phase d\'évaluation', 'css'),
+					'plugins'               => array('emundusstepevaluation'),
+					'plugin_state'          => array('1'),
+					'plugin_locations'      => array('both'),
+					'plugin_events'         => array('both'),
+					'plugin_description'    => array('Gestion d\'accès à la phase d\'évaluation'),
 				];
 			}
 			else
@@ -968,6 +963,57 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				$db->setQuery($query);
 
 				return $db->execute();
+			}
+
+			if ($plugin == 'databasejoin')
+			{
+				// Avoid creating a duplicate join record.
+				$query->clear()
+					->select($db->quoteName('id'))
+					->from($db->quoteName('#__fabrik_joins'))
+					->where($db->quoteName('element_id') . ' = ' . $db->quote($eid));
+				$db->setQuery($query);
+				if (!empty($db->loadResult()))
+				{
+					return true;
+				}
+
+				$query->clear()
+					->select($db->quoteName('params'))
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('id') . ' = ' . $db->quote($eid));
+				$db->setQuery($query);
+				$element_params = json_decode($db->loadResult());
+
+				if (!empty($element_params) && !empty($element_params->join_db_name))
+				{
+					$join_key_column = !empty($element_params->join_key_column) ? $element_params->join_key_column : 'id';
+
+					$params = array(
+						'join-label' => $element_params->join_val_column ?? '',
+						'type'       => 'element',
+						'pk'         => $db->quoteName($element_params->join_db_name) . '.' . $db->quoteName($join_key_column),
+					);
+					$data   = array(
+						'list_id'         => 0,
+						'element_id'      => $eid,
+						'join_from_table' => '',
+						'table_join'      => $element_params->join_db_name,
+						'table_key'       => $name,
+						'table_join_key'  => $join_key_column,
+						'join_type'       => 'left',
+						'group_id'        => $group_id,
+						'params'          => json_encode($params),
+					);
+
+					$query->clear()
+						->insert($db->quoteName('#__fabrik_joins'))
+						->columns($db->quoteName(array_keys($data)))
+						->values(implode(',', $db->quote(array_values($data))));
+					$db->setQuery($query);
+
+					return $db->execute();
+				}
 			}
 
 			return true;
@@ -1866,6 +1912,193 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $elements;
 	}
 
+	/**
+	 * Sort element ids from the freshest known value to the oldest one, for a given file.
+	 *
+	 * @param   array   $elementIds  The fabrik element ids to sort.
+	 * @param   string  $fnum        The file number the data belongs to.
+	 *
+	 * @return  array   The element ids, freshest data first.
+	 */
+	public static function sortElementIdsByDataFreshness(array $elementIds, string $fnum): array
+	{
+		$elementIds = array_values($elementIds);
+
+		if (count($elementIds) < 2 || empty($fnum))
+		{
+			return $elementIds;
+		}
+
+		$timestamps = self::getElementLogTimestamps($elementIds, $fnum);
+
+		$missingIds = array_diff($elementIds, array_keys($timestamps));
+
+		if (!empty($missingIds))
+		{
+			$tablesByElement = self::getElementsDataTables($missingIds);
+
+			foreach ($missingIds as $elementId)
+			{
+				$tableName = $tablesByElement[$elementId] ?? '';
+
+				if (!empty($tableName))
+				{
+					$timestamps[$elementId] = self::getDataTableTimestamp($tableName, $fnum);
+				}
+			}
+		}
+
+		usort($elementIds, function ($elementA, $elementB) use ($timestamps) {
+			return ($timestamps[$elementB] ?? 0) <=> ($timestamps[$elementA] ?? 0);
+		});
+
+		return $elementIds;
+	}
+
+	/**
+	 * Freshest timestamp per element id, read from the form-modification logs.
+	 *
+	 * @param   array   $elementIds  The fabrik element ids to look for.
+	 * @param   string  $fnum        The file number the data belongs to.
+	 *
+	 * @return  array<int, int>  Element id => unix timestamp of its last logged modification.
+	 */
+	private static function getElementLogTimestamps(array $elementIds, string $fnum): array
+	{
+		$timestamps   = [];
+		$remainingIds = array_flip($elementIds);
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		try
+		{
+			$actionRepository = new ActionRepository();
+			$action = $actionRepository->getByName(ActionEnum::FILE->value);
+
+			$query = $db->createQuery()
+				->select('timestamp, params')
+				->from($db->quoteName('#__emundus_logs'))
+				->where($db->quoteName('fnum_to') . ' = ' . $db->quote($fnum))
+				->where($db->quoteName('action_id') . ' = ' . $action->getId())
+				->where($db->quoteName('verb') . ' = ' . $db->quote('u'))
+				->where($db->quoteName('params') . ' LIKE ' . $db->quote('%"updated"%'))
+				->order($db->quoteName('timestamp') . ' DESC');
+			$db->setQuery($query);
+			$logs = $db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/helpers/fabrik | Cannot retrieve modification logs for fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.fabrik.helper');
+
+			return $timestamps;
+		}
+
+		foreach ($logs as $log)
+		{
+			if (empty($remainingIds))
+			{
+				break;
+			}
+
+			$params = json_decode($log->params, true);
+
+			foreach ($params['updated'] ?? [] as $updatedElement)
+			{
+				$elementId = (int) ($updatedElement['id'] ?? 0);
+
+				if (isset($remainingIds[$elementId]))
+				{
+					$timestamps[$elementId] = strtotime($log->timestamp);
+					unset($remainingIds[$elementId]);
+				}
+			}
+		}
+
+		return $timestamps;
+	}
+
+	/**
+	 * Map fabrik element ids to the name of the data table they are stored in.
+	 *
+	 * @param   array  $elementIds  The fabrik element ids to look for.
+	 *
+	 * @return  array<int, string>  Element id => data table name.
+	 */
+	private static function getElementsDataTables(array $elementIds): array
+	{
+		$tablesByElement = [];
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		try
+		{
+			$query = $db->createQuery()
+				->select('fe.id, fl.db_table_name')
+				->from($db->quoteName('#__fabrik_elements', 'fe'))
+				->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+				->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
+				->where($db->quoteName('fe.id') . ' IN (' . implode(',', array_map('intval', $elementIds)) . ')');
+			$db->setQuery($query);
+			$tablesByElement = $db->loadAssocList('id', 'db_table_name');
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/helpers/fabrik | Cannot retrieve data tables of elements : ' . $e->getMessage(), Log::ERROR, 'com_emundus.fabrik.helper');
+		}
+
+		return $tablesByElement;
+	}
+
+	/**
+	 * Get the submission timestamp of a file row inside a fabrik data table.
+	 *
+	 * @param   string  $tableName  The fabrik data table name.
+	 * @param   string  $fnum       The file number.
+	 *
+	 * @return  int     The unix timestamp of the row, 0 when unknown.
+	 */
+	private static function getDataTableTimestamp(string $tableName, string $fnum): int
+	{
+		$cacheKey = $tableName . '|' . $fnum;
+
+		if (isset(self::$dataTableTimestamps[$cacheKey]))
+		{
+			return self::$dataTableTimestamps[$cacheKey];
+		}
+
+		self::$dataTableTimestamps[$cacheKey] = 0;
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		try
+		{
+			$columns = array_keys($db->getTableColumns($tableName));
+
+			if (!in_array('time_date', $columns) || !in_array('fnum', $columns))
+			{
+				return 0;
+			}
+
+			$query = $db->createQuery()
+				->select('MAX(' . $db->quoteName('time_date') . ')')
+				->from($db->quoteName($tableName))
+				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$timeDate = $db->loadResult();
+
+			if (!empty($timeDate))
+			{
+				self::$dataTableTimestamps[$cacheKey] = (int) strtotime($timeDate);
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/helpers/fabrik | Cannot retrieve data freshness of table ' . $tableName . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.fabrik.helper');
+		}
+
+		return self::$dataTableTimestamps[$cacheKey];
+	}
+
 	static function getElementById(int $id): ?object
 	{
 		$db    = Factory::getContainer()->get('DatabaseDriver');
@@ -2023,6 +2256,17 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					$elements = array_filter($elements, function ($element) use ($fnumElements) {
 						return in_array($element->id, $fnumElements);
 					});
+
+					// Return the value from the freshest element first when the alias maps to several of them.
+					$elementsById = [];
+					foreach ($elements as $element)
+					{
+						$elementsById[$element->id] = $element;
+					}
+					$elements = array_map(
+						fn($id) => $elementsById[$id],
+						self::sortElementIdsByDataFreshness(array_keys($elementsById), $fnum)
+					);
 				}
 
 				try
@@ -3115,12 +3359,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		ValueFormatEnum $return = ValueFormatEnum::FORMATTED,
 		int             $user_id = 0,
 		ExportModeEnum  $exportMode = ExportModeEnum::GROUP_CONCAT,
-		array $translations = []
+		array $translations = [],
+		?string         $separator = null
 	): array
 	{
 		$fnums = !empty($fnum) ? [$fnum] : [];
 
-		return $this->getFabrikElementValues($fabrik_element, $fnums, $row_id, $return, $user_id, $exportMode, $translations);
+		return $this->getFabrikElementValues($fabrik_element, $fnums, $row_id, $return, $user_id, $exportMode, $translations, $separator);
 	}
 
 	/**
@@ -3143,7 +3388,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	    ValueFormatEnum $return = ValueFormatEnum::FORMATTED,
 	    int             $user_id = 0,
 	    ExportModeEnum  $exportMode = ExportModeEnum::GROUP_CONCAT,
-	    array $translations = [])
+	    array $translations = [],
+	    ?string         $separator = null)
 	: array
 	{
 		$fabrikElementValues = [];
@@ -3180,7 +3426,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 		if (in_array($plugin, [ElementPluginEnum::DATABASEJOIN, ElementPluginEnum::CASCADINGDROPDOWN]) || $isRepeatGroup)
 		{
-			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id, $exportMode);
+			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id, $exportMode, $separator);
 		}
 		else
 		{
@@ -3292,7 +3538,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		ValueFormatEnum   $return = ValueFormatEnum::FORMATTED,
 		?string           $date_format = null,
 		int               $user_id = 0,
-		ExportModeEnum    $exportMode = ExportModeEnum::GROUP_CONCAT
+		ExportModeEnum    $exportMode = ExportModeEnum::GROUP_CONCAT,
+		?string           $separator = null
 	)
 	{
 		if (!is_array($fnums) && $fnums !== null)
@@ -3305,12 +3552,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			return [];
 		}
 
-		if ($exportMode === ExportModeEnum::LEFT_JOIN)
+		if ($separator === null)
 		{
-			$separator = '[SEPARATOR]';
-		} else {
-			$separator = ', ';
+			$separator = $exportMode === ExportModeEnum::LEFT_JOIN ? self::VALUE_SEPARATOR_MARKER : self::VALUE_SEPARATOR;
 		}
+
+		// Interpolated as-is into the SEPARATOR "..." clauses built below.
+		$separator = str_replace(['"', '\\'], '', $separator);
 
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->createQuery();

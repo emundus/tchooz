@@ -1429,7 +1429,10 @@ class PlgFabrik_Element extends FabrikPlugin
 				{
 					\FabrikHelperHTML::debug($default, 'element eval default:' . $element->label);
 					\FabrikWorker::clearEval();
-					$default = Php::Eval(['code' => $default, 'vars'=>['data'=>$data]]);
+					// Re-resolve with forEval=true so substituted request/row data becomes a safe,
+					// quoted PHP literal instead of text spliced straight into the eval'd code.
+					$evalDefault = $w->parseMessageForPlaceHolder($element->default, $data, true, true, null, true, true);
+					$default = Php::Eval(['code' => $evalDefault, 'vars'=>['data'=>$data]]);
 					\FabrikWorker::logEval($default, 'Caught exception on eval of ' . $element->name . ': %s');
 
 					// Test this does stop error
@@ -1637,6 +1640,7 @@ class PlgFabrik_Element extends FabrikPlugin
 				}
 
 				$values = array_values($values);
+
 				$values = FArrayHelper::getValue($values, $repeatCounter, '');
 			}
 
@@ -2017,7 +2021,10 @@ class PlgFabrik_Element extends FabrikPlugin
 		if ($params->get('tipseval'))
 		{
 			FabrikWorker::clearEval();
-			$res = Php::Eval(['code' => $tip, 'vars' => ['data'=>$data]]);
+			// Re-resolve with forEval=true so substituted request/row data becomes a safe, quoted
+			// PHP literal instead of text spliced straight into the eval'd code.
+			$evalTip = $w->parseMessageForPlaceHolder($params->get('rollover'), $data, true, true, null, true, true);
+			$res = Php::Eval(['code' => $evalTip, 'vars' => ['data'=>$data]]);
 			FabrikWorker::logEval($res, 'Caught exception (%s) on eval of ' . $this->getElement()->name . ' tip: ' . str_replace('%','&percnt;',$tip));
 			$tip = $res;
 		}
@@ -3142,8 +3149,14 @@ class PlgFabrik_Element extends FabrikPlugin
 						}
 
 						$js .= "}";
-						$js = addslashes($js);
+						// Security fix: substitute %%REGEX%% BEFORE addslashes(), not after.
+						// $jsAct->js_e_value can contain data resolved from user-submitted form
+						// fields (via parseMessageForPlaceHolder() above). Substituting it in
+						// after addslashes() meant this one piece of the string never got
+						// escaped for the single-quoted JS string it's embedded in below,
+						// letting a crafted value break out and inject arbitrary JS.
 						$js = str_replace('%%REGEX%%', $jsAct->js_e_value, $js);
+						$js = addslashes($js);
 						$js = str_replace(array("\n", "\r"), "", $js);
 						$jsStr .= $jsControllerKey . ".dispatchEvent('$element->plugin', '$elId', '$jsAct->action', '$js');\n";
 					}
@@ -3964,7 +3977,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		{
 			$w    = new FabrikWorker;
 			//$data = empty($data) ? $this->getFormModel()->getData() : $data;
-			$pop  = $w->parseMessageForPlaceHolder($pop, $data, false);
+			$pop  = $w->parseMessageForPlaceHolder($pop, $data, false, true, null, true, true);
 
 			$key = md5($pop) . '-' . md5(serialize($data));
 
@@ -4552,6 +4565,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			{
 				case 'notequals':
 				case '<>':
+				case '!=':
 					$condition = "<>";
 
 					// 2 = sub-query so don't quote
@@ -4621,12 +4635,44 @@ class PlgFabrik_Element extends FabrikPlugin
 					$value = '(' . $value . ')';
 					break;
 				case 'not_in':
+				case 'not in':
 					$condition = 'NOT IN';
 					if ($eval != FABRIKFILTER_QUERY)
 					{
 						$value = FabrikString::safeQuote($value, true);
 					}
 					$value = '(' . $value . ')';
+					break;
+				case 'not like':
+				case 'not_like':
+					// Security fix: previously fell through with no case, so the raw value
+					// reached getFilterQuery()'s default branch unquoted (see 'contains'/'like' above).
+					$condition = 'NOT LIKE';
+
+					switch ($eval)
+					{
+						case FABRIKFILTER_QUERY:
+							$value = '(' . $value . ')';
+							break;
+						case FABRIKFILTER_NOQUOTES:
+							$value = $value;
+							break;
+						default:
+							$value = $db->q('%' . $value . '%');
+							break;
+					}
+					break;
+				case 'is null':
+				case 'is not null':
+					// Security fix: previously not a recognised condition at all (missing
+					// from $allowedConditions), so validateCondition() would reject it -
+					// yet other code (elementlist.php, list.php::groupFilterSQL()) treats
+					// 'IS NULL'/'IS NOT NULL' as legitimate, real conditions. These take no
+					// comparison value by definition, so discard whatever was submitted
+					// rather than trust it - there is nothing legitimate a value could add
+					// here, only room for injection.
+					$condition = ($condition === 'is null') ? 'IS NULL' : 'IS NOT NULL';
+					$value = '';
 					break;
 			}
 
@@ -4659,7 +4705,11 @@ class PlgFabrik_Element extends FabrikPlugin
 
 			if ($condition == '=' && $value == "'_null_'")
 			{
-				$condition = " IS NULL ";
+				// Note: previously " IS NULL " with padding spaces, which would never
+				// match the 'IS NULL' entry in validateCondition()'s whitelist (exact,
+				// case-sensitive-after-strtoupper comparison) - normalised to match the
+				// same canonical form used by the new 'is null'/'is not null' cases above.
+				$condition = 'IS NULL';
 				$value     = '';
 			}
 		}
@@ -4667,87 +4717,138 @@ class PlgFabrik_Element extends FabrikPlugin
 		return array($value, $condition);
 	}
 
-	/**
-	 * Build the filter query for the given element.
-	 * Can be overwritten in plugin - e.g. see checkbox element which checks for partial matches
-	 *
-	 * @param   string $key           element name in format `tablename`.`elementname`
-	 * @param   string $condition     =/like etc.
-	 * @param   string $value         search string - already quoted if specified in filter array options
-	 * @param   string $originalValue original filter value without quotes or %'s applied
-	 * @param   string $type          filter type advanced/normal/prefilter/search/querystring/sea* @
-	 * @param   string $filterEval    eval the filter value
-	 * @return  string    sql query part e,g, "key = value"
-	 */
-	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal', $filterEval = '0')
+/**
+ * Build the filter query for the given element.
+ * Can be overwritten in plugin - e.g. see checkbox element which checks for partial matches
+ *
+ * @param   string $key           element name in format `tablename`.`elementname` or like LOWER(`tablename`.`elementname`)
+ * @param   string $condition     =/like etc.
+ * @param   string $value         search string - already quoted if specified in filter array options
+ * @param   string $originalValue original filter value without quotes or %'s applied
+ * @param   string $type          filter type advanced/normal/prefilter/search/querystring/search
+ * @param   string $filterEval    eval the filter value
+ * @return  string    sql query part e,g, "key = value"
+ * @throws  UnexpectedValueException if $type is 'querystring' and $condition is not a recognised operator
+ */
+public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal', $filterEval = '0')
+{
+	$this->encryptFieldName($key);
+
+	// Query-string filters are the one filter type where $condition can be
+	// fully attacker-controlled (it comes straight from the URL). Key is
+	// already handled safely for this type; $value is only inspected here
+	// for the BETWEEN case, where its structure matters.
+	$this->validateCondition($condition, $value, $type);
+
+	switch ($condition)
 	{
-		$this->encryptFieldName($key);
-
-		switch ($condition)
-		{
-			case 'thisyear':
-				$query = ' YEAR(' . $key . ') = YEAR(NOW()) ';
-				break;
-			case 'lastyear':
-				$query = ' YEAR(' .$key . ') = YEAR(NOW()) - 1 ';
-				break;
-			case 'earlierthisyear':
-				$query = ' (DAYOFYEAR(' . $key . ') <= DAYOFYEAR(NOW()) AND YEAR(' . $key . ') = YEAR(NOW())) ';
-				break;
-			case 'laterthisyear':
-				$query = ' (DAYOFYEAR(' . $key . ') >= DAYOFYEAR(NOW()) AND YEAR(' . $key . ') = YEAR(NOW())) ';
-				break;
-			case 'today':
-				$query = ' (' . $key . ' >= CURDATE() AND ' . $key . ' < CURDATE() + INTERVAL 1 DAY) ';
-				break;
-			case 'yesterday':
-				$query = ' (' . $key . ' >= CURDATE() - INTERVAL 1 DAY AND ' . $key . ' < CURDATE()) ';
-				break;
-			case 'tomorrow':
-				$query = ' (' . $key . ' >= CURDATE() + INTERVAL 1 DAY  AND ' . $key . ' < CURDATE() + INTERVAL 2 DAY ) ';
-				break;
-			case 'thismonth':
-				$query = ' (' . $key . ' >= DATE_ADD(LAST_DAY(DATE_SUB(now(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)  AND ' . $key
-					. ' <= LAST_DAY(NOW()) ) ';
-				break;
-			case 'lastmonth':
-				$query = ' (' . $key . ' >= DATE_ADD(LAST_DAY(DATE_SUB(now(), INTERVAL 2 MONTH)), INTERVAL 1 DAY)  AND ' . $key
-					. ' <= LAST_DAY(DATE_SUB(NOW(), INTERVAL 1 MONTH)) ) ';
-				break;
-			case 'nextmonth':
-				$query = ' (' . $key . ' >= DATE_ADD(LAST_DAY(now()), INTERVAL 1 DAY)  AND ' . $key
-					. ' <= DATE_ADD(LAST_DAY(NOW()), INTERVAL 1 MONTH) ) ';
-				break;
-			case 'nextweek1':
-				$query = ' (YEARWEEK(' . $key . ',1) = YEARWEEK(DATE_ADD(NOW(), INTERVAL 1 WEEK), 1))';
-				break;
-			case 'birthday':
-				$query = '(MONTH(' . $key . ') = MONTH(CURDATE()) AND  DAY(' . $key . ') = DAY(CURDATE())) ';
-				break;
-			default:
-				if ($this->isJoin())
-				{
-					// Query the joined table concatenating into one field
-					$joinTable = $this->getJoinModel()->getJoin()->table_join;
-
-					// Jaanus: joined group pk set in groupConcactJoinKey()
-					$pk    = $this->groupConcactJoinKey();
-					$key   = "(SELECT GROUP_CONCAT(id SEPARATOR '" . GROUPSPLITTER . "') FROM $joinTable WHERE parent_id = $pk)";
-					$value = str_replace("'", '', $value);
-					$query = "($key = '$value' OR $key LIKE '$value" . GROUPSPLITTER . "%' OR
-					$key LIKE '" . GROUPSPLITTER . "$value" . GROUPSPLITTER . "%' OR
-					$key LIKE '%" . GROUPSPLITTER . "$value')";
-				}
-				else
-				{
-					$query = " $key $condition $value ";
-				}
-
-				break;
-		}
-
-		return $query;
+		case 'thisyear':
+			$query = ' YEAR(' . $key . ') = YEAR(NOW()) ';
+			break;
+		case 'lastyear':
+			$query = ' YEAR(' .$key . ') = YEAR(NOW()) - 1 ';
+			break;
+		case 'earlierthisyear':
+			$query = ' (DAYOFYEAR(' . $key . ') <= DAYOFYEAR(NOW()) AND YEAR(' . $key . ') = YEAR(NOW())) ';
+			break;
+		case 'laterthisyear':
+			$query = ' (DAYOFYEAR(' . $key . ') >= DAYOFYEAR(NOW()) AND YEAR(' . $key . ') = YEAR(NOW())) ';
+			break;
+		case 'today':
+			$query = ' (' . $key . ' >= CURDATE() AND ' . $key . ' < CURDATE() + INTERVAL 1 DAY) ';
+			break;
+		case 'yesterday':
+			$query = ' (' . $key . ' >= CURDATE() - INTERVAL 1 DAY AND ' . $key . ' < CURDATE()) ';
+			break;
+		case 'tomorrow':
+			$query = ' (' . $key . ' >= CURDATE() + INTERVAL 1 DAY  AND ' . $key . ' < CURDATE() + INTERVAL 2 DAY ) ';
+			break;
+		case 'thismonth':
+			$query = ' (' . $key . ' >= DATE_ADD(LAST_DAY(DATE_SUB(now(), INTERVAL 1 MONTH)), INTERVAL 1 DAY)  AND ' . $key
+				. ' <= LAST_DAY(NOW()) ) ';
+			break;
+		case 'lastmonth':
+			$query = ' (' . $key . ' >= DATE_ADD(LAST_DAY(DATE_SUB(now(), INTERVAL 2 MONTH)), INTERVAL 1 DAY)  AND ' . $key
+				. ' <= LAST_DAY(DATE_SUB(NOW(), INTERVAL 1 MONTH)) ) ';
+			break;
+		case 'nextmonth':
+			$query = ' (' . $key . ' >= DATE_ADD(LAST_DAY(now()), INTERVAL 1 DAY)  AND ' . $key
+				. ' <= DATE_ADD(LAST_DAY(NOW()), INTERVAL 1 MONTH) ) ';
+			break;
+		case 'nextweek1':
+			$query = ' (YEARWEEK(' . $key . ',1) = YEARWEEK(DATE_ADD(NOW(), INTERVAL 1 WEEK), 1))';
+			break;
+		case 'birthday':
+			$query = '(MONTH(' . $key . ') = MONTH(CURDATE()) AND  DAY(' . $key . ') = DAY(CURDATE())) ';
+			break;
+		default:
+			if ($this->isJoin())
+			{
+				// Query the joined table concatenating into one field
+				$joinTable = $this->getJoinModel()->getJoin()->table_join;
+				// Jaanus: joined group pk set in groupConcactJoinKey()
+				$pk    = $this->groupConcactJoinKey();
+				$key   = "(SELECT GROUP_CONCAT(id SEPARATOR '" . GROUPSPLITTER . "') FROM $joinTable WHERE parent_id = $pk)";
+				$value = str_replace("'", '', $value);
+				$query = "($key = '$value' OR $key LIKE '$value" . GROUPSPLITTER . "%' OR
+				$key LIKE '" . GROUPSPLITTER . "$value" . GROUPSPLITTER . "%' OR
+				$key LIKE '%" . GROUPSPLITTER . "$value')";
+			}
+			else
+			{
+				$query = " $key $condition $value ";
+			}
+			break;
 	}
+	return $query;
+}
+
+/**
+ * Validate $condition (and, for BETWEEN, $value) when the filter comes in
+ *
+ * This method guards:
+ *   - the operator/condition itself against being anything other than a
+ *     known, whitelisted value, and
+ *   - for BETWEEN specifically, that $value has the expected
+ *     'a' AND 'b' shape, since it is otherwise concatenated straight into
+ *     SQL (see getFilterQuery()'s default branch: "$key $condition $value").
+ *
+ * @param   string $condition filter condition, e.g. '=', 'LIKE', 'thisyear', ...
+ * @param   string $value     filter value belonging to $condition
+ * @param   string $type      filter type advanced/normal/prefilter/search/querystring/search
+ *
+ * @return  void
+ * @throws  UnexpectedValueException if $condition is not whitelisted,
+ *                                    or $condition is BETWEEN and $value is not 'a' AND 'b'
+ */
+public function validateCondition($condition, $value, $type) {	
+	static $allowedConditions = array(
+		'=', '!=', '<>', '<', '>', '<=', '>=',
+		'LIKE', 'NOT LIKE', 'IN', 'NOT IN', 'BETWEEN', 'REGEXP',
+		'IS NULL', 'IS NOT NULL',
+		'THISYEAR', 'LASTYEAR', 'EARLIERTHISYEAR', 'LATERTHISYEAR',
+		'TODAY', 'YESTERDAY', 'TOMORROW', 'THISMONTH', 'LASTMONTH',
+		'NEXTMONTH', 'NEXTWEEK1', 'BIRTHDAY',
+	);
+
+	if (!in_array(strtoupper($condition), $allowedConditions, true))
+	{
+		throw new UnexpectedValueException('Invalid filter condition: ' . $condition);
+	}
+
+	// Each BETWEEN bound may be either a quoted string ('a') or a plain
+	// number, integer or float (1, -6, 3.14, -0.5, ...) - the two bounds
+	// don't have to use the same form.
+	if (strtoupper($condition) === 'BETWEEN')
+	{
+		$bound = "(?:'(?:[^'\\\\]|\\\\.)*'|-?\\d+(?:\\.\\d+)?)";
+ 
+		if (!preg_match("/^{$bound}\\s+AND\\s+{$bound}$/i", trim($value)))
+		{
+			throw new UnexpectedValueException('Invalid BETWEEN ' . $value);
+		}
+	}
+}
 
 	/**
 	 * Get the AES decrypt sql segment for the element
@@ -5978,6 +6079,10 @@ class PlgFabrik_Element extends FabrikPlugin
 			return;
 		}
 
+		// Security hardening: cast here too instead of relying solely on the caller,
+		// since $id is spliced straight into the DELETE query below.
+		$id = (int) $id;
+
 		$db    = \FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->delete('#__fabrik_joins')->where('element_id = ' . $id);
@@ -6682,9 +6787,10 @@ class PlgFabrik_Element extends FabrikPlugin
 	}
 
 	/**
-	 * Not used
-	 *
-	 * @deprecated - not used
+	 * Ajax handler for the folder-browse UI in the fileupload element. Despite older
+	 * docblocks here claiming otherwise, this is still called from fileelement.js - do not
+	 * remove without checking that JS first. Scoped to the calling element's own
+	 * ul_directory, not the whole site - see the containment check inside.
 	 *
 	 * @return boolean
 	 */
@@ -6692,7 +6798,66 @@ class PlgFabrik_Element extends FabrikPlugin
 	{
 		$input   = $this->app->getInput();
 		$rDir    = $input->getString('dir');
-		$folders = Folder::folders($rDir);
+
+		// Eliminate \\ on Windows paths
+		$rDir = str_replace("\\\\","\\",$rDir);
+
+		/*
+		 * This ajax call only makes sense for the fileupload element's folder-browse UI,
+		 * which lets a user drill into subfolders of THAT element's own configured upload
+		 * directory (ul_directory) - see fileupload.php's rendering of the initial folder
+		 * list (JPATH_SITE . '/' . $params->get('ul_directory')). It must never be able to
+		 * browse anywhere else on the server, and it must never work at all for an
+		 * element_id that isn't a fileupload element with folder-select enabled - this is
+		 * not a general-purpose file-browser endpoint, even though it's unauthenticated by
+		 * design (folder-select can be used on public-facing forms).
+		 */
+		$this->setId($input->getInt('element_id'));
+		$this->getElement(true);
+		$params = $this->getParams();
+
+		if ($params->get('upload_allow_folderselect') != '1' || $params->get('ul_directory', '') === '')
+		{
+			$this->app->setHeader('status', 403, true);
+
+			return false;
+		}
+
+		$w = new FabrikWorker;
+		$baseDir = JPATH_SITE . '/' . $params->get('ul_directory');
+		$baseDir = $w->parseMessageForPlaceHolder($baseDir);
+
+		/*
+		 * Resolve to a canonical real path and confirm it's actually inside the element's
+		 * own upload directory. A plain string-prefix check on the raw input can be
+		 * defeated with ../ traversal, or by a sibling directory that merely shares the
+		 * base dir's string prefix, letting a caller list arbitrary server directories.
+		 */
+		$realDir  = realpath($rDir);
+		$realBase = realpath($baseDir);
+
+		if ($realDir !== false && ($realBase === false
+			|| strpos($realDir . DIRECTORY_SEPARATOR, $realBase . DIRECTORY_SEPARATOR) !== 0))
+		{
+			/*
+			 * The path resolves to somewhere real, but outside the allowed base dir - the
+			 * legitimate JS caller never sends such a path, so this is a probe/attack.
+			 * Fail loudly with a 403 rather than returning 200 + [], which would be
+			 * indistinguishable from the legitimate "no subfolders here" response below.
+			 *
+			 * Note: plain http_response_code() is not enough here - Joomla's own
+			 * AbstractWebApplication::respond() overwrites the Status header from its
+			 * internal Response object at the end of the request unless one has already
+			 * been set via setHeader(), so we have to go through the app's own API.
+			 */
+			$this->app->setHeader('status', 403, true);
+
+			return false;
+		}
+
+		// $realDir === false means the path simply doesn't exist/isn't readable - treat
+		// that as the normal "nothing to show" case, same as an empty folder listing.
+		$folders = $realDir === false ? false : Folder::folders($realDir);
 
 		if ($folders === false)
 		{

@@ -1712,17 +1712,17 @@
         },
         {
             "name": "joomla/filesystem",
-            "version": "3.2.0",
-            "version_normalized": "3.2.0.0",
+            "version": "dev-3.x-shtml",
+            "version_normalized": "dev-3.x-shtml",
             "source": {
                 "type": "git",
-                "url": "https://github.com/joomla-framework/filesystem.git",
-                "reference": "be6917c396300c8316ef13ef3e2096732af847fd"
+                "url": "git@github.com:joomla-framework/security-filesystem.git",
+                "reference": "8912e45e2aa2c119e78783d046a37ad2d1df0e61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/filesystem/zipball/be6917c396300c8316ef13ef3e2096732af847fd",
-                "reference": "be6917c396300c8316ef13ef3e2096732af847fd",
+                "url": "https://api.github.com/repos/joomla-framework/security-filesystem/zipball/8912e45e2aa2c119e78783d046a37ad2d1df0e61",
+                "reference": "8912e45e2aa2c119e78783d046a37ad2d1df0e61",
                 "shasum": ""
             },
             "require": {
@@ -1736,7 +1736,7 @@
                 "phpunit/phpunit": "^9.5.28",
                 "squizlabs/php_codesniffer": "^3.7.2"
             },
-            "time": "2025-08-27T18:46:46+00:00",
+            "time": "2026-08-05T17:20:15+00:00",
             "type": "joomla-package",
             "extra": {
                 "branch-alias": {
@@ -1750,7 +1750,11 @@
                     "Joomla\\Filesystem\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Joomla\\Filesystem\\Tests\\": "Tests/"
+                }
+            },
             "license": [
                 "GPL-2.0-or-later"
             ],
@@ -1762,9 +1766,19 @@
                 "joomla"
             ],
             "support": {
-                "issues": "https://github.com/joomla-framework/filesystem/issues",
-                "source": "https://github.com/joomla-framework/filesystem/tree/3.2.0"
+                "source": "https://github.com/joomla-framework/security-filesystem/tree/3.x-shtml",
+                "issues": "https://github.com/joomla-framework/security-filesystem/issues"
             },
+            "funding": [
+                {
+                    "type": "github",
+                    "url": "https://github.com/joomla"
+                },
+                {
+                    "type": "custom",
+                    "url": "https://community.joomla.org/sponsorship-campaigns.html"
+                }
+            ],
             "install-path": "../joomla/filesystem"
         },
         {

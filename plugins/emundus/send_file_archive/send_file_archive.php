@@ -12,10 +12,14 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Factory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Services\Export\Zip\ZipOptions;
+use Tchooz\Services\Export\Zip\ZipService;
+use Tchooz\Traits\TraitAutomatedTask;
 
 defined('_JEXEC') or die('Restricted access');
 
 class plgEmundusSend_file_archive extends CMSPlugin {
+	use TraitAutomatedTask;
 
 	function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);
@@ -90,6 +94,7 @@ class plgEmundusSend_file_archive extends CMSPlugin {
 	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
 	private function sendEmailArchive($fnum, $email) {
+		$sent = false;
 
 		if (!extension_loaded('zip')) {
 			Log::add('Error: ZIP extension not loaded.', Log::ERROR, 'com_emundus');
@@ -103,7 +108,6 @@ class plgEmundusSend_file_archive extends CMSPlugin {
 
 		$zip_attachments = $this->params->get('zip_attachments',1);
 		$zip_evaluation = $this->params->get('zip_evaluation', 0);
-
 
 		$eval_steps = [];
 		if ($zip_evaluation) {
@@ -144,15 +148,34 @@ class plgEmundusSend_file_archive extends CMSPlugin {
 			}
 		}
 
-		if (!defined(EMUNDUS_PATH_ABS)) {
-			define('EMUNDUS_PATH_ABS',     JPATH_ROOT.DIRECTORY_SEPARATOR.'images/emundus/files/');
+		if (!defined('EMUNDUS_PATH_ABS')) {
+			define('EMUNDUS_PATH_ABS', JPATH_ROOT.DIRECTORY_SEPARATOR.'images/emundus/files/');
 		}
 
-		$zip_name = $m_files->exportZip([$fnum], 1, $zip_attachments, $eval_steps, 0, null, null, null, true);
-		$file = JPATH_SITE.'/tmp/'.$zip_name;
+		try {
+			$zipService = new ZipService(
+				[$fnum],
+				$this->getAutomatedTaskUser(),
+				[
+					'synthesis'  => ZipOptions::DEFAULT_HEADERS,
+					'headers'    => [],
+					'eval_steps' => $eval_steps,
+					'forms'      => 1,
+					'attachment' => $zip_attachments ? 1 : 0,
+				]
+			);
+			$export = $zipService->export('tmp/', null);
 
-		$m_emails->sendEmail($fnum, $email, null, $file, false, 2);
-		return true;
+			$sent = $m_emails->sendEmail($fnum, $email, null, JPATH_SITE . '/' . $export->getFilePath(), false, 2);
+		} catch (\Exception $e) {
+			Log::add('Error: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		if (!$sent && Factory::getApplication()->isClient('site')) {
+			Factory::getApplication()->enqueueMessage('Error sending email to ' . $email, 'error');
+		}
+
+		return $sent;
 	}
 
 }

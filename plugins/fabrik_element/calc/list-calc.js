@@ -38,6 +38,7 @@ define(['jquery', 'fab/encoder'], function (jQuery, Encoder) {
 				'rows'       : this.list.getRowIds(),
 				'elementname': this.options.elid
 			};
+			data[Joomla.getOptions('csrf.token')] = 1;
 
 			new Request.JSON({
 				url      : '',

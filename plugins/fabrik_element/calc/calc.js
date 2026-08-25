@@ -134,9 +134,11 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 	            'method'       : 'ajax_calc',
 	            'element_id'   : this.options.id,
 	            'formid'       : this.form.id,
-	            'repeatCounter': this.options.repeatCounter
+	            'repeatCounter': this.options.repeatCounter,
+                'g'             : 'element'
             };
             data = Object.append(formData, data);
+            data[Joomla.getOptions('csrf.token')] = 1;
             Fabrik.loader.start(this.element.getParent(), Joomla.JText._('COM_FABRIK_LOADING'));
             new Request.HTML({
                 'url'     : '',

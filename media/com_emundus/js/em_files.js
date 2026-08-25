@@ -466,6 +466,18 @@ function hideItems(selectors){
     }
 }
 
+function removeApplicationBlocks() {
+    document.querySelectorAll('#em-appli-block').forEach(function (block) {
+        const previous = block.previousElementSibling;
+
+        if (previous && previous.classList.contains('clearfix')) {
+            previous.remove();
+        }
+
+        block.remove();
+    });
+}
+
 function openFiles(fnum, page = 0, vue = false) {
     checkIfSomeoneIsEditing(fnum.fnum);
 
@@ -536,6 +548,7 @@ function openFiles(fnum, page = 0, vue = false) {
 
             var panel = result;
             //.main-panel
+            removeApplicationBlocks();
             $('.main-panel').append('<div class="clearfix"></div><div class="col-md-12" style="height: calc(100% - 40px)" id="em-appli-block"></div>');
             if (result.trim() != '') {
                 let panelBody = $('#em-synthesis .panel-body');
@@ -4838,7 +4851,7 @@ $(document).ready(function() {
                     hideItems(['#em-appli-menu', '#em-synthesis', '#em-assoc-files', '.em-hide', '#em-last-open']);
 
                     $.ajaxQ.abortAll();
-                    $('#em-appli-block').remove();
+                    removeApplicationBlocks();
                     $('.em-close-minimise').remove();
                     $('.em-open-files').remove();
                     $('#em-last-open .list-group .list-group-item').removeClass('active');
@@ -6795,3 +6808,96 @@ window.addEventListener('message', (event) => {
         loadAssocFilesSection(event.data.fnum);
     }
 });
+
+// Delegated from document: reloadData() replaces the whole table, so a direct binding
+// would be lost on every filter change or pagination click.
+document.addEventListener('click', (event) => {
+    const toggle = event.target.closest('.em-favorite-toggle');
+
+    if (!toggle || toggle.dataset.pending === '1') {
+        return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    toggleFavorite(toggle);
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+        return;
+    }
+
+    const toggle = event.target.closest('.em-favorite-toggle');
+
+    if (!toggle || toggle.dataset.pending === '1') {
+        return;
+    }
+
+    event.preventDefault();
+    toggleFavorite(toggle);
+});
+
+function toggleFavorite(toggle) {
+    const fnum = toggle.dataset.fnum;
+
+    if (!fnum) {
+        return;
+    }
+
+    toggle.dataset.pending = '1';
+
+    fetch('/index.php?option=com_emundus&controller=favorites&task=togglefavorite', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRF-Token': Joomla.getOptions('csrf.token')
+        },
+        body: 'fnum=' + encodeURIComponent(fnum)
+    }).then((response) => {
+        return response.json();
+    }).then((result) => {
+        if (!result.status) {
+            throw new Error(result.msg);
+        }
+
+        applyFavoriteState(toggle, result.data.favorite);
+    }).catch((error) => {
+        // The icon keeps its previous state on purpose: it must never claim a change the server refused.
+        Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: Joomla.Text._('COM_EMUNDUS_FAVORITES_TOGGLE_FAILED'),
+            text: error.message || '',
+            showConfirmButton: true,
+            customClass: {
+                title: 'em-swal-title',
+                confirmButton: 'em-swal-confirm-button',
+                actions: 'em-swal-single-action'
+            }
+        });
+    }).finally(() => {
+        delete toggle.dataset.pending;
+    });
+}
+
+function applyFavoriteState(toggle, isFavorite) {
+    const title = Joomla.Text._(isFavorite ? 'COM_EMUNDUS_FAVORITES_REMOVE' : 'COM_EMUNDUS_FAVORITES_ADD');
+
+    // Palettes mirror EmundusHelperFiles::createFavoriteToggle(). The variant travels on the element
+    // so a toggle rendered on the dark action bar keeps its own colours once clicked.
+    const palettes = {
+        list: ['tw-text-yellow-500', 'tw-text-neutral-500'],
+        bar: ['tw-text-white', 'tw-text-white/60']
+    };
+    const [onClass, offClass] = palettes[toggle.dataset.variant] || palettes.list;
+
+    toggle.textContent = isFavorite ? 'star' : 'star_border';
+    toggle.dataset.favorite = isFavorite ? '1' : '0';
+    toggle.setAttribute('title', title);
+    toggle.setAttribute('aria-label', title);
+    toggle.classList.toggle('em-favorite-toggle--on', isFavorite);
+    toggle.classList.toggle(onClass, isFavorite);
+    toggle.classList.toggle(offClass, !isFavorite);
+}

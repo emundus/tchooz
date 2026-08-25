@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Session\Session;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
@@ -128,7 +129,8 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 				$this->session->set($context . 'title', $stitle);
 
 
-				$surl[$this->renderOrder] = 'index.php?option=com_' . $this->package . '&view=plugin&g=form&plugin=redirect&method=displayThanks&task=pluginAjax';
+				$surl[$this->renderOrder] = 'index.php?option=com_' . $this->package . '&view=plugin&g=form&plugin=redirect&method=displayThanks&task=pluginAjax'
+					. '&' . Session::getFormToken() . '=1';
 				$this->session->set($context . 'url', $surl);
 			}
 		}

@@ -196,11 +196,13 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                         'format'    : 'raw',
                         'task'      : 'plugin.pluginAjax',
                         'plugin'    : 'fileupload',
+                        'g'         : 'element',
                         'method'    : 'ajax_clearFileReference',
                         'element_id': this.options.id,
                         'formid'    : this.form.id,
                         'rowid'     : this.form.options.rowid,
-                        'joinPkVal' : joinPkVal
+                        'joinPkVal' : joinPkVal,
+                        [this.options.ajaxToken]: 1
                     }
                 }).done(function () {
                     Fabrik.trigger('fabrik.fileupload.clearfileref.complete', self);
@@ -401,7 +403,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
             this.pluploadContainer = c.find('.plupload_container');
             this.pluploadFallback = c.find('.plupload_fallback');
             this.droplist = c.find('.plupload_filelist');
-            var url = 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax';
+            var url = 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&g=element';
             url += '&plugin=fileupload&' + this.options.ajaxToken + '=1';
             url += '&method=ajax_upload&element_id=' + this.options.elid;
 
@@ -745,6 +747,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     'format'       : 'raw',
                     'task'         : 'plugin.pluginAjax',
                     'plugin'       : 'fileupload',
+                    'g'            : 'element',
                     'method'       : 'ajax_deleteFile',
                     'element_id'   : this.options.id,
                     'file'         : f,

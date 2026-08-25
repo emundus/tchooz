@@ -40,25 +40,28 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
 					'method': 'deleteComment',
 					'g'     : 'form',
 					'formid': this.options.formid,
-					'rowid' : this.options.rowid
+					'rowid' : this.options.rowid,
+					[Joomla.getOptions('csrf.token')]: 1
 				},
 				'onComplete': function (e) {
 					this.deleteComplete(e);
 				}.bind(this)
 			});
+			var updateCommentData = {
+				'option': 'com_fabrik',
+				'format': 'raw',
+				'task'  : 'plugin.pluginAjax',
+				'plugin': 'comment',
+				'method': 'updateComment',
+				'g'     : 'form',
+				'formid': this.options.formid,
+				'rowid' : this.options.rowid
+			};
+			updateCommentData[Joomla.getOptions('csrf.token')] = 1;
 			this.ajax.updateComment = new Request({
 				'url'   : '',
 				'method': 'post',
-				'data'  : {
-					'option': 'com_fabrik',
-					'format': 'raw',
-					'task'  : 'plugin.pluginAjax',
-					'plugin': 'comment',
-					'method': 'updateComment',
-					'g'     : 'form',
-					'formid': this.options.formid,
-					'rowid' : this.options.rowid
-				}
+				'data'  : updateCommentData
 			});
 			this.watchReply();
 			this.watchInput();
@@ -107,7 +110,8 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
 					'g'     : 'form',
 					'formid': this.options.formid,
 					'rowid' : this.options.rowid,
-					'label' : this.options.label
+					'label' : this.options.label,
+					[Joomla.getOptions('csrf.token')]: 1
 				},
 
 				'onSuccess': function (r) {
@@ -324,7 +328,8 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
 								'commentid': commentid,
 								'g'        : 'form',
 								'formid'   : this.options.formid,
-								'rowid'    : this.options.rowid
+								'rowid'    : this.options.rowid,
+								[Joomla.getOptions('csrf.token')]: 1
 							},
 							'onComplete': function (r) {
 								c.getElements('.info').dispose();

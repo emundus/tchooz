@@ -111,16 +111,24 @@ class EmundusControllerProgramme extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::READ]])]
 	public function getallprogramforfilter(): EmundusResponse
 	{
-		$programRepository     = new ProgramRepository();
-		$emundusUserRepository = new EmundusUserRepository();
+		$programRepository = new ProgramRepository();
 
-		$userPrograms = $emundusUserRepository->getUserProgramsCodes($this->user->id);
-		$programs     = $programRepository->get(
-			filters: [
-				'code' => $userPrograms
-			],
-			order: 'label'
-		);
+		// An empty list of codes filters everything out, so a user managing every program is not scoped
+		if (EmundusHelperAccess::canManageAllPrograms($this->user->id))
+		{
+			$programs = $programRepository->get(order: 'label');
+		}
+		else
+		{
+			$emundusUserRepository = new EmundusUserRepository();
+
+			$programs = $programRepository->get(
+				filters: [
+					'code' => $emundusUserRepository->getUserProgramsCodes($this->user->id)
+				],
+				order: 'label'
+			);
+		}
 
 		$values = [];
 		$type   = $this->input->getString('type', '');

@@ -356,6 +356,7 @@ define(['jquery', 'fab/element', 'fab/encoder', 'fab/fabrik', 'fab/autocomplete-
                     'format'    : 'raw',
                     'task'      : 'plugin.pluginAjax',
                     'plugin'    : 'databasejoin',
+                    'g'         : 'element',
                     'method'    : 'ajax_getOptions',
                     'element_id': this.options.id,
                     'formid'    : this.options.formid,
@@ -378,6 +379,7 @@ define(['jquery', 'fab/element', 'fab/encoder', 'fab/fabrik', 'fab/autocomplete-
                 // Joined elements strElement isnt right so use fullName as well
                 data[this.options.fullName + '_raw'] = v;
             }
+            data[Joomla.getOptions('csrf.token')] = 1;
 
             Fabrik.loader.start(this.element.getParent(), Joomla.JText._('COM_FABRIK_LOADING'));
 
@@ -514,6 +516,7 @@ define(['jquery', 'fab/element', 'fab/encoder', 'fab/fabrik', 'fab/autocomplete-
                     'formid': this.options.popupform,
                     'rowid' : rowId
                 };
+            post[Joomla.getOptions('csrf.token')] = 1;
             new Request.JSON({
                 url      : url,
                 'data'   : post,
@@ -1038,12 +1041,14 @@ define(['jquery', 'fab/element', 'fab/encoder', 'fab/fabrik', 'fab/autocomplete-
                                 // Need to get v if auto-complete and updating from posted popup form
                                 // as we only want to get ONE
                                 // option back inside update();
+                                var popupData = {
+                                    'formid': this.options.popupform,
+                                    'rowid' : json.rowid
+                                };
+                                popupData[Joomla.getOptions('csrf.token')] = 1;
                                 new Request.JSON({
                                     'url'      : 'index.php?option=com_fabrik&view=form&format=raw',
-                                    'data'     : {
-                                        'formid': this.options.popupform,
-                                        'rowid' : json.rowid
-                                    },
+                                    'data'     : popupData,
                                     'onSuccess': function (json) {
                                         this.update(json.data[this.options.key]);
                                     }.bind(this)

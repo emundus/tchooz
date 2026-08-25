@@ -32,6 +32,13 @@ use Joomla\CMS\Factory;
  *
  * as per the $myUsername example in userExists() below.
  *
+ * userAjax requests are validated by Html::validateRequest() with $requireToken = true, so
+ * EVERY request - GET included - must carry Joomla's session/CSRF token, or it will be
+ * rejected before your method is ever called. Joomla.getOptions('csrf.token') gives you
+ * the token's field name (a per-session hash); the value doesn't matter, so sending 1 is
+ * fine. See the userExists() and ajaxTest() examples below for how to attach it whether
+ * you're building the URL yourself or passing a data object to Request.
+ *
  * The userExists() example is designed to test if a username given in a text element
  * exists.  If it does, an alert will pop up, then the field will be cleared and the cursor re-focused to it.
  *
@@ -39,6 +46,7 @@ use Joomla\CMS\Factory;
  *
  * function userExists(myUsername,refocus) {
  *	 var url = "index.php?option=com_fabrik&format=raw&task=plugin.userAjax&method=userExists&username=" + myUsername;
+ *	 url += "&" + Joomla.getOptions('csrf.token') + "=1";
  *	 new Request({url:url,
  *		onComplete: function(response) {
  *			if (response != '') {
@@ -68,9 +76,11 @@ use Joomla\CMS\Factory;
  * have a "Country" dropdown, and wish to repopulate the State menu when it changes):
  *
  * function ajaxTest() {
- *	 var url = "index.php?option=com_fabrik&format=raw&task=plugin.userAjax&method=etStateDropDown";
- *	 new Request({url:url,
+ *	 var data = {method: 'etStateDropDown'};
+ *	 data[Joomla.getOptions('csrf.token')] = 1;
+ *	 new Request({url: "index.php?option=com_fabrik&format=raw&task=plugin.userAjax",
  *		method: 'get',
+ *		data: data,
  *		update: document.id('jos_fabrik_formdata_13___states')
  *	 }).send();
  * }

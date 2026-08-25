@@ -36,14 +36,16 @@ define(['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 		},
 
 		changePlugin: function (e) {
+			var changePluginData = {
+				'option': 'com_fabrik',
+				'task'  : 'cron.getPluginHTML',
+				'format': 'raw',
+				'plugin': e.target.get('value')
+			};
+			changePluginData[Joomla.getOptions('csrf.token')] = 1;
 			var myAjax = new Request.HTML({
 				url         : 'index.php',
-				'data'      : {
-					'option': 'com_fabrik',
-					'task'  : 'cron.getPluginHTML',
-					'format': 'raw',
-					'plugin': e.target.get('value')
-				},
+				'data'      : changePluginData,
 				'update'    : document.id('plugin-container'),
 				'onComplete': function () {
 					this.updateBootStrap();

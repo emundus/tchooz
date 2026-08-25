@@ -40,6 +40,14 @@ class Export
 
 	protected array|false $translations = [];
 
+	/**
+	 * Separator the repeated values of an element are concatenated with, or null to leave the choice
+	 * to EmundusHelperFabrik. A format that has to split the aggregate back apart (the Excel pivot)
+	 * sets the marker through setValueSeparator(), and is then responsible for replacing what is
+	 * left of it before the value is written out.
+	 */
+	protected ?string $valueSeparator = null;
+
 	const CAMPAIGN_ELEMENTS = [
 		1 => [
 			'id'    => HeadersEnum::CAMPAIGN_LABEL->value,
@@ -134,6 +142,20 @@ class Export
 	public function __construct(string $langCode = 'fr-FR')
 	{
 		$this->registerClasses();
+	}
+
+	/**
+	 * Whether an export may be handed over to the task system. When it may not, a run that cannot
+	 * finish has nowhere to go, so it must keep going instead of stopping on a partial state.
+	 */
+	protected function isAsyncExportAllowed(): bool
+	{
+		return (bool) ComponentHelper::getParams('com_emundus')->get('async_export', 0);
+	}
+
+	protected function setValueSeparator(string $separator): void
+	{
+		$this->valueSeparator = $separator;
 	}
 
 	/**
@@ -324,7 +346,7 @@ class Export
 				{
 					$elementValue = $this->helperFabrik->getFabrikElementValues($elementSerialized, array_map(function ($file) {
 						return $file->getFnum();
-					}, $files), 0, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations);
+					}, $files), 0, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations, $this->valueSeparator);
 				}
 				else
 				{
@@ -350,7 +372,7 @@ class Export
 						$evaluationValues = [];
 						foreach ($rowIds as $rowId)
 						{
-							$elementValuePart = $this->helperFabrik->getFabrikElementValue($elementSerialized, $file->getFnum(), $rowId, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations);
+							$elementValuePart = $this->helperFabrik->getFabrikElementValue($elementSerialized, $file->getFnum(), $rowId, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations, $this->valueSeparator);
 							if ($elementValuePart && !empty($elementValuePart[$element->getId()]) && !empty($elementValuePart[$element->getId()][$file->getFnum()]))
 							{
 								$evaluationValues[$rowId] = $elementValuePart[$element->getId()][$file->getFnum()]['val'];
@@ -361,7 +383,7 @@ class Export
 						$elementValue[$element->getId()][$file->getFnum()]['val'] = implode(',', $evaluationValues);
 					} else if (empty($elementValue) || empty($elementValue[$element->getId()]))
 					{
-						$elementValue = $this->helperFabrik->getFabrikElementValue($elementSerialized, $file->getFnum(), 0, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations);
+						$elementValue = $this->helperFabrik->getFabrikElementValue($elementSerialized, $file->getFnum(), 0, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations, $this->valueSeparator);
 					}
 
 					$result['data'][$file->getFnum()] = '';
@@ -401,7 +423,7 @@ class Export
 
 								$aliasedElement           = $this->fabrikRepository->getElementById($elementByAlias->id);
 								$aliasedElementSerialized = $aliasedElement->toArray();
-								$aliasedElementValue      = $this->helperFabrik->getFabrikElementValue($aliasedElementSerialized, $file->getFnum(), 0, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations);
+								$aliasedElementValue      = $this->helperFabrik->getFabrikElementValue($aliasedElementSerialized, $file->getFnum(), 0, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations, $this->valueSeparator);
 								if ($aliasedElementValue && !empty($aliasedElementValue[$aliasedElement->getId()]) && !empty($aliasedElementValue[$aliasedElement->getId()][$file->getFnum()]) && isset($aliasedElementValue[$aliasedElement->getId()][$file->getFnum()]['val']))
 								{
 									$result['data'][$file->getFnum()] = $aliasedElementValue[$aliasedElement->getId()][$file->getFnum()]['val'];
@@ -421,18 +443,23 @@ class Export
 						{
 							if ($element->getGroupParamsArray()['repeat_group_button'] == 1 || $element->getPlugin() == ElementPluginEnum::CHECKBOX)
 							{
-								// Explode by , first
-								$values = explode(',', $result['data'][$file->getFnum()]);
-							}
-
-							if (isset($values) && is_array($values))
-							{
-								$transformedValues = [];
-								foreach ($values as $value)
+								// Two levels of concatenation: the repetitions are joined with the
+								// separator this export asked for, the values selected inside one
+								// repetition with ','. Translating each one keeps both levels intact.
+								$separator   = $this->valueSeparator ?? \EmundusHelperFabrik::VALUE_SEPARATOR;
+								$repetitions = explode($separator, $result['data'][$file->getFnum()]);
+								foreach ($repetitions as $key => $repetition)
 								{
-									$transformedValues[] = Text::_($value);
+									$transformedValues = [];
+									foreach (explode(',', $repetition) as $value)
+									{
+										$transformedValues[] = Text::_(trim($value));
+									}
+
+									$repetitions[$key] = implode(', ', $transformedValues);
 								}
-								$result['data'][$file->getFnum()] = implode(', ', $transformedValues);
+
+								$result['data'][$file->getFnum()] = implode($separator, $repetitions);
 							}
 							else
 							{

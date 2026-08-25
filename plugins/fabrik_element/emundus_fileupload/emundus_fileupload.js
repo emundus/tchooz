@@ -40,7 +40,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 div.appendChild(divAttachment);
             }
 
-            fetch('index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_attachment', {
+            fetch('index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&g=element&plugin=emundus_fileupload&method=ajax_attachment&' + this.options.ajaxToken + '=1', {
                 body: formData,
                 method: 'post'
             }).then((response) => {
@@ -120,7 +120,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 formData.append('file[]', file);
             }
 
-            fetch('index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_upload', {
+            fetch('index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&g=element&plugin=emundus_fileupload&method=ajax_upload&' + this.options.ajaxToken + '=1', {
                 body: formData,
                 method: 'post'
             }).then((response) => {
@@ -289,7 +289,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     formData.append('fnum', this.options.fnum);
                     formData.append('element_id', this.options.elid);
 
-                    fetch('index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundus_fileupload&method=ajax_delete', {
+                    fetch('index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&g=element&plugin=emundus_fileupload&method=ajax_delete&' + this.options.ajaxToken + '=1', {
                         body: formData,
                         method: 'post'
                     }).then((response) => {

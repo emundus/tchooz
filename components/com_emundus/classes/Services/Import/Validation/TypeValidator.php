@@ -9,9 +9,13 @@
 namespace Tchooz\Services\Import\Validation;
 
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\Import\BooleanValueEnum;
 use Tchooz\Enums\Import\FieldTypeEnum;
+use Tchooz\Enums\Import\ImportErrorCodeEnum;
 use Tchooz\Services\DateParser;
 use Tchooz\Services\Import\Mapping\FieldDescriptor;
+use Tchooz\Services\Import\Report\RowError;
+use Tchooz\Transformers\PhoneNumberTransformer;
 
 /**
  * Generic per-field validator driven by a FieldDescriptor.
@@ -39,19 +43,7 @@ final class TypeValidator
 	];
 
 	/**
-	 * Truthy/falsy tokens accepted for FieldTypeEnum::BOOLEAN.
-	 * Comparison is case-insensitive after trim().
-	 */
-	private const BOOLEAN_TOKENS = [
-		'true', 'false',
-		'1', '0',
-		'yes', 'no',
-		'oui', 'non',
-		'y',   'n',
-	];
-
-	/**
-	 * @return string[] errors (empty array = field is valid)
+	 * @return RowError[] errors (empty array = field is valid)
 	 */
 	public function validate(mixed $value, FieldDescriptor $descriptor): array
 	{
@@ -76,6 +68,7 @@ final class TypeValidator
 			FieldTypeEnum::EMAIL   => $this->validateEmail($value, $descriptor),
 			FieldTypeEnum::URL     => $this->validateUrl($value, $descriptor),
 			FieldTypeEnum::ENUM    => $this->validateEnum($value, $descriptor),
+			FieldTypeEnum::REFERENTIAL => $this->validateReferential($value, $descriptor),
 			FieldTypeEnum::STRING  => $this->validateString($value, $descriptor),
 		};
 	}
@@ -90,7 +83,7 @@ final class TypeValidator
 			return [];
 		}
 
-		return [$this->message('COM_EMUNDUS_IMPORT_VALIDATION_INVALID_INTEGER', $descriptor, $value)];
+		return [$this->error(ImportErrorCodeEnum::INVALID_INTEGER, $descriptor, $value)];
 	}
 
 	private function validateNumber(mixed $value, FieldDescriptor $descriptor): array
@@ -103,23 +96,17 @@ final class TypeValidator
 			return [];
 		}
 
-		return [$this->message('COM_EMUNDUS_IMPORT_VALIDATION_INVALID_NUMBER', $descriptor, $value)];
+		return [$this->error(ImportErrorCodeEnum::INVALID_NUMBER, $descriptor, $value)];
 	}
 
 	private function validateBoolean(mixed $value, FieldDescriptor $descriptor): array
 	{
-		if (is_bool($value))
+		if (BooleanValueEnum::tryFromValue($value) !== null)
 		{
 			return [];
 		}
 
-		$token = strtolower(trim((string) $value));
-		if (in_array($token, self::BOOLEAN_TOKENS, true))
-		{
-			return [];
-		}
-
-		return [$this->message('COM_EMUNDUS_IMPORT_VALIDATION_INVALID_BOOLEAN', $descriptor, $value)];
+		return [$this->error(ImportErrorCodeEnum::INVALID_BOOLEAN, $descriptor, $value)];
 	}
 
 	private function validateDate(mixed $value, FieldDescriptor $descriptor): array
@@ -129,7 +116,7 @@ final class TypeValidator
 			return [];
 		}
 
-		return [$this->message('COM_EMUNDUS_IMPORT_VALIDATION_INVALID_DATE', $descriptor, $value)];
+		return [$this->error(ImportErrorCodeEnum::INVALID_DATE, $descriptor, $value)];
 	}
 
 	private function validateEmail(mixed $value, FieldDescriptor $descriptor): array
@@ -139,7 +126,7 @@ final class TypeValidator
 			return [];
 		}
 
-		return [$this->message('COM_EMUNDUS_IMPORT_VALIDATION_INVALID_EMAIL', $descriptor, $value)];
+		return [$this->error(ImportErrorCodeEnum::INVALID_EMAIL, $descriptor, $value)];
 	}
 
 	private function validateUrl(mixed $value, FieldDescriptor $descriptor): array
@@ -149,7 +136,7 @@ final class TypeValidator
 			return [];
 		}
 
-		return [$this->message('COM_EMUNDUS_IMPORT_VALIDATION_INVALID_URL', $descriptor, $value)];
+		return [$this->error(ImportErrorCodeEnum::INVALID_URL, $descriptor, $value)];
 	}
 
 	private function validateEnum(mixed $value, FieldDescriptor $descriptor): array
@@ -164,12 +151,43 @@ final class TypeValidator
 			return [];
 		}
 
-		return [$this->message(
-			'COM_EMUNDUS_IMPORT_VALIDATION_INVALID_ENUM_VALUE',
+		return [$this->error(
+			ImportErrorCodeEnum::INVALID_ENUM_VALUE,
 			$descriptor,
 			$value,
 			implode(', ', $allowed)
 		)];
+	}
+
+	private function validateReferential(mixed $value, FieldDescriptor $descriptor): array
+	{
+		$referential = $descriptor->referential;
+		if ($referential === null)
+		{
+			return [];
+		}
+
+		$str = trim((string) $value);
+
+		if ($referential->resolve($str) !== null)
+		{
+			return [];
+		}
+
+		if ($referential->isAmbiguousValue($str))
+		{
+			$code = ImportErrorCodeEnum::REFERENTIAL_VALUE_LABEL_COLLISION;
+		}
+		elseif ($referential->isAmbiguousLabel($str))
+		{
+			$code = ImportErrorCodeEnum::AMBIGUOUS_REFERENTIAL_VALUE;
+		}
+		else
+		{
+			$code = ImportErrorCodeEnum::INVALID_REFERENTIAL_VALUE;
+		}
+
+		return [$this->error($code, $descriptor, $value, $referential->getLabel())];
 	}
 
 	private function validateString(mixed $value, FieldDescriptor $descriptor): array
@@ -185,34 +203,33 @@ final class TypeValidator
 
 		return match ($descriptor->format)
 		{
-			'iso-3166-1-alpha-2' => $this->validateIsoLetters($str, 2, $descriptor, $value, 'COM_EMUNDUS_IMPORT_VALIDATION_INVALID_ISO2'),
-			'iso-3166-1-alpha-3' => $this->validateIsoLetters($str, 3, $descriptor, $value, 'COM_EMUNDUS_IMPORT_VALIDATION_INVALID_ISO3'),
-			'iso-4217'           => $this->validateIsoLetters($str, 3, $descriptor, $value, 'COM_EMUNDUS_IMPORT_VALIDATION_INVALID_ISO_4217'),
+			'iso-3166-1-alpha-2' => $this->validateIsoLetters($str, 2, $descriptor, $value, ImportErrorCodeEnum::INVALID_ISO2),
+			'iso-3166-1-alpha-3' => $this->validateIsoLetters($str, 3, $descriptor, $value, ImportErrorCodeEnum::INVALID_ISO3),
+			'iso-4217'           => $this->validateIsoLetters($str, 3, $descriptor, $value, ImportErrorCodeEnum::INVALID_ISO_4217),
 			'E.164'              => $this->validateE164($str, $descriptor, $value),
 		};
 	}
 
-	private function validateIsoLetters(string $str, int $length, FieldDescriptor $descriptor, mixed $rawValue, string $key): array
+	private function validateIsoLetters(string $str, int $length, FieldDescriptor $descriptor, mixed $rawValue, ImportErrorCodeEnum $code): array
 	{
 		$pattern = sprintf('/^[A-Za-z]{%d}$/', $length);
 
 		return preg_match($pattern, $str) === 1
 			? []
-			: [$this->message($key, $descriptor, $rawValue)];
+			: [$this->error($code, $descriptor, $rawValue)];
 	}
 
 	private function validateE164(string $str, FieldDescriptor $descriptor, mixed $rawValue): array
 	{
-		// Strip spaces (and similar separators) before checking the canonical
-		// E.164 shape: a mandatory + then 1..15 digits, first non-zero.
-		$compact = preg_replace('/[\s.\-()]/', '', $str);
-
-		if (preg_match('/^\+[1-9]\d{1,14}$/', (string) $compact) === 1)
+		// Accepts anything the transformer can turn into a real number: an
+		// optional ISO2 prefix, separators, and an existing country/subscriber
+		// range — a well-shaped but unassigned number is not valid.
+		if (PhoneNumberTransformer::toE164($str) !== null)
 		{
 			return [];
 		}
 
-		return [$this->message('COM_EMUNDUS_IMPORT_VALIDATION_INVALID_PHONE_E164', $descriptor, $rawValue)];
+		return [$this->error(ImportErrorCodeEnum::INVALID_PHONE_E164, $descriptor, $rawValue)];
 	}
 
 	private function isEmpty(mixed $value): bool
@@ -225,11 +242,12 @@ final class TypeValidator
 		return is_string($value) && trim($value) === '';
 	}
 
-	private function message(string $key, FieldDescriptor $descriptor, mixed $value, string ...$extras): string
+	private function error(ImportErrorCodeEnum $code, FieldDescriptor $descriptor, mixed $value, string ...$extras): RowError
 	{
-		$fieldLabel   = $descriptor->aliases[0] ?? $descriptor->canonical;
+		$fieldLabel   = $descriptor->label ?? $descriptor->aliases[0] ?? $descriptor->canonical;
 		$displayValue = mb_strimwidth((string) $value, 0, 80, '…');
+		$params       = [$fieldLabel, $displayValue, ...$extras];
 
-		return Text::sprintf($key, $fieldLabel, $displayValue, ...$extras);
+		return new RowError($code, $fieldLabel, $params);
 	}
 }

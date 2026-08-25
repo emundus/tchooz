@@ -148,19 +148,21 @@ define (['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 		changePlugin: function (e) {
 			document.id('plugin-container').empty()
 				.adopt(new Element('span').set('text', Joomla.JText._('COM_FABRIK_LOADING')));
+			var changePluginData = {
+				'option': 'com_fabrik',
+				'id': this.options.id,
+				'task': 'element.getPluginHTML',
+				'format': 'raw',
+				'plugin': e
+			};
+			changePluginData[Joomla.getOptions('csrf.token')] = 1;
 			var myAjax = new Request({
 				url: 'index.php',
 				'evalResponse': false,
 				'evalScripts': function (script, text) {
 					this.script = script;
 				}.bind(this),
-				'data': {
-					'option': 'com_fabrik',
-					'id': this.options.id,
-					'task': 'element.getPluginHTML',
-					'format': 'raw',
-					'plugin': e
-				},
+				'data': changePluginData,
 				'update': document.id('plugin-container'),
 				'onComplete': function (r) {
 					document.id('plugin-container').set('html', r);
@@ -198,20 +200,22 @@ define (['jquery', 'admin/pluginmanager'], function (jQuery, PluginManager) {
 			this.jsAccordion.addSection(toggler, body);
 			div.inject(document.id('javascriptActions'));
 			var c = this.jsCounter;
+			var addJavascriptData = {
+				'option': 'com_fabrik',
+				'view': 'plugin',
+				'task': 'top',
+				'format': 'raw',
+				'type': 'elementjavascript',
+				'plugin': null,
+				'plugin_published': true,
+				'c': c,
+				'id': jsId,
+				'elementid': this.id
+			};
+			addJavascriptData[Joomla.getOptions('csrf.token')] = 1;
 			var request = new Request.HTML({
 				url: 'index.php',
-				data: {
-					'option': 'com_fabrik',
-					'view': 'plugin',
-					'task': 'top',
-					'format': 'raw',
-					'type': 'elementjavascript',
-					'plugin': null,
-					'plugin_published': true,
-					'c': c,
-					'id': jsId,
-					'elementid': this.id
-				},
+				data: addJavascriptData,
 				update: body,
 				onRequest: function () {
 					if (Fabrik.debug) {
