@@ -4352,10 +4352,10 @@ class EmundusModelApplication extends ListModel
 
 		if ($attachments) {
 			$forms        .= '<div class="page-break pdf-attachments">';
-			$upload_files = $this->getCountUploadedFile($fnum, $aid, $profile_id);
+			$upload_files = $this->getCountUploadedFile($fnum, $current_user_id, $profile_id);
 			$forms        .= $upload_files;
 
-			$list_upload_files = $this->getListUploadedFile($fnum, $aid, $profile_id);
+			$list_upload_files = $this->getListUploadedFile($fnum, $aid, $profile_id, $current_user_id);
 			$forms             .= $list_upload_files;
 			$forms             .= '</div>';
 		}
@@ -6702,7 +6702,7 @@ class EmundusModelApplication extends ListModel
 		$m_application = new EmundusModelApplication;
 
 		$html    = '';
-		$uploads = $m_application->getUserAttachmentsByFnum($fnum, '', $profile);
+		$uploads = $m_application->getUserAttachmentsByFnum($fnum, '', $profile, false, $user_id);
 
 		$nbuploads = 0;
 		foreach ($uploads as $upload) {
@@ -6717,13 +6717,13 @@ class EmundusModelApplication extends ListModel
 	}
 
 	/// get list uploaded files
-	public function getListUploadedFile($fnum, $user_id, $profile = null)
+	public function getListUploadedFile($fnum, $user_id, $profile = null, $current_user_id = 0)
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
 		$m_application = new EmundusModelApplication;
 
 		$html    = '';
-		$uploads = $m_application->getUserAttachmentsByFnum($fnum, '', $profile);
+		$uploads = $m_application->getUserAttachmentsByFnum($fnum, '', $profile, false, $current_user_id);
 
 		$nbuploads = 0;
 		foreach ($uploads as $upload) {
