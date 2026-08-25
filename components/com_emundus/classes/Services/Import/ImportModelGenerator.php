@@ -286,7 +286,7 @@ final class ImportModelGenerator
 		$spreadsheet    = $sheet->getParent();
 		$listColumn     = $isReferential ? self::REFERENTIAL_DISPLAY_COLUMN : self::REFERENTIAL_VALUE_COLUMN;
 		$referentialKey = $isReferential ? ($column['referential']['key'] ?? null) : null;
-		
+
 		if ($referentialKey !== null && isset($this->referentialSheetTitles[$referentialKey]))
 		{
 			$sheetTitle = $this->referentialSheetTitles[$referentialKey];

@@ -8,9 +8,9 @@
 
 namespace Unit\Component\Emundus\Class\Services\Import\Validation;
 
-use Joomla\CMS\Language\Text;
 use PHPUnit\Framework\TestCase;
 use Tchooz\Enums\Import\FieldTypeEnum;
+use Tchooz\Enums\Import\ImportErrorCodeEnum;
 use Tchooz\Services\Import\Mapping\FieldDescriptor;
 use Tchooz\Services\Import\Referential\CallableReferentialProvider;
 use Tchooz\Services\Import\Referential\ReferentialProviderInterface;
@@ -230,9 +230,14 @@ class TypeValidatorTest extends TestCase
 
 		$this->assertNotEmpty($errors, 'A duplicate label must be rejected');
 		$this->assertSame(
-			Text::sprintf('COM_EMUNDUS_IMPORT_VALIDATION_AMBIGUOUS_REFERENTIAL_VALUE', 'Test field', 'Acme', 'Countries'),
-			$errors[0],
-			'Wrong message for an ambiguous label'
+			ImportErrorCodeEnum::AMBIGUOUS_REFERENTIAL_VALUE,
+			$errors[0]->code,
+			'Wrong error code for an ambiguous label'
+		);
+		$this->assertSame(
+			['Test field', 'Acme', 'Countries'],
+			$errors[0]->params,
+			'Params feed the string placeholders in order: field, value, referential name'
 		);
 	}
 
@@ -244,9 +249,14 @@ class TypeValidatorTest extends TestCase
 
 		$this->assertNotEmpty($errors, 'A value/label collision must be rejected');
 		$this->assertSame(
-			Text::sprintf('COM_EMUNDUS_IMPORT_VALIDATION_REFERENTIAL_VALUE_LABEL_COLLISION', 'Test field', '99', 'Countries'),
-			$errors[0],
-			'Wrong message for a value/label collision'
+			ImportErrorCodeEnum::REFERENTIAL_VALUE_LABEL_COLLISION,
+			$errors[0]->code,
+			'Wrong error code for a value/label collision'
+		);
+		$this->assertSame(
+			['Test field', '99', 'Countries'],
+			$errors[0]->params,
+			'Params feed the string placeholders in order: field, value, referential name'
 		);
 	}
 
@@ -258,9 +268,14 @@ class TypeValidatorTest extends TestCase
 
 		$this->assertNotEmpty($errors, 'An unknown value must be rejected');
 		$this->assertSame(
-			Text::sprintf('COM_EMUNDUS_IMPORT_VALIDATION_INVALID_REFERENTIAL_VALUE', 'Test field', 'does-not-exist', 'Countries'),
-			$errors[0],
-			'Wrong message for an unknown value'
+			ImportErrorCodeEnum::INVALID_REFERENTIAL_VALUE,
+			$errors[0]->code,
+			'Wrong error code for an unknown value'
+		);
+		$this->assertSame(
+			['Test field', 'does-not-exist', 'Countries'],
+			$errors[0]->params,
+			'Params feed the string placeholders in order: field, value, referential name'
 		);
 	}
 

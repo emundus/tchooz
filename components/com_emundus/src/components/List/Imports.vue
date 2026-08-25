@@ -112,7 +112,6 @@ export default {
 <template>
 	<section id="default-imports" class="tw-flex tw-gap-4">
 		<div v-if="displayedImports.length > 0">
-			<label class="!tw-mb-0 tw-font-medium tw-opacity-0">{{ translate('COM_EMUNDUS_ONBOARD_IMPORT') }}</label>
 			<popover
 				:button="translate('COM_EMUNDUS_ONBOARD_IMPORT')"
 				:button-class="'tw-btn-secondary tw-h-form'"

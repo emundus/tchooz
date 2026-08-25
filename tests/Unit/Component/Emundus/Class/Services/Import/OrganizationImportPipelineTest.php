@@ -18,6 +18,7 @@ use Tchooz\Repositories\Contacts\OrganizationRepository;
 use Tchooz\Repositories\CountryRepository;
 use Tchooz\Services\Import\Entity\OrganizationImporter;
 use Tchooz\Services\Import\ImportPipeline;
+use Tchooz\Services\Import\Report\RowError;
 use Tchooz\Services\Import\Source\ArraySource;
 use Tchooz\Services\Import\Source\CsvSource;
 use Tchooz\Services\Import\Source\ImportSourceInterface;
@@ -177,10 +178,21 @@ class OrganizationImportPipelineTest extends TestCase
 		$this->assertSame(1, $report->count(RowStatusEnum::FAILED));
 	}
 
-	public function testRowWithInvalidCountryCodeIsReportedAsFailed(): void
+	/**
+	 * Pays is an optional column: an unusable country code must not cost the
+	 * whole row. The organization is imported without it and the report carries
+	 * a warning saying the value was left out.
+	 */
+	public function testRowWithInvalidCountryCodeIsImportedWithoutTheCountry(): void
 	{
-		$this->orgRepo->expects($this->never())->method('flush');
-		$this->db->expects($this->never())->method('transactionStart');
+		$flushed = null;
+		$this->orgRepo->expects($this->once())->method('flush')->willReturnCallback(
+			function (OrganizationEntity $entity) use (&$flushed): bool {
+				$flushed = $entity;
+
+				return true;
+			}
+		);
 
 		$source = new ArraySource([
 			['Nom' => 'Acme', 'Pays' => 'FRA'],
@@ -188,7 +200,13 @@ class OrganizationImportPipelineTest extends TestCase
 
 		$report = $this->pipeline->run($source, $this->importer);
 
-		$this->assertSame(1, $report->count(RowStatusEnum::FAILED));
+		$this->assertSame(1, $report->count(RowStatusEnum::CREATED));
+		$this->assertSame(0, $report->count(RowStatusEnum::FAILED));
+		$this->assertNotEmpty($report->getRows()[0]->warnings, 'The dropped value must be reported as a warning');
+
+		// The row carried no other address column, so dropping the country
+		// leaves nothing to build an address from.
+		$this->assertNull($flushed?->getAddress(), 'An unusable country must never be persisted');
 	}
 
 	/**
@@ -282,7 +300,10 @@ class OrganizationImportPipelineTest extends TestCase
 
 		$failed = $report->getRowsByStatus(RowStatusEnum::FAILED);
 		$this->assertCount(1, $failed);
-		$this->assertSame(['insert failed'], $failed[0]->reasons);
+		$this->assertSame(
+			['insert failed'],
+			array_map(static fn (RowError $error) => $error->params[0] ?? '', $failed[0]->reasons)
+		);
 	}
 
 	public function testEmptyRowsAreIgnored(): void

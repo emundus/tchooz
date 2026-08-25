@@ -504,6 +504,7 @@ import PollDetails from '@/components/Polls/Popup/PollDetails.vue';
 import PollRun from '@/components/Polls/Popup/PollRun.vue';
 import PollContact from '@/components/Polls/Popup/PollContact.vue';
 import PollClose from '@/components/Polls/Popup/PollClose.vue';
+import ImportReport from '@/components/Import/ImportReport.vue';
 
 /* Services */
 import settingsService from '@/services/settings.js';
@@ -549,6 +550,7 @@ export default {
 		PollRun,
 		PollContact,
 		PollClose,
+		ImportReport,
 	},
 	props: {
 		defaultLists: {
@@ -614,6 +616,7 @@ export default {
 				UpdateApplicationChoiceState,
 				AddUser,
 				ImportEntity,
+				ImportReport,
 				PollReply,
 				PollDetails,
 				PollRun,
@@ -1305,7 +1308,6 @@ export default {
 		},
 
 		async executeAction(url, data = null, method = 'get') {
-			console.log(url);
 			this.loading.items = true;
 
 			let controller = url.split('controller=')[1].split('&')[0];

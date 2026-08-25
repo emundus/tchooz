@@ -13,10 +13,12 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 use Tchooz\Enums\Import\ImportConflictModeEnum;
+use Tchooz\Enums\Import\ImportErrorCodeEnum;
 use Tchooz\Enums\Import\RowStatusEnum;
 use Tchooz\Services\Import\Mapping\ColumnMap;
 use Tchooz\Services\Import\Mapping\RowMapper;
 use Tchooz\Services\Import\Report\ImportReport;
+use Tchooz\Services\Import\Report\RowError;
 use Tchooz\Services\Import\Source\ImportSourceInterface;
 use Tchooz\Services\Import\Validation\TypeValidator;
 
@@ -90,6 +92,8 @@ final class ImportPipeline
 			: null;
 
 		$lastProcessedRow = $options->skipUntilRow;
+		$budgetExhausted  = false;
+		$rowsSinceFlush   = 0;
 
 		foreach ($source as $rowNumber => $rawRow)
 		{
@@ -102,14 +106,21 @@ final class ImportPipeline
 			}
 
 			// Time budget: leave the loop cleanly so the wrapper can persist
-			// the cumulative report and re-enqueue itself.
+			// the cumulative report and re-enqueue itself for the remaining rows.
 			if ($deadline !== null && microtime(true) >= $deadline)
 			{
+				$budgetExhausted = true;
 				if (is_callable($options->onCheckpoint))
 				{
-					($options->onCheckpoint)($lastProcessedRow, $report);
+					($options->onCheckpoint)($lastProcessedRow, $report, false);
 				}
 				break;
+			}
+
+			if (is_callable($options->onProgress) && ++$rowsSinceFlush >= $options->progressEveryRows)
+			{
+				($options->onProgress)($lastProcessedRow, $report);
+				$rowsSinceFlush = 0;
 			}
 
 			$context = new ImportContext($source->getName(), $rowNumber, $options->dryRun, $options->userId);
@@ -118,16 +129,22 @@ final class ImportPipeline
 
 			if (RowMapper::isRowEmpty($row))
 			{
+				$report->add($context, RowStatusEnum::IGNORED);
 				$lastProcessedRow = $rowNumber;
 				continue;
 			}
+
+			// From here the row is examined for real: advance the resume cursor so
+			// a later slice never reprocesses it, whatever its outcome (failed rows
+			// included — a deterministic validation failure won't pass on retry).
+			$lastProcessedRow = $rowNumber;
 
 			$missing = $this->collectMissing($row, $required);
 			if (!empty($missing))
 			{
 				$report->add($context, RowStatusEnum::FAILED, [
-					Text::sprintf('COM_EMUNDUS_IMPORT_MISSING_REQUIRED_FIELDS', implode(', ', $missing)),
-				]);
+					new RowError(ImportErrorCodeEnum::MISSING_REQUIRED_FIELDS, null, [implode(', ', $missing)]),
+				], $row);
 				if ($options->stopOnError) break;
 				continue;
 			}
@@ -135,10 +152,10 @@ final class ImportPipeline
 			// Generic type-driven validation: errors short-circuit before the
 			// importer's custom validate() so business rules only see rows that
 			// already match their declared types/formats.
-			$typeErrors = $this->validateTypes($row, $columnMap);
+			$typeErrors = $this->validateTypes($row, $columnMap, $required, $context);
 			if (!empty($typeErrors))
 			{
-				$report->add($context, RowStatusEnum::FAILED, $typeErrors);
+				$report->add($context, RowStatusEnum::FAILED, $typeErrors, $row);
 				if ($options->stopOnError) break;
 				continue;
 			}
@@ -146,8 +163,17 @@ final class ImportPipeline
 			$validationErrors = $importer->validate($row, $context);
 			if (!empty($validationErrors))
 			{
-				$report->add($context, RowStatusEnum::FAILED, $validationErrors);
+				$report->add($context, RowStatusEnum::FAILED, $validationErrors, $row);
 				if ($options->stopOnError) break;
+				continue;
+			}
+
+			// Validate-only mode (dry-run preview): the row is well-formed; record it
+			// as VALID and move on without touching the database. No exists() lookup,
+			// no persist() — this is what keeps the synchronous dry-run cheap.
+			if ($options->validateOnly)
+			{
+				$report->add($context, RowStatusEnum::VALID);
 				continue;
 			}
 
@@ -161,7 +187,7 @@ final class ImportPipeline
 				}
 				catch (\Throwable $e)
 				{
-					$report->add($context, RowStatusEnum::FAILED, [$e->getMessage()]);
+					$report->add($context, RowStatusEnum::FAILED, [new RowError(ImportErrorCodeEnum::RUNTIME, null, [$e->getMessage()])], $row);
 					$this->logFailure($context, $e);
 					if ($options->stopOnError) break;
 					continue;
@@ -193,7 +219,40 @@ final class ImportPipeline
 			}
 		}
 
+		// Source fully consumed (not interrupted by the time budget): signal
+		// completion so the async wrapper can mark the job done and stop
+		// re-enqueuing. No-op for synchronous callers (no checkpoint set).
+		if (!$budgetExhausted && is_callable($options->onCheckpoint))
+		{
+			($options->onCheckpoint)($lastProcessedRow, $report, true);
+		}
+
 		return $report;
+	}
+
+	/**
+	 * Highest row number a full run would reach for this source, i.e. the data
+	 * row count aligned with the iterator keys (header is row 1, data starts at
+	 * row 2). Used to compute a progress percentage for async imports.
+	 *
+	 * Source-agnostic on purpose: it only relies on the ImportSourceInterface
+	 * iterator, so it works for CSV/XLSX/JSON/array sources alike. For a CSV this
+	 * means one extra streaming pass over the file — cheap and done once, at queue
+	 * time. Returns 0 for an empty source (header only or no rows).
+	 */
+	public static function countRows(ImportSourceInterface $source): int
+	{
+		$highest = 0;
+
+		foreach ($source as $rowNumber => $row)
+		{
+			if (!RowMapper::isRowEmpty($row))
+			{
+				$highest = (int) $rowNumber;
+			}
+		}
+
+		return $highest;
 	}
 
 	/**
@@ -308,13 +367,19 @@ final class ImportPipeline
 	/**
 	 * Runs the generic TypeValidator on every declared canonical field.
 	 *
-	 * @param array<string, mixed> $row
+	 * Type-checks every mapped column.
 	 *
-	 * @return string[] aggregated errors across all fields
+	 * Only required columns can block the row; a failing optional column is
+	 * cleared from $row and reported as a warning instead.
+	 *
+	 * @param array<string, mixed> $row       cleared in place for unusable optional values
+	 * @param string[]             $required
+	 *
+	 * @return RowError[] blocking errors only
 	 */
-	private function validateTypes(array $row, ColumnMap $columnMap): array
+	private function validateTypes(array &$row, ColumnMap $columnMap, array $required, ImportContext $context): array
 	{
-		$errors = [];
+		$blocking = [];
 
 		foreach ($columnMap->canonicalFields() as $canonical)
 		{
@@ -325,13 +390,33 @@ final class ImportPipeline
 			}
 
 			$fieldErrors = $this->typeValidator->validate($row[$canonical] ?? null, $descriptor);
-			if (!empty($fieldErrors))
+			if (empty($fieldErrors))
 			{
-				array_push($errors, ...$fieldErrors);
+				continue;
+			}
+
+			if (in_array($canonical, $required, true))
+			{
+				array_push($blocking, ...$fieldErrors);
+				continue;
+			}
+
+			// Optional column: an unusable value must not cost the whole row. Drop
+			// the value so nothing wrong is persisted, and report why as a warning
+			// — the dry-run then lets the user choose between fixing the file and
+			// importing knowing this column will be empty.
+			$row[$canonical] = null;
+
+			foreach ($fieldErrors as $fieldError)
+			{
+				$context->addWarning(Text::sprintf(
+					'COM_EMUNDUS_IMPORT_OPTIONAL_VALUE_IGNORED',
+					Text::sprintf($fieldError->code->value, ...$fieldError->params)
+				));
 			}
 		}
 
-		return $errors;
+		return $blocking;
 	}
 
 	/**
@@ -388,7 +473,7 @@ final class ImportPipeline
 				}
 			}
 
-			$report->add($context, RowStatusEnum::FAILED, [$e->getMessage()]);
+			$report->add($context, RowStatusEnum::FAILED, [new RowError(ImportErrorCodeEnum::RUNTIME, null, [$e->getMessage()])], $row);
 			$this->logFailure($context, $e);
 
 			return false;
@@ -452,7 +537,7 @@ final class ImportPipeline
 				}
 			}
 
-			$report->add($context, RowStatusEnum::FAILED, [$e->getMessage()]);
+			$report->add($context, RowStatusEnum::FAILED, [new RowError(ImportErrorCodeEnum::RUNTIME, null, [$e->getMessage()])], $row);
 			$this->logFailure($context, $e);
 
 			return false;

@@ -133,6 +133,32 @@ class UploadService
 		return $this->toRelativePath($destination);
 	}
 
+	/**
+	 * Moves an uploaded file to a caller-chosen filename inside the upload dir,
+	 * creating the directory if needed.
+	 *
+	 * Unlike upload(), the filename is explicit and deterministic — for files
+	 * that must stay addressable later (e.g. named after an entity id for
+	 * background processing / cleanup), not security-scanned web uploads.
+	 *
+	 * @return string The path relative to the site root.
+	 * @throws RuntimeException When the directory cannot be created or the move fails.
+	 */
+	public function moveUploadedFileAs(array $file, string $filename): string
+	{
+		if (!is_dir($this->uploadDir) && !mkdir($this->uploadDir, 0755, true) && !is_dir($this->uploadDir)) {
+			throw new RuntimeException('Failed to create upload directory.');
+		}
+
+		$destination = $this->uploadDir . $this->sanitizeFilename($filename);
+
+		if (!move_uploaded_file($file['tmp_name'], $destination)) {
+			throw new RuntimeException('Failed to move uploaded file.');
+		}
+
+		return $this->toRelativePath($destination);
+	}
+
 	public function deleteFile(string $relativePath): bool
 	{
 		$absolutePath = $this->uploadDir . basename($relativePath);

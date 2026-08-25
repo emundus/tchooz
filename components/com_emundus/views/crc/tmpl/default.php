@@ -12,8 +12,10 @@ defined('_JEXEC') or die('Restricted Access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\Import\ImportErrorCodeEnum;
 use Tchooz\Factories\LayoutFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Services\Import\EntityImporterRegistry;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 
@@ -129,6 +131,10 @@ Text::script('COM_EMUNDUS_IMPORT_SUCCESS_TITLE');
 Text::script('COM_EMUNDUS_IMPORT_LAUNCH');
 Text::script('COM_EMUNDUS_ACTIONS_BACK');
 Text::script('COM_EMUNDUS_IMPORT_NOTHING_TO_CREATE');
+Text::script('COM_EMUNDUS_IMPORT_NOTHING_TO_CREATE_DETAIL');
+Text::script('COM_EMUNDUS_IMPORT_ROWS_READ_NONE');
+Text::script('COM_EMUNDUS_IMPORT_ROWS_IGNORED');
+Text::script('COM_EMUNDUS_IMPORT_SUMMARY_IGNORED');
 Text::script('COM_EMUNDUS_IMPORT_BACK');
 Text::script('COM_EMUNDUS_IMPORT_BACK_TO_UPLOAD');
 Text::script('COM_EMUNDUS_IMPORT_FIELDS_HELP_INTRO');
@@ -168,6 +174,27 @@ Text::script('COM_EMUNDUS_IMPORT_SUMMARY_UPDATED');
 Text::script('COM_EMUNDUS_IMPORT_SUMMARY_SKIPPED');
 Text::script('COM_EMUNDUS_IMPORT_SUMMARY_FAILED_ONE_ELEMENT');
 Text::script('COM_EMUNDUS_IMPORT_SUMMARY_FAILED_SEVERAL_ELEMENTS');
+foreach (ImportErrorCodeEnum::cases() as $importErrorCode)
+{
+	Text::script($importErrorCode->value);
+}
+
+// Field labels are translation keys carried in the error params; register them
+// so the frontend can resolve them when rendering the failed-row messages.
+$importRegistry = EntityImporterRegistry::default();
+foreach ($importRegistry->getTypes() as $importType)
+{
+	$importColumnMap = $importRegistry->get($importType)->getColumnMap();
+	foreach ($importColumnMap->canonicalFields() as $importCanonical)
+	{
+		$importFieldLabel = $importColumnMap->getDescriptor($importCanonical)?->label;
+		if (!empty($importFieldLabel))
+		{
+			Text::script($importFieldLabel);
+		}
+	}
+}
+
 Text::script('COM_EMUNDUS_IMPORT_DRY_RESULT_TITLE');
 Text::script('COM_EMUNDUS_IMPORT_RESULT');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_CONTACT_ADDRESS_DESCRIPTION');
@@ -207,6 +234,22 @@ Text::script('COM_EMUNDUS_ONBOARD_CRC_COMMENT_DELETE_CONFIRM_TITLE');
 Text::script('COM_EMUNDUS_ONBOARD_CRC_COMMENT_DELETE_CONFIRM_TEXT');
 Text::script('COM_EMUNDUS_ONBOARD_CRC_COMMENT_DELETE_SUCCESS');
 Text::script('COM_EMUNDUS_ONBOARD_CRC_COMMENT_DELETE_ERROR');
+
+// Asynchronous import (progress + bounded report) keys.
+Text::script('COM_EMUNDUS_IMPORT_PROCESSING');
+Text::script('COM_EMUNDUS_IMPORT_CANCEL');
+Text::script('COM_EMUNDUS_IMPORT_ROWS_VALID');
+Text::script('COM_EMUNDUS_IMPORT_ERRORS_GROUP_COUNT');
+Text::script('COM_EMUNDUS_IMPORT_ERRORS_SAMPLE_ROW');
+Text::script('COM_EMUNDUS_IMPORT_ERRORS_SAMPLE_ROWS');
+Text::script('COM_EMUNDUS_IMPORT_ERROR_EXAMPLE_VALUE');
+Text::script('COM_EMUNDUS_IMPORT_FAILED_TRUNCATED');
+Text::script('COM_EMUNDUS_IMPORT_PROGRESS_LOST');
+Text::script('COM_EMUNDUS_IMPORT_QUEUED_TITLE');
+Text::script('COM_EMUNDUS_GO_TO_IMPORTS_PAGE');
+Text::script('COM_EMUNDUS_STAY_ON_PAGE');
+Text::script('COM_EMUNDUS_IMPORT_NO_FILE_SELECTED');
+Text::script('COM_EMUNDUS_IMPORT_SUMMARY_VALID');
 
 $data = LayoutFactory::prepareVueData();
 

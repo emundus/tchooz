@@ -135,15 +135,13 @@ final class ContactImporter extends AbstractEntityImporter implements UpdatableE
 		// re-syncs collections, and feeding it the already-loaded relations
 		// keeps them untouched.
 		//
-		// TODO(import-update): decide how the import row should affect related
-		// collections. Currently the imported "Adresse", "Pays", "Organisation"
-		// columns are IGNORED on update — only the contact's own scalar fields
-		// are overwritten. Open questions before changing this:
+		// TODO(import-update): the imported "Adresse" and "Pays" columns are still
+		// IGNORED on update — only the contact's own scalar fields and its
+		// organization are taken from the row. Open questions before changing this:
 		//   - merge addresses (append the new one) or replace the set entirely?
-		//   - same for countries and organizations?
 		//   - what happens to existing addresses tied to other contacts?
-		// Until that's decided, update() is intentionally narrow on scalars
-		// only — safe but partial.
+		// An address is a full entity rather than a plain link, so appending one
+		// risks duplicating instead of updating; left out until that is decided.
 		$existing->setLastname((string) $row['lastname']);
 		$existing->setFirstname((string) $row['firstname']);
 		$existing->setEmail((string) $row['email']);
@@ -158,6 +156,8 @@ final class ContactImporter extends AbstractEntityImporter implements UpdatableE
 		{
 			$existing->setStatus(VerifiedStatusEnum::from((string) $row['status']));
 		}
+
+		$this->attachOrganization($existing, $row);
 
 		$this->contactRepository->flush($existing);
 	}
@@ -212,6 +212,38 @@ final class ContactImporter extends AbstractEntityImporter implements UpdatableE
 		}
 
 		return $this->countryRepository->getByIso2(strtoupper($iso2));
+	}
+
+	/**
+	 * Adds the row's organization to an existing contact, without touching the
+	 * ones it is already linked to.
+	 *
+	 * Additive on purpose: on an update an empty cell means "no opinion", not
+	 * "detach". Note that ContactRepository::flush() has SET semantics on this
+	 * collection — anything missing from the entity gets detached — so the
+	 * already-loaded organizations must be preserved, never replaced.
+	 */
+	private function attachOrganization(ContactEntity $contact, array $row): void
+	{
+		$organization = $this->buildOrganization($row);
+
+		if ($organization === null)
+		{
+			return;
+		}
+
+		$organizations = $contact->getOrganizations() ?? [];
+
+		foreach ($organizations as $associated)
+		{
+			if ($associated->getId() === $organization->getId())
+			{
+				return;
+			}
+		}
+
+		$organizations[] = $organization;
+		$contact->setOrganizations($organizations);
 	}
 
 	public function buildOrganization(array $row): ?OrganizationEntity
