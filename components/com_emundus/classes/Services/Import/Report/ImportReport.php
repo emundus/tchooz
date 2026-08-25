@@ -23,6 +23,13 @@ use Tchooz\Services\Import\ImportContext;
  */
 final class ImportReport
 {
+	/**
+	 * Cap on individually-stored failed rows: keeps the *stored* report bounded
+	 * regardless of the failure rate (a fully-failed 100k-row file must not blow
+	 * up the JSON column). Beyond it, failed_truncated flags the cut.
+	 */
+	public const MAX_FAILED_ROWS = 5000;
+
 	/** @var RowResult[] */
 	private array $rows = [];
 
@@ -36,11 +43,18 @@ final class ImportReport
 	private array $globalErrors = [];
 
 	/**
-	 * @param string[] $reasons
+	 * @param RowError[]           $reasons
+	 * @param array<string, mixed> $data     canonical row values, kept for FAILED rows so an export can list them
+	 * @param string[]             $warnings non-blocking advisories
 	 */
-	public function add(ImportContext $context, RowStatusEnum $status, array $reasons = []): void
+	public function add(ImportContext $context, RowStatusEnum $status, array $reasons = [], array $data = [], array $warnings = []): void
 	{
-		$this->rows[] = new RowResult($context->sourceName, $context->rowNumber, $status, $reasons, $context->getWarnings());
+		// The context collects warnings while the row is decoded and validated
+		// (referential mismatch, unusable optional value...); they belong to the
+		// row's outcome, so they are merged with any passed explicitly.
+		$warnings = array_merge($context->getWarnings(), $warnings);
+
+		$this->rows[] = new RowResult($context->sourceName, $context->rowNumber, $status, $reasons, $data, $warnings);
 		$this->counts[$status->value] = ($this->counts[$status->value] ?? 0) + 1;
 	}
 
@@ -143,6 +157,119 @@ final class ImportReport
 		return [
 			'summary' => $summary,
 			'rows'    => array_map(static fn (RowResult $r) => $r->toArray(), $this->rows),
+		];
+	}
+
+	/**
+	 * Bounded variant of toArray() meant for persistence (the `report` column).
+	 *
+	 * Keeps the full summary counters and, for FAILED rows, a structured per-row
+	 * entry ({row, errors}) so the report can be translated on read and exported
+	 * line by line. The per-row list is hard-capped; truncation is flagged so the
+	 * UI can say "+N more".
+	 *
+	 * CREATED / UPDATED / SKIPPED / VALID rows are represented by their counters
+	 * only — never stored individually.
+	 */
+	public function toStorableArray(): array
+	{
+		$summary = ['total' => count($this->rows)];
+		foreach (RowStatusEnum::cases() as $case)
+		{
+			$summary[$case->value] = $this->counts[$case->value] ?? 0;
+		}
+		$summary['unknown_headers'] = $this->unknownHeaders;
+		$summary['global_errors']   = $this->globalErrors;
+
+		$failedRows    = [];
+		$rowsTruncated = false;
+
+		foreach ($this->getRowsByStatus(RowStatusEnum::FAILED) as $row)
+		{
+			if (count($failedRows) < self::MAX_FAILED_ROWS)
+			{
+				$failedRows[] = [
+					'row'    => $row->rowNumber,
+					'errors' => array_map(static fn (RowError $error) => $error->toArray(), $row->reasons),
+				];
+			}
+			else
+			{
+				$rowsTruncated = true;
+			}
+		}
+
+		return [
+			'summary'          => $summary,
+			'failed_rows'      => $failedRows,
+			'failed_truncated' => $rowsTruncated,
+			'failed_total'     => $summary[RowStatusEnum::FAILED->value],
+		];
+	}
+
+	/**
+	 * Combines two storable reports (output of toStorableArray()) into one.
+	 *
+	 * Used by the async wrapper to accumulate per-slice reports onto the running
+	 * cumulative: counters are summed, per-row failures are concatenated (re-capped),
+	 * unknown headers are unioned and global errors concatenated.
+	 *
+	 * @param array $cumulative The report stored so far (empty array on first slice).
+	 * @param array $slice      The storable report of the slice just processed.
+	 */
+	public static function mergeStorable(array $cumulative, array $slice): array
+	{
+		if (empty($cumulative))
+		{
+			return $slice;
+		}
+		if (empty($slice))
+		{
+			return $cumulative;
+		}
+
+		$summary = $cumulative['summary'] ?? [];
+		foreach (($slice['summary'] ?? []) as $key => $value)
+		{
+			if ($key === 'unknown_headers')
+			{
+				$summary['unknown_headers'] = array_values(array_unique(
+					array_merge($summary['unknown_headers'] ?? [], $value)
+				));
+			}
+			elseif ($key === 'global_errors')
+			{
+				$summary['global_errors'] = array_merge($summary['global_errors'] ?? [], $value);
+			}
+			else
+			{
+				$summary[$key] = ($summary[$key] ?? 0) + $value;
+			}
+		}
+
+		$failedRows    = $cumulative['failed_rows'] ?? [];
+		$rowsTruncated = false;
+		foreach (($slice['failed_rows'] ?? []) as $failedRow)
+		{
+			if (count($failedRows) < self::MAX_FAILED_ROWS)
+			{
+				$failedRows[] = $failedRow;
+			}
+			else
+			{
+				$rowsTruncated = true;
+			}
+		}
+
+		$truncated = $rowsTruncated
+			|| ($cumulative['failed_truncated'] ?? false)
+			|| ($slice['failed_truncated'] ?? false);
+
+		return [
+			'summary'          => $summary,
+			'failed_rows'      => $failedRows,
+			'failed_truncated' => $truncated,
+			'failed_total'     => ($cumulative['failed_total'] ?? 0) + ($slice['failed_total'] ?? 0),
 		];
 	}
 }

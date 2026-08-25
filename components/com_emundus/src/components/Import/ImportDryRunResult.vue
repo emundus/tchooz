@@ -38,10 +38,42 @@ export default {
 			if (this.hasGlobalErrors) {
 				return false;
 			}
-			return (this.report.summary?.created ?? 0) > 0 || (this.report.summary?.updated ?? 0) > 0;
+			return (
+				(this.report.summary?.valid ?? 0) > 0 ||
+				(this.report.summary?.created ?? 0) > 0 ||
+				(this.report.summary?.updated ?? 0) > 0
+			);
 		},
 		failedRows() {
 			return this.report?.rows?.filter((r) => r.status === 'failed') ?? [];
+		},
+		// Why nothing can be imported, in the report's own numbers. The generic
+		// "check your file" wording left the user to guess which bucket their
+		// rows fell into, while the summary already knows.
+		nothingToCreateMessage() {
+			const summary = this.report?.summary ?? {};
+			const total = summary.total ?? 0;
+
+			if (total === 0) {
+				return this.translate('COM_EMUNDUS_IMPORT_ROWS_READ_NONE');
+			}
+
+			const breakdown = [
+				['failed', 'COM_EMUNDUS_IMPORT_ROWS_FAILED'],
+				['skipped', 'COM_EMUNDUS_IMPORT_ROWS_SKIPPED'],
+				['ignored', 'COM_EMUNDUS_IMPORT_ROWS_IGNORED'],
+			]
+				.filter(([key]) => (summary[key] ?? 0) > 0)
+				.map(([key, label]) => (summary[key] ?? 0) + ' ' + this.translate(label))
+				.join(', ');
+
+			if (breakdown === '') {
+				return this.translate('COM_EMUNDUS_IMPORT_NOTHING_TO_CREATE');
+			}
+
+			return this.translate('COM_EMUNDUS_IMPORT_NOTHING_TO_CREATE_DETAIL')
+				.replace('%1$s', total)
+				.replace('%2$s', breakdown);
 		},
 		warnings() {
 			return (this.report?.rows ?? [])
@@ -98,7 +130,7 @@ export default {
 		<!-- Hidden when a global error already explains why nothing was created -->
 		<Info
 			v-if="!canConfirm && !hasGlobalErrors"
-			:text="translate('COM_EMUNDUS_IMPORT_NOTHING_TO_CREATE')"
+			:text="nothingToCreateMessage"
 			class="tw-w-full tw-text-left"
 			:icon="'cancel'"
 			:bg-color="'tw-bg-red-100'"

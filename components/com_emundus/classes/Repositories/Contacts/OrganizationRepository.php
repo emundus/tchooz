@@ -673,9 +673,9 @@ class OrganizationRepository extends EmundusRepository implements RepositoryInte
 	public function getAll(): array
 	{
 		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->order($this->db->quoteName('t.name') . ' ASC');
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->order($this->db->quoteName($this->alias . '.name') . ' ASC');
 
 		$this->db->setQuery($query);
 		$organizations = $this->db->loadAssocList();

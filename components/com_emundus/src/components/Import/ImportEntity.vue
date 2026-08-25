@@ -1,13 +1,23 @@
 <script>
 import importService from '@/services/import.js';
+import settingsService from '@/services/settings';
+import { useGlobalStore } from '@/stores/global.js';
+import alerts from '@/mixins/alerts.js';
 import ImportFieldsHelp from '@/components/Import/ImportFieldsHelp.vue';
 import ImportDropzone from '@/components/Import/ImportDropzone.vue';
 import ImportDryRunResult from '@/components/Import/ImportDryRunResult.vue';
 import ImportDone from '@/components/Import/ImportDone.vue';
+import ImportSummary from '@/components/Import/ImportSummary.vue';
+
+// Live progress polling is built but voluntarily disabled for now: queued
+// imports show a "go to My imports" screen instead. Set to true to restore
+// the in-modal progress bar.
+const LIVE_POLLING_ENABLED = false;
 
 export default {
 	name: 'ImportEntity',
-	components: { ImportFieldsHelp, ImportDropzone, ImportDryRunResult, ImportDone },
+	components: { ImportFieldsHelp, ImportDropzone, ImportDryRunResult, ImportDone, ImportSummary },
+	mixins: [alerts],
 	emits: ['close', 'update-items'],
 	props: {
 		tab: {
@@ -27,6 +37,20 @@ export default {
 			dryRunReport: null,
 			importReport: null,
 			supportedFormats: ['csv', 'xlsx', 'xls', 'json'],
+			// Async follow-up state (filled when the server queues the import).
+			importId: null,
+			pollTimer: null,
+			// Guards against overlapping polls: a request can outlast the
+			// polling interval (loaded server, big import), and the interval
+			// must never stack a second one while the first is in flight.
+			pollInFlight: false,
+			progress: 0,
+			counts: null,
+			// Stop polling after this many consecutive failures (import deleted,
+			// 404, server down…) instead of hammering the endpoint forever.
+			pollFailures: 0,
+			maxPollFailures: 5,
+			pollError: false,
 			// Conflict-resolution policy chosen by the user before upload.
 			// Defaults to 'skip' (current safe behaviour) — must match
 			// Tchooz\Enums\Import\ImportConflictModeEnum values.
@@ -46,6 +70,10 @@ export default {
 	created() {
 		this.getEntityImportInformation();
 	},
+	beforeUnmount() {
+		// Never leave a polling timer running after the component is gone.
+		this.stopPolling();
+	},
 	methods: {
 		getEntityImportInformation() {
 			this.loading = true;
@@ -55,10 +83,9 @@ export default {
 				if (Array.isArray(response.data.formatsSupported) && response.data.formatsSupported.length) {
 					this.supportedFormats = response.data.formatsSupported;
 				}
-
-				if (response.data.rules && response.data.rules.conflictModesSupported) {
+				if (Array.isArray(response.data.conflictModesSupported)) {
 					this.conflictModes.forEach((mode) => {
-						mode.displayed = response.data.rules.conflictModesSupported.includes(mode.value);
+						mode.displayed = response.data.conflictModesSupported.includes(mode.value);
 					});
 
 					// If the default conflict mode is not supported, switch to the first supported one.
@@ -108,11 +135,15 @@ export default {
 			this.step = 'dryrun';
 		},
 		resetToFields() {
+			this.stopPolling();
 			this.step = 'selectingFile';
 			this.dryRunReport = null;
 			this.importReport = null;
 			this.selectedFile = null;
 			this.uploadError = null;
+			this.importId = null;
+			this.progress = 0;
+			this.counts = null;
 		},
 		async confirmImport() {
 			this.step = 'importing';
@@ -125,12 +156,123 @@ export default {
 				return;
 			}
 
-			this.importReport = response.data ?? response;
+			const data = response.data ?? response;
+
+			if (data && data.import_id) {
+				this.importId = data.import_id;
+
+				if (LIVE_POLLING_ENABLED) {
+					// Async: follow progress by polling.
+					this.progress = 0;
+					this.counts = null;
+					this.step = 'processing';
+					this.startPolling();
+				} else {
+					// Async without live follow-up: point the user to the "My imports" page.
+					this.closeAndRefresh();
+					this.alertConfirm(
+						'COM_EMUNDUS_IMPORT_QUEUED_TITLE',
+						response.msg,
+						false,
+						'COM_EMUNDUS_GO_TO_IMPORTS_PAGE',
+						'COM_EMUNDUS_STAY_ON_PAGE',
+						null,
+						false,
+					).then((result) => {
+						if (result.isConfirmed) {
+							this.goToImportsPage();
+						}
+					});
+				}
+			} else {
+				// Synchronous fallback: the report is already here.
+				this.importReport = data;
+				this.step = 'done';
+			}
+		},
+		startPolling() {
+			this.stopPolling();
+			this.pollFailures = 0;
+			this.pollError = false;
+			// ~3s cadence: matches the cron run rhythm without hammering the server.
+			this.pollTimer = setInterval(() => this.pollProgress(), 3000);
+			this.pollProgress();
+		},
+		stopPolling() {
+			if (this.pollTimer) {
+				clearInterval(this.pollTimer);
+				this.pollTimer = null;
+			}
+		},
+		async pollProgress() {
+			if (this.pollInFlight) {
+				return;
+			}
+			this.pollInFlight = true;
+
+			try {
+				const importId = this.importId;
+				const response = await importService.getImportProgress(importId);
+
+				// Stale response: polling was stopped (cancel, reset, unmount) or
+				// restarted for another import while this request was in flight.
+				if (!this.pollTimer || importId !== this.importId) {
+					return;
+				}
+
+				// Failure (404 if the import was deleted, transient 5xx, network…): tolerate
+				// a few in a row, but give up instead of looping forever on a dead job.
+				if (response?.status === false) {
+					this.pollFailures++;
+					if (this.pollFailures >= this.maxPollFailures) {
+						this.stopPolling();
+						this.pollError = true;
+					}
+					return;
+				}
+
+				// Recovered: reset the failure streak.
+				this.pollFailures = 0;
+
+				const data = response.data ?? response;
+				this.progress = data.progress ?? 0;
+				this.counts = data.counts ?? null;
+
+				if (['completed', 'failed', 'cancelled'].includes(data.status)) {
+					this.stopPolling();
+					await this.loadFinalReport();
+				}
+			} finally {
+				this.pollInFlight = false;
+			}
+		},
+		async loadFinalReport() {
+			const response = await importService.getImportReport(this.importId);
+
+			if (response?.status === false) {
+				this.pollError = true;
+				return;
+			}
+
+			const data = response.data ?? response;
+			this.importReport = data.report ?? data;
 			this.step = 'done';
+		},
+		async cancelImport() {
+			await importService.cancelImport(this.importId);
+			this.stopPolling();
+			// Show the partial result gathered so far.
+			await this.loadFinalReport();
 		},
 		closeAndRefresh() {
 			this.$emit('update-items');
 			this.$emit('close');
+		},
+		goToImportsPage() {
+			settingsService.redirectJRoute(
+				'index.php?option=com_emundus&view=imports&layout=imports',
+				useGlobalStore().getCurrentLang,
+			);
 		},
 		importAnother() {
 			this.$emit('update-items');
@@ -237,6 +379,45 @@ export default {
 			>
 				<span class="material-symbols-outlined tw-animate-spin tw-text-4xl">progress_activity</span>
 				<p class="tw-m-0">{{ translate('COM_EMUNDUS_IMPORT_RUNNING') }}</p>
+			</div>
+
+			<!-- Async: the job runs in the background, we poll its progress. -->
+			<div v-else-if="step === 'processing'" class="tw-flex tw-flex-1 tw-flex-col tw-gap-4">
+				<template v-if="pollError">
+					<div class="tw-rounded tw-bg-red-50 tw-p-3">
+						<p class="tw-m-0 tw-text-sm tw-text-red-700">{{ translate('COM_EMUNDUS_IMPORT_PROGRESS_LOST') }}</p>
+					</div>
+					<div class="tw-mt-auto tw-flex tw-justify-end tw-pt-4">
+						<button type="button" class="tw-btn-primary tw-w-fit" @click="closeAndRefresh">
+							{{ translate('COM_EMUNDUS_IMPORT_STATUS_FINISH') }}
+						</button>
+					</div>
+				</template>
+
+				<template v-else>
+					<div class="tw-flex tw-items-center tw-gap-3">
+						<span class="material-symbols-outlined tw-animate-spin tw-text-2xl">progress_activity</span>
+						<p class="tw-m-0 tw-font-medium">{{ translate('COM_EMUNDUS_IMPORT_PROCESSING') }}</p>
+					</div>
+
+					<div class="tw-flex tw-flex-col tw-gap-1">
+						<div class="tw-h-3 tw-w-full tw-overflow-hidden tw-rounded-full tw-bg-neutral-200">
+							<div
+								class="tw-h-full tw-bg-main-500 tw-transition-all tw-duration-500"
+								:style="{ width: progress + '%' }"
+							></div>
+						</div>
+						<p class="tw-m-0 tw-text-right tw-text-sm tw-text-profile-full">{{ Math.round(progress) }}%</p>
+					</div>
+
+					<ImportSummary v-if="counts" :summary="counts" :dry="false" />
+
+					<div class="tw-mt-auto tw-flex tw-justify-end tw-pt-4">
+						<button type="button" class="tw-btn-secondary tw-w-fit" @click="cancelImport">
+							{{ translate('COM_EMUNDUS_IMPORT_CANCEL') }}
+						</button>
+					</div>
+				</template>
 			</div>
 
 			<ImportDone

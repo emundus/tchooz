@@ -8,6 +8,7 @@
 
 namespace Tchooz\Services\Import\Mapping;
 
+use Joomla\CMS\Language\Text;
 use Tchooz\Enums\Import\FieldTypeEnum;
 use Tchooz\Services\Import\Referential\ReferentialProviderInterface;
 
@@ -79,7 +80,7 @@ final class FieldDescriptor
 
 		if ($this->label !== null && $this->label !== '')
 		{
-			$out['label'] = $this->label;
+			$out['label'] = Text::_($this->label);
 		}
 
 		if ($this->values !== null)

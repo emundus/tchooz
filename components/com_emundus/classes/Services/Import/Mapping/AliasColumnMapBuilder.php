@@ -8,6 +8,7 @@
 
 namespace Tchooz\Services\Import\Mapping;
 
+use Joomla\CMS\Language\Text;
 use Tchooz\Enums\Import\FieldTypeEnum;
 use Tchooz\Services\Import\Referential\ReferentialProviderInterface;
 
@@ -166,7 +167,7 @@ final class AliasColumnMapBuilder
 			$aliases = $config['aliases'];
 			if ($config['label'] !== null && $config['label'] !== '')
 			{
-				array_unshift($aliases, $config['label']);
+				array_unshift($aliases, Text::_($config['label']));
 			}
 			$aliases = $this->cleanAliases($aliases);
 
