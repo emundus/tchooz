@@ -27,19 +27,22 @@ var CascadeFilter = new Class({
 				}
 				).inject(this.observer, 'after');
 			var v = this.observer.get('value');
+			var filterData = {
+				'option': 'com_fabrik',
+				'format': 'raw',
+				'task': 'plugin.pluginAjax',
+				'plugin': 'cascadingdropdown',
+				'g': 'element',
+				'method': 'ajax_getOptions',
+				'element_id': this.options.elid,
+				'v': v,
+				'formid': this.options.formid,
+				'fabrik_cascade_ajax_update': 1,
+				'filterview': 'table'
+			};
+			filterData[Joomla.getOptions('csrf.token')] = 1;
 			this.myAjax = new Request({url: '', method: 'post',
-				'data': {
-					'option': 'com_fabrik',
-					'format': 'raw',
-					'task': 'plugin.pluginAjax',
-					'plugin': 'cascadingdropdown',
-					'method': 'ajax_getOptions',
-					'element_id': this.options.elid,
-					'v': v,
-					'formid': this.options.formid,
-					'fabrik_cascade_ajax_update': 1,
-					'filterview': 'table'
-				},
+				'data': filterData,
 				onComplete: function (e) {
 					this.ajaxComplete(e);
 				}.bind(this)

@@ -10,7 +10,10 @@ namespace Unit\Component\Emundus\Class\Services\Import\Validation;
 
 use PHPUnit\Framework\TestCase;
 use Tchooz\Enums\Import\FieldTypeEnum;
+use Tchooz\Enums\Import\ImportErrorCodeEnum;
 use Tchooz\Services\Import\Mapping\FieldDescriptor;
+use Tchooz\Services\Import\Referential\CallableReferentialProvider;
+use Tchooz\Services\Import\Referential\ReferentialProviderInterface;
 use Tchooz\Services\Import\Validation\TypeValidator;
 
 /**
@@ -208,6 +211,86 @@ class TypeValidatorTest extends TestCase
 	}
 
 	// --------------------------------------------------------------------
+	// REFERENTIAL
+	// --------------------------------------------------------------------
+
+	public function testReferentialAcceptsAResolvableValue(): void
+	{
+		$descriptor = $this->descriptor(type: FieldTypeEnum::REFERENTIAL, referential: $this->referential());
+
+		$this->assertSame([], $this->validator->validate('FR', $descriptor), 'A resolvable value must pass');
+		$this->assertSame([], $this->validator->validate('France', $descriptor), 'A resolvable label must pass');
+	}
+
+	public function testReferentialReportsAmbiguousLabel(): void
+	{
+		$descriptor = $this->descriptor(type: FieldTypeEnum::REFERENTIAL, referential: $this->referential());
+
+		$errors = $this->validator->validate('Acme', $descriptor);
+
+		$this->assertNotEmpty($errors, 'A duplicate label must be rejected');
+		$this->assertSame(
+			ImportErrorCodeEnum::AMBIGUOUS_REFERENTIAL_VALUE,
+			$errors[0]->code,
+			'Wrong error code for an ambiguous label'
+		);
+		$this->assertSame(
+			['Test field', 'Acme', 'Countries'],
+			$errors[0]->params,
+			'Params feed the string placeholders in order: field, value, referential name'
+		);
+	}
+
+	public function testReferentialReportsValueLabelCollision(): void
+	{
+		$descriptor = $this->descriptor(type: FieldTypeEnum::REFERENTIAL, referential: $this->referential());
+
+		$errors = $this->validator->validate('99', $descriptor);
+
+		$this->assertNotEmpty($errors, 'A value/label collision must be rejected');
+		$this->assertSame(
+			ImportErrorCodeEnum::REFERENTIAL_VALUE_LABEL_COLLISION,
+			$errors[0]->code,
+			'Wrong error code for a value/label collision'
+		);
+		$this->assertSame(
+			['Test field', '99', 'Countries'],
+			$errors[0]->params,
+			'Params feed the string placeholders in order: field, value, referential name'
+		);
+	}
+
+	public function testReferentialReportsUnknownValue(): void
+	{
+		$descriptor = $this->descriptor(type: FieldTypeEnum::REFERENTIAL, referential: $this->referential());
+
+		$errors = $this->validator->validate('does-not-exist', $descriptor);
+
+		$this->assertNotEmpty($errors, 'An unknown value must be rejected');
+		$this->assertSame(
+			ImportErrorCodeEnum::INVALID_REFERENTIAL_VALUE,
+			$errors[0]->code,
+			'Wrong error code for an unknown value'
+		);
+		$this->assertSame(
+			['Test field', 'does-not-exist', 'Countries'],
+			$errors[0]->params,
+			'Params feed the string placeholders in order: field, value, referential name'
+		);
+	}
+
+	private function referential(): ReferentialProviderInterface
+	{
+		return new CallableReferentialProvider('countries', 'Countries', fn(): array => [
+			['value' => 'FR', 'label' => 'France'],
+			['value' => '12', 'label' => 'Acme'],
+			['value' => '34', 'label' => 'Acme'],
+			['value' => '99', 'label' => 'X'],
+			['value' => '7',  'label' => '99'],
+		]);
+	}
+
+	// --------------------------------------------------------------------
 	// STRING + format hints
 	// --------------------------------------------------------------------
 
@@ -291,10 +374,11 @@ class TypeValidatorTest extends TestCase
 	 * @param  array<int, array{value: string, label: string}>|null  $values
 	 */
 	private function descriptor(
-		FieldTypeEnum $type    = FieldTypeEnum::STRING,
-		?array        $values  = null,
-		?string       $format  = null,
-		bool          $validate = true
+		FieldTypeEnum                 $type        = FieldTypeEnum::STRING,
+		?array                        $values      = null,
+		?string                       $format      = null,
+		bool                          $validate    = true,
+		?ReferentialProviderInterface $referential = null
 	): FieldDescriptor
 	{
 		return new FieldDescriptor(
@@ -305,7 +389,9 @@ class TypeValidatorTest extends TestCase
 			values:    $values,
 			format:    $format,
 			examples:  null,
-			validate:  $validate
+			validate:  $validate,
+			label:     null,
+			referential: $referential
 		);
 	}
 }

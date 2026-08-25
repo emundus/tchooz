@@ -166,11 +166,13 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                         'format'    : 'raw',
                         'task'      : 'plugin.pluginAjax',
                         'plugin'    : 'date',
+                        'g'         : 'element',
                         'method'    : 'ajax_getAllowedDates',
                         'element_id': this.options.id,
                         'v'         : el.get('value'),
                         'formid'    : this.form.id
                     };
+                    data[Joomla.getOptions('csrf.token')] = 1;
                     new Request.JSON({
                         url      : '',
                         method   : 'post',

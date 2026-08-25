@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Html;
 
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Factory;
 
@@ -83,11 +84,18 @@ class FabrikControllerElement extends BaseController
 	 */
 	public function save()
 	{
-		Html::validateRequest($this->taskMap);
+		Html::validateRequest($this->taskMap, true);
+
 		$app = Factory::getApplication();
 		$input = $app->getInput();
 		$listModel = $this->getModel('list', 'FabrikFEModel');
 		$listModel->setId($input->getInt('listid'));
+
+		if (!$listModel->canEdit())
+		{
+			throw new Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
 		$rowId = $input->get('rowid');
 		$key = $input->get('element');
 		$key = array_pop(explode('___', $key));

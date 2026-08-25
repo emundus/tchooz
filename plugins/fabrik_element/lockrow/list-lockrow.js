@@ -102,6 +102,7 @@ define(['jquery'], function (jQuery) {
                 'elementname': this.options.elid,
                 'userid'     : this.options.userid
             };
+            data[Joomla.getOptions('csrf.token')] = 1;
 
             new Request({
                 'url': '',
@@ -159,6 +160,7 @@ define(['jquery'], function (jQuery) {
                 'elementname': this.options.elid,
                 'userid'     : this.options.userid
             };
+            data[Joomla.getOptions('csrf.token')] = 1;
 
             new Request({
                 'url': '',

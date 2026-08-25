@@ -114,7 +114,7 @@ class PlgFabrik_ListCandeleterow extends PlgFabrik_List
 		{
 			$w = new FabrikWorker;
 			$data = ArrayHelper::fromObject($data);
-			$canDeleteRowEval = $w->parseMessageForPlaceHolder($canDeleteRowEval, $data);
+			$canDeleteRowEval = $w->parseMessageForPlaceHolder($canDeleteRowEval, $data, true, true, null, true, true);
 			FabrikWorker::clearEval();
 			$canDeleteRowEval = Php::Eval(['code' => $canDeleteRowEval, 'vars'=>['data'=>$data]]);
 			FabrikWorker::logEval($canDeleteRowEval, 'Caught exception on eval in can delete row : %s');

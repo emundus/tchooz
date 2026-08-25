@@ -36,6 +36,7 @@ use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Groups\GroupRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
+use Tchooz\Services\Fabrik\CurrencyStorageFormatter;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
@@ -2474,9 +2475,9 @@ class EmundusHelperEvents
 								Log::add("Failed to get applicant_id from fnum $fnum : " . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 							}
 
-							$m_application   = new EmundusModelApplication();
-							$user            = Factory::getApplication()->getIdentity();
-							$logged_elements = [];
+							$m_application    = new EmundusModelApplication();
+							$user             = Factory::getApplication()->getIdentity();
+							$updated_elements = [];
 
 							foreach ($form_elements as $element)
 							{
@@ -2510,26 +2511,30 @@ class EmundusHelperEvents
 										$new_value = array_key_exists($raw_element_key, $form_data) ? $form_data[$raw_element_key] : $form_data[$element_key];
 										$new_value = is_array($new_value) ? implode(',', $new_value) : $new_value;
 										break;
+									case 'currency':
+										if (is_array($new_value))
+										{
+											$new_value = (new CurrencyStorageFormatter())->format([$element->name => $new_value['rowInputValueFront'] ?? ''])[$element->name] ?? '';
+										}
+										break;
 								}
 
 								$old_value = $m_application->getValuesByElementAndFnum($fnum, $element->id, $form_data['formid']);
-								$new_value = EmundusHelperFabrik::formatElementValue($element->name, $new_value, $element->group_id, $applicant_id);
+								$new_value = EmundusHelperFabrik::formatElementValue($element->name, $new_value, $element->group_id, $applicant_id, true);
 
 								if ($old_value != $new_value)
 								{
-									$log_params = [
+									$updated_elements[] = [
+										'id'          => $element->id,
 										'description' => '[' . $form_label . ']',
 										'element'     => Text::_($element->label),
 										'old'         => $old_value,
 										'new'         => $new_value
 									];
-
-									$logged_elements[] = EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', json_encode(['updated' => [$log_params]], JSON_UNESCAPED_UNICODE));
 								}
 							}
 
-
-							$logged = !in_array(false, $logged_elements);
+							$logged = empty($updated_elements) || EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', json_encode(['updated' => $updated_elements], JSON_UNESCAPED_UNICODE));
 						}
 					}
 				}

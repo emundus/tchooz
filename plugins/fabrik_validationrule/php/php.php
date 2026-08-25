@@ -93,7 +93,7 @@ class PlgFabrik_ValidationrulePhp extends PlgFabrik_Validationrule {
 		$formData = $formModel->formData;
 		$w = new FabrikWorker;
 		$phpCode = $params->get('php-code');
-		$phpCode = $w->parseMessageForPlaceHolder($phpCode, $formData, true, true);
+		$phpCode = $w->parseMessageForPlaceHolder($phpCode, $formData, true, true, null, true, true);
 		/**
 		 * $$$ hugh - added trigger_error(""), which will "clear" any existing errors,
 		 * otherwise logEval will pick up and report notices and warnings generated

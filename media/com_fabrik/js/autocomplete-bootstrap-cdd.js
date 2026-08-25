@@ -38,13 +38,15 @@ define(['jquery', 'fab/autocomplete-bootstrap', 'fab/fabrik'],
                             this.closeMenu();
                             this.ajax.cancel();
                         }
+                        var cddAcData = {
+                            value                     : v,
+                            fabrik_cascade_ajax_update: 1,
+                            v                         : observer.get('value')
+                        };
+                        cddAcData[Joomla.getOptions('csrf.token')] = 1;
                         this.ajax = new Request({
                             url      : this.options.url,
-                            data     : {
-                                value                     : v,
-                                fabrik_cascade_ajax_update: 1,
-                                v                         : observer.get('value')
-                            },
+                            data     : cddAcData,
                             onRequest: function () {
                                 Fabrik.loader.start(this.getInputElement());
                             }.bind(this),

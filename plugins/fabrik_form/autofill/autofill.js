@@ -188,26 +188,29 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
 				observe = this.options.observe,
 				self = this;
 
+			var autofillData = {
+				'option'               : 'com_fabrik',
+				'format'               : 'raw',
+				'task'                 : 'plugin.pluginAjax',
+				'plugin'               : 'autofill',
+				'method'               : 'onajax_getAutoFill',
+				'g'                    : 'form',
+				'v'                    : v,
+				'formid'               : formid,
+				'elid'                 : this.element.element.id,
+				'observe'              : observe,
+				'cnn'                  : this.options.cnn,
+				'table'                : this.options.table,
+				'map'                  : this.options.map,
+				'autofill_lookup_field': this.options.autofill_lookup_field
+			};
+			autofillData[Joomla.getOptions('csrf.token')] = 1;
+
 			jQuery.ajax({
 				url     : 'index.php',
 				method  : 'post',
 				dataType: 'json',
-				'data'  : {
-					'option'               : 'com_fabrik',
-					'format'               : 'raw',
-					'task'                 : 'plugin.pluginAjax',
-					'plugin'               : 'autofill',
-					'method'               : 'onajax_getAutoFill',
-					'g'                    : 'form',
-					'v'                    : v,
-					'formid'               : formid,
-					'elid'                 : this.element.element.id,
-					'observe'              : observe,
-					'cnn'                  : this.options.cnn,
-					'table'                : this.options.table,
-					'map'                  : this.options.map,
-					'autofill_lookup_field': this.options.autofill_lookup_field
-				}
+				'data'  : autofillData
 
 			}).always(function () {
 					Fabrik.loader.stop('form_' + self.options.formid);

@@ -29,6 +29,7 @@ use Tchooz\Enums\Fabrik\FabrikObjectsEnum;
 use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Factories\Language\LanguageFactory;
+use Tchooz\Repositories\Language\LanguageRepository;
 use Tchooz\Services\Fabrik\ApplicantTableCreator;
 use Tchooz\Services\Fabrik\EvaluationTableCreator;
 
@@ -1219,7 +1220,7 @@ class FabrikRepository
 		}
 		LanguageFactory::translate($labelKey, $labels_to_duplicate, 'fabrik_elements', $element->id, 'label', $this->user->id);
 		//
-		
+
 		if ($element->plugin === ElementPluginEnum::PANEL->value && !empty($element->default))
 		{
 			$newDefaultKey         = 'ELEMENT_' . $element->group_id . '_' . $element->id . '_DEFAULT';
@@ -1300,24 +1301,31 @@ class FabrikRepository
 			$this->db->setQuery($query);
 			$this->db->execute();
 
-			$languages = LanguageHelper::getLanguages();
-			$labels    = [];
+			$languages          = LanguageHelper::getLanguages();
+			$languageRepository = new LanguageRepository();
+			$labels             = [];
+			$rawLabels          = [];
+
 			foreach ($languages as $language)
 			{
-				$translation = LanguageFactory::getTranslation($oldLabel, $language->lang_code);
+				$translation = LanguageFactory::getTranslation($oldLabel, $language->lang_code, $languageRepository);
 
-				if ($translation !== null)
+				// Legacy labels mix free text and translation keys, ex: '2025 - FORM_EVALUATION'
+				$resolved = LanguageFactory::resolveTranslationKeys($translation ?? $oldLabel, $language->lang_code, $languageRepository);
+
+				if ($translation !== null || $resolved !== $oldLabel)
 				{
-					$labels[$language->sef] = $labelPrefix . $translation;
+					$labels[$language->sef] = $labelPrefix . $resolved;
+				}
+				else
+				{
+					$rawLabels[$language->sef] = $labelPrefix . $oldLabel;
 				}
 			}
 
 			if (empty($labels))
 			{
-				foreach ($languages as $language)
-				{
-					$labels[$language->sef] = $labelPrefix . $oldLabel;
-				}
+				$labels = $rawLabels;
 			}
 
 			$key     = LanguageFactory::translate($newKey, $labels, $referenceTable, $identifier, $referenceField, $this->user->id);
@@ -1471,6 +1479,354 @@ class FabrikRepository
 		}
 
 		return $updated;
+	}
+
+	/**
+	 * Supprime une liste Fabrik et toute sa chaîne d'entités liées (formulaire, groupes, éléments, jsactions, joins).
+	 *
+	 * @param   string  $tableName  Nom de la table (db_table_name) de la liste à supprimer
+	 *
+	 * @return bool
+	 */
+	public function deleteList(string $tableName): bool
+	{
+		$transactionStarted = false;
+
+		try
+		{
+			$lists = $this->getListsByTableName($tableName);
+
+			if (empty($lists))
+			{
+				return true;
+			}
+
+			// Collecter tous les IDs à chaque niveau avant de supprimer
+			$listIds = array_column($lists, 'id');
+			$formIds = array_column($lists, 'form_id');
+
+			$groupIds = $this->getGroupIdsByFormIds($formIds);
+
+			// La chaîne complète est supprimée en une transaction : un échec en cours de route
+			// laisserait sinon des formulaires sans groupes ou des groupes sans éléments
+			$this->db->transactionStart();
+			$transactionStarted = true;
+
+			if (!empty($groupIds))
+			{
+				$elementIds = $this->getElementIdsByGroupIds($groupIds);
+
+				if (!empty($elementIds))
+				{
+					$this->deleteJsActionsByElementIds($elementIds);
+					$this->deleteValidationsByElementIds($elementIds);
+					$this->deleteJoinsByElementIds($elementIds);
+					$this->deleteElementsByGroupIds($groupIds);
+				}
+
+				$this->deleteJoinsByGroupIds($groupIds);
+				$this->deleteGroupsByIds($groupIds);
+			}
+
+			$this->deleteJoinsByListIds($listIds);
+			$this->deleteFormSessionsByFormIds($formIds);
+			$this->deleteFormGroupsByFormIds($formIds);
+			$this->deleteFormsByIds($formIds);
+			$this->deleteListsByIds($listIds);
+
+			$this->db->transactionCommit();
+			$transactionStarted = false;
+
+			return true;
+		}
+		catch (\Throwable $e)
+		{
+			if ($transactionStarted)
+			{
+				try
+				{
+					$this->db->transactionRollback();
+				}
+				catch (\Throwable $rollbackError)
+				{
+					Log::add(
+						'Rollback failed while deleting Fabrik list for table ' . $tableName . ': ' . $rollbackError->getMessage(),
+						Log::ERROR,
+						'com_emundus.repository.fabrik'
+					);
+				}
+			}
+
+			Log::add(
+				sprintf(
+					'Failed to delete Fabrik list for table %s: %s: %s in %s:%d',
+					$tableName,
+					get_class($e),
+					$e->getMessage(),
+					$e->getFile(),
+					$e->getLine()
+				),
+				Log::ERROR,
+				'com_emundus.repository.fabrik'
+			);
+
+			return false;
+		}
+	}
+
+	/**
+	 * Récupère toutes les listes Fabrik correspondant à un nom de table.
+	 *
+	 * @param   string  $tableName
+	 *
+	 * @return array
+	 */
+	private function getListsByTableName(string $tableName): array
+	{
+		$query = $this->db->getQuery(true);
+		$query->select('id, form_id')
+			->from($this->db->quoteName('#__fabrik_lists'))
+			->where($this->db->quoteName('db_table_name') . ' = ' . $this->db->quote($tableName));
+
+		$this->db->setQuery($query);
+
+		return $this->db->loadObjectList();
+	}
+
+	/**
+	 * Récupère les group_id liés à une liste de formulaires.
+	 *
+	 * @param   array  $formIds
+	 *
+	 * @return array
+	 */
+	private function getGroupIdsByFormIds(array $formIds): array
+	{
+		$query = $this->db->getQuery(true);
+		$query->select('group_id')
+			->from($this->db->quoteName('#__fabrik_formgroup'))
+			->where($this->db->quoteName('form_id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $formIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->loadColumn();
+	}
+
+	/**
+	 * Récupère les ids des éléments appartenant à une liste de groupes.
+	 *
+	 * @param   array  $groupIds
+	 *
+	 * @return array
+	 */
+	private function getElementIdsByGroupIds(array $groupIds): array
+	{
+		$query = $this->db->getQuery(true);
+		$query->select('id')
+			->from($this->db->quoteName('#__fabrik_elements'))
+			->where($this->db->quoteName('group_id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $groupIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->loadColumn();
+	}
+
+	/**
+	 * Supprime les jsactions liées à une liste d'éléments.
+	 *
+	 * @param   array  $elementIds
+	 *
+	 * @return bool
+	 */
+	private function deleteJsActionsByElementIds(array $elementIds): bool
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__fabrik_jsactions'))
+			->where($this->db->quoteName('element_id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $elementIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->execute();
+	}
+
+	/**
+	 * Supprime les joins liés à une liste d'éléments.
+	 *
+	 * @param   array  $elementIds
+	 *
+	 * @return bool
+	 */
+	private function deleteJoinsByElementIds(array $elementIds): bool
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__fabrik_joins'))
+			->where($this->db->quoteName('element_id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $elementIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->execute();
+	}
+
+	/**
+	 * Supprime les validations liées à une liste d'éléments.
+	 *
+	 * @param   array  $elementIds
+	 *
+	 * @return bool
+	 */
+	private function deleteValidationsByElementIds(array $elementIds): bool
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__fabrik_validations'))
+			->where($this->db->quoteName('element_id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $elementIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->execute();
+	}
+
+	/**
+	 * Supprime les joins rattachés directement à une liste, sans passer par un élément ou un groupe.
+	 *
+	 * @param   array  $listIds
+	 *
+	 * @return bool
+	 */
+	private function deleteJoinsByListIds(array $listIds): bool
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__fabrik_joins'))
+			->where($this->db->quoteName('list_id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $listIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->execute();
+	}
+
+	/**
+	 * Supprime les sessions de saisie liées à une liste de formulaires.
+	 *
+	 * @param   array  $formIds
+	 *
+	 * @return bool
+	 */
+	private function deleteFormSessionsByFormIds(array $formIds): bool
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__fabrik_form_sessions'))
+			->where($this->db->quoteName('form_id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $formIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->execute();
+	}
+
+	/**
+	 * Supprime les joins liés à une liste de groupes.
+	 *
+	 * @param   array  $groupIds
+	 *
+	 * @return bool
+	 */
+	private function deleteJoinsByGroupIds(array $groupIds): bool
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__fabrik_joins'))
+			->where($this->db->quoteName('group_id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $groupIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->execute();
+	}
+
+	/**
+	 * Supprime les éléments appartenant à une liste de groupes.
+	 *
+	 * @param   array  $groupIds
+	 *
+	 * @return bool
+	 */
+	private function deleteElementsByGroupIds(array $groupIds): bool
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__fabrik_elements'))
+			->where($this->db->quoteName('group_id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $groupIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->execute();
+	}
+
+	/**
+	 * Supprime les groupes par leurs ids.
+	 *
+	 * @param   array  $groupIds
+	 *
+	 * @return bool
+	 */
+	private function deleteGroupsByIds(array $groupIds): bool
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__fabrik_groups'))
+			->where($this->db->quoteName('id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $groupIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->execute();
+	}
+
+	/**
+	 * Supprime les entrées de formgroup liées à une liste de formulaires.
+	 *
+	 * @param   array  $formIds
+	 *
+	 * @return bool
+	 */
+	private function deleteFormGroupsByFormIds(array $formIds): bool
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__fabrik_formgroup'))
+			->where($this->db->quoteName('form_id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $formIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->execute();
+	}
+
+	/**
+	 * Supprime des formulaires par leurs ids.
+	 *
+	 * @param   array  $formIds
+	 *
+	 * @return bool
+	 */
+	private function deleteFormsByIds(array $formIds): bool
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__fabrik_forms'))
+			->where($this->db->quoteName('id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $formIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->execute();
+	}
+
+	/**
+	 * Supprime des listes Fabrik par leurs ids.
+	 *
+	 * @param   array  $listIds
+	 *
+	 * @return bool
+	 */
+	private function deleteListsByIds(array $listIds): bool
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__fabrik_lists'))
+			->where($this->db->quoteName('id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $listIds)) . ')');
+
+		$this->db->setQuery($query);
+
+		return $this->db->execute();
 	}
 
 	public function duplicateConditions(object $oldForm, object $form, array $groupIdMap = []): bool

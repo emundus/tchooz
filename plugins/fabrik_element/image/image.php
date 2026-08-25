@@ -71,7 +71,14 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 			$rootFolder = StringHelper::ltrim($rootFolder, '/');
 			$rootFolder = StringHelper::rtrim($rootFolder, '/') . '/';
 			$this->default = preg_replace("#^$rootFolder#", '', $this->default);
-			$this->default = $w->parseMessageForPlaceHolder($this->default, $data);
+
+			// Security fix: $this->default is about to be eval'd via Php::Eval() below when
+			// eval is on, but this call left forEval at its default false, so any {placeholder}
+			// substituted from $data (form/request data) was spliced in as raw/htmlspecialchars'd
+			// text rather than a safe var_export()'d PHP literal - letting a crafted field value
+			// break out of a string context in the eval'd code. Pass forEval=true, matching the
+			// already-correct usage in calc.php's own pre-eval parseMessageForPlaceHolder() call.
+			$this->default = $w->parseMessageForPlaceHolder($this->default, $data, true, true, null, true, true);
 
 			if ($element->eval == "1")
 			{
@@ -414,6 +421,20 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 		$folder = $this->app->input->get('folder', '', 'path');
 		$folder = str_replace('\\', '/', $folder);
 		$rootFolder = $this->rootFolder();
+
+		// Security fix: Path::clean() below only normalises slashes, it does NOT resolve or
+		// reject '..' traversal segments - that's Path::check(), which was never called here.
+		// The 'path' input filter doesn't block embedded '..' either (only a leading one), and
+		// the strpos() prefix check just below is a literal string match, trivially satisfied
+		// by prepending $rootFolder to a crafted value - e.g. folder=<rootFolder>/../../../etc
+		// passes the prefix check, then Path::clean() leaves the '..' intact, letting
+		// readImages() recurse and list directories/images anywhere the web server can read,
+		// well outside $rootFolder. Reject any '..' segment outright, the same defense
+		// Path::check() uses.
+		if (strpos($folder, '..') !== false)
+		{
+			$folder = '';
+		}
 
 		if (!empty($folder) && !empty($rootFolder) && strpos($folder, $rootFolder) === 0)
 		{

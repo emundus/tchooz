@@ -133,6 +133,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     'formid'     : this.options.formid,
                     'add'        : add
                 };
+                data[Joomla.getOptions('csrf.token')] = 1;
 
                 new Request({
                     url       : '',

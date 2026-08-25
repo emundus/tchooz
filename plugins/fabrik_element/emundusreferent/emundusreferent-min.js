@@ -44,10 +44,11 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 					}
 
 					this.myAjax = new Request({
-						url: 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&plugin=emundusreferent&method=onAjax_getOptions&v='+v,
+						url: 'index.php?option=com_fabrik&format=raw&task=plugin.pluginAjax&g=element&plugin=emundusreferent&method=onAjax_getOptions&v='+v,
 						method: 'post',
 						'data': {
 							'attachment_id': attachment_id,
+							[this.options.ajaxToken]: 1,
 							'email': email,
 							'formid': this.options.formid,
 							'fnum': fnum,

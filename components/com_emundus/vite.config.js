@@ -11,9 +11,8 @@ export default defineConfig(({ mode }) => {
 	return {
 		plugins: [
 			vue(),
-			eslint({
-				failOnError: mode === 'production',
-			}),
+			// eslint only in dev/watch — production build is already gated by `npm run lint`
+			...(mode === 'production' ? [] : [eslint({ failOnError: false })]),
 		],
 		resolve: {
 			//preserveSymlinks: true,

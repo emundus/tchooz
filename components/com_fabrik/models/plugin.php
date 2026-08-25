@@ -767,6 +767,12 @@ class FabrikPlugin extends CMSPlugin
 	 */
 	public function ajax_tables()
 	{
+		//Allow for backend only
+		if (!Factory::getApplication()->isClient('administrator')) {
+			header('HTTP/1.1 403 Forbidden');
+			jexit(Text::_('JERROR_ALERTNOAUTHOR').' F1');
+		}
+
 		$input           = $this->app->getInput();
 		$cid             = $input->getInt('cid', -1);
 		$rows            = array();
@@ -1138,7 +1144,7 @@ class FabrikPlugin extends CMSPlugin
 			$origData = array();
 		}
 
-		$condition = trim($w->parseMessageForPlaceHolder($condition, $data));
+		$condition = trim($w->parseMessageForPlaceHolder($condition, $data, true, true, null, true, true));
 		FabrikWorker::clearEval();
 		$res = Php::Eval(['code' => $condition, 'vars'=>['data'=>$data, 'origData' => $origData, 'formModel' => $formModel]]);
 		FabrikWorker::logEval($res, 'Caught exception on eval of ' . $formModel->label . ' plugin condition: %s');

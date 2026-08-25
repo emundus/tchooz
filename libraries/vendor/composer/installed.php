@@ -3,7 +3,7 @@
         'name' => 'joomla/joomla-cms',
         'pretty_version' => 'dev-5.4-dev',
         'version' => 'dev-5.4-dev',
-        'reference' => '09525fc6f24b0a461633f97b367aabae793a40ba',
+        'reference' => 'e08f97c45440266d7b51bcf1c0739e8f135bab0b',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../../',
         'aliases' => array(),
@@ -236,12 +236,14 @@
             'dev_requirement' => false,
         ),
         'joomla/filesystem' => array(
-            'pretty_version' => '3.2.0',
-            'version' => '3.2.0.0',
-            'reference' => 'be6917c396300c8316ef13ef3e2096732af847fd',
+            'pretty_version' => 'dev-3.x-shtml',
+            'version' => 'dev-3.x-shtml',
+            'reference' => '8912e45e2aa2c119e78783d046a37ad2d1df0e61',
             'type' => 'joomla-package',
             'install_path' => __DIR__ . '/../joomla/filesystem',
-            'aliases' => array(),
+            'aliases' => array(
+                0 => '3.3.1',
+            ),
             'dev_requirement' => false,
         ),
         'joomla/filter' => array(
@@ -274,7 +276,7 @@
         'joomla/joomla-cms' => array(
             'pretty_version' => 'dev-5.4-dev',
             'version' => 'dev-5.4-dev',
-            'reference' => '09525fc6f24b0a461633f97b367aabae793a40ba',
+            'reference' => 'e08f97c45440266d7b51bcf1c0739e8f135bab0b',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../../',
             'aliases' => array(),

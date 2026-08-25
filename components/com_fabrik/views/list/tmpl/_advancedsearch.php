@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
 
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
@@ -65,7 +66,17 @@ $input = $app->getInput();
 
 	<input value="<?php echo Text::_('COM_FABRIK_CLEAR')?>" class="button btn advanced-search-clearall" type="button">
 	<input type="hidden" name="advanced-search" value="1" />
-	<input type="hidden" name="<?php echo $input->get('tkn', 'request')?>" value="1" />
+	<?php
+	/**
+	 * $$$ - this used to be `<input type="hidden" name="<?php echo $input->get('tkn', 'request')?>" value="1" />`,
+	 * which reads a request param ('tkn') that nothing in the codebase ever sets, so it always fell through to the
+	 * literal string 'request' as the field NAME - i.e. this never actually emitted a real CSRF token field, just
+	 * a decoy <input name="request" value="1">. Session::checkToken()/Html::validateRequest() were checking for
+	 * the real per-session token and never finding it here, since this form (unlike the list's own form) never
+	 * carried one.
+	 */
+	echo HTMLHelper::_('form.token');
+	?>
 
 	<?php
 	$scope = $input->get('scope', 'com_fabrik');

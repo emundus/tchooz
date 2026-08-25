@@ -266,11 +266,32 @@ class PlgFabrik_ListUpdate_col extends PlgFabrik_List
 		$ids = array_unique($input->get('ids', array(), 'array'));
 		$ids = ArrayHelper::toInteger($ids);
 		$this->row_count = count($ids);
-		$ids = implode(',', $ids);
+		$idsStr = implode(',', $ids);
 		$model->reset();
-		$model->setPluginQueryWhere('update_col', $item->db_primary_key . ' IN ( ' . $ids . ')');
+		$model->setPluginQueryWhere('update_col', $item->db_primary_key . ' IN ( ' . $idsStr . ')');
 		$model->setLimits(0, 0);
 		$data = $model->getData();
+
+		if ($params->get('update_check_canedit', '0') == '1')
+		{
+			// Drop any row the user isn't allowed to edit before we update or e-mail about it.
+			$editableIds = array();
+
+			foreach ($data as $rows)
+			{
+				foreach ($rows as $row)
+				{
+					if (isset($row->__pk_val) && $model->canEdit($row))
+					{
+						$editableIds[] = (int) $row->__pk_val;
+					}
+				}
+			}
+
+			$ids = $editableIds;
+			$this->row_count = count($ids);
+			$idsStr = implode(',', $ids);
+		}
 
 		// Needed to re-assign as getDate() messes the plugin params order
 		$this->params = $params;
@@ -278,7 +299,7 @@ class PlgFabrik_ListUpdate_col extends PlgFabrik_List
 		if (!empty($preEval))
 		{
 			FabrikWorker::clearEval();
-			$res = Php::Eval(['code' => $preEval, 'vars'=>['data'=>$data, 'ids'=>$ids, 'update'=>$update], 'thisVars'=>['msg'=>&$this->msg]]);
+			$res = Php::Eval(['code' => $preEval, 'vars'=>['data'=>$data, 'ids'=>$idsStr, 'update'=>$update], 'thisVars'=>['msg'=>&$this->msg]]);
 			Worker::logEval($res, 'Caught exception on eval in updatecol::process() : %s');
 
 			if ($res === false)
@@ -299,17 +320,17 @@ class PlgFabrik_ListUpdate_col extends PlgFabrik_List
 				$this->date->setTimezone($tz);
 			}
 
-			$this->_process($model, $dateCol, $this->date->toSql($local), false);
+			$this->_process($model, $dateCol, $this->date->toSql($local), false, $ids);
 		}
 
 		if (!empty($userCol))
 		{
-			$this->_process($model, $userCol, (int) $this->user->get('id'), false);
+			$this->_process($model, $userCol, (int) $this->user->get('id'), false, $ids);
 		}
 
 		if ($params->get('update_email_after_update', '1') == '0')
 		{
-			$this->sendEmails($ids);
+			$this->sendEmails($idsStr);
 		}
 
 		if (!empty($update))
@@ -318,13 +339,13 @@ class PlgFabrik_ListUpdate_col extends PlgFabrik_List
 			{
 				//update-col (user select) uses element's list view filter settings for input, which creates issues; fetch at least the "Range" filter
 				$update->update_value[$i] = is_array($update->update_value[$i]) ? $update->update_value[$i][0] : $update->update_value[$i];
-				$this->_process($model, $col, $update->update_value[$i], $update->update_eval[$i]);
+				$this->_process($model, $col, $update->update_value[$i], $update->update_eval[$i], $ids);
 			}
 		}
 
 		if ($params->get('update_email_after_update', '1') == '1')
 		{
-			$this->sendEmails($ids);
+			$this->sendEmails($idsStr);
 		}
 
 		if (empty($this->msg))
@@ -426,7 +447,10 @@ class PlgFabrik_ListUpdate_col extends PlgFabrik_List
 					if ($eval)
 					{
 						FabrikWorker::clearEval();
-						$thisMessage = Php::Eval(['code' => $thisMessage, 'vars'=>['row'=>$row]]);
+						// Re-resolve with forEval=true so substituted row data becomes a safe,
+						// quoted PHP literal instead of text spliced straight into the eval'd code.
+						$evalMessage = $w->parseMessageForPlaceholder($message, $row, true, true, null, true, true);
+						$thisMessage = Php::Eval(['code' => $evalMessage, 'vars'=>['row'=>$row]]);
 						Worker::logEval($thisMessage, 'Caught exception on eval in updatecol::process() : %s');
 					}
 
@@ -595,12 +619,20 @@ class PlgFabrik_ListUpdate_col extends PlgFabrik_List
 	 * @param   object  &$model  List model
 	 * @param   string  $col     Update column
 	 * @param   string  $val     Update val
+	 * @param   bool    $eval    Whether $val is PHP to be eval'd
+	 * @param   array   $ids     Row ids to update - the ones already filtered (if
+	 *                           update_check_canedit is on) by process(). Falls back to the raw,
+	 *                           unfiltered request ids if not passed, so any other caller keeps
+	 *                           the old behaviour.
 	 *
 	 * @return  void
 	 */
-	private function _process(&$model, $col, $val, $eval = false)
+	private function _process(&$model, $col, $val, $eval = false, $ids = null)
 	{
-		$ids = $this->app->input->get('ids', array(), 'array');
+		if ($ids === null)
+		{
+			$ids = $this->app->input->get('ids', array(), 'array');
+		}
 
 		if ($eval)
 		{

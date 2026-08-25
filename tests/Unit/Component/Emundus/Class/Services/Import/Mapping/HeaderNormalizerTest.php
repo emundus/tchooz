@@ -45,6 +45,46 @@ class HeaderNormalizerTest extends TestCase
 		$this->assertSame('ecu', HeaderNormalizer::normalize('écu'));
 	}
 
+	/**
+	 * Regression: accent stripping used to go through
+	 * iconv('ASCII//TRANSLIT'), whose output depends on the active locale. Under
+	 * "C" it renders "é" as "'e", so "Prénom" normalised to "pr_enom" while
+	 * "Prenom" gave "prenom" — the two spellings no longer matched and accented
+	 * column headers were silently dropped as unrecognised.
+	 */
+	public function testAccentStrippingDoesNotDependOnTheLocale(): void
+	{
+		$previous = setlocale(LC_CTYPE, 0);
+		setlocale(LC_CTYPE, 'C');
+
+		try
+		{
+			$this->assertSame('prenom', HeaderNormalizer::normalize('Prénom'));
+			$this->assertSame('region', HeaderNormalizer::normalize('Région'));
+			$this->assertSame('publie', HeaderNormalizer::normalize('Publié'));
+			$this->assertSame(
+				'complement_d_adresse',
+				HeaderNormalizer::normalize("Complément d'adresse")
+			);
+		}
+		finally
+		{
+			setlocale(LC_CTYPE, $previous);
+		}
+	}
+
+	public function testAccentedAndUnaccentedSpellingsShareTheSameKey(): void
+	{
+		foreach ([['Prénom', 'Prenom'], ['Région', 'Region'], ['Numéro', 'Numero']] as [$accented, $plain])
+		{
+			$this->assertSame(
+				HeaderNormalizer::normalize($plain),
+				HeaderNormalizer::normalize($accented),
+				sprintf('"%s" and "%s" must resolve to the same column', $accented, $plain)
+			);
+		}
+	}
+
 	public function testNonAlphanumericRunsBecomeSingleUnderscore(): void
 	{
 		$this->assertSame('e_mail', HeaderNormalizer::normalize('e-mail'));

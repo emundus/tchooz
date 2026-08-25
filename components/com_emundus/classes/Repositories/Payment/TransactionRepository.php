@@ -119,6 +119,7 @@ class TransactionRepository extends EmundusRepository
 		}
 
 		if (!empty($search)) {
+			$query->leftJoin($this->db->quoteName('#__emundus_external_reference', 'external_reference') . ' ON external_reference.intern_id = transaction.id AND external_reference.column = ' . $this->db->quote('jos_emundus_payment_transaction.id'));
 			$query->andWhere($this->db->quoteName('external_reference.reference') . ' LIKE ' . $this->db->quote('%'.$search.'%'));
 		}
 

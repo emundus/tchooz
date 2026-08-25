@@ -15,6 +15,8 @@ use Joomla\CMS\Factory;
 use Joomla\Component\Emundus\Administrator\Attributes\PostflightAttribute;
 use Joomla\Database\DatabaseInterface;
 use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Reference\InternalReferenceEntity;
 use Tchooz\Services\Language\DbLanguage;
 use Tchooz\Traits\TraitVersion;
 
@@ -290,7 +292,46 @@ class Com_EmundusInstallerScript
 
 		$updates[] = \EmundusHelperUpdate::makeFromEntity(AddonEntity::class);
 
+		// since 2.19.0 : the postflight short reference task reads these. Platforms whose manifest cache
+		// jumped past 2.19.0 never ran the release, so the column and the table are missing.
+		$updates[] = \EmundusHelperUpdate::makeFromEntity(ApplicationFileEntity::class);
+		$updates[] = \EmundusHelperUpdate::makeFromEntity(InternalReferenceEntity::class);
+
+		$this->dropLegacyContentXreference();
+
 		return !in_array(false, $updates);
+	}
+
+	/**
+	 * Joomla 3 leftover dropped by Joomla 4 : on databases where the column survived the migration,
+	 * it is NOT NULL without default and no Joomla 5 code fills it, so every article INSERT fails.
+	 */
+	private function dropLegacyContentXreference(): void
+	{
+		$this->db->setQuery(
+			'SELECT ' . $this->db->quoteName('COLUMN_NAME')
+			. ' FROM ' . $this->db->quoteName('information_schema.COLUMNS')
+			. ' WHERE ' . $this->db->quoteName('TABLE_SCHEMA') . ' = DATABASE()'
+			. ' AND ' . $this->db->quoteName('TABLE_NAME') . ' = ' . $this->db->quote('jos_content')
+			. ' AND ' . $this->db->quoteName('COLUMN_NAME') . ' = ' . $this->db->quote('xreference')
+		);
+
+		if (empty($this->db->loadResult()))
+		{
+			return;
+		}
+
+		try
+		{
+			$this->db->setQuery('ALTER TABLE ' . $this->db->quoteName('jos_content') . ' DROP COLUMN ' . $this->db->quoteName('xreference'));
+			$this->db->execute();
+
+			EmundusHelperUpdate::displayMessage('Colonne obsolète ' . $table . '.xreference supprimée.', 'success');
+		}
+		catch (Exception $e)
+		{
+			EmundusHelperUpdate::displayMessage('Suppression de la colonne obsolète ' . $table . '.xreference impossible : ' . $e->getMessage(), 'warning');
+		}
 	}
 
 	private function generateAutoloadTables(): void

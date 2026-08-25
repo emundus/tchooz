@@ -202,7 +202,7 @@ export default defineComponent({
 			});
 		},
 
-		runExport(async = false) {
+		runExport() {
 			this.loading = true;
 			this.exportLoading = true;
 
@@ -219,8 +219,6 @@ export default defineComponent({
 			const selectedSynthesisIds = this.selectedSynthesis.map((el) => el.id);
 			const selectedAttachmentIds = this.selectedAttachments.map((el) => el.id);
 
-			const allowAsync = Joomla.getOptions('plg_system_emundus.async_export', 0);
-
 			exportService
 				.export(
 					this.selectedFormat,
@@ -229,54 +227,48 @@ export default defineComponent({
 					selectedSynthesisIds,
 					selectedAttachmentIds,
 					this.exportSettings,
-					async,
-					allowAsync == 1,
 				)
 				.then((response) => {
 					this.loading = false;
 					this.exportLoading = false;
 
-					let confirmMessage = 'LINK_TO_DOWNLOAD';
-					let closeMessage = 'COM_EMUNDUS_CLOSE';
-					if (async && (!response.data || !response.data.progress >= 100)) {
-						confirmMessage = 'COM_EMUNDUS_GO_TO_EXPORTS_PAGE';
-						closeMessage = 'COM_EMUNDUS_STAY_ON_PAGE';
+					if (!response.status) {
+						this.alertError('COM_EMUNDUS_EXPORT_ERROR_TITLE', response.msg);
+						return;
 					}
 
-					if (response.status) {
-						this.alertConfirm(
-							'COM_EMUNDUS_EXPORT_SUCCESS_TITLE',
-							response.msg,
-							false,
-							confirmMessage,
-							closeMessage,
-							null,
-							false,
-						).then((result) => {
-							if (result.isConfirmed) {
-								if (async && !response.data.progress >= 100) {
-									window.open(this.exportLink, '_self');
-								} else {
-									// Files under images/emundus/exports must be served through the getfile
-									// PHP gateway: some web servers (IIS) 301-redirect static .zip requests to
-									// the home page, turning the download into an HTML file. Going through
-									// index.php streams the bytes and is immune to those rewrite rules.
-									const filename = response.data.filename || '';
-									const downloadUrl = filename.startsWith('images/emundus/exports')
-										? '/index.php?option=com_emundus&task=getfile&u=' + filename
-										: '/' + filename;
-									window.open(downloadUrl, '_blank');
-								}
-							}
-						});
-					} else {
-						if (response.title === 'AbortError' && allowAsync == 1) {
-							// Rerun export with async flag
-							this.runExport(true);
-						} else {
-							this.alertError('COM_EMUNDUS_EXPORT_ERROR_TITLE', response.msg);
+					// An export too large to be served inline is finished by a task: there is no file
+					// to download yet, it shows up on the exports page once the task is through.
+					const queued = !!(response.data && response.data.task_id);
+
+					this.alertConfirm(
+						'COM_EMUNDUS_EXPORT_SUCCESS_TITLE',
+						response.msg,
+						false,
+						queued ? 'COM_EMUNDUS_GO_TO_EXPORTS_PAGE' : 'LINK_TO_DOWNLOAD',
+						queued ? 'COM_EMUNDUS_STAY_ON_PAGE' : 'COM_EMUNDUS_CLOSE',
+						null,
+						false,
+					).then((result) => {
+						if (!result.isConfirmed) {
+							return;
 						}
-					}
+
+						if (queued) {
+							window.open(this.exportLink, '_self');
+							return;
+						}
+
+						// Files under images/emundus/exports must be served through the getfile
+						// PHP gateway: some web servers (IIS) 301-redirect static .zip requests to
+						// the home page, turning the download into an HTML file. Going through
+						// index.php streams the bytes and is immune to those rewrite rules.
+						const filename = response.data.filename || '';
+						const downloadUrl = filename.startsWith('images/emundus/exports')
+							? '/index.php?option=com_emundus&task=getfile&u=' + filename
+							: '/' + filename;
+						window.open(downloadUrl, '_blank');
+					});
 				});
 		},
 		saveExport() {

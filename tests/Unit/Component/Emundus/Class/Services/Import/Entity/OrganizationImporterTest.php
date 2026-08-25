@@ -13,6 +13,7 @@ use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Entities\Country;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
+use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
 use Tchooz\Repositories\CountryRepository;
 use Tchooz\Services\Import\Entity\OrganizationImporter;
@@ -25,6 +26,7 @@ class OrganizationImporterTest extends TestCase
 {
 	private OrganizationRepository $orgRepo;
 	private CountryRepository      $countryRepo;
+	private ContactRepository      $contactRepo;
 	private OrganizationImporter   $importer;
 	private ImportContext          $context;
 
@@ -32,7 +34,8 @@ class OrganizationImporterTest extends TestCase
 	{
 		$this->orgRepo     = $this->createMock(OrganizationRepository::class);
 		$this->countryRepo = $this->createMock(CountryRepository::class);
-		$this->importer    = new OrganizationImporter($this->orgRepo, $this->countryRepo);
+		$this->contactRepo = $this->createMock(ContactRepository::class);
+		$this->importer    = new OrganizationImporter($this->orgRepo, $this->countryRepo, $this->contactRepo);
 		$this->context     = new ImportContext('Organisations', 2);
 	}
 

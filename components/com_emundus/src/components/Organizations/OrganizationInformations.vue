@@ -39,6 +39,11 @@ export default {
 			const base = window.location.origin + '/';
 			return base + profilePicture.replace(/^\//, '');
 		},
+		contactEditLink(contact) {
+			if (!contact) return null;
+
+			return `${window.location.origin}/index.php?option=com_emundus&view=crc&layout=contactform&id=${contact.id}`;
+		},
 	},
 	computed: {
 		fullAddress() {
@@ -79,6 +84,7 @@ export default {
 						:text="contact.fullname"
 						:image="normalizedProfilePicture(contact.profile_picture)"
 						:image-alt-text="contact.fullname"
+						:href="contactEditLink(contact)"
 					/>
 				</div>
 			</div>
@@ -96,6 +102,7 @@ export default {
 						:text="contact.fullname"
 						:image="normalizedProfilePicture(contact.profile_picture)"
 						:image-alt-text="contact.fullname"
+						:href="contactEditLink(contact)"
 					/>
 				</div>
 			</div>

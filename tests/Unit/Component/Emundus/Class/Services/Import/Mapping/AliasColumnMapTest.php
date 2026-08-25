@@ -9,6 +9,7 @@
 namespace Unit\Component\Emundus\Class\Services\Import\Mapping;
 
 use PHPUnit\Framework\TestCase;
+use Tchooz\Enums\Import\BooleanValueEnum;
 use Tchooz\Enums\Import\FieldTypeEnum;
 use Tchooz\Services\Import\Mapping\AliasColumnMap;
 
@@ -448,6 +449,40 @@ class AliasColumnMapTest extends TestCase
 				values: ['active', 'inactive'],
 				examples: ['active']
 			);
+	}
+
+	// --------------------------------------------------------------------
+	// BOOLEAN — closed list carried by the type itself
+	// --------------------------------------------------------------------
+
+	public function testBooleanFieldExposesItsClosedListWithoutDeclaringValues(): void
+	{
+		$map = AliasColumnMap::create()
+			->field('published', type: FieldTypeEnum::BOOLEAN)
+			->build();
+
+		$values = $map->describe()[0]['values'];
+
+		$this->assertSame(BooleanValueEnum::entries(), $values, 'A boolean field offers the yes/no list');
+	}
+
+	public function testValuesOnBooleanFieldAreStillRejectedAtBuildTime(): void
+	{
+		// The list belongs to the type: redeclaring it would be a second source of truth.
+		$this->expectException(\InvalidArgumentException::class);
+		$this->expectExceptionMessageMatches('/carries values but its type is/i');
+
+		AliasColumnMap::create()
+			->field('published', type: FieldTypeEnum::BOOLEAN, values: ['Oui', 'Non']);
+	}
+
+	public function testExamplesOnBooleanFieldAreRejectedAtBuildTime(): void
+	{
+		$this->expectException(\InvalidArgumentException::class);
+		$this->expectExceptionMessageMatches('/examples are not allowed/i');
+
+		AliasColumnMap::create()
+			->field('published', type: FieldTypeEnum::BOOLEAN, examples: ['Oui']);
 	}
 
 	public function testFullDescriptorShapeIsJsonStable(): void

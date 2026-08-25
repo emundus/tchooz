@@ -921,8 +921,19 @@ class StringHelper extends \Joomla\String\StringHelper
 	}
 
 	/**
-	 * Return DB value quoted single string.  Does not quote if value starts with SELECT,
-	 * or if value is already single quoted.
+	 * Return DB value quoted single string.  Does not quote if value is already single quoted.
+	 *
+	 * Security fix: this used to also skip quoting whenever the value started with the
+	 * literal text "SELECT " (case-insensitive), intended to let a legitimate admin-authored
+	 * subquery through as raw SQL. In practice every caller of safeQuote()/safeQuoteOne() only
+	 * ever passes user- or form-controllable data here (element.php's IN/NOT IN filter
+	 * handling, only reached when $eval != FABRIKFILTER_QUERY - i.e. the "this IS a raw SQL
+	 * subquery" case is already routed around this function entirely via that check; and
+	 * cascadingdropdown.php's watched-element value, which is plain form data, never SQL).
+	 * An attacker could simply prefix any filter value with "SELECT " to have it spliced into
+	 * the query completely unescaped - confirmed exploitable via hex literals to sidestep the
+	 * remaining single-quote check too (e.g. "IN (SELECT 0x78726179)" needs no quote character
+	 * at all). There is no remaining legitimate use of the bypass, so it has been removed.
 	 *
 	 * @param string  $value
 	 *
@@ -931,15 +942,11 @@ class StringHelper extends \Joomla\String\StringHelper
 	public static function safeQuoteOne($value)
 	{
 		$value = trim($value);
-		if (is_string($value) && !preg_match('/^\s*SELECT\s+/i', $value))
+
+		if (is_string($value) && !preg_match("#^'.*'$#", $value))
 		{
-
-			if (!preg_match("#^'.*'$#", $value))
-			{
-				$db = Factory::getContainer()->get('DatabaseDriver');
-				$value = $db->quote($value);
-			}
-
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$value = $db->quote($value);
 		}
 
 		return $value;

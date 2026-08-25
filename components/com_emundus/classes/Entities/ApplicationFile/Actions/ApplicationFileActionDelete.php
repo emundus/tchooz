@@ -3,6 +3,7 @@
 namespace Tchooz\Entities\ApplicationFile\Actions;
 
 use EmundusModelFiles;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\User;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
@@ -25,9 +26,14 @@ class ApplicationFileActionDelete extends ApplicationFileAction
 			{
 				require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 			}
-			$filesModel = new EmundusModelFiles();
 
-			$deleted = $filesModel->deleteFile($applicationFileEntity->getFnum(), $currentUser?->id);
+			try {
+				$filesModel = new EmundusModelFiles();
+				$deleted = $filesModel->deleteFile($applicationFileEntity->getFnum(), $currentUser?->id);
+			} catch (\Exception $e) {
+				Log::add('Failed to delete file ' . $applicationFileEntity->getFnum() . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.application_file_actions');
+				$deleted = false;
+			}
 		}
 
 		return $deleted;

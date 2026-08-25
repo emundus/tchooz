@@ -14,4 +14,5 @@ enum CommentTargetTypeEnum: string
 	case CONTACT = 'contact';
 	case ORGANIZATION = 'organization';
 	case APPLICATION_FILE = 'application_file';
+	case CHOICE = 'choice';
 }

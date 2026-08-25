@@ -16,6 +16,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Session\Session;
 use Joomla\String\StringHelper;
 use Joomla\Registry\Registry;
 use OCH\Plugin\Captcha\ochCaptcha\Provider\OchcaptchaProvider;
@@ -272,14 +273,16 @@ class PlgFabrik_ElementCaptcha extends PlgFabrik_Element
 			$displayData       = new stdClass;
 			$displayData->id   = $id;
 			$displayData->name = $name;
+			$displayData->code = $code;
 
 			$formId    = $this->getFormModel()->getId();
 			$rowId     = $this->app->input->get('rowid', '0');
 			$elementId = $this->getId();
 
 			$displayData->url  = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $this->package
-				. '&task=plugin.pluginAjax&plugin=captcha&method=ajax_image&format=raw&element_id='
-				. $elementId . '&formid=' . $formId . '&rowid=' . $rowId . '&repeatcount=' . $repeatCounter;
+				. '&task=plugin.pluginAjax&plugin=captcha&g=element&method=ajax_image&format=raw&element_id='
+				. $elementId . '&formid=' . $formId . '&rowid=' . $rowId . '&repeatcount=' . $repeatCounter
+				. '&' . Session::getFormToken() . '=1';
 
 			$displayData->type = $type;
 			$displayData->size = $size;

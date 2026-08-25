@@ -985,7 +985,8 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 				$displayData->downloadImg   = ($downloadImg && File::exists(JPATH_SITE .'/media/com_fabrik/images/' . $downloadImg)) ? COM_FABRIK_LIVESITE . 'media/com_fabrik/images/' . $downloadImg : '';
 				$displayData->href          = COM_FABRIK_LIVESITE
 					. 'index.php?option=com_' . $this->package . '&amp;task=plugin.pluginAjax&amp;plugin=fileupload&amp;method=ajax_download&amp;format=raw&amp;element_id='
-					. $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0&ajaxIndex=' . $i;
+					. $elementId . '&amp;formid=' . $formId . '&amp;rowid=' . $rowId . '&amp;repeatcount=0&ajaxIndex=' . $i . '&amp;g=element'
+					. '&amp;' . Session::getFormToken() . '=1';
 
 				$downloadHTML = $layout->render($displayData);
 			}
@@ -2930,7 +2931,8 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$displayData->downloadImg   = ($downloadImg && File::exists(JPATH_SITE .'/media/com_fabrik/images/' . $downloadImg)) ? COM_FABRIK_LIVESITE . 'media/com_fabrik/images/' . $downloadImg : '';
 		$displayData->href          = COM_FABRIK_LIVESITE . 'index.php?option=com_' . $this->package
 			. '&task=plugin.pluginAjax&plugin=fileupload&method=ajax_download&format=raw&element_id='
-			. $elementId . '&formid=' . $formId . '&rowid=' . $rowId . '&repeatcount=' . $repeatCounter . '&ajaxIndex=' . $ajaxIndex;
+			. $elementId . '&formid=' . $formId . '&rowid=' . $rowId . '&repeatcount=' . $repeatCounter . '&ajaxIndex=' . $ajaxIndex . '&g=element'
+			. '&' . Session::getFormToken() . '=1';
 
 		return $layout->render($displayData);
 	}

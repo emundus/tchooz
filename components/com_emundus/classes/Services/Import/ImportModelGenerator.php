@@ -9,6 +9,7 @@
 namespace Tchooz\Services\Import;
 
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -21,58 +22,122 @@ use Tchooz\Enums\Import\FieldTypeEnum;
  * Generates an import template file (CSV or XLSX) from a column descriptor
  * array as produced by ColumnMap::describe().
  *
- * The XLSX variant builds two sheets:
- *   - "Data"          : header row + Excel data validation dropdowns for ENUM columns.
+ * The XLSX variant builds:
+ *   - "Data"          : header row + Excel data validation dropdowns for closed-list
+ *                       columns (ENUM, BOOLEAN and REFERENTIAL).
  *   - "Documentation" : one row per field describing required / type / format /
  *                       allowed values / examples, so the integrator does not have
  *                       to call /getEntityImportInformation to know the schema.
+ *   - one secondary sheet per REFERENTIAL field (and per oversized ENUM list)
+ *                       holding the value / label / "label [value]" entries the
+ *                       Data sheet dropdown references by range.
  *
- * The service is stateless. Callers are responsible for choosing the output
- * path and serving the file (the service only writes to disk).
+ * The service owns where models are stored: a directory covered by the
+ * .htaccess rewrite that routes every tmp/ request through the getfile PHP
+ * gateway, so a model is never served as a static file and its access control
+ * is enforced by EmundusControllerEmundus::getfile().
  */
 final class ImportModelGenerator
 {
+	/**
+	 * Root-relative directory holding the generated models. Must stay inside a
+	 * path protected by the getfile gateway (see .htaccess tmp/ rewrite rule).
+	 */
+	public const MODEL_DIRECTORY = 'tmp/import_models/';
+
 	private const MAX_DATA_VALIDATION_ROWS = 1000;
 	private const MAX_INLINE_FORMULA_LENGTH = 255;
+
+	private const REFERENTIAL_VALUE_COLUMN   = 'A';
+	private const REFERENTIAL_LABEL_COLUMN   = 'B';
+	private const REFERENTIAL_DISPLAY_COLUMN = 'C';
+
+	/** @var array<string, string>  referential key => sheet title, so each referential gets a single shared sheet */
+	private array $referentialSheetTitles = [];
 
 	/**
 	 * High-level entry point with built-in caching.
 	 *
 	 * Writes the model only when no file matches the current ($type, $format,
-	 * $cacheKey) tuple, and purges older variants for the same ($type, $format)
-	 * so /tmp does not accumulate one file per commit. Returns the absolute
-	 * file path on disk — URL composition stays the caller's concern.
+	 * code version) tuple, and purges older variants for the same ($type,
+	 * $format) so the directory does not accumulate one file per commit.
+	 * Returns the download URL going through the getfile gateway.
 	 *
-	 * @param string                            $directory  Absolute target directory.
-	 * @param string                            $type       Entity type ("contact", "organization", ...).
-	 * @param string                            $format     "csv" or "xlsx".
-	 * @param string                            $cacheKey   Filename suffix used for cache invalidation.
-	 * @param array<int, array<string, mixed>>  $columns    describe() output.
+	 * @param string                            $type     Entity type ("contact", "organization", ...).
+	 * @param string                            $format   "csv" or "xlsx".
+	 * @param array<int, array<string, mixed>>  $columns  describe() output.
 	 */
-	public function build(string $directory, string $type, string $format, string $cacheKey, array $columns): string
+	public function build(string $type, string $format, array $columns): string
 	{
-		$directory = rtrim($directory, '/\\') . '/';
-		$filename  = $this->modelFilename($type, $format, $cacheKey);
+		$directory = $this->resolveDirectory();
+		$filename  = $this->modelFilename($type, $format, $this->cacheKey());
 		$filepath  = $directory . $filename;
 
 		// Cache hit: same code version → reuse the existing file.
-		if (is_file($filepath))
+		if (!is_file($filepath))
 		{
-			return $filepath;
+			$this->purgeStaleModels($directory, $type, $format, $filename);
+
+			if ($format === 'xlsx')
+			{
+				$this->writeXlsx($filepath, $columns);
+			}
+			else
+			{
+				$this->writeCsv($filepath, $columns);
+			}
 		}
 
-		$this->purgeStaleModels($directory, $type, $format, $filename);
+		return $this->downloadUrl($filename);
+	}
 
-		if ($format === 'xlsx')
+	/**
+	 * Absolute model directory, created on first use.
+	 */
+	private function resolveDirectory(): string
+	{
+		$directory = JPATH_ROOT . '/' . self::MODEL_DIRECTORY;
+
+		if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory))
 		{
-			$this->writeXlsx($filepath, $columns);
-		}
-		else
-		{
-			$this->writeCsv($filepath, $columns);
+			throw new \RuntimeException(sprintf('Unable to create the import model directory "%s".', $directory));
 		}
 
-		return $filepath;
+		return $directory;
+	}
+
+	/**
+	 * Models are streamed by the getfile gateway rather than linked statically:
+	 * the directory is behind an .htaccess rewrite, and getfile is where the
+	 * access level is checked.
+	 */
+	private function downloadUrl(string $filename): string
+	{
+		return Uri::root() . 'index.php?option=com_emundus&task=getfile&u=' . self::MODEL_DIRECTORY . $filename;
+	}
+
+	/**
+	 * Short, filename-safe identifier of the current code version, sourced from
+	 * EmundusHelperCache::getCurrentGitHash() — the same helper used by every
+	 * cache-busting view in the project — so a new commit (dev) or a new
+	 * component release (prod) automatically invalidates cached models.
+	 */
+	private function cacheKey(): string
+	{
+		static $cached = null;
+		if ($cached !== null)
+		{
+			return $cached;
+		}
+
+		if (!class_exists('EmundusHelperCache'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+		}
+
+		$safe = preg_replace('/[^A-Za-z0-9.\-]/', '_', \EmundusHelperCache::getCurrentGitHash());
+
+		return $cached = ($safe !== '' ? substr($safe, 0, 12) : 'v0');
 	}
 
 	/**
@@ -114,6 +179,8 @@ final class ImportModelGenerator
 	 */
 	public function writeXlsx(string $filepath, array $columns): void
 	{
+		$this->referentialSheetTitles = [];
+
 		$spreadsheet = new Spreadsheet();
 
 		$dataSheet = $spreadsheet->getActiveSheet();
@@ -148,7 +215,7 @@ final class ImportModelGenerator
 	}
 
 	/**
-	 * Header row + data validation dropdowns for ENUM columns.
+	 * Header row + data validation dropdowns for closed-list columns.
 	 *
 	 * @param array<int, array<string, mixed>> $columns
 	 */
@@ -165,11 +232,7 @@ final class ImportModelGenerator
 				$sheet->getStyle($cell . '1')->getFont()->setBold(true);
 			}
 
-			// ENUM → dropdown over the first MAX_DATA_VALIDATION_ROWS data rows of this column.
-			if (($column['type'] ?? null) === FieldTypeEnum::ENUM->value && !empty($column['values']))
-			{
-				$this->attachEnumValidation($sheet, $cell, $column);
-			}
+			$this->attachClosedListValidation($sheet, $cell, $column);
 
 			$sheet->getColumnDimension($cell)->setAutoSize(true);
 			$cell++;
@@ -180,40 +243,179 @@ final class ImportModelGenerator
 	}
 
 	/**
-	 * Adds an Excel data validation list to a column for an ENUM field.
+	 * Adds a data validation dropdown to a column backed by a closed list: a
+	 * static `values` list (ENUM, BOOLEAN) or a REFERENTIAL (dynamic
+	 * `referential.entries`).
+	 *
+	 * Short static lists stay inline. REFERENTIAL fields and oversized static lists
+	 * (beyond Excel's ~255 char inline cap) are rendered on a dedicated secondary
+	 * sheet referenced by range. Static-list cells reference the raw value column;
+	 * referential cells reference the "label [value]" column (decoded back to the
+	 * value at import time).
 	 *
 	 * @param array<string, mixed> $column
 	 */
-	private function attachEnumValidation(Worksheet $sheet, string $columnLetter, array $column): void
+	private function attachClosedListValidation(Worksheet $sheet, string $columnLetter, array $column): void
 	{
-		$values  = array_map(static fn(array $v) => (string) $v['value'], $column['values']);
-		$formula = '"' . implode(',', $values) . '"';
+		$isReferential = !empty($column['referential']['entries']);
+		$isStaticList  = !empty($column['values']);
 
-		// Excel caps inline list formulas around 255 chars; bail out gracefully on long enums.
-		if (strlen($formula) > self::MAX_INLINE_FORMULA_LENGTH)
+		if (!$isReferential && !$isStaticList)
 		{
 			return;
 		}
 
+		$entries = $isReferential ? $column['referential']['entries'] : $column['values'];
+
+		if (!$isReferential)
+		{
+			$inline = '"' . implode(',', array_map(static fn(array $v) => (string) $v['value'], $entries)) . '"';
+
+			if (strlen($inline) <= self::MAX_INLINE_FORMULA_LENGTH)
+			{
+				$validation = $this->newListValidation($sheet, $columnLetter, $column);
+				$validation->setShowInputMessage(true);
+				$validation->setPromptTitle(Text::_('COM_EMUNDUS_IMPORT_MODEL_CHOOSE_VALUE'));
+				$validation->setPrompt($this->buildListPromptText($entries));
+				$validation->setFormula1($inline);
+
+				return;
+			}
+		}
+
+		$spreadsheet    = $sheet->getParent();
+		$listColumn     = $isReferential ? self::REFERENTIAL_DISPLAY_COLUMN : self::REFERENTIAL_VALUE_COLUMN;
+		$referentialKey = $isReferential ? ($column['referential']['key'] ?? null) : null;
+
+		if ($referentialKey !== null && isset($this->referentialSheetTitles[$referentialKey]))
+		{
+			$sheetTitle = $this->referentialSheetTitles[$referentialKey];
+		}
+		else
+		{
+			$desiredTitle = !empty($column['referential']['label'])
+				? (string) $column['referential']['label']
+				: $this->buildHeader($column);
+
+			$sheetTitle = $this->writeReferentialSheet($spreadsheet, $desiredTitle, $entries);
+
+			if ($referentialKey !== null)
+			{
+				$this->referentialSheetTitles[$referentialKey] = $sheetTitle;
+			}
+		}
+
+		$formula = sprintf(
+			"'%s'!$%s$2:$%s$%d",
+			str_replace("'", "''", $sheetTitle),
+			$listColumn,
+			$listColumn,
+			count($entries) + 1
+		);
+
+		$validation = $this->newListValidation($sheet, $columnLetter, $column);
+		$validation->setFormula1($formula);
+	}
+
+	/**
+	 * Builds a list-type data validation on the first data cell of a column and
+	 * stretches it over the column area below via sqref (PhpSpreadsheet's
+	 * getDataValidation() only takes a single coordinate). Caller sets formula1.
+	 *
+	 * @param array<string, mixed> $column
+	 */
+	private function newListValidation(Worksheet $sheet, string $columnLetter, array $column): DataValidation
+	{
 		$firstCell = $columnLetter . '2';
 		$range     = $firstCell . ':' . $columnLetter . self::MAX_DATA_VALIDATION_ROWS;
 
-		// PhpSpreadsheet's getDataValidation() takes a single coordinate, not a
-		// range. We attach the validation to the first data cell and let sqref
-		// tell Excel that it actually applies to the whole column area below.
 		$validation = $sheet->getCell($firstCell)->getDataValidation();
 		$validation->setType(DataValidation::TYPE_LIST);
 		$validation->setErrorStyle(DataValidation::STYLE_INFORMATION);
 		$validation->setAllowBlank(empty($column['required']));
 		$validation->setShowDropDown(true);
-		$validation->setShowInputMessage(true);
 		$validation->setShowErrorMessage(true);
 		$validation->setErrorTitle(Text::_('COM_EMUNDUS_IMPORT_MODEL_INVALID_VALUE'));
 		$validation->setError(Text::_('COM_EMUNDUS_IMPORT_MODEL_INVALID_VALUE_DESC'));
-		$validation->setPromptTitle(Text::_('COM_EMUNDUS_IMPORT_MODEL_CHOOSE_VALUE'));
-		$validation->setPrompt($this->buildEnumPromptText($column));
-		$validation->setFormula1($formula);
 		$validation->setSqref($range);
+
+		return $validation;
+	}
+
+	/**
+	 * Writes a secondary sheet listing a closed list as value / label /
+	 * "label [value]" columns and returns its unique, ≤31 char title.
+	 *
+	 * @param array<int, array{value: string, label?: string}> $entries
+	 */
+	private function writeReferentialSheet(Spreadsheet $spreadsheet, string $desiredTitle, array $entries): string
+	{
+		$sheet = new Worksheet($spreadsheet);
+		$spreadsheet->addSheet($sheet);
+
+		$title = $this->uniqueSheetTitle($spreadsheet, $desiredTitle);
+		$sheet->setTitle($title);
+
+		$sheet->setCellValue(self::REFERENTIAL_VALUE_COLUMN . '1', Text::_('COM_EMUNDUS_IMPORT_MODEL_REF_VALUE'));
+		$sheet->setCellValue(self::REFERENTIAL_LABEL_COLUMN . '1', Text::_('COM_EMUNDUS_IMPORT_MODEL_REF_LABEL'));
+		$sheet->setCellValue(self::REFERENTIAL_DISPLAY_COLUMN . '1', Text::_('COM_EMUNDUS_IMPORT_MODEL_REF_DISPLAY'));
+
+		$row = 2;
+		foreach ($entries as $entry)
+		{
+			$value   = (string) $entry['value'];
+			$label   = (string) ($entry['label'] ?? $value);
+			$display = $label === $value ? $value : sprintf('%s [%s]', $label, $value);
+
+			$sheet->setCellValueExplicit(self::REFERENTIAL_VALUE_COLUMN . $row, $value, DataType::TYPE_STRING);
+			$sheet->setCellValue(self::REFERENTIAL_LABEL_COLUMN . $row, $label);
+			$sheet->setCellValueExplicit(self::REFERENTIAL_DISPLAY_COLUMN . $row, $display, DataType::TYPE_STRING);
+			$row++;
+		}
+
+		foreach ([self::REFERENTIAL_VALUE_COLUMN, self::REFERENTIAL_LABEL_COLUMN, self::REFERENTIAL_DISPLAY_COLUMN] as $col)
+		{
+			$sheet->getColumnDimension($col)->setAutoSize(true);
+		}
+
+		return $title;
+	}
+
+	/**
+	 * Sanitizes a desired sheet title (Excel forbids \ / ? * [ ] : and caps at
+	 * 31 chars) and disambiguates collisions with a numeric suffix.
+	 */
+	private function uniqueSheetTitle(Spreadsheet $spreadsheet, string $desired): string
+	{
+		$clean = trim((string) preg_replace('/[\\\\\/?*\[\]:]/', ' ', $desired));
+		$base  = substr($clean !== '' ? $clean : 'Ref', 0, 31);
+
+		$title = $base;
+		$index = 1;
+		while ($spreadsheet->sheetNameExists($title))
+		{
+			$suffix = '_' . $index;
+			$title  = substr($base, 0, 31 - strlen($suffix)) . $suffix;
+			$index++;
+		}
+
+		return $title;
+	}
+
+	/**
+	 * @param array<int, array{value: string, label?: string}> $entries
+	 */
+	private function buildListPromptText(array $entries): string
+	{
+		$lines = [];
+		foreach ($entries as $entry)
+		{
+			$value = (string) $entry['value'];
+			$label = (string) ($entry['label'] ?? $value);
+			$lines[] = $label === $value ? $value : sprintf('%s (%s)', $value, $label);
+		}
+
+		return implode("\n", $lines);
 	}
 
 	/**
@@ -259,22 +461,6 @@ final class ImportModelGenerator
 		}
 
 		$sheet->freezePane('A2');
-	}
-
-	/**
-	 * @param array<string, mixed> $column
-	 */
-	private function buildEnumPromptText(array $column): string
-	{
-		$lines = [];
-		foreach ($column['values'] as $entry)
-		{
-			$value = (string) $entry['value'];
-			$label = (string) ($entry['label'] ?? $value);
-			$lines[] = $label === $value ? $value : sprintf('%s (%s)', $value, $label);
-		}
-
-		return implode("\n", $lines);
 	}
 
 	/**

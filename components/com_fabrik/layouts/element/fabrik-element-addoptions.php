@@ -35,7 +35,6 @@ $d = $displayData;
         <?php echo $d->hidden_field; ?>
     </div>
 </div>
-
 <script>
     let addButton = document.querySelector('.toggle-addoption')
     let iconButton = document.querySelector('.toggle-addoption .material-symbols-outlined');
@@ -48,3 +47,4 @@ $d = $displayData;
         }
     });
 </script>
+

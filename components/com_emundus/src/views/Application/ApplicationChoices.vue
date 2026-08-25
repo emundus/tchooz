@@ -7,6 +7,7 @@ import CampaignsList from '@/components/Organisms/Campaigns/CampaignsList.vue';
 import Modal from '@/components/Modal.vue';
 import Card from '@/components/Molecules/Card.vue';
 import Back from '@/components/Utils/Back.vue';
+import UpdateApplicationChoiceState from '@/components/Application/UpdateApplicationChoiceState.vue';
 
 import date from '@/mixins/date.js';
 import string from '@/mixins/string.js';
@@ -16,7 +17,7 @@ import Info from '@/components/Utils/Info.vue';
 
 export default {
 	name: 'ApplicationChoices',
-	components: { Info, Back, Card, Modal, CampaignsList, Button },
+	components: { Info, Back, Card, Modal, CampaignsList, Button, UpdateApplicationChoiceState },
 	mixins: [date, string, alerts, campaign],
 	props: {
 		fnum: {
@@ -35,23 +36,18 @@ export default {
 
 			openCampaignModal: false,
 			openFabrikFormModal: false,
+			openUpdateStatusModal: false,
 			selectedChoice: 0,
+			choiceToUpdate: null,
+			editedComment: 0,
+			commentDraft: '',
 			loading: false,
-
-			status: {
-				draft: this.translate('COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_DRAFT'),
-				waiting: this.translate('COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_WAITING'),
-				accepted: this.translate('COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_ACCEPTED'),
-				rejected: this.translate('COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_REJECTED'),
-				confirmed: this.translate('COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_CONFIRMED'),
-			},
 		};
 	},
 	async mounted() {
 		let fnum = this.fnum || '';
 
 		this.loading = true;
-		await this.getStates();
 		await this.getChoicesConfiguration(fnum);
 		await this.getApplicationChoices(fnum);
 		await this.getAvailableChoices(fnum);
@@ -107,16 +103,6 @@ export default {
 			return new Promise((resolve) => {
 				applicationService.getChoicesConfiguration(fnum).then((res) => {
 					this.configuration = res.data;
-
-					resolve();
-				});
-			});
-		},
-
-		getStates() {
-			return new Promise((resolve) => {
-				applicationService.getChoicesStates().then((res) => {
-					this.status = res.data;
 
 					resolve();
 				});
@@ -304,40 +290,64 @@ export default {
 			});
 		},
 
-		async updateStatus(id, currentStatus) {
+		// Both state change entry points go through UpdateApplicationChoiceState: a dropdown alert cannot
+		// hold the state and its message at once.
+		openUpdateStatus(choice) {
+			this.choiceToUpdate = choice;
+			this.openUpdateStatusModal = true;
+		},
+
+		closeUpdateStatus() {
+			this.openUpdateStatusModal = false;
+			this.choiceToUpdate = null;
+		},
+
+		// The message is edited on its own: no state is written, so no automation is triggered
+		canCommentBeEdited(choice) {
+			return this.$props.fnum && choice.can_be_managed && this.canBeUpdate;
+		},
+
+		startCommentEdition(choice) {
+			this.editedComment = choice.id;
+			this.commentDraft = choice.state_comment ? choice.state_comment.raw : '';
+		},
+
+		cancelCommentEdition() {
+			this.editedComment = 0;
+			this.commentDraft = '';
+		},
+
+		saveComment(choice) {
+			this.loading = true;
+
+			applicationService.updateChoiceComment(choice.id, this.commentDraft).then((res) => {
+				this.loading = false;
+
+				if (!res.status) {
+					this.alertError(
+						'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_ERROR_TITLE',
+						res.error || 'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_COMMENT_ERROR_TEXT',
+					);
+					return;
+				}
+
+				const index = this.choices.findIndex((item) => item.id === choice.id);
+				if (index !== -1) {
+					this.choices[index].state_comment = res.data;
+				}
+
+				this.cancelCommentEdition();
+			});
+		},
+
+		async reloadAfterStatusUpdate() {
 			let fnum = this.fnum || '';
 
-			this.alertDropdown(
-				'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_TITLE',
-				this.status,
-				null,
-				'COM_EMUNDUS_OK',
-				'COM_EMUNDUS_ACTIONS_CANCEL',
-				null,
-				currentStatus.name.toLowerCase(),
-			).then(async (result) => {
-				if (result.isConfirmed) {
-					applicationService.updateStatus(id, result.value).then(async (res) => {
-						if (res.status) {
-							this.loading = true;
-							await this.getChoicesConfiguration(fnum);
-							await this.getApplicationChoices(fnum);
-							await this.getAvailableChoices(fnum);
-							this.loading = false;
-
-							this.alertSuccess(
-								'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_SUCCESS_TITLE',
-								'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_SUCCESS_TEXT',
-							);
-						} else {
-							this.alertError(
-								'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_ERROR_TITLE',
-								res.error || 'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_ERROR_TEXT',
-							);
-						}
-					});
-				}
-			});
+			this.loading = true;
+			await this.getChoicesConfiguration(fnum);
+			await this.getApplicationChoices(fnum);
+			await this.getAvailableChoices(fnum);
+			this.loading = false;
 		},
 
 		filterProperties(properties) {
@@ -352,7 +362,7 @@ export default {
 
 		canMoreBeEdited(choice) {
 			if (this.$props.fnum && this.configuration.crud) {
-				return this.configuration.crud.u || this.configuration.crud.c;
+				return (this.configuration.crud.u || this.configuration.crud.c) && choice.can_be_managed;
 			}
 
 			if (this.configuration.can_be_confirmed === 1) {
@@ -425,6 +435,10 @@ export default {
 				);
 			}
 		},
+		// Reordering renumbers the whole list, so it is refused as soon as one choice is out of the manager's programs.
+		canReorder: function () {
+			return this.canBeUpdate && this.choices.every((choice) => choice.can_be_managed);
+		},
 		canBeConfirm: function () {
 			if (this.$props.fnum && this.configuration.crud && this.configuration.crud.u) {
 				return true;
@@ -479,9 +493,8 @@ export default {
 		<modal
 			v-if="openCampaignModal && canBeCreate"
 			name="add-application-choice"
-			:classes="'tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-2xl tw-p-8 tw-shadow-modal'"
+			:classes="'!tw-max-h-[80vh] !tw-w-[95%] tw-overflow-y-auto tw-rounded-2xl tw-p-4 tw-shadow-modal md:!tw-w-[60%] md:tw-p-8'"
 			transition="nice-modal-fade"
-			width="60%"
 			height="100%"
 			:delay="100"
 			:adaptive="true"
@@ -510,9 +523,8 @@ export default {
 		<modal
 			v-if="configuration.form_id && openFabrikFormModal"
 			name="add-application-choice-more"
-			:classes="'tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-2xl tw-p-8 tw-shadow-modal'"
+			:classes="'!tw-max-h-[80vh] !tw-w-[95%] tw-overflow-y-auto tw-rounded-2xl tw-p-4 tw-shadow-modal md:!tw-w-[60%] md:tw-p-8'"
 			transition="nice-modal-fade"
-			width="60%"
 			height="100%"
 			:delay="100"
 			:adaptive="true"
@@ -534,6 +546,24 @@ export default {
 				class="tw-h-full tw-w-full"
 				:title="translate('COM_EMUNDUS_IFRAME_APPLICATION_CHOICES_FORM_TITLE')"
 			></iframe>
+		</modal>
+
+		<modal
+			v-if="openUpdateStatusModal && choiceToUpdate"
+			name="update-application-choice-state"
+			:classes="'tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-2xl tw-p-8 tw-shadow-modal'"
+			transition="nice-modal-fade"
+			width="40%"
+			height="auto"
+			:delay="100"
+			:adaptive="true"
+			:clickToClose="false"
+		>
+			<UpdateApplicationChoiceState
+				:item="choiceToUpdate"
+				@close="closeUpdateStatus"
+				@update-items="reloadAfterStatusUpdate"
+			/>
 		</modal>
 
 		<Back class="tw-mb-4" link="index.php" v-if="!$props.fnum" />
@@ -587,7 +617,7 @@ export default {
 						<div v-html="choice.state_html" />
 						<div class="tw-flex tw-items-center tw-gap-1" v-if="configuration.can_be_ordering === 1">
 							<span
-								v-if="canBeUpdate"
+								v-if="canReorder"
 								class="material-symbols-outlined tw-cursor-pointer"
 								@click="reorderChoices(choice.id, 'up')"
 								:class="{ 'tw-text-neutral-400': index === 0 }"
@@ -595,7 +625,7 @@ export default {
 								arrow_upward
 							</span>
 							<span
-								v-if="canBeUpdate"
+								v-if="canReorder"
 								class="material-symbols-outlined tw-cursor-pointer"
 								@click="reorderChoices(choice.id, 'down')"
 								:class="{ 'tw-text-neutral-400': index === choices.length - 1 }"
@@ -628,6 +658,54 @@ export default {
 					></div>
 				</template>
 				<template #actions>
+					<!-- Managers only: the backend leaves state_comment empty for the applicant -->
+					<div class="tw-mb-2 tw-mt-2" v-if="choice.state_comment">
+						<Info
+							title="COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_COMMENT"
+							bg-color="tw-bg-neutral-50"
+							icon="chat"
+							icon-color="tw-text-neutral-600"
+							class="tw-border-b-0 tw-border-l-4 tw-border-r-0 tw-border-t-0 tw-border-l-neutral-500"
+						>
+							<template #content>
+								<div v-if="editedComment !== choice.id">
+									<p class="tw-mt-1 tw-text-sm tw-text-neutral-600" v-if="choice.state_comment">
+										{{ choice.state_comment.signature }}
+									</p>
+									<div class="tw-mt-2" v-if="choice.state_comment" v-html="choice.state_comment.content"></div>
+									<div class="tw-flex tw-flex-row tw-justify-end">
+										<Button
+											v-if="canCommentBeEdited(choice)"
+											variant="secondary"
+											width="fit"
+											@click="startCommentEdition(choice)"
+										>
+											{{
+												choice.state_comment
+													? translate('COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_COMMENT')
+													: translate('COM_EMUNDUS_APPLICATION_CHOICES_ADD_COMMENT')
+											}}
+										</Button>
+									</div>
+								</div>
+								<div v-else class="tw-mt-2">
+									<textarea v-model="commentDraft" rows="4" class="tw-w-full"></textarea>
+									<p class="tw-mt-1 tw-text-sm tw-text-neutral-600">
+										{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_COMMENT_HELP') }}
+									</p>
+									<div class="tw-mt-2 tw-flex tw-justify-end tw-gap-2">
+										<Button variant="cancel" width="fit" @click="cancelCommentEdition">
+											{{ translate('COM_EMUNDUS_ACTIONS_CANCEL') }}
+										</Button>
+										<Button variant="primary" width="fit" @click="saveComment(choice)">
+											{{ translate('COM_EMUNDUS_ONBOARD_SAVE') }}
+										</Button>
+									</div>
+								</div>
+							</template>
+						</Info>
+					</div>
+
 					<div class="tw-mb-2 tw-mt-2" v-if="canMoreBeViewed(choice)">
 						<Info
 							:bg-color="
@@ -682,14 +760,22 @@ export default {
 					</div>
 					<div class="tw-flex tw-justify-end tw-gap-2">
 						<Button
-							v-if="($props.fnum && canBeUpdate) || ($props.fnum && canBeCreate && choice.state.value === 3)"
+							v-if="
+								choice.can_be_managed &&
+								(($props.fnum && canBeUpdate) || ($props.fnum && canBeCreate && choice.state.value === 3))
+							"
 							variant="primary"
 							width="fit"
-							@click="updateStatus(choice.id, choice.state)"
+							@click="openUpdateStatus(choice)"
 						>
 							{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS') }}
 						</Button>
-						<Button variant="cancel" width="fit" v-if="canBeDelete" @click="removeChoice(choice.id)">
+						<Button
+							variant="cancel"
+							width="fit"
+							v-if="canBeDelete && choice.can_be_managed"
+							@click="removeChoice(choice.id)"
+						>
 							{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_CANCEL') }}
 						</Button>
 						<Button

@@ -73,7 +73,10 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 					if ($element->eval == "1")
 					{
 						FabrikWorker::clearEval();
-						$v = Php::Eval(['code' => $default, 'vars'=>['data'=>$data]]);
+						// Re-resolve with forEval=true so substituted request/row data becomes a safe,
+						// quoted PHP literal instead of text spliced straight into the eval'd code.
+						$evalDefault = $w->parseMessageForPlaceHolder($element->default, $data, true, true, null, true, true);
+						$v = Php::Eval(['code' => $evalDefault, 'vars'=>['data'=>$data]]);
 						FabrikWorker::logEval($v, 'Caught exception on eval in ' . $element->name . '::getDefaultValue() : %s');
 					}
 					else

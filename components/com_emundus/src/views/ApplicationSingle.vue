@@ -313,7 +313,7 @@ export default {
 							applicant_id: result.data.owner_id,
 							applicant_name: result.data.user,
 							campaign: result.campaign_id,
-							is_anonym: 0,
+							is_anonym: result.data.is_anonym,
 							status: result.status.label,
 							status_color: result.status.color,
 						};
@@ -510,6 +510,14 @@ export default {
 		},
 	},
 	computed: {
+		// selectedFile is a plain fnum string until render() replaces it with the loaded object.
+		currentFnum() {
+			if (!this.selectedFile) {
+				return '';
+			}
+
+			return typeof this.selectedFile === 'string' ? this.selectedFile : this.selectedFile.fnum;
+		},
 		ratioStyle() {
 			let ratio_array = this.$props.ratio.split('/');
 			return ratio_array[0] + '% ' + ratio_array[1] + '%';

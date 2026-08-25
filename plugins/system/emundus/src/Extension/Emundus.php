@@ -12,6 +12,7 @@ namespace Joomla\Plugin\System\Emundus\Extension;
 
 use EmundusModelForm;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Event\Application\AfterDispatchEvent;
 use Joomla\CMS\Event\Application\AfterInitialiseEvent;
 use Joomla\CMS\Event\Application\AfterRenderEvent;
 use Joomla\CMS\Event\GenericEvent;
@@ -36,6 +37,7 @@ use Tchooz\Entities\Emails\TagModifierRegistry;
 use Tchooz\Enums\User\AuthenticationModeEnum;
 use Tchooz\Providers\DbLanguageProvider;
 use Tchooz\Providers\EmundusSubscriberProvider;
+use Tchooz\Services\Automation\RedirectIntentRegistry;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -84,6 +86,12 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			$mapping['onComUsersCaptiveValidateSuccess'] = 'onComUsersCaptiveValidateSuccess';
 		}
 
+		if ($app->isClient('site'))
+		{
+			// Full-page transport of the unified redirect channel (see RedirectIntentRegistry).
+			$mapping['onAfterDispatch'] = 'onAfterDispatch';
+		}
+
 		return $mapping;
 	}
 
@@ -113,6 +121,44 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		}
 
 		$this->getApplication()->redirect($returnUrl);
+	}
+
+	/**
+	 * Full-page transport of the unified redirect channel: an automation action that redirects no
+	 * longer calls $app->redirect() itself, it registers its URL in RedirectIntentRegistry. We
+	 * consume it here once the request has been dispatched and perform the actual redirect — but
+	 * only on the site client and outside AJAX/raw responses (the fetch endpoint already consumes
+	 * the intent to return it in its JSON response).
+	 */
+	public function onAfterDispatch(AfterDispatchEvent $event): void
+	{
+		$app = $this->getApplication();
+
+		if (!$app->isClient('site'))
+		{
+			return;
+		}
+
+		$format = $app->getInput()->get('format', 'html');
+		if (in_array($format, ['json', 'raw'], true))
+		{
+			return;
+		}
+
+		$intent = RedirectIntentRegistry::consume();
+		if ($intent === null || empty($intent->getUrl()))
+		{
+			return;
+		}
+
+		// Built like ActionRedirect::route() does, otherwise the comparison fails as soon as a language segment is present.
+		$active     = $app->getMenu()->getActive();
+		$currentUrl = !empty($active) ? Route::_('index.php?Itemid=' . $active->id, false) : '';
+
+		if ($intent->getUrl() !== $currentUrl)
+		{
+			$app->redirect($intent->getUrl());
+		}
 	}
 
 	public function onAfterInitialise(AfterInitialiseEvent $event): void
@@ -234,7 +280,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		// Add configuration options
 		$currentLanguage = $this->getApplication()->getLanguage()->getTag();
 		$defaultLanguage = ComponentHelper::getParams('com_languages')->get('site', 'fr-FR');
-		if ($currentLanguage !== $defaultLanguage)
+		if ($currentLanguage !== $defaultLanguage && $this->getApplication()->isClient('site'))
 		{
 			$currentLangPath = '/' . substr($currentLanguage, 0, 2);
 		}

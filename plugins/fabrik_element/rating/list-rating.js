@@ -93,6 +93,7 @@ define(['jquery'], function (jQuery) {
 				'rating'     : this.rating,
 				'mode'       : this.options.mode
 			};
+			data[Joomla.getOptions('csrf.token')] = 1;
 			new Request({
 				url       : '',
 				'data'    : data,

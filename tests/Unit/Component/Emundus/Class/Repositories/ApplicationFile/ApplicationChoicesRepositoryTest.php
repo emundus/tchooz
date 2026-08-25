@@ -271,9 +271,10 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 		$this->assertCount(1, $choices);
 		$this->assertEquals($applicationChoice->getId(), $choices[0]->getId());
 
-		// Add another choice
+		// Add another choice. The fixture has no choices step, so the configuration falls back to a maximum
+		// of one: this test covers retrieval, not that rule, hence the rules are skipped.
 		$applicationChoice2 = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[1], $this->campaignsFixtures[1]->getId(), 0, ChoicesStateEnum::ACCEPTED);
-		$this->model->flush($applicationChoice2);
+		$this->model->flush($applicationChoice2, false);
 		$choices = $this->model->getChoicesByFnum($this->dataset['fnum']);
 		$this->assertIsArray($choices);
 		$this->assertCount(2, $choices);
@@ -283,6 +284,102 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 		$this->assertIsArray($acceptedChoices);
 		$this->assertCount(1, $acceptedChoices);
 		$this->assertEquals(ChoicesStateEnum::ACCEPTED, $acceptedChoices[0]->getState());
+
+		$this->clearFixtures();
+	}
+
+	// =====================
+	// assertApplicantCanUpdate — la règle affichée par le front, imposée côté serveur
+	// =====================
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository::assertApplicantCanUpdate
+	 */
+	public function testAssertApplicantCanUpdateWhenChoicesAreNotEditableThrows()
+	{
+		$this->expectException(\InvalidArgumentException::class);
+		$this->expectExceptionMessage(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_NOT_EDITABLE'));
+
+		$this->model->assertApplicantCanUpdate($this->dataset['fnum'], false, ['can_be_updated' => 0, 'can_be_ordering' => 1]);
+	}
+
+	/**
+	 * Un appel API direct ne doit pas contourner la règle : le refus porte le code 403.
+	 *
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository::assertApplicantCanUpdate
+	 */
+	public function testAssertApplicantCanUpdateRefusalCarriesForbiddenCode()
+	{
+		try
+		{
+			$this->model->assertApplicantCanUpdate($this->dataset['fnum'], false, ['can_be_updated' => 0]);
+			$this->fail('Le garde doit refuser une édition hors phase');
+		}
+		catch (\InvalidArgumentException $e)
+		{
+			$this->assertEquals(403, $e->getCode(), 'Le refus doit se traduire par un 403, pas par une erreur serveur');
+		}
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository::assertApplicantCanUpdate
+	 */
+	public function testAssertApplicantCanUpdateWhenChoicesAreEditablePasses()
+	{
+		$this->model->assertApplicantCanUpdate($this->dataset['fnum'], false, ['can_be_updated' => 1, 'can_be_ordering' => 0]);
+
+		$this->assertTrue(true, 'Une configuration éditable ne doit pas lever');
+	}
+
+	/**
+	 * Le classement a sa propre règle : éditable ne veut pas dire classable.
+	 *
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository::assertApplicantCanUpdate
+	 */
+	public function testAssertApplicantCanUpdateWhenOrderingIsRequiredButDisabledThrows()
+	{
+		$this->expectException(\InvalidArgumentException::class);
+		$this->expectExceptionMessage(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_ORDERING_DISABLED'));
+
+		$this->model->assertApplicantCanUpdate($this->dataset['fnum'], true, ['can_be_updated' => 1, 'can_be_ordering' => 0]);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository::assertApplicantCanUpdate
+	 */
+	public function testAssertApplicantCanUpdateWhenOrderingIsRequiredAndAllowedPasses()
+	{
+		$this->model->assertApplicantCanUpdate($this->dataset['fnum'], true, ['can_be_updated' => 1, 'can_be_ordering' => 1]);
+
+		$this->assertTrue(true, 'Une configuration éditable et classable ne doit pas lever');
+	}
+
+	/**
+	 * Sans configuration fournie, le garde va la lire lui-même : la règle ne dépend pas de l'appelant.
+	 *
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository::assertApplicantCanUpdate
+	 */
+	public function testAssertApplicantCanUpdateReadsTheConfigurationWhenNotGiven()
+	{
+		$this->loadFixtures();
+
+		if (!class_exists('EmundusModelWorkflow'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
+		}
+		$config = (new \EmundusModelWorkflow())->getChoicesConfigurationFromFnum($this->dataset['fnum']);
+
+		$thrown = false;
+		try
+		{
+			$this->model->assertApplicantCanUpdate($this->dataset['fnum']);
+		}
+		catch (\InvalidArgumentException $e)
+		{
+			$thrown = true;
+		}
+
+		$this->assertSame(empty($config['can_be_updated']), $thrown, 'Le garde doit suivre la configuration du dossier');
 
 		$this->clearFixtures();
 	}

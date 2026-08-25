@@ -330,7 +330,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 			if ($elementModel)
 			{
 				$w          = new FabrikWorker;
-				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true);
+				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true, null, true, true);
 				FabrikWorker::clearEval();
 				$php_result = Php::Eval(['code' => $code, 'vars' => ['formModel' => $formModel,'elementModel' => $elementModel]]);
 				FabrikWorker::logEval($php_result, 'Caught exception on eval of ' . $formModel->label . ': %s');
@@ -368,7 +368,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 			if ($elementModel)
 			{
 				$w          = new FabrikWorker;
-				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true);
+				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true, null, true, true);
 				FabrikWorker::clearEval();
 				$php_result = Php::Eval(['code' => $code, 'vars' => ['formModel' => $formModel,'elementModel' => $elementModel]]);
 				FabrikWorker::logEval($php_result, 'Caught exception on eval of ' . $formModel->label . ': %s');
@@ -442,7 +442,7 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 			if ($elementModel)
 			{
 				$w          = new FabrikWorker;
-				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true);
+				$code       = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $formModel->data, true, true, null, true, true);
 				FabrikWorker::clearEval();
 				$php_result = Php::Eval(['code' => $code, 'vars' => ['formModel' => $formModel,'elementModel' => $elementModel, 'data' => $data]]);
 				FabrikWorker::logEval($php_result, 'Caught exception on eval of ' . $formModel->label . ': %s');
@@ -572,7 +572,13 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 
 		if ($params->get('form_php_file') == -1)
 		{
-			$code = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $this->html, true, true);
+			// Security fix: $this->html is sourced from $formModel->formData/->data - i.e.
+			// submitted form data - and $code is about to be eval'd below. Without forEval,
+			// any {placeholder} substituted from it was emitted as raw/htmlspecialchars'd
+			// text rather than a safe var_export()'d PHP literal, letting a crafted field
+			// value break out of a string context in the eval'd code. Pass forEval=true,
+			// matching the sibling parseMessageForPlaceHolder() calls above (curl mode).
+			$code = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $this->html, true, true, null, true, true);
 
 			if ($method == 'getBottomContent' || $method == 'getTopContent' || $method == 'getEndContent')
 			{
@@ -691,7 +697,13 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 			 * @TODO add an option to specify which way round to execute (file first or eval first)
 			 * as per Skype convo with Rob.
 			 */
-			$code = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $this->html, true, true);
+			// Security fix: $this->html is sourced from $formModel->formData/->data - i.e.
+			// submitted form data - and $code is about to be eval'd below. Without forEval,
+			// any {placeholder} substituted from it was emitted as raw/htmlspecialchars'd
+			// text rather than a safe var_export()'d PHP literal, letting a crafted field
+			// value break out of a string context in the eval'd code. Pass forEval=true,
+			// matching the sibling parseMessageForPlaceHolder() calls above (curl mode).
+			$code = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $this->html, true, true, null, true, true);
 
 			if (!empty($code))
 			{

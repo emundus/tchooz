@@ -12,6 +12,7 @@
 
 // phpcs:enable PSR1.Files.SideEffects
 
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -29,6 +30,7 @@ use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectTo;
 use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Comments\CommentEntity;
 use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnTag;
 use Tchooz\Enums\AccessLevelEnum;
@@ -51,7 +53,9 @@ use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Controller\EmundusController;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
+use Tchooz\Services\ApplicationFile\ApplicationChoicesService;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
+use Tchooz\Services\Automation\RedirectIntentRegistry;
 use Tchooz\Traits\TraitDispatcher;
 use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 
@@ -65,6 +69,8 @@ class EmundusControllerApplication extends EmundusController
 	private mixed $_user;
 
 	private ActionEntity $applicationChoicesAction;
+
+	private ApplicationChoicesService $applicationChoicesService;
 
 	public function __construct(array $config = array())
 	{
@@ -84,6 +90,7 @@ class EmundusControllerApplication extends EmundusController
 		$actionRepository               = new ActionRepository();
 		$this->applicationChoicesAction = $actionRepository->getByName('application_choices');
 
+		$this->applicationChoicesService = new ApplicationChoicesService();
 	}
 
 	/**
@@ -544,7 +551,7 @@ class EmundusControllerApplication extends EmundusController
 		$m_workflow = new EmundusModelWorkflow();
 
 		$actionRepository = new ActionRepository();
-		$paymentAction    = $actionRepository->getByName('payment');
+		$paymentAction    = $actionRepository->getByName(ActionEnum::PAYMENT->value);
 
 		if (!class_exists('EmundusModelApplication'))
 		{
@@ -1910,21 +1917,19 @@ class EmundusControllerApplication extends EmundusController
 		}
 		$m_workflow = new EmundusModelWorkflow();
 
-		$programs = [];
-		$step_id  = $this->input->getInt('step_id', 0);
-		$fnum     = $this->input->getString('fnum');
+		$as_manager = false;
+		$programs   = [];
+		$step_id    = $this->input->getInt('step_id', 0);
+		$fnum       = $this->input->getString('fnum');
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'r', $this->_user->id, $fnum))
 		{
+			$as_manager   = true;
 			$current_fnum = $fnum;
 		}
 		elseif (!empty($fnum) && EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
-			if (!class_exists('EmundusModelProgramme'))
-			{
-				require_once JPATH_SITE . '/components/com_emundus/models/programme.php';
-			}
-			$m_programme = new EmundusModelProgramme();
-			$programs    = $m_programme->getUserPrograms($this->_user->id);
+			$emundusUserRepository = new EmundusUserRepository();
+			$programs              = $emundusUserRepository->getUserProgramsCodes($this->_user->id);
 
 			if (!empty($step_id))
 			{
@@ -1939,6 +1944,7 @@ class EmundusControllerApplication extends EmundusController
 				}
 			}
 
+			$as_manager   = true;
 			$current_fnum = $fnum;
 		}
 		else
@@ -1961,12 +1967,19 @@ class EmundusControllerApplication extends EmundusController
 		$applicationChoicesRepository = new ApplicationChoicesRepository();
 		$applicationChoicesEntities   = $applicationChoicesRepository->getChoicesByFnum($current_fnum, $programs, null, $choicesConfiguration['form_id'] ?? 0);
 
+		// Fetched for every choice in one query rather than per choice
+		$commentsByChoice = $as_manager ? $this->applicationChoicesService->getStateCommentsByChoice($applicationChoicesEntities) : [];
+
 		$choices = [];
 		foreach ($applicationChoicesEntities as $entity)
 		{
 			$entityObject               = $entity->__serialize();
 			$entityObject['state_html'] = $entity->getState()->getHtmlBadge();
-			$choices[]                  = $entityObject;
+			// Program scope only, the CRUD rights are carried by the choices configuration.
+			$entityObject['can_be_managed'] = !$as_manager || EmundusHelperAccess::canManageProgram($this->_user->id, $entity->getCampaign()?->getProgram()?->getCode());
+			// Managers only: the message justifying a state change is never restituted to the applicant
+			$entityObject['state_comment'] = $this->serializeChoiceStateComment($commentsByChoice[$entity->getId()][0] ?? null);
+			$choices[]                     = $entityObject;
 		}
 
 		$response['code']   = 200;
@@ -1987,15 +2000,16 @@ class EmundusControllerApplication extends EmundusController
 		}
 
 		$checkRules = true;
+		$as_manager = false;
 		$fnum       = $this->input->getString('fnum');
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'c', $this->_user->id, $fnum))
 		{
 			$checkRules   = false;
+			$as_manager   = true;
 			$current_fnum = $fnum;
 		}
 		else
 		{
-			// TODO: Check that applicant can add choice based on the step configuration and the current status of application file
 			$e_session    = Factory::getApplication()->getSession()->get('emundusUser');
 			$current_fnum = $e_session->fnum;
 		}
@@ -2005,11 +2019,15 @@ class EmundusControllerApplication extends EmundusController
 			$response['code']    = 400;
 			$response['message'] = 'Missing fnum parameter.';
 			$this->sendJsonResponse($response);
-
-			return;
 		}
 
 		$campaign_id = $this->input->getInt('campaign_id', 0);
+
+		// The applicant only adds a choice while the configuration says choices are editable
+		if (!$as_manager)
+		{
+			(new ApplicationChoicesRepository())->assertApplicantCanUpdate($current_fnum);
+		}
 
 		$campaignRepository = new CampaignRepository();
 		$campaign           = $campaignRepository->getById($campaign_id);
@@ -2018,8 +2036,14 @@ class EmundusControllerApplication extends EmundusController
 			$response['code']    = 400;
 			$response['message'] = 'Invalid campaign.';
 			$this->sendJsonResponse($response);
+		}
 
-			return;
+		if ($as_manager && !EmundusHelperAccess::canManageProgram($this->_user->id, $campaign->getProgram()?->getCode()))
+		{
+			$response['code']    = 403;
+			$response['status']  = false;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
 		}
 
 		$applicationChoicesEntity = new ApplicationChoicesEntity(
@@ -2067,6 +2091,8 @@ class EmundusControllerApplication extends EmundusController
 
 		$entityObject               = $applicationChoicesEntity->__serialize();
 		$entityObject['state_html'] = $applicationChoicesEntity->getState()->getHtmlBadge();
+		// The program scope was checked above, so the choice we just created is always manageable.
+		$entityObject['can_be_managed'] = true;
 
 		$response['code']    = 200;
 		$response['status']  = true;
@@ -2086,17 +2112,17 @@ class EmundusControllerApplication extends EmundusController
 			return;
 		}
 
-		$fnum = $this->input->getString('fnum');
+		$as_manager = false;
+		$fnum       = $this->input->getString('fnum');
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'd', $this->_user->id, $fnum))
 		{
+			$as_manager   = true;
 			$current_fnum = $fnum;
 		}
 		else
 		{
 			$e_session    = Factory::getApplication()->getSession()->get('emundusUser');
 			$current_fnum = $e_session->fnum;
-
-			// TODO: Check that applicant can remove choice based on the step configuration and the current status of application file
 		}
 
 		if (empty($current_fnum))
@@ -2120,6 +2146,12 @@ class EmundusControllerApplication extends EmundusController
 
 		$applicationChoicesRepository = new ApplicationChoicesRepository();
 
+		// The applicant only removes a choice while the configuration says choices are editable
+		if (!$as_manager)
+		{
+			$applicationChoicesRepository->assertApplicantCanUpdate($current_fnum);
+		}
+
 		$applicant_choices = $applicationChoicesRepository->getChoicesByFnum($current_fnum);
 		$found             = null;
 		foreach ($applicant_choices as $choice)
@@ -2134,6 +2166,16 @@ class EmundusControllerApplication extends EmundusController
 		{
 			$response['code']    = 400;
 			$response['message'] = 'Choice not found.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		if ($as_manager && !EmundusHelperAccess::canManageProgram($this->_user->id, $found->getCampaign()?->getProgram()?->getCode()))
+		{
+			$response['code']    = 403;
+			$response['status']  = false;
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2169,14 +2211,15 @@ class EmundusControllerApplication extends EmundusController
 			return;
 		}
 
-		$fnum = $this->input->getString('fnum');
+		$as_manager = false;
+		$fnum       = $this->input->getString('fnum');
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'u', $this->_user->id, $fnum))
 		{
+			$as_manager   = true;
 			$current_fnum = $fnum;
 		}
 		else
 		{
-			// TODO: Check that applicant can reorder choices based on the step configuration and the current status of application file
 			$e_session    = Factory::getApplication()->getSession()->get('emundusUser');
 			$current_fnum = $e_session->fnum;
 		}
@@ -2203,16 +2246,40 @@ class EmundusControllerApplication extends EmundusController
 
 		$repository = new ApplicationChoicesRepository();
 
-		$choicesReordered = [];
+		// The applicant only reorders while the configuration allows editing and ordering
+		if (!$as_manager)
+		{
+			$repository->assertApplicantCanUpdate($current_fnum, true);
+		}
+
+		$choiceEntities = [];
 		foreach ($choices as $choice)
 		{
 			$choiceEntity = $repository->getById($choice['id']);
 
-			if ($choiceEntity && $choiceEntity->getFnum() === $current_fnum)
+			if (!$choiceEntity || $choiceEntity->getFnum() !== $current_fnum)
 			{
-				$choiceEntity->setOrder($choice['ordering']);
-				$choicesReordered[] = $repository->flush($choiceEntity, false);
+				continue;
 			}
+
+			// Reordering renumbers the whole list, so a single choice out of the manager's programs
+			// blocks the operation: applying it partially would leave the ranking inconsistent.
+			if ($as_manager && !EmundusHelperAccess::canManageProgram($this->_user->id, $choiceEntity->getCampaign()?->getProgram()?->getCode()))
+			{
+				$response['code']    = 403;
+				$response['status']  = false;
+				$response['message'] = Text::_('ACCESS_DENIED');
+				$this->sendJsonResponse($response);
+			}
+
+			$choiceEntity->setOrder($choice['ordering']);
+			$choiceEntities[] = $choiceEntity;
+		}
+
+		$choicesReordered = [];
+		foreach ($choiceEntities as $choiceEntity)
+		{
+			$choicesReordered[] = $repository->flush($choiceEntity, false);
 		}
 
 		if (in_array(false, $choicesReordered))
@@ -2349,6 +2416,9 @@ class EmundusControllerApplication extends EmundusController
 		$status = $this->input->getString('status', '');
 		$status = ChoicesStateEnum::isValidState($status);
 
+		// Optional message the manager attaches to the state change, stored as a comment on the choice
+		$comment = $this->input->getString('comment', '');
+
 		if (!is_array($ids) || empty($ids) || empty($status))
 		{
 			$response['code']    = 400;
@@ -2358,11 +2428,14 @@ class EmundusControllerApplication extends EmundusController
 			return;
 		}
 
-		$choicesObjects = [];
+		$repository = new ApplicationChoicesRepository();
+
+		// Every choice is checked before the first one is written, so a denied choice in the selection
+		// does not leave the others updated.
+		$choices = [];
 		foreach ($ids as $id)
 		{
-			$repository = new ApplicationChoicesRepository();
-			$choice     = $repository->getById($id);
+			$choice = $repository->getById($id);
 
 			if (empty($choice))
 			{
@@ -2382,6 +2455,21 @@ class EmundusControllerApplication extends EmundusController
 				return;
 			}
 
+			if (!EmundusHelperAccess::canManageProgram($this->_user->id, $choice->getCampaign()?->getProgram()?->getCode()))
+			{
+				$response['code']    = 403;
+				$response['message'] = Text::_('ACCESS_DENIED');
+				$this->sendJsonResponse($response);
+
+				return;
+			}
+
+			$choices[] = $choice;
+		}
+
+		$choicesObjects = [];
+		foreach ($choices as $choice)
+		{
 			$old_status = $choice->getState();
 
 			$choice->setState($status);
@@ -2397,6 +2485,8 @@ class EmundusControllerApplication extends EmundusController
 
 			EmundusModelLogs::log($this->_user->id, $this->_user->id, $choice->getFnum(), $this->applicationChoicesAction->getId(), 'u', 'COM_EMUNDUS_LOGS_UPDATE_STATUS_CHOICE', json_encode(['updated' => [['old' => $old_status->getLabel(), 'new' => $status->getLabel()]]]));
 
+			$this->applicationChoicesService->addStateComment($choice, $comment, $this->_user->id);
+
 			$choiceObject               = $choice->__serialize();
 			$choiceObject['state_html'] = $choice->getState()->getHtmlBadge();
 
@@ -2407,6 +2497,61 @@ class EmundusControllerApplication extends EmundusController
 		$response['status']  = true;
 		$response['data']    = $choicesObjects;
 		$response['message'] = 'Choice status updated successfully.';
+		$this->sendJsonResponse($response);
+	}
+
+	/**
+	 * Rewrites the message of a choice on its own. The choice is not written, so no automation listening to
+	 * a state change is triggered.
+	 */
+	public function updatechoicecomment(): void
+	{
+		if ($this->_user->guest)
+		{
+			$response['code']    = 403;
+			$response['status']  = false;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$id      = $this->input->getInt('id', 0);
+		$comment = $this->input->getString('comment', '');
+
+		if (empty($id))
+		{
+			$response['code']    = 400;
+			$response['status']  = false;
+			$response['message'] = 'Missing id parameter.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$repository = new ApplicationChoicesRepository();
+		$choice     = $repository->getById($id);
+
+		if (
+			empty($choice)
+			|| !EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'u', $this->_user->id, $choice->getFnum())
+			|| !EmundusHelperAccess::canManageProgram($this->_user->id, $choice->getCampaign()?->getProgram()?->getCode())
+		)
+		{
+			$response['code']    = 403;
+			$response['status']  = false;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$updated = $this->applicationChoicesService->updateStateComment($choice, $comment, $this->_user->id);
+
+		$response['code']    = 200;
+		$response['status']  = true;
+		$response['data']    = $this->serializeChoiceStateComment($updated);
+		$response['message'] = Text::_('COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_COMMENT_SUCCESS_TEXT');
 		$this->sendJsonResponse($response);
 	}
 
@@ -2431,9 +2576,11 @@ class EmundusControllerApplication extends EmundusController
 			return;
 		}
 
-		$fnum = $this->input->getString('fnum', '');
+		$as_manager = false;
+		$fnum       = $this->input->getString('fnum', '');
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'u', $this->_user->id, $fnum))
 		{
+			$as_manager   = true;
 			$current_fnum = $fnum;
 		}
 		else
@@ -2457,6 +2604,16 @@ class EmundusControllerApplication extends EmundusController
 		if (empty($choice))
 		{
 			$response['code']    = 403;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		if ($as_manager && !EmundusHelperAccess::canManageProgram($this->_user->id, $choice->getCampaign()?->getProgram()?->getCode()))
+		{
+			$response['code']    = 403;
+			$response['status']  = false;
 			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
@@ -2524,9 +2681,11 @@ class EmundusControllerApplication extends EmundusController
 			$this->sendJsonResponse($response);
 		}
 
-		$fnum = $this->input->getString('fnum', '');
+		$as_manager = false;
+		$fnum       = $this->input->getString('fnum', '');
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'u', $this->_user->id, $fnum))
 		{
+			$as_manager   = true;
 			$current_fnum = $fnum;
 		}
 		else
@@ -2548,6 +2707,14 @@ class EmundusControllerApplication extends EmundusController
 		if (empty($choice))
 		{
 			$response['code']    = 403;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
+		}
+
+		if ($as_manager && !EmundusHelperAccess::canManageProgram($this->_user->id, $choice->getCampaign()?->getProgram()?->getCode()))
+		{
+			$response['code']    = 403;
+			$response['status']  = false;
 			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 		}
@@ -2724,6 +2891,9 @@ class EmundusControllerApplication extends EmundusController
 			$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=evaluation', $emundusUser->menutype], 'true');
 		}
 
+		// Fetched for the whole page in one query rather than per row
+		$commentsByChoice = $this->applicationChoicesService->getStateCommentsByChoice($applicationChoices->getItems());
+
 		foreach ($applicationChoices->getItems() as $key => $applicationChoice)
 		{
 			assert($applicationChoice instanceof ApplicationChoicesEntity);
@@ -2804,6 +2974,13 @@ class EmundusControllerApplication extends EmundusController
 					}, $labels),
 					ListColumnTypesEnum::TAGS
 				),
+				new AdditionalColumn(
+					Text::_('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_COMMENT'),
+					'',
+					ListDisplayEnum::ALL,
+					'',
+					$this->renderChoiceStateComment($commentsByChoice[$applicationChoice->getId()][0] ?? null)
+				),
 			];
 
 			foreach ($moreElements as $moreElement)
@@ -2826,6 +3003,59 @@ class EmundusControllerApplication extends EmundusController
 		}
 
 		return EmundusResponse::ok($applicationChoicesSerialized, Text::_('APPLICATION_CHOICES_RETRIEVED'));
+	}
+
+	/**
+	 * The message attached to the last state change of a choice, ready to display: content sanitized, and
+	 * author and date composed in a single signature so both screens share the same wording.
+	 *
+	 * @return array{raw: string, content: string, signature: string}|null  null when the choice has no message
+	 */
+	private function serializeChoiceStateComment(?CommentEntity $comment): ?array
+	{
+		if (empty($comment))
+		{
+			return null;
+		}
+
+		// The table is shared with the legacy comment write path, so the content is sanitized on read too
+		if (!class_exists('Component\\Emundus\\Helpers\\HtmlSanitizerSingleton'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/helpers/html.php';
+		}
+
+		if (!class_exists('EmundusHelperDate'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/helpers/date.php';
+		}
+
+		return [
+			// Plain text, to prefill the edition field: the sanitized content carries <br> tags
+			'raw'       => $comment->getContent(),
+			'content'   => HtmlSanitizerSingleton::getInstance()->sanitize(nl2br($comment->getContent())),
+			'signature' => Text::sprintf(
+				'COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_COMMENT_SIGNATURE',
+				$comment->getAuthorName() ?? '',
+				EmundusHelperDate::displayDate($comment->getCreatedAt()->format('Y-m-d H:i:s'), 'COM_EMUNDUS_DATE_FORMAT', 0)
+			)
+		];
+	}
+
+	/**
+	 * Same message rendered for a list cell, where a dash stands for the absence of value as in the
+	 * neighbouring columns.
+	 */
+	private function renderChoiceStateComment(?CommentEntity $comment): string
+	{
+		$serialized = $this->serializeChoiceStateComment($comment);
+
+		if (empty($serialized))
+		{
+			return '-';
+		}
+
+		return '<div>' . $serialized['content'] . '</div>'
+			. '<div class="tw-text-sm tw-text-neutral-600">' . $serialized['signature'] . '</div>';
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
@@ -3196,7 +3426,21 @@ class EmundusControllerApplication extends EmundusController
 
 			if (!empty($applicationFile))
 			{
-				$response = new EmundusResponse(true, Text::_('APPLICATION_FILE_RETRIEVED'), 200, $applicationFile->__serialize());
+				$data = $applicationFile->__serialize();
+
+				if (!class_exists('EmundusHelperFiles'))
+				{
+					require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
+				}
+
+				// Mask the applicant identity when the file/account is anonymous or the viewer is restricted to anonymized data.
+				$data['is_anonym'] = EmundusHelperFiles::isFnumAnonymized($fnum, $this->user->id) ? 1 : 0;
+				if ($data['is_anonym'] === 1)
+				{
+					$data['user'] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+				}
+
+				$response = new EmundusResponse(true, Text::_('APPLICATION_FILE_RETRIEVED'), 200, $data);
 			}
 			else
 			{
@@ -3649,7 +3893,16 @@ class EmundusControllerApplication extends EmundusController
 					{
 						$data = [];
 
-						if (method_exists($foundAction, 'getRedirectUrl'))
+						// Unified channel: an action (or an automation triggered downstream) that
+						// redirects registers its URL in RedirectIntentRegistry. We consume it here to
+						// return it to the front. Non-automation file actions (Print, Copy, Delete)
+						// register nothing and expose their URL through getRedirectUrl().
+						$redirectIntent = RedirectIntentRegistry::consume();
+						if ($redirectIntent !== null)
+						{
+							$data['redirect'] = $redirectIntent->getUrl();
+						}
+						else if (method_exists($foundAction, 'getRedirectUrl'))
 						{
 							$data['redirect'] = $foundAction->getRedirectUrl($applicationFile, $parameters, $this->app->getIdentity());
 						}

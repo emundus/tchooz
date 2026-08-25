@@ -32,6 +32,14 @@ class ExcelPivotProcessor
 	private FabrikRepository $fabrikRepository;
 
 	/**
+	 * Separator the repeated values of a column were aggregated with, as decided by the caller
+	 * (ExcelService passes the one it asked EmundusHelperFabrik for). It has no default on purpose:
+	 * splitting on anything else cuts inside the values themselves — a currency is stored formatted,
+	 * so "600,00 € (EUR)" split on ',' yielded a phantom row holding "00 € (EUR)", read as 0 €.
+	 */
+	private string $valueSeparator;
+
+	/**
 	 * The service reuses a single FabrikRepository across the whole export lifecycle;
 	 * its `$elementFilters` array accumulates across `getElementById()` / `getData()` /
 	 * pivot lookups and its later merges silently narrow subsequent queries (e.g. keeping
@@ -53,9 +61,12 @@ class ExcelPivotProcessor
 	 * @param   array           $headers  JSON `headers` map (used to filter which siblings to expand for repeat groups)
 	 * @param   PivotScopeEnum  $scope    Pivot semantic picked by the user
 	 * @param   int             $targetId Id of the target within that scope (form id / group id / element id / evaluation form id)
+	 * @param   string          $valueSeparator Separator the caller aggregated the repeated values with
 	 */
-	public function process(array $files, array $headers, PivotScopeEnum $scope, int $targetId): array
+	public function process(array $files, array $headers, PivotScopeEnum $scope, int $targetId, string $valueSeparator): array
 	{
+		$this->valueSeparator = $valueSeparator;
+
 		if (empty($files) || $targetId <= 0) {
 			return $files;
 		}
@@ -272,7 +283,7 @@ class ExcelPivotProcessor
 	}
 
 	/**
-	 * Split a single column's comma-separated value across successive rows.
+	 * Split a single column's aggregated value across successive rows.
 	 * Existing base row keeps index 0; extra values get suffixed keys.
 	 */
 	private function splitColumn(array &$files, string $fnum, array $file, int $columnId): void
@@ -281,7 +292,7 @@ class ExcelPivotProcessor
 			return;
 		}
 
-		$parts = explode(',', $file[$columnId]);
+		$parts = explode($this->valueSeparator, $file[$columnId]);
 
 		foreach ($parts as $key => $value) {
 			$index = $key === 0 ? $fnum : ($fnum . '_' . $key);

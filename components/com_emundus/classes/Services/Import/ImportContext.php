@@ -13,6 +13,9 @@ namespace Tchooz\Services\Import;
  */
 final class ImportContext
 {
+	/** @var string[]  non-blocking advisories collected while processing the row */
+	private array $warnings = [];
+
 	public function __construct(
 		public readonly string $sourceName,
 		public readonly int    $rowNumber,
@@ -23,5 +26,16 @@ final class ImportContext
 	public function withRow(int $rowNumber): self
 	{
 		return new self($this->sourceName, $rowNumber, $this->dryRun, $this->userId);
+	}
+
+	public function addWarning(string $message): void
+	{
+		$this->warnings[] = $message;
+	}
+
+	/** @return string[] */
+	public function getWarnings(): array
+	{
+		return $this->warnings;
 	}
 }

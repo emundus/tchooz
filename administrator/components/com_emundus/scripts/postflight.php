@@ -476,6 +476,63 @@ class Com_EmundusPostflightTasks
 		return $converted;
 	}
 
+	#[PostflightAttribute(name: "Add the hour to the hidden time_date element form format")]
+	public function fixTimeDateFormFormat(): bool
+	{
+		$fixed = true;
+
+		$formatKeyByPlugin = [
+			'date'  => 'date_form_format',
+			'jdate' => 'jdate_form_format',
+		];
+		$targetFormat = 'd/m/Y H:i:s';
+
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->clear()
+				->select('id,plugin,params')
+				->from($this->db->quoteName('#__fabrik_elements'))
+				->where($this->db->quoteName('name') . ' = ' . $this->db->quote('time_date'))
+				->where($this->db->quoteName('plugin') . ' IN (' . implode(',', array_map([$this->db, 'quote'], array_keys($formatKeyByPlugin))) . ')')
+				->where('json_valid(`params`)');
+			$this->db->setQuery($query);
+			$time_date_elements = $this->db->loadObjectList();
+
+			foreach ($time_date_elements as $time_date_element)
+			{
+				$format_key = $formatKeyByPlugin[$time_date_element->plugin];
+				$params      = json_decode($time_date_element->params, true);
+
+				if (($params[$format_key] ?? null) === $targetFormat)
+				{
+					continue;
+				}
+
+				$params[$format_key] = $targetFormat;
+
+				$query->clear()
+					->update($this->db->quoteName('#__fabrik_elements'))
+					->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($time_date_element->id));
+				$this->db->setQuery($query);
+
+				if (!$this->db->execute())
+				{
+					$fixed = false;
+					break;
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			$fixed = false;
+		}
+
+		return $fixed;
+	}
+
 	#[PostflightAttribute(name: "Check account application menu")]
 	public function checkAccountApplicationMenu(): bool
 	{
@@ -1838,7 +1895,7 @@ class Com_EmundusPostflightTasks
 		$addonRepository = new AddonRepository();
 		$addon = $addonRepository->getByName(AddonEnum::PUBLIC_SESSION->value);
 
-		if ($addon->getParam('has_been_activated_once', 0) == 1) { // no turning back now
+		if ($addon?->getParam('has_been_activated_once', 0) == 1) { // no turning back now
 			$enabled = \EmundusHelperUpdate::enableEmundusPlugins('emunduspublicaccess', 'system');
 
 			$systemUserId = (int) ComponentHelper::getParams('com_emundus')->get('system_public_user_id', 0);
