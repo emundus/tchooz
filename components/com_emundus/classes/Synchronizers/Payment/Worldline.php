@@ -18,6 +18,7 @@ use Worldline\Connect\Sdk\Communicator;
 use Worldline\Connect\Sdk\CommunicatorConfiguration;
 use Worldline\Connect\Sdk\V1\Domain\Address;
 use Worldline\Connect\Sdk\V1\Domain\AmountOfMoney;
+use Worldline\Connect\Sdk\V1\Domain\CardPaymentMethodSpecificInputBase;
 use Worldline\Connect\Sdk\V1\Domain\ContactDetails;
 use Worldline\Connect\Sdk\V1\Domain\CreateHostedCheckoutRequest;
 use Worldline\Connect\Sdk\V1\Domain\Customer;
@@ -157,9 +158,16 @@ class Worldline implements PaymentSynchronizerInterface
 		// Without this, a consumer abandoning the page comes back indistinguishable from a failure.
 		$hostedCheckoutSpecificInput->returnCancelState = true;
 
-		$request                             = new CreateHostedCheckoutRequest();
-		$request->order                      = $order;
-		$request->hostedCheckoutSpecificInput = $hostedCheckoutSpecificInput;
+		// Capture the funds straight away. Left to the account default, the payment stops at
+		// PENDING_APPROVAL and waits for a manual approval on the Worldline side, which would
+		// never reach CAPTURED and never confirm the transaction here.
+		$cardPaymentMethodSpecificInput                   = new CardPaymentMethodSpecificInputBase();
+		$cardPaymentMethodSpecificInput->requiresApproval = false;
+
+		$request                                  = new CreateHostedCheckoutRequest();
+		$request->order                           = $order;
+		$request->hostedCheckoutSpecificInput     = $hostedCheckoutSpecificInput;
+		$request->cardPaymentMethodSpecificInput  = $cardPaymentMethodSpecificInput;
 
 		try
 		{
@@ -347,9 +355,12 @@ class Worldline implements PaymentSynchronizerInterface
 			return false;
 		}
 
-		if ($transaction->getStatus() === TransactionStatus::CONFIRMED && $new_status !== TransactionStatus::CONFIRMED)
+		// APPROVED may still be upgraded to CONFIRMED when the capture settles, but never the
+		// other way round, and a successful transaction must never fall back to a pending state.
+		if ($transaction->getStatus()->isSuccessful()
+			&& !($new_status === TransactionStatus::CONFIRMED && $transaction->getStatus() === TransactionStatus::APPROVED))
 		{
-			Log::add('Ignoring Worldline callback for transaction ' . $transaction->getId() . ' : already CONFIRMED, refusing downgrade to ' . $new_status->value . ' (status=' . $status . ')', Log::WARNING, self::LOG_CHANNEL);
+			Log::add('Ignoring Worldline callback for transaction ' . $transaction->getId() . ' : already ' . $transaction->getStatus()->value . ', refusing change to ' . $new_status->value . ' (status=' . $status . ')', Log::WARNING, self::LOG_CHANNEL);
 
 			return false;
 		}

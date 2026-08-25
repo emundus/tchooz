@@ -1000,6 +1000,20 @@ class EmundusControllerWebhook extends BaseController
 
 	public function updatePaymentTransaction()
 	{
+		// Worldline activates an endpoint by sending a GET carrying this header, and expects its
+		// value echoed back verbatim as plain text. The endpoint stays inactive until it does.
+		$endpoint_verification = $_SERVER['HTTP_X_GCS_WEBHOOKS_ENDPOINT_VERIFICATION'] ?? '';
+
+		if (!empty($endpoint_verification))
+		{
+			Log::addLogger(['text_file' => 'com_emundus.payment.php'], Log::ALL, ['com_emundus.payment']);
+			Log::add('Worldline endpoint verification request received', Log::INFO, 'com_emundus.payment');
+
+			header('Content-Type: text/plain; charset=utf-8');
+			echo $endpoint_verification;
+			exit;
+		}
+
 		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
 		$sync_id = $this->input->getInt('sync_id', 0);
@@ -1159,6 +1173,14 @@ class EmundusControllerWebhook extends BaseController
 							Log::add('Worldline signature verified', Log::INFO, 'com_emundus.payment');
 							$decoded   = json_decode($raw_payload, true);
 							$reference = $decoded['payment']['paymentOutput']['references']['merchantReference'] ?? '';
+
+							Log::add(sprintf(
+								'Worldline event received: type=%s status=%s category=%s ref=%s',
+								$decoded['type'] ?? '-',
+								$decoded['payment']['status'] ?? '-',
+								$decoded['payment']['statusOutput']['statusCategory'] ?? '-',
+								$reference !== '' ? $reference : '-'
+							), Log::INFO, 'com_emundus.payment');
 
 							if (!empty($reference))
 							{

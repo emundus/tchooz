@@ -21,6 +21,13 @@ enum WorldlineStatusCategoryEnum: string
 	case REVERSED                     = 'REVERSED';
 	case REFUNDED                     = 'REFUNDED';
 
+	/**
+	 * Authorised: the bank has reserved the funds and the capture is on its way. Card capture
+	 * runs in batches, so waiting for CAPTURED would leave the applicant blocked for hours
+	 * on money that is already guaranteed.
+	 */
+	private const APPROVED_STATUSES = ['CAPTURE_REQUESTED', 'CAPTURE_IN_PROGRESS'];
+
 	/** Consumer or merchant cancellation, as opposed to a refusal. */
 	private const CANCELLED_STATUSES = ['CANCELLED'];
 
@@ -64,6 +71,11 @@ enum WorldlineStatusCategoryEnum: string
 		if (in_array($status, self::CLAWBACK_STATUSES, true))
 		{
 			return null;
+		}
+
+		if (in_array($status, self::APPROVED_STATUSES, true))
+		{
+			return TransactionStatus::APPROVED;
 		}
 
 		if (in_array($status, self::CANCELLED_STATUSES, true))
