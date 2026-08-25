@@ -16,6 +16,8 @@ use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\Automation\EventCategoryEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\Database\QueryInterface;
+use Tchooz\Enums\AccessLevelEnum;
 
 class Release2_24_0Installer extends ReleaseInstaller
 {
@@ -121,6 +123,8 @@ class Release2_24_0Installer extends ReleaseInstaller
 				'Voeux du dossier et motif de leur dernier changement d\'état. Accepte les modificateurs STATUS et INDEX.'
 			);
 
+			$this->initLanguagesFeature($query);
+
 			$result['status'] = !in_array(false, $this->tasks, true);
 		}
 		catch (\Exception $e)
@@ -192,5 +196,41 @@ class Release2_24_0Installer extends ReleaseInstaller
 			);
 
 		return (bool) $this->db->setQuery($query)->execute();
+	}
+
+	private function initLanguagesFeature(QueryInterface $query): void
+	{
+		$query->clear()
+			->select('id')
+			->from($this->db->quoteName('#__menu'))
+			->where($this->db->quoteName('menutype') . ' LIKE ' . $this->db->quote('onboardingmenu'))
+			->where($this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_emundus&view=languages'));
+		$this->db->setQuery($query);
+		$languagesMenuId = $this->db->loadResult();
+
+		if (empty($languagesMenuId))
+		{
+			$data          = [
+				'menutype'          => 'onboardingmenu',
+				'title'             => 'Traductions système',
+				'alias'             => 'languages',
+				'path'              => 'languages',
+				'link'              => 'index.php?option=com_emundus&view=languages',
+				'type'              => 'component',
+				'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+				'access'            => AccessLevelEnum::ADMINISTRATOR->value,
+				'template_style_id' => 0,
+				'params'            => [
+					'menu_image_css' => 'translate'
+				],
+			];
+			$languagesMenu = \EmundusHelperUpdate::addJoomlaMenu($data, 1, 1);
+
+			if ($this->tasks[] = $languagesMenu['status'])
+			{
+				$languagesMenuId = $languagesMenu['id'];
+				\EmundusHelperUpdate::insertFalangTranslation(1, $languagesMenuId, 'menu', 'title', 'System translations');
+			}
+		}
 	}
 }
