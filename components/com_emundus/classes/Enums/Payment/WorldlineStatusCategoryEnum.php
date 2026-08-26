@@ -23,10 +23,10 @@ enum WorldlineStatusCategoryEnum: string
 
 	/**
 	 * Authorised: the bank has reserved the funds and the capture is on its way. Card capture
-	 * runs in batches, so waiting for CAPTURED would leave the applicant blocked for hours
-	 * on money that is already guaranteed.
+	 * runs in batches, so waiting for CAPTURED or PAID would leave the applicant blocked for
+	 * hours on money that is already guaranteed. Treated as acquired from here on.
 	 */
-	private const APPROVED_STATUSES = ['CAPTURE_REQUESTED', 'CAPTURE_IN_PROGRESS'];
+	private const CONFIRMED_STATUSES = ['CAPTURE_REQUESTED', 'CAPTURE_IN_PROGRESS'];
 
 	/** Consumer or merchant cancellation, as opposed to a refusal. */
 	private const CANCELLED_STATUSES = ['CANCELLED'];
@@ -73,9 +73,9 @@ enum WorldlineStatusCategoryEnum: string
 			return null;
 		}
 
-		if (in_array($status, self::APPROVED_STATUSES, true))
+		if (in_array($status, self::CONFIRMED_STATUSES, true))
 		{
-			return TransactionStatus::APPROVED;
+			return TransactionStatus::CONFIRMED;
 		}
 
 		if (in_array($status, self::CANCELLED_STATUSES, true))
