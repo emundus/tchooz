@@ -60,10 +60,37 @@ export default {
 							}
 						}
 
+						// When the field is grouped, reshape the flat choices into the structure
+						// vue-multiselect expects for groups ([{ label, options: [...] }]), preserving
+						// the backend order (root/"Racine" group first, then folders).
+						let multiselectItems = parameter.options;
+						let groupValues = null;
+						let groupLabel = null;
+						if (field.choicesGrouped) {
+							const grouped = [];
+							const groupByLabel = new Map();
+							parameter.options.forEach((option) => {
+								const label = option.group && option.group.label ? option.group.label : '';
+								let group = groupByLabel.get(label);
+								if (!group) {
+									group = { label, options: [] };
+									groupByLabel.set(label, group);
+									grouped.push(group);
+								}
+								group.options.push(option);
+							});
+							multiselectItems = grouped;
+							groupValues = 'options';
+							groupLabel = 'label';
+						}
+
 						parameter.multiple = field.multiple;
 						parameter.type = 'multiselect';
 						parameter.multiselectOptions = {
-							options: parameter.options,
+							options: multiselectItems,
+							groupValues: groupValues,
+							groupLabel: groupLabel,
+							groupSelect: field.choicesGrouped ? true : false,
 							noOptions: false,
 							multiple: field.multiple,
 							taggable: false,

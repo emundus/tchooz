@@ -1,0 +1,29 @@
+# Uploaded resource files are user content: serve them as static files, never execute.
+# This is defence in depth behind UploadService::isSafeFile() — if any future upload path
+# regresses, a stored script still cannot run from this directory.
+
+# Disable the PHP engine here regardless of the mod_php version in use.
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+# Make sure no handler/type maps these extensions to an interpreter.
+RemoveHandler .php .phtml .pht .phps .php3 .php4 .php5 .php6 .php7 .php8 .phar .cgi .pl .py
+RemoveType .php .phtml .pht .phps .php3 .php4 .php5 .php6 .php7 .php8 .phar .cgi .pl .py
+
+# Deny direct access to anything executable.
+<FilesMatch "(?i)\.(php[0-9]?|phtml|pht|phps|phar|cgi|fcgi|pl|py|asp|aspx|jsp|sh)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>

@@ -10,19 +10,17 @@
 
 namespace scripts;
 
-use Tchooz\Entities\Automation\Actions\ActionRedirect;
-use Tchooz\Entities\Synchronizer\SynchronizerEntity;
-use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\Database\QueryInterface;
-use scripts\ReleaseInstaller;
 use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Entities\Automation\Actions\ActionRedirect;
 use Tchooz\Entities\Poll\PollAnswerEntity;
 use Tchooz\Entities\Poll\PollEntity;
 use Tchooz\Entities\Poll\PollParticipantsEntity;
+use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Enums\AccessLevelEnum;
-use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 
 class Release2_23_0Installer extends ReleaseInstaller
 {
@@ -188,7 +186,7 @@ class Release2_23_0Installer extends ReleaseInstaller
 				'template_style_id' => 0,
 				'params'            => [
 					'menu_image_css' => 'library_add_check',
-					'menu_show' => 0
+					'menu_show'      => 0
 				],
 			];
 			$pollsMenu = \EmundusHelperUpdate::addJoomlaMenu($data, 1, 0);
@@ -288,14 +286,15 @@ class Release2_23_0Installer extends ReleaseInstaller
 			}
 		}
 
+		// Register the Resources addon so it can be toggled from the addons manager
 		$addonRepository = new AddonRepository();
 		$pollAddon       = $addonRepository->getByName('poll');
 		if (empty($pollAddon))
 		{
 			$params        = [
 				'configuration' => [
-					'run_email_subject' => 'Vous êtes invité(e) à participer au sondage : {poll}',
-					'run_email_body'    => "<p>Bonjour {name},</p><p></p><p>Nous avons le plaisir de vous inviter à participer au sondage <strong>{poll}</strong>.</p><p>{description}</p><p></p><p>Votre réponse ne vous prendra que quelques minutes et nous sera très précieuse.</p><p></p><p><a target='_blank' rel='noopener noreferrer nofollow' href='{siteurl}'>Répondre au sondage</a></p><p></p><p>Nous vous remercions par avance pour votre contribution.</p><p>Bien cordialement, </p><p>L'équipe {sitename}</p>",
+					'run_email_subject'   => 'Vous êtes invité(e) à participer au sondage : {poll}',
+					'run_email_body'      => "<p>Bonjour {name},</p><p></p><p>Nous avons le plaisir de vous inviter à participer au sondage <strong>{poll}</strong>.</p><p>{description}</p><p></p><p>Votre réponse ne vous prendra que quelques minutes et nous sera très précieuse.</p><p></p><p><a target='_blank' rel='noopener noreferrer nofollow' href='{siteurl}'>Répondre au sondage</a></p><p></p><p>Nous vous remercions par avance pour votre contribution.</p><p>Bien cordialement, </p><p>L'équipe {sitename}</p>",
 					'close_email_subject' => "Le sondage {poll} est désormais clôturé",
 					'close_email_body'    => "<p>Bonjour {name},</p><p></p><p>Le sondage <strong>{poll}</strong> est désormais clôturé.</p><p>{description}</p><p>Merci pour votre participation.</p><p>Cordialement,<br />L'équipe {sitename}</p>"
 				]

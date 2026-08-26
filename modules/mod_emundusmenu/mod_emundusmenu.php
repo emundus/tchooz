@@ -12,7 +12,9 @@
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\Router\Route;
 use Joomla\Module\Emundusmenu\Site\Helper\EmundusmenuHelper;
+use Tchooz\Services\Resource\ResourceService;
 
 require_once JPATH_ROOT . '/components/com_emundus/models/profile.php';
 require_once JPATH_ROOT . '/components/com_emundus/models/settings.php';
@@ -83,7 +85,47 @@ elseif (!empty($applicant_menu)) {
 	$layout = 'default';
 
 	$wa->registerAndUseStyle('mod_emundusmenu_applicant', 'modules/mod_emundusmenu/style/mod_emundusmenu_applicant.css');
+
+	if (!empty($user->id))
+	{
+		$resourceService = new ResourceService();
+		if ($resourceService->hasAccessibleResources((int) $user->id))
+		{
+			$menu = $app->getMenu();
+			$item = $menu->getItems('link', 'index.php?option=com_emundus&view=resources', true);
+
+			if (!empty($item))
+			{
+				// The item comes straight from the menu and, unlike those returned by
+				// EmundusmenuHelper::getList(), has no routed $item->flink nor the display
+				// props the layout reads. Without this the link renders empty and clicking it
+				// lands on the homepage. Prepare it the same way getList() does.
+				$is_sef = (bool) $app->getConfig()->get('sef');
+
+				$item->flink = $is_sef
+					? 'index.php?Itemid=' . $item->id
+					: $item->link . '&Itemid=' . $item->id;
+				$item->flink = Route::_($item->flink);
+
+				$item->title        = htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8', false);
+				$item->anchor_css   = '';
+				$item->anchor_title = '';
+				$item->anchor_rel   = '';
+				$item->menu_image   = $item->getParams()->get('menu_image', '')
+					? htmlspecialchars($item->getParams()->get('menu_image', ''), ENT_COMPAT, 'UTF-8', false)
+					: '';
+				$item->active     = false;
+				$item->parent     = false;
+				$item->deeper     = false;
+				$item->shallower  = false;
+				$item->level_diff = 0;
+
+				$list[] = $item;
+			}
+		}
+	}
 }
+$list = array_values($list);
 
 $menu              = $app->getMenu();
 $active            = $menu->getActive();

@@ -765,7 +765,7 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 
 						foreach ($rows as $row)
 						{
-							if (strip_tags($row->intro) == $key)
+							if (strip_tags($row->{$field}) == $key)
 							{
 								$find = $row->id;
 								break;
