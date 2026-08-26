@@ -652,45 +652,112 @@ class EmundusModelGroups extends JModelList
 		}
 	}
 
-	public function getUsersToShareTo(int $userId)
+	/**
+	 * Users the given coordinator can share a resource with.
+	 *
+	 * Eligible targets are:
+	 *  - members of the coordinator's groups (staff), and
+	 *  - applicants who own a file on a campaign of a program linked to those groups.
+	 *
+	 * Paginated and searchable so the front-end selector can lazy-load large sets
+	 * (name/email search, default first 20).
+	 *
+	 * @param   int     $userId  The coordinator user id.
+	 * @param   int     $limit   Max rows to return (0 = no limit).
+	 * @param   int     $offset  Rows to skip.
+	 * @param   string  $search  Optional name/email search term.
+	 *
+	 * @return array<array{id:int,name:string,email:string}>
+	 */
+	public function getUsersToShareTo(int $userId, int $limit = 20, int $offset = 0, string $search = ''): array
 	{
-		$users = [];
-
-		if (!empty($userId)) {
-			$user_groups = $this->getUsersGroups([$userId]);
-			$group_ids = array_map(function($user_group) {
-				return $user_group->group_id;
-			}, $user_groups);
-			$group_ids = array_unique($group_ids);
-
-			$emundus_config = ComponentHelper::getParams('com_emundus');
-			$all_rights_grp = $emundus_config->get('all_rights_group', 1);
-
-			if (in_array($all_rights_grp, $group_ids)) {
-				$groups = $this->getGroups();
-
-				$group_ids = array_map(function($group) {
-					return $group->id;
-				}, $groups);
-			}
-
-			$usersByGroups = $this->getUsersByGroups($group_ids);
-			$userIds = array_map(function($user) {
-				return $user['user_id'];
-			}, $usersByGroups);
-
-			$query = $this->db->getQuery(true);
-			$query->select('u.id, u.name')
-				->from($this->db->quoteName('#__users', 'u'))
-				->where($this->db->quoteName('u.id') . ' IN (' . implode(',', $userIds) . ')')
-				->where($this->db->quoteName('u.block') . ' = 0')
-				->where($this->db->quoteName('u.id') . ' != ' . $userId)
-				->order('u.name');
-
-			$this->db->setQuery($query);
-			$users = $this->db->loadAssocList();
+		if (empty($userId)) {
+			return [];
 		}
 
-		return $users;
+		$user_groups = $this->getUsersGroups([$userId]);
+		$group_ids   = array_unique(array_map(static function ($user_group) {
+			return (int) $user_group->group_id;
+		}, $user_groups));
+
+		$emundus_config = ComponentHelper::getParams('com_emundus');
+		$all_rights_grp = $emundus_config->get('all_rights_group', 1);
+		$displaySysadminUsers = $emundus_config->get('display_sysadmin_users', 0);
+		$exclude_users = [];
+		if(!$displaySysadminUsers)
+		{
+			$exclude_users_query = $this->db->getQuery(true);
+			$exclude_users_query->select('eu.user_id')
+				->from($this->db->quoteName('#__emundus_users', 'eu'))
+				->leftJoin($this->db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $this->db->quoteName('eup.user_id') . ' = ' . $this->db->quoteName('eu.user_id'))
+				->where('eup.profile_id = 1')
+				->orWhere('eu.profile = 1');
+			$this->db->setQuery($exclude_users_query);
+			$exclude_users = $this->db->loadColumn();
+
+			if (!empty($automated_task_user))
+			{
+				$exclude_users[] = $automated_task_user;
+			}
+
+			if (!empty($public_access_user))
+			{
+				$exclude_users[] = $public_access_user;
+			}
+		}
+
+		if (in_array($all_rights_grp, $group_ids)) {
+			$group_ids = array_map(static function ($group) {
+				return (int) $group->id;
+			}, $this->getGroups());
+		}
+
+		if (empty($group_ids)) {
+			return [];
+		}
+
+		$group_list = implode(',', array_map('intval', $group_ids));
+
+		// Applicants with a file on a campaign of a program linked to those groups.
+		$applicant_condition = $this->db->quoteName('u.id') . ' IN ('
+			. 'SELECT ' . $this->db->quoteName('ecc.applicant_id')
+			. ' FROM ' . $this->db->quoteName('#__emundus_campaign_candidature', 'ecc')
+			. ' JOIN ' . $this->db->quoteName('#__emundus_setup_campaigns', 'esc')
+			. ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id')
+			. ' WHERE ' . $this->db->quoteName('ecc.published') . ' <> -1'
+			. ' AND ' . $this->db->quoteName('esc.training') . ' IN ('
+			. 'SELECT ' . $this->db->quoteName('esgrc.course')
+			. ' FROM ' . $this->db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc')
+			. ' WHERE ' . $this->db->quoteName('esgrc.parent_id') . ' IN (' . $group_list . ')))';
+
+		$query = $this->db->getQuery(true);
+		$query->select('DISTINCT ' . $this->db->quoteName('u.id') . ', ' . $this->db->quoteName('u.name') . ', ' . $this->db->quoteName('u.email'))
+			->from($this->db->quoteName('#__users', 'u'))
+			->where($this->db->quoteName('u.block') . ' = 0')
+			->where($this->db->quoteName('u.id') . ' != ' . (int) $userId)
+			->where($applicant_condition);
+
+		$search = trim($search);
+		if ($search !== '') {
+			$like = $this->db->quote('%' . $this->db->escape($search, true) . '%', false);
+			$query->where('(' . $this->db->quoteName('u.name') . ' LIKE ' . $like
+				. ' OR ' . $this->db->quoteName('u.email') . ' LIKE ' . $like . ')');
+		}
+
+		if(!empty($exclude_users))
+		{
+			$query->where($this->db->quoteName('u.id') . ' NOT IN (' . implode(',', $exclude_users) . ')');
+		}
+
+		$query->order($this->db->quoteName('u.name') . ' ASC');
+
+		if ($limit > 0) {
+			$this->db->setQuery($query, (int) $offset, (int) $limit);
+		}
+		else {
+			$this->db->setQuery($query);
+		}
+
+		return $this->db->loadAssocList() ?: [];
 	}
 }
