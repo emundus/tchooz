@@ -1339,7 +1339,7 @@ export default {
 					} catch (_) {
 						// message is not JSON, keep the raw string
 					}
-					this.alertError('COM_EMUNDUS_ERROR', message).then(() => {
+					this.alertError('COM_EMUNDUS_ERROR', message, true).then(() => {
 						this.getListItems();
 					});
 				};
