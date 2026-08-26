@@ -42,6 +42,7 @@ export default {
 			// Add any local state here if needed
 			paymentChoice: 'total',
 			loading: false,
+			checkingOut: false,
 			alterationToEdit: null,
 			discountModalKey: 0,
 			customExternalReference: '',
@@ -181,59 +182,75 @@ export default {
 		},
 
 		checkoutCart() {
+			// Each call creates a transaction server-side, so a double click would leave orphans
+			// behind. The flag is only released on failure: on success the browser navigates away.
+			if (this.checkingOut) {
+				return;
+			}
+
+			this.checkingOut = true;
 			this.loading = true;
 
-			paymentService.checkoutCart(this.cart.id, this.customExternalReference).then((response) => {
-				if (response.status) {
-					if (response.data && response.data.transaction_confirmed) {
-						if (response.data.message) {
-							this.alertSuccess(response.data.message).then(() => {
-								if (response.data.redirect) {
-									window.location.href = response.data.redirect;
-								}
-							});
-						} else if (response.data.redirect) {
-							window.location.href = response.data.redirect;
-						} else {
-							window.location.href = '/';
-						}
-					} else {
-						// data contains form, with the action, the method and the fields
-						const form = response.data;
-						const formElement = document.createElement('form');
-
-						if (form.type === 'form') {
-							formElement.setAttribute('method', form.method);
-							formElement.setAttribute('action', form.action);
-							formElement.setAttribute('target', '_self');
-							formElement.setAttribute('id', 'checkout-form');
-							formElement.setAttribute('style', 'display: none;');
-
-							if (form.fields && typeof form.fields === 'object') {
-								for (const [key, value] of Object.entries(form.fields)) {
-									const input = document.createElement('input');
-									input.setAttribute('type', 'hidden');
-									input.setAttribute('name', key);
-									input.setAttribute('value', value);
-									formElement.appendChild(input);
-								}
-
-								document.body.appendChild(formElement);
-								formElement.submit();
-								document.body.removeChild(formElement);
+			paymentService
+				.checkoutCart(this.cart.id, this.customExternalReference)
+				.then((response) => {
+					if (response.status) {
+						if (response.data && response.data.transaction_confirmed) {
+							if (response.data.message) {
+								this.alertSuccess(response.data.message).then(() => {
+									if (response.data.redirect) {
+										window.location.href = response.data.redirect;
+									}
+								});
+							} else if (response.data.redirect) {
+								window.location.href = response.data.redirect;
 							} else {
-								this.displayError('COM_EMUNDUS_ERROR_OCCURED', 'COM_EMUNDUS_CART_FAILED_TO_PROCESS_PAYMENT');
+								window.location.href = '/';
 							}
-						} else if (form.type === 'redirect') {
-							window.location.href = form.action;
+						} else {
+							// data contains form, with the action, the method and the fields
+							const form = response.data;
+							const formElement = document.createElement('form');
+
+							if (form.type === 'form') {
+								formElement.setAttribute('method', form.method);
+								formElement.setAttribute('action', form.action);
+								formElement.setAttribute('target', '_self');
+								formElement.setAttribute('id', 'checkout-form');
+								formElement.setAttribute('style', 'display: none;');
+
+								if (form.fields && typeof form.fields === 'object') {
+									for (const [key, value] of Object.entries(form.fields)) {
+										const input = document.createElement('input');
+										input.setAttribute('type', 'hidden');
+										input.setAttribute('name', key);
+										input.setAttribute('value', value);
+										formElement.appendChild(input);
+									}
+
+									document.body.appendChild(formElement);
+									formElement.submit();
+									document.body.removeChild(formElement);
+								} else {
+									this.checkingOut = false;
+									this.displayError('COM_EMUNDUS_ERROR_OCCURED', 'COM_EMUNDUS_CART_FAILED_TO_PROCESS_PAYMENT');
+								}
+							} else if (form.type === 'redirect') {
+								window.location.href = form.action;
+							}
 						}
+						this.loading = false;
+					} else {
+						this.loading = false;
+						this.checkingOut = false;
+						this.displayError('COM_EMUNDUS_ERROR_OCCURED', response.msg);
 					}
+				})
+				.catch(() => {
 					this.loading = false;
-				} else {
-					this.loading = false;
-					this.displayError('COM_EMUNDUS_ERROR_OCCURED', response.msg);
-				}
-			});
+					this.checkingOut = false;
+					this.displayError('COM_EMUNDUS_ERROR_OCCURED', 'COM_EMUNDUS_CART_FAILED_TO_PROCESS_PAYMENT');
+				});
 		},
 		confirmCart() {
 			if (this.isManager && !this.readOnly) {
@@ -834,7 +851,13 @@ export default {
 		</div>
 
 		<div class="tw-flex tw-justify-end" v-if="cart">
-			<button v-if="isManager !== true && !readOnly" id="checkout" class="tw-btn-primary" @click="checkoutCart">
+			<button
+				v-if="isManager !== true && !readOnly"
+				id="checkout"
+				class="tw-btn-primary disabled:tw-cursor-not-allowed disabled:tw-opacity-60"
+				:disabled="checkingOut"
+				@click="checkoutCart"
+			>
 				{{ translate('COM_EMUNDUS_CHECKOUT') }}
 
 				(<span v-if="cart.pay_advance == 0">{{ cart.displayed_total }}</span>
