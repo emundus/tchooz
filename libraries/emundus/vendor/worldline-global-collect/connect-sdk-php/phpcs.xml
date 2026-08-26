@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<ruleset name="Connect">
+  <rule ref="PSR2"/>
+  <rule ref="PEAR">
+    <exclude name="PEAR.Commenting.FileComment"/>
+    <!-- These two conflict with PSR2 which does not allow leading underscores in private member names -->
+    <exclude name="PEAR.NamingConventions.ValidFunctionName"/>
+    <exclude name="PEAR.NamingConventions.ValidVariableName"/>
+    <!-- This one conflicts with PS2 for switch case indentation -->
+    <exclude name="PEAR.WhiteSpace.ScopeIndent.IncorrectExact"/>
+  </rule>
+  <rule ref="Generic.Commenting.DocComment">
+    <exclude name="Generic.Commenting.DocComment.MissingShort"/>
+    <exclude-pattern>*/tests/*</exclude-pattern>
+  </rule>
+  <rule ref="Generic.Files.LineLength">
+    <properties>
+      <property name="lineLimit" value="150"/>
+    </properties>
+    <exclude-pattern>src/*/Domain/*</exclude-pattern>
+    <exclude-pattern>src/*/Merchant/*</exclude-pattern>
+  </rule>
+  <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
+    <exclude-pattern>*/tests/*</exclude-pattern>
+  </rule>
+  <rule ref="PEAR.Commenting.ClassComment">
+    <exclude name="PEAR.Commenting.ClassComment.MissingAuthorTag"/>
+    <exclude name="PEAR.Commenting.ClassComment.MissingCategoryTag"/>
+    <exclude name="PEAR.Commenting.ClassComment.MissingLicenseTag"/>
+    <exclude name="PEAR.Commenting.ClassComment.MissingLinkTag"/>
+    <exclude-pattern>*/tests/*</exclude-pattern>
+  </rule>
+  <rule ref="PEAR.Commenting.FunctionComment">
+    <properties>
+      <property name="minimumVisibility" value="protected"/>
+    </properties>
+    <exclude name="PEAR.Commenting.FunctionComment.Missing"/>
+    <exclude name="PEAR.Commenting.FunctionComment.MissingParamComment"/>
+    <exclude-pattern>*/tests/*</exclude-pattern>
+  </rule>
+  <exclude-pattern>*/tests/bootstrap.php</exclude-pattern>
+</ruleset>

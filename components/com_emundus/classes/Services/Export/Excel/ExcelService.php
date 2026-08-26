@@ -757,7 +757,9 @@ class ExcelService extends Export implements ExportInterface
 				->addCondition('50');
 			$objConditional3->getStyle()->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
-			$i = 0;
+			// PhpSpreadsheet numbers columns from 1 (A = 1). Starting at 0 was tolerated until
+			// 5.4 but throws "Invalid column index 0" from 5.7 on.
+			$i = 1;
 			//FNUM
 			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
 			$objPHPExcel->getActiveSheet()->getStyle('A2:A' . ($nbrow + 1))->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
@@ -779,18 +781,21 @@ class ExcelService extends Export implements ExportInterface
 			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
 			$i++;
 
-			for ($i; $i < $nbcol; $i++)
+			for ($i; $i <= $nbcol; $i++)
 			{
 				$value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
 
+				// $colonne_by_id is a 0-based list of column letters, hence the offset.
+				$column = $colonne_by_id[$i - 1] ?? Coordinate::stringFromColumnIndex($i);
+
 				if (strpos($value, '(%)'))
 				{
-					$conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->getConditionalStyles();
+					$conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($column . '1')->getConditionalStyles();
 					array_push($conditionalStyles, $objConditional1);
 					array_push($conditionalStyles, $objConditional2);
 					array_push($conditionalStyles, $objConditional3);
-					$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->setConditionalStyles($conditionalStyles);
-					$objPHPExcel->getActiveSheet()->duplicateConditionalStyle($conditionalStyles, $colonne_by_id[$i] . '1:' . $colonne_by_id[$i] . ($nbrow + 1));
+					$objPHPExcel->getActiveSheet()->getStyle($column . '1')->setConditionalStyles($conditionalStyles);
+					$objPHPExcel->getActiveSheet()->duplicateConditionalStyle($conditionalStyles, $column . '1:' . $column . ($nbrow + 1));
 				}
 				$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
 			}

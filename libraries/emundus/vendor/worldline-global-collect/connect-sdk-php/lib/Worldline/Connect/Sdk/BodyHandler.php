@@ -1,0 +1,80 @@
+<?php
+namespace Worldline\Connect\Sdk;
+
+/**
+ * Class BodyHandler
+ * A utility class that can be used to support binary responses. Its handleBodyPart method can be used as
+ * callback to methods that require a body handler callable.
+ *
+ * @package Worldline\Connect\Sdk
+ */
+class BodyHandler
+{
+    /**
+     * @var bool
+     */
+    private bool $initialized = false;
+
+    /**
+     * Initializes this body handler if not done yet, then calls doHandleBodyPart.
+     *
+     * @param string $bodyPart
+     * @param array  $headers
+     *
+     * @return void
+     */
+    final public function handleBodyPart(string $bodyPart, array $headers): void
+    {
+        if (!$this->initialized) {
+            $this->initialize($headers);
+            $this->initialized = true;
+        }
+        $this->doHandleBodyPart($bodyPart);
+    }
+
+    /**
+     * Calls doCleanup, then marks this body handler as not initialized.
+     * Afterwards this instance can be reused again.
+     *
+     * @return void
+     */
+    final public function close(): void
+    {
+        $this->doCleanup();
+        $this->initialized = false;
+    }
+
+    /**
+     * Can be used to initialize this body handler based on the given headers.
+     * The default implementation does nothing.
+     *
+     * @param array $headers
+     *
+     * @return void
+     */
+    protected function initialize(array $headers): void
+    {
+    }
+
+    /**
+     * Can be used to handle a single body part.
+     * The default implementation does nothing.
+     *
+     * @param string $bodyPart
+     *
+     * @return void
+     */
+    protected function doHandleBodyPart(string $bodyPart): void
+    {
+    }
+
+    /**
+     * Can be used to do cleanup resources allocated by this body handler.
+     * The default implementation does nothing.
+     *
+     * @return void
+     */
+    protected function doCleanup(): void
+    {
+    }
+}
