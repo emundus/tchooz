@@ -5539,7 +5539,7 @@ class EmundusModelUsers extends ListModel
 			->addCondition('50');
 		$objConditional3->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
-		for ($i = 0; $i<$nb_cols; $i++) {
+		for ($i = 1; $i<=$nb_cols; $i++) {
 			$value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
 
 			if ($value=="forms(%)" || $value=="attachment(%)") {
