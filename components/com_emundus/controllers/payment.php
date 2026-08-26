@@ -461,6 +461,12 @@ class EmundusControllerPayment extends BaseController
 							'display' => 'table'
 						],
 						[
+							'key'     => Text::_('COM_EMUNDUS_TRANSACTION_PAYMENT_METHOD'),
+							'value'   => $transaction->getPaymentMethod()->getLabel(),
+							'classes' => '',
+							'display' => 'all'
+						],
+						[
 							'key'     => Text::_('COM_EMUNDUS_TRANSACTION_DATE'),
 							'value'   => $transaction->getCreatedAt(true),
 							'classes' => '',
@@ -488,12 +494,6 @@ class EmundusControllerPayment extends BaseController
 							'value'   => $transaction->getStatus()->getHtmlBadge(),
 							'classes' => '',
 							'display' => 'table'
-						],
-						[
-							'key'     => Text::_('COM_EMUNDUS_TRANSACTION_PAYMENT_METHOD'),
-							'value' => $transaction->getPaymentMethod()->getLabel(),
-							'classes' => '',
-							'display' => 'all'
 						],
 					];
 
