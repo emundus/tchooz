@@ -2413,7 +2413,7 @@ class EmundusModelWorkflow extends JModelList
 
 			if (!empty($transaction) && !empty($transaction->getId()))
 			{
-				if ($transaction->getStatus()->isSuccessful())
+				if ($transaction->getStatus() === TransactionStatus::CONFIRMED)
 				{
 					$completed = true;
 				}

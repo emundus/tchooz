@@ -355,12 +355,12 @@ class Worldline implements PaymentSynchronizerInterface
 			return false;
 		}
 
-		// APPROVED may still be upgraded to CONFIRMED when the capture settles, but never the
-		// other way round, and a successful transaction must never fall back to a pending state.
-		if ($transaction->getStatus()->isSuccessful()
-			&& !($new_status === TransactionStatus::CONFIRMED && $transaction->getStatus() === TransactionStatus::APPROVED))
+		// The transaction is confirmed from CAPTURE_REQUESTED onwards, so the later CAPTURED and
+		// PAID events carry nothing new. They are logged and dropped, which also blocks any
+		// downgrade of an already acquired payment.
+		if ($transaction->getStatus() === TransactionStatus::CONFIRMED)
 		{
-			Log::add('Ignoring Worldline callback for transaction ' . $transaction->getId() . ' : already ' . $transaction->getStatus()->value . ', refusing change to ' . $new_status->value . ' (status=' . $status . ')', Log::WARNING, self::LOG_CHANNEL);
+			Log::add('Ignoring Worldline callback for transaction ' . $transaction->getId() . ' : already CONFIRMED (status=' . $status . ', category=' . $category . ')', Log::INFO, self::LOG_CHANNEL);
 
 			return false;
 		}
