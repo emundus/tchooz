@@ -26,6 +26,7 @@ use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Exception\PublicApplicationGuardException;
@@ -37,9 +38,12 @@ use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Export\ExportRepository;
+use Tchooz\Repositories\Resource\ResourceRepository;
 use Tchooz\Services\FileSecurityService;
 use Tchooz\Services\Import\ImportModelGenerator;
 use Tchooz\Services\PublicAccess\PublicApplicationGuard;
+use Tchooz\Services\Resource\ResourceArchiveService;
+use Tchooz\Services\Resource\ResourceService;
 use Tchooz\Services\Security\AntiBotChallenge;
 use Tchooz\Services\Security\ClientIpResolver;
 use Tchooz\Services\Security\RateLimiter;
@@ -1850,11 +1854,130 @@ class EmundusController extends JControllerLegacy
 	/**
 	 * Check if user can or not open PDF file
 	 */
+	/**
+	 * Stream a resource folder archive stored under tmp/resource-archives/<userId>/<name>.zip.
+	 *
+	 * Access is granted only to the user the archive was built for (its id is baked into the path),
+	 * and the file is unlinked once streamed so temporary archives never accumulate on disk.
+	 *
+	 * @param   string  $url  Relative path from the getfile "u" parameter (already prefix-checked).
+	 *
+	 * @return  void
+	 */
+	private function streamResourceArchive(string $url): void
+	{
+		// Reject any traversal attempt before touching the filesystem.
+		if (strpos($url, '..') !== false) {
+			die(Text::_('ACCESS_DENIED'));
+		}
+
+		$current_user = $this->app->getSession()->get('emundusUser');
+		$parts        = explode('/', $url);
+		// tmp/resource-archives/<ownerId>/<file>.zip
+		$ownerId = (int) ($parts[2] ?? 0);
+
+		if (empty($current_user->id) || $ownerId === 0 || $ownerId !== (int) $current_user->id) {
+			die(Text::_('ACCESS_DENIED'));
+		}
+
+		$archive = JPATH_SITE . '/' . $url;
+		if (!is_file($archive)) {
+			JError::raiseWarning(500, Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND') . ' ' . $url);
+
+			return;
+		}
+
+		header('Content-Type: application/zip');
+		header('Content-Disposition: attachment; filename=' . basename($archive));
+		header('Content-Length: ' . filesize($archive));
+		header('Cache-Control: no-store, no-cache, must-revalidate');
+		header('Pragma: no-cache');
+		header('Expires: 0');
+
+		while (ob_get_level()) {
+			ob_end_clean();
+		}
+
+		readfile($archive);
+
+		// Single-use: remove the archive now that it has been delivered.
+		if (!@unlink($archive)) {
+			Log::add('Failed to remove downloaded resource archive ' . $archive, Log::WARNING, 'com_emundus');
+		}
+
+		// Drop the now-empty per-user directory so tmp/resource-archives does not fill up with empty folders.
+		$ownerDir = dirname($archive);
+		if (is_dir($ownerDir) && !(new \FilesystemIterator($ownerDir))->valid()) {
+			@rmdir($ownerDir);
+		}
+
+		exit;
+	}
+
+	/**
+	 * Authorise a read on a stored resource file, addressed by its relative path.
+	 *
+	 * Mirrors ResourceController::assertFileAccess so the bytes are guarded exactly like the
+	 * endpoints that hand out their URL: the RESOURCE manager action, or at least a "view" rank
+	 * through a direct or folder share. A public share grants access through the session flag
+	 * viewshared() sets once it has checked the code, its expiration and its password.
+	 *
+	 * @param   string  $url  Relative path from the getfile "u" parameter (already traversal-checked).
+	 *
+	 * @return  void
+	 */
+	private function assertResourceAccess(string $url): void
+	{
+		$resourceId = (new ResourceRepository(false))->findIdByFilename($url);
+		if (empty($resourceId))
+		{
+			die (Text::_('ACCESS_DENIED'));
+		}
+
+		$granted = $this->app->getSession()->get('emundus.resource.shared_granted', []);
+		if (in_array($resourceId, (array) $granted, true))
+		{
+			return;
+		}
+
+		$userId = (int) ($this->app->getIdentity()->id ?? 0);
+		if ($userId === 0)
+		{
+			die (Text::_('ACCESS_DENIED'));
+		}
+
+		if (EmundusHelperAccess::asAccessAction(ActionEnum::RESOURCE->value, CrudEnum::READ->value, $userId))
+		{
+			return;
+		}
+
+		// 1 = the "view" permission rank shared on the file itself or on its folder.
+		if ((new ResourceService())->getUserPermissionRank($userId, $resourceId) < 1)
+		{
+			die (Text::_('ACCESS_DENIED'));
+		}
+	}
+
 	function getfile()
 	{
-
 		// Get the filename and user ID from the URL.
 		$url = $this->input->get->get('u', null, 'RAW');
+
+		// Each branch below authorises a path prefix, so a traversal sequence would let a caller climb
+		// out of the directory it was granted. Reject it once here, for every branch.
+		if (empty($url) || str_contains($url, '..') || str_contains($url, "\0"))
+		{
+			die (Text::_('ACCESS_DENIED'));
+		}
+
+		// Resource folder archives are single-use downloads stored under tmp/. Their path is namespaced
+		// by the owner's user id (tmp/resource-archives/<userId>/<name>.zip): only that user may fetch
+		// them, and the archive is deleted right after streaming so it does not pile up on the server.
+		if (str_starts_with($url, ResourceArchiveService::ARCHIVE_DIR . '/')) {
+			$this->streamResourceArchive($url);
+
+			return;
+		}
 
 		// If we try to download export file check if the user is owner of the file and has partner access level
 		if (strpos($url, 'images/emundus/exports') !== false) {
@@ -1876,10 +1999,16 @@ class EmundusController extends JControllerLegacy
 		// statically, and only coordinators may download them.
 		elseif (str_starts_with($url, ImportModelGenerator::MODEL_DIRECTORY))
 		{
-			if (str_contains($url, '..') || !EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
+			if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
 			{
 				die (Text::_('ACCESS_DENIED'));
 			}
+		}
+		// Resources are routed here instead of being served statically: their stored filename is only a
+		// uniqid(), so a direct URL would hand the file to anyone holding it and bypass the per-file ACL.
+		elseif (str_starts_with($url, ResourceService::UPLOAD_DIR))
+		{
+			$this->assertResourceAccess($url);
 		}
 		// Otherwise, check if the user has the rights to open the file.
 		else
@@ -1974,7 +2103,7 @@ class EmundusController extends JControllerLegacy
 				// Check if the user is an applicant and it is his file.
 				if (!EmundusHelperAccess::isFnumMine($fnum, $current_user->id) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
 				{
-					if ($fileInfo->can_be_viewed != 1 && !empty($fileInfo))
+					if (!empty($fileInfo) && $fileInfo->can_be_viewed != 1)
 					{
 						die (Text::_('ACCESS_DENIED'));
 					}

@@ -585,7 +585,7 @@ module.exports = {
                 },
 
                 '.btn-red': {
-                    backgroundColor: 'var(--red-500)',
+                    backgroundColor: 'var(--red-500) !important',
                     color: 'var(--neutral-0) !important',
                     border: '1px solid var(--red-500)  !important',
                     textShadow: 'none',

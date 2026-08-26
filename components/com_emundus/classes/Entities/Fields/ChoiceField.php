@@ -122,6 +122,7 @@ class ChoiceField extends Field
 		$schema = $this->defaultSchema();
 		$schema['choices'] = array_map(fn($choice) => $choice->toSchema(), $this->choices);
 		$schema['multiple'] = $this->getMultiple();
+		$schema['choicesGrouped'] = $this->areChoicesGrouped();
 
 		if (!empty($this->getOptionsProvider()))
 		{

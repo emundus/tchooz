@@ -243,7 +243,7 @@ export default {
 			</div>
 		</div>
 
-		<Slider :options="views" v-model="currentView" />
+		<Slider v-show="views.length > 1" :options="views" v-model="currentView" />
 	</section>
 </template>
 

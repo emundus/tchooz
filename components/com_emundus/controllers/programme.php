@@ -163,6 +163,9 @@ class EmundusControllerProgramme extends EmundusController
 		$campaignAccess     = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::READ->value, $this->user->id);
 		$campaignEditAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::UPDATE->value, $this->user->id);
 
+		// Unlike campaigns, a program has no creator to fall back on.
+		$programDeleteAccess =EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asAccessAction($this->programAction->getId(), CrudEnum::DELETE->value, $this->user->id);
+
 		$emConfig = ComponentHelper::getParams('com_emundus');
 		$prestationSociales = $emConfig->get('prestations_sociales', 0) == 1;
 
@@ -171,6 +174,9 @@ class EmundusControllerProgramme extends EmundusController
 		foreach ($programs['datas'] as $key => $program)
 		{
 			$programs['datas'][$key]->label = ['fr' => Text::_($program->label), 'en' => Text::_($program->label)];
+
+			// Access
+			$programs['datas'][$key]->can_delete = $programDeleteAccess;
 
 			if ($campaignAccess)
 			{
@@ -462,19 +468,22 @@ class EmundusControllerProgramme extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::DELETE]])]
 	public function deleteprogram(): EmundusResponse
 	{
-		$data = $this->input->getInt('id');
-		if (empty($data))
+		$ids = $this->getProgramIdsFromInput();
+
+		// The attribute above grants the delete right, it says nothing about which programs are mine.
+		$emundusUserRepository = new EmundusUserRepository();
+		$userProgramIds        = array_map('intval', $emundusUserRepository->getUserProgramsIds($this->user->id));
+
+		if (!empty(array_diff($ids, $userProgramIds)))
 		{
-			throw new InvalidArgumentException(Text::_("MISSING_PARAMS"));
+			throw new AccessException(Text::_('COM_EMUNDUS_PROGRAM_DELETE_NOT_ALLOWED'), EmundusResponse::HTTP_FORBIDDEN);
 		}
 
-		$result = $this->m_programme->deleteProgram($data);
-		if (!$result)
-		{
-			throw new RuntimeException(Text::_('ERROR_CANNOT_DELETE_PROGRAMS'));
-		}
+		$deleted = $this->programRepository->deleteBatch($ids);
 
-		return EmundusResponse::ok($result, Text::_('PROGRAMMES_DELETED'));
+		$this->cleanProgramCache();
+
+		return EmundusResponse::ok($deleted, Text::_('COM_EMUNDUS_PROGRAM_DELETE_SUCCESS'));
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
