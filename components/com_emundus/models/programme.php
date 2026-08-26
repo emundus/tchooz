@@ -817,6 +817,10 @@ class EmundusModelProgramme extends ListModel
 		return $added;
 	}
 
+	/**
+	 * @deprecated Use ProgramRepository::deleteBatch() instead, which refuses to delete a program
+	 *             that still has campaigns. This one deletes those campaigns along the way.
+	 */
 	public function deleteProgram(int|array $data): bool
 	{
 		$deleted = false;

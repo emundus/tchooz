@@ -215,6 +215,23 @@ export default {
 									acl: 'program|u',
 								},
 								{
+									action: 'deleteprogram',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_DELETE',
+									controller: 'programme',
+									name: 'delete',
+									multiple: true,
+									method: 'delete',
+									confirm: 'COM_EMUNDUS_ONBOARD_PROGRDELETE',
+									acl: 'program|d',
+									showon: [
+										{
+											key: 'can_delete',
+											operator: '=',
+											value: true,
+										},
+									],
+								},
+								{
 									action: 'unpublishprogram',
 									label: 'COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH',
 									controller: 'programme',
