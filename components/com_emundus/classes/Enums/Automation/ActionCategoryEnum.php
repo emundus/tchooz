@@ -11,6 +11,7 @@ enum ActionCategoryEnum: string
 	case FILE = 'file';
 	case SIGN = 'sign';
 	case CONTACT = 'contact';
+	case PROGRAM = 'program';
 
 	public function getLabel(): string
 	{
@@ -20,6 +21,7 @@ enum ActionCategoryEnum: string
 			self::FILE => Text::_('COM_EMUNDUS_CONDITION_ACTION_CATEGORY_FILE'),
 			self::SIGN => Text::_('COM_EMUNDUS_CONDITION_ACTION_CATEGORY_SIGN'),
 			self::CONTACT => Text::_('COM_EMUNDUS_CONDITION_ACTION_CATEGORY_CONTACT'),
+			self::PROGRAM => Text::_('COM_EMUNDUS_CONDITION_ACTION_CATEGORY_PROGRAM'),
 		};
 	}
 
@@ -31,6 +33,7 @@ enum ActionCategoryEnum: string
 			self::FILE => 'inventory_2',
 			self::SIGN => 'signature',
 			self::CONTACT => 'sensor_occupied',
+			self::PROGRAM => 'computer',
 		};
 	}
 }
