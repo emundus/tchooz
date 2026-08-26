@@ -160,21 +160,17 @@ class EmundusControllerGroups extends EmundusController
 			)
 		)
 		{
-			$m_groups = $this->getModel('Groups');
-			$users    = $m_groups->getUsersToShareTo($this->user->id);
+			$limit  = $this->input->getInt('limit', 20);
+			$offset = $this->input->getInt('offset', 0);
+			$search = $this->input->getString('search', '');
 
-			if (!empty($users))
-			{
-				$response['status'] = true;
-				$response['msg']    = Text::_('COM_EMUNDUS_SELECT_USERS');
-				$response['data']   = $users;
-				$response['code']   = 200;
-			}
-			else
-			{
-				$response['msg']  = Text::_('NO_USERS');
-				$response['code'] = 200;
-			}
+			$m_groups = $this->getModel('Groups');
+			$users    = $m_groups->getUsersToShareTo($this->user->id, $limit, $offset, $search);
+
+			$response['status'] = true;
+			$response['msg']    = empty($users) ? Text::_('NO_USERS') : Text::_('COM_EMUNDUS_SELECT_USERS');
+			$response['data']   = $users;
+			$response['code']   = 200;
 		}
 
 		$this->sendJsonResponse($response);

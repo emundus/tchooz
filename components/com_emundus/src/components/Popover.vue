@@ -279,6 +279,7 @@ export default {
 	width: max-content;
 	opacity: 1;
 	transition: opacity 0.2s ease-in-out;
+	padding: 0;
 }
 
 .fade-enter-active,

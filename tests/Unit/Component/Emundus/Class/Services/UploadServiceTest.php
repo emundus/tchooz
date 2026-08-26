@@ -1,5 +1,6 @@
 <?php
 
+use Joomla\CMS\Language\Text;
 use PHPUnit\Framework\TestCase;
 use Tchooz\Services\UploadService;
 
@@ -99,7 +100,7 @@ class UploadServiceTest extends TestCase
 		$file = $this->simulateUploadedFile($assetPath, 'xssPDF.pdf', 'application/pdf');
 
 		$this->expectException(\RuntimeException::class);
-		$this->expectExceptionMessage('File contains potentially dangerous active content');
+		$this->expectExceptionMessage(Text::sprintf('COM_EMUNDUS_UPLOAD_ERROR_DANGEROUS_CONTENT', 'xssPDF.pdf'));
 
 		$uploadService->upload($file);
 	}
@@ -126,8 +127,8 @@ class UploadServiceTest extends TestCase
 			$this->assertTrue(true);
 		} catch (\RuntimeException $e) {
 			// "Failed to move uploaded file." is expected — it means the security scan passed
-			$this->assertStringNotContainsString(
-				'dangerous active content',
+			$this->assertNotSame(
+				Text::sprintf('COM_EMUNDUS_UPLOAD_ERROR_DANGEROUS_CONTENT', 'pdf_test_file.pdf'),
 				$e->getMessage(),
 				'A safe PDF should not be flagged as dangerous'
 			);
@@ -160,7 +161,7 @@ class UploadServiceTest extends TestCase
 		];
 
 		$this->expectException(\RuntimeException::class);
-		$this->expectExceptionMessage('File contains potentially dangerous active content');
+		$this->expectExceptionMessage(Text::sprintf('COM_EMUNDUS_UPLOAD_ERROR_DANGEROUS_CONTENT', 'malicious.pdf'));
 
 		$uploadService->upload($file);
 	}

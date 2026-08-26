@@ -49,6 +49,34 @@
 				@update-items="getListItems"
 			/>
 
+			<nav
+				v-if="navigateAction"
+				id="list-breadcrumb"
+				class="tw-mb-2 tw-mt-2 tw-flex tw-flex-wrap tw-items-center tw-gap-1 tw-text-sm"
+			>
+				<span
+					:class="{
+						'tw-cursor-pointer hover:tw-underline': navigationTrail.length > 0,
+						'tw-font-semibold': navigationTrail.length === 0,
+					}"
+					@click="navigationTrail.length > 0 ? navigateToTrail(-1) : null"
+				>
+					{{ translate(navigateAction.rootLabel || 'COM_EMUNDUS_ONBOARD_HOME') }}
+				</span>
+				<template v-for="(crumb, index) in navigationTrail" :key="crumb.id">
+					<span class="material-symbols-outlined tw-text-base">chevron_right</span>
+					<span
+						class="hover:tw-underline"
+						:class="{
+							'tw-cursor-pointer': index < navigationTrail.length - 1,
+							'tw-font-semibold': index === navigationTrail.length - 1,
+						}"
+						@click="index < navigationTrail.length - 1 ? navigateToTrail(index) : null"
+						v-html="crumb.label"
+					></span>
+				</template>
+			</nav>
+
 			<div
 				v-if="loading.items"
 				id="items-loading"
@@ -158,51 +186,76 @@
 										'tw-rounded-s-coordinator-cards': !canCheck && viewType === 'table',
 									}"
 								>
-									<div class="tw-flex tw-w-full tw-justify-between">
-										<span
-											v-if="
-												editAction &&
-												(typeof editAction.showon === 'undefined' || evaluateShowOn(item, editAction.showon))
-											"
-											@click="onClickAction(editAction, item.id, false, $event)"
-											class="hover:tw-underline"
-											:class="{
-												'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
-											}"
-											:title="item.label[params.shortlang]"
-											v-html="item.label[params.shortlang]"
-										></span>
-										<span
-											v-else-if="showAction"
-											@click="onClickAction(showAction, item.id, false, $event)"
-											class="hover:tw-underline"
-											:class="{
-												'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
-											}"
-											:title="item.label[params.shortlang]"
-											v-html="item.label[params.shortlang]"
-										></span>
-										<span
-											v-else-if="
-												labelAction &&
-												(typeof labelAction.showon === 'undefined' || evaluateShowOn(item, labelAction.showon))
-											"
-											@click="onClickAction(labelAction, item.id, false, $event)"
-											class="hover:tw-underline"
-											:class="{
-												'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
-											}"
-											:title="item.label[params.shortlang]"
-											v-html="item.label[params.shortlang]"
-										></span>
-										<span
-											v-else
-											:class="{
-												'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
-											}"
-											:title="item.label[params.shortlang]"
-											v-html="item.label[params.shortlang]"
-										></span>
+									<div class="tw-flex tw-w-full tw-items-center tw-justify-between">
+										<div class="tw-flex tw-min-w-0 tw-items-center">
+											<Icon v-if="item.icon" :name="item.icon" :size="24" class="tw-mr-3 tw-shrink-0" />
+											<span
+												v-if="
+													editAction &&
+													(typeof editAction.showon === 'undefined' || evaluateShowOn(item, editAction.showon))
+												"
+												@click="onClickAction(editAction, item.id, false, $event)"
+												class="hover:tw-underline"
+												:class="{
+													'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
+												}"
+												:title="item.label[params.shortlang]"
+												v-html="item.label[params.shortlang]"
+											></span>
+											<span
+												v-else-if="
+													showAction &&
+													(typeof showAction.showon === 'undefined' || evaluateShowOn(item, showAction.showon))
+												"
+												@click="onClickAction(showAction, item.id, false, $event)"
+												class="hover:tw-underline"
+												:class="{
+													'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
+												}"
+												:title="item.label[params.shortlang]"
+												v-html="item.label[params.shortlang]"
+											></span>
+											<span
+												v-else-if="
+													navigateAction &&
+													(typeof navigateAction.showon === 'undefined' || evaluateShowOn(item, navigateAction.showon))
+												"
+												@click="onClickAction(navigateAction, item.id, false, $event)"
+												class="tw-cursor-pointer hover:tw-underline"
+												:class="{
+													'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
+												}"
+												:title="item.label[params.shortlang]"
+												v-html="item.label[params.shortlang]"
+											></span>
+											<span
+												v-else-if="
+													labelAction &&
+													(typeof labelAction.showon === 'undefined' || evaluateShowOn(item, labelAction.showon))
+												"
+												@click="onClickAction(labelAction, item.id, false, $event)"
+												class="hover:tw-underline"
+												:class="{
+													'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
+												}"
+												:title="item.label[params.shortlang]"
+												v-html="item.label[params.shortlang]"
+											></span>
+											<span
+												v-else
+												:class="{
+													'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
+												}"
+												:title="item.label[params.shortlang]"
+												v-html="item.label[params.shortlang]"
+											></span>
+											<span
+												v-if="item.badge"
+												class="tw-ml-2 tw-shrink-0 tw-whitespace-nowrap tw-rounded-full tw-bg-profile-light tw-px-2 tw-py-0.5 tw-text-xs tw-font-semibold tw-text-profile-full"
+											>
+												{{ item.badge.label }}
+											</span>
+										</div>
 										<img
 											v-if="item.image && viewType === 'blocs'"
 											:src="item.image"
@@ -270,7 +323,11 @@
 											{{ translate(editAction.label) }}
 										</a>
 										<a
-											v-if="viewType === 'blocs' && showAction"
+											v-if="
+												viewType === 'blocs' &&
+												showAction &&
+												(typeof showAction.showon === 'undefined' || evaluateShowOn(item, showAction.showon))
+											"
 											@click="onClickAction(showAction, item.id, false, $event)"
 											class="tw-btn-primary tw-w-auto tw-cursor-pointer tw-rounded-coordinator tw-text-sm"
 										>
@@ -293,7 +350,11 @@
 												}}</span>
 											</button>
 											<button
-												v-if="showAction && viewType === 'table'"
+												v-if="
+													showAction &&
+													viewType === 'table' &&
+													(typeof showAction.showon === 'undefined' || evaluateShowOn(item, showAction.showon))
+												"
 												@click="onClickAction(showAction, item.id)"
 												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1 tw-rounded-coordinator"
 												style="padding: 0.5rem"
@@ -349,6 +410,7 @@
 													<component
 														:is="resolvedComponent"
 														:item="item"
+														:siblings="previewSiblings"
 														:tab="currentTab.key"
 														@close="closePopup()"
 														@update-items="getListItems()"
@@ -457,6 +519,7 @@
 							:items="checkedItems"
 							:selected-items="checkedItems.map((id) => displayedItems.find((it) => it.id === id)).filter(Boolean)"
 							:tab="currentTab.key"
+							:folder-id="currentFolderId"
 							@close="closePopup()"
 							@update-items="getListItems"
 						/>
@@ -507,6 +570,10 @@ import TranslationAdd from '@/components/Languages/TranslationAdd.vue';
 import PollContact from '@/components/Polls/Popup/PollContact.vue';
 import PollClose from '@/components/Polls/Popup/PollClose.vue';
 import ImportReport from '@/components/Import/ImportReport.vue';
+import ResourceImport from '@/components/Resource/ResourceImport.vue';
+import ResourcePreview from '@/components/Resource/ResourcePreview.vue';
+import ResourceShare from '@/components/Resource/ResourceShare.vue';
+import { Icon } from '@emundus/ui';
 
 /* Services */
 import settingsService from '@/services/settings.js';
@@ -555,6 +622,10 @@ export default {
 		ImportReport,
 		TranslationEdit,
 		TranslationAdd,
+		ResourceImport,
+		ResourcePreview,
+		ResourceShare,
+		Icon,
 	},
 	props: {
 		defaultLists: {
@@ -628,6 +699,9 @@ export default {
 				PollClose,
 				TranslationEdit,
 				TranslationAdd,
+				ResourceImport,
+				ResourcePreview,
+				ResourceShare,
 			},
 
 			lists: {},
@@ -646,6 +720,9 @@ export default {
 
 			searches: {},
 			filters: {},
+			navigationParams: {},
+			navigationParamKey: null,
+			navigationTrail: [],
 			alertBannerDisplayed: false,
 
 			orderBy: null,
@@ -839,6 +916,10 @@ export default {
 							if (this.defaultFilter && this.defaultFilter.length > 0) {
 								url += '&' + this.defaultFilter;
 							}
+
+							Object.entries(this.navigationParams).forEach(([key, value]) => {
+								url += '&' + key + '=' + encodeURIComponent(value);
+							});
 
 							try {
 								fetch(url, {
@@ -1081,6 +1162,15 @@ export default {
 				return;
 			}
 
+			if (action.type === 'navigate') {
+				const label = item && item.label ? item.label[this.params.shortlang] : '';
+				this.navigationParamKey = action.param;
+				this.navigationTrail = [...this.navigationTrail, { id: itemId, label: label }];
+				this.navigationParams = { ...this.navigationParams, [action.param]: itemId };
+				this.getListItems(1, this.selectedListTab);
+				return;
+			}
+
 			if (action.type === 'modal') {
 				this.currentComponent = action.component;
 				this.showModal = true;
@@ -1171,34 +1261,85 @@ export default {
 					return;
 				}
 
-				Swal.fire({
-					title: this.translate(action.label),
-					html: this.translate(action.confirm),
-					input: action.input ? action.input : null,
-					inputLabel: action.inputLabel ? this.translate(action.inputLabel) : null,
-					showCancelButton: true,
-					confirmButtonText: action.confirmButton
-						? this.translate(action.confirmButton)
-						: this.translate('COM_EMUNDUS_ONBOARD_OK'),
-					cancelButtonText: action.cancelButton
-						? this.translate(action.cancelButton)
-						: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
-					reverseButtons: true,
-					customClass: {
-						title: 'em-swal-title',
-						confirmButton: 'em-swal-confirm-button',
-						cancelButton: 'em-swal-cancel-button',
-						actions: 'em-swal-double-action',
-					},
-				}).then((result) => {
-					if (result.isConfirmed) {
-						if (action.input) {
-							parameters['input'] = result.value;
+				const fireConfirm = (inputOptions = null) => {
+					Swal.fire({
+						icon: Object.prototype.hasOwnProperty.call(action, 'confirmIcon') ? action.confirmIcon : 'warning',
+						title: Object.prototype.hasOwnProperty.call(action, 'confirmLabel')
+							? this.translate(action.confirmLabel)
+							: this.translate(action.label),
+						html: this.translate(action.confirm),
+						input: action.input ? action.input : null,
+						inputLabel: action.inputLabel ? this.translate(action.inputLabel) : null,
+						inputValue: action.inputValueField && item ? item[action.inputValueField] || '' : undefined,
+						inputAttributes: action.inputAttributes || undefined,
+						inputOptions: inputOptions || undefined,
+						showCancelButton: Object.prototype.hasOwnProperty.call(action, 'showCancelButton')
+							? action.showCancelButton
+							: true,
+						confirmButtonText: action.confirmButton
+							? this.translate(action.confirmButton)
+							: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+						cancelButtonText: action.cancelButton
+							? this.translate(action.cancelButton)
+							: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+						reverseButtons: true,
+						showCloseButton: Object.prototype.hasOwnProperty.call(action, 'showCloseButton')
+							? action.showCloseButton
+							: false,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: action.name === 'delete' ? 'tw-btn-red' : 'em-swal-confirm-button',
+							cancelButton: 'em-swal-cancel-button',
+							actions:
+								!Object.prototype.hasOwnProperty.call(action, 'showCancelButton') ||
+								(Object.prototype.hasOwnProperty.call(action, 'showCancelButton') && action.showCancelButton)
+									? 'em-swal-double-action'
+									: 'em-swal-single-action',
+							htmlContainer: action.containerClass,
+						},
+					}).then((result) => {
+						if (result.isConfirmed) {
+							if (action.input) {
+								parameters['input'] = result.value;
+							}
+							this.executeAction(url, parameters, action.method);
 						}
-						this.executeAction(url, parameters, action.method);
-					}
-				});
+					});
+				};
+
+				// A select input can source its options from a controller task ({ controller, action } -> [{value,label}]).
+				if (action.input === 'select' && action.optionsGetter) {
+					const optionsClient = new FetchClient(action.optionsGetter.controller);
+					optionsClient
+						.get(action.optionsGetter.action)
+						.then((optionsResponse) => {
+							const inputOptions = {};
+							if (optionsResponse && optionsResponse.status && Array.isArray(optionsResponse.data)) {
+								optionsResponse.data.forEach((option) => {
+									inputOptions[option.value] = option.label;
+								});
+							}
+							fireConfirm(inputOptions);
+						})
+						.catch(() => fireConfirm({}));
+				} else {
+					fireConfirm();
+				}
 			}
+		},
+		navigateToTrail(index) {
+			if (index < 0) {
+				this.navigationTrail = [];
+				const { [this.navigationParamKey]: _removed, ...rest } = this.navigationParams;
+				this.navigationParams = rest;
+			} else {
+				this.navigationTrail = this.navigationTrail.slice(0, index + 1);
+				this.navigationParams = {
+					...this.navigationParams,
+					[this.navigationParamKey]: this.navigationTrail[index].id,
+				};
+			}
+			this.getListItems(1, this.selectedListTab);
 		},
 		closePopup() {
 			this.currentComponent = null;
@@ -1364,16 +1505,16 @@ export default {
 								position: 'center',
 								icon: 'success',
 								title: this.translate('COM_EMUNDUS_REGISTRANTS_FILE_READY'),
-								showCancelButton: true,
+								showCancelButton: false,
+								showCloseButton: true,
 								showConfirmButton: true,
 								confirmButtonText: this.translate('LINK_TO_DOWNLOAD'),
-								cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_EDITOR_UNDO'),
 								reverseButtons: true,
 								allowOutsideClick: false,
 								customClass: {
-									cancelButton: 'em-swal-cancel-button',
 									confirmButton: 'em-swal-confirm-button btn btn-success',
 									title: 'w-full justify-center',
+									actions: 'em-swal-single-action',
 								},
 								preConfirm: () => {
 									var downloadUrl = response.download_file;
@@ -1634,12 +1775,29 @@ export default {
 		resolvedComponent() {
 			return this.components[this.currentComponent] || null;
 		},
+		currentFolderId() {
+			if (!this.navigationParamKey) {
+				return null;
+			}
+
+			const value = this.navigationParams[this.navigationParamKey];
+			if (!value) {
+				return null;
+			}
+
+			// Navigation ids are prefixed by the list transformer (e.g. "folder-5"),
+			// so extract the trailing numeric part expected by the backend.
+			const numeric = Number(String(value).split('-').pop());
+			return Number.isNaN(numeric) ? null : numeric;
+		},
 		modalClasses() {
 			let classes = ['tw-max-h-[80vh]', 'tw-overflow-y-auto', 'tw-rounded-coordinator', 'tw-shadow-modal'];
 			if (this.currentComponent === 'GroupDetails') {
 				classes.push('tw-px-8 tw-pb-8');
-			} else {
+			} else if (this.currentComponent !== 'ResourcePreview') {
 				classes.push('tw-p-8');
+			} else {
+				classes = classes.filter((className) => className !== 'tw-rounded-coordinator');
 			}
 
 			return classes.join(' ');
@@ -1654,7 +1812,7 @@ export default {
 			return typeof this.currentTab.actions !== 'undefined'
 				? this.currentTab.actions.filter((action) => {
 						return (
-							!['add', 'edit', 'secondary-head', 'show'].includes(action.name) &&
+							!['add', 'edit', 'secondary-head', 'show', 'navigate'].includes(action.name) &&
 							!Object.prototype.hasOwnProperty.call(action, 'icon') &&
 							action.display
 						);
@@ -1707,16 +1865,36 @@ export default {
 		},
 
 		secondaryAction() {
-			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
-				? this.currentTab.actions.find((action) => {
-						return action.name === 'secondary-head' && action.display;
-					})
-				: false;
+			const action =
+				typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
+					? this.currentTab.actions.find((action) => {
+							return action.name === 'secondary-head' && action.display;
+						})
+					: false;
+
+			// A secondary-head action has no row item, so its showon is evaluated
+			// against the current view state (e.g. the folder we are browsing).
+			if (action && typeof action.showon !== 'undefined') {
+				const viewContext = { currentFolderId: this.currentFolderId };
+				if (!this.evaluateShowOn(viewContext, action.showon)) {
+					return false;
+				}
+			}
+
+			return action;
 		},
 		addAction() {
 			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
 				? this.currentTab.actions.find((action) => {
 						return action.name === 'add' && action.display;
+					})
+				: false;
+		},
+
+		navigateAction() {
+			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
+				? this.currentTab.actions.find((action) => {
+						return action.name === 'navigate' && action.display;
 					})
 				: false;
 		},
@@ -1741,6 +1919,17 @@ export default {
 
 		displayedItems() {
 			return typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
+		},
+
+		// Files of the current level, in display order, so the preview can browse to the
+		// previous/next document without closing. undefined for non-preview components so the
+		// prop does not fall through to them.
+		previewSiblings() {
+			if (this.currentComponent !== 'ResourcePreview') {
+				return undefined;
+			}
+
+			return this.displayedItems.filter((item) => item.type !== 'folder');
 		},
 
 		additionalColumns() {
