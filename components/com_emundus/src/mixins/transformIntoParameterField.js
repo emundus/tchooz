@@ -152,8 +152,8 @@ export default {
 				case 'wysiwig':
 					parameter.type = 'wysiwig';
 					break;
-				case 'webhook_url':
-					parameter.type = 'webhook_url';
+				case 'copyable_text':
+					parameter.type = 'copyable_text';
 					break;
 				default:
 					parameter.type = 'text';

@@ -288,7 +288,7 @@
 			</div>
 
 			<!-- WEBHOOK URL: built by the parent, never edited nor saved -->
-			<div v-else-if="parameter.type === 'webhook_url'" class="tw-flex tw-w-full tw-items-center tw-gap-2">
+			<div v-else-if="parameter.type === 'copyable_text'" class="tw-flex tw-w-full tw-items-center tw-gap-2">
 				<input
 					:id="paramId"
 					type="text"

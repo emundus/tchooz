@@ -34,7 +34,9 @@ export default {
 			this.app.parameters.forEach((parameter) => {
 				const vueParameter = this.fromFieldEntityToParameter(parameter);
 
-				if (vueParameter.type === 'webhook_url') {
+				// Keyed on the parameter name, not the type: copyable_text only describes how the
+				// value is rendered, it says nothing about what the value should be.
+				if (vueParameter.param === 'webhook_url') {
 					// Built here rather than server-side: only the client knows the site origin.
 					vueParameter.value =
 						window.location.origin +
@@ -71,8 +73,8 @@ export default {
 			let config = {};
 
 			this.selectedTab.parameters.forEach((parameter) => {
-				// Derived from the site origin at render time, never stored.
-				if (parameter.type === 'webhook_url') {
+				// Copyable values are derived at render time, never stored.
+				if (parameter.type === 'copyable_text') {
 					return;
 				}
 

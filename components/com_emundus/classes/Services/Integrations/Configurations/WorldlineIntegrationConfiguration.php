@@ -7,7 +7,7 @@ use Tchooz\Entities\Fields\BooleanField;
 use Tchooz\Entities\Fields\FieldGroup;
 use Tchooz\Entities\Fields\PasswordField;
 use Tchooz\Entities\Fields\StringField;
-use Tchooz\Entities\Fields\WebhookUrlField;
+use Tchooz\Entities\Fields\CopyableTextField;
 use Tchooz\Services\Integrations\EmundusIntegrationConfiguration;
 
 class WorldlineIntegrationConfiguration extends EmundusIntegrationConfiguration
@@ -22,7 +22,7 @@ class WorldlineIntegrationConfiguration extends EmundusIntegrationConfiguration
 		$subdomainField = new StringField('checkout_subdomain', Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_WORLDLINE_SETUP_CHECKOUT_SUBDOMAIN'), false, $authGroup);
 		$subdomainField->setHelpText(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_WORLDLINE_SETUP_CHECKOUT_SUBDOMAIN_HELP'));
 
-		$webhookUrlField = new WebhookUrlField('webhook_url', Text::_('COM_EMUNDUS_WORLDLINE_SETUP_WEBHOOK_ENDPOINT_LABEL'), false, $authGroup);
+		$webhookUrlField = new CopyableTextField('webhook_url', Text::_('COM_EMUNDUS_WORLDLINE_SETUP_WEBHOOK_ENDPOINT_LABEL'), false, $authGroup);
 		$webhookUrlField->setHelpText(Text::_('COM_EMUNDUS_WORLDLINE_SETUP_WEBHOOK_ENDPOINT_LABEL_HELP'));
 
 		return [
