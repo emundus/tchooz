@@ -12,6 +12,7 @@ use Tchooz\Entities\Payment\TransactionEntity;
 use Tchooz\Entities\Payment\TransactionStatus;
 use Tchooz\Enums\Payment\WorldlineEnvironmentEnum;
 use Tchooz\Enums\Payment\WorldlineStatusCategoryEnum;
+use Tchooz\Repositories\CountryRepository;
 use Tchooz\Repositories\Payment\TransactionRepository;
 use Worldline\Connect\Sdk\Client;
 use Worldline\Connect\Sdk\Communicator;
@@ -204,8 +205,11 @@ class Worldline implements PaymentSynchronizerInterface
 			throw new \Exception(Text::_('COM_EMUNDUS_CART_CUSTOMER_ADDRESS_NOT_SET'));
 		}
 
+		// The cart stores a country id, Worldline expects the ISO 3166-1 alpha-2 code.
+		$country = (new CountryRepository())->getById((int) ($address->getCountry() ?? 0));
+
 		$billingAddress              = new Address();
-		$billingAddress->countryCode = $this->getCountryISO2($address->getCountry() ?? 0);
+		$billingAddress->countryCode = $country?->getIso2() ?? '';
 
 		if (empty($billingAddress->countryCode))
 		{
@@ -220,26 +224,6 @@ class Worldline implements PaymentSynchronizerInterface
 		$billingAddress->zip            = $address->getPostalCode() ?: null;
 
 		return $billingAddress;
-	}
-
-	/**
-	 * Same lookup as Lyra: the cart stores a country id, Worldline expects the ISO 3166-1 alpha-2 code.
-	 */
-	private function getCountryISO2(int $country_id): string
-	{
-		if (empty($country_id))
-		{
-			return '';
-		}
-
-		$query = $this->db->createQuery();
-		$query->select($this->db->quoteName('iso2'))
-			->from($this->db->quoteName('data_country'))
-			->where($this->db->quoteName('id') . ' = ' . (int) $country_id);
-
-		$this->db->setQuery($query);
-
-		return (string) $this->db->loadResult();
 	}
 
 	/**
