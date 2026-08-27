@@ -14,7 +14,6 @@ import Tag from '@/components/Atoms/Tag.vue';
 import Button from '@/components/Atoms/Button.vue';
 import CustomReference from '@/components/Settings/Addons/CustomReference.vue';
 import StripeSetup from '@/components/Settings/Integration/StripeSetup.vue';
-import WorldlineSetup from '@/components/Settings/Integration/WorldlineSetup.vue';
 import AmmonSetup from '@/components/Settings/Integration/AmmonSetup.vue';
 import IntegrationSetup from '@/components/Settings/Integration/IntegrationSetup.vue';
 import AddonSetup from '@/components/Settings/Addons/AddonSetup.vue';
@@ -26,7 +25,6 @@ export default {
 		IntegrationSetup,
 		AmmonSetup,
 		StripeSetup,
-		WorldlineSetup,
 		CustomReference,
 		Button,
 		Tag,
@@ -613,15 +611,6 @@ export default {
 					v-else-if="currentApp.type === 'stripe'"
 					:app="currentApp"
 					@stripeInstalled="
-						currentApp = null;
-						getApps();
-					"
-				/>
-
-				<WorldlineSetup
-					v-else-if="currentApp.type === 'worldline'"
-					:app="currentApp"
-					@worldlineInstalled="
 						currentApp = null;
 						getApps();
 					"

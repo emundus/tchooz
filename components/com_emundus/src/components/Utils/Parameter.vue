@@ -287,6 +287,19 @@
 				/>
 			</div>
 
+			<!-- WEBHOOK URL: built by the parent, never edited nor saved -->
+			<div v-else-if="parameter.type === 'webhook_url'" class="tw-flex tw-w-full tw-items-center tw-gap-2">
+				<input
+					:id="paramId"
+					type="text"
+					v-model="value"
+					readonly
+					disabled
+					class="form-control tw-w-full tw-cursor-not-allowed"
+				/>
+				<span class="material-symbols-outlined tw-cursor-copy" @click="copyToClipboard"> content_copy </span>
+			</div>
+
 			<!-- TRANSLATABLE INPUT -->
 			<div v-else-if="parameter.translatable" class="tw-flex tw-w-full tw-flex-col tw-gap-2">
 				<Slider
@@ -782,6 +795,16 @@ export default {
 		this.initValue = this.value;
 	},
 	methods: {
+		copyToClipboard() {
+			navigator.clipboard.writeText(this.value).then(() => {
+				Swal.fire({
+					icon: 'success',
+					title: this.translate('COM_EMUNDUS_COPIED_TO_CLIPBOARD'),
+					showConfirmButton: false,
+					timer: 1500,
+				});
+			});
+		},
 		onTranslationInput(text) {
 			// Reassign a NEW object so the value watcher sees a changed reference ; a deep mutation
 			// would keep the same reference and be filtered out as "unchanged" downstream.
