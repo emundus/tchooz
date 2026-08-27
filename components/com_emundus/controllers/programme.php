@@ -164,7 +164,7 @@ class EmundusControllerProgramme extends EmundusController
 		$campaignEditAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::UPDATE->value, $this->user->id);
 
 		// Unlike campaigns, a program has no creator to fall back on.
-		$programDeleteAccess =EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asAccessAction($this->programAction->getId(), CrudEnum::DELETE->value, $this->user->id);
+		$programDeleteAccess = EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asAccessAction($this->programAction->getId(), CrudEnum::DELETE->value, $this->user->id);
 
 		$emConfig = ComponentHelper::getParams('com_emundus');
 		$prestationSociales = $emConfig->get('prestations_sociales', 0) == 1;
@@ -175,8 +175,10 @@ class EmundusControllerProgramme extends EmundusController
 		{
 			$programs['datas'][$key]->label = ['fr' => Text::_($program->label), 'en' => Text::_($program->label)];
 
-			// Access
-			$programs['datas'][$key]->can_delete = $programDeleteAccess;
+			// Access: the right to delete, then the program scope deleteprogram() enforces, so the
+			// button is not offered on a program the endpoint would refuse.
+			$programs['datas'][$key]->can_delete = $programDeleteAccess
+				&& EmundusHelperAccess::canManageProgram($this->user->id, $program->code ?? null);
 
 			if ($campaignAccess)
 			{
@@ -471,12 +473,17 @@ class EmundusControllerProgramme extends EmundusController
 		$ids = $this->getProgramIdsFromInput();
 
 		// The attribute above grants the delete right, it says nothing about which programs are mine.
-		$emundusUserRepository = new EmundusUserRepository();
-		$userProgramIds        = array_map('intval', $emundusUserRepository->getUserProgramsIds($this->user->id));
-
-		if (!empty(array_diff($ids, $userProgramIds)))
+		// getUserProgramsIds() only knows the programs linked to the user's groups, and the all rights
+		// group has none: asking it alone would deny the very users who manage every program.
+		if (!EmundusHelperAccess::canManageAllPrograms($this->user->id))
 		{
-			throw new AccessException(Text::_('COM_EMUNDUS_PROGRAM_DELETE_NOT_ALLOWED'), EmundusResponse::HTTP_FORBIDDEN);
+			$emundusUserRepository = new EmundusUserRepository();
+			$userProgramIds        = array_map('intval', $emundusUserRepository->getUserProgramsIds($this->user->id));
+
+			if (!empty(array_diff($ids, $userProgramIds)))
+			{
+				throw new AccessException(Text::_('COM_EMUNDUS_PROGRAM_DELETE_NOT_ALLOWED'), EmundusResponse::HTTP_FORBIDDEN);
+			}
 		}
 
 		$deleted = $this->programRepository->deleteBatch($ids);

@@ -81,10 +81,12 @@ class EmundusControllerResource extends EmundusController
 		if ($isManager)
 		{
 			$resources = $this->resourceService->getResources($folderId, $recherche, $lim, $page, $order_by, $sort, $typeFilter, $formats);
+			$count     = $this->resourceService->countResources($folderId, $recherche, $typeFilter, $formats);
 		}
 		else
 		{
 			$resources = $this->resourceService->getAccessibleResources((int) $this->user->id, $folderId ?: null, $recherche, $lim, $page, $order_by, $sort, $typeFilter, $formats);
+			$count     = $this->resourceService->countAccessibleResources((int) $this->user->id, $folderId ?: null, $recherche, $typeFilter, $formats);
 		}
 
 		$transformer = new ResourceListItemTransformer(null, $isManager);
@@ -93,14 +95,23 @@ class EmundusControllerResource extends EmundusController
 			return $transformer->transform($resource);
 		}, $resources);
 
+		// The unpaginated total, not the page length: the list builds its pager from this.
 		return EmundusResponse::ok(
-			['datas' => $datas, 'count' => count($resources)],
+			['datas' => $datas, 'count' => $count],
 			Text::_('COM_EMUNDUS_RESOURCES_RETRIEVED')
 		);
 	}
 
+	// TODO: no caller yet. The guard below is the "view" rank, but getResource() loads the relations,
+	// so the response also carries the access list (with target emails) and the share code — data
+	// getaccess() and getsharelink() gate behind PERMISSION_MANAGE. Before wiring a caller, decide
+	// which one this endpoint is: a document read (then load it without relations) or an admin read
+	// (then require PERMISSION_MANAGE).
 	#[AccessAttribute(actions: [['id' => ActionEnum::RESOURCE, 'mode' => CrudEnum::READ]])]
-	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
+	//#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
+	// Until further developement and real usage, close access to this method that opens the door to
+	// getting access to any resource.
+	#[AccessAttribute(accessLevel: AccessLevelEnum::ADMINISTRATOR)]
 	public function getresource(): EmundusResponse
 	{
 		$id = $this->app->input->getInt('id', 0);
@@ -180,6 +191,8 @@ class EmundusControllerResource extends EmundusController
 	#[AccessAttribute(actions: [['id' => ActionEnum::RESOURCE, 'mode' => CrudEnum::CREATE]])]
 	public function createfolder(): EmundusResponse
 	{
+		$this->assertToken();
+
 		$name     = $this->app->input->getString('input', '');
 		$parentId = $this->app->input->getInt('parent_id', 0);
 
@@ -191,6 +204,8 @@ class EmundusControllerResource extends EmundusController
 	#[AccessAttribute(actions: [['id' => ActionEnum::RESOURCE, 'mode' => CrudEnum::CREATE]])]
 	public function import(): EmundusResponse
 	{
+		$this->assertToken();
+
 		$file     = $this->app->input->files->get('file');
 		$folderId = $this->app->input->getInt('folder_id', 0);
 
@@ -208,6 +223,8 @@ class EmundusControllerResource extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
 	public function rename(): EmundusResponse
 	{
+		$this->assertToken();
+
 		[$type, $id] = $this->parseResourceRef($this->app->input->getString('id', ''));
 		$name = $this->app->input->getString('input', $this->app->input->getString('name', ''));
 
@@ -234,6 +251,8 @@ class EmundusControllerResource extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
 	public function move(): EmundusResponse
 	{
+		$this->assertToken();
+
 		[$type, $id] = $this->parseResourceRef($this->app->input->getString('id', ''));
 		$target = $this->app->input->getString('input', $this->app->input->getString('folder_id', ''));
 
@@ -262,6 +281,8 @@ class EmundusControllerResource extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
 	public function delete(): EmundusResponse
 	{
+		$this->assertToken();
+
 		$ref  = $this->app->input->getString('id', '');
 		$refs = $ref !== '' ? [$ref] : json_decode($this->app->input->getString('ids', '[]'), true);
 
@@ -297,6 +318,8 @@ class EmundusControllerResource extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
 	public function saveaccess(): EmundusResponse
 	{
+		$this->assertToken();
+
 		[$type, $id] = $this->parseResourceRef($this->app->input->getString('id', ''));
 		$access      = json_decode($this->app->input->getString('access', '[]'), true);
 		$access      = is_array($access) ? $access : [];
@@ -325,6 +348,8 @@ class EmundusControllerResource extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
 	public function savedisplayspaces(): EmundusResponse
 	{
+		$this->assertToken();
+
 		$id     = $this->app->input->getInt('id', 0);
 		$spaces = json_decode($this->app->input->getString('spaces', '[]'), true);
 
@@ -344,6 +369,8 @@ class EmundusControllerResource extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
 	public function savesharelink(): EmundusResponse
 	{
+		$this->assertToken();
+
 		$id         = $this->app->input->getInt('id', 0);
 		$password   = $this->app->input->getString('password', null);
 		$expiration = $this->app->input->getString('expiration_date', null);
@@ -364,6 +391,8 @@ class EmundusControllerResource extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
 	public function revokesharelink(): EmundusResponse
 	{
+		$this->assertToken();
+
 		$id = $this->app->input->getInt('id', 0);
 		if (empty($id))
 		{
