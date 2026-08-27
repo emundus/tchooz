@@ -350,8 +350,6 @@ class Worldline implements PaymentSynchronizerInterface
 		}
 
 		$transaction->setStatus($new_status);
-		$transaction->setUpdatedAt(date('Y-m-d H:i:s'));
-		$transaction->setUpdatedBy($user_id);
 
 		try
 		{
