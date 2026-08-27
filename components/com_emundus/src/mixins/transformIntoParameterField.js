@@ -22,6 +22,8 @@ export default {
 				hideLabel: false,
 				watchers: field.watchers ? field.watchers : [],
 				translatable: field.translatable || false,
+				editable: !field.readonly,
+				copyable: field.copyable || false,
 			};
 
 			switch (field.type) {
@@ -151,9 +153,6 @@ export default {
 					break;
 				case 'wysiwig':
 					parameter.type = 'wysiwig';
-					break;
-				case 'copyable_text':
-					parameter.type = 'copyable_text';
 					break;
 				default:
 					parameter.type = 'text';

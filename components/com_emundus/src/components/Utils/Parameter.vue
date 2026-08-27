@@ -287,19 +287,6 @@
 				/>
 			</div>
 
-			<!-- WEBHOOK URL: built by the parent, never edited nor saved -->
-			<div v-else-if="parameter.type === 'copyable_text'" class="tw-flex tw-w-full tw-items-center tw-gap-2">
-				<input
-					:id="paramId"
-					type="text"
-					v-model="value"
-					readonly
-					disabled
-					class="form-control tw-w-full tw-cursor-not-allowed"
-				/>
-				<span class="material-symbols-outlined tw-cursor-copy" @click="copyToClipboard"> content_copy </span>
-			</div>
-
 			<!-- TRANSLATABLE INPUT -->
 			<div v-else-if="parameter.translatable" class="tw-flex tw-w-full tw-flex-col tw-gap-2">
 				<Slider
@@ -342,6 +329,16 @@
 				@change.self="checkValue(parameter)"
 				@focusin="clearPassword(parameter)"
 			/>
+
+			<!-- COPY BUTTON: for values the user has to paste into a third-party back office -->
+			<span
+				v-if="parameter.copyable"
+				class="material-symbols-outlined tw-ml-2 tw-cursor-copy tw-text-neutral-600"
+				:title="translate('COM_EMUNDUS_COPY')"
+				@click="copyToClipboard"
+			>
+				content_copy
+			</span>
 
 			<div v-else-if="parameter.type === 'file' && dropzoneOptions.url !== ''" class="tw-w-full">
 				<div

@@ -7,7 +7,6 @@ use Tchooz\Entities\Fields\BooleanField;
 use Tchooz\Entities\Fields\FieldGroup;
 use Tchooz\Entities\Fields\PasswordField;
 use Tchooz\Entities\Fields\StringField;
-use Tchooz\Entities\Fields\CopyableTextField;
 use Tchooz\Services\Integrations\EmundusIntegrationConfiguration;
 
 class WorldlineIntegrationConfiguration extends EmundusIntegrationConfiguration
@@ -22,8 +21,12 @@ class WorldlineIntegrationConfiguration extends EmundusIntegrationConfiguration
 		$subdomainField = new StringField('checkout_subdomain', Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_WORLDLINE_SETUP_CHECKOUT_SUBDOMAIN'), false, $authGroup);
 		$subdomainField->setHelpText(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_WORLDLINE_SETUP_CHECKOUT_SUBDOMAIN_HELP'));
 
-		$webhookUrlField = new CopyableTextField('webhook_url', Text::_('COM_EMUNDUS_WORLDLINE_SETUP_WEBHOOK_ENDPOINT_LABEL'), false, $authGroup);
+		// Displayed so the administrator can paste it into the Worldline Configuration Center.
+		// The value itself is built by IntegrationSetup.vue, which knows the site origin and
+		// the synchronizer id; it is read-only and never persisted.
+		$webhookUrlField = new StringField('webhook_url', Text::_('COM_EMUNDUS_WORLDLINE_SETUP_WEBHOOK_ENDPOINT_LABEL'), false, $authGroup);
 		$webhookUrlField->setHelpText(Text::_('COM_EMUNDUS_WORLDLINE_SETUP_WEBHOOK_ENDPOINT_LABEL_HELP'));
+		$webhookUrlField->setReadonly(true)->setCopyable(true);
 
 		return [
 			$modeField,
