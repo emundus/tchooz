@@ -8,11 +8,16 @@ use JsonSerializable;
 
 class DownloadFrom implements JsonSerializable
 {
+    public const FIELD_EMBEDDED  = 'embedded';
+    public const FIELD_WATERMARK = 'watermark';
+    public const FIELD_STAMP     = 'stamp';
+
     /** @param array<string,string> $extraHttpHeaders */
     public function __construct(
         public readonly string $url,
         public readonly array|null $extraHttpHeaders = null,
         public readonly bool $embedded = false,
+        public readonly string $field = '',
     ) {
     }
 
@@ -26,6 +31,10 @@ class DownloadFrom implements JsonSerializable
 
         if (! empty($this->extraHttpHeaders)) {
             $serialized['extraHttpHeaders'] = $this->extraHttpHeaders;
+        }
+
+        if ($this->field !== '') {
+            $serialized['field'] = $this->field;
         }
 
         return $serialized;

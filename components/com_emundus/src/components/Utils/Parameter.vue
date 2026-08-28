@@ -330,6 +330,16 @@
 				@focusin="clearPassword(parameter)"
 			/>
 
+			<!-- COPY BUTTON: for values the user has to paste into a third-party back office -->
+			<span
+				v-if="parameter.copyable"
+				class="material-symbols-outlined tw-ml-2 tw-cursor-copy tw-text-neutral-600"
+				:title="translate('COM_EMUNDUS_COPY')"
+				@click="copyToClipboard"
+			>
+				content_copy
+			</span>
+
 			<div v-else-if="parameter.type === 'file' && dropzoneOptions.url !== ''" class="tw-w-full">
 				<div
 					class="tw-relative tw-mb-2 tw-flex tw-w-fit tw-rounded-coordinator-form tw-border tw-border-neutral-400 tw-p-2"
@@ -782,6 +792,16 @@ export default {
 		this.initValue = this.value;
 	},
 	methods: {
+		copyToClipboard() {
+			navigator.clipboard.writeText(this.value).then(() => {
+				Swal.fire({
+					icon: 'success',
+					title: this.translate('COM_EMUNDUS_COPIED_TO_CLIPBOARD'),
+					showConfirmButton: false,
+					timer: 1500,
+				});
+			});
+		},
 		onTranslationInput(text) {
 			// Reassign a NEW object so the value watcher sees a changed reference ; a deep mutation
 			// would keep the same reference and be filtered out as "unchanged" downstream.

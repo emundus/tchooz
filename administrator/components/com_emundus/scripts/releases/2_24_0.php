@@ -27,6 +27,8 @@ use Tchooz\Entities\Resource\ResourceFolderAccessEntity;
 use Tchooz\Entities\Resource\ResourceFolderEntity;
 use Tchooz\Entities\Resource\ResourceSeenEntity;
 use Tchooz\Entities\Resource\ResourceShareEntity;
+use Tchooz\Entities\Synchronizer\SynchronizerEntity;
+use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 
 class Release2_24_0Installer extends ReleaseInstaller
 {
@@ -138,6 +140,52 @@ class Release2_24_0Installer extends ReleaseInstaller
 			$this->registerFavoriteAddon();
 
 			$this->initResourceFeature($query);
+
+
+
+
+			// Worldline
+			$repository = new SynchronizerRepository();
+			$worldline  = $repository->getByType('worldline');
+
+			if (empty($worldline))
+			{
+				$config = [
+					'authentication' => [
+						'mode'           => 0,
+						'merchant_id'    => '',
+						'api_key_id'     => '',
+						'api_secret'     => '',
+						'webhook_key_id' => '',
+						'webhook_secret' => '',
+					],
+				];
+
+				$worldline = new SynchronizerEntity(
+					0,
+					'worldline',
+					'Worldline',
+					'Paiement via le service Worldline Connect',
+					[],
+					$config,
+					false,
+					false,
+					'worldline.png'
+				);
+
+				$this->tasks[] = $repository->flush($worldline);
+			}
+
+			if (!empty($worldline) && !empty($worldline->getId()))
+			{
+				$this->tasks[] = $this->associatePaymentMethod('CB', $worldline->getId());
+			}
+
+
+
+
+
+
 
 			$result['status'] = !in_array(false, $this->tasks, true);
 		}

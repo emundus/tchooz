@@ -22,6 +22,8 @@ export default {
 				hideLabel: false,
 				watchers: field.watchers ? field.watchers : [],
 				translatable: field.translatable || false,
+				editable: !field.readonly,
+				copyable: field.copyable || false,
 			};
 
 			switch (field.type) {
