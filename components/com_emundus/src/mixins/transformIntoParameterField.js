@@ -153,6 +153,10 @@ export default {
 					break;
 				case 'wysiwig':
 					parameter.type = 'wysiwig';
+					parameter.preset = field.preset;
+					parameter.singleLine = field.singleLine || false;
+					parameter.editorContentHeight = field.editorContentHeight;
+					parameter.maxlength = field.maxLength;
 					break;
 				default:
 					parameter.type = 'text';
