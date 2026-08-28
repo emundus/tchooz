@@ -106,7 +106,7 @@ class DocaposteSynchronizer extends Api
 		$conf['mode']              = $params['configuration']['mode'];
 		// Not set means the integration was configured before this option existed, proof document was always retrieved
 		$conf['retrieveProofDocument'] = !empty($params['configuration']['retrieveProofDocument'] ?? 1);
-
+		$conf['agreementText']         = (string) ($params['configuration']['agreementText'] ?? '');
 		$conf['contactEditability'] = (string) ($params['configuration']['contactEditability'] ?? '');
 
 		foreach ([DocaposteContactReadOnlyParameterEnum::EMAIL, DocaposteContactReadOnlyParameterEnum::PHONE] as $readOnlyParameter)
@@ -1170,6 +1170,14 @@ class DocaposteSynchronizer extends Api
 				'transactionId' => $request->getExternalReference(),
 				'signaturesIds' => $signature_id
 			];
+
+			$agreementText = trim((string) ($this->config['agreementText'] ?? ''));
+
+			// Omitted rather than sent empty, so Docaposte keeps showing its own acceptance window
+			if ($agreementText !== '')
+			{
+				$body['agreementText'] = $agreementText;
+			}
 
 			// An unknown value means the integration was configured before this option existed, contact details were always editable
 			$editability = DocaposteContactEditabilityEnum::tryFrom($this->config['contactEditability'] ?? '')

@@ -45,7 +45,7 @@ final class ImportModelGenerator
 	 */
 	public const MODEL_DIRECTORY = 'tmp/import_models/';
 
-	private const MAX_DATA_VALIDATION_ROWS = 1000;
+	public const MAX_DATA_VALIDATION_ROWS = 1000;
 	private const MAX_INLINE_FORMULA_LENGTH = 255;
 
 	private const REFERENTIAL_VALUE_COLUMN   = 'A';

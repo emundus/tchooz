@@ -11,6 +11,7 @@ namespace Tchooz\Services\Integrations;
 
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Fields\PasswordField;
+use Tchooz\Entities\Fields\WysiwygField;
 use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
@@ -126,6 +127,11 @@ abstract class AbstractIntegrationHandler implements HandlerInterface
 					}
 
 					$value = $this->encrypt($value);
+				}
+
+				if ($parameter instanceof WysiwygField && !empty($parameter->getAllowedTags()))
+				{
+					$value = $parameter->sanitizeValue($value);
 				}
 
 				$config[$groupName][$fieldName] = $value;
