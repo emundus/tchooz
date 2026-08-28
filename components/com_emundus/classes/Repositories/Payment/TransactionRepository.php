@@ -357,6 +357,7 @@ class TransactionRepository extends EmundusRepository
 								onAfterEmundusTransactionUpdateDefinition::TRANSACTION_STATUS_PARAMETER => $transaction->getStatus()->value,
 								onAfterEmundusTransactionUpdateDefinition::OLD_TRANSACTION_STATUS_PARAMETER => !empty($old_data['status']) ? $old_data['status'] : null,
 								onAfterEmundusTransactionUpdateDefinition::TRANSACTION_STEP_ID_PARAMETER => $transaction->getStepId(),
+								onAfterEmundusTransactionUpdateDefinition::TRANSACTION_PAYMENT_METHOD_PARAMETER => $transaction->getPaymentMethod()->getId(),
 							]
 						)
 					]
