@@ -17,6 +17,7 @@ use Joomla\Database\ParameterType;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterProgramCreateDefinition;
 use Tchooz\Entities\Groups\GroupEntity;
 use Tchooz\Entities\Programs\ProgramEntity;
 use Tchooz\Factories\Programs\ProgramFactory;
@@ -113,7 +114,15 @@ class ProgramRepository extends EmundusRepository
 
 		if ($isNew)
 		{
-			$this->dispatchJoomlaEvent('onAfterProgramCreate', ['programme' => $data, 'user_id' => $user->id, 'context' => new EventContextEntity($user, [], [], [])]);
+			$this->dispatchJoomlaEvent('onAfterProgramCreate', [
+				'programme' => $data,
+				'user_id'   => $user->id,
+				'context'   => new EventContextEntity($user, [], [], [
+					onAfterProgramCreateDefinition::PROGRAM_ID_KEY    => $programEntity->getId(),
+					onAfterProgramCreateDefinition::PROGRAM_CODE_KEY  => $programEntity->getCode(),
+					onAfterProgramCreateDefinition::PROGRAM_LABEL_KEY => $programEntity->getLabel(),
+				])
+			]);
 		}
 
 		return true;

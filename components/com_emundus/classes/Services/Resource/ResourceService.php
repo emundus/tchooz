@@ -93,6 +93,15 @@ class ResourceService
 	}
 
 	/**
+	 * Number of rows getResources() matches, ignoring pagination. The list client needs the whole
+	 * total to size its pager: handing it the current page length would cap it at a single page.
+	 */
+	public function countResources(?int $folderId = null, ?string $search = null, ?string $typeFilter = null, array $formats = []): int
+	{
+		return $this->resourceRepository->countListRows($folderId, $search, $typeFilter, $formats);
+	}
+
+	/**
 	 * File format filter options as {value, label}. Managers see every format in the library;
 	 * everyone else only sees the formats among the files shared with them.
 	 *
@@ -201,10 +210,11 @@ class ResourceService
 
 		$userId = (int) $userId;
 
-		// Folders are listed only while browsing without a search and when the view is not restricted
-		// to files (an explicit "file" type or a format filter both exclude folders).
-		$showFolders = empty($search) && $typeFilter !== 'file' && empty($formats);
-		$folderRows  = $showFolders ? $this->getAccessibleFolderRows($userId, $folderId) : [];
+		// Folders are never paginated (they are rebuilt in PHP from the whole tree), so they belong
+		// to the first page only: repeating them on every page would show the same rows twice.
+		$folderRows = $this->showAccessibleFolders($search, $typeFilter, $formats) && $page <= 1
+			? $this->getAccessibleFolderRows($userId, $folderId)
+			: [];
 
 		// A "folder" type filter drops the files entirely.
 		$fileRows = $typeFilter === 'folder'
@@ -213,6 +223,37 @@ class ResourceService
 
 		// Folders first, then files (mirrors getResources default ordering).
 		return array_merge($folderRows, $fileRows);
+	}
+
+	/**
+	 * Number of rows getAccessibleResources() matches, ignoring pagination: the folders of the
+	 * current level plus every file shared with the user.
+	 */
+	public function countAccessibleResources(int $userId, ?int $folderId = null, ?string $search = null, ?string $typeFilter = null, array $formats = []): int
+	{
+		if ($userId <= 0)
+		{
+			return 0;
+		}
+
+		$folderCount = $this->showAccessibleFolders($search, $typeFilter, $formats)
+			? count($this->getAccessibleFolderRows((int) $userId, $folderId))
+			: 0;
+
+		$fileCount = $typeFilter === 'folder'
+			? 0
+			: $this->resourceRepository->countAccessibleFileRows((int) $userId, $folderId, $search, $formats);
+
+		return $folderCount + $fileCount;
+	}
+
+	/**
+	 * Folders show only while browsing without a search and when the view is not restricted to
+	 * files (an explicit "file" type or a format filter both exclude folders).
+	 */
+	private function showAccessibleFolders(?string $search, ?string $typeFilter, array $formats): bool
+	{
+		return empty($search) && $typeFilter !== 'file' && empty($formats);
 	}
 
 	/**

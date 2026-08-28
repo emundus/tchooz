@@ -683,6 +683,9 @@ class EmundusModelGroups extends JModelList
 		$emundus_config = ComponentHelper::getParams('com_emundus');
 		$all_rights_grp = $emundus_config->get('all_rights_group', 1);
 		$displaySysadminUsers = $emundus_config->get('display_sysadmin_users', 0);
+		// Same technical accounts EmundusModelUsers hides from its own user lists.
+		$automated_task_user = $emundus_config->get('automated_task_user', 0);
+		$public_access_user = $emundus_config->get('system_public_user_id', 0);
 		$exclude_users = [];
 		if(!$displaySysadminUsers)
 		{
@@ -718,6 +721,12 @@ class EmundusModelGroups extends JModelList
 
 		$group_list = implode(',', array_map('intval', $group_ids));
 
+		// Staff: the members of those groups.
+		$staff_condition = $this->db->quoteName('u.id') . ' IN ('
+			. 'SELECT ' . $this->db->quoteName('eg.user_id')
+			. ' FROM ' . $this->db->quoteName('#__emundus_groups', 'eg')
+			. ' WHERE ' . $this->db->quoteName('eg.group_id') . ' IN (' . $group_list . '))';
+
 		// Applicants with a file on a campaign of a program linked to those groups.
 		$applicant_condition = $this->db->quoteName('u.id') . ' IN ('
 			. 'SELECT ' . $this->db->quoteName('ecc.applicant_id')
@@ -735,7 +744,8 @@ class EmundusModelGroups extends JModelList
 			->from($this->db->quoteName('#__users', 'u'))
 			->where($this->db->quoteName('u.block') . ' = 0')
 			->where($this->db->quoteName('u.id') . ' != ' . (int) $userId)
-			->where($applicant_condition);
+			// Either side qualifies: a colleague of the group, or one of its applicants.
+			->where('(' . $staff_condition . ' OR ' . $applicant_condition . ')');
 
 		$search = trim($search);
 		if ($search !== '') {
@@ -746,7 +756,7 @@ class EmundusModelGroups extends JModelList
 
 		if(!empty($exclude_users))
 		{
-			$query->where($this->db->quoteName('u.id') . ' NOT IN (' . implode(',', $exclude_users) . ')');
+			$query->where($this->db->quoteName('u.id') . ' NOT IN (' . implode(',', array_map('intval', $exclude_users)) . ')');
 		}
 
 		$query->order($this->db->quoteName('u.name') . ' ASC');

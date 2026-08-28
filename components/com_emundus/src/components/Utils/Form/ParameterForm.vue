@@ -318,10 +318,15 @@ export default {
 									parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
 								}
 							} else {
-								if (parameter.displayed !== false || parameter.value !== null) {
+								// Remounting a hidden field makes Parameter.created() write a value back (a toggle
+								// resets to '0'), so `reload` is only bumped when the visibility actually changes.
+								if (parameter.displayed !== false) {
 									parameter.displayed = false;
-									parameter.value = null;
 									parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
+								}
+
+								if (parameter.value !== null) {
+									parameter.value = null;
 								}
 							}
 						}

@@ -10,7 +10,6 @@
 namespace Tchooz\Repositories\Resource;
 
 use Joomla\CMS\Factory;
-use Joomla\Database\ParameterType;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Resource\ResourceEntity;
 use Tchooz\Enums\List\ListSortEnum;
@@ -116,6 +115,52 @@ class ResourceRepository extends EmundusRepository implements RepositoryInterfac
 	 */
 	public function findListRows(?int $folderId, ?string $search, int $limit, int $page, ?string $orderBy, ListSortEnum $orderDir, ?string $typeFilter = null, array $formats = []): array
 	{
+		$db    = $this->db;
+		$query = $this->buildListQuery($folderId, $search, $typeFilter, $formats);
+
+		if ($query === null)
+		{
+			return [];
+		}
+
+		// Default ordering: folders first, then files, each sorted by name.
+		if (empty($orderBy))
+		{
+			$query->order('(' . $db->quoteName('type') . ' = ' . $db->quote('folder') . ') DESC')
+				->order($db->quoteName('name') . ' ASC');
+		}
+		else
+		{
+			$query->order($db->quoteName($orderBy) . ' ' . $orderDir->value);
+		}
+
+		if (!empty($limit))
+		{
+			$query->setLimit($limit, ($page - 1) * $limit);
+		}
+
+		return $db->setQuery($query)->loadObjectList() ?: [];
+	}
+
+	/**
+	 * Total number of rows findListRows() would return without pagination, so the client can size
+	 * its pager. Built from the same query, so the two can never disagree on what a row is.
+	 */
+	public function countListRows(?int $folderId, ?string $search, ?string $typeFilter = null, array $formats = []): int
+	{
+		$query = $this->buildListQuery($folderId, $search, $typeFilter, $formats);
+
+		return $query === null ? 0 : $this->countOver($query);
+	}
+
+	/**
+	 * The unordered, unpaginated list query shared by findListRows() and countListRows():
+	 * the files of a folder (or of the root), UNIONed with the flat folder rows at the root level.
+	 *
+	 * @return \Joomla\Database\QueryInterface|null  null when the filters can match no row at all.
+	 */
+	private function buildListQuery(?int $folderId, ?string $search, ?string $typeFilter, array $formats): ?\Joomla\Database\QueryInterface
+	{
 		$db = $this->db;
 
 		$formatCondition = $this->formatFilterCondition('format', $formats);
@@ -126,7 +171,7 @@ class ResourceRepository extends EmundusRepository implements RepositoryInterfac
 		// Folders are only listed at the root; inside a folder there are no sub-folder rows.
 		if ($foldersOnly)
 		{
-			return empty($folderId) ? $this->findFolderRows($search, $orderBy, $orderDir, $limit, $page) : [];
+			return empty($folderId) ? $this->buildFolderUnionQuery($search) : null;
 		}
 
 		$columns         = [$db->quoteName('id'), $db->quoteName('name'), $db->quoteName('created_at')];
@@ -143,8 +188,9 @@ class ResourceRepository extends EmundusRepository implements RepositoryInterfac
 
 		if (!empty($folderId))
 		{
-			$queryResources->where($db->quoteName('folder_id') . ' = :folderId')
-				->bind(':folderId', $folderId, ParameterType::INTEGER);
+			// Cast rather than bind: countListRows() renders this query into a derived table,
+			// where a placeholder would be separated from its binding.
+			$queryResources->where($db->quoteName('folder_id') . ' = ' . (int) $folderId);
 		}
 		else
 		{
@@ -167,52 +213,21 @@ class ResourceRepository extends EmundusRepository implements RepositoryInterfac
 			$queryResources->union($this->buildFolderUnionQuery($search));
 		}
 
-		// Default ordering: folders first, then files, each sorted by name.
-		if (empty($orderBy))
-		{
-			$queryResources->order('(' . $db->quoteName('type') . ' = ' . $db->quote('folder') . ') DESC')
-				->order($db->quoteName('name') . ' ASC');
-		}
-		else
-		{
-			$queryResources->order($db->quoteName($orderBy) . ' ' . $orderDir->value);
-		}
-
-		if (!empty($limit))
-		{
-			$offset = ($page - 1) * $limit;
-			$queryResources->setLimit($limit, $offset);
-		}
-
-		return $db->setQuery($queryResources)->loadObjectList() ?: [];
+		return $queryResources;
 	}
 
 	/**
-	 * Folder rows (flat, all folders) shaped like the file list rows, with the cumulated size of
-	 * their files. Used when the list is filtered to folders only.
-	 *
-	 * @return array<\stdClass>
+	 * Row count of an arbitrary list query, wrapped as a derived table so a UNION counts as one set.
 	 */
-	private function findFolderRows(?string $search, ?string $orderBy, ListSortEnum $orderDir, int $limit, int $page): array
+	private function countOver(\Joomla\Database\QueryInterface $query): int
 	{
-		$db    = $this->db;
-		$query = $this->buildFolderUnionQuery($search);
+		$db = $this->db;
 
-		if (empty($orderBy))
-		{
-			$query->order($db->quoteName('name') . ' ASC');
-		}
-		else
-		{
-			$query->order($db->quoteName($orderBy) . ' ' . $orderDir->value);
-		}
+		$count = $db->getQuery(true)
+			->select('COUNT(*)')
+			->from('(' . (string) $query . ') AS ' . $db->quoteName('list_rows'));
 
-		if (!empty($limit))
-		{
-			$query->setLimit($limit, ($page - 1) * $limit);
-		}
-
-		return $db->setQuery($query)->loadObjectList() ?: [];
+		return (int) $db->setQuery($count)->loadResult();
 	}
 
 	/**
@@ -373,10 +388,50 @@ class ResourceRepository extends EmundusRepository implements RepositoryInterfac
 	 */
 	public function findAccessibleFileRows(int $userId, ?int $folderId, ?string $search, int $limit, int $page, array $formats = []): array
 	{
+		$query = $this->buildAccessibleFileQuery($userId, $folderId, $search, $formats);
+
+		if ($query === null)
+		{
+			return [];
+		}
+
+		$db = $this->db;
+		$query->order($db->quoteName('r.name') . ' ASC');
+
+		if (!empty($limit))
+		{
+			$db->setQuery($query, ($page - 1) * $limit, $limit);
+		}
+		else
+		{
+			$db->setQuery($query);
+		}
+
+		return $db->loadObjectList() ?: [];
+	}
+
+	/**
+	 * Total number of files findAccessibleFileRows() would return without pagination.
+	 */
+	public function countAccessibleFileRows(int $userId, ?int $folderId, ?string $search, array $formats = []): int
+	{
+		$query = $this->buildAccessibleFileQuery($userId, $folderId, $search, $formats);
+
+		return $query === null ? 0 : $this->countOver($query);
+	}
+
+	/**
+	 * The unordered, unpaginated query of the files shared with a user, shared by
+	 * findAccessibleFileRows() and countAccessibleFileRows().
+	 *
+	 * @return \Joomla\Database\QueryInterface|null  null when the user can match no file at all.
+	 */
+	private function buildAccessibleFileQuery(int $userId, ?int $folderId, ?string $search, array $formats): ?\Joomla\Database\QueryInterface
+	{
 		$userId = (int) $userId;
 		if ($userId <= 0)
 		{
-			return [];
+			return null;
 		}
 
 		$db    = $this->db;
@@ -417,18 +472,7 @@ class ResourceRepository extends EmundusRepository implements RepositoryInterfac
 			$query->where($formatCondition);
 		}
 
-		$query->order($db->quoteName('r.name') . ' ASC');
-
-		if (!empty($limit))
-		{
-			$db->setQuery($query, ($page - 1) * $limit, $limit);
-		}
-		else
-		{
-			$db->setQuery($query);
-		}
-
-		return $db->loadObjectList() ?: [];
+		return $query;
 	}
 
 	/**
