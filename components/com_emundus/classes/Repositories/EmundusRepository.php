@@ -16,6 +16,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\QueryInterface;
 use Tchooz\Entities\List\ListResult;
+use Tchooz\Enums\Automation\ConditionOperatorEnum;
 use Tchooz\Traits\TraitDispatcher;
 use Tchooz\Traits\TraitTable;
 
@@ -225,7 +226,7 @@ class EmundusRepository
 	}
 
 	/**
-	 * @param   array         $filters
+	 * @param   array         $filters Filters to apply to the query, Two formats are allowed, key => value, or ColumnFilter object
 	 * @param   int           $limit
 	 * @param   int           $page
 	 * @param   string|array  $select
@@ -290,19 +291,11 @@ class EmundusRepository
 
 		if(!empty($search))
 		{
-			$searchConditions = [];
-			foreach ($this->searchableColumns as $column)
-			{
-				if(!str_contains($column, '.'))
-				{
-					$column = $this->alias . '.' . $column;
-				}
-				$searchConditions[] = $this->db->quoteName($column) . ' LIKE ' . $this->db->quote('%' . $search . '%');
-			}
+			$searchConditions = $this->buildSearchConditions($this->searchableColumns, $search);
 
 			if (!empty($searchConditions))
 			{
-				$query->where('(' . implode(' OR ', $searchConditions) . ')');
+				$query->where($searchConditions);
 			}
 		}
 
@@ -378,6 +371,13 @@ class EmundusRepository
 		}
 	}
 
+	/**
+	 * @param   QueryInterface  $query
+	 * @param   array           $filters  Two formats are allowed, key => value where the operator is
+	 *                                    inferred from the value, or ColumnFilter objects
+	 *                                    carrying an explicit operator. Right now filters are all on AND operation. We should handle a FilterGroup some day
+	 * @return void
+	 */
 	public function applyFilters(QueryInterface $query, array $filters): void
 	{
 		if (!empty($filters))
@@ -386,6 +386,17 @@ class EmundusRepository
 
 			foreach ($filters as $field => $value)
 			{
+				if ($value instanceof ColumnFilter)
+				{
+					$field    = $value->getColumn();
+					$operator = $value->getOperator();
+					$value    = $value->getValue();
+				}
+				else
+				{
+					$operator = ConditionOperatorEnum::EQUALS;
+				}
+
 				if (!str_starts_with($field, $this->alias . '.') && !str_contains($field, '.')) {
 					$field = $this->alias . '.' . $field;
 				}
@@ -422,39 +433,148 @@ class EmundusRepository
 							$this->db->quoteName($this->alias . '.' . $joinObject->getFromKey())
 						);
 
-					$this->buildWhere($subQuery, ($joinObjectFilterAlias . '.' . $fieldWithoutAlias), $value);
+					$this->buildWhere($subQuery, ($joinObjectFilterAlias . '.' . $fieldWithoutAlias), $value, $operator);
 
 					$query->where('EXISTS (' . $subQuery . ')');
 
 					continue;
 				}
 
-				$this->buildWhere($query, $field, $value);
+				$this->buildWhere($query, $field, $value, $operator);
 			}
 		}
 	}
 
-	private function buildWhere(QueryInterface $query, string $field, mixed $value): void
+	/**
+	 * A filter without an explicit operator is an equality, so both filter shapes share this single path.
+	 * Semantics mirror ScalarComparator::compare and ArrayComparator::compare, so that filtering rows in
+	 * SQL and evaluating an automation condition in PHP on the same data agree.
+	 *
+	 * @throws \InvalidArgumentException when the operator cannot be applied to the given value
+	 */
+	private function buildWhere(QueryInterface $query, string $field, mixed $value, ?ConditionOperatorEnum $operator = null): void
 	{
+		$operator = $operator ?? ConditionOperatorEnum::EQUALS;
+		$column   = $this->db->quoteName($field);
+
+		if ($operator->noValueNeeded() || is_null($value))
+		{
+			// ScalarComparator compares loosely, so comparing to null tests emptiness
+			$expectsEmpty = match ($operator)
+			{
+				ConditionOperatorEnum::IS_EMPTY, ConditionOperatorEnum::EQUALS          => true,
+				ConditionOperatorEnum::IS_NOT_EMPTY, ConditionOperatorEnum::NOT_EQUALS  => false,
+				default                                                                 => throw new \InvalidArgumentException("Operator {$operator->value} requires a value to filter on {$field}"),
+			};
+
+			$query->where($this->buildEmptyWhere($column, $expectsEmpty));
+
+			return;
+		}
+
 		if (is_array($value))
 		{
-			if (!empty($value))
+			// ArrayComparator with its default ANY match mode: the column has to be one of the values
+			if (!in_array($operator, [ConditionOperatorEnum::EQUALS, ConditionOperatorEnum::NOT_EQUALS], true))
 			{
-				$query->where($this->db->quoteName($field) . ' IN (' . implode(',', array_map([$this->db, 'quote'], $value)) . ')');
+				throw new \InvalidArgumentException("Operator {$operator->value} does not support a list of values on {$field}");
+			}
+
+			// No column value can belong to an empty list, so the query has to return no row at all.
+			// Writing IN () would be a SQL error, hence the invalidating condition
+			if (empty($value))
+			{
+				$query->where($operator === ConditionOperatorEnum::NOT_EQUALS ? '1 = 1' : '1 = 0');
+
+				return;
+			}
+
+			$values = implode(',', array_map([$this->db, 'quote'], $value));
+			$query->where($column . ($operator === ConditionOperatorEnum::NOT_EQUALS ? ' NOT IN ' : ' IN ') . '(' . $values . ')');
+
+			return;
+		}
+
+		// Callers embed their own wildcards in a value to ask for a partial match
+		if (is_string($value) && str_contains($value, '%') && in_array($operator, [ConditionOperatorEnum::EQUALS, ConditionOperatorEnum::NOT_EQUALS], true))
+		{
+			$query->where($column . ($operator === ConditionOperatorEnum::NOT_EQUALS ? ' NOT LIKE ' : ' LIKE ') . $this->db->quote($value));
+
+			return;
+		}
+
+		if (in_array($operator, [ConditionOperatorEnum::CONTAINS, ConditionOperatorEnum::NOT_CONTAINS], true))
+		{
+			$query->where($column . ' ' . $operator->sqlOperator() . ' ' . $this->db->quote('%' . $this->db->escape($value, true) . '%', false));
+
+			return;
+		}
+
+		if ($operator === ConditionOperatorEnum::NOT_EQUALS)
+		{
+			// PHP holds null != value as true where SQL would drop those rows
+			$query->where('(' . $column . ' IS NULL OR ' . $column . ' != ' . $this->db->quote($value) . ')');
+
+			return;
+		}
+
+		$query->where($column . ' ' . $operator->sqlOperator() . ' ' . $this->db->quote($value));
+	}
+
+	/**
+	 * Empty is understood as PHP empty(): null, an empty string and zero all qualify. The zero is compared
+	 * as a string so that MySQL does not coerce a text column to a number, where any text would equal 0.
+	 */
+	private function buildEmptyWhere(string $column, bool $expectsEmpty): string
+	{
+		$emptyString = $this->db->quote('');
+		$zero        = $this->db->quote('0');
+
+		if ($expectsEmpty)
+		{
+			return '(' . $column . ' IS NULL OR ' . $column . ' = ' . $emptyString . ' OR ' . $column . ' = ' . $zero . ')';
+		}
+
+		return '(' . $column . ' IS NOT NULL AND ' . $column . ' != ' . $emptyString . ' AND ' . $column . ' != ' . $zero . ')';
+	}
+
+	/**
+	 * Builds the SQL condition of a search field. A comma separates independent terms: searching
+	 * "data1,data2" returns the matches of both at once.
+	 *
+	 * @param   array   $columns  columns to search in, prefixed with the repository alias when unqualified
+	 * @param   string  $search   raw search string
+	 *
+	 * @return string empty when there is nothing to search on
+	 */
+	public function buildSearchConditions(array $columns, string $search): string
+	{
+		$terms = array_filter(array_map('trim', explode(',', $search)), function ($term) {
+			return $term !== '';
+		});
+
+		if (empty($terms) || empty($columns))
+		{
+			return '';
+		}
+
+		$conditions = [];
+		foreach ($terms as $term)
+		{
+			$term = $this->db->quote('%' . $this->db->escape($term, true) . '%', false);
+
+			foreach ($columns as $column)
+			{
+				if (!str_contains($column, '.'))
+				{
+					$column = $this->alias . '.' . $column;
+				}
+
+				$conditions[] = $this->db->quoteName($column) . ' LIKE ' . $term;
 			}
 		}
-		elseif (is_null($value))
-		{
-			$query->where($this->db->quoteName($field) . ' IS NULL');
-		}
-		elseif (str_contains($value, '%'))
-		{
-			$query->where($this->db->quoteName($field) . ' LIKE ' . $this->db->quote($value));
-		}
-		else
-		{
-			$query->where($this->db->quoteName($field) . ' = ' . $this->db->quote($value));
-		}
+
+		return '(' . implode(' OR ', $conditions) . ')';
 	}
 
 	public function buildOrderBy(string $order, string $direction = 'ASC'): string

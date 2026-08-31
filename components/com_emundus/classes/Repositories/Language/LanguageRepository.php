@@ -18,6 +18,7 @@ use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Language\LanguageEntity;
+use Tchooz\Entities\List\ListResult;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
@@ -58,6 +59,8 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 
 		$this->factory = new LanguageFactory();
 
+		$this->searchableColumns = ['tag', 'override'];
+
 		// By default we get the site language
 		$this->langCode = Factory::getApplication()->getLanguage()->getTag();
 
@@ -89,12 +92,12 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 				'reference_table' => $language->getReferenceTable(),
 				'reference_field' => $language->getReferenceField(),
 				'published'       => $language->getPublished()->value,
-				'location'        => '',
 			];
 
 			if (empty($language->getId()))
 			{
-				$data->created_by    = $language->getCreatedBy();
+				$data->location      = '';
+				$data->created_by    = $language->getCreatedBy()?->id;
 				$data->created_date  = $language->getCreatedDate()->format('Y-m-d H:i:s');
 				$data->original_text = $language->getOriginalText();
 				$data->original_md5  = md5($language->getOverride());
@@ -106,7 +109,7 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 			}
 			else
 			{
-				$data->modified_by   = $language->getModifiedBy();
+				$data->modified_by   = $language->getModifiedBy()?->id;
 				$data->modified_date = $language->getModifiedDate()?->format('Y-m-d H:i:s');
 				$data->id            = $language->getId();
 
@@ -190,6 +193,21 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 
 	public function applyFilters(QueryInterface $query, array $filters): void
 	{
+		if (in_array('lang_code', array_keys($filters)) && $filters['lang_code'] !== 'all')
+		{
+			$query->where($this->db->qn('lang_code') . ' = ' . $this->db->q($filters['lang_code']));
+		}
+
+		if (in_array('tag', array_keys($filters)))
+		{
+			$query->where($this->db->qn('tag') . ' = ' . $this->db->q($filters['tag']));
+		}
+
+		if (in_array('form', array_keys($filters)) && !empty($filters['form']))
+		{
+			$query->where($this->buildFormOwnershipCondition((int) $filters['form']));
+		}
+
 		if (in_array('published', array_keys($filters)))
 		{
 			$query->where($this->db->qn('published') . ' = ' . (int) $filters['published']);
@@ -231,7 +249,7 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 		}
 	}
 
-	public function getCount(array $filters = []): int
+	public function getCount(array $filters = [], string $search = ''): int
 	{
 		$count = 0;
 
@@ -245,8 +263,11 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 			$query = $this->db->getQuery(true);
 
 			$query->select('COUNT(*)')
-				->from($this->db->qn($this->tableName, $this->alias))
-				->where($this->db->qn('lang_code') . ' = ' . $this->db->q($filters['lang_code']));
+				->from($this->db->qn($this->tableName, $this->alias));
+
+			$this->applyFilters($query, $filters);
+			$this->applySearch($query, $search);
+
 			$this->db->setQuery($query);
 			$count = (int) $this->db->loadResult();
 		}
@@ -256,6 +277,132 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 		}
 
 		return $count;
+	}
+
+	public function getList(array $filters = [], int $limit = 0, int $page = 1, string|array $select = '*', string $order = '', string $search = ''): ListResult
+	{
+		if (!in_array('lang_code', array_keys($filters)))
+		{
+			$filters['lang_code'] = $this->getLangCode();
+		}
+
+		return new ListResult(
+			$this->get($filters, $limit, $page, $select, $order, $search),
+			$this->getCount($filters, $search)
+		);
+	}
+
+	/**
+	 * A row belongs to a form either directly, through the group it sits in, or through the group of
+	 * the element it sits in. Expressed as a condition rather than a join so it composes with the
+	 * queries built by the parent repository.
+	 */
+	private function buildFormOwnershipCondition(int $formId): string
+	{
+		$table    = $this->db->qn('reference_table');
+		$id       = $this->db->qn('reference_id');
+		$formOnly = $this->db->q('fabrik_forms');
+
+		$groupIds = '(SELECT ' . $this->db->qn('group_id') . ' FROM ' . $this->db->qn('#__fabrik_formgroup')
+			. ' WHERE ' . $this->db->qn('form_id') . ' = ' . $formId . ')';
+
+		$elementIds = '(SELECT ' . $this->db->qn('fe.id') . ' FROM ' . $this->db->qn('#__fabrik_elements', 'fe')
+			. ' INNER JOIN ' . $this->db->qn('#__fabrik_formgroup', 'ffg')
+			. ' ON ' . $this->db->qn('ffg.group_id') . ' = ' . $this->db->qn('fe.group_id')
+			. ' WHERE ' . $this->db->qn('ffg.form_id') . ' = ' . $formId . ')';
+
+		return '('
+			. '(' . $table . ' = ' . $formOnly . ' AND ' . $id . ' = ' . $formId . ')'
+			. ' OR (' . $table . ' = ' . $this->db->q('fabrik_groups') . ' AND ' . $id . ' IN ' . $groupIds . ')'
+			. ' OR (' . $table . ' = ' . $this->db->q('fabrik_elements') . ' AND ' . $id . ' IN ' . $elementIds . ')'
+			. ')';
+	}
+
+	/**
+	 * The unique key is (tag, lang_code, location) and rows created from this page carry an empty
+	 * location, so that is the couple to check before inserting.
+	 */
+	public function tagExists(string $tag, string $langCode): bool
+	{
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select('COUNT(*)')
+				->from($this->db->qn($this->tableName, $this->alias))
+				->where($this->db->qn('tag') . ' = :tag')
+				->where($this->db->qn('lang_code') . ' = :lang_code')
+				->bind(':tag', $tag)
+				->bind(':lang_code', $langCode);
+			$this->db->setQuery($query);
+
+			return ((int) $this->db->loadResult()) > 0;
+		}
+		catch (\Exception $e)
+		{
+			throw new \RuntimeException('Failed to check tag ' . $tag . ': ' . $e->getMessage(), 0, $e);
+		}
+	}
+
+	/**
+	 * Forms that actually own at least one translation, to feed the list filter.
+	 *
+	 * @return array<int, object>  {id, label} — the label is itself a translation key.
+	 */
+	public function getReferencedForms(): array
+	{
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select('DISTINCT ff.id, ff.label')
+				->from($this->db->qn($this->tableName, $this->alias))
+				->leftJoin(
+					$this->db->qn('#__fabrik_elements', 'fe')
+					. ' ON ' . $this->db->qn('esl.reference_table') . ' = ' . $this->db->q('fabrik_elements')
+					. ' AND ' . $this->db->qn('fe.id') . ' = ' . $this->db->qn('esl.reference_id')
+				)
+				->leftJoin(
+					$this->db->qn('#__fabrik_formgroup', 'ffg')
+					. ' ON ' . $this->db->qn('ffg.group_id') . ' = COALESCE(' . $this->db->qn('fe.group_id')
+					. ', CASE WHEN ' . $this->db->qn('esl.reference_table') . ' = ' . $this->db->q('fabrik_groups')
+					. ' THEN ' . $this->db->qn('esl.reference_id') . ' END)'
+				)
+				->leftJoin(
+					$this->db->qn('#__fabrik_forms', 'ff')
+					. ' ON ' . $this->db->qn('ff.id') . ' = COALESCE(' . $this->db->qn('ffg.form_id')
+					. ', CASE WHEN ' . $this->db->qn('esl.reference_table') . ' = ' . $this->db->q('fabrik_forms')
+					. ' THEN ' . $this->db->qn('esl.reference_id') . ' END)'
+				)
+				->where($this->db->qn('ff.id') . ' IS NOT NULL')
+				->order($this->db->qn('ff.label') . ' ASC');
+			$this->db->setQuery($query);
+
+			return $this->db->loadObjectList();
+		}
+		catch (\Exception $e)
+		{
+			throw new \RuntimeException('Failed to get referenced forms: ' . $e->getMessage(), 0, $e);
+		}
+	}
+
+	private function applySearch(QueryInterface $query, string $search): void
+	{
+		if (empty($search))
+		{
+			return;
+		}
+
+		$conditions = [];
+		foreach ($this->searchableColumns as $column)
+		{
+			$conditions[] = $this->db->qn($column) . ' LIKE ' . $this->db->q('%' . $search . '%');
+		}
+
+		if (!empty($conditions))
+		{
+			$query->where('(' . implode(' OR ', $conditions) . ')');
+		}
 	}
 
 	/**
@@ -618,7 +765,7 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 
 						foreach ($rows as $row)
 						{
-							if (strip_tags($row->intro) == $key)
+							if (strip_tags($row->{$field}) == $key)
 							{
 								$find = $row->id;
 								break;

@@ -11,6 +11,8 @@ namespace Tchooz\Services;
 
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use enshrined\svgSanitize\Sanitizer;
+use Joomla\CMS\Filter\InputFilter;
+use Joomla\CMS\Language\Text;
 use RuntimeException;
 use InvalidArgumentException;
 use Tchooz\Enums\Upload\UploadFormatEnum;
@@ -76,12 +78,20 @@ class UploadService
 		}
 
 		if (!in_array($file['type'], $this->validMimeTypes, true)) {
-			throw new RuntimeException('Invalid file type.');
+			throw new RuntimeException(Text::sprintf('COM_EMUNDUS_UPLOAD_ERROR_INVALID_TYPE', $file['name']), 400);
 		}
-		
+
 		$bytes = $this->maxFilesizeMB * 1024 * 1024;
 		if ($file['size'] > $bytes) {
-			throw new RuntimeException(sprintf('File size exceeds %dMB', $this->maxFilesizeMB));
+			throw new RuntimeException(Text::sprintf('COM_EMUNDUS_UPLOAD_ERROR_SIZE', $this->maxFilesizeMB), 400);
+		}
+
+		// Block server-executable uploads before anything touches disk. The stored extension is
+		// otherwise attacker-controlled, so a PNG/PDF polyglot named "x.php" would land as an
+		// executable file in a web-served directory. isSafeFile rejects forbidden extensions
+		// (incl. double extensions like x.php.png), null bytes and <?php / phar stubs in content.
+		if (!InputFilter::isSafeFile($file)) {
+			throw new RuntimeException(Text::sprintf('COM_EMUNDUS_UPLOAD_ERROR_DANGEROUS_CONTENT', $file['name']), 400);
 		}
 
 		$basename = $this->sanitizeFilename($file['name']);
@@ -90,7 +100,7 @@ class UploadService
 		$mimetype = $this->detectMimeType($ext, $file['tmp_name']);
 
 		if ($file['type'] !== $mimetype) {
-			throw new RuntimeException('File type does not match file content/extension.');
+			throw new RuntimeException(Text::sprintf('COM_EMUNDUS_UPLOAD_ERROR_TYPE_MISMATCH', $file['name']), 400);
 		}
 
 		if ($mimetype === 'image/svg+xml') {
@@ -104,7 +114,7 @@ class UploadService
 		// Scan file content for dangerous patterns (JS in PDF, macros in Office, etc.)
 		$securityService = new FileSecurityService();
 		if ($securityService->containsDangerousContent($file['tmp_name'], $ext)) {
-			throw new RuntimeException('File contains potentially dangerous active content (scripts, macros).');
+			throw new RuntimeException(Text::sprintf('COM_EMUNDUS_UPLOAD_ERROR_DANGEROUS_CONTENT', $file['name']), 400);
 		}
 
 		if (!is_dir($this->uploadDir) && !mkdir($this->uploadDir, 0755, true) && !is_dir($this->uploadDir)) {
@@ -125,6 +135,32 @@ class UploadService
 		$finalFilename = $unique . ($ext ? '.' . $ext : '');
 
 		$destination = $this->uploadDir . $finalFilename;
+
+		if (!move_uploaded_file($file['tmp_name'], $destination)) {
+			throw new RuntimeException('Failed to move uploaded file.');
+		}
+
+		return $this->toRelativePath($destination);
+	}
+
+	/**
+	 * Moves an uploaded file to a caller-chosen filename inside the upload dir,
+	 * creating the directory if needed.
+	 *
+	 * Unlike upload(), the filename is explicit and deterministic — for files
+	 * that must stay addressable later (e.g. named after an entity id for
+	 * background processing / cleanup), not security-scanned web uploads.
+	 *
+	 * @return string The path relative to the site root.
+	 * @throws RuntimeException When the directory cannot be created or the move fails.
+	 */
+	public function moveUploadedFileAs(array $file, string $filename): string
+	{
+		if (!is_dir($this->uploadDir) && !mkdir($this->uploadDir, 0755, true) && !is_dir($this->uploadDir)) {
+			throw new RuntimeException('Failed to create upload directory.');
+		}
+
+		$destination = $this->uploadDir . $this->sanitizeFilename($filename);
 
 		if (!move_uploaded_file($file['tmp_name'], $destination)) {
 			throw new RuntimeException('Failed to move uploaded file.');

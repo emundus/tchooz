@@ -44,6 +44,20 @@ use Tchooz\Repositories\Profile\ProfileRepository;
  */
 class EmundusHelperFabrik
 {
+	/**
+	 * Separator the repeated values of an element are concatenated with. It is meant to be read by
+	 * a human, so it is also a sequence a value can legitimately contain — a currency element stores
+	 * "1 200,00 € (EUR)" — and an aggregate built with it cannot always be split back apart.
+	 */
+	public const VALUE_SEPARATOR = ', ';
+
+	/**
+	 * Separator for callers that need to split the aggregate back into one value per repetition.
+	 * No element value contains it, so the split is unambiguous; whoever asks for it is responsible
+	 * for replacing what is left of it before the value reaches a human.
+	 */
+	public const VALUE_SEPARATOR_MARKER = '[SEPARATOR]';
+
 	private static array $dataTableTimestamps = [];
 
 	public function __construct()
@@ -3345,12 +3359,13 @@ class EmundusHelperFabrik
 		ValueFormatEnum $return = ValueFormatEnum::FORMATTED,
 		int             $user_id = 0,
 		ExportModeEnum  $exportMode = ExportModeEnum::GROUP_CONCAT,
-		array $translations = []
+		array $translations = [],
+		?string         $separator = null
 	): array
 	{
 		$fnums = !empty($fnum) ? [$fnum] : [];
 
-		return $this->getFabrikElementValues($fabrik_element, $fnums, $row_id, $return, $user_id, $exportMode, $translations);
+		return $this->getFabrikElementValues($fabrik_element, $fnums, $row_id, $return, $user_id, $exportMode, $translations, $separator);
 	}
 
 	/**
@@ -3373,7 +3388,8 @@ class EmundusHelperFabrik
 	    ValueFormatEnum $return = ValueFormatEnum::FORMATTED,
 	    int             $user_id = 0,
 	    ExportModeEnum  $exportMode = ExportModeEnum::GROUP_CONCAT,
-	    array $translations = [])
+	    array $translations = [],
+	    ?string         $separator = null)
 	: array
 	{
 		$fabrikElementValues = [];
@@ -3410,7 +3426,7 @@ class EmundusHelperFabrik
 
 		if (in_array($plugin, [ElementPluginEnum::DATABASEJOIN, ElementPluginEnum::CASCADINGDROPDOWN]) || $isRepeatGroup)
 		{
-			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id, $exportMode);
+			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id, $exportMode, $separator);
 		}
 		else
 		{
@@ -3522,7 +3538,8 @@ class EmundusHelperFabrik
 		ValueFormatEnum   $return = ValueFormatEnum::FORMATTED,
 		?string           $date_format = null,
 		int               $user_id = 0,
-		ExportModeEnum    $exportMode = ExportModeEnum::GROUP_CONCAT
+		ExportModeEnum    $exportMode = ExportModeEnum::GROUP_CONCAT,
+		?string           $separator = null
 	)
 	{
 		if (!is_array($fnums) && $fnums !== null)
@@ -3535,12 +3552,13 @@ class EmundusHelperFabrik
 			return [];
 		}
 
-		if ($exportMode === ExportModeEnum::LEFT_JOIN)
+		if ($separator === null)
 		{
-			$separator = '[SEPARATOR]';
-		} else {
-			$separator = ', ';
+			$separator = $exportMode === ExportModeEnum::LEFT_JOIN ? self::VALUE_SEPARATOR_MARKER : self::VALUE_SEPARATOR;
 		}
+
+		// Interpolated as-is into the SEPARATOR "..." clauses built below.
+		$separator = str_replace(['"', '\\'], '', $separator);
 
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->createQuery();

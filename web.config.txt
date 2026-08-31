@@ -15,6 +15,38 @@
                    </conditions>
                    <action type="CustomResponse" url="index.php" statusCode="403" statusReason="Forbidden" statusDescription="Forbidden" />
                </rule>
+               <!-- ################################################################### -->
+               <!-- eMundus protected downloads.                                        -->
+               <!-- Mirrors the RewriteRules in .htaccess.tchooz.base.rules.txt. These   -->
+               <!-- MUST stay ahead of the Joomla SEF rules below: those skip any        -->
+               <!-- request that resolves to an existing file, so without these rules    -->
+               <!-- IIS would serve the uploads statically and bypass the PHP access     -->
+               <!-- checks in EmundusController::getfile().                              -->
+               <!-- ################################################################### -->
+               <rule name="eMundus applicant files" stopProcessing="true">
+                   <match url="^(images/emundus/files)/([0-9]+)/(.*)\.(.*)$" ignoreCase="true" />
+                   <action type="Redirect" url="/index.php?option=com_emundus&amp;task=getfile&amp;u={R:1}/{R:2}/{R:3}.{R:4}" appendQueryString="false" redirectType="Found" />
+               </rule>
+               <rule name="eMundus exports" stopProcessing="true">
+                   <match url="^(images/emundus/exports)/([0-9]+)/(.*)\.(.*)$" ignoreCase="true" />
+                   <action type="Redirect" url="/index.php?option=com_emundus&amp;task=getfile&amp;u={R:1}/{R:2}/{R:3}.{R:4}" appendQueryString="false" redirectType="Found" />
+               </rule>
+               <rule name="eMundus file archives" stopProcessing="true">
+                   <match url="^(images/emundus/files/archives)/(.*)\.(.*)$" ignoreCase="true" />
+                   <action type="Redirect" url="/index.php?option=com_emundus&amp;task=getfile&amp;u={R:1}/{R:2}.{R:3}" appendQueryString="false" redirectType="Found" />
+               </rule>
+               <rule name="eMundus resources" stopProcessing="true">
+                   <match url="^(images/emundus/resources)/(.*)\.(.*)$" ignoreCase="true" />
+                   <action type="Redirect" url="/index.php?option=com_emundus&amp;task=getfile&amp;u={R:1}/{R:2}.{R:3}" appendQueryString="false" redirectType="Found" />
+               </rule>
+               <rule name="eMundus tmp" stopProcessing="true">
+                   <match url="^(tmp)/(.*)\.(.*)$" ignoreCase="true" />
+                   <action type="Redirect" url="/index.php?option=com_emundus&amp;task=getfile&amp;u={R:1}/{R:2}.{R:3}" appendQueryString="false" redirectType="Found" />
+               </rule>
+               <rule name="eMundus logs" stopProcessing="true">
+                   <match url="^(logs)/(.*)\.(.*)$" ignoreCase="true" />
+                   <action type="Redirect" url="/index.php?option=com_emundus&amp;task=getfile&amp;u={R:1}/{R:2}.{R:3}" appendQueryString="false" redirectType="Found" />
+               </rule>
                <rule name="Joomla! API Application SEF URLs">
                    <match url="^api/(.*)" ignoreCase="false" />
                    <conditions logicalGrouping="MatchAll">

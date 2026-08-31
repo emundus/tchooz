@@ -157,20 +157,21 @@
 			</textarea>
 
 			<!-- EDITOR -->
-			<tip-tap-editor
-				v-else-if="parameter.type === 'wysiwig' && editorReady"
-				v-model="value"
-				:editor-content-height="'20em'"
-				:class="'tw-mt-1 tw-w-full'"
-				:locale="actualLanguage"
-				:preset="parameter.preset ? parameter.preset : 'basic'"
-				:toolbar-classes="['tw-bg-white']"
-				:editor-content-classes="['tw-bg-white']"
-				:suggestions="suggestions"
-				:media-files="medias"
-				@focusout="checkValue(parameter)"
-			>
-			</tip-tap-editor>
+			<div v-else-if="parameter.type === 'wysiwig' && editorReady" class="tw-w-full" @keydown.capture="onEditorKeydown">
+				<tip-tap-editor
+					v-model="value"
+					:editor-content-height="parameter.editorContentHeight ? parameter.editorContentHeight : '20em'"
+					:class="'tw-mt-1 tw-w-full'"
+					:locale="actualLanguage"
+					:preset="parameter.preset ? parameter.preset : 'basic'"
+					:toolbar-classes="['tw-bg-white']"
+					:editor-content-classes="['tw-bg-white']"
+					:suggestions="suggestions"
+					:media-files="medias"
+					@focusout="checkValue(parameter)"
+				>
+				</tip-tap-editor>
+			</div>
 
 			<!-- YESNO -->
 			<div v-else-if="parameter.type === 'yesno'">
@@ -329,6 +330,16 @@
 				@change.self="checkValue(parameter)"
 				@focusin="clearPassword(parameter)"
 			/>
+
+			<!-- COPY BUTTON: for values the user has to paste into a third-party back office -->
+			<span
+				v-if="parameter.copyable"
+				class="material-symbols-outlined tw-ml-2 tw-cursor-copy tw-text-neutral-600"
+				:title="translate('COM_EMUNDUS_COPY')"
+				@click="copyToClipboard"
+			>
+				content_copy
+			</span>
 
 			<div v-else-if="parameter.type === 'file' && dropzoneOptions.url !== ''" class="tw-w-full">
 				<div
@@ -782,6 +793,16 @@ export default {
 		this.initValue = this.value;
 	},
 	methods: {
+		copyToClipboard() {
+			navigator.clipboard.writeText(this.value).then(() => {
+				Swal.fire({
+					icon: 'success',
+					title: this.translate('COM_EMUNDUS_COPIED_TO_CLIPBOARD'),
+					showConfirmButton: false,
+					timer: 1500,
+				});
+			});
+		},
 		onTranslationInput(text) {
 			// Reassign a NEW object so the value watcher sees a changed reference ; a deep mutation
 			// would keep the same reference and be filtered out as "unchanged" downstream.
@@ -1029,6 +1050,25 @@ export default {
 
 				delete this.errors[this.parameter.param];
 				return true;
+			}
+		},
+		/**
+		 * Refuse line breaks in a single-line editor, without touching the toolbar inputs
+		 * where Enter validates (the link popup among them).
+		 *
+		 * Caught while capturing: the editor inserts the paragraph from its own keydown handler
+		 * on the editable node, so the event has to be stopped before it gets there.
+		 *
+		 * @param {KeyboardEvent} event
+		 */
+		onEditorKeydown(event) {
+			if (!this.parameter.singleLine || event.key !== 'Enter') {
+				return;
+			}
+
+			if (event.target && typeof event.target.closest === 'function' && event.target.closest('.ProseMirror')) {
+				event.preventDefault();
+				event.stopPropagation();
 			}
 		},
 		checkValue(parameter) {

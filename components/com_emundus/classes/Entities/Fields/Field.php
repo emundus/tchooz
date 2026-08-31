@@ -16,6 +16,15 @@ abstract class Field
 	 */
 	protected bool $translatable = false;
 
+	/**
+	 * Displayed but not editable. A read-only value is not persisted either: it is derived at
+	 * render time from context the configuration does not have, such as the site origin.
+	 */
+	protected bool $readonly = false;
+
+	/** Adds a copy button, for a value the user has to paste somewhere else. */
+	protected bool $copyable = false;
+
 	public function __construct(
 		protected string       $name,
 		protected string       $label,
@@ -145,6 +154,30 @@ abstract class Field
 		return $this;
 	}
 
+	public function isReadonly(): bool
+	{
+		return $this->readonly;
+	}
+
+	public function setReadonly(bool $readonly): self
+	{
+		$this->readonly = $readonly;
+
+		return $this;
+	}
+
+	public function isCopyable(): bool
+	{
+		return $this->copyable;
+	}
+
+	public function setCopyable(bool $copyable): self
+	{
+		$this->copyable = $copyable;
+
+		return $this;
+	}
+
 	public function isTranslatable(): bool
 	{
 		return $this->translatable;
@@ -184,6 +217,8 @@ abstract class Field
 			'helpText'     => $this->helpText,
 			'defaultValue' => $this->defaultValue,
 			'translatable' => $this->translatable,
+			'readonly'     => $this->readonly,
+			'copyable'     => $this->copyable,
 		];
 	}
 }

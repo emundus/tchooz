@@ -1757,7 +1757,7 @@ button.em-swal-confirm-button:hover{
   border-radius: 25px !important;
 }
 button.em-swal-cancel-button{
-  display: flex !important;
+  display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;

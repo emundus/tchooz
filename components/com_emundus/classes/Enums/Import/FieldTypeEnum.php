@@ -23,7 +23,7 @@ use Joomla\CMS\Language\Text;
  *   DATE     → human-readable date pattern (e.g. "YYYY-MM-DD", "DD/MM/YYYY").
  *   INTEGER  → no format (digits only).
  *   NUMBER   → no format (decimal point convention is locale-driven).
- *   BOOLEAN  → no format (the canonical truthy/falsy set is implementation-defined).
+ *   BOOLEAN  → no format (the closed yes/no list comes from BooleanValueEnum).
  *   EMAIL    → no format (always RFC 5322).
  *   URL      → no format (always absolute URI).
  *   ENUM     → `values` carries the allowed set; format is unused.
@@ -38,6 +38,7 @@ enum FieldTypeEnum: string
 	case EMAIL   = 'email';
 	case URL     = 'url';
 	case ENUM    = 'enum';
+	case REFERENTIAL = 'referential';
 
 	/**
 	 * Localized, human-readable label. Used in the XLSX model documentation
@@ -57,6 +58,33 @@ enum FieldTypeEnum: string
 			self::EMAIL   => Text::_('COM_EMUNDUS_IMPORT_FIELD_TYPE_EMAIL'),
 			self::URL     => Text::_('COM_EMUNDUS_IMPORT_FIELD_TYPE_URL'),
 			self::ENUM    => Text::_('COM_EMUNDUS_IMPORT_FIELD_TYPE_ENUM'),
+			self::REFERENTIAL => Text::_('COM_EMUNDUS_IMPORT_FIELD_TYPE_REFERENTIAL'),
 		};
+	}
+
+	/**
+	 * Values the type defines on its own, without any declaration. BOOLEAN is
+	 * the only such type: a boolean cell can only be yes or no, so its closed
+	 * list needs no `values` argument. ENUM and REFERENTIAL are closed lists
+	 * too, but theirs comes from the field declaration.
+	 *
+	 * @return array<int, array{value: string, label: string}>|null
+	 */
+	public function getIntrinsicValues(): ?array
+	{
+		return match ($this)
+		{
+			self::BOOLEAN => BooleanValueEnum::entries(),
+			default       => null,
+		};
+	}
+
+	/**
+	 * Whether a cell of this type must hold one of a finite set of values,
+	 * whatever the source of that set.
+	 */
+	public function isClosedList(): bool
+	{
+		return in_array($this, [self::BOOLEAN, self::ENUM, self::REFERENTIAL], true);
 	}
 }

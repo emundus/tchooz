@@ -148,23 +148,43 @@ export class FetchClient {
 			}
 		}
 
+		let headers = {};
+		if (typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
+			var csrf = Joomla.getOptions('csrf.token', '');
+			if (csrf) {
+				headers = {
+					'X-CSRF-Token': csrf,
+				};
+			}
+		}
+
 		return fetch(url, {
 			method: 'DELETE',
+			headers: headers,
 		})
-			.then((response) => {
+			.then(async (response) => {
 				if (response.ok) {
 					return response.json();
 				} else {
-					throw new Error(
-						'An error occurred while fetching the data. ' + response.status + ' ' + response.statusText + '.',
-					);
+					const errorText = await response.text();
+
+					// if the response is JSON, try to parse it
+					let errorMessage = '';
+					try {
+						const errorData = JSON.parse(errorText);
+						errorMessage = errorData.message || errorData.msg || JSON.stringify(errorData);
+					} catch (e) {
+						errorMessage = errorText;
+					}
+
+					throw new Error(errorMessage);
 				}
 			})
 			.then((data) => {
 				return data;
 			})
 			.catch((error) => {
-				throw new Error('An error occurred while fetching the data. ' + error.message + '.');
+				throw new Error(error.message);
 			});
 	}
 }

@@ -13,11 +13,15 @@ use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\User\User;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 use phpDocumentor\Reflection\Types\Self_;
 use Tchooz\Attributes\TableAttribute;
+use Tchooz\EmundusResponse;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterApplicationChoiceUpdateDefinition;
 use Tchooz\Entities\List\ListResult;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Enums\Campaigns\StatusEnum;
@@ -25,6 +29,8 @@ use Tchooz\Factories\ApplicationFile\ApplicationChoicesFactory;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
+use Tchooz\Traits\TraitAutomatedTask;
+use Tchooz\Traits\TraitDispatcher;
 use Tchooz\Traits\TraitTable;
 use function Symfony\Component\String\s;
 
@@ -41,6 +47,10 @@ use function Symfony\Component\String\s;
 )]
 class ApplicationChoicesRepository extends EmundusRepository implements RepositoryInterface
 {
+	use TraitAutomatedTask;
+
+	use TraitDispatcher;
+
 	private ApplicationChoicesFactory $factory;
 
 	public function __construct($withRelations = true, $exceptRelations = [])
@@ -50,13 +60,21 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		$this->factory = new ApplicationChoicesFactory();
 	}
 
-	public function flush(ApplicationChoicesEntity $entity, ?bool $checkRules = true, ?int $outputStatus = null): bool
+	public function flush(ApplicationChoicesEntity $entity, ?bool $checkRules = true, ?int $outputStatus = null, ?User $user = null): bool
 	{
 		$flushed = false;
+		$is_new = false;
 
 		if (empty($entity->getCampaign()) || empty($entity->getFnum()))
 		{
 			throw new \InvalidArgumentException('Campaign ID and Fnum are required to flush ApplicationChoicesEntity');
+		}
+
+		if (empty($user))
+		{
+			// There is no identity in a CLI or cron context, and the automations reached by the event
+			// dispatched below require a real user to know who triggered them
+			$user = Factory::getApplication()->getIdentity() ?? $this->getAutomatedTaskUser();
 		}
 
 		$existing_choices = $this->getChoicesByFnum($entity->getFnum());
@@ -89,6 +107,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 
 			$entity->setId($this->db->insertid());
 			$flushed = true;
+			$is_new = true;
 		}
 		else
 		{
@@ -131,6 +150,25 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 			}
 			$m_application = new \EmundusModelApplication();
 			$m_application->moveApplication($entity->getFnum(), $entity->getFnum(), $entity->getCampaign()->getParent()->getId());
+		}
+
+		if ($flushed)
+		{
+			$this->dispatchJoomlaEvent(onAfterApplicationChoiceUpdateDefinition::NAME, [
+				'context' => new EventContextEntity
+				(
+					$user,
+					[$entity->getFnum()],
+					[$entity->getUser()->id],
+					[
+						onAfterApplicationChoiceUpdateDefinition::IS_NEW_PARAMETER => $is_new,
+						onAfterApplicationChoiceUpdateDefinition::ORDER_PARAMETER => $entity->getOrder(),
+						onAfterApplicationChoiceUpdateDefinition::STATE_PARAMETER  => $entity->getState()->value,
+						onAfterApplicationChoiceUpdateDefinition::CAMPAIGN_PARAMETER => $entity->getCampaign()->getId(),
+						onAfterApplicationChoiceUpdateDefinition::ID_PARAMETER => $entity->getId()
+					]
+				)
+			]);
 		}
 
 		return $flushed;
@@ -596,28 +634,52 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		return $query;
 	}
 
-	private function checkRules($entity, $existing_choices = []): true
+	/**
+	 * Refuses a write an applicant is not allowed to make. The configuration says whether choices are
+	 * editable at the current phase, and the front hides the buttons accordingly: this is the same rule
+	 * enforced server side, so a direct call cannot bypass it.
+	 *
+	 * @param   string      $fnum
+	 * @param   bool        $requireOrdering  reordering also needs the ordering rule
+	 * @param   array|null  $choices_config   already loaded configuration, read when not given
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function assertApplicantCanUpdate(string $fnum, bool $requireOrdering = false, ?array $choices_config = null): void
+	{
+		$choices_config = $choices_config ?? $this->getChoicesConfiguration($fnum);
+
+		if (empty($choices_config['can_be_updated']))
+		{
+			throw new \InvalidArgumentException(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_NOT_EDITABLE'), EmundusResponse::HTTP_FORBIDDEN);
+		}
+
+		if ($requireOrdering && empty($choices_config['can_be_ordering']))
+		{
+			throw new \InvalidArgumentException(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_ORDERING_DISABLED'), EmundusResponse::HTTP_FORBIDDEN);
+		}
+	}
+
+	private function getChoicesConfiguration(string $fnum): array
 	{
 		if (!class_exists('EmundusModelWorkflow'))
 		{
 			require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
 		}
-		$m_workflow     = new \EmundusModelWorkflow();
-		$choices_config = $m_workflow->getChoicesConfigurationFromFnum($entity->getFnum());
+
+		return (new \EmundusModelWorkflow())->getChoicesConfigurationFromFnum($fnum);
+	}
+
+	private function checkRules($entity, $existing_choices = []): true
+	{
+		$choices_config = $this->getChoicesConfiguration($entity->getFnum());
 
 		if (empty($existing_choices))
 		{
 			$existing_choices = $this->getChoicesByFnum($entity->getFnum());
 		}
 
-		if (!empty($choices_config['max']))
-		{
-			if (count($existing_choices) > $choices_config['max'])
-			{
-				throw new \InvalidArgumentException(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_MAX_REACHED'));
-			}
-		}
-
+		// A duplicate is reported before the maximum: when both are true it is the actionable message
 		foreach ($existing_choices as $existing_choice)
 		{
 			if ($existing_choice->getId() !== $entity->getId() &&
@@ -625,6 +687,17 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 				$existing_choice->getFnum() === $entity->getFnum())
 			{
 				throw new \InvalidArgumentException(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_ALREADY_EXIST'));
+			}
+		}
+
+		if (!empty($choices_config['max']))
+		{
+			// A choice being created is not among the existing ones yet
+			$total = count($existing_choices) + (empty($entity->getId()) ? 1 : 0);
+
+			if ($total > $choices_config['max'])
+			{
+				throw new \InvalidArgumentException(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_MAX_REACHED'));
 			}
 		}
 

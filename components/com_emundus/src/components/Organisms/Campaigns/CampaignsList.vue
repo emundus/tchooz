@@ -65,7 +65,7 @@ export default {
 
 <template>
 	<div>
-		<div class="tw-mb-4 tw-flex tw-w-full tw-items-end tw-justify-between">
+		<div class="tw-mb-4 tw-flex tw-w-full tw-flex-wrap tw-items-end tw-justify-between tw-gap-3">
 			<!-- Filters -->
 			<div class="tw-flex tw-items-center tw-gap-3">
 				<Filter

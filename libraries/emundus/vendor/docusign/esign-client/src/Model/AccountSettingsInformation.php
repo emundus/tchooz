@@ -101,6 +101,8 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_auto_tagging_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'allow_bulk_send' => '?string',
         'allow_bulk_send_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
+        'allow_byoidv' => '?string',
+        'allow_byoidv_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'allow_cd_withdraw' => '?string',
         'allow_cd_withdraw_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'allow_connect_agreement_ui' => '?string',
@@ -157,6 +159,10 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_external_linked_accounts_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'allow_external_signature_pad' => '?string',
         'allow_external_signature_pad_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
+        'allow_fed_ramp_idv_level1' => '?string',
+        'allow_fed_ramp_idv_level1_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
+        'allow_fed_ramp_idv_level2' => '?string',
+        'allow_fed_ramp_idv_level2_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'allow_idv_for_eu_qualified_signatures' => '?string',
         'allow_idv_for_eu_qualified_signatures_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'allow_idv_level1' => '?string',
@@ -169,6 +175,8 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_idv_level3_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'allow_idv_platform' => '?string',
         'allow_idv_platform_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
+        'allow_idv_risk_assessment' => '?string',
+        'allow_idv_risk_assessment_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'allow_in_person' => '?string',
         'allow_in_person_electronic_notary' => '?string',
         'allow_in_person_electronic_notary_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
@@ -389,7 +397,6 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'document_visibility_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'draft_envelope_retention' => '?string',
         'draft_envelope_retention_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
-        'dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb' => '?string',
         'dss_sign_28411_enable_leave_page_prompt_radmin_option' => '?string',
         'dss_sign_29182_slide_up_bar_radmin_option' => '?string',
         'email_template_version' => '?string',
@@ -530,10 +537,14 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'enable_navigator_api_utilities_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'enable_navigator_for_hr' => '?string',
         'enable_navigator_for_hr_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
+        'enable_navigator_hierarchy_ai' => '?string',
+        'enable_navigator_hierarchy_ai_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'enable_navigator_partial_ingestion' => '?string',
         'enable_navigator_partial_ingestion_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'enable_navigator_trial' => '?string',
         'enable_navigator_trial_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
+        'enable_notary_on_demand_witness' => '?string',
+        'enable_notary_on_demand_witness_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'enable_obligation_management' => '?string',
         'enable_obligation_management_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'enable_participant_recipient_setting_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
@@ -583,8 +594,6 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'enable_signer_attachments_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'enable_signing_ai_features_plan' => '?string',
         'enable_signing_ai_features_plan_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
-        'enable_signing_ai_features_setting' => '?string',
-        'enable_signing_ai_features_setting_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'enable_signing_extension_comments' => '?string',
         'enable_signing_extension_comments_metadata' => '\DocuSign\eSign\Model\SettingsMetadata',
         'enable_signing_extension_conversations' => '?string',
@@ -943,6 +952,8 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_auto_tagging_metadata' => null,
         'allow_bulk_send' => null,
         'allow_bulk_send_metadata' => null,
+        'allow_byoidv' => null,
+        'allow_byoidv_metadata' => null,
         'allow_cd_withdraw' => null,
         'allow_cd_withdraw_metadata' => null,
         'allow_connect_agreement_ui' => null,
@@ -999,6 +1010,10 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_external_linked_accounts_metadata' => null,
         'allow_external_signature_pad' => null,
         'allow_external_signature_pad_metadata' => null,
+        'allow_fed_ramp_idv_level1' => null,
+        'allow_fed_ramp_idv_level1_metadata' => null,
+        'allow_fed_ramp_idv_level2' => null,
+        'allow_fed_ramp_idv_level2_metadata' => null,
         'allow_idv_for_eu_qualified_signatures' => null,
         'allow_idv_for_eu_qualified_signatures_metadata' => null,
         'allow_idv_level1' => null,
@@ -1011,6 +1026,8 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_idv_level3_metadata' => null,
         'allow_idv_platform' => null,
         'allow_idv_platform_metadata' => null,
+        'allow_idv_risk_assessment' => null,
+        'allow_idv_risk_assessment_metadata' => null,
         'allow_in_person' => null,
         'allow_in_person_electronic_notary' => null,
         'allow_in_person_electronic_notary_metadata' => null,
@@ -1231,7 +1248,6 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'document_visibility_metadata' => null,
         'draft_envelope_retention' => null,
         'draft_envelope_retention_metadata' => null,
-        'dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb' => null,
         'dss_sign_28411_enable_leave_page_prompt_radmin_option' => null,
         'dss_sign_29182_slide_up_bar_radmin_option' => null,
         'email_template_version' => null,
@@ -1372,10 +1388,14 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'enable_navigator_api_utilities_metadata' => null,
         'enable_navigator_for_hr' => null,
         'enable_navigator_for_hr_metadata' => null,
+        'enable_navigator_hierarchy_ai' => null,
+        'enable_navigator_hierarchy_ai_metadata' => null,
         'enable_navigator_partial_ingestion' => null,
         'enable_navigator_partial_ingestion_metadata' => null,
         'enable_navigator_trial' => null,
         'enable_navigator_trial_metadata' => null,
+        'enable_notary_on_demand_witness' => null,
+        'enable_notary_on_demand_witness_metadata' => null,
         'enable_obligation_management' => null,
         'enable_obligation_management_metadata' => null,
         'enable_participant_recipient_setting_metadata' => null,
@@ -1425,8 +1445,6 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'enable_signer_attachments_metadata' => null,
         'enable_signing_ai_features_plan' => null,
         'enable_signing_ai_features_plan_metadata' => null,
-        'enable_signing_ai_features_setting' => null,
-        'enable_signing_ai_features_setting_metadata' => null,
         'enable_signing_extension_comments' => null,
         'enable_signing_extension_comments_metadata' => null,
         'enable_signing_extension_conversations' => null,
@@ -1806,6 +1824,8 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_auto_tagging_metadata' => 'allowAutoTaggingMetadata',
         'allow_bulk_send' => 'allowBulkSend',
         'allow_bulk_send_metadata' => 'allowBulkSendMetadata',
+        'allow_byoidv' => 'allowBYOIDV',
+        'allow_byoidv_metadata' => 'allowBYOIDVMetadata',
         'allow_cd_withdraw' => 'allowCDWithdraw',
         'allow_cd_withdraw_metadata' => 'allowCDWithdrawMetadata',
         'allow_connect_agreement_ui' => 'allowConnectAgreementUI',
@@ -1862,6 +1882,10 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_external_linked_accounts_metadata' => 'allowExternalLinkedAccountsMetadata',
         'allow_external_signature_pad' => 'allowExternalSignaturePad',
         'allow_external_signature_pad_metadata' => 'allowExternalSignaturePadMetadata',
+        'allow_fed_ramp_idv_level1' => 'allowFedRampIDVLevel1',
+        'allow_fed_ramp_idv_level1_metadata' => 'allowFedRampIDVLevel1Metadata',
+        'allow_fed_ramp_idv_level2' => 'allowFedRampIDVLevel2',
+        'allow_fed_ramp_idv_level2_metadata' => 'allowFedRampIDVLevel2Metadata',
         'allow_idv_for_eu_qualified_signatures' => 'allowIDVForEUQualifiedSignatures',
         'allow_idv_for_eu_qualified_signatures_metadata' => 'allowIDVForEUQualifiedSignaturesMetadata',
         'allow_idv_level1' => 'allowIDVLevel1',
@@ -1874,6 +1898,8 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_idv_level3_metadata' => 'allowIDVLevel3Metadata',
         'allow_idv_platform' => 'allowIDVPlatform',
         'allow_idv_platform_metadata' => 'allowIDVPlatformMetadata',
+        'allow_idv_risk_assessment' => 'allowIdvRiskAssessment',
+        'allow_idv_risk_assessment_metadata' => 'allowIdvRiskAssessmentMetadata',
         'allow_in_person' => 'allowInPerson',
         'allow_in_person_electronic_notary' => 'allowInPersonElectronicNotary',
         'allow_in_person_electronic_notary_metadata' => 'allowInPersonElectronicNotaryMetadata',
@@ -2094,7 +2120,6 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'document_visibility_metadata' => 'documentVisibilityMetadata',
         'draft_envelope_retention' => 'draftEnvelopeRetention',
         'draft_envelope_retention_metadata' => 'draftEnvelopeRetentionMetadata',
-        'dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb' => 'dss_SCOREFDN_196_Rebrand_DocuSignIsNotAVerb',
         'dss_sign_28411_enable_leave_page_prompt_radmin_option' => 'dss_SIGN_28411_EnableLeavePagePrompt_RadminOption',
         'dss_sign_29182_slide_up_bar_radmin_option' => 'dss_SIGN_29182_SlideUpBar_RadminOption',
         'email_template_version' => 'emailTemplateVersion',
@@ -2235,10 +2260,14 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'enable_navigator_api_utilities_metadata' => 'enableNavigatorAPIUtilitiesMetadata',
         'enable_navigator_for_hr' => 'enableNavigatorForHR',
         'enable_navigator_for_hr_metadata' => 'enableNavigatorForHRMetadata',
+        'enable_navigator_hierarchy_ai' => 'enableNavigatorHierarchyAI',
+        'enable_navigator_hierarchy_ai_metadata' => 'enableNavigatorHierarchyAIMetadata',
         'enable_navigator_partial_ingestion' => 'enableNavigatorPartialIngestion',
         'enable_navigator_partial_ingestion_metadata' => 'enableNavigatorPartialIngestionMetadata',
         'enable_navigator_trial' => 'enableNavigatorTrial',
         'enable_navigator_trial_metadata' => 'enableNavigatorTrialMetadata',
+        'enable_notary_on_demand_witness' => 'enableNotaryOnDemandWitness',
+        'enable_notary_on_demand_witness_metadata' => 'enableNotaryOnDemandWitnessMetadata',
         'enable_obligation_management' => 'enableObligationManagement',
         'enable_obligation_management_metadata' => 'enableObligationManagementMetadata',
         'enable_participant_recipient_setting_metadata' => 'enableParticipantRecipientSettingMetadata',
@@ -2288,8 +2317,6 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'enable_signer_attachments_metadata' => 'enableSignerAttachmentsMetadata',
         'enable_signing_ai_features_plan' => 'enableSigningAIFeaturesPlan',
         'enable_signing_ai_features_plan_metadata' => 'enableSigningAIFeaturesPlanMetadata',
-        'enable_signing_ai_features_setting' => 'enableSigningAIFeaturesSetting',
-        'enable_signing_ai_features_setting_metadata' => 'enableSigningAIFeaturesSettingMetadata',
         'enable_signing_extension_comments' => 'enableSigningExtensionComments',
         'enable_signing_extension_comments_metadata' => 'enableSigningExtensionCommentsMetadata',
         'enable_signing_extension_conversations' => 'enableSigningExtensionConversations',
@@ -2648,6 +2675,8 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_auto_tagging_metadata' => 'setAllowAutoTaggingMetadata',
         'allow_bulk_send' => 'setAllowBulkSend',
         'allow_bulk_send_metadata' => 'setAllowBulkSendMetadata',
+        'allow_byoidv' => 'setAllowByoidv',
+        'allow_byoidv_metadata' => 'setAllowByoidvMetadata',
         'allow_cd_withdraw' => 'setAllowCdWithdraw',
         'allow_cd_withdraw_metadata' => 'setAllowCdWithdrawMetadata',
         'allow_connect_agreement_ui' => 'setAllowConnectAgreementUi',
@@ -2704,6 +2733,10 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_external_linked_accounts_metadata' => 'setAllowExternalLinkedAccountsMetadata',
         'allow_external_signature_pad' => 'setAllowExternalSignaturePad',
         'allow_external_signature_pad_metadata' => 'setAllowExternalSignaturePadMetadata',
+        'allow_fed_ramp_idv_level1' => 'setAllowFedRampIdvLevel1',
+        'allow_fed_ramp_idv_level1_metadata' => 'setAllowFedRampIdvLevel1Metadata',
+        'allow_fed_ramp_idv_level2' => 'setAllowFedRampIdvLevel2',
+        'allow_fed_ramp_idv_level2_metadata' => 'setAllowFedRampIdvLevel2Metadata',
         'allow_idv_for_eu_qualified_signatures' => 'setAllowIdvForEuQualifiedSignatures',
         'allow_idv_for_eu_qualified_signatures_metadata' => 'setAllowIdvForEuQualifiedSignaturesMetadata',
         'allow_idv_level1' => 'setAllowIdvLevel1',
@@ -2716,6 +2749,8 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_idv_level3_metadata' => 'setAllowIdvLevel3Metadata',
         'allow_idv_platform' => 'setAllowIdvPlatform',
         'allow_idv_platform_metadata' => 'setAllowIdvPlatformMetadata',
+        'allow_idv_risk_assessment' => 'setAllowIdvRiskAssessment',
+        'allow_idv_risk_assessment_metadata' => 'setAllowIdvRiskAssessmentMetadata',
         'allow_in_person' => 'setAllowInPerson',
         'allow_in_person_electronic_notary' => 'setAllowInPersonElectronicNotary',
         'allow_in_person_electronic_notary_metadata' => 'setAllowInPersonElectronicNotaryMetadata',
@@ -2936,7 +2971,6 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'document_visibility_metadata' => 'setDocumentVisibilityMetadata',
         'draft_envelope_retention' => 'setDraftEnvelopeRetention',
         'draft_envelope_retention_metadata' => 'setDraftEnvelopeRetentionMetadata',
-        'dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb' => 'setDssScorefdn196RebrandDocuSignIsNotAVerb',
         'dss_sign_28411_enable_leave_page_prompt_radmin_option' => 'setDssSign28411EnableLeavePagePromptRadminOption',
         'dss_sign_29182_slide_up_bar_radmin_option' => 'setDssSign29182SlideUpBarRadminOption',
         'email_template_version' => 'setEmailTemplateVersion',
@@ -3077,10 +3111,14 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'enable_navigator_api_utilities_metadata' => 'setEnableNavigatorApiUtilitiesMetadata',
         'enable_navigator_for_hr' => 'setEnableNavigatorForHr',
         'enable_navigator_for_hr_metadata' => 'setEnableNavigatorForHrMetadata',
+        'enable_navigator_hierarchy_ai' => 'setEnableNavigatorHierarchyAi',
+        'enable_navigator_hierarchy_ai_metadata' => 'setEnableNavigatorHierarchyAiMetadata',
         'enable_navigator_partial_ingestion' => 'setEnableNavigatorPartialIngestion',
         'enable_navigator_partial_ingestion_metadata' => 'setEnableNavigatorPartialIngestionMetadata',
         'enable_navigator_trial' => 'setEnableNavigatorTrial',
         'enable_navigator_trial_metadata' => 'setEnableNavigatorTrialMetadata',
+        'enable_notary_on_demand_witness' => 'setEnableNotaryOnDemandWitness',
+        'enable_notary_on_demand_witness_metadata' => 'setEnableNotaryOnDemandWitnessMetadata',
         'enable_obligation_management' => 'setEnableObligationManagement',
         'enable_obligation_management_metadata' => 'setEnableObligationManagementMetadata',
         'enable_participant_recipient_setting_metadata' => 'setEnableParticipantRecipientSettingMetadata',
@@ -3130,8 +3168,6 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'enable_signer_attachments_metadata' => 'setEnableSignerAttachmentsMetadata',
         'enable_signing_ai_features_plan' => 'setEnableSigningAiFeaturesPlan',
         'enable_signing_ai_features_plan_metadata' => 'setEnableSigningAiFeaturesPlanMetadata',
-        'enable_signing_ai_features_setting' => 'setEnableSigningAiFeaturesSetting',
-        'enable_signing_ai_features_setting_metadata' => 'setEnableSigningAiFeaturesSettingMetadata',
         'enable_signing_extension_comments' => 'setEnableSigningExtensionComments',
         'enable_signing_extension_comments_metadata' => 'setEnableSigningExtensionCommentsMetadata',
         'enable_signing_extension_conversations' => 'setEnableSigningExtensionConversations',
@@ -3490,6 +3526,8 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_auto_tagging_metadata' => 'getAllowAutoTaggingMetadata',
         'allow_bulk_send' => 'getAllowBulkSend',
         'allow_bulk_send_metadata' => 'getAllowBulkSendMetadata',
+        'allow_byoidv' => 'getAllowByoidv',
+        'allow_byoidv_metadata' => 'getAllowByoidvMetadata',
         'allow_cd_withdraw' => 'getAllowCdWithdraw',
         'allow_cd_withdraw_metadata' => 'getAllowCdWithdrawMetadata',
         'allow_connect_agreement_ui' => 'getAllowConnectAgreementUi',
@@ -3546,6 +3584,10 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_external_linked_accounts_metadata' => 'getAllowExternalLinkedAccountsMetadata',
         'allow_external_signature_pad' => 'getAllowExternalSignaturePad',
         'allow_external_signature_pad_metadata' => 'getAllowExternalSignaturePadMetadata',
+        'allow_fed_ramp_idv_level1' => 'getAllowFedRampIdvLevel1',
+        'allow_fed_ramp_idv_level1_metadata' => 'getAllowFedRampIdvLevel1Metadata',
+        'allow_fed_ramp_idv_level2' => 'getAllowFedRampIdvLevel2',
+        'allow_fed_ramp_idv_level2_metadata' => 'getAllowFedRampIdvLevel2Metadata',
         'allow_idv_for_eu_qualified_signatures' => 'getAllowIdvForEuQualifiedSignatures',
         'allow_idv_for_eu_qualified_signatures_metadata' => 'getAllowIdvForEuQualifiedSignaturesMetadata',
         'allow_idv_level1' => 'getAllowIdvLevel1',
@@ -3558,6 +3600,8 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'allow_idv_level3_metadata' => 'getAllowIdvLevel3Metadata',
         'allow_idv_platform' => 'getAllowIdvPlatform',
         'allow_idv_platform_metadata' => 'getAllowIdvPlatformMetadata',
+        'allow_idv_risk_assessment' => 'getAllowIdvRiskAssessment',
+        'allow_idv_risk_assessment_metadata' => 'getAllowIdvRiskAssessmentMetadata',
         'allow_in_person' => 'getAllowInPerson',
         'allow_in_person_electronic_notary' => 'getAllowInPersonElectronicNotary',
         'allow_in_person_electronic_notary_metadata' => 'getAllowInPersonElectronicNotaryMetadata',
@@ -3778,7 +3822,6 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'document_visibility_metadata' => 'getDocumentVisibilityMetadata',
         'draft_envelope_retention' => 'getDraftEnvelopeRetention',
         'draft_envelope_retention_metadata' => 'getDraftEnvelopeRetentionMetadata',
-        'dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb' => 'getDssScorefdn196RebrandDocuSignIsNotAVerb',
         'dss_sign_28411_enable_leave_page_prompt_radmin_option' => 'getDssSign28411EnableLeavePagePromptRadminOption',
         'dss_sign_29182_slide_up_bar_radmin_option' => 'getDssSign29182SlideUpBarRadminOption',
         'email_template_version' => 'getEmailTemplateVersion',
@@ -3919,10 +3962,14 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'enable_navigator_api_utilities_metadata' => 'getEnableNavigatorApiUtilitiesMetadata',
         'enable_navigator_for_hr' => 'getEnableNavigatorForHr',
         'enable_navigator_for_hr_metadata' => 'getEnableNavigatorForHrMetadata',
+        'enable_navigator_hierarchy_ai' => 'getEnableNavigatorHierarchyAi',
+        'enable_navigator_hierarchy_ai_metadata' => 'getEnableNavigatorHierarchyAiMetadata',
         'enable_navigator_partial_ingestion' => 'getEnableNavigatorPartialIngestion',
         'enable_navigator_partial_ingestion_metadata' => 'getEnableNavigatorPartialIngestionMetadata',
         'enable_navigator_trial' => 'getEnableNavigatorTrial',
         'enable_navigator_trial_metadata' => 'getEnableNavigatorTrialMetadata',
+        'enable_notary_on_demand_witness' => 'getEnableNotaryOnDemandWitness',
+        'enable_notary_on_demand_witness_metadata' => 'getEnableNotaryOnDemandWitnessMetadata',
         'enable_obligation_management' => 'getEnableObligationManagement',
         'enable_obligation_management_metadata' => 'getEnableObligationManagementMetadata',
         'enable_participant_recipient_setting_metadata' => 'getEnableParticipantRecipientSettingMetadata',
@@ -3972,8 +4019,6 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         'enable_signer_attachments_metadata' => 'getEnableSignerAttachmentsMetadata',
         'enable_signing_ai_features_plan' => 'getEnableSigningAiFeaturesPlan',
         'enable_signing_ai_features_plan_metadata' => 'getEnableSigningAiFeaturesPlanMetadata',
-        'enable_signing_ai_features_setting' => 'getEnableSigningAiFeaturesSetting',
-        'enable_signing_ai_features_setting_metadata' => 'getEnableSigningAiFeaturesSettingMetadata',
         'enable_signing_extension_comments' => 'getEnableSigningExtensionComments',
         'enable_signing_extension_comments_metadata' => 'getEnableSigningExtensionCommentsMetadata',
         'enable_signing_extension_conversations' => 'getEnableSigningExtensionConversations',
@@ -4386,6 +4431,8 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         $this->container['allow_auto_tagging_metadata'] = isset($data['allow_auto_tagging_metadata']) ? $data['allow_auto_tagging_metadata'] : null;
         $this->container['allow_bulk_send'] = isset($data['allow_bulk_send']) ? $data['allow_bulk_send'] : null;
         $this->container['allow_bulk_send_metadata'] = isset($data['allow_bulk_send_metadata']) ? $data['allow_bulk_send_metadata'] : null;
+        $this->container['allow_byoidv'] = isset($data['allow_byoidv']) ? $data['allow_byoidv'] : null;
+        $this->container['allow_byoidv_metadata'] = isset($data['allow_byoidv_metadata']) ? $data['allow_byoidv_metadata'] : null;
         $this->container['allow_cd_withdraw'] = isset($data['allow_cd_withdraw']) ? $data['allow_cd_withdraw'] : null;
         $this->container['allow_cd_withdraw_metadata'] = isset($data['allow_cd_withdraw_metadata']) ? $data['allow_cd_withdraw_metadata'] : null;
         $this->container['allow_connect_agreement_ui'] = isset($data['allow_connect_agreement_ui']) ? $data['allow_connect_agreement_ui'] : null;
@@ -4442,6 +4489,10 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         $this->container['allow_external_linked_accounts_metadata'] = isset($data['allow_external_linked_accounts_metadata']) ? $data['allow_external_linked_accounts_metadata'] : null;
         $this->container['allow_external_signature_pad'] = isset($data['allow_external_signature_pad']) ? $data['allow_external_signature_pad'] : null;
         $this->container['allow_external_signature_pad_metadata'] = isset($data['allow_external_signature_pad_metadata']) ? $data['allow_external_signature_pad_metadata'] : null;
+        $this->container['allow_fed_ramp_idv_level1'] = isset($data['allow_fed_ramp_idv_level1']) ? $data['allow_fed_ramp_idv_level1'] : null;
+        $this->container['allow_fed_ramp_idv_level1_metadata'] = isset($data['allow_fed_ramp_idv_level1_metadata']) ? $data['allow_fed_ramp_idv_level1_metadata'] : null;
+        $this->container['allow_fed_ramp_idv_level2'] = isset($data['allow_fed_ramp_idv_level2']) ? $data['allow_fed_ramp_idv_level2'] : null;
+        $this->container['allow_fed_ramp_idv_level2_metadata'] = isset($data['allow_fed_ramp_idv_level2_metadata']) ? $data['allow_fed_ramp_idv_level2_metadata'] : null;
         $this->container['allow_idv_for_eu_qualified_signatures'] = isset($data['allow_idv_for_eu_qualified_signatures']) ? $data['allow_idv_for_eu_qualified_signatures'] : null;
         $this->container['allow_idv_for_eu_qualified_signatures_metadata'] = isset($data['allow_idv_for_eu_qualified_signatures_metadata']) ? $data['allow_idv_for_eu_qualified_signatures_metadata'] : null;
         $this->container['allow_idv_level1'] = isset($data['allow_idv_level1']) ? $data['allow_idv_level1'] : null;
@@ -4454,6 +4505,8 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         $this->container['allow_idv_level3_metadata'] = isset($data['allow_idv_level3_metadata']) ? $data['allow_idv_level3_metadata'] : null;
         $this->container['allow_idv_platform'] = isset($data['allow_idv_platform']) ? $data['allow_idv_platform'] : null;
         $this->container['allow_idv_platform_metadata'] = isset($data['allow_idv_platform_metadata']) ? $data['allow_idv_platform_metadata'] : null;
+        $this->container['allow_idv_risk_assessment'] = isset($data['allow_idv_risk_assessment']) ? $data['allow_idv_risk_assessment'] : null;
+        $this->container['allow_idv_risk_assessment_metadata'] = isset($data['allow_idv_risk_assessment_metadata']) ? $data['allow_idv_risk_assessment_metadata'] : null;
         $this->container['allow_in_person'] = isset($data['allow_in_person']) ? $data['allow_in_person'] : null;
         $this->container['allow_in_person_electronic_notary'] = isset($data['allow_in_person_electronic_notary']) ? $data['allow_in_person_electronic_notary'] : null;
         $this->container['allow_in_person_electronic_notary_metadata'] = isset($data['allow_in_person_electronic_notary_metadata']) ? $data['allow_in_person_electronic_notary_metadata'] : null;
@@ -4674,7 +4727,6 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         $this->container['document_visibility_metadata'] = isset($data['document_visibility_metadata']) ? $data['document_visibility_metadata'] : null;
         $this->container['draft_envelope_retention'] = isset($data['draft_envelope_retention']) ? $data['draft_envelope_retention'] : null;
         $this->container['draft_envelope_retention_metadata'] = isset($data['draft_envelope_retention_metadata']) ? $data['draft_envelope_retention_metadata'] : null;
-        $this->container['dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb'] = isset($data['dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb']) ? $data['dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb'] : null;
         $this->container['dss_sign_28411_enable_leave_page_prompt_radmin_option'] = isset($data['dss_sign_28411_enable_leave_page_prompt_radmin_option']) ? $data['dss_sign_28411_enable_leave_page_prompt_radmin_option'] : null;
         $this->container['dss_sign_29182_slide_up_bar_radmin_option'] = isset($data['dss_sign_29182_slide_up_bar_radmin_option']) ? $data['dss_sign_29182_slide_up_bar_radmin_option'] : null;
         $this->container['email_template_version'] = isset($data['email_template_version']) ? $data['email_template_version'] : null;
@@ -4815,10 +4867,14 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         $this->container['enable_navigator_api_utilities_metadata'] = isset($data['enable_navigator_api_utilities_metadata']) ? $data['enable_navigator_api_utilities_metadata'] : null;
         $this->container['enable_navigator_for_hr'] = isset($data['enable_navigator_for_hr']) ? $data['enable_navigator_for_hr'] : null;
         $this->container['enable_navigator_for_hr_metadata'] = isset($data['enable_navigator_for_hr_metadata']) ? $data['enable_navigator_for_hr_metadata'] : null;
+        $this->container['enable_navigator_hierarchy_ai'] = isset($data['enable_navigator_hierarchy_ai']) ? $data['enable_navigator_hierarchy_ai'] : null;
+        $this->container['enable_navigator_hierarchy_ai_metadata'] = isset($data['enable_navigator_hierarchy_ai_metadata']) ? $data['enable_navigator_hierarchy_ai_metadata'] : null;
         $this->container['enable_navigator_partial_ingestion'] = isset($data['enable_navigator_partial_ingestion']) ? $data['enable_navigator_partial_ingestion'] : null;
         $this->container['enable_navigator_partial_ingestion_metadata'] = isset($data['enable_navigator_partial_ingestion_metadata']) ? $data['enable_navigator_partial_ingestion_metadata'] : null;
         $this->container['enable_navigator_trial'] = isset($data['enable_navigator_trial']) ? $data['enable_navigator_trial'] : null;
         $this->container['enable_navigator_trial_metadata'] = isset($data['enable_navigator_trial_metadata']) ? $data['enable_navigator_trial_metadata'] : null;
+        $this->container['enable_notary_on_demand_witness'] = isset($data['enable_notary_on_demand_witness']) ? $data['enable_notary_on_demand_witness'] : null;
+        $this->container['enable_notary_on_demand_witness_metadata'] = isset($data['enable_notary_on_demand_witness_metadata']) ? $data['enable_notary_on_demand_witness_metadata'] : null;
         $this->container['enable_obligation_management'] = isset($data['enable_obligation_management']) ? $data['enable_obligation_management'] : null;
         $this->container['enable_obligation_management_metadata'] = isset($data['enable_obligation_management_metadata']) ? $data['enable_obligation_management_metadata'] : null;
         $this->container['enable_participant_recipient_setting_metadata'] = isset($data['enable_participant_recipient_setting_metadata']) ? $data['enable_participant_recipient_setting_metadata'] : null;
@@ -4868,8 +4924,6 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
         $this->container['enable_signer_attachments_metadata'] = isset($data['enable_signer_attachments_metadata']) ? $data['enable_signer_attachments_metadata'] : null;
         $this->container['enable_signing_ai_features_plan'] = isset($data['enable_signing_ai_features_plan']) ? $data['enable_signing_ai_features_plan'] : null;
         $this->container['enable_signing_ai_features_plan_metadata'] = isset($data['enable_signing_ai_features_plan_metadata']) ? $data['enable_signing_ai_features_plan_metadata'] : null;
-        $this->container['enable_signing_ai_features_setting'] = isset($data['enable_signing_ai_features_setting']) ? $data['enable_signing_ai_features_setting'] : null;
-        $this->container['enable_signing_ai_features_setting_metadata'] = isset($data['enable_signing_ai_features_setting_metadata']) ? $data['enable_signing_ai_features_setting_metadata'] : null;
         $this->container['enable_signing_extension_comments'] = isset($data['enable_signing_extension_comments']) ? $data['enable_signing_extension_comments'] : null;
         $this->container['enable_signing_extension_comments_metadata'] = isset($data['enable_signing_extension_comments_metadata']) ? $data['enable_signing_extension_comments_metadata'] : null;
         $this->container['enable_signing_extension_conversations'] = isset($data['enable_signing_extension_conversations']) ? $data['enable_signing_extension_conversations'] : null;
@@ -6185,6 +6239,54 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
     public function setAllowBulkSendMetadata($allow_bulk_send_metadata)
     {
         $this->container['allow_bulk_send_metadata'] = $allow_bulk_send_metadata;
+
+        return $this;
+    }
+
+    /**
+     * Gets allow_byoidv
+     *
+     * @return ?string
+     */
+    public function getAllowByoidv()
+    {
+        return $this->container['allow_byoidv'];
+    }
+
+    /**
+     * Sets allow_byoidv
+     *
+     * @param ?string $allow_byoidv 
+     *
+     * @return $this
+     */
+    public function setAllowByoidv($allow_byoidv)
+    {
+        $this->container['allow_byoidv'] = $allow_byoidv;
+
+        return $this;
+    }
+
+    /**
+     * Gets allow_byoidv_metadata
+     *
+     * @return \DocuSign\eSign\Model\SettingsMetadata
+     */
+    public function getAllowByoidvMetadata()
+    {
+        return $this->container['allow_byoidv_metadata'];
+    }
+
+    /**
+     * Sets allow_byoidv_metadata
+     *
+     * @param \DocuSign\eSign\Model\SettingsMetadata $allow_byoidv_metadata 
+     *
+     * @return $this
+     */
+    public function setAllowByoidvMetadata($allow_byoidv_metadata)
+    {
+        $this->container['allow_byoidv_metadata'] = $allow_byoidv_metadata;
 
         return $this;
     }
@@ -7534,6 +7636,102 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets allow_fed_ramp_idv_level1
+     *
+     * @return ?string
+     */
+    public function getAllowFedRampIdvLevel1()
+    {
+        return $this->container['allow_fed_ramp_idv_level1'];
+    }
+
+    /**
+     * Sets allow_fed_ramp_idv_level1
+     *
+     * @param ?string $allow_fed_ramp_idv_level1 
+     *
+     * @return $this
+     */
+    public function setAllowFedRampIdvLevel1($allow_fed_ramp_idv_level1)
+    {
+        $this->container['allow_fed_ramp_idv_level1'] = $allow_fed_ramp_idv_level1;
+
+        return $this;
+    }
+
+    /**
+     * Gets allow_fed_ramp_idv_level1_metadata
+     *
+     * @return \DocuSign\eSign\Model\SettingsMetadata
+     */
+    public function getAllowFedRampIdvLevel1Metadata()
+    {
+        return $this->container['allow_fed_ramp_idv_level1_metadata'];
+    }
+
+    /**
+     * Sets allow_fed_ramp_idv_level1_metadata
+     *
+     * @param \DocuSign\eSign\Model\SettingsMetadata $allow_fed_ramp_idv_level1_metadata 
+     *
+     * @return $this
+     */
+    public function setAllowFedRampIdvLevel1Metadata($allow_fed_ramp_idv_level1_metadata)
+    {
+        $this->container['allow_fed_ramp_idv_level1_metadata'] = $allow_fed_ramp_idv_level1_metadata;
+
+        return $this;
+    }
+
+    /**
+     * Gets allow_fed_ramp_idv_level2
+     *
+     * @return ?string
+     */
+    public function getAllowFedRampIdvLevel2()
+    {
+        return $this->container['allow_fed_ramp_idv_level2'];
+    }
+
+    /**
+     * Sets allow_fed_ramp_idv_level2
+     *
+     * @param ?string $allow_fed_ramp_idv_level2 
+     *
+     * @return $this
+     */
+    public function setAllowFedRampIdvLevel2($allow_fed_ramp_idv_level2)
+    {
+        $this->container['allow_fed_ramp_idv_level2'] = $allow_fed_ramp_idv_level2;
+
+        return $this;
+    }
+
+    /**
+     * Gets allow_fed_ramp_idv_level2_metadata
+     *
+     * @return \DocuSign\eSign\Model\SettingsMetadata
+     */
+    public function getAllowFedRampIdvLevel2Metadata()
+    {
+        return $this->container['allow_fed_ramp_idv_level2_metadata'];
+    }
+
+    /**
+     * Sets allow_fed_ramp_idv_level2_metadata
+     *
+     * @param \DocuSign\eSign\Model\SettingsMetadata $allow_fed_ramp_idv_level2_metadata 
+     *
+     * @return $this
+     */
+    public function setAllowFedRampIdvLevel2Metadata($allow_fed_ramp_idv_level2_metadata)
+    {
+        $this->container['allow_fed_ramp_idv_level2_metadata'] = $allow_fed_ramp_idv_level2_metadata;
+
+        return $this;
+    }
+
+    /**
      * Gets allow_idv_for_eu_qualified_signatures
      *
      * @return ?string
@@ -7817,6 +8015,54 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
     public function setAllowIdvPlatformMetadata($allow_idv_platform_metadata)
     {
         $this->container['allow_idv_platform_metadata'] = $allow_idv_platform_metadata;
+
+        return $this;
+    }
+
+    /**
+     * Gets allow_idv_risk_assessment
+     *
+     * @return ?string
+     */
+    public function getAllowIdvRiskAssessment()
+    {
+        return $this->container['allow_idv_risk_assessment'];
+    }
+
+    /**
+     * Sets allow_idv_risk_assessment
+     *
+     * @param ?string $allow_idv_risk_assessment 
+     *
+     * @return $this
+     */
+    public function setAllowIdvRiskAssessment($allow_idv_risk_assessment)
+    {
+        $this->container['allow_idv_risk_assessment'] = $allow_idv_risk_assessment;
+
+        return $this;
+    }
+
+    /**
+     * Gets allow_idv_risk_assessment_metadata
+     *
+     * @return \DocuSign\eSign\Model\SettingsMetadata
+     */
+    public function getAllowIdvRiskAssessmentMetadata()
+    {
+        return $this->container['allow_idv_risk_assessment_metadata'];
+    }
+
+    /**
+     * Sets allow_idv_risk_assessment_metadata
+     *
+     * @param \DocuSign\eSign\Model\SettingsMetadata $allow_idv_risk_assessment_metadata 
+     *
+     * @return $this
+     */
+    public function setAllowIdvRiskAssessmentMetadata($allow_idv_risk_assessment_metadata)
+    {
+        $this->container['allow_idv_risk_assessment_metadata'] = $allow_idv_risk_assessment_metadata;
 
         return $this;
     }
@@ -13102,30 +13348,6 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
     }
 
     /**
-     * Gets dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb
-     *
-     * @return ?string
-     */
-    public function getDssScorefdn196RebrandDocuSignIsNotAVerb()
-    {
-        return $this->container['dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb'];
-    }
-
-    /**
-     * Sets dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb
-     *
-     * @param ?string $dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb 
-     *
-     * @return $this
-     */
-    public function setDssScorefdn196RebrandDocuSignIsNotAVerb($dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb)
-    {
-        $this->container['dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb'] = $dss_scorefdn_196_rebrand_docu_sign_is_not_a_verb;
-
-        return $this;
-    }
-
-    /**
      * Gets dss_sign_28411_enable_leave_page_prompt_radmin_option
      *
      * @return ?string
@@ -16486,6 +16708,54 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets enable_navigator_hierarchy_ai
+     *
+     * @return ?string
+     */
+    public function getEnableNavigatorHierarchyAi()
+    {
+        return $this->container['enable_navigator_hierarchy_ai'];
+    }
+
+    /**
+     * Sets enable_navigator_hierarchy_ai
+     *
+     * @param ?string $enable_navigator_hierarchy_ai 
+     *
+     * @return $this
+     */
+    public function setEnableNavigatorHierarchyAi($enable_navigator_hierarchy_ai)
+    {
+        $this->container['enable_navigator_hierarchy_ai'] = $enable_navigator_hierarchy_ai;
+
+        return $this;
+    }
+
+    /**
+     * Gets enable_navigator_hierarchy_ai_metadata
+     *
+     * @return \DocuSign\eSign\Model\SettingsMetadata
+     */
+    public function getEnableNavigatorHierarchyAiMetadata()
+    {
+        return $this->container['enable_navigator_hierarchy_ai_metadata'];
+    }
+
+    /**
+     * Sets enable_navigator_hierarchy_ai_metadata
+     *
+     * @param \DocuSign\eSign\Model\SettingsMetadata $enable_navigator_hierarchy_ai_metadata 
+     *
+     * @return $this
+     */
+    public function setEnableNavigatorHierarchyAiMetadata($enable_navigator_hierarchy_ai_metadata)
+    {
+        $this->container['enable_navigator_hierarchy_ai_metadata'] = $enable_navigator_hierarchy_ai_metadata;
+
+        return $this;
+    }
+
+    /**
      * Gets enable_navigator_partial_ingestion
      *
      * @return ?string
@@ -16577,6 +16847,54 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
     public function setEnableNavigatorTrialMetadata($enable_navigator_trial_metadata)
     {
         $this->container['enable_navigator_trial_metadata'] = $enable_navigator_trial_metadata;
+
+        return $this;
+    }
+
+    /**
+     * Gets enable_notary_on_demand_witness
+     *
+     * @return ?string
+     */
+    public function getEnableNotaryOnDemandWitness()
+    {
+        return $this->container['enable_notary_on_demand_witness'];
+    }
+
+    /**
+     * Sets enable_notary_on_demand_witness
+     *
+     * @param ?string $enable_notary_on_demand_witness 
+     *
+     * @return $this
+     */
+    public function setEnableNotaryOnDemandWitness($enable_notary_on_demand_witness)
+    {
+        $this->container['enable_notary_on_demand_witness'] = $enable_notary_on_demand_witness;
+
+        return $this;
+    }
+
+    /**
+     * Gets enable_notary_on_demand_witness_metadata
+     *
+     * @return \DocuSign\eSign\Model\SettingsMetadata
+     */
+    public function getEnableNotaryOnDemandWitnessMetadata()
+    {
+        return $this->container['enable_notary_on_demand_witness_metadata'];
+    }
+
+    /**
+     * Sets enable_notary_on_demand_witness_metadata
+     *
+     * @param \DocuSign\eSign\Model\SettingsMetadata $enable_notary_on_demand_witness_metadata 
+     *
+     * @return $this
+     */
+    public function setEnableNotaryOnDemandWitnessMetadata($enable_notary_on_demand_witness_metadata)
+    {
+        $this->container['enable_notary_on_demand_witness_metadata'] = $enable_notary_on_demand_witness_metadata;
 
         return $this;
     }
@@ -17753,54 +18071,6 @@ class AccountSettingsInformation implements ModelInterface, ArrayAccess
     public function setEnableSigningAiFeaturesPlanMetadata($enable_signing_ai_features_plan_metadata)
     {
         $this->container['enable_signing_ai_features_plan_metadata'] = $enable_signing_ai_features_plan_metadata;
-
-        return $this;
-    }
-
-    /**
-     * Gets enable_signing_ai_features_setting
-     *
-     * @return ?string
-     */
-    public function getEnableSigningAiFeaturesSetting()
-    {
-        return $this->container['enable_signing_ai_features_setting'];
-    }
-
-    /**
-     * Sets enable_signing_ai_features_setting
-     *
-     * @param ?string $enable_signing_ai_features_setting 
-     *
-     * @return $this
-     */
-    public function setEnableSigningAiFeaturesSetting($enable_signing_ai_features_setting)
-    {
-        $this->container['enable_signing_ai_features_setting'] = $enable_signing_ai_features_setting;
-
-        return $this;
-    }
-
-    /**
-     * Gets enable_signing_ai_features_setting_metadata
-     *
-     * @return \DocuSign\eSign\Model\SettingsMetadata
-     */
-    public function getEnableSigningAiFeaturesSettingMetadata()
-    {
-        return $this->container['enable_signing_ai_features_setting_metadata'];
-    }
-
-    /**
-     * Sets enable_signing_ai_features_setting_metadata
-     *
-     * @param \DocuSign\eSign\Model\SettingsMetadata $enable_signing_ai_features_setting_metadata 
-     *
-     * @return $this
-     */
-    public function setEnableSigningAiFeaturesSettingMetadata($enable_signing_ai_features_setting_metadata)
-    {
-        $this->container['enable_signing_ai_features_setting_metadata'] = $enable_signing_ai_features_setting_metadata;
 
         return $this;
     }

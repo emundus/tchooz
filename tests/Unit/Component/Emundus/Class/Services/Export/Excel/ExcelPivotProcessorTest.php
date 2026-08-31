@@ -23,6 +23,12 @@ use Tchooz\Services\Export\Excel\ExcelPivotProcessor;
  */
 class ExcelPivotProcessorTest extends TestCase
 {
+	/**
+	 * Separator ExcelService aggregates the repeated values with when a pivot is configured
+	 * (EmundusHelperFabrik::VALUE_SEPARATOR_MARKER), spelled out to keep these tests standalone.
+	 */
+	private const SEP = '[SEPARATOR]';
+
 	private FabrikRepository $fabrikRepository;
 
 	private ExcelPivotProcessor $processor;
@@ -47,7 +53,7 @@ class ExcelPivotProcessorTest extends TestCase
 		$files   = ['abc' => ['header_fnum' => 'abc', 42 => 'v1,v2']];
 		$headers = ['header_fnum' => 'Fnum', 42 => 'Column'];
 
-		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 0);
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 0, self::SEP);
 
 		$this->assertSame($files, $out, 'Un targetId <= 0 doit court-circuiter le pivot');
 	}
@@ -58,7 +64,7 @@ class ExcelPivotProcessorTest extends TestCase
 	 */
 	public function testProcessReturnsEmptyWhenNoFiles(): void
 	{
-		$out = $this->processor->process([], ['header_fnum' => 'Fnum'], PivotScopeEnum::ELEMENT, 42);
+		$out = $this->processor->process([], ['header_fnum' => 'Fnum'], PivotScopeEnum::ELEMENT, 42, self::SEP);
 
 		$this->assertSame([], $out, 'Un tableau vide de files doit être renvoyé tel quel');
 	}
@@ -71,19 +77,19 @@ class ExcelPivotProcessorTest extends TestCase
 	 * @covers \Tchooz\Services\Export\Excel\ExcelPivotProcessor::process
 	 * @return void
 	 */
-	public function testElementScopeSplitsCommaSeparatedValueIntoRows(): void
+	public function testElementScopeSplitsAggregatedValueIntoRows(): void
 	{
 		$pivotElement = $this->mockElement(42, 0, [], null);
 		$this->fabrikRepository->method('getElementById')->with(42)->willReturn($pivotElement);
 
 		$files = [
-			'abc' => ['header_fnum' => 'abc', 42 => 'v1,v2,v3'],
+			'abc' => ['header_fnum' => 'abc', 42 => 'v1' . self::SEP . 'v2' . self::SEP . 'v3'],
 		];
 		$headers = ['header_fnum' => 'Fnum', 42 => 'Values'];
 
-		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42);
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP);
 
-		$this->assertCount(3, $out, 'Trois valeurs virgules doivent produire trois lignes');
+		$this->assertCount(3, $out, 'Trois valeurs agrégées doivent produire trois lignes');
 		$this->assertSame('v1', $out['abc'][42], 'La ligne de base doit contenir la 1re valeur');
 		$this->assertSame('v2', $out['abc_1'][42], 'abc_1 doit contenir la 2e valeur');
 		$this->assertSame('v3', $out['abc_2'][42], 'abc_2 doit contenir la 3e valeur');
@@ -104,11 +110,11 @@ class ExcelPivotProcessorTest extends TestCase
 		$this->fabrikRepository->method('getElementsByGroupId')->with(10)->willReturn([$pivot, $sibling, $absent]);
 
 		$files = [
-			'abc' => ['header_fnum' => 'abc', 42 => 'a,b', 43 => 'x,y'],
+			'abc' => ['header_fnum' => 'abc', 42 => 'a' . self::SEP . 'b', 43 => 'x' . self::SEP . 'y'],
 		];
 		$headers = ['header_fnum' => 'Fnum', 42 => 'Pivot', 43 => 'Sibling'];
 
-		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42);
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP);
 
 		$this->assertSame('a', $out['abc'][42], 'La ligne de base doit prendre la 1re valeur du pivot');
 		$this->assertSame('x', $out['abc'][43], 'La ligne de base doit prendre la 1re valeur du sibling');
@@ -138,7 +144,8 @@ class ExcelPivotProcessorTest extends TestCase
 			['abc' => ['header_fnum' => 'abc', 42 => 'a']],
 			['header_fnum' => 'Fnum', 42 => 'Pivot'],
 			PivotScopeEnum::ELEMENT,
-			42
+			42,
+			self::SEP
 		);
 	}
 
@@ -151,9 +158,64 @@ class ExcelPivotProcessorTest extends TestCase
 		$this->fabrikRepository->method('getElementById')->willReturn(null);
 
 		$files = ['abc' => ['header_fnum' => 'abc']];
-		$out = $this->processor->process($files, ['header_fnum' => 'Fnum'], PivotScopeEnum::ELEMENT, 999);
+		$out = $this->processor->process($files, ['header_fnum' => 'Fnum'], PivotScopeEnum::ELEMENT, 999, self::SEP);
 
 		$this->assertSame($files, $out, 'Un elementId inconnu doit laisser les files inchangés');
+	}
+
+	/**
+	 * Regression: a currency element is stored already formatted ("600,00 € (EUR)"), so splitting the
+	 * aggregate on a bare ',' cut inside the value and produced a second row holding "00 € (EUR)",
+	 * which Excel read as 0 €. One repetition must stay one row.
+	 *
+	 * @covers \Tchooz\Services\Export\Excel\ExcelPivotProcessor::process
+	 * @return void
+	 */
+	public function testValueContainingACommaIsNotSplit(): void
+	{
+		$pivot   = $this->mockElement(42, 10, ['repeat_group_button' => 1], null);
+		$sibling = $this->mockElement(43, 10, ['repeat_group_button' => 1], null);
+
+		$this->fabrikRepository->method('getElementById')->willReturn($pivot);
+		$this->fabrikRepository->method('getElementsByGroupId')->with(10)->willReturn([$pivot, $sibling]);
+
+		$files = [
+			'abc' => ['header_fnum' => 'abc', 42 => 'Accordé', 43 => '600,00 € (EUR)'],
+		];
+		$headers = ['header_fnum' => 'Fnum', 42 => 'Décision', 43 => 'Montant'];
+
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP);
+
+		$this->assertCount(1, $out, 'Une seule répétition doit produire une seule ligne');
+		$this->assertSame('600,00 € (EUR)', $out['abc'][43], 'Le montant doit rester entier');
+	}
+
+	/**
+	 * @covers \Tchooz\Services\Export\Excel\ExcelPivotProcessor::process
+	 * @return void
+	 */
+	public function testRepeatedValuesContainingACommaAreSplitOnTheSeparatorOnly(): void
+	{
+		$pivot   = $this->mockElement(42, 10, ['repeat_group_button' => 1], null);
+		$sibling = $this->mockElement(43, 10, ['repeat_group_button' => 1], null);
+
+		$this->fabrikRepository->method('getElementById')->willReturn($pivot);
+		$this->fabrikRepository->method('getElementsByGroupId')->with(10)->willReturn([$pivot, $sibling]);
+
+		$files = [
+			'abc' => [
+				'header_fnum' => 'abc',
+				42            => 'Accordé' . self::SEP . 'Refusé',
+				43            => '600,00 € (EUR)' . self::SEP . '1 200,50 € (EUR)',
+			],
+		];
+		$headers = ['header_fnum' => 'Fnum', 42 => 'Décision', 43 => 'Montant'];
+
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP);
+
+		$this->assertCount(2, $out, 'Deux répétitions doivent produire deux lignes');
+		$this->assertSame('600,00 € (EUR)', $out['abc'][43], 'La 1re ligne garde le 1er montant');
+		$this->assertSame('1 200,50 € (EUR)', $out['abc_1'][43], 'La 2e ligne garde le 2e montant');
 	}
 
 	// -------------------------------------------------------------------------
@@ -174,11 +236,11 @@ class ExcelPivotProcessorTest extends TestCase
 		$this->fabrikRepository->method('getElementsByGroupId')->with(10)->willReturn([$el1, $el2, $el3]);
 
 		$files = [
-			'abc' => ['header_fnum' => 'abc', 42 => 'a,b', 43 => 'x,y', 44 => 'ignored'],
+			'abc' => ['header_fnum' => 'abc', 42 => 'a' . self::SEP . 'b', 43 => 'x' . self::SEP . 'y', 44 => 'ignored'],
 		];
 		$headers = ['header_fnum' => 'Fnum', 42 => 'A', 43 => 'B'];
 
-		$out = $this->processor->process($files, $headers, PivotScopeEnum::GROUP, 10);
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::GROUP, 10, self::SEP);
 
 		$this->assertSame('a', $out['abc'][42], 'Ligne de base doit prendre la 1re valeur de 42');
 		$this->assertSame('x', $out['abc'][43], 'Ligne de base doit prendre la 1re valeur de 43');
@@ -195,7 +257,7 @@ class ExcelPivotProcessorTest extends TestCase
 		$this->fabrikRepository->method('getElementsByGroupId')->willReturn([]);
 
 		$files = ['abc' => ['header_fnum' => 'abc']];
-		$out = $this->processor->process($files, ['header_fnum' => 'Fnum'], PivotScopeEnum::GROUP, 99);
+		$out = $this->processor->process($files, ['header_fnum' => 'Fnum'], PivotScopeEnum::GROUP, 99, self::SEP);
 
 		$this->assertSame($files, $out, 'Un groupe vide doit laisser les files inchangés');
 	}
@@ -213,7 +275,7 @@ class ExcelPivotProcessorTest extends TestCase
 		$files = ['abc' => ['header_fnum' => 'abc', 42 => 'a,b']];
 		$headers = ['header_fnum' => 'Fnum'];
 
-		$out = $this->processor->process($files, $headers, PivotScopeEnum::GROUP, 10);
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::GROUP, 10, self::SEP);
 
 		$this->assertSame($files, $out, 'Aucune colonne du groupe dans les headers → pas d\'expansion');
 	}
@@ -233,12 +295,12 @@ class ExcelPivotProcessorTest extends TestCase
 
 		// Two fnums, each with two pivot values
 		$files = [
-			'abc' => ['header_fnum' => 'abc', 42 => 'a,b'],
-			'def' => ['header_fnum' => 'def', 42 => 'c,d'],
+			'abc' => ['header_fnum' => 'abc', 42 => 'a' . self::SEP . 'b'],
+			'def' => ['header_fnum' => 'def', 42 => 'c' . self::SEP . 'd'],
 		];
 		$headers = ['header_fnum' => 'Fnum', 42 => 'Pivot'];
 
-		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42);
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP);
 
 		$keys = array_keys($out);
 		$this->assertSame(['abc', 'abc_1', 'def', 'def_1'], $keys, 'Les lignes issues d\'un même fnum doivent être contigües');

@@ -6,6 +6,7 @@ use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Automation\EventsDefinitions\Defaults\EventDefinition;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
+use Tchooz\Entities\Payment\PaymentMethodEntity;
 use Tchooz\Entities\Payment\TransactionStatus;
 use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Enums\Automation\TargetTypeEnum;
@@ -17,6 +18,7 @@ class onAfterEmundusTransactionUpdateDefinition extends EventDefinition
 	public CONST TRANSACTION_STATUS_PARAMETER = 'transaction_status';
 	public CONST OLD_TRANSACTION_STATUS_PARAMETER = 'old_transaction_status';
 	public CONST TRANSACTION_STEP_ID_PARAMETER = 'transaction_step_id';
+	public CONST TRANSACTION_PAYMENT_METHOD_PARAMETER = 'transaction_payment_method';
 
 	public function __construct()
 	{
@@ -24,7 +26,8 @@ class onAfterEmundusTransactionUpdateDefinition extends EventDefinition
 			[
 				new ChoiceField(self::TRANSACTION_STATUS_PARAMETER, Text::_('COM_EMUNDUS_TRANSACTION_STATUS'), $this->getTransactionsStatusList(), false, true),
 				new ChoiceField(self::OLD_TRANSACTION_STATUS_PARAMETER, Text::_('COM_EMUNDUS_OLD_TRANSACTION_STATUS'), $this->getTransactionsStatusList(), false, true),
-				new ChoiceField(self::TRANSACTION_STEP_ID_PARAMETER, Text::_('COM_EMUNDUS_CURRENT_CART_STEP'), $this->getPaymentStepsList(), false, true)
+				new ChoiceField(self::TRANSACTION_STEP_ID_PARAMETER, Text::_('COM_EMUNDUS_CURRENT_CART_STEP'), $this->getPaymentStepsList(), false, true),
+				new ChoiceField(self::TRANSACTION_PAYMENT_METHOD_PARAMETER, Text::_('COM_EMUNDUS_TRANSACTION_PAYMENT_METHOD'), $this->getPaymentMethodsList(), false, true)
 			]
 		);
 	}
@@ -46,6 +49,23 @@ class onAfterEmundusTransactionUpdateDefinition extends EventDefinition
 		}
 
 		return $statuses;
+	}
+
+	/**
+	 * @return array<ChoiceFieldValue>
+	 */
+	private function getPaymentMethodsList(): array
+	{
+		$options = [];
+
+		$repository = new PaymentRepository();
+		foreach ($repository->getPaymentMethods() as $payment_method)
+		{
+			assert($payment_method instanceof PaymentMethodEntity);
+			$options[] = new ChoiceFieldValue($payment_method->getId(), $payment_method->getLabel());
+		}
+
+		return $options;
 	}
 
 	/**

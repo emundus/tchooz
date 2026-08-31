@@ -96,4 +96,16 @@ final class AliasColumnMap implements ColumnMap
 
 		return $out;
 	}
+
+	public function describeWithReferentials(): array
+	{
+		$out = [];
+
+		foreach ($this->canonicalFields as $canonical)
+		{
+			$out[] = $this->descriptors[$canonical]->toArrayWithReferential();
+		}
+
+		return $out;
+	}
 }

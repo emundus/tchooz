@@ -23,6 +23,8 @@ use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 
 class TagEntity
 {
+	public const CHOICES_TAG = 'VOEU';
+
 	private string|int $name;
 
 	private string|int $fullName;
@@ -260,9 +262,9 @@ class TagEntity
 		}
 
 		// TOOD: Ugly fix for VOEU tag need to be refactored
-		if ($this->name === 'VOEU')
+		if ($this->name === self::CHOICES_TAG)
 		{
-			$this->request = 'VOEU';
+			$this->request = self::CHOICES_TAG;
 			$this->type = TagTypeEnum::STANDARD;
 		}
 
@@ -310,7 +312,7 @@ class TagEntity
 							$result = 'data:image/' . $type . ';base64,' . base64_encode($data);
 						}
 					}
-					elseif ($this->name === 'VOEU')
+					elseif ($this->name === self::CHOICES_TAG)
 					{
 						$result = '';
 						$applicationChoices = [];

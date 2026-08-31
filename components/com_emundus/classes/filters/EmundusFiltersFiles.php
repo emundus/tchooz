@@ -719,6 +719,26 @@ class EmundusFiltersFiles extends EmundusFilters
 			];
 		}
 
+		// FavoriteAddonHandler writes this parameter on every files and evaluation menu when the
+		// addon is toggled, so the addon state is read once here instead of on every render.
+		if ($config['filter_favorites'] ?? 0)
+		{
+			$this->applied_filters[] = [
+				'uid'       => 'favorites',
+				'id'        => 'favorites',
+				'label'     => Text::_('COM_EMUNDUS_FAVORITES_FILTER_LABEL'),
+				'type'      => 'select',
+				'values'    => [
+					['value' => 1, 'label' => Text::_('COM_EMUNDUS_FAVORITES_FILTER_ONLY_MINE'), 'count' => 0],
+					['value' => 0, 'label' => Text::_('COM_EMUNDUS_FAVORITES_FILTER_EXCLUDE'), 'count' => 0],
+				],
+				'value'     => ['all'],
+				'default'   => true,
+				'available' => true,
+				'order'     => $config['filter_favorites_order'] ?? 0
+			];
+		}
+
 		if ($config['filter_published'])
 		{
 			$this->applied_filters[] = [

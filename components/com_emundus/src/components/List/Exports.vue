@@ -120,7 +120,6 @@ export default {
 <template>
 	<section id="default-exports" class="tw-flex tw-gap-4">
 		<div v-if="multipleExportsPopover.length > 0">
-			<label class="!tw-mb-0 tw-font-medium tw-opacity-0">{{ translate('EXPORT') }}</label>
 			<popover
 				:button="translate('EXPORT')"
 				:button-class="'tw-btn-secondary tw-h-form'"

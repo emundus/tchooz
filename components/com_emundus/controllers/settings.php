@@ -3504,7 +3504,7 @@ class EmundusControllersettings extends EmundusController
 				'',
 				25,
 				0,
-				't.id',
+				'id',
 				true
 			);
 			$data                   = [];

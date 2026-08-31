@@ -6,9 +6,11 @@ use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
+use Tchooz\Entities\Country;
 use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Contacts\GenderEnum;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
+use Tchooz\Enums\Import\BooleanValueEnum;
 use Tchooz\Enums\Import\FieldTypeEnum;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
@@ -18,6 +20,9 @@ use Tchooz\Services\Import\AbstractEntityImporter;
 use Tchooz\Services\Import\ImportContext;
 use Tchooz\Services\Import\Mapping\AliasColumnMap;
 use Tchooz\Services\Import\Mapping\ColumnMap;
+use Tchooz\Services\Import\Referential\ReferentialRegistry;
+use Tchooz\Services\Import\Referential\Source\CountryReferentialSource;
+use Tchooz\Services\Import\Referential\Source\OrganizationReferentialSource;
 use Tchooz\Services\Import\UpdatableEntityImporter;
 
 final class ContactImporter extends AbstractEntityImporter implements UpdatableEntityImporter
@@ -48,6 +53,8 @@ final class ContactImporter extends AbstractEntityImporter implements UpdatableE
 	{
 		if ($this->columnMap === null)
 		{
+			$referentials = ReferentialRegistry::default();
+
 			$this->columnMap = AliasColumnMap::create()
 				->field('lastname', aliases: ['Nom', 'Lastname'], required: true, examples: ['Doe'], label: Text::_('COM_EMUNDUS_IMPORT_CONTACT_LASTNAME'))
 				->field('firstname', aliases: ['Prénom', 'Firstname'], required: true, examples: ['John'], label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_FIRSTNAME'))
@@ -56,17 +63,17 @@ final class ContactImporter extends AbstractEntityImporter implements UpdatableE
 				->field('service', aliases: ['Service', 'Services'], examples: ['Informatique'], label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_SERVICE'))
 				->field('gender', aliases: ['Sexe', 'Gender', 'Genre'], type: FieldTypeEnum::ENUM, values: GenderEnum::class, label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_GENDER'))
 				->field('birthdate', aliases: ['Date de naissance', 'Birthdate', 'Birthday', 'Birth date'], type: FieldTypeEnum::DATE, format: 'YYYY-MM-DD', examples: ['14-02-1983'], label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_BIRTHDATE'))
-				->field('nationality', aliases: ['Nationalité', 'Nationality'], examples: ['FR' => 'France', 'GB' => 'United Kingdom', 'US' => 'United States'], label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_NATIONALITY'))
+				->field('nationality', aliases: ['Nationalité', 'Nationality'], type: FieldTypeEnum::REFERENTIAL, label: Text::_('COM_EMUNDUS_IMPORT_CONTACT_NATIONALITY'), referential: $referentials->get(CountryReferentialSource::KEY))
 				->field('street_address', aliases: ['Adresse', 'Street address', 'Rue', 'Address'], examples: ['12 Rue des Innovateurs'], label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_STREET_ADDRESS'))
 				->field('extended_address', aliases: ['Complément d\'adresse', 'Extended address'], examples: ['Entrée D'], label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_EXTENDED_ADDRESS'))
 				->field('postal_code', aliases: ['Code postal', 'Postal code', 'CP', 'Zip'], type: FieldTypeEnum::INTEGER, examples: ['75011'], label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_POSTAL_CODE'))
 				->field('locality', aliases: ['Ville', 'Locality', 'City'], examples: ['Paris'], label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_LOCALITY'))
 				->field('region', aliases: ['Région', 'Region'], examples: ['Île-de-France'], label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_REGION'))
-				->field('country', aliases: ['Pays', 'Country'], format: 'iso-3166-1-alpha-2', examples: ['FR' => 'France', 'GB' => 'United Kingdom', 'US' => 'United States'], label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_COUNTRY'))
+				->field('country', aliases: ['Pays', 'Country'], type: FieldTypeEnum::REFERENTIAL, label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_COUNTRY'), referential: $referentials->get(CountryReferentialSource::KEY))
 				->field('address_description', aliases: ['Description de l\'adresse', 'Address description'], examples: ['Au bout de l’impasse'], label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_ADDRESS_DESCRIPTION'))
 				->field('phone_1', aliases: ['phone', 'Phone number', 'Téléphone'], format: 'E.164', examples: ['+33 1 02 03 04 05'], label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_PHONE_1'))
-				->field('organization', aliases: ['Organisation', 'Organization'], examples: ['Organisation 1'], label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_ORGANIZATION'))
-				->field('published', aliases: ['Publié', 'Published'], type: FieldTypeEnum::BOOLEAN, examples: ['Oui'], label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_PUBLISHED'))
+				->field('organization', aliases: ['Organisation', 'Organization'], type: FieldTypeEnum::REFERENTIAL, label: Text::_('COM_EMUNDUS_IMPORT_CONTACT_ORGANIZATION'), referential: $referentials->get(OrganizationReferentialSource::KEY))
+				->field('published', aliases: ['Publié', 'Published'], type: FieldTypeEnum::BOOLEAN, label:  Text::_('COM_EMUNDUS_IMPORT_CONTACT_PUBLISHED'))
 				->build();
 		}
 
@@ -101,9 +108,9 @@ final class ContactImporter extends AbstractEntityImporter implements UpdatableE
 			gender: $row['gender'] ?? null,
 			fonction: $row['fonction'] ?? null,
 			service: $row['service'] ?? null,
-			countries: [],
+			countries: $this->buildNationality($row),
 			organizations: [$this->buildOrganization($row)],
-			published: !isset($row['published']) || $row['published'] !== '0',
+			published: BooleanValueEnum::tryFromValue($row['published'] ?? null)?->toBool() ?? true,
 		);
 
 		$this->contactRepository->flush($contact);
@@ -128,15 +135,13 @@ final class ContactImporter extends AbstractEntityImporter implements UpdatableE
 		// re-syncs collections, and feeding it the already-loaded relations
 		// keeps them untouched.
 		//
-		// TODO(import-update): decide how the import row should affect related
-		// collections. Currently the imported "Adresse", "Pays", "Organisation"
-		// columns are IGNORED on update — only the contact's own scalar fields
-		// are overwritten. Open questions before changing this:
+		// TODO(import-update): the imported "Adresse" and "Pays" columns are still
+		// IGNORED on update — only the contact's own scalar fields and its
+		// organization are taken from the row. Open questions before changing this:
 		//   - merge addresses (append the new one) or replace the set entirely?
-		//   - same for countries and organizations?
 		//   - what happens to existing addresses tied to other contacts?
-		// Until that's decided, update() is intentionally narrow on scalars
-		// only — safe but partial.
+		// An address is a full entity rather than a plain link, so appending one
+		// risks duplicating instead of updating; left out until that is decided.
 		$existing->setLastname((string) $row['lastname']);
 		$existing->setFirstname((string) $row['firstname']);
 		$existing->setEmail((string) $row['email']);
@@ -145,12 +150,14 @@ final class ContactImporter extends AbstractEntityImporter implements UpdatableE
 		$existing->setGender(!empty($row['gender']) ? GenderEnum::from((string) $row['gender']) : null);
 		$existing->setFonction($this->stringOrNull($row['fonction'] ?? null));
 		$existing->setService($this->stringOrNull($row['service'] ?? null));
-		$existing->setPublished(!isset($row['published']) || $row['published'] !== '0');
+		$existing->setPublished(BooleanValueEnum::tryFromValue($row['published'] ?? null)?->toBool() ?? true);
 
 		if (!empty($row['status']))
 		{
 			$existing->setStatus(VerifiedStatusEnum::from((string) $row['status']));
 		}
+
+		$this->attachOrganization($existing, $row);
 
 		$this->contactRepository->flush($existing);
 	}
@@ -171,12 +178,7 @@ final class ContactImporter extends AbstractEntityImporter implements UpdatableE
 			return null;
 		}
 
-		$countryId = null;
-		if ($countryIso2 !== null)
-		{
-			$country   = $this->countryRepository->getByIso2(strtoupper($countryIso2));
-			$countryId = $country?->getId();
-		}
+		$countryId = $this->resolveCountry($countryIso2)?->getId();
 
 		return new AddressEntity(
 			id:               0,
@@ -190,13 +192,67 @@ final class ContactImporter extends AbstractEntityImporter implements UpdatableE
 		);
 	}
 
+	/**
+	 * @return Country[]
+	 */
+	private function buildNationality(array $row): array
+	{
+		$nationality = $this->resolveCountry($row['nationality'] ?? null);
+
+		return $nationality !== null ? [$nationality] : [];
+	}
+
+	private function resolveCountry(mixed $value): ?Country
+	{
+		$iso2 = $this->stringOrNull($value);
+
+		if ($iso2 === null)
+		{
+			return null;
+		}
+
+		return $this->countryRepository->getByIso2(strtoupper($iso2));
+	}
+
+	/**
+	 * Adds the row's organization to an existing contact, without touching the
+	 * ones it is already linked to.
+	 *
+	 * Additive on purpose: on an update an empty cell means "no opinion", not
+	 * "detach". Note that ContactRepository::flush() has SET semantics on this
+	 * collection — anything missing from the entity gets detached — so the
+	 * already-loaded organizations must be preserved, never replaced.
+	 */
+	private function attachOrganization(ContactEntity $contact, array $row): void
+	{
+		$organization = $this->buildOrganization($row);
+
+		if ($organization === null)
+		{
+			return;
+		}
+
+		$organizations = $contact->getOrganizations() ?? [];
+
+		foreach ($organizations as $associated)
+		{
+			if ($associated->getId() === $organization->getId())
+			{
+				return;
+			}
+		}
+
+		$organizations[] = $organization;
+		$contact->setOrganizations($organizations);
+	}
+
 	public function buildOrganization(array $row): ?OrganizationEntity
 	{
 		$organization = null;
 
 		if (!empty($row['organization']))
 		{
-			$organization = $this->organizationRepository->getByName($row['organization']);
+			$organization = $this->organizationRepository->getById((int) $row['organization']);
 		}
 
 		return $organization;

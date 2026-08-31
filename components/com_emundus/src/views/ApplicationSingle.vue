@@ -510,6 +510,14 @@ export default {
 		},
 	},
 	computed: {
+		// selectedFile is a plain fnum string until render() replaces it with the loaded object.
+		currentFnum() {
+			if (!this.selectedFile) {
+				return '';
+			}
+
+			return typeof this.selectedFile === 'string' ? this.selectedFile : this.selectedFile.fnum;
+		},
 		ratioStyle() {
 			let ratio_array = this.$props.ratio.split('/');
 			return ratio_array[0] + '% ' + ratio_array[1] + '%';

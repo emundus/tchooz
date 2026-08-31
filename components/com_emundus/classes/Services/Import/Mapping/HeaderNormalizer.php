@@ -45,16 +45,20 @@ final class HeaderNormalizer
 
 	private static function stripAccents(string $value): string
 	{
-		if (function_exists('iconv'))
+		// Decompose, then drop the combining marks. Deliberately NOT
+		// iconv('ASCII//TRANSLIT'), whose output depends on the active locale:
+		// under "C" it renders "é" as "'e", so an accented header normalised to
+		// a different key than its unaccented spelling and never resolved.
+		if (class_exists(\Normalizer::class))
 		{
-			$converted = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value);
-			if ($converted !== false)
+			$decomposed = \Normalizer::normalize($value, \Normalizer::FORM_D);
+			if ($decomposed !== false)
 			{
-				return $converted;
+				return preg_replace('/\p{Mn}+/u', '', $decomposed);
 			}
 		}
 
-		// Fallback for environments where iconv is unreliable.
+		// Fallback for environments without intl.
 		$map = [
 			'à' => 'a','á' => 'a','â' => 'a','ã' => 'a','ä' => 'a','å' => 'a',
 			'ç' => 'c',

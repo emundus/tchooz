@@ -217,7 +217,8 @@ class TransactionRepository extends EmundusRepository
 		$currency_repository = new CurrencyRepository();
 		$currency = $currency_repository->getCurrencyById($transaction->currency_id);
 		$transaction_entity->setCurrency($currency);
-		$transaction_entity->setPaymentMethod(new PaymentMethodEntity($transaction->payment_method_id));
+		$payment_method = (new PaymentMethodRepository())->getById((int) $transaction->payment_method_id);
+		$transaction_entity->setPaymentMethod($payment_method ?? new PaymentMethodEntity($transaction->payment_method_id));
 		$transaction_entity->setSynchronizerId($transaction->synchronizer_id);
 		$transaction_entity->setStepId($transaction->step_id);
 
@@ -357,6 +358,7 @@ class TransactionRepository extends EmundusRepository
 								onAfterEmundusTransactionUpdateDefinition::TRANSACTION_STATUS_PARAMETER => $transaction->getStatus()->value,
 								onAfterEmundusTransactionUpdateDefinition::OLD_TRANSACTION_STATUS_PARAMETER => !empty($old_data['status']) ? $old_data['status'] : null,
 								onAfterEmundusTransactionUpdateDefinition::TRANSACTION_STEP_ID_PARAMETER => $transaction->getStepId(),
+								onAfterEmundusTransactionUpdateDefinition::TRANSACTION_PAYMENT_METHOD_PARAMETER => $transaction->getPaymentMethod()->getId(),
 							]
 						)
 					]

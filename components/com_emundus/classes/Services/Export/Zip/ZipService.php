@@ -109,13 +109,16 @@ class ZipService extends Export implements ExportInterface
 		$this->bootstrapDependencies();
 		$this->assertExportPreconditions($exportPath, $task);
 
-		$state         = $this->loadOrInitState($exportPath);
-		$totalFnums    = count($state['fnums']);
-		$pending       = array_slice($state['fnums'], $state['processed']);
-		$processStart  = microtime(true);
-		$processedNow  = 0;
-		$isAsync       = !empty($task);
-		$result        = new ExportResult(true);
+		$state        = $this->loadOrInitState($exportPath);
+		$totalFnums   = count($state['fnums']);
+		$pending      = array_slice($state['fnums'], $state['processed']);
+		$processStart = microtime(true);
+		$processedNow = 0;
+		$isAsync      = !empty($task);
+		// Stopping halfway is only an option when something can pick the export up again: an export
+		// record to hold the state path, and a task to resume it.
+		$isResumable = $this->exportEntity !== null && ($isAsync || $this->isAsyncExportAllowed());
+		$result      = new ExportResult(true);
 
 		foreach ($pending as $fnum)
 		{
@@ -124,7 +127,7 @@ class ZipService extends Export implements ExportInterface
 				throw new \Exception('Export has been cancelled.');
 			}
 
-			if ($isAsync && $processedNow > 0 && $this->shouldYield($processedNow, $processStart))
+			if ($isResumable && $processedNow > 0 && $this->shouldYield($processedNow, $processStart, $isAsync))
 			{
 				break;
 			}
@@ -148,6 +151,12 @@ class ZipService extends Export implements ExportInterface
 			$result->setProgress(100.0);
 			$result->setFilePath($zipPath);
 			$this->cleanupStaging($state);
+		}
+		else
+		{
+			// The caller persists this path as the export filename: it is what the next
+			// invocation resumes from.
+			$result->setFilePath($state['state_path']);
 		}
 
 		return $result;
@@ -206,9 +215,13 @@ class ZipService extends Export implements ExportInterface
 		return $this->exportEntity !== null && $this->exportRepository->isCancelled($this->exportEntity->getId());
 	}
 
-	private function shouldYield(int $processedNow, float $processStart): bool
+	/**
+	 * A task keeps its tick short by also stopping on a file count; a request has nobody else to hand
+	 * the work to before its time is up, so it only stops on time and serves small exports inline.
+	 */
+	private function shouldYield(int $processedNow, float $processStart, bool $isAsync): bool
 	{
-		return $processedNow >= self::BATCH_SIZE || (microtime(true) - $processStart) >= self::TIME_LIMIT;
+		return ($isAsync && $processedNow >= self::BATCH_SIZE) || (microtime(true) - $processStart) >= self::TIME_LIMIT;
 	}
 
 	// -----------------------------------------------------------------------

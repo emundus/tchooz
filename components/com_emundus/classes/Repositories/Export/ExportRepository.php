@@ -226,6 +226,39 @@ class ExportRepository extends EmundusRepository implements RepositoryInterface
 	}
 
 	/**
+	 * Last export of that format the user started but never finished. A new request for the same
+	 * format resumes it instead of opening a second record for the same work — reusing the last
+	 * export whatever its state would recycle an already downloaded one.
+	 */
+	public function getLastUnfinishedExportByUser(int $userId, ExportFormatEnum $format): ?ExportEntity
+	{
+		$exportEntity = null;
+
+		$formatValue = $format->value;
+
+		$query = $this->db->getQuery(true);
+
+		$query->select($this->columns)
+			->from($this->db->qn($this->tableName, $this->alias))
+			->where('created_by = :created_by')
+			->where('format = :format')
+			->where($this->db->qn('progress') . ' < 100')
+			->where($this->db->qn('failed') . ' = 0')
+			->order('created_at DESC')
+			->bind(':created_by', $userId, ParameterType::INTEGER)
+			->bind(':format', $formatValue);
+		$this->db->setQuery($query, 0, 1);
+		$dbObject = $this->db->loadObject();
+
+		if ($dbObject)
+		{
+			$exportEntity = $this->factory->fromDbObject($dbObject, $this->withRelations, $this->exceptRelations, $this->db);
+		}
+
+		return $exportEntity;
+	}
+
+	/**
 	 *
 	 * @return array<ExportEntity>
 	 *

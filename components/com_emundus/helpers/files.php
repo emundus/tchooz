@@ -21,6 +21,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Router\Route;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Repositories\Favorite\FavoriteFileRepository;
 
 if(!class_exists('EmundusHelperCache'))
 {
@@ -2620,6 +2621,59 @@ class EmundusHelperFiles
 		return $tagsList;
 	}
 
+	/**
+	 * Builds one favorite toggle. Single source of the markup: every context that shows a favorite
+	 * goes through here, so the icon, the data attributes and the JS hook can never drift apart.
+	 *
+	 * @param   string  $variant  'list' on a dark-on-light row, 'bar' on the dark action bar
+	 */
+	public function createFavoriteToggle(string $fnum, bool $is_favorite, string $variant = 'list'): string
+	{
+		$title = Text::_($is_favorite ? 'COM_EMUNDUS_FAVORITES_REMOVE' : 'COM_EMUNDUS_FAVORITES_ADD');
+
+		// Same icon and same states everywhere, only the palette follows the background: filling is
+		// the primary signal, colour only reinforces it. The frame shows on hover only, in both
+		// contexts, so a row of stars stays quiet until pointed at.
+		$colors = $variant === 'bar'
+			? ($is_favorite ? 'tw-text-white' : 'tw-text-white/60')
+			: ($is_favorite ? 'tw-text-yellow-500' : 'tw-text-neutral-500');
+
+		$hover = $variant === 'bar' ? 'hover:tw-bg-white/30' : 'hover:tw-bg-blue-50';
+
+		return '<span class="!tw-text-2xl !tw-flex tw-items-center tw-justify-center material-icons em-favorite-toggle tw-cursor-pointer tw-rounded-md tw-p-1 tw-transition-colors tw-w-10 tw-h-10 '
+			. $hover . ' '
+			. ($is_favorite ? 'em-favorite-toggle--on ' : '')
+			. $colors
+			. ($variant === 'bar' ? ' tw-ml-2 tw-mr-1 ' : '')
+			. '" role="button" tabindex="0"'
+			. ' data-fnum="' . htmlspecialchars($fnum, ENT_QUOTES, 'UTF-8') . '"'
+			. ' data-favorite="' . ($is_favorite ? 1 : 0) . '"'
+			. ' data-variant="' . htmlspecialchars($variant, ENT_QUOTES, 'UTF-8') . '"'
+			. ' title="' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '"'
+			. ' aria-label="' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '"'
+			. '>' . ($is_favorite ? 'star' : 'star_border') . '</span>';
+	}
+
+	/**
+	 * Builds the favorite toggle of every row of the current page.
+	 *
+	 * @param   array<string>  $fnums           every file number displayed on the page
+	 * @param   array<string>  $favorite_fnums  those the current user marked as favorite
+	 *
+	 * @return array<string, string> fnum => html
+	 */
+	public function createFavoritesList(array $fnums, array $favorite_fnums): array
+	{
+		$favorites_list = [];
+
+		foreach ($fnums as $fnum)
+		{
+			$favorites_list[$fnum] = $this->createFavoriteToggle($fnum, in_array($fnum, $favorite_fnums, true));
+		}
+
+		return $favorites_list;
+	}
+
 	public function createFormProgressList($formsprogress)
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
@@ -5017,6 +5071,28 @@ class EmundusHelperFiles
 									break;
 								case 'published':
 									$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', $filter['value'], $filter['operator']);
+									break;
+								case 'favorites':
+									$favorite_values = array_values(array_unique(array_map('intval', (array) $filter['value'])));
+
+									// Picking both "my favorites" and "not my favorites" restricts nothing.
+									if (count($favorite_values) === 1)
+									{
+										$wants_favorites = $favorite_values[0] === 1;
+
+										if (in_array($filter['operator'], ['NOT IN', '!='], true))
+										{
+											$wants_favorites = !$wants_favorites;
+										}
+
+										// Subquery rather than a join: the outer query already groups by
+										// jecc.fnum and counts separately, an extra join would skew both.
+										$where['q'] .= ' AND jecc.fnum ' . ($wants_favorites ? 'IN' : 'NOT IN') . ' ('
+											. ' SELECT ' . $db->quoteName('eff.fnum')
+											. ' FROM ' . $db->quoteName(FavoriteFileRepository::TABLE, 'eff')
+											. ' WHERE ' . $db->quoteName('eff.user_id') . ' = ' . (int) $user->id
+											. ' )';
+									}
 									break;
 								case 'tags':
 									if ($filter['andorOperator'] === 'AND' && is_array($filter['value']) && sizeof($filter['value']) > 1) {

@@ -39,6 +39,11 @@ export default {
 			const base = window.location.origin + '/';
 			return base + logo.replace(/^\//, '');
 		},
+		organizationEditLink(organization) {
+			if (!organization) return null;
+
+			return `${window.location.origin}/index.php?option=com_emundus&view=crc&layout=organizationform&id=${organization.id}`;
+		},
 	},
 	computed: {
 		fullAddress() {
@@ -136,6 +141,7 @@ export default {
 						:text="org.name"
 						:image="normalizedLogo(org.logo)"
 						:image-alt-text="org.name"
+						:href="organizationEditLink(org)"
 					/>
 				</div>
 				<p v-else>-</p>

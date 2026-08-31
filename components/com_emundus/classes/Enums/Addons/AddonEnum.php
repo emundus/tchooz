@@ -25,8 +25,11 @@ enum AddonEnum: string
 	case SMS = 'sms';
 	case BOOKING = 'booking';
 	case PUBLIC_SESSION = 'public_session';
+	case RESOURCES = 'resources';
 
 	case POLL = 'poll';
+
+	case FAVORITE = 'favorite';
 
 	public function getLabel(): string
 	{
@@ -45,6 +48,8 @@ enum AddonEnum: string
 			self::BOOKING => Text::_('COM_EMUNDUS_ADDON_BOOKING'),
 			self::PUBLIC_SESSION => Text::_('COM_EMUNDUS_ADDONS_PUBLIC_SESSION'),
 			self::POLL => Text::_('COM_EMUNDUS_ADDON_POLL'),
+			self::FAVORITE => Text::_('COM_EMUNDUS_ADDON_FAVORITE'),
+			self::RESOURCES => Text::_('COM_EMUNDUS_ADDON_RESOURCES'),
 		};
 	}
 
@@ -65,6 +70,8 @@ enum AddonEnum: string
 			self::BOOKING => Text::_('COM_EMUNDUS_ADDON_BOOKING_DESC'),
 			self::PUBLIC_SESSION => Text::_('COM_EMUNDUS_ADDONS_PUBLIC_SESSION_DESC'),
 			self::POLL => Text::_('COM_EMUNDUS_ADDON_POLL_DESC'),
+			self::FAVORITE => Text::_('COM_EMUNDUS_ADDON_FAVORITE_DESC'),
+			self::RESOURCES => Text::_('COM_EMUNDUS_ADDON_RESOURCES_DESC'),
 		};
 	}
 
@@ -86,6 +93,8 @@ enum AddonEnum: string
 			self::BOOKING => 'event',
 			self::PUBLIC_SESSION => 'no_accounts',
 			self::POLL => 'voting_chip',
+			self::FAVORITE => 'favorite',
+			self::RESOURCES => 'library_books',
 		};
 	}
 }
