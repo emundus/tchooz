@@ -474,7 +474,7 @@ class EmundusModelLogs extends JModelList
 									$action_details .= '<span class="em-blue-500-color">' . Text::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF') . '</span>&nbsp';
 								}
 								else {
-									$action_details .= '<span class="em-main-500-color">' . $_new . '</span>&nbsp';
+									$action_details .= '<span class="tw-text-red-700">' . $_new . '</span>&nbsp';
 								}
 							}
 						}
