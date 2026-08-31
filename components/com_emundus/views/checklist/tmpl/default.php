@@ -674,14 +674,14 @@ if (!empty($this->custom_title)) :?>
                 <div class="tw-flex tw-justify-between">
                     <div>
                     </div>
-                    <div class="btn-group cursor-pointer"  <?php if ($block_upload || $this->attachments_prog < 100 || $this->forms_prog < 100) :?> style="opacity: 0.6; cursor: not-allowed !important;" <?php endif; ?>>
+                    <div class="btn-group cursor-pointer"  <?php if ($block_upload || $this->attachments_prog < 100 || $this->forms_prog < 100) :?> style="cursor: not-allowed !important;" <?php endif; ?>>
                         <div class="btn-group">
 
                             <button type="button"
 								<?php if (!$block_upload && $this->attachments_prog >= 100 && $this->forms_prog >= 100) : ?>
                                     onclick="window.location.href='<?php echo $this->confirm_form_url; ?>'" style="opacity: 1"
 								<?php else: ?>
-                                    style="opacity: 0.6; cursor: not-allowed !important;" disabled
+                                    style="cursor: not-allowed !important;" disabled
 								<?php endif; ?>
                                     class="btn btn-primary save-btn sauvegarder button save_continue" name="Submit"
                                     id="fabrikSubmit_287">
@@ -957,7 +957,13 @@ if (!empty($this->custom_title)) :?>
                 cancelButtonColor: "#dc3545",
                 reverseButtons: true,
                 confirmButtonText: "<?php echo JText::_('JYES');?>",
-                cancelButtonText: "<?php echo JText::_('JNO');?>"
+                cancelButtonText: "<?php echo JText::_('JNO');?>",
+                customClass: {
+                    title: 'em-swal-title',
+                    confirmButton: 'em-swal-confirm-button',
+                    cancelButton: 'em-swal-cancel-button',
+                    actions: 'em-swal-double-action',
+                },
             }).then((confirm) => {
                 if (confirm.value) {
                     document.location.href = element.getAttribute('data-url');

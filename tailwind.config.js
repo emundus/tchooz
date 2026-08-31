@@ -326,7 +326,7 @@ module.exports = {
                     '&:hover': {
                         backgroundColor: 'color-mix(in srgb, var(--em-profile-color), var(--neutral-900) 30%) !important',
                         color: 'var(--neutral-0) !important',
-                        border: '1px solid var(--em-profile-color) !important',
+                        border: '1px solid color-mix(in srgb, var(--em-profile-color), var(--neutral-900) 30%) !important',
                         textDecoration: 'none',
                     },
 
@@ -585,9 +585,9 @@ module.exports = {
                 },
 
                 '.btn-red': {
-                    backgroundColor: 'var(--red-500) !important',
+                    backgroundColor: 'var(--red-700) !important',
                     color: 'var(--neutral-0) !important',
-                    border: '1px solid var(--red-500)  !important',
+                    border: '1px solid var(--red-700)  !important',
                     textShadow: 'none',
                     textTransform: 'math-auto',
                     padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal) !important',
@@ -604,10 +604,17 @@ module.exports = {
                     boxShadow: 'none',
 
                     '&:hover': {
-                        backgroundColor: 'color-mix(in srgb, var(--red-500), var(--neutral-900) 30%) !important',
+                        backgroundColor: 'color-mix(in srgb, var(--red-700), var(--neutral-900) 30%) !important',
                         color: 'var(--neutral-0) !important',
-                        border: '1px solid var(--red-500) !important',
+                        border: '1px solid var(--red-700) !important',
                         textDecoration: 'none',
+                    },
+
+                    '&:focus': {
+                        backgroundColor: 'color-mix(in srgb, var(--red-700), var(--neutral-900) 30%) !important',
+                        color: 'var(--neutral-0) !important',
+                        border: '1px solid var(--red-700) !important',
+                        textDecoration: 'underline !important',
                     },
 
                     '&:disabled': {

@@ -326,7 +326,7 @@
 
   /** UTILITIES **/
   --link-xxs-size: #{$font-xxs-size};
-  --link-regular: #{$base-primary-color};
+  --link-regular: color-mix(in srgb, #{$base-primary-color}, black 15%);
   --link-visited: color-mix(in srgb, var(--link-regular), #000 30%);
 
   /** STATUS,TAGS **/
@@ -343,7 +343,7 @@
   --em-blue-2: #{$accent-blue-2};
   --em-blue-3: #{$accent-blue-3};
   --em-green-1: #{$accent-green-1};
-  --em-green-2: #{$accent-green-2};
+  --em-green-2: color-mix(in srgb, #{$accent-green-2}, black 15%);
   --em-yellow-1: #{$accent-yellow-1};
   --em-yellow-2: #{$accent-yellow-2};
   --em-orange-1: #{$accent-orange-1};

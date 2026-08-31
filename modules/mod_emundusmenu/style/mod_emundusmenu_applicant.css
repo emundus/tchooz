@@ -14,8 +14,20 @@
     border-radius: var(--em-default-br);
 }
 
+#em_user_menu li:hover {
+    background-color: var(--neutral-300);
+}
+
+#em_user_menu li:active {
+    background-color: var(--neutral-400);
+}
+
 #em_user_menu li.active {
-    background: var(--neutral-200);
+    background-color: hsl(from var(--em-profile-color) h s l / 15%);
+}
+
+#em_user_menu li.active:hover {
+    background-color: hsl(from var(--em-profile-color) h s l / 30%)
 }
 
 #header-b {
