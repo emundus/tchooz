@@ -3875,6 +3875,12 @@ class EmundusModelEvaluation extends JModelList
 										$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
 									}
 
+									// The file has no stored row for this element, formatting it would build a value out of nothing.
+									if (!isset($fabrikValues[$elt['id']][$fnum]))
+									{
+										continue;
+									}
+
 									if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton")
 									{
 										foreach ($fabrikValues[$elt['id']] as $fnum => $val)
