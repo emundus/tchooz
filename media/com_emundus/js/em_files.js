@@ -6226,6 +6226,7 @@ async function sendMailQueue(fnums, nbFiles = 0) {
                 title = 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL';
                 html = '<div id="data" class="em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
                 swal_confirm_button = 'COM_EMUNDUS_EMAILS_EMAIL_PREVIEW_BEFORE_SEND';
+                swal_actions_class += ' !tw-justify-end';
 
                 $.ajax({
                     type: 'POST',
