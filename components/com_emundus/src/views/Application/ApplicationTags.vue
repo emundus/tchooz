@@ -20,6 +20,19 @@ export default {
 			type: Array,
 			default: () => [],
 		},
+		crud: {
+			type: Array,
+			default: () => [
+				{
+					c: false,
+					d: false,
+				},
+			],
+		},
+		currentUser: {
+			type: Number,
+			default: 0,
+		},
 	},
 	data() {
 		return {
@@ -136,6 +149,10 @@ export default {
 				await this.refreshApplicationTags();
 			}
 		},
+
+		canDelete(tag) {
+			return this.$props.crud.d || tag.user_id === this.$props.currentUser;
+		},
 	},
 };
 </script>
@@ -161,6 +178,7 @@ export default {
 					</div>
 					<div class="actions">
 						<span
+							v-if="canDelete(tag)"
 							class="material-symbols-outlined tw-cursor-pointer tw-text-red-500"
 							@click="removeApplicationTag(tag.id)"
 						>
@@ -177,7 +195,7 @@ export default {
 
 		<hr class="tw-w-full" />
 
-		<div id="form" class="tw-flex tw-w-full tw-items-end tw-gap-2">
+		<div id="form" class="tw-flex tw-w-full tw-items-end tw-gap-2" v-if="this.$props.crud.c">
 			<div class="tw-flex-1">
 				<Parameter
 					:key="tagField.reload"
