@@ -4210,7 +4210,12 @@ class EmundusModelFiles extends JModelLegacy
 		$query = $this->_db->createQuery();
 		$query->select('*')
 			->from($this->_db->qn('#__emundus_tag_assoc'))
-			->where('id_tag = ' . $this->_db->quote($tid) . ' AND fnum LIKE "' . $this->_db->quote($fnum) . '" AND user_id = ' . $this->_db->quote($user_id));
+			->where($this->_db->qn('id_tag') . ' = :id_tag')
+			->andWhere($this->_db->qn('fnum') . ' = :fnum')
+			->andWhere($this->_db->qn('user_id') . ' = :user_id')
+			->bind(':id_tag', $tid, ParameterType::INTEGER)
+			->bind(':fnum', $fnum, ParameterType::STRING)
+			->bind(':user_id', $user_id, ParameterType::INTEGER);
 
 		try {
 			$this->_db->setQuery($query);
