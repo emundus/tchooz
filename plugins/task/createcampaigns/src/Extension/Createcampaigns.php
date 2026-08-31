@@ -469,7 +469,22 @@ class Createcampaigns extends CMSPlugin implements SubscriberInterface
 								if (!empty($this->params->campaign_training_mapping))
 								{
 									$columns[] = 'training';
-									$values[]  = $db->quote($this->getValueFromJson($campaign, $this->params->campaign_training_mapping));
+									$training = $this->getValueFromJson($campaign, $this->params->campaign_training_mapping);
+									$values[]  = $db->quote($training);
+
+									if (empty($old_campaign_data['program_id']))
+									{
+										$query->clear()
+											->select('id')
+											->from('#__emundus_setup_programmes')
+											->where('code LIKE ' . $db->quote($training));
+
+										$db->setQuery($query);
+										$program_id = $db->loadResult();
+
+										$columns[] = 'program_id';
+										$values[]  = $db->quote($program_id);
+									}
 								}
 
 								if (!empty($this->params->campaign_start_date_mapping))
@@ -517,15 +532,26 @@ class Createcampaigns extends CMSPlugin implements SubscriberInterface
 								Log::add('Campaign with custom id ' . $custom_campaign_id . ' not found, creating it', Log::INFO, 'com_emundus.task_create_campaigns.php');
 
 								// create the campaign
+								$training = $this->getValueFromJson($campaign, $this->params->campaign_training_mapping);
+								$query->clear()
+									->select('id')
+									->from('#__emundus_setup_programmes')
+									->where('code LIKE ' . $db->quote($training));
+
+								$db->setQuery($query);
+								$program_id = $db->loadResult();
+
 								$columns = [
 									$this->params->campaign_id_mapping_emundus,
 									'label',
-									'training'
+									'training',
+									'program_id'
 								];
 								$values  = [
 									$db->quote($custom_campaign_id),
 									$db->quote($this->getValueFromJson($campaign, $this->params->campaign_label_mapping)),
-									$db->quote($this->getValueFromJson($campaign, $this->params->campaign_training_mapping)),
+									$db->quote($training),
+									$db->quote($program_id)
 								];
 
 								if (!empty($this->params->campaign_start_date_mapping))
