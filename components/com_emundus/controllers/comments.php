@@ -115,41 +115,39 @@ class EmundusControllerComments extends EmundusController
         $this->sendJsonResponse($response);
     }
 
-	/**
-	 * Update comment for an application file
-	 *
-	 * @since version 1.40.0
-	 */
-    public function updateComment() {
-        $response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
-        $comment_id = $this->app->input->getInt('comment_id', 0);
+	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
+	public function updateComment(): void {
+		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
 
-        if (!empty($comment_id)) {
-            $model = $this->getModel('comments');
-            $comment = $model->getComment($comment_id);
-            if (!empty($comment)) {
-                $fnum = EmundusHelperFiles::getFnumFromId($comment['ccid']);
+		$comment_id = $this->app->input->getInt('comment_id', 0);
 
-                if ((EmundusHelperAccess::asAccessAction(10, 'u', $this->user->id, $fnum) || (EmundusHelperAccess::isFnumMine($this->user->id, $fnum)) && $comment['user_id'] == $this->user->id)) {
-                    $response['code'] = 500;
-                    $new_comment = $this->app->input->getString('comment', '');
+		if (!empty($comment_id)) {
+			$model = $this->getModel('comments');
+			$comment = $model->getComment($comment_id);
 
-                    $response['status'] = $model->updateComment($comment_id, $new_comment, $this->user->id);
-                    $response['code'] = $response['status'] ? 200 : 500;
-                    $response['message'] = $response['status'] ? Text::_('COM_EMUNDUS_UPDATE_COMMENT_SUCCESS') : Text::_('COM_EMUNDUS_UPDATE_COMMENT_FAILED');
-                }
-            }
-        }
+			if (!empty($comment)) {
+				$fnum = EmundusHelperFiles::getFnumFromId($comment['ccid']);
 
-        $this->sendJsonResponse($response);
-    }
+				$isOwnComment = $comment['user_id'] == $this->user->id;
+				$canUpdate    = EmundusHelperAccess::asAccessAction(10, 'u', $this->user->id, $fnum)
+					|| ($isOwnComment && EmundusHelperAccess::isFnumMine($this->user->id, $fnum))
+					|| ($isOwnComment && EmundusHelperAccess::asAccessAction(10, 'c', $this->user->id, $fnum));
 
-	/**
-	 * Open/Close comment for an application file
-	 *
-	 * @since version 1.40.0
-	 */
-    public function updateCommentOpenedState()
+				if ($canUpdate) {
+					$new_comment = $this->app->input->getString('comment', '');
+
+					$response['status'] = $model->updateComment($comment_id, $new_comment, $this->user->id);
+					$response['code'] = $response['status'] ? 200 : 500;
+					$response['message'] = $response['status'] ? Text::_('COM_EMUNDUS_UPDATE_COMMENT_SUCCESS') : Text::_('COM_EMUNDUS_UPDATE_COMMENT_FAILED');
+				}
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
+    public function updateCommentOpenedState(): void
     {
         $response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
         $comment_id = $this->app->input->getInt('comment_id', 0);
@@ -160,8 +158,12 @@ class EmundusControllerComments extends EmundusController
             if (!empty($comment)) {
                 $fnum = EmundusHelperFiles::getFnumFromId($comment['ccid']);
 
-                if (EmundusHelperAccess::asAccessAction(10, 'u', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($this->user->id, $fnum)) {
-                    $response['code'] = 500;
+	            $isOwnComment = $comment['user_id'] == $this->user->id;
+	            $canClose    = EmundusHelperAccess::asAccessAction(10, 'u', $this->user->id, $fnum)
+		            || EmundusHelperAccess::isFnumMine($this->user->id, $fnum)
+		            || ($isOwnComment && EmundusHelperAccess::asAccessAction(10, 'c', $this->user->id, $fnum));
+
+	            if ($canClose) {
                     $opened = $this->app->input->getInt('opened', 0);
 
                     $response['status'] = $model->updateCommentOpenedState($comment_id, $opened, $this->user->id);
@@ -174,12 +176,8 @@ class EmundusControllerComments extends EmundusController
         $this->sendJsonResponse($response);
     }
 
-	/**
-	 * Delete comment for an application file
-	 *
-	 * @since version 1.40.0
-	 */
-    public function deletecomment()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::REGISTERED)]
+	public function deletecomment(): void
     {
         $response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
         $comment_id = $this->app->input->getInt('comment_id', 0);
@@ -191,9 +189,12 @@ class EmundusControllerComments extends EmundusController
             if (!empty($comment)) {
                 $fnum = EmundusHelperFiles::getFnumFromId($comment['ccid']);
 
-                if (EmundusHelperAccess::asAccessAction(10, 'd', $this->user->id, $fnum) || (EmundusHelperAccess::isFnumMine($this->user->id, $fnum)  && $comment['user_id'] == $this->user->id)) {
-                    $response['code'] = 500;
-                    $model = $this->getModel('comments');
+	            $isOwnComment = $comment['user_id'] == $this->user->id;
+	            $canDelete    = EmundusHelperAccess::asAccessAction(10, 'd', $this->user->id, $fnum)
+		            || ($isOwnComment && EmundusHelperAccess::isFnumMine($this->user->id, $fnum))
+		            || ($isOwnComment && EmundusHelperAccess::asAccessAction(10, 'c', $this->user->id, $fnum));
+
+                if ($canDelete) {
                     $response['status'] = $model->deleteComment($comment_id, $this->user->id);
                     $response['code'] = $response['status'] ? 200 : 500;
                 }
