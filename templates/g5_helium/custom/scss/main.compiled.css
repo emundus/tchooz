@@ -169571,6 +169571,9 @@ div[data-plugin="panel"][data-type="error"] span.material-symbols-outlined {
 .disabled\:tw-bg-neutral-100:disabled {
     background-color: var(--neutral-100);
 }
+.disabled\:tw-opacity-60:disabled {
+    opacity: 0.6;
+}
 .tw-group:hover .group-hover\:\!tw-border-blue-100 {
     border-color: var(--blue-100) !important;
 }
