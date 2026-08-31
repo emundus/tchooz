@@ -22,7 +22,10 @@ use Tchooz\Factories\Payment\TransactionFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Enums\Payment\PaymentGatewayEnum;
+use Tchooz\Entities\Reference\ExternalReferenceEntity;
+use Tchooz\Factories\Reference\ExternalReferenceFactory;
 use Tchooz\Repositories\EmundusRepository;
+use Tchooz\Repositories\Reference\ExternalReferenceRepository;
 use Tchooz\Traits\TraitTable;
 
 #[TableAttribute(table: '#__emundus_payment_transaction', alias: 'transaction', columns: [
@@ -45,6 +48,11 @@ class TransactionRepository extends EmundusRepository
 {
 	use TraitTable;
 
+	/**
+	 * Value of #__emundus_external_reference.column identifying references pointing to a transaction
+	 */
+	private const REFERENCE_COLUMN = 'jos_emundus_payment_transaction.id';
+
 	private TransactionFactory $factory;
 
 	public function __construct($withRelations = true, $exceptRelations = [])
@@ -59,6 +67,63 @@ class TransactionRepository extends EmundusRepository
 		return $this->factory;
 	}
 
+	/**
+	 * The transaction main reference is the one eMundus generates and shares with the payment service provider.
+	 * It is the only one not attached to a synchronizer, third party systems always stamp their sync_id.
+	 */
+	private function getMainReferenceJoinCondition(string $alias): string
+	{
+		return $this->db->quoteName($alias . '.intern_id') . ' = ' . $this->db->quoteName('transaction.id')
+			. ' AND ' . $this->db->quoteName($alias . '.column') . ' = ' . $this->db->quote(self::REFERENCE_COLUMN)
+			. ' AND ' . $this->db->quoteName($alias . '.sync_id') . ' IS NULL';
+	}
+
+	/**
+	 * Searching happens on every reference of a transaction, an EXISTS keeps one row per transaction.
+	 */
+	private function getReferenceSearchCondition(string $search): string
+	{
+		return 'EXISTS (SELECT 1 FROM ' . $this->db->quoteName('#__emundus_external_reference', 'search_reference')
+			. ' WHERE ' . $this->db->quoteName('search_reference.intern_id') . ' = ' . $this->db->quoteName('transaction.id')
+			. ' AND ' . $this->db->quoteName('search_reference.column') . ' = ' . $this->db->quote(self::REFERENCE_COLUMN)
+			. ' AND ' . $this->db->quoteName('search_reference.reference') . ' LIKE ' . $this->db->quote('%' . $search . '%') . ')';
+	}
+
+	/**
+	 * @param   int[]  $transaction_ids
+	 *
+	 * @return array<int, ExternalReferenceEntity[]> References indexed by transaction id
+	 */
+	public function getExternalReferences(array $transaction_ids): array
+	{
+		$external_references = [];
+
+		$transaction_ids = array_filter(array_map('intval', $transaction_ids));
+		if (empty($transaction_ids)) {
+			return $external_references;
+		}
+
+		$query = $this->db->createQuery();
+		$query->select('reference.*')
+			->from($this->db->quoteName('#__emundus_external_reference', 'reference'))
+			->where($this->db->quoteName('reference.column') . ' = ' . $this->db->quote(self::REFERENCE_COLUMN))
+			->andWhere($this->db->quoteName('reference.intern_id') . ' IN (' . implode(',', $transaction_ids) . ')')
+			->order($this->db->quoteName('reference.sync_id') . ' IS NOT NULL, ' . $this->db->quoteName('reference.id'));
+
+		try {
+			$this->db->setQuery($query);
+			$references = $this->db->loadObjectList();
+
+			foreach (ExternalReferenceFactory::fromDbObjects($references) as $reference) {
+				$external_references[(int) $reference->getInternId()][] = $reference;
+			}
+		} catch (\Exception $e) {
+			Log::add('Failed to load transactions external references: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.transaction');
+		}
+
+		return $external_references;
+	}
+
 	public function getById(int $id, ?CartEntity $cart = null): ?TransactionEntity
 	{
 		$transaction_entity = null;
@@ -67,13 +132,14 @@ class TransactionRepository extends EmundusRepository
 			$query = $this->db->getQuery(true);
 			$query->select('transaction.*, reference.reference')
 				->from($this->db->quoteName($this->getTableName(self::class), 'transaction'))
-				->leftJoin($this->db->quoteName('#__emundus_external_reference', 'reference') . ' ON transaction.id = reference.intern_id AND reference.column = ' .  $this->db->quote('jos_emundus_payment_transaction.id'))
+				->leftJoin($this->db->quoteName('#__emundus_external_reference', 'reference') . ' ON ' . $this->getMainReferenceJoinCondition('reference'))
 				->where('transaction.id = ' . $id);
 			$this->db->setQuery($query);
 			$transaction = $this->db->loadObject();
 
 			if ($transaction) {
 				$transaction_entity = $this->mountEntityFromObject($transaction, $cart);
+				$transaction_entity->setExternalReferences($this->getExternalReferences([$id])[$id] ?? []);
 			} else {
 				Log::add(Text::_('COM_EMUNDUS_TRANSACTION_NOT_FOUND'), Log::ERROR, 'com_emundus.repository.transaction');
 			}
@@ -119,8 +185,7 @@ class TransactionRepository extends EmundusRepository
 		}
 
 		if (!empty($search)) {
-			$query->leftJoin($this->db->quoteName('#__emundus_external_reference', 'external_reference') . ' ON external_reference.intern_id = transaction.id AND external_reference.column = ' . $this->db->quote('jos_emundus_payment_transaction.id'));
-			$query->andWhere($this->db->quoteName('external_reference.reference') . ' LIKE ' . $this->db->quote('%'.$search.'%'));
+			$query->andWhere($this->getReferenceSearchCondition($search));
 		}
 
 		try {
@@ -147,9 +212,9 @@ class TransactionRepository extends EmundusRepository
 		$transaction_entities = [];
 
 		$query = $this->db->getQuery(true);
-		$query->select('transaction.*, external_reference.reference')
+		$query->select('transaction.*, reference.reference')
 			->from($this->db->quoteName($this->getTableName(self::class), 'transaction'))
-			->leftJoin($this->db->quoteName('#__emundus_external_reference', 'external_reference') . ' ON external_reference.intern_id = transaction.id AND external_reference.column = ' . $this->db->quote('jos_emundus_payment_transaction.id'))
+			->leftJoin($this->db->quoteName('#__emundus_external_reference', 'reference') . ' ON ' . $this->getMainReferenceJoinCondition('reference'))
 			->where('1=1');
 
 		if (!empty($filters)) {
@@ -172,7 +237,7 @@ class TransactionRepository extends EmundusRepository
 		}
 
 		if (!empty($search)) {
-			$query->andWhere($this->db->quoteName('external_reference.reference') . ' LIKE ' . $this->db->quote('%'.$search.'%'));
+			$query->andWhere($this->getReferenceSearchCondition($search));
 		}
 
 		$query->order('transaction.created_at DESC, transaction.updated_at DESC');
@@ -182,8 +247,11 @@ class TransactionRepository extends EmundusRepository
 			$this->db->setQuery($query);
 			$transactions = $this->db->loadObjectList();
 
+			$external_references = $this->getExternalReferences(array_column($transactions, 'id'));
+
 			foreach ($transactions as $transaction) {
 				$transaction_entity = $this->mountEntityFromObject($transaction);
+				$transaction_entity->setExternalReferences($external_references[$transaction->id] ?? []);
 				$transaction_entities[] = $transaction_entity;
 			}
 		} catch (\Exception $e) {
@@ -269,7 +337,7 @@ class TransactionRepository extends EmundusRepository
 			$query->clear()
 				->select('transaction.*, reference.reference AS external_reference')
 				->from($this->db->quoteName($this->getTableName(self::class), 'transaction'))
-				->leftJoin($this->db->quoteName('#__emundus_external_reference', 'reference') . ' ON transaction.id = reference.intern_id AND reference.column = ' .  $this->db->quote('jos_emundus_payment_transaction.id'))
+				->leftJoin($this->db->quoteName('#__emundus_external_reference', 'reference') . ' ON ' . $this->getMainReferenceJoinCondition('reference'))
 				->where($this->db->quoteName('transaction.id') . ' = ' . $this->db->quote($transaction->getId()));
 
 			$this->db->setQuery($query);
@@ -415,6 +483,9 @@ class TransactionRepository extends EmundusRepository
 		return $saved;
 	}
 
+	/**
+	 * Only writes the main reference, the ones owned by third party synchronizers are left untouched.
+	 */
 	private function saveTransactionReference(TransactionEntity $transaction): bool
 	{
 		$saved = false;
@@ -424,31 +495,14 @@ class TransactionRepository extends EmundusRepository
 				$transaction->generateExternalReference();
 			}
 
-			$query = $this->db->createQuery();
-			$query->clear()
-				->select('id')
-				->from($this->db->quoteName('#__emundus_external_reference'))
-				->where($this->db->quoteName('intern_id') . ' = ' . $this->db->quote($transaction->getId()))
-				->where($this->db->quoteName('column') . ' = ' . $this->db->quote('jos_emundus_payment_transaction.id'));
-
-			$this->db->setQuery($query);
-			$external_reference = $this->db->loadResult();
-
-			if (empty($external_reference)) {
-				$query->clear()
-					->insert($this->db->quoteName('#__emundus_external_reference'))
-					->columns($this->db->quoteName(['intern_id', 'column', 'reference']))
-					->values($this->db->quote($transaction->getId()) . ', ' . $this->db->quote('jos_emundus_payment_transaction.id') . ', ' . $this->db->quote($transaction->getExternalReference()));
-			} else {
-				$query->clear()
-					->update($this->db->quoteName('#__emundus_external_reference'))
-					->set($this->db->quoteName('reference') . ' = ' . $this->db->quote($transaction->getExternalReference()))
-					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($external_reference));
-			}
-
 			try {
-				$this->db->setQuery($query);
-				$saved = $this->db->execute();
+				$external_reference_repository = new ExternalReferenceRepository();
+				$saved = $external_reference_repository->flush(new ExternalReferenceEntity(
+					0,
+					self::REFERENCE_COLUMN,
+					(string) $transaction->getId(),
+					$transaction->getExternalReference()
+				));
 			} catch (\Exception $e) {
 				Log::add('Error saving transaction reference: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.transaction');
 				throw new \Exception(Text::_('COM_EMUNDUS_ERROR_SAVING_TRANSACTION'));
@@ -564,10 +618,11 @@ class TransactionRepository extends EmundusRepository
 			$query->select('intern_id')
 				->from($this->db->quoteName('#__emundus_external_reference'))
 				->where($this->db->quoteName('reference') . ' = ' . $this->db->quote($external_reference))
-				->andWhere($this->db->quoteName('column') . ' = ' . $this->db->quote('jos_emundus_payment_transaction.id'));
+				->andWhere($this->db->quoteName('column') . ' = ' . $this->db->quote(self::REFERENCE_COLUMN))
+				->andWhere($this->db->quoteName('sync_id') . ' IS NULL');
 
 			$this->db->setQuery($query);
-			$transaction_id = $this->db->loadResult();
+			$transaction_id = (int) $this->db->loadResult();
 		}
 
 		return $transaction_id;

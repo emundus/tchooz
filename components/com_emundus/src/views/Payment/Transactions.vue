@@ -131,8 +131,34 @@ export default {
 		}
 	},
 	methods: {
+		escapeHtml(value) {
+			const div = document.createElement('div');
+			div.textContent = value === null || value === undefined ? '' : String(value);
+			return div.innerHTML;
+		},
+		buildExternalReferencesHtml(transaction) {
+			const references = transaction.external_references || [];
+
+			if (!references.length) {
+				return this.escapeHtml(transaction.external_reference);
+			}
+
+			let html = '<ul class="tw-m-0 tw-list-none tw-p-0">';
+			references.forEach((reference) => {
+				html += '<li>' + this.escapeHtml(reference.reference);
+				if (reference.referenceObject) {
+					html += ' <span class="tw-text-neutral-600">(' + this.escapeHtml(reference.referenceObject) + ')</span>';
+				}
+				html += '</li>';
+			});
+			html += '</ul>';
+
+			return html;
+		},
 		previewTransaction(transaction) {
 			let html = '<div class="tw-flex tw-flex-col tw-gap-2">';
+
+			const external_references_html = this.buildExternalReferencesHtml(transaction);
 
 			transaction.additional_columns
 				.filter((column) => {
@@ -153,10 +179,10 @@ export default {
 			html +=
 				'<div class="tw-grid tw-grid-cols-2 tw-items-center tw-gap-3">' +
 				'<div><strong>' +
-				this.translate('COM_EMUNDUS_TRANSACTION_EXTERNAL_REFERENCE') +
+				this.translate('COM_EMUNDUS_TRANSACTION_EXTERNAL_REFERENCES') +
 				'</strong></div>' +
 				'<div>' +
-				transaction.external_reference +
+				external_references_html +
 				'</div>' +
 				'</div> <hr class="tw-m-0">';
 
