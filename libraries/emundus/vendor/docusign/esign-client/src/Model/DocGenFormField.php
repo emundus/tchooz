@@ -61,12 +61,15 @@ class DocGenFormField implements ModelInterface, ArrayAccess
     protected static $swaggerTypes = [
         'connected_object_details' => '\DocuSign\eSign\Model\ConnectedObjectDetails',
         'description' => '?string',
+        'format' => '\DocuSign\eSign\Model\DocGenFormat',
         'fully_qualified_path' => '?string',
+        'hidden' => '?string',
         'label' => '?string',
         'name' => '?string',
         'options' => '\DocuSign\eSign\Model\DocGenFormFieldOption[]',
         'order' => '?string',
         'predefined_validation' => '?string',
+        'read_only' => '?string',
         'required' => '?string',
         'row_values' => '\DocuSign\eSign\Model\DocGenFormFieldRowValue[]',
         'type' => '?string',
@@ -82,12 +85,15 @@ class DocGenFormField implements ModelInterface, ArrayAccess
     protected static $swaggerFormats = [
         'connected_object_details' => null,
         'description' => null,
+        'format' => null,
         'fully_qualified_path' => null,
+        'hidden' => null,
         'label' => null,
         'name' => null,
         'options' => null,
         'order' => null,
         'predefined_validation' => null,
+        'read_only' => null,
         'required' => null,
         'row_values' => null,
         'type' => null,
@@ -124,12 +130,15 @@ class DocGenFormField implements ModelInterface, ArrayAccess
     protected static $attributeMap = [
         'connected_object_details' => 'connectedObjectDetails',
         'description' => 'description',
+        'format' => 'format',
         'fully_qualified_path' => 'fullyQualifiedPath',
+        'hidden' => 'hidden',
         'label' => 'label',
         'name' => 'name',
         'options' => 'options',
         'order' => 'order',
         'predefined_validation' => 'predefinedValidation',
+        'read_only' => 'readOnly',
         'required' => 'required',
         'row_values' => 'rowValues',
         'type' => 'type',
@@ -145,12 +154,15 @@ class DocGenFormField implements ModelInterface, ArrayAccess
     protected static $setters = [
         'connected_object_details' => 'setConnectedObjectDetails',
         'description' => 'setDescription',
+        'format' => 'setFormat',
         'fully_qualified_path' => 'setFullyQualifiedPath',
+        'hidden' => 'setHidden',
         'label' => 'setLabel',
         'name' => 'setName',
         'options' => 'setOptions',
         'order' => 'setOrder',
         'predefined_validation' => 'setPredefinedValidation',
+        'read_only' => 'setReadOnly',
         'required' => 'setRequired',
         'row_values' => 'setRowValues',
         'type' => 'setType',
@@ -166,12 +178,15 @@ class DocGenFormField implements ModelInterface, ArrayAccess
     protected static $getters = [
         'connected_object_details' => 'getConnectedObjectDetails',
         'description' => 'getDescription',
+        'format' => 'getFormat',
         'fully_qualified_path' => 'getFullyQualifiedPath',
+        'hidden' => 'getHidden',
         'label' => 'getLabel',
         'name' => 'getName',
         'options' => 'getOptions',
         'order' => 'getOrder',
         'predefined_validation' => 'getPredefinedValidation',
+        'read_only' => 'getReadOnly',
         'required' => 'getRequired',
         'row_values' => 'getRowValues',
         'type' => 'getType',
@@ -241,12 +256,15 @@ class DocGenFormField implements ModelInterface, ArrayAccess
     {
         $this->container['connected_object_details'] = isset($data['connected_object_details']) ? $data['connected_object_details'] : null;
         $this->container['description'] = isset($data['description']) ? $data['description'] : null;
+        $this->container['format'] = isset($data['format']) ? $data['format'] : null;
         $this->container['fully_qualified_path'] = isset($data['fully_qualified_path']) ? $data['fully_qualified_path'] : null;
+        $this->container['hidden'] = isset($data['hidden']) ? $data['hidden'] : null;
         $this->container['label'] = isset($data['label']) ? $data['label'] : null;
         $this->container['name'] = isset($data['name']) ? $data['name'] : null;
         $this->container['options'] = isset($data['options']) ? $data['options'] : null;
         $this->container['order'] = isset($data['order']) ? $data['order'] : null;
         $this->container['predefined_validation'] = isset($data['predefined_validation']) ? $data['predefined_validation'] : null;
+        $this->container['read_only'] = isset($data['read_only']) ? $data['read_only'] : null;
         $this->container['required'] = isset($data['required']) ? $data['required'] : null;
         $this->container['row_values'] = isset($data['row_values']) ? $data['row_values'] : null;
         $this->container['type'] = isset($data['type']) ? $data['type'] : null;
@@ -327,6 +345,30 @@ class DocGenFormField implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets format
+     *
+     * @return \DocuSign\eSign\Model\DocGenFormat
+     */
+    public function getFormat()
+    {
+        return $this->container['format'];
+    }
+
+    /**
+     * Sets format
+     *
+     * @param \DocuSign\eSign\Model\DocGenFormat $format 
+     *
+     * @return $this
+     */
+    public function setFormat($format)
+    {
+        $this->container['format'] = $format;
+
+        return $this;
+    }
+
+    /**
      * Gets fully_qualified_path
      *
      * @return ?string
@@ -346,6 +388,30 @@ class DocGenFormField implements ModelInterface, ArrayAccess
     public function setFullyQualifiedPath($fully_qualified_path)
     {
         $this->container['fully_qualified_path'] = $fully_qualified_path;
+
+        return $this;
+    }
+
+    /**
+     * Gets hidden
+     *
+     * @return ?string
+     */
+    public function getHidden()
+    {
+        return $this->container['hidden'];
+    }
+
+    /**
+     * Sets hidden
+     *
+     * @param ?string $hidden 
+     *
+     * @return $this
+     */
+    public function setHidden($hidden)
+    {
+        $this->container['hidden'] = $hidden;
 
         return $this;
     }
@@ -466,6 +532,30 @@ class DocGenFormField implements ModelInterface, ArrayAccess
     public function setPredefinedValidation($predefined_validation)
     {
         $this->container['predefined_validation'] = $predefined_validation;
+
+        return $this;
+    }
+
+    /**
+     * Gets read_only
+     *
+     * @return ?string
+     */
+    public function getReadOnly()
+    {
+        return $this->container['read_only'];
+    }
+
+    /**
+     * Sets read_only
+     *
+     * @param ?string $read_only 
+     *
+     * @return $this
+     */
+    public function setReadOnly($read_only)
+    {
+        $this->container['read_only'] = $read_only;
 
         return $this;
     }

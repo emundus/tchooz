@@ -23,8 +23,41 @@ class TagContext
 		private ?array $post = null,
 		private string $passwd = '',
 		private string $content = '',
-		private bool $base64 = false
+		private bool $base64 = false,
+		/**
+		 * Modifiers written on the tag occurrence being resolved, as TagEntity parses them:
+		 * a list of ['modifier' => TagModifierInterface, 'params' => array].
+		 * A provider whose value depends on them reads this instead of relying on transform(),
+		 * which can only rework an already computed string.
+		 */
+		private array $modifiers = []
 	) {}
+
+	/**
+	 * @return array<array{modifier: \Tchooz\Interfaces\TagModifierInterface, params: array}>
+	 */
+	public function getModifiers(): array
+	{
+		return $this->modifiers;
+	}
+
+	/**
+	 * Parameters of the first occurrence of a modifier, by modifier class.
+	 *
+	 * @return array
+	 */
+	public function getModifierParams(string $modifierClass): array
+	{
+		foreach ($this->modifiers as $modifier)
+		{
+			if ($modifier['modifier'] instanceof $modifierClass)
+			{
+				return $modifier['params'] ?? [];
+			}
+		}
+
+		return [];
+	}
 
 	public function getUserId(): int
 	{

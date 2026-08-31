@@ -3345,21 +3345,19 @@ class EmundusModelUsers extends ListModel
 		return $groups_acl;
 	}
 
-	/** This function returns the groups which are linked to the fnum's program OR NO PROGRAM AT ALL.
+	/** This function returns the groups which are linked to the fnum's program OR NO PROGRAM AT ALL, or directly associated to the fnum
 	 *
 	 * @param $group_ids array
 	 * @param $fnum      string
 	 * @param $strict    bool if true, only the groups linked to the fnum's program are returned
 	 *
-	 * @return bool|mixed
+	 * @return array
 	 *
 	 * @since version
 	 */
-	public function getEffectiveGroupsForFnum($group_ids, $fnum, $strict = false)
+	public function getEffectiveGroupsForFnum(array $group_ids, string $fnum, bool $strict = false): array
 	{
-
 		$groups = [];
-
 
 		$query = $this->db->getQuery(true);
 
@@ -3378,6 +3376,17 @@ class EmundusModelUsers extends ListModel
 		try {
 			$this->db->setQuery($query);
 			$groups = $this->db->loadColumn();
+
+			$query->clear()
+				->select('DISTINCT(jega.group_id)')
+				->from($this->db->quoteName('#__emundus_group_assoc', 'jega'))
+				->where($this->db->quoteName('jega.group_id') . ' IN (' . implode(',', $group_ids) . ')')
+				->andWhere($this->db->quoteName('jega.fnum') . ' LIKE ' . $this->db->quote($fnum));
+			$this->db->setQuery($query);
+			$assoc_groups = $this->db->loadColumn();
+
+			$groups = array_merge($groups, $assoc_groups);
+			$groups = array_unique($groups);
 		}
 		catch (Exception $e) {
 			Log::add('Error getting effective groups for fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
@@ -5530,7 +5539,7 @@ class EmundusModelUsers extends ListModel
 			->addCondition('50');
 		$objConditional3->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
-		for ($i = 0; $i<$nb_cols; $i++) {
+		for ($i = 1; $i<=$nb_cols; $i++) {
 			$value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
 
 			if ($value=="forms(%)" || $value=="attachment(%)") {

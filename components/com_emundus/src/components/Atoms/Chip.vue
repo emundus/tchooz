@@ -6,6 +6,10 @@ export default {
 			type: String,
 			default: '',
 		},
+		href: {
+			type: String,
+			default: '',
+		},
 		image: {
 			type: String,
 			default: '',
@@ -39,8 +43,15 @@ export default {
 </script>
 
 <template>
-	<div
-		class="tw-mb-2 tw-mr-2 tw-flex tw-h-max tw-w-fit tw-items-center tw-rounded-full tw-border tw-border-neutral-500 tw-bg-neutral-400 tw-px-2 tw-py-1 tw-text-sm tw-font-semibold hover:tw-font-semibold"
+	<component
+		:is="href ? 'a' : 'div'"
+		:href="href || null"
+		:target="href ? '_blank' : null"
+		:rel="href ? 'noopener noreferrer' : null"
+		:class="[
+			'tw-mb-2 tw-mr-2 tw-flex tw-h-max tw-w-fit tw-items-center tw-rounded-full tw-border tw-border-neutral-500 tw-bg-neutral-400 tw-px-2 tw-py-1 tw-text-sm tw-font-semibold hover:tw-font-semibold',
+			{ 'tw-cursor-pointer hover:tw-underline': href },
+		]"
 	>
 		<img
 			v-if="image && !imageError"
@@ -55,8 +66,9 @@ export default {
 		>
 			{{ initials }}
 		</div>
+
 		<span>{{ text }}</span>
-	</div>
+	</component>
 </template>
 
 <style scoped></style>

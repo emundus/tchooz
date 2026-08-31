@@ -39,6 +39,7 @@ use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
+use Tchooz\Services\FilePreviewService;
 use Tchooz\Transformers\ApplicationChoicesTransformer;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -4352,10 +4353,10 @@ class EmundusModelApplication extends ListModel
 
 		if ($attachments) {
 			$forms        .= '<div class="page-break pdf-attachments">';
-			$upload_files = $this->getCountUploadedFile($fnum, $aid, $profile_id);
+			$upload_files = $this->getCountUploadedFile($fnum, $current_user_id, $profile_id);
 			$forms        .= $upload_files;
 
-			$list_upload_files = $this->getListUploadedFile($fnum, $aid, $profile_id);
+			$list_upload_files = $this->getListUploadedFile($fnum, $aid, $profile_id, $current_user_id);
 			$forms             .= $list_upload_files;
 			$forms             .= '</div>';
 		}
@@ -6702,7 +6703,7 @@ class EmundusModelApplication extends ListModel
 		$m_application = new EmundusModelApplication;
 
 		$html    = '';
-		$uploads = $m_application->getUserAttachmentsByFnum($fnum, '', $profile);
+		$uploads = $m_application->getUserAttachmentsByFnum($fnum, '', $profile, false, $user_id);
 
 		$nbuploads = 0;
 		foreach ($uploads as $upload) {
@@ -6717,13 +6718,13 @@ class EmundusModelApplication extends ListModel
 	}
 
 	/// get list uploaded files
-	public function getListUploadedFile($fnum, $user_id, $profile = null)
+	public function getListUploadedFile($fnum, $user_id, $profile = null, $current_user_id = 0)
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
 		$m_application = new EmundusModelApplication;
 
 		$html    = '';
-		$uploads = $m_application->getUserAttachmentsByFnum($fnum, '', $profile);
+		$uploads = $m_application->getUserAttachmentsByFnum($fnum, '', $profile, false, $current_user_id);
 
 		$nbuploads = 0;
 		foreach ($uploads as $upload) {
@@ -6943,51 +6944,12 @@ class EmundusModelApplication extends ListModel
 				}
 			}
 			else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {
-				require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-
-				switch ($extension) {
-					case 'odt':
-						$class = 'ODText';
-						break;
-					case 'rtf':
-						$class = 'RTF';
-						break;
-					case 'doc':
-					case 'docx':
-					default:
-						$class = 'Word2007';
-				}
-
-				$phpWord    = \PhpOffice\PhpWord\IOFactory::load(JPATH_SITE . DS . $filePath, $class);
-				$htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
-				$content    = $htmlWriter->getContent();
-
-				$contentWithoutSpaces = preg_replace('/\s+/', '', $content);
-				if (strpos($contentWithoutSpaces, '<body></') !== false) {
-					$preview['status']  = false;
-					$preview['error']   = 'unavailable';
-					$preview['content'] = '<div style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;"><p style="margin:0;text-align:center;">' . Text::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_UNAVAILABLE') . '</p></div>';
-				}
-				else {
-					$preview['content']   = '<div class="wrapper">' . $content . '</div>';
-					$preview['overflowY'] = true;
-					$preview['style']     = 'word';
-					$preview['msg']       = Text::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
-				}
+				// Delegate to FilePreviewService so Word preview stays a single source of truth (see ResourceService).
+				$preview = array_merge($preview, (new FilePreviewService())->buildWordPreview(JPATH_SITE . DS . $filePath, $extension));
 			}
 			else if (in_array($extension, ['xls', 'xlsx', 'ods', 'csv'])) {
-				require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-
-				$phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_SITE . DS . $filePath);
-				$htmlWriter     = new \PhpOffice\PhpSpreadsheet\Writer\Html($phpSpreadsheet);
-				$htmlWriter->setGenerateSheetNavigationBlock(true);
-				$htmlWriter->setSheetIndex(0);
-				$preview['content']   = $htmlWriter->generateHtmlAll();
-				$preview['overflowY'] = true;
-				$preview['overflowX'] = true;
-				$preview['style']     = 'sheet';
-
-				$preview['msg'] = Text::_('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
+				// Delegate to FilePreviewService so spreadsheet preview stays a single source of truth (see ResourceService).
+				$preview = array_merge($preview, (new FilePreviewService())->buildSheetPreview(JPATH_SITE . DS . $filePath));
 			}
 			else if (in_array($extension, ['ppt', 'pptx', 'odp'])) {
 				// ? PHPPresentation is not giving html support... need to create it manually ?

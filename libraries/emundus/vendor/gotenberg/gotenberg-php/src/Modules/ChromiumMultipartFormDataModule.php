@@ -50,6 +50,17 @@ trait ChromiumMultipartFormDataModule
     }
 
     /**
+     * Sets the selector (e.g. '#id') to query before converting an HTML
+     * document into PDF until it matches a node.
+     */
+    public function waitForSelector(string $selector): self
+    {
+        $this->formValue('waitForSelector', $selector);
+
+        return $this;
+    }
+
+    /**
      * Forces Chromium to emulate the media type "print".
      */
     public function emulatePrintMediaType(): self
@@ -65,6 +76,25 @@ trait ChromiumMultipartFormDataModule
     public function emulateScreenMediaType(): self
     {
         $this->formValue('emulatedMediaType', 'screen');
+
+        return $this;
+    }
+
+    /**
+     * Simulates specific browser conditions by overriding CSS media features
+     *
+     * @param ChromiumEmulatedMediaFeatures[] $features
+     *
+     * @throws NativeFunctionErrored
+     */
+    public function emulatedMediaFeatures(array $features): self
+    {
+        $json = json_encode($features);
+        if ($json === false) {
+            throw NativeFunctionErrored::createFromLastPhpError();
+        }
+
+        $this->formValue('emulatedMediaFeatures', $json);
 
         return $this;
     }
@@ -158,6 +188,26 @@ trait ChromiumMultipartFormDataModule
         return $this;
     }
 
+     /**
+      * Excludes resources from "failOnResourceHttpStatusCodes" checks based on
+      * their hostname.
+      *
+      * @param string[] $domains
+      *
+      * @throws NativeFunctionErrored
+      */
+    public function ignoreResourceHttpStatusDomains(array $domains): self
+    {
+        $json = json_encode($domains);
+        if ($json === false) {
+            throw NativeFunctionErrored::createFromLastPhpError();
+        }
+
+        $this->formValue('ignoreResourceHttpStatusDomains', $json);
+
+        return $this;
+    }
+
     /**
      * Forces Gotenberg to return a 409 Conflict if Chromium fails to load at
      * least one resource.
@@ -187,6 +237,17 @@ trait ChromiumMultipartFormDataModule
     public function skipNetworkIdleEvent(bool $skip = true): self
     {
         $this->formValue('skipNetworkIdleEvent', $skip ?: '0');
+
+        return $this;
+    }
+
+    /**
+     * Specifies whether Chromium have to wait or not for its network to be
+     * almost idle.
+     */
+    public function skipNetworkAlmostIdleEvent(bool $skip = true): self
+    {
+        $this->formValue('skipNetworkAlmostIdleEvent', $skip ?: '0');
 
         return $this;
     }

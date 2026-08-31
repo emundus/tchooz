@@ -10,16 +10,22 @@ namespace Tchooz\Services\Import\Entity;
 
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Contacts\AddressEntity;
+use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
+use Tchooz\Enums\Import\BooleanValueEnum;
 use Tchooz\Enums\Import\FieldTypeEnum;
+use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
 use Tchooz\Repositories\CountryRepository;
 use Tchooz\Services\Import\AbstractEntityImporter;
 use Tchooz\Services\Import\ImportContext;
 use Tchooz\Services\Import\Mapping\AliasColumnMap;
 use Tchooz\Services\Import\Mapping\ColumnMap;
+use Tchooz\Services\Import\Referential\ReferentialRegistry;
+use Tchooz\Services\Import\Referential\Source\ContactReferentialSource;
+use Tchooz\Services\Import\Referential\Source\CountryReferentialSource;
 use Tchooz\Services\Import\UpdatableEntityImporter;
 
 /**
@@ -41,12 +47,13 @@ final class OrganizationImporter extends AbstractEntityImporter implements Updat
 
 	public function __construct(
 		private readonly OrganizationRepository $organizationRepository,
-		private readonly CountryRepository      $countryRepository
+		private readonly CountryRepository      $countryRepository,
+		private readonly ContactRepository      $contactRepository
 	) {}
 
 	public static function create(): self
 	{
-		return new self(new OrganizationRepository(), new CountryRepository());
+		return new self(new OrganizationRepository(), new CountryRepository(), new ContactRepository(false));
 	}
 
 	public function getType(): string
@@ -58,6 +65,8 @@ final class OrganizationImporter extends AbstractEntityImporter implements Updat
 	{
 		if ($this->columnMap === null)
 		{
+			$referentials = ReferentialRegistry::default();
+
 			$this->columnMap = AliasColumnMap::create()
 				->field('name', aliases: ['Nom', 'Name', 'Organisation', 'Organization'], required: true, examples: ['Organisation 1'], label: Text::_('COM_EMUNDUS_IMPORT_ORGANIZATION_NAME'))
 				->field('description', aliases: ['Description'], examples: ['Entreprise technologique spécialisée dans le développement de solutions logicielles sur mesure.'], label: Text::_('COM_EMUNDUS_IMPORT_ORGANIZATION_DESCRIPTION'))
@@ -68,11 +77,11 @@ final class OrganizationImporter extends AbstractEntityImporter implements Updat
 				->field('postal_code', aliases: ['Code postal', 'Postal code', 'CP', 'Zip'], examples: ['75011'], label: Text::_('COM_EMUNDUS_IMPORT_ORGANIZATION_POSTAL_CODE'))
 				->field('locality', aliases: ['Ville', 'Locality', 'City'], examples: ['Paris'], label: Text::_('COM_EMUNDUS_IMPORT_ORGANIZATION_LOCALITY'))
 				->field('region', aliases: ['Région', 'Region'], examples: ['Île-de-France'], label: Text::_('COM_EMUNDUS_IMPORT_ORGANIZATION_REGION'))
-				->field('country', aliases: ['Pays', 'Country'], format: 'iso-3166-1-alpha-2', examples: ['FR' => 'France', 'GB' => 'United Kingdom', 'US' => 'United States'], label: Text::_('COM_EMUNDUS_IMPORT_ORGANIZATION_COUNTRY'))
+				->field('country', aliases: ['Pays', 'Country'], type: FieldTypeEnum::REFERENTIAL, label: Text::_('COM_EMUNDUS_IMPORT_ORGANIZATION_COUNTRY'), referential: $referentials->get(CountryReferentialSource::KEY))
 				->field('address_description', aliases: ['Description de l\'adresse', 'Address description'], examples: ['Au bout de l’impasse'], label: Text::_('COM_EMUNDUS_IMPORT_ORGANIZATION_ADDRESS_DESCRIPTION'))
-				->field('contact_person', aliases: ['Contact'], examples: ['Contact 1'], label: Text::_('COM_EMUNDUS_IMPORT_ORGANIZATION_CONTACT_PERSON'))
-				->field('other_contact', aliases: ['Autre contacts', 'Other contacts'], examples: ['Contact 3'], label: Text::_('COM_EMUNDUS_IMPORT_ORGANIZATION_OTHER_CONTACT'))
-				->field('published', aliases: ['Publié', 'Published'], type: FieldTypeEnum::BOOLEAN, examples: ['Oui'], label: Text::_('COM_EMUNDUS_IMPORT_ORGANIZATION_PUBLISHED'))
+				->field('contact_person', aliases: ['Contact'], type: FieldTypeEnum::REFERENTIAL, label: Text::_('COM_EMUNDUS_IMPORT_ORGANIZATION_CONTACT_PERSON'), referential: $referentials->get(ContactReferentialSource::KEY))
+				->field('other_contact', aliases: ['Autre contacts', 'Other contacts'], type: FieldTypeEnum::REFERENTIAL, label: Text::_('COM_EMUNDUS_IMPORT_ORGANIZATION_OTHER_CONTACT'), referential: $referentials->get(ContactReferentialSource::KEY))
+				->field('published', aliases: ['Publié', 'Published'], type: FieldTypeEnum::BOOLEAN, label: Text::_('COM_EMUNDUS_IMPORT_ORGANIZATION_PUBLISHED'))
 				->build();
 		}
 
@@ -136,7 +145,9 @@ final class OrganizationImporter extends AbstractEntityImporter implements Updat
 			));
 		}
 
-		// SET semantics: scalar fields are fully overwritten by the incoming row.
+		// SET semantics: scalar fields are fully overwritten by the incoming row,
+		// and the contact columns define the whole set of associations — an empty
+		// cell detaches the contacts previously linked to the organization.
 		// The existing primary key is preserved so OrganizationRepository::flush()
 		// routes to UPDATE rather than INSERT.
 		$this->organizationRepository->flush($this->buildEntity($row, id: $existing->getId()));
@@ -145,16 +156,25 @@ final class OrganizationImporter extends AbstractEntityImporter implements Updat
 	private function buildEntity(array $row, int $id): OrganizationEntity
 	{
 		return new OrganizationEntity(
-			id:              $id,
-			name:            trim((string) $row['name']),
-			description:     $this->stringOrNull($row['description']      ?? null),
-			url_website:     $this->stringOrNull($row['url_website']      ?? null),
-			address:         $this->buildAddress($row),
-			identifier_code: $this->stringOrNull($row['identifier_code']  ?? null),
-			logo:            null,
-			published:       (bool)($row['published'] ?? true),
-			status:          $this->resolveStatus($row['status']          ?? null),
+			id:                $id,
+			name:              trim((string) $row['name']),
+			description:       $this->stringOrNull($row['description']      ?? null),
+			url_website:       $this->stringOrNull($row['url_website']      ?? null),
+			address:           $this->buildAddress($row),
+			identifier_code:   $this->stringOrNull($row['identifier_code']  ?? null),
+			logo:              null,
+			referent_contacts: [$this->resolveContact($row['contact_person'] ?? null)],
+			other_contacts:    [$this->resolveContact($row['other_contact']  ?? null)],
+			published:         BooleanValueEnum::tryFromValue($row['published'] ?? null)?->toBool() ?? true,
+			status:            $this->resolveStatus($row['status']          ?? null),
 		);
+	}
+
+	private function resolveContact(mixed $value): ?ContactEntity
+	{
+		$id = (int) ($this->stringOrNull($value) ?? 0);
+
+		return $id > 0 ? $this->contactRepository->getById($id) : null;
 	}
 
 	private function buildAddress(array $row): ?AddressEntity

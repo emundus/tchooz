@@ -1,0 +1,34 @@
+{
+    "name": "worldline-global-collect/connect-sdk-php",
+    "type": "library",
+    "description": "PHP SDK to communicate with the Worldline Global Collect platform server-to-server API",
+    "homepage": "https://worldline.com/",
+    "keywords": ["SDK"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Worldline Global Collect",
+            "homepage": "https://worldline.com/"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "robtimus/multipart": "~1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Worldline\\Connect\\Sdk\\": ["src/Worldline/Connect/Sdk", "lib/Worldline/Connect/Sdk"]
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Worldline\\Connect\\Sdk\\": ["tests/Worldline/Connect/Sdk"]
+        }
+    }
+}

@@ -34,7 +34,14 @@ export default {
 			this.app.parameters.forEach((parameter) => {
 				const vueParameter = this.fromFieldEntityToParameter(parameter);
 
-				vueParameter.value = this.app.config[parameter.group.name][parameter.name] ?? '';
+				if (vueParameter.param === 'webhook_url') {
+					vueParameter.value =
+						window.location.origin +
+						'/index.php?option=com_emundus&controller=webhook&task=updatePaymentTransaction&sync_id=' +
+						this.app.id;
+				} else {
+					vueParameter.value = this.app.config[parameter.group.name][parameter.name] ?? '';
+				}
 
 				const tab = this.tabs.find((tab) => tab.id === parameter.group.name);
 				if (!tab) {
@@ -63,6 +70,10 @@ export default {
 			let config = {};
 
 			this.selectedTab.parameters.forEach((parameter) => {
+				if (parameter.editable === false) {
+					return;
+				}
+
 				const appParameter = this.app.parameters.find((p) => p.name === parameter.param);
 
 				if (!config[appParameter.group.name]) {

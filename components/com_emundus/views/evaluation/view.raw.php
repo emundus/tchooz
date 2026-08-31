@@ -16,8 +16,11 @@ jimport('joomla.application.component.view');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Providers\DateProvider;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Favorite\FavoriteFileRepository;
 use Tchooz\Services\Reference\InternalReferenceService;
 
 /**
@@ -211,7 +214,20 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				// Columns
 				$defaultElements              = $this->get('DefaultElements');
-				$this->datas                  = array(array('check' => '#', 'fnum' => Text::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'status' => Text::_('COM_EMUNDUS_STATUS')));
+				$this->datas                  = array(array('check' => '#'));
+
+				// No keys_order in this view: column order is the insertion order of datas[0], so the
+				// heart is declared here to sit right after the checkbox as on the files list.
+				// Parameter written by FavoriteAddonHandler when the addon is toggled.
+				$addonRepository = new AddonRepository();
+				$favoriteAddon = $addonRepository->getByName(AddonEnum::FAVORITE->value);
+				if ($favoriteAddon->isActivated()) {
+					$this->datas[0]['favorite'] = '';
+					$this->colsSup['favorite']  = array();
+				}
+
+				$this->datas[0]['fnum']   = Text::_('COM_EMUNDUS_FILES_APPLICATION_FILES');
+				$this->datas[0]['status'] = Text::_('COM_EMUNDUS_STATUS');
 				$fl                           = array();
 				$fl['evaluations_step_label'] = Text::_('COM_EMUNDUS_EVALUATION_EVAL_STEP');
 				if ($show_evaluator)
@@ -568,6 +584,12 @@ class EmundusViewEvaluation extends JViewLegacy
 					{
 						$tags                    = $m_files->getTagsByFnum($fnumArray);
 						$this->colsSup['id_tag'] = EmundusHelperFiles::createTagsList($tags);
+					}
+
+					if (isset($this->colsSup['favorite']))
+					{
+						$favorite_fnums            = (new FavoriteFileRepository())->getFavoriteFnums($fnumArray, $this->_user->id);
+						$this->colsSup['favorite'] = $h_files->createFavoritesList($fnumArray, $favorite_fnums);
 					}
 
 					if (isset($this->colsSup['access']))

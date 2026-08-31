@@ -19,7 +19,7 @@ use Symfony\Contracts\Cache\NamespacedPoolInterface;
 /**
  * @author Titouan Galopin <galopintitouan@gmail.com>
  */
-class NullAdapter implements AdapterInterface, CacheInterface, NamespacedPoolInterface, TagAwareAdapterInterface
+class NullAdapter implements AdapterInterface, CacheInterface, NamespacedPoolInterface
 {
     private static \Closure $createCacheItem;
 
@@ -28,7 +28,6 @@ class NullAdapter implements AdapterInterface, CacheInterface, NamespacedPoolInt
         self::$createCacheItem ??= \Closure::bind(
             static function ($key) {
                 $item = new CacheItem();
-                $item->isTaggable = true;
                 $item->key = $key;
                 $item->isHit = false;
 
@@ -108,10 +107,5 @@ class NullAdapter implements AdapterInterface, CacheInterface, NamespacedPoolInt
         foreach ($keys as $key) {
             yield $key => $f($key);
         }
-    }
-
-    public function invalidateTags(array $tags): bool
-    {
-        return true;
     }
 }

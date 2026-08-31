@@ -8,7 +8,9 @@
 
 namespace Tchooz\Services\Import\Mapping;
 
+use Joomla\CMS\Language\Text;
 use Tchooz\Enums\Import\FieldTypeEnum;
+use Tchooz\Services\Import\Referential\ReferentialProviderInterface;
 
 /**
  * Fluent builder for AliasColumnMap.
@@ -27,7 +29,8 @@ final class AliasColumnMapBuilder
 	 *     values:   array<string>|string|null,
 	 *     format:   ?string,
 	 *     examples: array<mixed>|null,
-	 *     validate: bool
+	 *     validate: bool,
+	 *     referential: ReferentialProviderInterface|null
 	 * }>
 	 */
 	private array $fields = [];
@@ -45,9 +48,11 @@ final class AliasColumnMapBuilder
 	 *                                                        a flat string[] of allowed values, or the
 	 *                                                        FQCN of a BackedEnum which is then expanded
 	 *                                                        to its cases (and ::getLabel() when available).
+	 *                                                        Types carrying their own closed list (BOOLEAN)
+	 *                                                        get it from FieldTypeEnum and take no $values.
 	 * @param   string|null                       $format     Optional free-form format hint (e.g.
 	 *                                                        "iso-3166-1-alpha-2", "YYYY-MM-DD").
-	 * @param   array<mixed>|null                 $examples   Illustrative samples for non-ENUM types.
+	 * @param   array<mixed>|null                 $examples   Illustrative samples for open-list types.
 	 *                                                        Accepts three forms, all normalized to
 	 *                                                        {value, label} pairs:
 	 *                                                          - string[]:      value = label
@@ -61,6 +66,8 @@ final class AliasColumnMapBuilder
 	 *                                                        giving a human-readable name for the field.
 	 *                                                        Null falls back to the canonical name on the
 	 *                                                        frontend.
+	 * @param   ReferentialProviderInterface|null $referential Required if $type === REFERENTIAL. Dynamic,
+	 *                                                        DB-backed closed list resolved once per import.
 	 */
 	public function field(
 		string                       $canonical,
@@ -72,6 +79,7 @@ final class AliasColumnMapBuilder
 		?array                       $examples = null,
 		bool                         $validate = true,
 		?string                      $label = null,
+		?ReferentialProviderInterface $referential = null,
 	): self
 	{
 		if ($canonical === '')
@@ -100,12 +108,30 @@ final class AliasColumnMapBuilder
 			));
 		}
 
-		// ENUM uses its closed `values` list — illustrative `examples` would be redundant.
-		if ($type === FieldTypeEnum::ENUM && $examples !== null)
+		// A closed-list type already tells the integrator what to fill in —
+		// illustrative `examples` would be redundant.
+		if ($examples !== null && $type->isClosedList())
 		{
 			throw new \InvalidArgumentException(sprintf(
-				'Field "%s" is declared as ENUM; use `values` to expose the closed list — examples are not allowed.',
-				$canonical
+				'Field "%s" is declared as %s, whose values form a closed list — examples are not allowed.',
+				$canonical,
+				$type->value
+			));
+		}
+
+		// Tight contract: REFERENTIAL ↔ referential, otherwise neither.
+		if ($type === FieldTypeEnum::REFERENTIAL && $referential === null)
+		{
+			throw new \InvalidArgumentException(sprintf(
+				'Field "%s" is declared as REFERENTIAL but no referential provider was given.', $canonical
+			));
+		}
+		if ($type !== FieldTypeEnum::REFERENTIAL && $referential !== null)
+		{
+			throw new \InvalidArgumentException(sprintf(
+				'Field "%s" carries a referential provider but its type is "%s" instead of REFERENTIAL.',
+				$canonical,
+				$type->value
 			));
 		}
 
@@ -118,6 +144,7 @@ final class AliasColumnMapBuilder
 			'format'   => $format,
 			'examples' => $examples,
 			'validate' => $validate,
+			'referential' => $referential,
 		];
 
 		return $this;
@@ -140,7 +167,7 @@ final class AliasColumnMapBuilder
 			$aliases = $config['aliases'];
 			if ($config['label'] !== null && $config['label'] !== '')
 			{
-				array_unshift($aliases, $config['label']);
+				array_unshift($aliases, Text::_($config['label']));
 			}
 			$aliases = $this->cleanAliases($aliases);
 
@@ -149,11 +176,14 @@ final class AliasColumnMapBuilder
 				aliases: $aliases,
 				required: $config['required'],
 				type: $config['type'],
-				values: $config['values']   !== null ? $this->resolveEnumValues($config['values']) : null,
+				values: $config['values'] !== null
+					? $this->resolveEnumValues($config['values'])
+					: $config['type']->getIntrinsicValues(),
 				format: $config['format'],
 				examples: $config['examples'] !== null ? $this->resolveExamples($config['examples']) : null,
 				validate: $config['validate'],
-				label: $config['label']
+				label: $config['label'],
+				referential: $config['referential']
 			);
 
 			// The canonical name itself is a valid header.

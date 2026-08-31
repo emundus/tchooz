@@ -13,14 +13,14 @@ export default {
 			};
 		}
 	},
-	getUsersToShareTo() {
-		return client.get('getuserstoshareto').then((data) => {
+	getUsersToShareTo(search = '', limit = 20, offset = 0) {
+		return client.get('getuserstoshareto', { search, limit, offset }).then((data) => {
 			if (data.status) {
 				// add group id and group label to each user
 				data.data.forEach((user) => {
 					user.group_id = 1;
 					user.group_label = '';
-					user.label = user.name;
+					user.label = user.email ? user.name + ' (' + user.email + ')' : user.name;
 				});
 
 				return data.data;

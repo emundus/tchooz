@@ -111,16 +111,24 @@ class EmundusControllerProgramme extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::READ]])]
 	public function getallprogramforfilter(): EmundusResponse
 	{
-		$programRepository     = new ProgramRepository();
-		$emundusUserRepository = new EmundusUserRepository();
+		$programRepository = new ProgramRepository();
 
-		$userPrograms = $emundusUserRepository->getUserProgramsCodes($this->user->id);
-		$programs     = $programRepository->get(
-			filters: [
-				'code' => $userPrograms
-			],
-			order: 'label'
-		);
+		// An empty list of codes filters everything out, so a user managing every program is not scoped
+		if (EmundusHelperAccess::canManageAllPrograms($this->user->id))
+		{
+			$programs = $programRepository->get(order: 'label');
+		}
+		else
+		{
+			$emundusUserRepository = new EmundusUserRepository();
+
+			$programs = $programRepository->get(
+				filters: [
+					'code' => $emundusUserRepository->getUserProgramsCodes($this->user->id)
+				],
+				order: 'label'
+			);
+		}
 
 		$values = [];
 		$type   = $this->input->getString('type', '');
@@ -155,6 +163,9 @@ class EmundusControllerProgramme extends EmundusController
 		$campaignAccess     = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::READ->value, $this->user->id);
 		$campaignEditAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::UPDATE->value, $this->user->id);
 
+		// Unlike campaigns, a program has no creator to fall back on.
+		$programDeleteAccess = EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asAccessAction($this->programAction->getId(), CrudEnum::DELETE->value, $this->user->id);
+
 		$emConfig = ComponentHelper::getParams('com_emundus');
 		$prestationSociales = $emConfig->get('prestations_sociales', 0) == 1;
 
@@ -163,6 +174,11 @@ class EmundusControllerProgramme extends EmundusController
 		foreach ($programs['datas'] as $key => $program)
 		{
 			$programs['datas'][$key]->label = ['fr' => Text::_($program->label), 'en' => Text::_($program->label)];
+
+			// Access: the right to delete, then the program scope deleteprogram() enforces, so the
+			// button is not offered on a program the endpoint would refuse.
+			$programs['datas'][$key]->can_delete = $programDeleteAccess
+				&& EmundusHelperAccess::canManageProgram($this->user->id, $program->code ?? null);
 
 			if ($campaignAccess)
 			{
@@ -454,19 +470,27 @@ class EmundusControllerProgramme extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => ActionEnum::PROGRAM, 'mode' => CrudEnum::DELETE]])]
 	public function deleteprogram(): EmundusResponse
 	{
-		$data = $this->input->getInt('id');
-		if (empty($data))
+		$ids = $this->getProgramIdsFromInput();
+
+		// The attribute above grants the delete right, it says nothing about which programs are mine.
+		// getUserProgramsIds() only knows the programs linked to the user's groups, and the all rights
+		// group has none: asking it alone would deny the very users who manage every program.
+		if (!EmundusHelperAccess::canManageAllPrograms($this->user->id))
 		{
-			throw new InvalidArgumentException(Text::_("MISSING_PARAMS"));
+			$emundusUserRepository = new EmundusUserRepository();
+			$userProgramIds        = array_map('intval', $emundusUserRepository->getUserProgramsIds($this->user->id));
+
+			if (!empty(array_diff($ids, $userProgramIds)))
+			{
+				throw new AccessException(Text::_('COM_EMUNDUS_PROGRAM_DELETE_NOT_ALLOWED'), EmundusResponse::HTTP_FORBIDDEN);
+			}
 		}
 
-		$result = $this->m_programme->deleteProgram($data);
-		if (!$result)
-		{
-			throw new RuntimeException(Text::_('ERROR_CANNOT_DELETE_PROGRAMS'));
-		}
+		$deleted = $this->programRepository->deleteBatch($ids);
 
-		return EmundusResponse::ok($result, Text::_('PROGRAMMES_DELETED'));
+		$this->cleanProgramCache();
+
+		return EmundusResponse::ok($deleted, Text::_('COM_EMUNDUS_PROGRAM_DELETE_SUCCESS'));
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]

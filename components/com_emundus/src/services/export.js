@@ -99,11 +99,11 @@ export default {
 		selectedAttachmentIds,
 		settings = {},
 		async = false,
-		allowAsync = false,
 	) {
-		let timeout = format === 'xlsx' && allowAsync ? 10000 : null;
-
 		try {
+			// No timeout: an export too large to be served inline is queued as a task by the
+			// backend, which answers with its task id. Aborting here would leave that run
+			// orphaned server-side and queue the same work twice.
 			return await client.post(
 				'export',
 				{
@@ -117,7 +117,7 @@ export default {
 					version: 'next',
 				},
 				null,
-				timeout,
+				null,
 			);
 		} catch (e) {
 			return {

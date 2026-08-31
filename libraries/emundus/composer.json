@@ -29,7 +29,7 @@
         "setasign/fpdf": "1.8.*",
         "setasign/fpdi": "^2.3",
         "tecnickcom/tcpdf": "^6.8.2",
-        "setasign/fpdi_pdf-parser": "^2.0",
+        "setasign/fpdi_pdf-parser": "2.1.4",
         "psr/simple-cache": "^1.0",
         "svrnm/exceldatatables": "0.*",
         "dompdf/dompdf": "3.*",
@@ -45,7 +45,8 @@
         "stripe/stripe-php": "^17.5",
         "kwn/number-to-words": "^2.12",
         "docusign/esign-client": "^8.5",
-        "symfony/expression-language": "^7.4"
+        "symfony/expression-language": "^7.4",
+        "worldline-global-collect/connect-sdk-php": "*"
     },
     "autoload": {
         "psr-4": {"Tchooz\\": "../../components/com_emundus/classes"}

@@ -90,6 +90,7 @@ $data['user'] = $this->_user->id;
                     <?php echo LayoutHelper::render('emundus.application.applicant-header', [
                         'applicant'       => $this->applicant,
                         'applicationFile' => $this->applicationFile,
+                        'favoriteToggle'  => $this->favorite_toggle
                     ]); ?>
                 <?php endif; ?>
 

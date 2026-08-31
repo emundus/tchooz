@@ -78,6 +78,10 @@
     <row constraint_name="jos_emundus_evaluations_ibfk_3" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum" update_rule="CASCADE" delete_rule="CASCADE"/>
     <row constraint_name="jos_emundus_evaluations_ibfk_4" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id" update_rule="CASCADE" delete_rule="NO ACTION"/>
   </table>
+  <table name="jos_emundus_favorite_files">
+    <row constraint_name="emundus_favorite_files_fnum_fk" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum" update_rule="CASCADE" delete_rule="CASCADE"/>
+    <row constraint_name="emundus_favorite_files_user_fk" column_name="user_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id" update_rule="CASCADE" delete_rule="CASCADE"/>
+  </table>
   <table name="jos_emundus_files_request">
     <row constraint_name="jos_emundus_files_request_ibfk_1" column_name="student_id" referenced_table_name="jos_emundus_users" referenced_column_name="user_id" update_rule="CASCADE" delete_rule="CASCADE"/>
     <row constraint_name="jos_emundus_files_request_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum" update_rule="CASCADE" delete_rule="CASCADE"/>

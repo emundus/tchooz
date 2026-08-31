@@ -8,9 +8,12 @@
 
 namespace Unit\Component\Emundus\Class\Services\Import;
 
+use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseInterface;
 use PHPUnit\Framework\TestCase;
+use Tchooz\Enums\Import\FieldTypeEnum;
 use Tchooz\Enums\Import\ImportConflictModeEnum;
+use Tchooz\Enums\Import\ImportErrorCodeEnum;
 use Tchooz\Enums\Import\RowStatusEnum;
 use Tchooz\Services\Import\EntityImporterInterface;
 use Tchooz\Services\Import\ImportContext;
@@ -19,6 +22,7 @@ use Tchooz\Services\Import\ImportPipeline;
 use Tchooz\Services\Import\Mapping\AliasColumnMap;
 use Tchooz\Services\Import\Mapping\ColumnMap;
 use Tchooz\Services\Import\Report\ImportReport;
+use Tchooz\Services\Import\Report\RowError;
 use Tchooz\Services\Import\Source\ArraySource;
 use Tchooz\Services\Import\UpdatableEntityImporter;
 
@@ -114,7 +118,7 @@ class ImportPipelineTest extends TestCase
 		);
 
 		$this->assertSame(1, $report->count(RowStatusEnum::FAILED));
-		$this->assertSame(['must be uppercase'], $report->getRowsByStatus(RowStatusEnum::FAILED)[0]->reasons);
+		$this->assertSame(['must be uppercase'], $this->reasonMessages($report));
 	}
 
 	public function testExistingRowIsSkippedAndPersistNotCalled(): void
@@ -151,10 +155,10 @@ class ImportPipelineTest extends TestCase
 		);
 
 		$this->assertSame(1, $report->count(RowStatusEnum::FAILED));
-		$this->assertSame(['lookup failed'], $report->getRowsByStatus(RowStatusEnum::FAILED)[0]->reasons);
+		$this->assertSame(['lookup failed'], $this->reasonMessages($report));
 	}
 
-	public function testEmptyRowsAreIgnoredSilently(): void
+	public function testEmptyRowsAreCountedAsIgnoredRatherThanDropped(): void
 	{
 		$importer = $this->fakeImporter();
 
@@ -170,6 +174,76 @@ class ImportPipelineTest extends TestCase
 		$this->assertSame(2, $report->count(RowStatusEnum::CREATED));
 		$this->assertSame(0, $report->count(RowStatusEnum::FAILED));
 		$this->assertSame(0, $report->count(RowStatusEnum::SKIPPED));
+
+		// The blank row must still appear in the counters: a file that maps to
+		// nothing has to be able to say "29 rows read, 29 ignored" instead of
+		// reporting an empty result with no explanation.
+		$this->assertSame(1, $report->count(RowStatusEnum::IGNORED));
+		$this->assertSame(3, $report->toArray()['summary']['total']);
+	}
+
+	// --------------------------------------------------------------------
+	// Optional columns never cost the whole row
+	// --------------------------------------------------------------------
+
+	public function testInvalidOptionalValueWarnsAndStillImportsTheRow(): void
+	{
+		$importer = $this->typedImporter();
+
+		$report = (new ImportPipeline($this->db))->run(
+			new ArraySource([
+				['id' => 'a', 'count' => 'not-a-number'],
+			]),
+			$importer
+		);
+
+		$this->assertSame(1, $report->count(RowStatusEnum::CREATED), 'An optional column must not fail the row');
+		$this->assertSame(0, $report->count(RowStatusEnum::FAILED));
+
+		// Built through the same Text calls as the pipeline: the assertion holds
+		// whether or not a language pack is loaded in the test environment.
+		$expected = Text::sprintf(
+			'COM_EMUNDUS_IMPORT_OPTIONAL_VALUE_IGNORED',
+			Text::sprintf(ImportErrorCodeEnum::INVALID_INTEGER->value, 'count', 'not-a-number')
+		);
+
+		$warnings = $report->getRows()[0]->warnings;
+		$this->assertCount(1, $warnings, 'The reason must be reported as a warning');
+		$this->assertSame(
+			$expected,
+			$warnings[0],
+			'The warning must wrap the type error in the "optional value left out" wording'
+		);
+	}
+
+	public function testInvalidOptionalValueIsNotPersisted(): void
+	{
+		$importer = $this->typedImporter();
+
+		(new ImportPipeline($this->db))->run(
+			new ArraySource([
+				['id' => 'a', 'count' => 'not-a-number'],
+			]),
+			$importer
+		);
+
+		$this->assertNull($importer->persisted[0]['count'], 'An unusable value must be dropped, never persisted');
+	}
+
+	public function testInvalidRequiredValueStillFailsTheRow(): void
+	{
+		$importer = $this->typedImporter(requiredCount: true);
+
+		$report = (new ImportPipeline($this->db))->run(
+			new ArraySource([
+				['id' => 'a', 'count' => 'not-a-number'],
+			]),
+			$importer
+		);
+
+		$this->assertSame(0, $report->count(RowStatusEnum::CREATED));
+		$this->assertSame(1, $report->count(RowStatusEnum::FAILED), 'A required column must still block the row');
+		$this->assertSame([], $report->getRows()[0]->warnings, 'A blocking error is not a warning');
 	}
 
 	// --------------------------------------------------------------------
@@ -298,7 +372,7 @@ class ImportPipelineTest extends TestCase
 
 		$this->assertSame(2, $report->count(RowStatusEnum::CREATED));
 		$this->assertSame(1, $report->count(RowStatusEnum::FAILED));
-		$this->assertSame(['B fails'], $report->getRowsByStatus(RowStatusEnum::FAILED)[0]->reasons);
+		$this->assertSame(['B fails'], $this->reasonMessages($report));
 	}
 
 	// --------------------------------------------------------------------
@@ -557,8 +631,10 @@ class ImportPipelineTest extends TestCase
 
 	public function testWithoutTimeBudgetEveryRowIsProcessed(): void
 	{
-		$importer = $this->fakeImporter();
-		$called   = false;
+		$importer    = $this->fakeImporter();
+		$invocations = 0;
+		$completed   = null;
+		$lastRow     = null;
 
 		$report = (new ImportPipeline($this->db))->run(
 			new ArraySource([
@@ -566,13 +642,123 @@ class ImportPipelineTest extends TestCase
 				['id' => 'b', 'value' => 'B'],
 			]),
 			$importer,
-			new ImportOptions(onCheckpoint: function () use (&$called) {
-				$called = true;
+			new ImportOptions(onCheckpoint: function (int $row, ImportReport $r, bool $isComplete) use (&$invocations, &$completed, &$lastRow) {
+				$invocations++;
+				$completed = $isComplete;
+				$lastRow   = $row;
 			})
 		);
 
-		$this->assertFalse($called, 'Checkpoint must not fire when no time budget is set.');
+		// Finalised contract: the checkpoint fires once — at natural completion,
+		// with completed = true. (It used to fire only on a time-budget break.)
+		$this->assertSame(1, $invocations, 'Checkpoint fires exactly once per run.');
+		$this->assertTrue($completed, 'Natural completion reports completed = true.');
+		$this->assertSame(3, $lastRow, 'Last processed row is the highest data row number (keys 2,3).');
 		$this->assertSame(2, $report->count(RowStatusEnum::CREATED));
+	}
+
+	public function testCountRowsReturnsHighestRowNumber(): void
+	{
+		// 3 data rows → iterator keys 2,3,4 → highest is 4.
+		$source = new ArraySource([
+			['id' => 'a', 'value' => 'A'],
+			['id' => 'b', 'value' => 'B'],
+			['id' => 'c', 'value' => 'C'],
+		]);
+
+		$this->assertSame(4, ImportPipeline::countRows($source));
+	}
+
+	public function testCountRowsReturnsZeroForEmptySource(): void
+	{
+		$this->assertSame(0, ImportPipeline::countRows(new ArraySource([], ['id', 'value'])));
+	}
+
+	public function testValidateOnlyReportsValidRowsWithoutPersisting(): void
+	{
+		$importer = $this->fakeImporter();
+
+		$report = (new ImportPipeline($this->db))->run(
+			new ArraySource([
+				['id' => 'a', 'value' => 'A'],
+				['id' => 'b', 'value' => 'B'],
+			]),
+			$importer,
+			new ImportOptions(validateOnly: true)
+		);
+
+		$this->assertSame(2, $report->count(RowStatusEnum::VALID));
+		$this->assertSame(0, $report->count(RowStatusEnum::CREATED));
+		$this->assertCount(0, $importer->persisted, 'validateOnly must never persist.');
+	}
+
+	public function testValidateOnlyStillFlagsValidationFailures(): void
+	{
+		$importer                  = $this->fakeImporter();
+		$importer->validateReturns = ['boom'];
+
+		$report = (new ImportPipeline($this->db))->run(
+			new ArraySource([['id' => 'a', 'value' => 'A']]),
+			$importer,
+			new ImportOptions(validateOnly: true)
+		);
+
+		$this->assertSame(0, $report->count(RowStatusEnum::VALID));
+		$this->assertSame(1, $report->count(RowStatusEnum::FAILED));
+		$this->assertCount(0, $importer->persisted);
+	}
+
+	public function testValidateOnlySkipsExistsLookup(): void
+	{
+		// exists() would throw — validateOnly must short-circuit before reaching it.
+		$importer               = $this->fakeImporter(existingIds: ['a']);
+		$importer->existsThrows = new \RuntimeException('exists() must not be called in validateOnly');
+
+		$report = (new ImportPipeline($this->db))->run(
+			new ArraySource([['id' => 'a', 'value' => 'A']]),
+			$importer,
+			new ImportOptions(validateOnly: true)
+		);
+
+		$this->assertSame(1, $report->count(RowStatusEnum::VALID));
+	}
+
+	public function testOnProgressFiresEveryConfiguredNumberOfRowsWithCommittedCursor(): void
+	{
+		$calls = [];
+
+		(new ImportPipeline($this->db))->run(
+			new ArraySource([
+				['id' => 'a', 'value' => 'A'],
+				['id' => 'b', 'value' => 'B'],
+				['id' => 'c', 'value' => 'C'],
+				['id' => 'd', 'value' => 'D'],
+				['id' => 'e', 'value' => 'E'],
+			]),
+			$this->fakeImporter(),
+			new ImportOptions(
+				progressEveryRows: 2,
+				onProgress: function (int $row) use (&$calls) {
+					$calls[] = $row;
+				}
+			)
+		);
+
+		// 5 rows (keys 2..6), a flush every 2 examined rows fires at the 2nd and
+		// 4th iteration, each reporting the previously-committed cursor.
+		$this->assertSame([2, 4], $calls);
+	}
+
+	public function testOnProgressIsOptional(): void
+	{
+		$report = (new ImportPipeline($this->db))->run(
+			new ArraySource([['id' => 'a', 'value' => 'A']]),
+			$this->fakeImporter(),
+			new ImportOptions()
+		);
+
+		// No onProgress configured: the run completes normally without firing it.
+		$this->assertSame(1, $report->count(RowStatusEnum::CREATED));
 	}
 
 	// --------------------------------------------------------------------
@@ -583,6 +769,71 @@ class ImportPipelineTest extends TestCase
 	 * @param string[] $required
 	 * @param string[] $existingIds  ids that exists() should return true for
 	 */
+	/** Raw messages of the first failed row, for assertions (params[0] carries them for RUNTIME errors). */
+	private function reasonMessages(ImportReport $report): array
+	{
+		return array_map(
+			static fn (RowError $error) => $error->params[0] ?? '',
+			$report->getRowsByStatus(RowStatusEnum::FAILED)[0]->reasons
+		);
+	}
+
+	/**
+	 * Importer whose "count" column is typed INTEGER, optional unless asked
+	 * otherwise — the shape needed to exercise required vs optional handling.
+	 */
+	private function typedImporter(bool $requiredCount = false): EntityImporterInterface
+	{
+		return new class($requiredCount) implements EntityImporterInterface {
+			public array $persisted = [];
+
+			private ColumnMap $columnMap;
+
+			public function __construct(bool $requiredCount)
+			{
+				$this->columnMap = AliasColumnMap::create()
+					->field('id', required: true)
+					->field('count', type: FieldTypeEnum::INTEGER, required: $requiredCount)
+					->build();
+			}
+
+			public static function create(): EntityImporterInterface
+			{
+				throw new \LogicException('Not used in tests.');
+			}
+
+			public function getType(): string
+			{
+				return 'typed';
+			}
+
+			public function getSupportedModes(): array
+			{
+				return [ImportConflictModeEnum::SKIP, ImportConflictModeEnum::CREATE_NEW];
+			}
+
+			public function getColumnMap(): ColumnMap
+			{
+				return $this->columnMap;
+			}
+
+			public function validate(array $row, ImportContext $context): array
+			{
+				return [];
+			}
+
+			public function exists(array $row, ImportContext $context): bool
+			{
+				return false;
+			}
+
+			public function persist(array $row, ImportContext $context): void
+			{
+				$this->persisted[] = $row;
+			}
+		};
+	}
+
 	private function fakeImporter(array $required = [], array $existingIds = []): EntityImporterInterface
 	{
 		return new class($required, $existingIds) implements EntityImporterInterface {
@@ -629,7 +880,10 @@ class ImportPipelineTest extends TestCase
 
 			public function validate(array $row, ImportContext $context): array
 			{
-				return $this->validateReturns;
+				return array_map(
+					static fn (string $message) => new RowError(ImportErrorCodeEnum::RUNTIME, null, [$message]),
+					$this->validateReturns
+				);
 			}
 
 			public function exists(array $row, ImportContext $context): bool

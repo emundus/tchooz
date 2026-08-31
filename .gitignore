@@ -70,6 +70,9 @@ images/stories/*
 /images/emundus/gallery/*
 /image/logo.png
 /images/emundus/custom/*
+/images/emundus/resources/*
+!/images/emundus/resources/.htaccess
+!/images/emundus/resources/web.config
 
 # COMPILER
 ## TAILWIND

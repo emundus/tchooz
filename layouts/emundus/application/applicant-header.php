@@ -24,6 +24,7 @@ $displayData = $displayData ?? [];
 
 $applicant       = $displayData['applicant'] ?? null;
 $applicationFile = $displayData['applicationFile'] ?? null;
+$favoriteToggle = $displayData['favoriteToggle'] ?? null;
 
 if (empty($applicant) || empty($applicationFile) || !$applicationFile instanceof ApplicationFileEntity)
 {
@@ -63,9 +64,14 @@ $copyValue = !empty($reference) ? ($reference->getReference() . '#' . $shortRefe
         </div>
     </div>
     <div class="tw-ml-4">
-        <p class="em-font-weight-500">
-			<?php echo htmlspecialchars($applicant->lastname . ' ' . $applicant->firstname, ENT_QUOTES, 'UTF-8'); ?>
-        </p>
+        <div class="tw-flex tw-gap-2 tw-items-center">
+            <?php if (!empty($favoriteToggle)) : ?>
+                <div class="em-favorite-toggle-slot tw-flex tw-items-center"><?php echo $favoriteToggle; ?></div>
+            <?php endif; ?>
+            <p class="em-font-weight-500">
+                <?php echo htmlspecialchars($applicant->lastname . ' ' . $applicant->firstname, ENT_QUOTES, 'UTF-8'); ?>
+            </p>
+        </div>
         <p><?php echo htmlspecialchars($applicationFile->getFnum(), ENT_QUOTES, 'UTF-8'); ?></p>
 		<?php if ($showReference) : ?>
             <div class="tw-flex tw-items-end tw-gap-1">

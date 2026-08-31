@@ -23,6 +23,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\User\User;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterProgramCreateDefinition;
 use Tchooz\Factories\Language\LanguageFactory;
 
 class EmundusModelProgramme extends ListModel
@@ -713,7 +714,15 @@ class EmundusModelProgramme extends ListModel
 					// Call plugin triggers
 					$this->app->triggerEvent('onCallEventHandler', [
 						'onAfterProgramCreate',
-						['programme' => $programme, 'user_id' => $user_id, 'context' => new EventContextEntity($user, [],[],[])],
+						[
+							'programme' => $programme,
+							'user_id'   => $user_id,
+							'context'   => new EventContextEntity($user, [], [], [
+								onAfterProgramCreateDefinition::PROGRAM_ID_KEY    => (int) $programme->id,
+								onAfterProgramCreateDefinition::PROGRAM_CODE_KEY  => $programme->code,
+								onAfterProgramCreateDefinition::PROGRAM_LABEL_KEY => $programme->label,
+							]),
+						],
 					]);
 
 					$response = array(
@@ -817,6 +826,10 @@ class EmundusModelProgramme extends ListModel
 		return $added;
 	}
 
+	/**
+	 * @deprecated Use ProgramRepository::deleteBatch() instead, which refuses to delete a program
+	 *             that still has campaigns. This one deletes those campaigns along the way.
+	 */
 	public function deleteProgram(int|array $data): bool
 	{
 		$deleted = false;

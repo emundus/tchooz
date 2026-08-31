@@ -68,11 +68,26 @@ export default {
 		}
 	},
 
-	async updateStatus(id, status) {
+	async updateStatus(id, status, comment = '') {
 		try {
 			return await client.post('updatechoicestatus', {
 				id: id,
 				status: status,
+				comment: comment,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				error: e.message,
+			};
+		}
+	},
+
+	async updateChoiceComment(id, comment) {
+		try {
+			return await client.post('updatechoicecomment', {
+				id: id,
+				comment: comment,
 			});
 		} catch (e) {
 			return {

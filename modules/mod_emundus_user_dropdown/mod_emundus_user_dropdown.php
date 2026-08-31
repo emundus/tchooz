@@ -71,6 +71,18 @@ if(!empty($user->id))
 	}
 }
 
+$link_imports           = '';
+$actionRepository = new ActionRepository();
+if(!empty($user->id))
+{
+	$importAction = $actionRepository->getByName('import');
+
+	if(!empty($importAction) && EmundusHelperAccess::asAccessAction($importAction->getId(), CrudEnum::CREATE->value, $user->id))
+	{
+		$link_imports = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emundus&view=imports&layout=imports');
+	}
+}
+
 $custom_actions = $params->get('custom_actions', []);
 
 if (!empty($custom_actions) && !empty($user->id))

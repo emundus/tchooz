@@ -1000,6 +1000,20 @@ class EmundusControllerWebhook extends BaseController
 
 	public function updatePaymentTransaction()
 	{
+		// Worldline activates an endpoint by sending a GET carrying this header, and expects its
+		// value echoed back verbatim as plain text. The endpoint stays inactive until it does.
+		$endpoint_verification = $_SERVER['HTTP_X_GCS_WEBHOOKS_ENDPOINT_VERIFICATION'] ?? '';
+
+		if (!empty($endpoint_verification))
+		{
+			Log::addLogger(['text_file' => 'com_emundus.payment.php'], Log::ALL, ['com_emundus.payment']);
+			Log::add('Worldline endpoint verification request received', Log::INFO, 'com_emundus.payment');
+
+			header('Content-Type: text/plain; charset=utf-8');
+			echo $endpoint_verification;
+			exit;
+		}
+
 		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
 		$sync_id = $this->input->getInt('sync_id', 0);
@@ -1148,6 +1162,62 @@ class EmundusControllerWebhook extends BaseController
 							Log::add('Paybox signature verification failed', Log::ERROR, 'com_emundus.payment');
 						}
 						break;
+					case PaymentGatewayEnum::WORLDLINE:
+						Log::add('Worldline transaction update attempt', Log::INFO, 'com_emundus.payment');
+						$added_to_queue = false;
+						// Worldline signs the raw body and identifies its key through the request headers.
+						$verified = $synchronizer->verifySignature($raw_payload, $this->getRequestHeaders());
+
+						if ($verified)
+						{
+							Log::add('Worldline signature verified', Log::INFO, 'com_emundus.payment');
+							$decoded   = json_decode($raw_payload, true);
+							$reference = $decoded['payment']['paymentOutput']['references']['merchantReference'] ?? '';
+
+							Log::add(sprintf(
+								'Worldline event received: type=%s status=%s category=%s ref=%s',
+								$decoded['type'] ?? '-',
+								$decoded['payment']['status'] ?? '-',
+								$decoded['payment']['statusOutput']['statusCategory'] ?? '-',
+								$reference !== '' ? $reference : '-'
+							), Log::INFO, 'com_emundus.payment');
+
+							if (!empty($reference))
+							{
+								$transaction_id = $transaction_repository->getTransactionIdByExternalReference($reference);
+								$transaction    = $transaction_repository->getById($transaction_id);
+
+								if (!empty($transaction) && $transaction->getStatus() === TransactionStatus::CONFIRMED)
+								{
+									Log::add('Worldline webhook replayed for already confirmed transaction ' . $reference . ', skipping', Log::INFO, 'com_emundus.payment');
+									$added_to_queue = true;
+								}
+								else
+								{
+									$added_to_queue = $transaction_repository->addTransactionToQueue($decoded, $reference, $sync_id);
+
+									if ($added_to_queue)
+									{
+										$transactions = $transaction_repository->getTransactionsInQueue(['pending'], [$transaction_id]);
+										$managed      = $transaction_repository->manageQueueTransactions($transactions);
+										Log::add('Worldline transaction ' . $reference . ' managed: ' . (int) $managed, Log::INFO, 'com_emundus.payment');
+									}
+									else
+									{
+										Log::add('Worldline transaction not added to queue', Log::ERROR, 'com_emundus.payment');
+									}
+								}
+							}
+							else
+							{
+								Log::add('Worldline webhook received without merchantReference', Log::WARNING, 'com_emundus.payment');
+							}
+						}
+						else
+						{
+							Log::add('Worldline signature verification failed', Log::ERROR, 'com_emundus.payment');
+						}
+						break;
 					default:
 						Log::add('Wrong attempt to add transaction to queue, no matching synchronizer found', Log::ERROR, 'com_emundus.payment');
 						$verified       = false;
@@ -1227,6 +1297,33 @@ class EmundusControllerWebhook extends BaseController
 
 		$this->sendJsonResponse($response);
 		exit;
+	}
+
+	/**
+	 * Incoming HTTP headers, rebuilt from $_SERVER so it does not depend on getallheaders()
+	 * being available (it is not under php-fpm).
+	 *
+	 * @return array<string, string>
+	 */
+	private function getRequestHeaders(): array
+	{
+		$headers = [];
+
+		foreach ($_SERVER as $key => $value)
+		{
+			if (str_starts_with($key, 'HTTP_'))
+			{
+				$name           = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($key, 5)))));
+				$headers[$name] = $value;
+			}
+		}
+
+		if (isset($_SERVER['CONTENT_TYPE']))
+		{
+			$headers['Content-Type'] = $_SERVER['CONTENT_TYPE'];
+		}
+
+		return $headers;
 	}
 
 	public function getwidgets()

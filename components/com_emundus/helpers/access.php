@@ -15,6 +15,7 @@
 // no direct access
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
@@ -22,6 +23,7 @@ use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\NumericSign\RequestRepository;
+use Tchooz\Repositories\User\EmundusUserRepository;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
@@ -318,7 +320,7 @@ class EmundusHelperAccess
 		require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 		$m_users = new EmundusModelUsers();
 
-		if (!is_null($fnum) && !empty($fnum))
+		if (!empty($fnum))
 		{
 			$accessList = $m_users->getGroupActions($gids, $fnum, $action_id, $crud);
 			$canAccess  = (!empty($accessList)) ? -1 : null;
@@ -364,6 +366,77 @@ class EmundusHelperAccess
 
 			return false;
 		}
+	}
+
+	/**
+	 * Program scopes already resolved during this request, keyed by user id. A user's groups do not change
+	 * while a request runs, and canManageProgram() is called once per entity when a list is served.
+	 *
+	 * @var array<int, array{all_programs: bool, codes: array<string>}>
+	 */
+	private static array $program_scopes = [];
+
+	private static function getProgramScope(int $user_id): array
+	{
+		if (!isset(self::$program_scopes[$user_id]))
+		{
+			$all_rights_group = (int) ComponentHelper::getParams('com_emundus')->get('all_rights_group', 1);
+
+			require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+			$m_users   = new EmundusModelUsers();
+			$group_ids = array_map('intval', $m_users->getUserGroups($user_id, 'Column') ?: []);
+
+			$emundusUserRepository = new EmundusUserRepository();
+
+			self::$program_scopes[$user_id] = [
+				'all_programs' => in_array($all_rights_group, $group_ids, true),
+				'codes'        => $emundusUserRepository->getUserProgramsCodes($user_id),
+			];
+		}
+
+		return self::$program_scopes[$user_id];
+	}
+
+	/**
+	 * Tells whether a user manages every program, ie belongs to the group flagged as all rights.
+	 *
+	 * @param   int  $user_id
+	 *
+	 * @return bool
+	 */
+	public static function canManageAllPrograms(int $user_id): bool
+	{
+		return self::getProgramScope($user_id)['all_programs'];
+	}
+
+	/**
+	 * Tells whether a user may manage (create, update, delete) entities attached to a given program.
+	 * Outside of the all rights group, a user only manages the programs of their own groups: belonging
+	 * to no program means managing nothing, not managing everything.
+	 *
+	 * Reading is not covered here: a user holding the read action on a file reads every entity of that
+	 * file, including the ones outside of the programs they manage.
+	 *
+	 * @param   int          $user_id
+	 * @param   string|null  $program_code
+	 *
+	 * @return bool
+	 */
+	public static function canManageProgram(int $user_id, ?string $program_code): bool
+	{
+		$scope = self::getProgramScope($user_id);
+
+		if ($scope['all_programs'])
+		{
+			return true;
+		}
+
+		if (empty($program_code))
+		{
+			return false;
+		}
+
+		return in_array($program_code, $scope['codes'], true);
 	}
 
 	/**

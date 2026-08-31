@@ -308,6 +308,26 @@ abstract class EmundusController extends BaseController
 	}
 
 	/**
+	 * CSRF guard for a JSON endpoint.
+	 *
+	 * BaseController::checkToken() redirects to the referrer on failure, which swaps the JSON
+	 * response for the site's HTML: unusable for a client that awaits a payload. Hence the
+	 * no-redirect form plus an exception execute() turns into a clean 403 JSON.
+	 *
+	 * Session::checkToken() reads the X-CSRF-Token header before the request parameters, so any
+	 * caller going through FetchClient (get, post or delete) satisfies this.
+	 *
+	 * @throws AccessException When the token is missing or stale.
+	 */
+	protected function assertToken(string $method = 'post'): void
+	{
+		if (!$this->checkToken($method, false))
+		{
+			throw new AccessException(Text::_('JINVALID_TOKEN_NOTICE'), EmundusResponse::HTTP_FORBIDDEN);
+		}
+	}
+
+	/**
 	 * @codeCoverageIgnore
 	 */
 	public function getUser(): ?User

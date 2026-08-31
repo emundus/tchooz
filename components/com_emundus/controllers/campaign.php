@@ -1232,10 +1232,22 @@ class EmundusControllerCampaign extends EmundusController
 		{
 			$filters = json_decode($filters, true);
 		}
+		$emundusUserRepository = new EmundusUserRepository();
+
+		// Managers only pick choices within the programs of their groups. Applicants are not scoped by program.
+		$scoped_to_programs  = false;
+		$manageable_programs = [];
+
 		$fnum = $this->input->getString('fnum');
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction($applicationChoicesAction->getId(), 'r', $this->user->id, $fnum))
 		{
-			$current_fnum = $fnum;
+			$current_fnum       = $fnum;
+			$scoped_to_programs = !EmundusHelperAccess::canManageAllPrograms($this->user->id);
+
+			if ($scoped_to_programs)
+			{
+				$manageable_programs = $emundusUserRepository->getUserProgramsCodes($this->user->id);
+			}
 		}
 		else
 		{
@@ -1349,14 +1361,17 @@ class EmundusControllerCampaign extends EmundusController
 			return;
 		}
 
-		$emundusUserRepository = new EmundusUserRepository();
-		$emundusUser           = $emundusUserRepository->getByFnum($current_fnum);
-		$categoryUser          = $emundusUser->getUserCategory();
+		$emundusUser  = $emundusUserRepository->getByFnum($current_fnum);
+		$categoryUser = $emundusUser->getUserCategory();
 
 		$campaign_parameters = $this->campaignRepository->getParameters();
-		$campaign_choices    = $this->campaignRepository->getAllCampaigns('ASC', $search, 0, 0, 'esc.label', true, $applicationFile->getCampaignId(), $categoryUser?->getId(), null, null, [], [], $filters);
-		if ($campaign_choices->getTotalItems() > 0)
+
+		// getAllCampaigns reads an empty list of codes as "no program filter", so a manager who manages
+		// no program at all must not reach it: they would get every choice instead of none.
+		if (!$scoped_to_programs || !empty($manageable_programs))
 		{
+			$campaign_choices = $this->campaignRepository->getAllCampaigns('ASC', $search, 0, 0, 'esc.label', true, $applicationFile->getCampaignId(), $categoryUser?->getId(), null, null, $manageable_programs, [], $filters);
+
 			foreach ($campaign_choices->getItems() as $choice)
 			{
 				/**

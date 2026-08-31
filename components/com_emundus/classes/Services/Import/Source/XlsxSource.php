@@ -11,6 +11,7 @@ namespace Tchooz\Services\Import\Source;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Tchooz\Services\Import\Mapping\RowMapper;
 
 /**
  * Reads a single worksheet from an xlsx/xls/ods file.
@@ -73,6 +74,11 @@ final class XlsxSource implements ImportSourceInterface
 		$mapped = [];
 		foreach ($rows as $index => $row)
 		{
+			if (RowMapper::isRowEmpty($row))
+			{
+				continue;
+			}
+
 			$assoc = [];
 			foreach ($headers as $headerIndex => $header)
 			{

@@ -862,21 +862,63 @@ class EmundusModelEmails extends JModelList
 		if (!class_exists('EmundusHelperTags')) {
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/tags.php');
 		}
-		$tags_in_content = !empty($content) ? (new EmundusHelperTags())->getVariables($content, 'SQUARE') : [];
-		$tag_context     = new TagContext($user_id ?? 0, $fnum, null, $passwd, $content, false);
+		// One TagEntity per occurrence found in the content: the occurrence carries the modifiers, so
+		// [TAG] and [TAG:STATUS("rejected")] are resolved separately, each with its own value.
+		$tag_occurrences = [];
+		if (!empty($content)) {
+			foreach (array_unique((new EmundusHelperTags())->getVariables($content, 'SQUARE')) as $occurrence) {
+				$tag_occurrences[] = new TagEntity($occurrence);
+			}
+		}
+
 		foreach (TagProviderRegistry::all() as $provider) {
-			// Cheap string check first: when a content is given, only consider providers whose tags appear in it.
-			if (!empty($content) && empty(array_intersect($provider->getProvidedTags(), $tags_in_content))) {
+			// Cheap string check first: when a content is given, only consider providers whose tags appear in
+			// it. The comparison is made on parsed names, an occurrence holding modifiers being written
+			// TAG:MODIFIER(param) and never matching a bare tag name.
+			$occurrences = array_filter($tag_occurrences, function ($tag_occurrence) use ($provider) {
+				return in_array($tag_occurrence->getName(), $provider->getProvidedTags());
+			});
+
+			if (!empty($content) && empty($occurrences)) {
 				continue;
 			}
 
-			if (!$provider->supports($tag_context)) {
+			// Without content there is no occurrence to read: the provider is asked for its bare tags.
+			if (empty($content)) {
+				$tag_context = new TagContext($user_id ?? 0, $fnum, null, $passwd, $content, false);
+
+				if (!$provider->supports($tag_context)) {
+					continue;
+				}
+
+				foreach ($provider->provide($tag_context) as $tag => $value) {
+					$patterns[]     = '/\[' . $tag . '\]/';
+					$replacements[] = $value;
+				}
+
 				continue;
 			}
 
-			foreach ($provider->provide($tag_context) as $tag => $value) {
-				$patterns[]     = '/\[' . $tag . '\]/';
-				$replacements[] = $value;
+			foreach ($occurrences as $tag_occurrence) {
+				$tag_context = new TagContext($user_id ?? 0, $fnum, null, $passwd, $content, false, $tag_occurrence->getModifiers());
+
+				if (!$provider->supports($tag_context)) {
+					continue;
+				}
+
+				foreach ($provider->provide($tag_context) as $tag => $value) {
+					if ($tag !== $tag_occurrence->getName()) {
+						continue;
+					}
+
+					$tag_occurrence->setValue($value);
+
+					// The occurrence is matched literally: getFullPatternName() accepts any modifier
+					// parameters, so it would replace [TAG:STATUS("a")] and [TAG:STATUS("b")] alike.
+					// Formatting modifiers (UPPERCASE, TRIM) still apply on top of the resolved value.
+					$patterns[]     = '/\[' . preg_quote($tag_occurrence->getFullName(), '/') . '\]/';
+					$replacements[] = $tag_occurrence->getValueModified();
+				}
 			}
 		}
 

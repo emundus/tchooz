@@ -8,7 +8,9 @@
 
 namespace Tchooz\Services\Import\Mapping;
 
+use Joomla\CMS\Language\Text;
 use Tchooz\Enums\Import\FieldTypeEnum;
+use Tchooz\Services\Import\Referential\ReferentialProviderInterface;
 
 /**
  * Read-only description of a canonical import field.
@@ -18,9 +20,10 @@ use Tchooz\Enums\Import\FieldTypeEnum;
  * expected primitive type, the closed list of values when applicable, an
  * optional format hint and an optional list of illustrative examples.
  *
- * For ENUM types `$values` is a list of {value, label} pairs (closed list).
- * For non-ENUM types `$examples` carries optional illustrative samples
- * (open list, displayed as helper text alongside the format hint).
+ * For closed-list types `$values` is a list of {value, label} pairs: declared
+ * by the field for ENUM, derived from the type itself for BOOLEAN. Open-list
+ * types instead carry optional illustrative samples in `$examples`, displayed
+ * as helper text alongside the format hint.
  */
 final class FieldDescriptor
 {
@@ -29,9 +32,9 @@ final class FieldDescriptor
 	 * @param string[]                                             $aliases
 	 * @param bool                                                 $required
 	 * @param FieldTypeEnum                                        $type
-	 * @param array<int, array{value: string, label: string}>|null $values    Closed list (ENUM only).
+	 * @param array<int, array{value: string, label: string}>|null $values    Closed list (ENUM, BOOLEAN).
 	 * @param string|null                                          $format
-	 * @param array<int, array{value: string, label: string}>|null $examples  Open list (non-ENUM).
+	 * @param array<int, array{value: string, label: string}>|null $examples  Open list (no closed list).
 	 * @param bool                                                 $validate  When false, the pipeline's
 	 *                                                                        generic TypeValidator skips
 	 *                                                                        this field — the type/format
@@ -43,6 +46,10 @@ final class FieldDescriptor
 	 *                                                                        providing a human-readable name for
 	 *                                                                        the field. Null falls back to the
 	 *                                                                        canonical name on the frontend.
+	 * @param ReferentialProviderInterface|null                    $referential Source of the closed list when
+	 *                                                                        $type === REFERENTIAL: a dynamic,
+	 *                                                                        DB-backed list resolved once per
+	 *                                                                        import.
 	 */
 	public function __construct(
 		public readonly string         $canonical,
@@ -53,7 +60,8 @@ final class FieldDescriptor
 		public readonly ?string        $format = null,
 		public readonly ?array         $examples = null,
 		public readonly bool           $validate = true,
-		public readonly ?string        $label = null
+		public readonly ?string        $label = null,
+		public readonly ?ReferentialProviderInterface $referential = null
 	) {}
 
 	/**
@@ -72,12 +80,20 @@ final class FieldDescriptor
 
 		if ($this->label !== null && $this->label !== '')
 		{
-			$out['label'] = $this->label;
+			$out['label'] = Text::_($this->label);
 		}
 
 		if ($this->values !== null)
 		{
 			$out['values'] = $this->values;
+		}
+		
+		if ($this->referential !== null)
+		{
+			$out['referential'] = [
+				'key'   => $this->referential->getKey(),
+				'label' => $this->referential->getLabel(),
+			];
 		}
 
 		if ($this->format !== null && $this->format !== '')
@@ -88,6 +104,24 @@ final class FieldDescriptor
 		if ($this->examples !== null && $this->examples !== [])
 		{
 			$out['examples'] = $this->examples;
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Same shape as toArray() plus the resolved referential entries under
+	 * `referential.entries`.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function toArrayWithReferential(): array
+	{
+		$out = $this->toArray();
+
+		if ($this->referential !== null)
+		{
+			$out['referential']['entries'] = $this->referential->getEntries();
 		}
 
 		return $out;

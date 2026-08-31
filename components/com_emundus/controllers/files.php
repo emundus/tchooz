@@ -3166,7 +3166,7 @@ class EmundusControllerFiles extends EmundusController
 				->addCondition('50');
 			$objConditional3->getStyle()->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
 
-			$i = 0;
+			$i = 1;
 			//FNUM
 			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
 			$objPHPExcel->getActiveSheet()->getStyle('A2:A' . ($nbrow + 1))->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);

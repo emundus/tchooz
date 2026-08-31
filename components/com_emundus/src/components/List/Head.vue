@@ -43,14 +43,13 @@ export default {
 		<div class="tw-mb-6 tw-flex tw-items-center tw-justify-between">
 			<h1>{{ translate(title) }}</h1>
 			<div class="tw-flex tw-flex-row tw-items-center tw-gap-2">
-				<a
-					v-if="secondaryAction"
-					id="secondary-action-btn"
-					class="tw-btn-secondary tw-mr-2 tw-w-auto tw-cursor-pointer tw-rounded-coordinator"
-					@click="onClickAction(secondaryAction)"
-				>
+				<Button v-if="secondaryAction" variant="secondary" emphasis="lite" @click="onClickAction(secondaryAction)">
+					<template #leading v-if="secondaryAction.iconLabel">
+						<Icon :name="secondaryAction.iconLabel" />
+					</template>
 					{{ translate(secondaryAction.label) }}
-				</a>
+				</Button>
+
 				<Button v-if="primaryAction" @click="onClickAction(primaryAction)">
 					<template #leading v-if="primaryAction.iconLabel">
 						<Icon :name="primaryAction.iconLabel" />
