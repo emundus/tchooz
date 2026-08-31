@@ -80,6 +80,9 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 			throw new \InvalidArgumentException(Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_EMAIL_ALREADY_EXISTS'), 400);
 		}
 
+		// The column is an integer: a raw false would be quoted as an empty string.
+		$contact_object->published = (int) $entity->isPublished();
+
 		if (!empty($entity->getGender()))
 		{
 			$contact_object->gender = $entity->getGender()->value;
@@ -92,6 +95,9 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 		else {
 			$contact_object->status = VerifiedStatusEnum::TO_BE_VERIFIED->value;
 		}
+
+		// insertObject/updateObject quote a PHP false as '', which the column rejects.
+		$contact_object->published = (int) $entity->isPublished();
 
 		if (empty($entity->getId()))
 		{

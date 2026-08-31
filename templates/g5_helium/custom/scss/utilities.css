@@ -346,7 +346,7 @@
                 color: var(--neutral-800);
             }
 
-            input:where(.swal2-input), textarea:where(.swal2-textarea) {
+            input:where(.swal2-input), textarea:where(.swal2-textarea), select:where(.swal2-select) {
                 margin: 0;
             }
         }

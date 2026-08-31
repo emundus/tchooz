@@ -20,6 +20,8 @@ use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\NumericSign\Request as Request;
 use Tchooz\Entities\NumericSign\RequestSigners;
 use Tchooz\Entities\Upload\UploadEntity;
+use Tchooz\Enums\NumericSign\DocaposteContactEditabilityEnum;
+use Tchooz\Enums\NumericSign\DocaposteContactReadOnlyParameterEnum;
 use Tchooz\Enums\NumericSign\DocaposteEmailTypeEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Enums\Upload\UploadValidationStatusEnum;
@@ -104,7 +106,15 @@ class DocaposteSynchronizer extends Api
 		$conf['mode']              = $params['configuration']['mode'];
 		// Not set means the integration was configured before this option existed, proof document was always retrieved
 		$conf['retrieveProofDocument'] = !empty($params['configuration']['retrieveProofDocument'] ?? 1);
-		$infos['conf']                 = $conf;
+		$conf['agreementText']         = (string) ($params['configuration']['agreementText'] ?? '');
+		$conf['contactEditability'] = (string) ($params['configuration']['contactEditability'] ?? '');
+
+		foreach ([DocaposteContactReadOnlyParameterEnum::EMAIL, DocaposteContactReadOnlyParameterEnum::PHONE] as $readOnlyParameter)
+		{
+			$conf[$readOnlyParameter->value] = !empty($params['configuration'][$readOnlyParameter->value]);
+		}
+
+		$infos['conf'] = $conf;
 
 		return $infos;
 	}
@@ -1043,7 +1053,7 @@ class DocaposteSynchronizer extends Api
 
 			if ($config['needsSignUrl'])
 			{
-				$signUrl = $this->createSignURL($request, $signatureMap[$signerId]);
+				$signUrl = $this->createSignURL($request, $signatureMap[$signerId], $signer);
 				$message = str_replace('[DOCAPOSTE_URL_SIGN]', $signUrl, $message);
 			}
 
@@ -1113,9 +1123,43 @@ class DocaposteSynchronizer extends Api
 	}
 
 	/**
+	 * Docaposte delivers no signature URL for a locked contact detail the signatory does not have,
+	 * so a lock only applies to a detail that is actually filled in.
+	 *
+	 * @param   array<string, bool>  $readOnlyParameters
+	 *
+	 * @return  array<string, bool>
+	 */
+	private function unlockMissingContactDetails(array $readOnlyParameters, RequestSigners $signer): array
+	{
+		$contact = $signer->getContact();
+
+		$missingDetails = [];
+
+		if (trim((string) $contact->getPhone1()) === '')
+		{
+			$missingDetails[] = DocaposteContactReadOnlyParameterEnum::PHONE->value;
+		}
+
+		if (trim((string) $contact->getEmail()) === '')
+		{
+			$missingDetails[] = DocaposteContactReadOnlyParameterEnum::EMAIL->value;
+		}
+
+		foreach ($missingDetails as $parameterName)
+		{
+			$readOnlyParameters[$parameterName] = false;
+			// The global lock covers the missing detail too, so it has to go as well
+			$readOnlyParameters[DocaposteContactReadOnlyParameterEnum::BOTH->value] = false;
+		}
+
+		return $readOnlyParameters;
+	}
+
+	/**
 	 * @throws Exception
 	 */
-	private function createSignURL(Request $request, int $signature_id): string
+	private function createSignURL(Request $request, int $signature_id, RequestSigners $signer): string
 	{
 		$signUrl = '';
 		try
@@ -1126,6 +1170,31 @@ class DocaposteSynchronizer extends Api
 				'transactionId' => $request->getExternalReference(),
 				'signaturesIds' => $signature_id
 			];
+
+			$agreementText = trim((string) ($this->config['agreementText'] ?? ''));
+
+			// Omitted rather than sent empty, so Docaposte keeps showing its own acceptance window
+			if ($agreementText !== '')
+			{
+				$body['agreementText'] = $agreementText;
+			}
+
+			// An unknown value means the integration was configured before this option existed, contact details were always editable
+			$editability = DocaposteContactEditabilityEnum::tryFrom($this->config['contactEditability'] ?? '')
+				?? DocaposteContactEditabilityEnum::ALL;
+
+			$readOnlyParameters = $this->unlockMissingContactDetails(
+				$editability->getReadOnlyParameters(
+					!empty($this->config[DocaposteContactReadOnlyParameterEnum::EMAIL->value]),
+					!empty($this->config[DocaposteContactReadOnlyParameterEnum::PHONE->value])
+				),
+				$signer
+			);
+
+			foreach ($readOnlyParameters as $parameterName => $readOnly)
+			{
+				$body[$parameterName] = $readOnly ? 'true' : 'false';
+			}
 
 			$response = $this->post(
 				'/document/signUrl',

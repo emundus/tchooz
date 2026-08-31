@@ -9,6 +9,7 @@
 
 namespace Tchooz\Entities\Emails;
 
+use Tchooz\Entities\Emails\Providers\ChoiceCommentTagProvider;
 use Tchooz\Entities\Emails\Providers\TransactionTagProvider;
 use Tchooz\Interfaces\TagProviderInterface;
 
@@ -39,6 +40,7 @@ class TagProviderRegistry
 		}
 
 		self::register(new TransactionTagProvider());
+		self::register(new ChoiceCommentTagProvider());
 
 		self::$defaultsRegistered = true;
 	}

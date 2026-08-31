@@ -879,7 +879,7 @@ class EmundusControllerExport extends BaseController
 			}
 			elseif ($async)
 			{
-				$exportEntity = $this->exportRepository->getLastExportByUser($this->_user->id);
+				$exportEntity = $this->exportRepository->getLastUnfinishedExportByUser($this->_user->id, $format);
 			}
 
 			if (empty($exportEntity))
@@ -908,44 +908,46 @@ class EmundusControllerExport extends BaseController
 
 			if ($async)
 			{
-				// Check if we have an existing pending or in-progress task for this export
-				if (empty($exportEntity->getTask()))
-				{
-					// If export asynchronous, create a task
-					$task = new TaskEntity(0, TaskStatusEnum::PENDING, null, $this->_user->id, ['actionEntity' => $exportAction->serialize(), 'fnums' => array_map(function ($target) {
-						return $target->getFile();
-					}, $targets)]);
-					$task->setPriority($exportAction->getPriority());
+				// The synchronous attempt the client gave up on may still be running: cancel it so it
+				// stops instead of writing over the export the task is about to resume.
+				$task = $this->queueExportTask($exportAction, $exportEntity, $fnums, true);
 
-					$taskRepository = new TaskRepository();
-					if (!$taskRepository->saveTask($task))
-					{
-						throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_SAVE_TASK'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
-					}
-
-					$exportEntity->setCancelled(true);
-					$exportEntity->setTask($task);
-					if (!$this->exportRepository->flush($exportEntity))
-					{
-						throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_UPDATE_EXPORT_WITH_TASK'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
-					}
-				}
-
-				$response = EmundusResponse::ok(['task_id' => $exportEntity->getTask()->getId()], Text::_('COM_EMUNDUS_EXPORT_TASK_QUEUED_SUCCESSFULLY'));
-				//
+				$response = EmundusResponse::ok(['task_id' => $task->getId()], Text::_('COM_EMUNDUS_EXPORT_TASK_QUEUED_SUCCESSFULLY'));
 			}
 			else
 			{
-				// Synchronous export
-				if ($exportAction->with($exportEntity)->execute($targets) !== ActionExecutionStatusEnum::COMPLETED)
+				// Synchronous export. Every format stops after a bounded number of files, so an export
+				// too large to finish within the request comes back PENDING: it is handed over to the
+				// task system, which resumes it from the state the request has already persisted.
+				$status = $exportAction->with($exportEntity)->execute($targets);
+
+				if ($status === ActionExecutionStatusEnum::PENDING)
+				{
+					if (empty($allowAsync))
+					{
+						throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_EXECUTE_EXPORT'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
+					}
+
+					// The action persisted its progress on its own copy of the record: reload it so the
+					// task is attached to the resume state and not to the values we came in with.
+					$exportEntity = $this->exportRepository->getById($exportEntity->getId());
+					$task         = $this->queueExportTask($exportAction, $exportEntity, $fnums);
+
+					$response = EmundusResponse::ok(
+						['task_id' => $task->getId(), 'progress' => $exportEntity->getProgress()],
+						Text::_('COM_EMUNDUS_EXPORT_TASK_QUEUED_SUCCESSFULLY')
+					);
+				}
+				elseif ($status !== ActionExecutionStatusEnum::COMPLETED)
 				{
 					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_EXECUTE_EXPORT'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 				}
+				else
+				{
+					$exportResult = $this->exportRepository->getById($exportEntity->getId());
 
-				// Get last export for user
-				$exportResult = $this->exportRepository->getLastExportByUser($this->_user->id);
-
-				$response = EmundusResponse::ok($exportResult->__serialize(), Text::_('COM_EMUNDUS_EXPORT_COMPLETED_SUCCESSFULLY'));
+					$response = EmundusResponse::ok($exportResult->__serialize(), Text::_('COM_EMUNDUS_EXPORT_COMPLETED_SUCCESSFULLY'));
+				}
 			}
 		}
 		catch (Exception $e)
@@ -955,6 +957,47 @@ class EmundusControllerExport extends BaseController
 		}
 
 		$this->sendJsonResponse($response);
+	}
+
+	/**
+	 * Hand an export over to the task system so it is resumed outside of the request, and return the
+	 * task now attached to the export record.
+	 *
+	 * @param   bool  $cancelRunningExport  Flag the export as cancelled, to stop a synchronous run
+	 *                                      still in flight for that same record.
+	 */
+	private function queueExportTask(ActionExport $exportAction, ExportEntity $exportEntity, array $fnums, bool $cancelRunningExport = false): TaskEntity
+	{
+		// An export already queued keeps its task: a second one would run the same work twice.
+		if (!empty($exportEntity->getTask()))
+		{
+			return $exportEntity->getTask();
+		}
+
+		$task = new TaskEntity(0, TaskStatusEnum::PENDING, null, $this->_user->id, [
+			'actionEntity' => $exportAction->serialize(),
+			'fnums'        => $fnums,
+		]);
+		$task->setPriority($exportAction->getPriority());
+
+		$taskRepository = new TaskRepository();
+		if (!$taskRepository->saveTask($task))
+		{
+			throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_SAVE_TASK'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
+		}
+
+		if ($cancelRunningExport)
+		{
+			$exportEntity->setCancelled(true);
+		}
+
+		$exportEntity->setTask($task);
+		if (!$this->exportRepository->flush($exportEntity))
+		{
+			throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_UPDATE_EXPORT_WITH_TASK'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
+		}
+
+		return $task;
 	}
 
 	public function getexports(): void

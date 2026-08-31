@@ -86,6 +86,11 @@ class PlgFabrik_FormApplicationChoicesMore extends plgFabrik_Form
 
 	private function checkAccess($parent_id): bool
 	{
+		if (!class_exists('EmundusHelperAccess'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/access.php';
+		}
+
 		$user      = $this->app->getIdentity();
 		$parent_id = (int) $parent_id;
 		if (empty($parent_id))
@@ -94,13 +99,9 @@ class PlgFabrik_FormApplicationChoicesMore extends plgFabrik_Form
 		}
 
 		// Check if parent_id is mine or if i have application choices rights on this fnum
-		$query = $this->_db->getQuery(true);
-
-		$query->select('fnum')
-			->from($this->_db->quoteName($this->getTableName(ApplicationChoicesRepository::class)))
-			->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($parent_id));
-		$this->_db->setQuery($query);
-		$fnum = $this->_db->loadResult();
+		$applicationChoicesRepository = new ApplicationChoicesRepository();
+		$choice                       = $applicationChoicesRepository->getById($parent_id);
+		$fnum                         = !empty($choice) ? $choice->getFnum() : '';
 		if (empty($fnum))
 		{
 			throw new Exception(Text::_('PLG_FABRIK_FORM_EMUNDUSCAMPAIGNMORE_ERROR_NO_PARENT_ID'));
@@ -109,16 +110,25 @@ class PlgFabrik_FormApplicationChoicesMore extends plgFabrik_Form
 		$actionRepository         = new ActionRepository();
 		$applicationChoicesAction = $actionRepository->getByName('application_choices');
 
-		$query->clear()
-			->select('applicant_id')
+		$query = $this->_db->getQuery(true);
+		$query->select('applicant_id')
 			->from($this->_db->quoteName($this->getTableName(ApplicationFileRepository::class)))
 			->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
 		$this->_db->setQuery($query);
-		$applicant_id = $this->_db->loadResult();
+		$applicant_id = (int) $this->_db->loadResult();
 
-		if ($applicant_id !== $user->id && EmundusHelperAccess::asAccessAction($applicationChoicesAction->getId(), 'u', $user->id, $fnum) === false)
+		if ($applicant_id !== (int) $user->id)
 		{
-			throw new Exception(Text::_('PLG_FABRIK_FORM_EMUNDUSCAMPAIGNMORE_ERROR_CANNOT_ACCESS'));
+			if (EmundusHelperAccess::asAccessAction($applicationChoicesAction->getId(), 'u', $user->id, $fnum) === false)
+			{
+				throw new Exception(Text::_('PLG_FABRIK_FORM_EMUNDUSCAMPAIGNMORE_ERROR_CANNOT_ACCESS'));
+			}
+
+			// Managers only fill in the complementary form of choices within the programs they manage
+			if (!EmundusHelperAccess::canManageProgram($user->id, $choice->getCampaign()?->getProgram()?->getCode()))
+			{
+				throw new Exception(Text::_('PLG_FABRIK_FORM_EMUNDUSCAMPAIGNMORE_ERROR_CANNOT_ACCESS'));
+			}
 		}
 
 		return true;

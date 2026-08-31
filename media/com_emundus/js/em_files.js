@@ -6226,6 +6226,7 @@ async function sendMailQueue(fnums, nbFiles = 0) {
                 title = 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL';
                 html = '<div id="data" class="em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
                 swal_confirm_button = 'COM_EMUNDUS_EMAILS_EMAIL_PREVIEW_BEFORE_SEND';
+                swal_actions_class += ' !tw-justify-end';
 
                 $.ajax({
                     type: 'POST',
@@ -6808,3 +6809,96 @@ window.addEventListener('message', (event) => {
         loadAssocFilesSection(event.data.fnum);
     }
 });
+
+// Delegated from document: reloadData() replaces the whole table, so a direct binding
+// would be lost on every filter change or pagination click.
+document.addEventListener('click', (event) => {
+    const toggle = event.target.closest('.em-favorite-toggle');
+
+    if (!toggle || toggle.dataset.pending === '1') {
+        return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    toggleFavorite(toggle);
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+        return;
+    }
+
+    const toggle = event.target.closest('.em-favorite-toggle');
+
+    if (!toggle || toggle.dataset.pending === '1') {
+        return;
+    }
+
+    event.preventDefault();
+    toggleFavorite(toggle);
+});
+
+function toggleFavorite(toggle) {
+    const fnum = toggle.dataset.fnum;
+
+    if (!fnum) {
+        return;
+    }
+
+    toggle.dataset.pending = '1';
+
+    fetch('/index.php?option=com_emundus&controller=favorites&task=togglefavorite', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRF-Token': Joomla.getOptions('csrf.token')
+        },
+        body: 'fnum=' + encodeURIComponent(fnum)
+    }).then((response) => {
+        return response.json();
+    }).then((result) => {
+        if (!result.status) {
+            throw new Error(result.msg);
+        }
+
+        applyFavoriteState(toggle, result.data.favorite);
+    }).catch((error) => {
+        // The icon keeps its previous state on purpose: it must never claim a change the server refused.
+        Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: Joomla.Text._('COM_EMUNDUS_FAVORITES_TOGGLE_FAILED'),
+            text: error.message || '',
+            showConfirmButton: true,
+            customClass: {
+                title: 'em-swal-title',
+                confirmButton: 'em-swal-confirm-button',
+                actions: 'em-swal-single-action'
+            }
+        });
+    }).finally(() => {
+        delete toggle.dataset.pending;
+    });
+}
+
+function applyFavoriteState(toggle, isFavorite) {
+    const title = Joomla.Text._(isFavorite ? 'COM_EMUNDUS_FAVORITES_REMOVE' : 'COM_EMUNDUS_FAVORITES_ADD');
+
+    // Palettes mirror EmundusHelperFiles::createFavoriteToggle(). The variant travels on the element
+    // so a toggle rendered on the dark action bar keeps its own colours once clicked.
+    const palettes = {
+        list: ['tw-text-yellow-500', 'tw-text-neutral-500'],
+        bar: ['tw-text-white', 'tw-text-white/60']
+    };
+    const [onClass, offClass] = palettes[toggle.dataset.variant] || palettes.list;
+
+    toggle.textContent = isFavorite ? 'star' : 'star_border';
+    toggle.dataset.favorite = isFavorite ? '1' : '0';
+    toggle.setAttribute('title', title);
+    toggle.setAttribute('aria-label', title);
+    toggle.classList.toggle('em-favorite-toggle--on', isFavorite);
+    toggle.classList.toggle(onClass, isFavorite);
+    toggle.classList.toggle(offClass, !isFavorite);
+}

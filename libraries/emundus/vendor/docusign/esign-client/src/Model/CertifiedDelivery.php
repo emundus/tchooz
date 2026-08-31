@@ -128,6 +128,7 @@ class CertifiedDelivery implements ModelInterface, ArrayAccess
         'signing_group_id' => '?string',
         'signing_group_id_metadata' => '\DocuSign\eSign\Model\PropertyMetadata',
         'signing_group_name' => '?string',
+        'signing_group_type' => '?string',
         'signing_group_users' => '\DocuSign\eSign\Model\UserInfo[]',
         'sms_authentication' => '\DocuSign\eSign\Model\RecipientSMSAuthentication',
         'social_authentications' => '\DocuSign\eSign\Model\SocialAuthentication[]',
@@ -215,6 +216,7 @@ class CertifiedDelivery implements ModelInterface, ArrayAccess
         'signing_group_id' => null,
         'signing_group_id_metadata' => null,
         'signing_group_name' => null,
+        'signing_group_type' => null,
         'signing_group_users' => null,
         'sms_authentication' => null,
         'social_authentications' => null,
@@ -323,6 +325,7 @@ class CertifiedDelivery implements ModelInterface, ArrayAccess
         'signing_group_id' => 'signingGroupId',
         'signing_group_id_metadata' => 'signingGroupIdMetadata',
         'signing_group_name' => 'signingGroupName',
+        'signing_group_type' => 'signingGroupType',
         'signing_group_users' => 'signingGroupUsers',
         'sms_authentication' => 'smsAuthentication',
         'social_authentications' => 'socialAuthentications',
@@ -410,6 +413,7 @@ class CertifiedDelivery implements ModelInterface, ArrayAccess
         'signing_group_id' => 'setSigningGroupId',
         'signing_group_id_metadata' => 'setSigningGroupIdMetadata',
         'signing_group_name' => 'setSigningGroupName',
+        'signing_group_type' => 'setSigningGroupType',
         'signing_group_users' => 'setSigningGroupUsers',
         'sms_authentication' => 'setSmsAuthentication',
         'social_authentications' => 'setSocialAuthentications',
@@ -497,6 +501,7 @@ class CertifiedDelivery implements ModelInterface, ArrayAccess
         'signing_group_id' => 'getSigningGroupId',
         'signing_group_id_metadata' => 'getSigningGroupIdMetadata',
         'signing_group_name' => 'getSigningGroupName',
+        'signing_group_type' => 'getSigningGroupType',
         'signing_group_users' => 'getSigningGroupUsers',
         'sms_authentication' => 'getSmsAuthentication',
         'social_authentications' => 'getSocialAuthentications',
@@ -638,6 +643,7 @@ class CertifiedDelivery implements ModelInterface, ArrayAccess
         $this->container['signing_group_id'] = isset($data['signing_group_id']) ? $data['signing_group_id'] : null;
         $this->container['signing_group_id_metadata'] = isset($data['signing_group_id_metadata']) ? $data['signing_group_id_metadata'] : null;
         $this->container['signing_group_name'] = isset($data['signing_group_name']) ? $data['signing_group_name'] : null;
+        $this->container['signing_group_type'] = isset($data['signing_group_type']) ? $data['signing_group_type'] : null;
         $this->container['signing_group_users'] = isset($data['signing_group_users']) ? $data['signing_group_users'] : null;
         $this->container['sms_authentication'] = isset($data['sms_authentication']) ? $data['sms_authentication'] : null;
         $this->container['social_authentications'] = isset($data['social_authentications']) ? $data['social_authentications'] : null;
@@ -2303,6 +2309,30 @@ class CertifiedDelivery implements ModelInterface, ArrayAccess
     public function setSigningGroupName($signing_group_name)
     {
         $this->container['signing_group_name'] = $signing_group_name;
+
+        return $this;
+    }
+
+    /**
+     * Gets signing_group_type
+     *
+     * @return ?string
+     */
+    public function getSigningGroupType()
+    {
+        return $this->container['signing_group_type'];
+    }
+
+    /**
+     * Sets signing_group_type
+     *
+     * @param ?string $signing_group_type 
+     *
+     * @return $this
+     */
+    public function setSigningGroupType($signing_group_type)
+    {
+        $this->container['signing_group_type'] = $signing_group_type;
 
         return $this;
     }

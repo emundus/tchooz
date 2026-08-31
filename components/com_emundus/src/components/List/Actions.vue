@@ -3,7 +3,6 @@ import Popover from '@/components/Popover.vue';
 import Exports from '@/components/List/Exports.vue';
 import { Slider } from '@emundus/ui';
 import Imports from '@/components/List/Imports.vue';
-
 export default {
 	name: 'Actions',
 	components: {
@@ -167,7 +166,6 @@ export default {
 	<section id="default-actions" class="tw-flex tw-flex-shrink-0 tw-items-end tw-gap-4">
 		<div class="tw-flex tw-h-[72px] tw-items-end tw-gap-2">
 			<div v-if="multipleActionsPopover.length > 0">
-				<label class="!tw-mb-0 tw-font-medium tw-opacity-0">{{ translate('COM_EMUNDUS_ONBOARD_ACTIONS') }}</label>
 				<popover
 					:button="translate('COM_EMUNDUS_ONBOARD_ACTIONS')"
 					:button-class="'tw-btn-secondary tw-h-form'"
@@ -245,7 +243,7 @@ export default {
 			</div>
 		</div>
 
-		<Slider :options="views" v-model="currentView" />
+		<Slider v-show="views.length > 1" :options="views" v-model="currentView" />
 	</section>
 </template>
 

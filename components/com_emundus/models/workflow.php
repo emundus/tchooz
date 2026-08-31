@@ -26,7 +26,10 @@ use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Enums\Workflow\WorkflowStepDatesRelativeUnitsEnum;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Services\Addons\Configurations\ChoicesAddonConfiguration;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
@@ -2560,6 +2563,13 @@ class EmundusModelWorkflow extends JModelList
 				$config['can_be_updated']   = in_array($file_status, $choices_step->entry_status) ? 1 : 0;
 				$config['form_id']          = $choices_step->choices_form_id;
 			}
+
+			// Outside the phases the step is bound to, the addon carries its own rules. Reusing the ones of
+			// the step would silently apply the selection phase settings to a file that has left it.
+			if (empty($config['can_be_updated']))
+			{
+				$config = array_merge($config, $this->getChoicesConfigurationOutOfPhase($config));
+			}
 		}
 		catch (Exception $e)
 		{
@@ -2567,6 +2577,35 @@ class EmundusModelWorkflow extends JModelList
 		}
 
 		return $config;
+	}
+
+	/**
+	 * Rules the choices addon applies when an applicant edits their choices outside the phases of the
+	 * choices step. Returns nothing when the addon does not allow it, which leaves the file read only.
+	 *
+	 * @param   array  $config  configuration read from the step, used to keep its complementary form
+	 *
+	 * @return array
+	 */
+	private function getChoicesConfigurationOutOfPhase(array $config): array
+	{
+		$choicesAddon = (new AddonRepository())->getByName(AddonEnum::CHOICES->value);
+
+		if (empty($choicesAddon) || empty($choicesAddon->getParam(ChoicesAddonConfiguration::APPLICANT_CAN_UPDATE_ANYTIME, ChoicesAddonConfiguration::CONFIGURATION_GROUP)))
+		{
+			return [];
+		}
+
+		$max = (int) $choicesAddon->getParam(ChoicesAddonConfiguration::DEFAULT_MAX, ChoicesAddonConfiguration::CONFIGURATION_GROUP);
+
+		return [
+			'can_be_updated'   => 1,
+			// A maximum of zero would forbid every choice, so the step value stands in
+			'max'              => !empty($max) ? $max : $config['max'],
+			'can_be_ordering'  => (int) (bool) $choicesAddon->getParam(ChoicesAddonConfiguration::DEFAULT_CAN_BE_ORDERING, ChoicesAddonConfiguration::CONFIGURATION_GROUP),
+			'can_be_confirmed' => (int) (bool) $choicesAddon->getParam(ChoicesAddonConfiguration::DEFAULT_CAN_BE_CONFIRMED, ChoicesAddonConfiguration::CONFIGURATION_GROUP),
+			'can_be_sent'      => (int) (bool) $choicesAddon->getParam(ChoicesAddonConfiguration::DEFAULT_CAN_BE_SENT, ChoicesAddonConfiguration::CONFIGURATION_GROUP),
+		];
 	}
 
 	/**

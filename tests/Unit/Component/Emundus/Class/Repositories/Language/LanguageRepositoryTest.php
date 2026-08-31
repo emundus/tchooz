@@ -488,4 +488,190 @@ class LanguageRepositoryTest extends UnitTestCase
 		$this->repository->setLangCode('ts-TEST');
 		$this->assertEquals('ts-TEST', $this->repository->getLangCode());
 	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Language\LanguageRepository::getList
+	 * @return void
+	 */
+	public function testGetList()
+	{
+		$this->repository->setLangCode('fr-FR');
+
+		$tag = rand(1, 1000) . 'TEST_LANGUAGE_TAG' . rand(1, 1000);
+
+		$language = new LanguageEntity(
+			$tag,
+			'fr-FR',
+			'Test Language Tag',
+			'Test Language Tag',
+			'override'
+		);
+		$this->repository->flush($language);
+
+		$list = $this->repository->getList();
+		$this->assertInstanceOf(\Tchooz\Entities\List\ListResult::class, $list, 'getList should return a ListResult');
+		$this->assertIsArray($list->getItems(), 'getList items should be an array');
+		$this->assertGreaterThan(0, $list->getTotalItems(), 'getList total items should be greater than 0');
+
+		// Filtering on the tag should return exactly the row we created.
+		$filtered = $this->repository->getList(['tag' => $tag]);
+		$this->assertEquals(1, $filtered->getTotalItems(), 'getList filtered by tag should count exactly one row');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Language\LanguageRepository::tagExists
+	 * @return void
+	 */
+	public function testTagExists()
+	{
+		$this->repository->setLangCode('fr-FR');
+
+		$tag = rand(1, 1000) . 'TEST_LANGUAGE_TAG' . rand(1, 1000);
+
+		$this->assertFalse(
+			$this->repository->tagExists($tag, 'fr-FR'),
+			'tagExists should return false before the tag is inserted'
+		);
+
+		$language = new LanguageEntity(
+			$tag,
+			'fr-FR',
+			'Test Language Tag',
+			'Test Language Tag',
+			'override'
+		);
+		$this->repository->flush($language);
+
+		$this->assertTrue(
+			$this->repository->tagExists($tag, 'fr-FR'),
+			'tagExists should return true once the tag is inserted for the language'
+		);
+
+		$this->assertFalse(
+			$this->repository->tagExists($tag, 'en-GB'),
+			'tagExists should return false for a different language code'
+		);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Language\LanguageRepository::buildQuery
+	 * @return void
+	 */
+	public function testBuildQuery()
+	{
+		$this->repository->setLangCode('fr-FR');
+
+		$query = $this->repository->buildQuery();
+		$this->assertInstanceOf(\Joomla\Database\QueryInterface::class, $query, 'buildQuery should return a QueryInterface');
+		$this->assertStringContainsString('WHERE `lang_code`', $query->__toString(), 'buildQuery should filter on lang_code by default');
+
+		$queryAll = $this->repository->buildQuery('all');
+		$this->assertStringNotContainsString('WHERE `lang_code`', $queryAll->__toString(), 'buildQuery with "all" should not filter on lang_code');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Language\LanguageRepository::getReferencedForms
+	 * @return void
+	 */
+	public function testGetReferencedForms()
+	{
+		$forms = $this->repository->getReferencedForms();
+		$this->assertIsArray($forms, 'getReferencedForms should return an array');
+
+		foreach ($forms as $form)
+		{
+			$this->assertIsObject($form, 'Each referenced form should be an object');
+			$this->assertObjectHasProperty('id', $form, 'Each referenced form should have an id property');
+			$this->assertObjectHasProperty('label', $form, 'Each referenced form should have a label property');
+		}
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Language\LanguageRepository::getDefaultLanguage
+	 * @return void
+	 */
+	public function testGetDefaultLanguage()
+	{
+		$language = $this->repository->getDefaultLanguage();
+		$this->assertIsObject($language, 'getDefaultLanguage should return an object');
+		$this->assertObjectHasProperty('lang_code', $language, 'getDefaultLanguage should return an object with a lang_code property');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Language\LanguageRepository::updateFalangModule
+	 * @return void
+	 */
+	public function testUpdateFalangModule()
+	{
+		$updated = $this->repository->updateFalangModule(0);
+		$this->assertIsBool($updated, 'updateFalangModule should return a boolean');
+		$this->assertTrue($updated, 'updateFalangModule should return true when the query executes');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Language\LanguageRepository::findReferences
+	 * @return void
+	 */
+	public function testFindReferences()
+	{
+		$key    = 'NON_EXISTENT_TRANSLATION_KEY_' . rand(1, 100000);
+		$result = $this->repository->findReferences($key);
+
+		$this->assertIsArray($result, 'findReferences should return an array');
+		$this->assertArrayHasKey('reference_table', $result, 'findReferences result should have a reference_table key');
+		$this->assertArrayHasKey('reference_id', $result, 'findReferences result should have a reference_id key');
+		$this->assertArrayHasKey('reference_field', $result, 'findReferences result should have a reference_field key');
+		$this->assertNull($result['reference_table'], 'reference_table should be null when the key is not referenced anywhere');
+		$this->assertNull($result['reference_id'], 'reference_id should be null when the key is not referenced anywhere');
+		$this->assertNull($result['reference_field'], 'reference_field should be null when the key is not referenced anywhere');
+
+		$key    = 'SETUP_LETTERS_INTRO';
+		$result = $this->repository->findReferences($key);
+
+		$this->assertIsArray($result, 'findReferences should return an array');
+		$this->assertNotNull($result, 'findReferences should return a not-null result');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Language\LanguageRepository::updateContentLanguage
+	 * @return void
+	 */
+	public function testUpdateContentLanguage()
+	{
+		$langCode = 'ts-UPD';
+
+		$insert = (object) [
+			'lang_code'    => $langCode,
+			'title'        => 'Language de Test',
+			'title_native' => 'Langue de Test',
+			'sef'          => 'test-upd',
+			'image'        => 'test-image',
+			'description'  => 'Description de Test',
+			'metakey'      => 'metakey test',
+			'metadesc'     => 'metadesc test',
+			'published'    => 0,
+		];
+		$this->db->insertObject('jos_languages', $insert);
+
+		try
+		{
+			// Non-default branch: only toggles the published flag of the given language.
+			$updated = $this->repository->updateContentLanguage($langCode, 1, 0);
+			$this->assertTrue($updated, 'updateContentLanguage should return true when publishing a language');
+
+			$query = $this->db->getQuery(true);
+			$query->select($this->db->qn('published'))
+				->from($this->db->qn('#__languages'))
+				->where($this->db->qn('lang_code') . ' = ' . $this->db->quote($langCode));
+			$this->db->setQuery($query);
+			$this->assertEquals(1, (int) $this->db->loadResult(), 'The language should now be published');
+		}
+		finally
+		{
+			$cleanup = $this->db->getQuery(true)
+				->delete('jos_languages')
+				->where($this->db->quoteName('lang_code') . ' = ' . $this->db->quote($langCode));
+			$this->db->setQuery($cleanup)->execute();
+		}
+	}
 }

@@ -62,10 +62,10 @@ class ZipStreamTest extends TestCase
 
         $name = 'árvíztűrő tükörfúrógép.txt';
         $content = 'Sample String Data';
-        $comment
-            = 'Filename has every special characters '
-            . 'from Hungarian language in lowercase. '
-            . 'In uppercase: ÁÍŰŐÜÖÚÓÉ';
+        $comment =
+            'Filename has every special characters ' .
+            'from Hungarian language in lowercase. ' .
+            'In uppercase: ÁÍŰŐÜÖÚÓÉ';
 
         $zip->addFile(fileName: $name, data: $content, comment: $comment);
         $zip->finish();
@@ -327,14 +327,11 @@ class ZipStreamTest extends TestCase
             defaultEnableZeroHeader: false,
         );
 
-        foreach (['cat', 'more'] as $cmd) {
-            $streamUnseekable = @popen($cmd, 'w');
-            if ($streamUnseekable !== false) {
-                break;
-            }
-        }
-
-        if ($streamUnseekable === false) {
+        if (file_exists('/dev/null')) {
+            $streamUnseekable = fopen('/dev/null', 'w+');
+        } elseif (file_exists('NUL')) {
+            $streamUnseekable = fopen('NUL', 'w+');
+        } else {
             $this->markTestSkipped('Needs file /dev/null');
         }
 

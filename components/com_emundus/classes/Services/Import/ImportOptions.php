@@ -31,10 +31,14 @@ final class ImportOptions
 	 * @param  int|null  $timeBudgetSeconds  When set, the pipeline checks elapsed time
 	 *                                       between rows and breaks once the budget is
 	 *                                       exhausted (so a slice fits inside one cron run).
-	 * @param  callable|null  $onCheckpoint  Optional callback fired right before the
-	 *                                       pipeline breaks on time budget. Signature:
-	 *                                       (int $lastProcessedRow, ImportReport $report): void.
-	 *                                       Lets the async wrapper persist the slice state.
+	 * @param  callable|null  $onCheckpoint  Optional callback fired once per run to report
+	 *                                       the slice outcome. Signature:
+	 *                                       (int $lastProcessedRow, ImportReport $report, bool $completed): void.
+	 *                                       Fired with $completed = false when the loop breaks
+	 *                                       on the time budget (more rows remain), and with
+	 *                                       $completed = true when the source has been fully
+	 *                                       consumed. Lets the async wrapper learn the resume
+	 *                                       cursor and whether the job is done.
 	 * @param  float    $maxUnknownHeaderRatio  Threshold on the fraction of source headers
 	 *                                       not recognized by the ColumnMap. When the ratio
 	 *                                       is **at or above** this value, the pipeline
@@ -50,6 +54,24 @@ final class ImportOptions
 	 *                                                        (requires an UpdatableEntityImporter).
 	 *                                         - CREATE_NEW : skip the existence check and
 	 *                                                        create a duplicate.
+	 * @param  bool      $validateOnly       When true, the pipeline stops after validation
+	 *                                       (required fields + type rules + importer->validate())
+	 *                                       and reports each passing row as VALID — it never
+	 *                                       calls exists() nor persist(). No DB write, no per-row
+	 *                                       lookup, so it stays cheap even on huge files. Powers
+	 *                                       the synchronous dry-run preview. Appended last so
+	 *                                       existing positional/named callers are unaffected.
+	 * @param  callable|null  $onProgress    Optional callback fired every $progressEveryRows
+	 *                                       processed rows, with the committed cursor so the
+	 *                                       async wrapper can persist intermediate progress and
+	 *                                       the UI bar advances *within* a slice (not only at its
+	 *                                       end). Signature: (int $lastProcessedRow, ImportReport
+	 *                                       $report): void. All rows up to $lastProcessedRow are
+	 *                                       already committed, so it also tightens crash recovery.
+	 * @param  int       $progressEveryRows  Cadence (in processed rows) of the $onProgress
+	 *                                       callback. Defaults to 250 — frequent enough for a
+	 *                                       smooth bar, rare enough to keep the extra writes
+	 *                                       negligible. Ignored when $onProgress is null.
 	 */
 	public function __construct(
 		public readonly bool $dryRun = false,
@@ -59,6 +81,9 @@ final class ImportOptions
 		public readonly ?int $timeBudgetSeconds = null,
 		public readonly mixed $onCheckpoint = null,
 		public readonly float $maxUnknownHeaderRatio = 0.5,
-		public readonly ImportConflictModeEnum $conflictMode = ImportConflictModeEnum::SKIP
+		public readonly ImportConflictModeEnum $conflictMode = ImportConflictModeEnum::SKIP,
+		public readonly bool $validateOnly = false,
+		public readonly mixed $onProgress = null,
+		public readonly int $progressEveryRows = 250
 	) {}
 }

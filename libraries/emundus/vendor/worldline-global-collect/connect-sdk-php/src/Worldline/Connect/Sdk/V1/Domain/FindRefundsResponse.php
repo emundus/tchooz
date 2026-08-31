@@ -1,0 +1,92 @@
+<?php
+/*
+ * This class was auto-generated from the API references found at
+ * https://apireference.connect.worldline-solutions.com/
+ */
+namespace Worldline\Connect\Sdk\V1\Domain;
+
+use UnexpectedValueException;
+use Worldline\Connect\Sdk\Domain\DataObject;
+
+/**
+ * @package Worldline\Connect\Sdk\V1\Domain
+ */
+class FindRefundsResponse extends DataObject
+{
+    /**
+     * @var int|null
+     */
+    public ?int $limit = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $offset = null;
+
+    /**
+     * @var RefundResult[]|null
+     */
+    public ?array $refunds = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $totalCount = null;
+
+    /**
+     * @return object
+     */
+    public function toObject(): object
+    {
+        $object = parent::toObject();
+        if (!is_null($this->limit)) {
+            $object->limit = $this->limit;
+        }
+        if (!is_null($this->offset)) {
+            $object->offset = $this->offset;
+        }
+        if (!is_null($this->refunds)) {
+            $object->refunds = [];
+            foreach ($this->refunds as $element) {
+                if (!is_null($element)) {
+                    $object->refunds[] = $element->toObject();
+                }
+            }
+        }
+        if (!is_null($this->totalCount)) {
+            $object->totalCount = $this->totalCount;
+        }
+        return $object;
+    }
+
+    /**
+     * @param object $object
+     *
+     * @return $this
+     * @throws UnexpectedValueException
+     */
+    public function fromObject(object $object): FindRefundsResponse
+    {
+        parent::fromObject($object);
+        if (property_exists($object, 'limit')) {
+            $this->limit = $object->limit;
+        }
+        if (property_exists($object, 'offset')) {
+            $this->offset = $object->offset;
+        }
+        if (property_exists($object, 'refunds')) {
+            if (!is_array($object->refunds) && !is_object($object->refunds)) {
+                throw new UnexpectedValueException('value \'' . print_r($object->refunds, true) . '\' is not an array or object');
+            }
+            $this->refunds = [];
+            foreach ($object->refunds as $element) {
+                $value = new RefundResult();
+                $this->refunds[] = $value->fromObject($element);
+            }
+        }
+        if (property_exists($object, 'totalCount')) {
+            $this->totalCount = $object->totalCount;
+        }
+        return $this;
+    }
+}

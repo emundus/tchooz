@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<form>
+    <fields name="params">
+        <fieldset name="task_params">
+            <field
+                    type="number"
+                    name="retention_days"
+                    label="PLG_TASK_PURGEIMPORTS_FIELD_RETENTION_DAYS_LABEL"
+                    description="PLG_TASK_PURGEIMPORTS_FIELD_RETENTION_DAYS_DESC"
+                    default="365"
+                    min="1"
+                    step="1"
+            />
+        </fieldset>
+    </fields>
+</form>

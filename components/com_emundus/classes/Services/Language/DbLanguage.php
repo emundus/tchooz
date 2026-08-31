@@ -306,7 +306,7 @@ class DbLanguage extends Language
 								tag: $translation->tag,
 								langCode: $language,
 								override: $translation->override,
-								originalText: $translation->original_text,
+								originalText: $translation->original_text ?? '',
 								type: 'override',
 								createdBy: !empty($creator) ? $creator : null,
 								createdDate: (!empty($translation->created_date) && $translation->created_date !== '0000-00-00 00:00:00') ? new \DateTime($translation->created_date) : null,

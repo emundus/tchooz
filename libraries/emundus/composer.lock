@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7e412ea9bbacae0bee8c00b476055f61",
+    "content-hash": "8793eabcf45f09819f0ccb26e12282df",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -3460,6 +3460,56 @@
             "time": "2019-03-08T08:55:37+00:00"
         },
         {
+            "name": "robtimus/multipart",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/robtimus/php-multipart.git",
+                "reference": "98977024f1261185d139c9df0aaecbf28cb131f4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/robtimus/php-multipart/zipball/98977024f1261185d139c9df0aaecbf28cb131f4",
+                "reference": "98977024f1261185d139c9df0aaecbf28cb131f4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Robtimus\\Multipart\\": [
+                        "src/Robtimus/Multipart"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Rob Spoor",
+                    "email": "robtimus@users.noreply.github.com"
+                }
+            ],
+            "description": "A library to support (streaming) multiparts",
+            "homepage": "https://github.com/robtimus/php-multipart",
+            "keywords": [
+                "multipart",
+                "streaming"
+            ],
+            "support": {
+                "issues": "https://github.com/robtimus/php-multipart/issues",
+                "source": "https://github.com/robtimus/php-multipart/tree/1.0.1"
+            },
+            "time": "2023-01-16T18:51:47+00:00"
+        },
+        {
             "name": "sabberworm/php-css-parser",
             "version": "v9.3.0",
             "source": {
@@ -3659,13 +3709,14 @@
         },
         {
             "name": "setasign/fpdi_pdf-parser",
-            "version": "2.1.6",
+            "version": "2.1.4",
             "dist": {
                 "type": "zip",
-                "url": "https://www.setasign.com/downloads/7082320/FPDI_PDF-Parser-2.1.6.zip"
+                "url": "https://www.setasign.com/downloads/6913817/FPDI_PDF-Parser-2.1.4.zip"
             },
             "require": {
-                "setasign/fpdi": "^2.6.6"
+                "php": ">=5.6 <8.6",
+                "setasign/fpdi": "^2.6.0"
             },
             "type": "library",
             "autoload": {
@@ -3679,7 +3730,7 @@
             "support": {
                 "email": "support@setasign.com"
             },
-            "time": "2026-03-13T00:00:00+00:00"
+            "time": "2024-12-10T00:00:00+00:00"
         },
         {
             "name": "smalot/pdfparser",
@@ -4883,6 +4934,60 @@
                 }
             ],
             "time": "2026-02-04T18:08:13+00:00"
+        },
+        {
+            "name": "worldline-global-collect/connect-sdk-php",
+            "version": "10.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Worldline-Global-Collect/connect-sdk-php.git",
+                "reference": "c9f4aaa5afb2047b63c1a5615b16e8dd1290dbb4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Worldline-Global-Collect/connect-sdk-php/zipball/c9f4aaa5afb2047b63c1a5615b16e8dd1290dbb4",
+                "reference": "c9f4aaa5afb2047b63c1a5615b16e8dd1290dbb4",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=7.4",
+                "robtimus/multipart": "~1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Worldline\\Connect\\Sdk\\": [
+                        "src/Worldline/Connect/Sdk",
+                        "lib/Worldline/Connect/Sdk"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Worldline Global Collect",
+                    "homepage": "https://worldline.com/"
+                }
+            ],
+            "description": "PHP SDK to communicate with the Worldline Global Collect platform server-to-server API",
+            "homepage": "https://worldline.com/",
+            "keywords": [
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/Worldline-Global-Collect/connect-sdk-php/issues",
+                "source": "https://github.com/Worldline-Global-Collect/connect-sdk-php/tree/10.3.0"
+            },
+            "time": "2026-07-29T09:35:14+00:00"
         }
     ],
     "packages-dev": [

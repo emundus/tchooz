@@ -20,6 +20,7 @@ use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Favorite\FavoriteFileRepository;
 use Tchooz\Services\Reference\InternalReferenceService;
 
 defined('_JEXEC') or die('Restricted access');
@@ -310,6 +311,14 @@ class EmundusViewFiles extends HtmlView
 				}
 			}
 
+			// Own menu parameter rather than an em_other_columns entry, written by
+			// FavoriteAddonHandler when the addon is toggled.
+			if ($menu_params->get('em_display_favorites', 0))
+			{
+				$data[0]['favorite'] = '';
+				$colsSup['favorite'] = array();
+			}
+
 			$unread_messages = array();
 			if ($this->m_messenger->checkMessengerState())
 			{
@@ -442,6 +451,12 @@ class EmundusViewFiles extends HtmlView
 				$colsSup['id_tag'] = $h_files->createTagsList($tags);
 			}
 
+			if (isset($colsSup['favorite']))
+			{
+				$favorite_fnums      = (new FavoriteFileRepository())->getFavoriteFnums($fnumArray, $this->user->id);
+				$colsSup['favorite'] = $h_files->createFavoritesList($fnumArray, $favorite_fnums);
+			}
+
 			if (isset($colsSup['access']))
 			{
 				$objAccess = $this->m_files->getAccessorByFnums($fnumArray);
@@ -508,7 +523,14 @@ class EmundusViewFiles extends HtmlView
 				}
 			}
 
-			$this->keys_order = ['check' => -1, 'fnum' => 0];
+			$this->keys_order = ['check' => -1];
+
+			if (isset($colsSup['favorite']))
+			{
+				$this->keys_order['favorite'] = -1;
+			}
+
+			$this->keys_order['fnum'] = 0;
 
 			if (!empty($menu_params->get('em_columns_ordered')))
 			{
