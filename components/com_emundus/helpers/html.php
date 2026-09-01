@@ -7,6 +7,7 @@ use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 
 class HtmlSanitizerSingleton
 {
+	private const MAX_INPUT_LENGTH = 50_000;
 	private static ?self $instance = null;
 	private HtmlSanitizer $sanitizer;
 
@@ -24,7 +25,7 @@ class HtmlSanitizerSingleton
 				->allowRelativeMedias(true);
 		}
 
-		$this->sanitizer = new HtmlSanitizer($config);
+		$this->sanitizer = new HtmlSanitizer($config->withMaxInputLength(self::MAX_INPUT_LENGTH));
 	}
 
 	public static function getInstance(?HtmlSanitizerConfig $config = null): self
