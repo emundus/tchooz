@@ -6204,9 +6204,18 @@ class EmundusHelperFiles
 			}
 
 			require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
-			$m_users              = new EmundusModelUsers;
-			$user_programmes      = array_filter($m_users->getUserGroupsProgrammeAssoc($user_id));
-			$groups               = $m_users->getUserGroups($user_id, 'Column');
+			$m_users = new EmundusModelUsers;
+
+			$emundusUser    = $app->getSession()->get('emundusUser');
+			$currentProfile = !empty($emundusUser) && $emundusUser->id == $user_id ? (int) $emundusUser->profile : (int) $m_users->getCurrentUserProfile($user_id);
+
+			$groups          = $m_users->getUserGroups($user_id, 'Column', $currentProfile);
+			$user_programmes = [];
+			if (!empty($groups))
+			{
+				$user_programmes = array_filter($m_users->getUserGroupsProgrammeAssoc($user_id, 'jesgrc.course', $groups));
+			}
+
 			$fnum_assoc_to_groups = $m_users->getApplicationsAssocToGroups($groups);
 			$fnum_assoc_to_user   = $m_users->getApplicantsAssoc($user_id);
 			$user_fnums_assoc     = array_merge($fnum_assoc_to_groups, $fnum_assoc_to_user);
@@ -6369,7 +6378,7 @@ class EmundusHelperFiles
 								$query .= $leftJoins;
 							}
 
-							$whereConditions = $this->_moduleBuildWhere($already_joined, 'files', ['code' => $user_programmes, 'fnum_assoc' => $user_fnums_assoc], [$applied_filter['uid']]);
+							$whereConditions = $this->_moduleBuildWhere($already_joined, 'files', ['code' => $user_programmes, 'fnum_assoc' => $user_fnums_assoc], [$applied_filter['uid']], $menu_item);
 
 							$query .= $whereConditions['join'];
 							$query .= ' WHERE u.block=0 ' . $whereConditions['q'];
@@ -6437,7 +6446,7 @@ class EmundusHelperFiles
 							$where_params['code'] = $user_programmes;
 							$where_params['fnum_assoc'] = $user_fnums_assoc;
 
-							$whereConditions = $this->_moduleBuildWhere($already_joined, 'files', $where_params, [$applied_filter['uid']]);
+							$whereConditions = $this->_moduleBuildWhere($already_joined, 'files', $where_params, [$applied_filter['uid']], $menu_item);
 
 							$query .= $whereConditions['join'];
 							$query .= ' WHERE u.block=0 ' . $whereConditions['q'];
