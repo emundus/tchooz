@@ -70,28 +70,34 @@ class Com_EmundusInstallerScript
 		$query_str = 'SHOW TABLES LIKE ' . $this->db->quote('jos_emundus_version');
 		$this->db->setQuery($query_str);
 		$table_exists = $this->db->loadResult();
-		if(!$table_exists)
+		if (!$table_exists)
 		{
-			$columns = [
+			$columns             = [
 				[
-					'name'   => 'update_date',
-					'type'   => 'date',
-					'null'   => 0,
+					'name' => 'update_date',
+					'type' => 'date',
+					'null' => 0,
 				],
 			];
 			$primary_key_options = [
-				'name' => 'version',
-				'type' => 'varchar',
-				'length' => 20,
+				'name'           => 'version',
+				'type'           => 'varchar',
+				'length'         => 20,
 				'auto_increment' => 0,
 			];
 
-			EmundusHelperUpdate::createTable('#__emundus_version', $columns,[], '', [], $primary_key_options);
+			EmundusHelperUpdate::createTable('#__emundus_version', $columns, [], '', [], $primary_key_options);
 		}
 
 		if (!$this->updateTablesBeforeFilesScripts())
 		{
 			EmundusHelperUpdate::displayMessage('Échec de mise à jour des tables avant les scripts de fichiers.', 'error');
+			exit;
+		}
+
+		if (!$this->checkForeignKeys())
+		{
+			EmundusHelperUpdate::displayMessage('Échec de la vérification de l\'existence des clés étrangères', 'error');
 			exit;
 		}
 
@@ -148,11 +154,11 @@ class Com_EmundusInstallerScript
 						{
 							EmundusHelperUpdate::displayMessage('Version ' . $release_version . ' installed', 'success');
 
-							$date = Factory::getDate()->toSql();
+							$date            = Factory::getDate()->toSql();
 							$existingVersion = $this->getVersion($this->db, $release_version);
-							if($existingVersion)
+							if ($existingVersion)
 							{
-								if(!$this->updateVersion($this->db, $release_version, $date))
+								if (!$this->updateVersion($this->db, $release_version, $date))
 								{
 									EmundusHelperUpdate::displayMessage('Version ' . $release_version . ' update failed', 'error');
 									$succeed = false;
@@ -161,7 +167,7 @@ class Com_EmundusInstallerScript
 							else
 							{
 								// Run only once for 2.13.0
-								if($release_version === '2.13.0')
+								if ($release_version === '2.13.0')
 								{
 									$dbLanguage = new DbLanguage();
 									if (!$dbLanguage->filesToDatabase())
@@ -191,7 +197,8 @@ class Com_EmundusInstallerScript
 	}
 
 	public function uninstall(object $parent): void
-	{}
+	{
+	}
 
 	public function postflight(string $type, object $parent): bool
 	{
@@ -208,7 +215,7 @@ class Com_EmundusInstallerScript
 		}
 
 		$cachingMethod = Factory::getApplication()->get('caching');
-		if($cachingMethod === 1)
+		if ($cachingMethod === 1)
 		{
 			// Update to 2
 			$options['caching'] = 2;
@@ -278,12 +285,12 @@ class Com_EmundusInstallerScript
 		$table_existing = $db->setQuery('SHOW TABLE STATUS WHERE Name LIKE ' . $db->quote('jos_emundus_setup_step_types'))->loadResult();
 		if (!empty($table_existing))
 		{
-			$result = EmundusHelperUpdate::addColumn('#__emundus_setup_step_types', 'code', 'varchar', 50);
+			$result    = EmundusHelperUpdate::addColumn('#__emundus_setup_step_types', 'code', 'varchar', 50);
 			$updates[] = $result['status'];
 		}
 
 		// since 2.17.0
-		$result = EmundusHelperUpdate::addColumn('jos_emundus_setup_actions', 'type', 'VARCHAR', 20, 0, 'file');
+		$result    = EmundusHelperUpdate::addColumn('jos_emundus_setup_actions', 'type', 'VARCHAR', 20, 0, 'file');
 		$updates[] = $result['status'];
 		if (!$result['status'])
 		{
@@ -334,13 +341,158 @@ class Com_EmundusInstallerScript
 		}
 	}
 
+	/**
+	 * Ensure that the foreign keys declared in .docker/installation/vanilla/foreign_keys/foreign_keys.xml
+	 * exist on the schema. The XML is the source of truth: each <table name="..."> holds <row> entries
+	 * with constraint_name, column_name, referenced_table_name, referenced_column_name, update_rule, delete_rule.
+	 *
+	 * A FK is considered present when a row in information_schema.KEY_COLUMN_USAGE matches the same
+	 * (source_table, source_column, referenced_table, referenced_column) tuple — the constraint name is
+	 * ignored on purpose so an existing FK under a different name is still detected.
+	 *
+	 * @return bool
+	 */
+	private function checkForeignKeys(): bool
+	{
+		$xml_path = JPATH_ROOT . '/.docker/installation/vanilla/foreign_keys/foreign_keys.xml';
+
+		if (!is_file($xml_path) || !is_readable($xml_path))
+		{
+			EmundusHelperUpdate::displayMessage('Fichier de description des clés étrangères introuvable : ' . $xml_path, 'error');
+
+			return false;
+		}
+
+		$xml = simplexml_load_file($xml_path);
+
+		if ($xml === false)
+		{
+			EmundusHelperUpdate::displayMessage('Impossible de parser le fichier XML des clés étrangères : ' . $xml_path, 'error');
+
+			return false;
+		}
+
+		$success = true;
+
+		$original_sql_mode = (string) $this->db->setQuery('SELECT @@SESSION.sql_mode')->loadResult();
+
+		$this->db->setQuery('SET sql_mode = ""')->execute();
+		$this->db->setQuery('SET FOREIGN_KEY_CHECKS = 0')->execute();
+
+		try
+		{
+			foreach ($xml->table as $table_node)
+			{
+				$source_table = (string) $table_node['name'];
+
+				if ($source_table === '')
+				{
+					EmundusHelperUpdate::displayMessage('Nœud <table> sans attribut "name", ignoré.', 'warning');
+					continue;
+				}
+
+				$source_table_resolved = $this->db->replacePrefix($source_table);
+
+				$table_exists_query = $this->db->getQuery(true)
+					->select('COUNT(*)')
+					->from($this->db->quoteName('information_schema.TABLES'))
+					->where($this->db->quoteName('TABLE_SCHEMA') . ' = DATABASE()')
+					->where($this->db->quoteName('TABLE_NAME') . ' = ' . $this->db->quote($source_table_resolved));
+
+				$this->db->setQuery($table_exists_query);
+				$table_exists = (int) $this->db->loadResult();
+
+				if ($table_exists === 0)
+				{
+					EmundusHelperUpdate::displayMessage('Table ' . $source_table . ' introuvable, clés étrangères associées ignorées.', 'warning');
+					continue;
+				}
+
+				foreach ($table_node->row as $row_node)
+				{
+					$name            = (string) $row_node['constraint_name'];
+					$column_name     = (string) $row_node['column_name'];
+					$target_table    = (string) $row_node['referenced_table_name'];
+					$target_column   = (string) $row_node['referenced_column_name'];
+					$update_rule_raw = (string) $row_node['update_rule'];
+					$delete_rule_raw = (string) $row_node['delete_rule'];
+
+					if ($name === '' || $column_name === '' || $target_table === '' || $target_column === '')
+					{
+						EmundusHelperUpdate::displayMessage('Définition de clé étrangère incomplète sur ' . $source_table . ', ignorée.', 'warning');
+						continue;
+					}
+
+					$on_update = EmundusTableForeignKeyOnEnum::tryFrom($update_rule_raw) ?? EmundusTableForeignKeyOnEnum::NO_ACTION;
+					$on_delete = EmundusTableForeignKeyOnEnum::tryFrom($delete_rule_raw) ?? EmundusTableForeignKeyOnEnum::NO_ACTION;
+
+					$foreign_key = new EmundusTableForeignKey(
+						$name,
+						$column_name,
+						$target_table,
+						$target_column,
+						$on_update,
+						$on_delete
+					);
+
+					try
+					{
+						$target_table_resolved = $this->db->replacePrefix($target_table);
+
+						$check_query = $this->db->getQuery(true)
+							->select('COUNT(*)')
+							->from($this->db->quoteName('information_schema.KEY_COLUMN_USAGE'))
+							->where($this->db->quoteName('TABLE_SCHEMA') . ' = DATABASE()')
+							->where($this->db->quoteName('TABLE_NAME') . ' = ' . $this->db->quote($source_table_resolved))
+							->where($this->db->quoteName('COLUMN_NAME') . ' = ' . $this->db->quote($foreign_key->getFromColumn()))
+							->where($this->db->quoteName('REFERENCED_TABLE_NAME') . ' = ' . $this->db->quote($target_table_resolved))
+							->where($this->db->quoteName('REFERENCED_COLUMN_NAME') . ' = ' . $this->db->quote($foreign_key->getReferencedColumn()));
+
+						$this->db->setQuery($check_query);
+						$exists = (int) $this->db->loadResult();
+
+						if ($exists > 0)
+						{
+							continue;
+						}
+
+						$alter = 'ALTER TABLE ' . $this->db->quoteName($source_table)
+							. ' ADD CONSTRAINT ' . $this->db->quoteName($foreign_key->getName())
+							. ' FOREIGN KEY (' . $this->db->quoteName($foreign_key->getFromColumn()) . ')'
+							. ' REFERENCES ' . $this->db->quoteName($foreign_key->getReferencedTable())
+							. ' (' . $this->db->quoteName($foreign_key->getReferencedColumn()) . ')'
+							. ' ON UPDATE ' . $foreign_key->getOnUpdate()->value
+							. ' ON DELETE ' . $foreign_key->getOnDelete()->value;
+
+						$this->db->setQuery($alter);
+						$this->db->execute();
+
+						EmundusHelperUpdate::displayMessage('Clé étrangère ' . $foreign_key->getName() . ' ajoutée sur ' . $source_table . '.', 'success');
+					}
+					catch (Exception $e)
+					{
+						EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la clé étrangère ' . $foreign_key->getName() . ' : ' . $e->getMessage(), 'error');
+						$success = false;
+					}
+				}
+			}
+		}
+		finally
+		{
+			$this->db->setQuery('SET FOREIGN_KEY_CHECKS = 1')->execute();
+			$this->db->setQuery('SET sql_mode = ' . $this->db->quote($original_sql_mode))->execute();
+		}
+
+		return $success;
+	}
+
 	private function generateAutoloadTables(): void
 	{
 		// Regenerate autoload_tables file located in JPATH_CACHE. Check only files in components/com_emundus/classes/Repositories directory
 		$repositoryPath = JPATH_SITE . '/components/com_emundus/classes/Repositories';
-		$outputFile = JPATH_CACHE . '/autoload_tables.php';
+		$outputFile     = JPATH_CACHE . '/autoload_tables.php';
 
-		$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($repositoryPath));
+		$files    = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($repositoryPath));
 		$phpFiles = new RegexIterator($files, '/\.php$/');
 
 		$map = [];
@@ -348,7 +500,7 @@ class Com_EmundusInstallerScript
 		foreach ($phpFiles as $file)
 		{
 			$contents = file_get_contents($file->getPathname());
-			
+
 			// Search namespace declaration
 			preg_match('/namespace\s+([^;]+);/', $contents, $namespaceMatches);
 			$namespace = $namespaceMatches[1] ?? '';
@@ -360,25 +512,30 @@ class Com_EmundusInstallerScript
 			if (!empty($namespace) && !empty($class))
 			{
 				$fqcn = $namespace . '\\' . $class;
-				try {
+				try
+				{
 					require_once $file->getPathname();
-					if (!class_exists($fqcn, false)) {
+					if (!class_exists($fqcn, false))
+					{
 						continue;
 					}
 
-					$ref = new ReflectionClass($fqcn);
+					$ref   = new ReflectionClass($fqcn);
 					$attrs = $ref->getAttributes('Tchooz\Attributes\TableAttribute');
-					if (count($attrs) > 0) {
+					if (count($attrs) > 0)
+					{
 						$instance = $attrs[0]->newInstance();
 
 						$map[$fqcn] = [
-							'table' => $instance->table,
-							'alias' => $instance->alias,
+							'table'   => $instance->table,
+							'alias'   => $instance->alias,
 							'columns' => $instance->columns,
 						];
 					}
 
-				} catch (Throwable $e) {
+				}
+				catch (Throwable $e)
+				{
 					// Ignore classes that fail to load during scanning
 				}
 			}
@@ -387,8 +544,8 @@ class Com_EmundusInstallerScript
 		$export = var_export($map, true);
 		$export = preg_replace(['/\barray\s*\(/', '/\)(,)/'], ['[', ']$1'], $export);
 		$export = preg_replace('/\)(;)?$/', ']$1', $export);
-		$php = "<?php\ndefined('_JEXEC') or die;\nreturn $export;\n";
-		$tmp ='autoload_tables.php' . '.tmp';
+		$php    = "<?php\ndefined('_JEXEC') or die;\nreturn $export;\n";
+		$tmp    = 'autoload_tables.php' . '.tmp';
 		file_put_contents($tmp, $php);
 		rename($tmp, $outputFile);
 	}
