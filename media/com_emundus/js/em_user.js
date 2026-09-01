@@ -7,7 +7,8 @@ var loading;
 
 function reloadActions(view) {
 	let multi = document.querySelectorAll('.em-check:checked').length;
-	let url = window.location.origin+'/index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=inline&multi=' + multi;
+	let root = Joomla.getOptions('system.paths', {}).root || '';
+	let url = root + '/index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=inline&multi=' + multi;
 
 	fetch(url)
 		.then(response => response.text())
