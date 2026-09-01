@@ -650,9 +650,13 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     text-decoration: none;
 }
 
+.tchooz-single-campaign #campaign {
+    color: var(--neutral-900);
+}
+
 .tchooz-single-campaign #campaign p {
     line-height: normal;
-    color: var(--neutral-900);
+    color: inherit;
     font-family: var(--em-applicant-font);
 }
 
@@ -663,7 +667,7 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
 
 
 .tchooz-single-campaign #campaign *:not(a, span.material-symbols-outlined) {
-    color: var(--neutral-900);
+    color: inherit;
     font-family: var(--em-profile-font), Inter, sans-serif;
 }
 
