@@ -98,7 +98,6 @@ class Com_EmundusInstallerScript
 		if (!$this->checkForeignKeys())
 		{
 			EmundusHelperUpdate::displayMessage('Échec de la vérification de l\'existence des clés étrangères', 'error');
-			exit;
 		}
 
 		$this->generateAutoloadTables();
@@ -454,6 +453,34 @@ class Com_EmundusInstallerScript
 						if ($exists > 0)
 						{
 							continue;
+						}
+
+						$referenced_key_query = 'SELECT COUNT(*) FROM ('
+							. ' SELECT ' . $this->db->quoteName('INDEX_NAME')
+							. ' FROM ' . $this->db->quoteName('information_schema.STATISTICS')
+							. ' WHERE ' . $this->db->quoteName('TABLE_SCHEMA') . ' = DATABASE()'
+							. ' AND ' . $this->db->quoteName('TABLE_NAME') . ' = ' . $this->db->quote($target_table_resolved)
+							. ' AND ' . $this->db->quoteName('NON_UNIQUE') . ' = 0'
+							. ' GROUP BY ' . $this->db->quoteName('INDEX_NAME')
+							. ' HAVING COUNT(*) = 1'
+							. ' AND MAX(' . $this->db->quoteName('COLUMN_NAME') . ') = ' . $this->db->quote($foreign_key->getReferencedColumn())
+							. ' AND MAX(' . $this->db->quoteName('SUB_PART') . ') IS NULL'
+							. ') usable_keys';
+
+						$this->db->setQuery($referenced_key_query);
+
+						if ((int) $this->db->loadResult() === 0)
+						{
+							$index_name = $target_table_resolved . '_' . $foreign_key->getReferencedColumn() . '_unique';
+
+							$this->db->setQuery(
+								'ALTER TABLE ' . $this->db->quoteName($target_table)
+								. ' ADD UNIQUE ' . $this->db->quoteName($index_name)
+								. ' (' . $this->db->quoteName($foreign_key->getReferencedColumn()) . ')'
+							);
+							$this->db->execute();
+
+							EmundusHelperUpdate::displayMessage('Index unique ' . $index_name . ' ajouté sur ' . $target_table . ', requis pour référencer ' . $foreign_key->getReferencedColumn() . '.', 'warning');
 						}
 
 						$constraint_query = $this->db->getQuery(true)
