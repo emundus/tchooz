@@ -528,7 +528,7 @@ class modemundusApplicationsHelper
 
 			default :
 			case 'fnum' :
-				$query->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos->fnum);
+				$query->where($db->quoteName('eh.fnum') . ' = ' . $db->quote($fnumInfos->fnum));
 				break;
 
 			case 'user' :
@@ -547,11 +547,11 @@ class modemundusApplicationsHelper
 				if (in_array($fnumInfos->status, $payment_status))
 				{
 					$query->where($db->quoteName('eh.status') . ' = ' . $fnumInfos->status)
-						->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos->fnum);
+						->where($db->quoteName('eh.fnum') . ' = ' . $db->quote($fnumInfos->fnum));
 				}
 				else
 				{
-					$query->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos->fnum);
+					$query->where($db->quoteName('eh.fnum') . ' = ' . $db->quote($fnumInfos->fnum));
 				}
 				break;
 		}

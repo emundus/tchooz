@@ -866,6 +866,8 @@ class EmundusControllersettings extends EmundusController
 
 	public function redirectjroute()
 	{
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
+
 		$raw_link = $this->input->getString('link');
 		// Link is base64-encoded client-side to avoid WAF false positives (RCE rule matching on `&id=` etc.).
 		// Fallback to raw value if it is not valid base64 (legacy callers / cached JS).
@@ -926,12 +928,7 @@ class EmundusControllersettings extends EmundusController
 
 		if (!empty($menu))
 		{
-			$languages = LanguageHelper::getLanguages('lang_code');
-			$sef       = '';
-			if (isset($languages[$language]))
-			{
-				$sef = $languages[$language]->sef;
-			}
+			$sef = EmundusHelperMenu::getLanguageSefPrefix($language);
 			$response['data'] = !empty($sef) ? $sef . '/' . $menu->route : $menu->route;
 
 			if (!empty($options_to_set))

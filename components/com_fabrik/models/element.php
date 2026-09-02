@@ -1764,6 +1764,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		$displayData->rollOver   = $this->isTipped('form', $model->data);
 		$displayData->isEditable = $this->isEditable();
 		$displayData->tipOpts    = $this->tipOpts();
+		$displayData->required   = $this->validator->isRequired();
 		$displayData->labelPosition =  $this->group->labelPosition();
 
 		$labelClass = 'form-label';

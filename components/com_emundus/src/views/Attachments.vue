@@ -286,8 +286,8 @@
 								</a>
 							</li>
 							<li class="active">
-								<a class="!tw-w-auto !tw-rounded-coordinator"
-									>{{ selectedAttachmentPosition + 1 }}/{{ displayedAttachments.length }}</a
+								<span class="!tw-w-auto !tw-rounded-coordinator !tw-border-none !tw-bg-profile-full !tw-text-white"
+									>{{ selectedAttachmentPosition + 1 }}/{{ displayedAttachments.length }}</span
 								>
 							</li>
 							<li class="tw-flex">

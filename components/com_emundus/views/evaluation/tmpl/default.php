@@ -13,6 +13,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
@@ -199,6 +200,7 @@ $datas = [
 				'user'      => $this->_user->id,
 				'fullname'  => $this->_user->name,
 				'applicant' => $applicant,
+                'applicantsAllowedToComment' => ComponentHelper::getParams('com_emundus')->get('allow_applicant_to_comment', false) ? 1 : 0,
 				'ratio'     => $this->modal_ratio,
 				'tabs'      => $this->modal_tabs,
 				'type'      => 'evaluation',

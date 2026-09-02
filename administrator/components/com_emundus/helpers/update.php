@@ -3321,6 +3321,51 @@ class EmundusHelperUpdate
 	 *
 	 * @since version 1.35.0
 	 */
+
+	private static function getForeignKeyCollations($db, array $foreigns_key): array
+	{
+		$collations = [];
+
+		foreach ($foreigns_key as $fk)
+		{
+			if (!is_array($fk) && $fk instanceof EmundusTableForeignKey)
+			{
+				$from_column = $fk->getFromColumn();
+				$ref_table   = $fk->getReferencedTable();
+				$ref_column  = $fk->getReferencedColumn();
+			}
+			else
+			{
+				$from_column = $fk['from_column'] ?? '';
+				$ref_table   = $fk['ref_table'] ?? '';
+				$ref_column  = $fk['ref_column'] ?? '';
+			}
+
+			if (empty($from_column) || empty($ref_table) || empty($ref_column))
+			{
+				continue;
+			}
+
+			$ref_table = str_replace('#__', $db->getPrefix(), $ref_table);
+
+			$query = $db->getQuery(true)
+				->select($db->quoteName('COLLATION_NAME'))
+				->from($db->quoteName('information_schema.COLUMNS'))
+				->where($db->quoteName('TABLE_SCHEMA') . ' = DATABASE()')
+				->where($db->quoteName('TABLE_NAME') . ' = ' . $db->quote($ref_table))
+				->where($db->quoteName('COLUMN_NAME') . ' = ' . $db->quote($ref_column));
+
+			$collation = $db->setQuery($query)->loadResult();
+
+			if (!empty($collation))
+			{
+				$collations[$from_column] = $collation;
+			}
+		}
+
+		return $collations;
+	}
+
 	public static function createTable($table, $columns = [], $foreigns_key = [], $comment = '', $unique_keys = [], $primary_key_options = []): array
 	{
 		$result = ['status' => false, 'message' => ''];
@@ -3339,6 +3384,8 @@ class EmundusHelperUpdate
 
 			if (empty($table_existing))
 			{
+				$fk_collations = self::getForeignKeyCollations($db, $foreigns_key);
+
 				$query = 'CREATE TABLE ' . $table . '(';
 				if (empty($primary_key_options))
 				{
@@ -3372,6 +3419,10 @@ class EmundusHelperUpdate
 							if (!empty($column->getLength()))
 							{
 								$query_column .= '(' . $column->getLength() . ')';
+							}
+							if (!empty($fk_collations[$column->getName()]))
+							{
+								$query_column .= ' COLLATE ' . $fk_collations[$column->getName()];
 							}
 							if (!is_null($column->getDefault()))
 							{
@@ -3409,6 +3460,10 @@ class EmundusHelperUpdate
 							if (!empty($column['length']))
 							{
 								$query_column .= '(' . $column['length'] . ')';
+							}
+							if (!empty($fk_collations[$column['name']]))
+							{
+								$query_column .= ' COLLATE ' . $fk_collations[$column['name']];
 							}
 							if (isset($column['default']) && $column['default'] !== '')
 							{

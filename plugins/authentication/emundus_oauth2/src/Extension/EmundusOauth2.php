@@ -22,6 +22,7 @@ use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Utilities\ArrayHelper;
@@ -31,6 +32,8 @@ use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryAwareTrait;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\SubscriberInterface;
+use Tchooz\Entities\User\EmundusUserEntity;
+use Tchooz\Repositories\User\EmundusUserRepository;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -262,10 +265,25 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 							}
 
 							if (!$response->isnew) {
+								$user_id = UserHelper::getUserId($response->username);
+
+								// Check that emundus user exist
+								$emundusUserRepository = new EmundusUserRepository();
+								$emundusUser = $emundusUserRepository->getByUserId($user_id);
+								if(empty($emundusUser))
+								{
+									$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
+									$emundusUser = new EmundusUserEntity(0, $user, $response->firstname ?? '', $response->lastname ?? '');
+
+									if(!$emundusUserRepository->flush($emundusUser))
+									{
+										throw new \Exception('Cannot repair emundus user');
+									}
+								}
+								//
+
 								if (!empty($response->annex_data)) {
 									$query = $db->getQuery(true);
-
-									$user_id = UserHelper::getUserId($response->username);
 
 									foreach ($response->annex_data as $data) {
 										if (is_array($data['value'])) {

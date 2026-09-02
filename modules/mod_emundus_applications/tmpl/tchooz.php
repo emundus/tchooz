@@ -290,7 +290,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 </div>
 
 <?php if ($show_tabs == 1 && sizeof($applications) > 0) : ?>
-    <div class="em-mt-12 em-flex-row em-border-bottom-neutral-400"
+    <div class="em-mt-12 em-flex-row em-border-bottom-neutral-400 tw-gap-2"
          style="height: 50px; overflow:hidden; overflow-x: auto;">
 		<?php foreach ($tabs as $tab) :
             $tab['name'] = $sanitizer->sanitize($tab['name']);

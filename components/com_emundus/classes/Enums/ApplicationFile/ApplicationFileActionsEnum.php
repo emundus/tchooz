@@ -188,7 +188,7 @@ enum ApplicationFileActionsEnum: string
 	{
 		return match($this)
 		{
-			self::UNANONYMIZE, self::DELETE => 'tw-text-red-500',
+			self::UNANONYMIZE, self::DELETE => 'tw-text-red-700',
 			default => ''
 		};
 	}

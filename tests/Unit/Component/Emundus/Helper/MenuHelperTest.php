@@ -11,7 +11,10 @@ namespace Unit\Component\Emundus\Helper;
 
 use EmundusHelperCache;
 use EmundusHelperMenu;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Language\Multilanguage;
 use Joomla\Registry\Registry;
 use Joomla\Tests\Unit\UnitTestCase;
 
@@ -436,6 +439,113 @@ class MenuHelperTest extends UnitTestCase
 			$this->assertNotNull($second);
 			$this->assertEquals($first->id, $second->id, 'Repeated calls should return the same heading menu item');
 		}
+	}
+
+	// =========================================================================
+	// getLanguageSefPrefix
+	// =========================================================================
+
+	/**
+	 * @covers EmundusHelperMenu::getLanguageSefPrefix
+	 */
+	public function testGetLanguageSefPrefixAlwaysReturnsString(): void
+	{
+		$result = EmundusHelperMenu::getLanguageSefPrefix();
+
+		$this->assertIsString($result, 'getLanguageSefPrefix should always return a string');
+	}
+
+	/**
+	 * When multilanguage is disabled, the prefix is always empty regardless of input.
+	 *
+	 * @covers EmundusHelperMenu::getLanguageSefPrefix
+	 */
+	public function testGetLanguageSefPrefixReturnsEmptyWhenMultilanguageDisabled(): void
+	{
+		if (Multilanguage::isEnabled())
+		{
+			$this->markTestSkipped('Multilanguage is enabled in this environment');
+		}
+
+		$this->assertSame('', EmundusHelperMenu::getLanguageSefPrefix(), 'Empty language should yield empty prefix when multilanguage is disabled');
+		$this->assertSame('', EmundusHelperMenu::getLanguageSefPrefix('fr-FR'), 'A known-looking language should yield empty prefix when multilanguage is disabled');
+		$this->assertSame('', EmundusHelperMenu::getLanguageSefPrefix('en-GB'), 'The default language should yield empty prefix when multilanguage is disabled');
+	}
+
+	/**
+	 * An unknown language code is never mapped to a sef prefix.
+	 *
+	 * @covers EmundusHelperMenu::getLanguageSefPrefix
+	 */
+	public function testGetLanguageSefPrefixReturnsEmptyForUnknownLanguage(): void
+	{
+		$result = EmundusHelperMenu::getLanguageSefPrefix('zz-ZZ');
+
+		$this->assertSame('', $result, 'An unknown language code should never produce a sef prefix');
+	}
+
+	/**
+	 * When multilanguage is enabled, a known non-default language returns the sef
+	 * prefix declared by the Joomla content language.
+	 *
+	 * @covers EmundusHelperMenu::getLanguageSefPrefix
+	 */
+	public function testGetLanguageSefPrefixReturnsDeclaredSefForKnownLanguage(): void
+	{
+		if (!Multilanguage::isEnabled())
+		{
+			$this->markTestSkipped('Multilanguage is disabled in this environment');
+		}
+
+		$languages   = LanguageHelper::getLanguages('lang_code');
+		$defaultLang = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+
+		// Pick any installed content language that is not the default one.
+		$target = null;
+		foreach ($languages as $code => $language)
+		{
+			if ($code !== $defaultLang)
+			{
+				$target = $language;
+				break;
+			}
+		}
+
+		if ($target === null)
+		{
+			$this->markTestSkipped('No non-default content language installed to assert against');
+		}
+
+		$result = EmundusHelperMenu::getLanguageSefPrefix($target->lang_code);
+
+		$this->assertSame($target->sef, $result, 'A known non-default language should return its declared sef prefix');
+	}
+
+	/**
+	 * When no language is passed, the current application language tag is used.
+	 *
+	 * @covers EmundusHelperMenu::getLanguageSefPrefix
+	 */
+	public function testGetLanguageSefPrefixEmptyArgumentFallsBackToCurrentLanguage(): void
+	{
+		$currentTag = Factory::getApplication()->getLanguage()->getTag();
+
+		$this->assertSame(
+			EmundusHelperMenu::getLanguageSefPrefix($currentTag),
+			EmundusHelperMenu::getLanguageSefPrefix(),
+			'Calling with no argument should behave like passing the current language tag'
+		);
+	}
+
+	/**
+	 * @covers EmundusHelperMenu::getLanguageSefPrefix
+	 */
+	public function testGetLanguageSefPrefixIsDeterministic(): void
+	{
+		$first  = EmundusHelperMenu::getLanguageSefPrefix('fr-FR');
+		$second = EmundusHelperMenu::getLanguageSefPrefix('fr-FR');
+
+		$this->assertSame($first, $second, 'getLanguageSefPrefix should return the same result on every call for the same input');
 	}
 }
 

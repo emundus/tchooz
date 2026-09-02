@@ -127,6 +127,14 @@ body {
     color: var(--neutral-0) !important;
 }
 
+a,span,li,div {
+    transition: background-color 0.2s ease-in-out;
+}
+
+a:focus {
+    color: color-mix(in srgb, var(--em-profile-color), var(--neutral-900) 30%);
+}
+
 /***********
 /* TCHOOZY *
  ***********/
