@@ -9,7 +9,7 @@
 
 namespace Joomla\Plugin\Task\Inactiveaccounts\Service;
 
-use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\User;
 use Joomla\Plugin\Task\Inactiveaccounts\Enum\Mode;
 use Joomla\Plugin\Task\Inactiveaccounts\Helper\Date;
@@ -30,6 +30,7 @@ class InactiveService
 		private Mode                     $mode = Mode::DISABLE,
 	)
 	{
+		Log::addLogger(['text_file' => 'plugin.emundus.inactiveaccounts.php'], Log::ALL, array('plugin.emundus.inactiveaccounts'));
 	}
 
 	public function run(): bool
@@ -42,23 +43,28 @@ class InactiveService
 			{
 				$daysToDisableAfter = $this->delay * 30;
 
-				$inactiveAccounts = $this->getInactiveAccounts($daysToDisableAfter, false, 0, 0);
+				$inactiveAccounts = $this->getInactiveAccounts($daysToDisableAfter, $this->mode == Mode::DISABLE, 0, 0);
 				if (!empty($inactiveAccounts))
 				{
+					Log::add('Inactive accounts found: ' . count($inactiveAccounts) . ' with delay ' . $daysToDisableAfter, Log::DEBUG, 'plugin.emundus.inactiveaccounts');
+
 					foreach ($inactiveAccounts as $inactiveAccount)
 					{
 						$account         = new User($inactiveAccount);
+						// Already filtered on query but keep fallback
 						$testing_account = $account->getParam('testing_account', 0) == 1;
 						if ($account->activation != -1 && $testing_account == $this->checkTestAccounts)
 						{
 							if ($this->mode == Mode::DISABLE)
 							{
+								Log::add('Disabling account: ' . $account->username, Log::DEBUG, 'plugin.emundus.inactiveaccounts');
 								$account->activation = -2;
 								$results[]           = $account->save();
 							}
 							elseif ($this->mode == Mode::DELETE)
 							{
 								// TODO: Send email with an archive of the account data
+								Log::add('Deleting account: ' . $account->username, Log::DEBUG, 'plugin.emundus.inactiveaccounts');
 								$results[] = $account->delete();
 							}
 						}
@@ -91,7 +97,7 @@ class InactiveService
 						}
 					}
 
-					if(count($inactiveAccountsToReminder) < self::LIMIT)
+					if (count($inactiveAccountsToReminder) < self::LIMIT)
 					{
 						$this->updateTaskOffset(0);
 					}
@@ -103,10 +109,11 @@ class InactiveService
 				//
 			}
 
-			return !in_array(false, $results, true);
+			return !in_array(false, $results, true) || empty($results);
 		}
 		catch (\Exception $e)
 		{
+			Log::add('Failed to run inactive accounts task: ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.inactiveaccounts');
 			throw new \Exception($e);
 		}
 	}
@@ -118,23 +125,35 @@ class InactiveService
 			->from($this->db->quoteName('#__users'))
 			->where($this->db->quoteName('lastvisitdate') . ' IS NOT NULL')
 			->where($this->db->quoteName('lastvisitdate') . ' < ' . $this->db->quote(Date::getModifiedDate($days, true)));
+
 		if ($activation)
 		{
-			$this->query->where($this->db->quoteName('activation') . ' <> -2');
+			$this->query->where($this->db->quoteName('activation') . ' NOT IN (-2,-1)');
 		}
+		else {
+			$this->query->where($this->db->quoteName('activation') . ' <> -1');
+		}
+
+		if($this->checkTestAccounts)
+		{
+			$this->query->where('JSON_EXTRACT(params,"$.testing_account") = 1');
+		}
+
 		$this->query->order('lastvisitdate ASC');
-		if(!empty($limit))
+
+		if (!empty($limit))
 		{
 			$this->query->setLimit($limit, $offset);
 		}
-		$this->db->setQuery($this->query);
 
 		try
 		{
+			$this->db->setQuery($this->query);
 			return $this->db->loadColumn();
 		}
 		catch (\Exception $e)
 		{
+			Log::add('Failed to get inactive accounts: ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.inactiveaccounts');
 			throw new \Exception('Error fetching inactive accounts: ' . $e->getMessage());
 		}
 	}
@@ -197,6 +216,7 @@ class InactiveService
 		}
 		catch (\Exception $e)
 		{
+			Log::add('Failed to update task offset: ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.inactiveaccounts');
 			throw new \Exception('Error updating task offset: ' . $e->getMessage());
 		}
 	}
