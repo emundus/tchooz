@@ -21,9 +21,11 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\ParameterType;
+use Joomla\Registry\Registry;
 
 class EmundusHelperMenu
 {
@@ -362,13 +364,7 @@ class EmundusHelperMenu
 	{
 		$alias = '';
 
-		$activeLanguage = Factory::getApplication()->getLanguage()->getTag();
-		$languages      = LanguageHelper::getLanguages('lang_code');
-		$sef            = '';
-		if (isset($languages[$activeLanguage]))
-		{
-			$sef = $languages[$activeLanguage]->sef;
-		}
+		$sef = self::getLanguageSefPrefix();
 
 		$menu = Factory::getApplication()->getMenu();
 		$item = $menu->getItems('link', $link, true);
@@ -379,6 +375,35 @@ class EmundusHelperMenu
 		}
 
 		return $alias;
+	}
+
+	// Language prefixes are built by the languagefilter plugin only, an empty prefix is returned when it does not build one.
+	static function getLanguageSefPrefix(string $language = ''): string
+	{
+		if (!Multilanguage::isEnabled())
+		{
+			return '';
+		}
+
+		if (empty($language))
+		{
+			$language = Factory::getApplication()->getLanguage()->getTag();
+		}
+
+		$languages = LanguageHelper::getLanguages('lang_code');
+		if (!isset($languages[$language]))
+		{
+			return '';
+		}
+
+		$params = new Registry(PluginHelper::getPlugin('system', 'languagefilter')?->params ?? '');
+
+		if ($params->get('remove_default_prefix', 0) && $language === ComponentHelper::getParams('com_languages')->get('site', 'en-GB'))
+		{
+			return '';
+		}
+
+		return $languages[$language]->sef;
 	}
 
 	static function getNonce(): string

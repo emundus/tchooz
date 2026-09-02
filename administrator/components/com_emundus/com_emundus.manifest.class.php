@@ -456,9 +456,37 @@ class Com_EmundusInstallerScript
 							continue;
 						}
 
-						$alter = 'ALTER TABLE ' . $this->db->quoteName($source_table)
-							. ' ADD CONSTRAINT ' . $this->db->quoteName($foreign_key->getName())
-							. ' FOREIGN KEY (' . $this->db->quoteName($foreign_key->getFromColumn()) . ')'
+						$constraint_query = $this->db->getQuery(true)
+							->select('COUNT(*)')
+							->from($this->db->quoteName('information_schema.TABLE_CONSTRAINTS'))
+							->where($this->db->quoteName('CONSTRAINT_SCHEMA') . ' = DATABASE()')
+							->where($this->db->quoteName('CONSTRAINT_TYPE') . ' = ' . $this->db->quote('FOREIGN KEY'))
+							->where($this->db->quoteName('CONSTRAINT_NAME') . ' = ' . $this->db->quote($foreign_key->getName()));
+
+						$this->db->setQuery($constraint_query);
+						$name_taken = (int) $this->db->loadResult() > 0;
+
+						if (!$name_taken)
+						{
+							$index_query = $this->db->getQuery(true)
+								->select('COUNT(*)')
+								->from($this->db->quoteName('information_schema.STATISTICS'))
+								->where($this->db->quoteName('TABLE_SCHEMA') . ' = DATABASE()')
+								->where($this->db->quoteName('TABLE_NAME') . ' = ' . $this->db->quote($source_table_resolved))
+								->where($this->db->quoteName('INDEX_NAME') . ' = ' . $this->db->quote($foreign_key->getName()));
+
+							$this->db->setQuery($index_query);
+							$name_taken = (int) $this->db->loadResult() > 0;
+						}
+
+						$alter = 'ALTER TABLE ' . $this->db->quoteName($source_table) . ' ADD ';
+
+						if (!$name_taken)
+						{
+							$alter .= 'CONSTRAINT ' . $this->db->quoteName($foreign_key->getName()) . ' ';
+						}
+
+						$alter .= 'FOREIGN KEY (' . $this->db->quoteName($foreign_key->getFromColumn()) . ')'
 							. ' REFERENCES ' . $this->db->quoteName($foreign_key->getReferencedTable())
 							. ' (' . $this->db->quoteName($foreign_key->getReferencedColumn()) . ')'
 							. ' ON UPDATE ' . $foreign_key->getOnUpdate()->value
@@ -467,7 +495,14 @@ class Com_EmundusInstallerScript
 						$this->db->setQuery($alter);
 						$this->db->execute();
 
-						EmundusHelperUpdate::displayMessage('Clé étrangère ' . $foreign_key->getName() . ' ajoutée sur ' . $source_table . '.', 'success');
+						if ($name_taken)
+						{
+							EmundusHelperUpdate::displayMessage('Clé étrangère ajoutée sur ' . $source_table . ' (' . $foreign_key->getFromColumn() . ' vers ' . $target_table . '.' . $foreign_key->getReferencedColumn() . '), nommée par MySQL car ' . $foreign_key->getName() . ' est déjà pris sur cette base.', 'warning');
+						}
+						else
+						{
+							EmundusHelperUpdate::displayMessage('Clé étrangère ' . $foreign_key->getName() . ' ajoutée sur ' . $source_table . '.', 'success');
+						}
 					}
 					catch (Exception $e)
 					{
