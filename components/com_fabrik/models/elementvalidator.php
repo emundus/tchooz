@@ -153,6 +153,30 @@ class FabrikFEModelElementValidator extends FabModel
 	}
 
 	/**
+	 * Is the element required by its own configuration, regardless of the conditional
+	 * notempty validation added by form rules
+	 *
+	 * @return  bool
+	 */
+	public function isRequired(): bool
+	{
+		$params      = $this->elementModel->getParams();
+		$validations = (array) $params->get('validations', 'array');
+		$usedPlugins = (array) FArrayHelper::getValue($validations, 'plugin', array());
+		$published   = FArrayHelper::getValue($validations, 'plugin_published', array());
+
+		foreach ($usedPlugins as $i => $usedPlugin)
+		{
+			if ($usedPlugin === 'notempty' && FArrayHelper::getValue($published, $i, true))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Should the icon be shown
 	 *
 	 * @return boolean

@@ -6,7 +6,7 @@ use Joomla\CMS\Language\Text;
 $d = $displayData;
 ?>
 
-<img src="<?php echo $d->url;?>" alt="<?php echo $d->code; ?>" />
+<img src="<?php echo $d->url;?>" alt="<?php echo Text::_('PLG_ELEMENT_CAPTCHA_ALT_TEXT'); ?>" />
 
 <div class="captcha_input">
 	<input class="form-control inputbox <?php echo $d->type;?>"

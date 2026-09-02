@@ -27,7 +27,7 @@ $element = $this->element;
 	<?php echo $element->element; ?>
 </div>
 
-<div class="<?php echo $this->class ?> tw-flex tw-items-start">
+<div class="<?php echo $this->class ?> tw-flex tw-items-center">
     <?php if ($element->error) : ?>
         <span class="material-symbols-outlined tw-mr-1" style="line-height: 18px;font-size: 18px">error</span>
         <?php echo $element->error ?>

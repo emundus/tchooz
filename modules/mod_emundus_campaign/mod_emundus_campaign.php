@@ -336,17 +336,17 @@ if ($user->guest || in_array($e_user->profile, $app_prof) || $tmpl === 'tchooz_s
 	}
 
 	$mod_em_campaign_get_admission_date = ($mod_em_campaign_show_admission_start_date || $mod_em_campaign_show_admission_end_date);
-	$currentCampaign                    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity, $order, $mod_em_campaign_show_pinned_campaign);
-	$pastCampaign                       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity, $order, $mod_em_campaign_show_pinned_campaign);
-	$futurCampaign                      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity, $order, $mod_em_campaign_show_pinned_campaign);
-	$allCampaign                        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity);
+	$showApplyButton = ($mod_em_campaign_show_apply_button == 1 || $tmpl === 'tchooz_single_campaign');
+	$currentCampaign                    = $helper->getCurrent($condition, $mod_em_campaign_get_teaching_unity, $order, $mod_em_campaign_show_pinned_campaign, $showApplyButton);
+	$pastCampaign                       = $helper->getPast($condition, $mod_em_campaign_get_teaching_unity, $order, $mod_em_campaign_show_pinned_campaign, $showApplyButton);
+	$futurCampaign                      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity, $order, $mod_em_campaign_show_pinned_campaign, $showApplyButton);
+	$allCampaign                        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity, $showApplyButton);
 
-	$totalCampaigns = $helper->getProgram('', $mod_em_campaign_get_teaching_unity);
+	$totalCampaigns = $helper->getProgram('', $mod_em_campaign_get_teaching_unity, $showApplyButton);
 	if ($mod_em_campaign_show_pinned_campaign && sizeof($totalCampaigns) == 1 && $totalCampaigns[0]->pinned == 1)
 	{
 		$totalCampaigns = [];
 	}
-
 
 	if ($params->get('mod_em_campaign_layout') == "single_campaign" || $params->get('mod_em_campaign_layout') == "tchooz_single_campaign" || $params->get('mod_em_campaign_layout') == "institut_fr_single_campaign")
 	{

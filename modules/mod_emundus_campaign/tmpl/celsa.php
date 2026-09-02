@@ -51,7 +51,7 @@ function userFormationLevelsAllowed()
 				->leftJoin('data_formation ON data_formation_level.id = data_formation.level')
 				->leftJoin('#__emundus_setup_campaigns ON data_formation.id = #__emundus_setup_campaigns.formation')
 				->leftJoin('#__emundus_campaign_candidature ON #__emundus_setup_campaigns.id = #__emundus_campaign_candidature.campaign_id')
-				->where('#__emundus_campaign_candidature.fnum = ' . $fnum)
+				->where('#__emundus_campaign_candidature.fnum = ' . $db->quote($fnum))
 				->andWhere('#__emundus_campaign_candidature.published = 1')
 				->andWhere('#__emundus_setup_campaigns.end_date >= NOW()');
 

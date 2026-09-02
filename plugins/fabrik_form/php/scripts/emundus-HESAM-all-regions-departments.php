@@ -45,7 +45,7 @@ if ($all == 'oui') {
     $query
         ->select($db->quoteName('id'))
         ->from($db->quoteName('#__emundus_recherche'))
-        ->where($db->quoteName('fnum').' = '.$fnum);
+        ->where($db->quoteName('fnum').' = '.$db->quote($fnum));
 
     $db->setQuery($query);
 

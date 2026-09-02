@@ -640,12 +640,16 @@ import settingsService from '@/services/settings.js';
 import programmeService from '@/services/programme.js';
 import formService from '@/services/form.js';
 
+import purifier from '@/mixins/purifier.js';
+
 import { useGlobalStore } from '@/stores/global.js';
 import { useCampaignStore } from '@/stores/campaign.js';
 import { Slider } from '@emundus/ui';
 
 export default {
 	name: 'addCampaign',
+
+	mixins: [purifier],
 
 	components: {
 		Slider,
@@ -863,6 +867,8 @@ export default {
 						let label = response.data.campaign.label;
 
 						this.form = response.data.campaign;
+						this.form.description = this.normalizeEditorTextStyles(this.form.description);
+						this.form.short_description = this.normalizeEditorTextStyles(this.form.short_description);
 						this.$emit('getInformations', this.form);
 						this.programForm = response.data.program;
 
@@ -1405,8 +1411,8 @@ export default {
 			// Sinon on fetch depuis la BDD
 			campaignService.getCampaignById(this.campaignId, newLang).then((response) => {
 				if (response.status) {
-					this.form.description = response.data.campaign.description;
-					this.form.short_description = response.data.campaign.short_description;
+					this.form.description = this.normalizeEditorTextStyles(response.data.campaign.description);
+					this.form.short_description = this.normalizeEditorTextStyles(response.data.campaign.short_description);
 					this.form.label[newLang] = response.data.label[newLang] ?? this.form.label[newLang];
 				}
 			});

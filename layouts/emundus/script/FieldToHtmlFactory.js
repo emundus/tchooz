@@ -40,7 +40,7 @@ const FieldToHtmlFactory = {
         const requiredAttr = schema.required ? 'required' : '';
         const requiredMark = schema.required ? '<span class="tw-text-red-500"> *</span>' : '';
         const label = schema.label
-            ? `<label class="tw-font-medium tw-mb-1 tw-block" for="field-${schema.name}">${schema.label}${requiredMark}</label>`
+            ? `<label class="tw-font-medium tw-mb-1 tw-block tw-text-neutral-900" for="field-${schema.name}">${schema.label}${requiredMark}</label>`
             : '';
 
         const input = builder.call(this, schema, requiredAttr);

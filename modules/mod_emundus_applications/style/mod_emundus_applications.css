@@ -567,13 +567,13 @@ a.btn.btn-success:not(.btn-xs) {
 
 .mod_emundus_applications_badge {
     margin-left: var(--m-8);
-    background: var(--neutral-0);
-    border: solid 1px var(--neutral-300);
+    background: var(--neutral-700);
+    border: solid 1px var(--neutral-700);
     border-radius: 50px;
-    color: var(--neutral-600) !important;
+    color: var(--neutral-0) !important;
     display: flex;
-    height: 25px;
-    width: 25px;
+    height: 20px;
+    width: 20px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -830,7 +830,7 @@ circle.circle {
 {
     font-size: 80px;
     color: var(--em-profile-color);
-    opacity: 0.3;
+    opacity: 0.8;
 }
 
 .hover-and-tile-container-add:hover > .mod_emundus_applications___content_app > span,
@@ -878,7 +878,7 @@ circle.circle {
 #import_file td > span{
     font-size: 42px;
     color: var(--em-profile-color);
-    opacity: 0.3;
+    opacity: 0.8;
 }
 
 .list-application-add td > p,

@@ -19,7 +19,7 @@ if (!empty($applications)) {
 		$query = $db->getQuery(true);
 		$query->select('data_voie_d_acces')
 			->from($db->quoteName('#__emundus_campaign_candidature'))
-			->where($db->quoteName('fnum') . ' = ' . $application->fnum);
+			->where($db->quoteName('fnum') . ' = ' . $db->quote($application->fnum));
 
 		$db->setQuery($query);
 		$voie_d_acces = $db->loadResult();

@@ -15,7 +15,10 @@ class ExternalReferenceFactory
 				(int) $dbObject->id,
 				(string) $dbObject->column,
 				(string) $dbObject->intern_id,
-				(string) $dbObject->reference
+				(string) $dbObject->reference,
+				!empty($dbObject->sync_id) ? (int) $dbObject->sync_id : null,
+				$dbObject->reference_object ?? null,
+				$dbObject->reference_attribute ?? null
 			);
 		}
 
