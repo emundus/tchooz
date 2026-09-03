@@ -25,13 +25,9 @@ if($display_required_icon == 1 && !empty($labelText)) {
     } else if($required_position_icon == 1) {
         $l  = $labelText . $d->icons;
     }
-} else if($display_required_icon == 0) {
-    if($d->tipOpts->heading != 'Validation')
-    {
-	    $l .= $labelText . '<small class="tw-ml-1 em-text-neutral-600">' . JText::_('COM_FABRIK_OPTIONNAL_FIELD') . '</small>';
-    } else {
-        $l .= $labelText;
-    }
+} else if($display_required_icon == 0 && !empty($labelText)) {
+    $optional_style = $d->required ? ' style="display:none;"' : '';
+    $l .= $labelText . '<small class="em-optional-field tw-ml-1 em-text-neutral-600"' . $optional_style . '>' . Text::_('COM_FABRIK_OPTIONNAL_FIELD') . '</small>';
 }
 
 

@@ -51,7 +51,7 @@
   border: 1px solid var(--neutral-300) !important;
   border-radius: var(--em-applicant-br);
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
-  color: var(--neutral-600) !important;
+  color: var(--neutral-700) !important;
   cursor: not-allowed;
   transition: all 0.3s ease-in-out;
 
@@ -85,9 +85,10 @@
 }
 
 .btn[disabled] {
-  border: 1px solid #e6e6e6;
-  color: #333333;
-  background-color: #e6e6e6;
+  border: 1px solid transparent;
+  color: var(--neutral-800);
+  background-color: var(--neutral-300);
+  opacity: 1;
 
   &:hover, &:focus, &:active {
     border: 1px solid #333333;
@@ -1382,40 +1383,28 @@ input:focus + .em-slider {
 .em-light-tabs{
   padding: 12px 10px;
   border-bottom: solid 1px var(--transparent);
-  color: var(--neutral-600);
   border-radius: 8px 8px 0 0;
-  span, p{
-    color: var(--neutral-600);
-  }
 }
-.em-light-tabs:hover span,
 .em-light-tabs:hover {
-    background: var(--neutral-300);
+    background-color: var(--neutral-300);
 }
-.em-light-tabs:hover{
-  span, p{
-    background: var(--neutral-300);
-  }
+.em-light-tabs:active {
+  background-color: var(--neutral-400);
 }
 .em-light-selected-tab{
-  border-bottom: 1px solid var(--em-profile-color);
-  color: var(--em-profile-color);
+  border-bottom: 1px solid hsl(from var(--em-profile-color) h s l / 15%);
+  background-color: hsl(from var(--em-profile-color) h s l / 15%);
   span, p{
-    color: var(--em-profile-color);
+    color: var(--neutral-900);
   }
 
   &:hover {
-    background: none;
+    background-color: hsl(from var(--em-profile-color) h s l / 30%);
   }
 }
 
 #list-nav .em-light-tabs:not(.em-light-selected-tab){
   border-bottom: solid 1px var(--neutral-400);
-}
-.em-light-selected-tab:hover{
-  span, p{
-    color: var(--neutral-900) !important;
-  }
 }
 .em-tabs{
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);

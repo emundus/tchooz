@@ -105,6 +105,7 @@
 								:user="$props.user"
 								:access="access['10']"
 								:key="selectedFile.fnum"
+								:applicants-allowed-to-comment="$props.applicantsAllowedToComment"
 							/>
 							<Messages
 								v-if="tab.name === 'messenger' && selected === 'messenger'"
@@ -178,6 +179,10 @@ export default {
 			required: true,
 		},
 		applicant: {
+			type: Boolean,
+			default: false,
+		},
+		applicantsAllowedToComment: {
 			type: Boolean,
 			default: false,
 		},

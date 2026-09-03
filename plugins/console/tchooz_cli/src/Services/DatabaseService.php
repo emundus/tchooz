@@ -313,7 +313,20 @@ class DatabaseService
 		}
 		$this->db->setQuery($this->query);
 
-		return $this->db->loadAssocList();
+		$datas = $this->db->loadAssocList();
+
+		if ($table === 'jos_dropfiles')
+		{
+			foreach ($datas as &$data)
+			{
+				if ($data['cloud_id'] === '')
+				{
+					$data['cloud_id'] = null;
+				}
+			}
+		}
+
+		return $datas;
 	}
 
 	public function convertToInnodb(string $table): bool

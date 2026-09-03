@@ -1022,7 +1022,7 @@ video {
 .tw-btn-primary:hover {
     background-color: color-mix(in srgb, var(--em-profile-color), var(--neutral-900) 30%) !important;
     color: var(--neutral-0) !important;
-    border: 1px solid var(--em-profile-color) !important;
+    border: 1px solid color-mix(in srgb, var(--em-profile-color), var(--neutral-900) 30%) !important;
     text-decoration: none;
 }
 .tw-btn-primary:active {
@@ -1199,9 +1199,9 @@ video {
     text-decoration: none;
 }
 .tw-btn-red {
-    background-color: var(--red-500) !important;
+    background-color: var(--red-700) !important;
     color: var(--neutral-0) !important;
-    border: 1px solid var(--red-500) !important;
+    border: 1px solid var(--red-700) !important;
     text-shadow: none;
     text-transform: math-auto;
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
@@ -1218,10 +1218,16 @@ video {
     box-shadow: none;
 }
 .tw-btn-red:hover {
-    background-color: color-mix(in srgb, var(--red-500), var(--neutral-900) 30%) !important;
+    background-color: color-mix(in srgb, var(--red-700), var(--neutral-900) 30%) !important;
     color: var(--neutral-0) !important;
-    border: 1px solid var(--red-500) !important;
+    border: 1px solid var(--red-700) !important;
     text-decoration: none;
+}
+.tw-btn-red:focus {
+    background-color: color-mix(in srgb, var(--red-700), var(--neutral-900) 30%) !important;
+    color: var(--neutral-0) !important;
+    border: 1px solid var(--red-700) !important;
+    text-decoration: underline !important;
 }
 .tw-btn-red:disabled {
     opacity: 0.6;
@@ -2840,6 +2846,11 @@ video {
                 border: unset;
                 box-shadow: unset;
             }
+
+        /* Chosen override */
+        form.fabrikForm .chosen-container-multi .chosen-drop .result-selected {
+            color: var(--neutral-600);
+        }
 
     .pull-right.em-repeat-table {
         float: inherit;
@@ -168513,7 +168524,7 @@ video {
         color: #b94a48;
     }
 
-    
+
     .has-error .\!checkbox {
         color: #b94a48 !important;
     }
@@ -169005,6 +169016,14 @@ body {
 ::-moz-selection {
     background-color: color-mix(in srgb, var(--em-primary-color), var(--neutral-0) 60%) !important;
     color: var(--neutral-0) !important;
+}
+
+a,span,li,div {
+    transition: background-color 0.2s ease-in-out;
+}
+
+a:focus {
+    color: color-mix(in srgb, var(--em-profile-color), var(--neutral-900) 30%);
 }
 
 /***********
@@ -169570,6 +169589,9 @@ div[data-plugin="panel"][data-type="error"] span.material-symbols-outlined {
 }
 .disabled\:tw-bg-neutral-100:disabled {
     background-color: var(--neutral-100);
+}
+.disabled\:tw-opacity-60:disabled {
+    opacity: 0.6;
 }
 .tw-group:hover .group-hover\:\!tw-border-blue-100 {
     border-color: var(--blue-100) !important;

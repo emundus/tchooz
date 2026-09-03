@@ -2045,7 +2045,7 @@ class EmundusModelFiles extends JModelLegacy
 			$query = $this->_db->getQuery(true);
 			$query->select($this->_db->quoteName('published'))
 				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
-				->where($this->_db->quoteName('fnum') . ' = ' . $fnum);
+				->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
 			$this->_db->setQuery($query);
 			$old_publish = $this->_db->loadResult();
 			// Before logging, translate the publish id to corresponding label
@@ -2350,7 +2350,7 @@ class EmundusModelFiles extends JModelLegacy
                         left join jos_emundus_setup_status as jess on jess.step = cc.status
                         left join jos_emundus_tag_assoc as jeta on jeta.fnum = cc.fnum
                         left join jos_emundus_setup_action_tag as jesat on jesat.id = jeta.id_tag
-                        where cc.fnum = ' . $fnum;
+                        where cc.fnum = ' . $this->_db->quote($fnum);
 			$this->_db->setQuery($query);
 
 			return $this->_db->loadAssoc();
@@ -3649,7 +3649,7 @@ class EmundusModelFiles extends JModelLegacy
 		try {
 
 
-			$query = 'SELECT * FROM #__emundus_evaluations WHERE fnum = ' . $fnum . ' AND user = ' . $evaluator_id;
+			$query = 'SELECT * FROM #__emundus_evaluations WHERE fnum = ' . $this->_db->quote($fnum) . ' AND user = ' . $evaluator_id;
 			$this->_db->setQuery($query);
 
 			return $this->_db->loadAssocList();
@@ -4210,7 +4210,12 @@ class EmundusModelFiles extends JModelLegacy
 		$query = $this->_db->createQuery();
 		$query->select('*')
 			->from($this->_db->qn('#__emundus_tag_assoc'))
-			->where('id_tag = ' . $this->_db->quote($tid) . ' AND fnum LIKE "' . $this->_db->quote($fnum) . '" AND user_id = ' . $this->_db->quote($user_id));
+			->where($this->_db->qn('id_tag') . ' = :id_tag')
+			->andWhere($this->_db->qn('fnum') . ' = :fnum')
+			->andWhere($this->_db->qn('user_id') . ' = :user_id')
+			->bind(':id_tag', $tid, ParameterType::INTEGER)
+			->bind(':fnum', $fnum, ParameterType::STRING)
+			->bind(':user_id', $user_id, ParameterType::INTEGER);
 
 		try {
 			$this->_db->setQuery($query);

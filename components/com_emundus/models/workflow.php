@@ -2550,7 +2550,7 @@ class EmundusModelWorkflow extends JModelList
 			$query = $this->db->getQuery(true);
 			$query->select('status')
 				->from($this->db->quoteName('#__emundus_campaign_candidature'))
-				->where('fnum = ' . $fnum);
+				->where('fnum = ' . $this->db->quote($fnum));
 			$this->db->setQuery($query);
 			$file_status = $this->db->loadResult();
 

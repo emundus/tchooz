@@ -482,4 +482,64 @@ class FilesModelTest extends UnitTestCase
 		$this->assertEquals('Test', $dataOneLinePerEvaluation[0]['jos_emundus_evaluations_00___field_1'], 'first row contains correct evaluation value');
 		$this->assertEquals('Test2', $dataOneLinePerEvaluation[1]['jos_emundus_evaluations_00___field_1'], 'second row contains correct evaluation value');
 	}
+
+	// -------------------------------------------------------------------------
+	// getTagsByIdFnumUser
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @covers EmundusModelFiles::getTagsByIdFnumUser
+	 *
+	 * @since version 1.0.0
+	 */
+	public function testGetTagsByIdFnumUser_WhenTagAssociatedToUser_ReturnsTrue()
+	{
+		$tags = $this->model->getAllTags();
+		$this->assertNotEmpty($tags, 'a tag is available for the test');
+		$tid  = (int) $tags[0]['id'];
+		$fnum = $this->dataset['fnum'];
+		$user = (int) $this->dataset['coordinator'];
+
+		$tagged = $this->model->tagFile([$fnum], [$tid], $user);
+		$this->assertTrue($tagged, 'the tag is associated to the file for the coordinator');
+
+		$hasTag = $this->model->getTagsByIdFnumUser($tid, $fnum, $user);
+		$this->assertTrue($hasTag, 'getTagsByIdFnumUser returns true when the tag is associated to the fnum by the user');
+	}
+
+	/**
+	 * @covers EmundusModelFiles::getTagsByIdFnumUser
+	 *
+	 * @since version 1.0.0
+	 */
+	public function testGetTagsByIdFnumUser_WhenTagNotAssociated_ReturnsFalse()
+	{
+		$tags = $this->model->getAllTags();
+		$this->assertNotEmpty($tags, 'a tag is available for the test');
+		$tid  = (int) $tags[0]['id'];
+		$user = (int) $this->dataset['coordinator'];
+
+		$hasTag = $this->model->getTagsByIdFnumUser($tid, 'nonexistentfnum000000000000000000', $user);
+		$this->assertFalse($hasTag, 'getTagsByIdFnumUser returns false when no tag is associated to the fnum');
+	}
+
+	/**
+	 * @covers EmundusModelFiles::getTagsByIdFnumUser
+	 *
+	 * @since version 1.0.0
+	 */
+	public function testGetTagsByIdFnumUser_WhenAssociatedByAnotherUser_ReturnsFalse()
+	{
+		$tags = $this->model->getAllTags();
+		$this->assertNotEmpty($tags, 'a tag is available for the test');
+		$tid  = (int) $tags[0]['id'];
+		$fnum = $this->dataset['fnum'];
+
+		$tagged = $this->model->tagFile([$fnum], [$tid], (int) $this->dataset['coordinator']);
+		$this->assertTrue($tagged, 'the tag is associated to the file for the coordinator');
+
+		// The tag is scoped per user: another user has no association.
+		$hasTag = $this->model->getTagsByIdFnumUser($tid, $fnum, 0);
+		$this->assertFalse($hasTag, 'getTagsByIdFnumUser returns false when the tag is associated by a different user');
+	}
 }

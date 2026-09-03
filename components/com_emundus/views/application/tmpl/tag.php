@@ -1,8 +1,10 @@
 <?php
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Factories\LayoutFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Label\LabelRepository;
 
 defined('_JEXEC') or die('Restricted access');
@@ -12,14 +14,28 @@ if (empty($this->applicationFile) || !($this->applicationFile instanceof Applica
     return;
 }
 
+$user = Factory::getApplication()->getIdentity();
+
 $labelRepository = new LabelRepository();
 $applicationTags = $labelRepository->getLabelAssociationsByFnum($this->applicationFile->getFnum());
 
-$data = LayoutFactory::prepareVueData();
-$data['application'] = $this->applicationFile->__serialize();
-$data['applicationTags'] = array_map(function ($tag) { return $tag->__serialize(); }, $applicationTags);
-$data['tagOptions'] = array_map(function ($tag) { return $tag->__serialize(); }, $labelRepository->get());
+$data                    = LayoutFactory::prepareVueData();
+$data['currentUser']     = $user->id;
+$data['application']     = $this->applicationFile->__serialize();
+$data['applicationTags'] = array_map(function ($tag) {
+    return $tag->__serialize();
+}, $applicationTags);
+$data['tagOptions']      = array_map(function ($tag) {
+    return $tag->__serialize();
+}, $labelRepository->get());
 
+
+$actionRepository = new ActionRepository();
+$tagAction        = $actionRepository->getByName('tag');
+$data['crud']     = [
+    'c' => EmundusHelperAccess::asAccessAction($tagAction->getId(), 'c', $user->id, $this->applicationFile->getFnum()),
+    'd' => EmundusHelperAccess::asAccessAction($tagAction->getId(), 'd', $user->id, $this->applicationFile->getFnum()),
+];
 ?>
 <div class="tags">
     <div class="row">
@@ -28,7 +44,8 @@ $data['tagOptions'] = array_map(function ($tag) { return $tag->__serialize(); },
                 <h3 class="panel-title tw-flex tw-items-center tw-gap-1">
                     <span class="material-symbols-outlined">sell</span>
                     <span><?php echo Text::_('COM_EMUNDUS_TAGS'); ?></span>
-                    <span class="tw-rounded tw-bg-white !tw-text-neutral-900 tw-px-2"><?php echo count($applicationTags); ?></span>
+                    <span
+                        class="tw-rounded tw-bg-white !tw-text-neutral-900 tw-px-2"><?php echo count($applicationTags); ?></span>
                 </h3>
 
                 <div class="btn-group pull-right">

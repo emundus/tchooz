@@ -343,7 +343,7 @@ class EmundusHelperList
 						$query->clear()
 							->select('DISTINCT id')
 							->from($db->quoteName($evaluation_step->table))
-							->where($db->quoteName('fnum') . ' = ' . $fnum)
+							->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
 							->andWhere($db->quoteName('step_id') . ' = ' . $evaluation_step->id);
 
 						if (!EmundusHelperAccess::asAccessAction($evaluation_step->action_id, 'r', $current_user_id, $fnum)) {

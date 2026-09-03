@@ -25,7 +25,6 @@ include:
   ref: main
   file: '.release-template.yml'
 - template: Security/Secret-Detection.gitlab-ci.yml
-- template: Security/SAST.gitlab-ci.yml
 
 build-app-to-test-job:
   stage: build

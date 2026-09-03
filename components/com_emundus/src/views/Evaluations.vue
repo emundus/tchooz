@@ -17,7 +17,10 @@
 				</ul>
 			</nav>
 
-			<div v-if="ccid > 0 && selectedEvaluationStep && selectedEvaluationStep.form_id" class="tw-h-full">
+			<div
+				v-if="ccid > 0 && selectedEvaluationStep && selectedEvaluationStep.form_id"
+				class="tw-flex tw-min-h-0 tw-flex-1 tw-flex-col"
+			>
 				<div v-if="selectedEvaluationStep.evaluations.length > 1">
 					<!-- Make a tab for each evaluation -->
 					<EvaluationList
@@ -31,7 +34,7 @@
 					v-else-if="selectedEvaluationStep.evaluations.length > 0"
 					v-show="!loading"
 					:src="'/' + currentLang + selectedEvaluationStep.evaluations[0].url"
-					class="iframe-evaluation-list tw-w-full tw-bg-coordinator-bg tw-p-4"
+					class="iframe-evaluation-list tw-w-full tw-bg-coordinator-bg"
 					:key="selectedTab"
 					@load="iframeLoaded($event)"
 					:title="translate('COM_EMUNDUS_IFRAME_EVALUATION_FORM_TITLE')"
@@ -89,11 +92,15 @@ export default {
 
 			loading: false,
 			currentLang: useGlobalStore().getShortLang,
+			iframeResizeObserver: null,
 		};
 	},
 	mounted() {
 		this.getFileId();
 		this.getEvaluationsForms();
+	},
+	beforeUnmount() {
+		this.disconnectIframeResizeObserver();
 	},
 	methods: {
 		getFileId() {
@@ -149,20 +156,46 @@ export default {
 
 			if (iframeDoc.querySelector('.emundus-form')) {
 				iframeDoc.querySelector('.emundus-form').classList.add('eval-form-split-view');
+				iframeDoc.querySelector('body').classList.add('tw-bg-white');
 				iframeDoc.querySelector('body .platform-content > div').classList.add('eval-form-split-view-container');
+				iframeDoc.querySelector('body .platform-content .btn-group').classList.add('tw-hidden');
 			}
 
 			const evaluatorStepContainer = document.querySelector('.em-container-evaluator-step');
 			if (iframeEl && evaluatorStepContainer) {
-				// Shrink iframe to 0 so scrollHeight reflects actual content, not stretched container
-				iframeEl.style.height = '0px';
-				requestAnimationFrame(() => {
-					const body = iframeDoc.body;
-					if (body) {
-						const contentHeight = body.scrollHeight;
-						iframeEl.style.height = contentHeight + 'px';
-					}
-				});
+				this.resizeIframeToContent(iframeEl, iframeDoc);
+				this.observeIframeBodyResize(iframeEl, iframeDoc);
+			}
+		},
+		resizeIframeToContent(iframeEl, iframeDoc) {
+			const body = iframeDoc.body;
+			if (!body) {
+				return;
+			}
+			// Shrink to 0 first so scrollHeight reflects real content, not the stretched iframe
+			iframeEl.style.height = '0px';
+			requestAnimationFrame(() => {
+				iframeEl.style.height = body.scrollHeight + 'px';
+			});
+		},
+		observeIframeBodyResize(iframeEl, iframeDoc) {
+			// Recompute height when conditional fields appear/disappear (body height changes)
+			this.disconnectIframeResizeObserver();
+
+			const body = iframeDoc.body;
+			if (!body || typeof ResizeObserver === 'undefined') {
+				return;
+			}
+
+			this.iframeResizeObserver = new ResizeObserver(() => {
+				iframeEl.style.height = body.scrollHeight + 'px';
+			});
+			this.iframeResizeObserver.observe(body);
+		},
+		disconnectIframeResizeObserver() {
+			if (this.iframeResizeObserver) {
+				this.iframeResizeObserver.disconnect();
+				this.iframeResizeObserver = null;
 			}
 		},
 		updateTab(evaluation) {

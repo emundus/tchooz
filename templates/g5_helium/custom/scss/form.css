@@ -1363,6 +1363,11 @@
                 box-shadow: unset;
             }
         }
+
+        /* Chosen override */
+        .chosen-container-multi .chosen-drop .result-selected {
+            color: var(--neutral-600);
+        }
     }
 
     .pull-right.em-repeat-table {

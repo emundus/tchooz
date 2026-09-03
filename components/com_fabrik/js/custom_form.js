@@ -599,31 +599,8 @@ requirejs(['fab/fabrik'], function () {
                       let event = new Event(elt.getChangeEvent());
                       elt.element.dispatchEvent(event);
                     }
-                  } else if (['set_optional', 'set_mandatory']) {
-                    let required_icon = document.querySelector('label[for="' + id + '"] span.material-symbols-outlined');
-                    if (required_icon) {
-                      if (action.action === 'set_optional') {
-                        required_icon.style.display = 'none';
-                      } else {
-                        required_icon.style.display = 'inline-block';
-                      }
-                    }
-                    else {
-                      if (action.action == 'set_mandatory') {
-                        let label = document.querySelector('label[for="' + id + '"]');
-                        if(label)
-                        {
-                          // Create the span element and insert it into the label
-                          let icon = document.createElement('span');
-                          icon.classList.add('material-symbols-outlined','!tw-text-xs', 'tw-text-red-600', 'tw-mr-0');
-                          icon.style.top = '-5px';
-                          icon.style.position = 'relative';
-                          icon.innerText = 'emergency';
-
-                          label.appendChild(icon);
-                        }
-                      }
-                    }
+                  } else if (['set_optional', 'set_mandatory'].includes(action.action)) {
+                    applyRequiredState(id, action.action === 'set_mandatory');
                   }
                 }
               });
@@ -707,15 +684,8 @@ requirejs(['fab/fabrik'], function () {
                       let event = new Event(elt.getChangeEvent());
                       elt.element.dispatchEvent(event);
                     }
-                  } else if (['set_optional', 'set_mandatory']) {
-                    let required_icon = document.querySelector('label[for="' + id + '"] span.material-symbols-outlined');
-                    if (required_icon) {
-                      if (opposite_action === 'set_optional') {
-                        required_icon.style.display = 'none';
-                      } else {
-                        required_icon.style.display = 'inline-block';
-                      }
-                    }
+                  } else if (['set_optional', 'set_mandatory'].includes(opposite_action)) {
+                    applyRequiredState(id, opposite_action === 'set_mandatory');
                   }
                 }
               });
@@ -723,6 +693,40 @@ requirejs(['fab/fabrik'], function () {
           });
         }
       });
+    }
+  }
+
+  /**
+   * Reflect the required state of an element on its label.
+   * When the required icon is disabled in the component settings, the label holds an
+   * "optional" mention to toggle instead of the icon.
+   */
+  function applyRequiredState(id, mandatory) {
+    let label = document.querySelector('label[for="' + id + '"]');
+
+    if (!label) {
+      return;
+    }
+
+    let optional_mention = label.querySelector('.em-optional-field');
+
+    if (optional_mention) {
+      optional_mention.style.display = mandatory ? 'none' : 'inline';
+      return;
+    }
+
+    let required_icon = label.querySelector('span.material-symbols-outlined');
+
+    if (required_icon) {
+      required_icon.style.display = mandatory ? 'inline-block' : 'none';
+    } else if (mandatory) {
+      let icon = document.createElement('span');
+      icon.classList.add('material-symbols-outlined', '!tw-text-xs', 'tw-text-red-600', 'tw-mr-0');
+      icon.style.top = '-5px';
+      icon.style.position = 'relative';
+      icon.innerText = 'emergency';
+
+      label.appendChild(icon);
     }
   }
 

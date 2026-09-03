@@ -126,23 +126,48 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 		$db = $this->databaseServiceSource->getDatabase();
 
 		$query = $db->getQuery(true)
-			->select('esw.*, GROUP_CONCAT(DISTINCT eswrp.programs) as program_codes, GROUP_CONCAT(DISTINCT eswrc.campaign) as campaign_ids, GROUP_CONCAT(DISTINCT eswres.entry_status) as entry_status')
-			->from($db->quoteName('jos_emundus_campaign_workflow', 'esw'))
-			->leftJoin($db->quoteName('jos_emundus_campaign_workflow_repeat_campaign', 'eswrc'), 'eswrc.parent_id = esw.id')
-			->leftJoin($db->quoteName('jos_emundus_campaign_workflow_repeat_programs', 'eswrp'), 'eswrp.parent_id = esw.id')
-			->leftJoin($db->quoteName('jos_emundus_campaign_workflow_repeat_entry_status', 'eswres'), 'eswres.parent_id = esw.id')
-			->group('esw.id');
+			->select('esw.*')
+			->from($db->quoteName('jos_emundus_campaign_workflow', 'esw'));
 
 		try {
 			$db->setQuery($query);
-			$workflows = $db->loadAssocList();
+			$workflows = $db->loadAssocList('id');
 
 			if (!empty($workflows)) {
-				foreach ($workflows as $key => $workflow) {
-					$workflows[$key]['program_codes'] = !empty($workflow['program_codes']) ? explode(',', $workflow['program_codes']) : [];
-					$workflows[$key]['campaign_ids'] = !empty($workflow['campaign_ids']) ? explode(',', $workflow['campaign_ids']) : [];
-					$workflows[$key]['entry_status'] = explode(',', $workflow['entry_status']);
+				$parent_ids = implode(',', array_map('intval', array_keys($workflows)));
+
+				// One query per repeat table: GROUP_CONCAT silently truncates at group_concat_max_len
+				$repeats = [
+					'program_codes' => ['jos_emundus_campaign_workflow_repeat_programs', 'programs'],
+					'campaign_ids'  => ['jos_emundus_campaign_workflow_repeat_campaign', 'campaign'],
+					'entry_status'  => ['jos_emundus_campaign_workflow_repeat_entry_status', 'entry_status'],
+				];
+
+				foreach ($repeats as $property => [$table, $column]) {
+					foreach ($workflows as $key => $workflow) {
+						$workflows[$key][$property] = [];
+					}
+
+					$query->clear()
+						->select($db->quoteName(['parent_id', $column]))
+						->from($db->quoteName($table))
+						->where($db->quoteName('parent_id') . ' IN (' . $parent_ids . ')');
+
+					$db->setQuery($query);
+					foreach ($db->loadAssocList() as $row) {
+						$value = $row[$column];
+
+						if ($value === null || $value === '' || !isset($workflows[$row['parent_id']])) {
+							continue;
+						}
+
+						if (!in_array($value, $workflows[$row['parent_id']][$property])) {
+							$workflows[$row['parent_id']][$property][] = $value;
+						}
+					}
 				}
+
+				$workflows = array_values($workflows);
 			}
 		} catch (\Exception $e) {
 			Log::add('Error while fetching old workflows: ' . $e->getMessage(), Log::ERROR, self::getJobName());

@@ -1060,7 +1060,7 @@ include(\'index.php\');
 	}
 
 	#[CheckAttribute(description: "Check if menus are correctly configured")]
-	private function checkMenu()
+	private function checkMenu(): bool
 	{
 		$checks = [];
 		$db     = $this->databaseService->getDatabase();
@@ -1090,6 +1090,55 @@ include(\'index.php\');
 		}
 
 		return !in_array(false, $checks);
+	}
+
+	#[CheckAttribute(description: "Set schoolyear column of emundus_users table null")]
+	private function checkEmundusUsersColumns(): bool
+	{
+		$checked = [];
+
+		$db = $this->databaseService->getDatabase();
+
+		$columns = [
+			'schoolyear',
+			'disabled_date',
+			'cancellation_date',
+			'cancellation_received',
+		];
+
+		$query = $db->createQuery();
+
+		foreach ($columns as $column)
+		{
+			$query->clear()
+				->select('COLUMN_TYPE, IS_NULLABLE')
+				->from('information_schema.COLUMNS')
+				->where('TABLE_SCHEMA = ' . $db->quote($this->databaseService->getDbName()))
+				->where('TABLE_NAME = ' . $db->quote($db->getPrefix() . 'emundus_users'))
+				->where('COLUMN_NAME = ' . $db->quote($column));
+			$db->setQuery($query);
+			$columnExist = $db->loadObject();
+
+			if (empty($columnExist))
+			{
+				continue;
+			}
+
+			// Already nullable: nothing to do.
+			if ($columnExist->IS_NULLABLE === 'YES')
+			{
+				continue;
+			}
+
+			$db->setQuery(
+				'ALTER TABLE ' . $db->quoteName($db->getPrefix() . 'emundus_users')
+				. ' MODIFY ' . $db->quoteName($column) . ' ' . $columnExist->COLUMN_TYPE . ' NULL;'
+			);
+
+			$checked[] = $db->execute();
+		}
+
+		return !in_array(false, $checked);
 	}
 
 	public static function getJobName(): string
