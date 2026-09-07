@@ -4836,4 +4836,63 @@ class EmundusHelperUpdate
 			return false;
 		}
 	}
+
+	/**
+	 * Registers an email tag whose value is resolved at send time by a TagProviderInterface
+	 * implementation. The row carries no value: it only makes the tag discoverable, and the two
+	 * consumers read it differently — the alias list renders #__emundus_setup_tags.description
+	 * directly, while the email editor picker (EmundusModelSettings::getEditorVariables) joins
+	 * #__falang_content and drops any tag without a translation. Hence both are written here.
+	 *
+	 * Idempotent: an already registered tag is left untouched, translations included.
+	 *
+	 * @param   string  $tag             Tag name without brackets, e.g. LAST_CONFIRMED_TRANSACTION_AMOUNT
+	 * @param   string  $description_en  Description shown in English
+	 * @param   string  $description_fr  Description shown in French
+	 *
+	 * @return bool
+	 */
+	public static function addSelectableProviderTag(string $tag, string $description_en, string $description_fr): bool
+	{
+		$db    = Factory::getDbo();
+		$query = $db->getQuery(true);
+
+		try
+		{
+			$query->select('id')
+				->from($db->quoteName('#__emundus_setup_tags'))
+				->where($db->quoteName('tag') . ' = ' . $db->quote($tag));
+
+			if (!empty($db->setQuery($query)->loadResult()))
+			{
+				return true;
+			}
+
+			$row = (object) [
+				'date_time'   => date('Y-m-d H:i:s'),
+				'tag'         => $tag,
+				'request'     => '[' . $tag . ']',
+				'description' => $description_fr,
+				'published'   => 1,
+			];
+
+			if (!$db->insertObject('#__emundus_setup_tags', $row, 'id'))
+			{
+				return false;
+			}
+
+			$tag_id = $row->id;
+
+			self::insertFalangTranslation(1, $tag_id, 'emundus_setup_tags', 'description', $description_en);
+			self::insertFalangTranslation(2, $tag_id, 'emundus_setup_tags', 'description', $description_fr);
+
+			return true;
+		}
+		catch (\Exception $e)
+		{
+			self::displayMessage('Error registering the provider tag ' . $tag . ': ' . $e->getMessage(), 'error');
+
+			return false;
+		}
+	}
 }

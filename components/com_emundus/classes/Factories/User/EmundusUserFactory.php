@@ -61,16 +61,20 @@ class EmundusUserFactory implements DBFactory
 
 		// Create a date from dd/mm/yyyy format
 		$birthDate = null;
-		if(!empty($dbObject->birth_date) && strpos($dbObject->birth_date, '/') !== false)
+		if(!empty($dbObject->birth_date))
 		{
+			$dbFormat = 'd/m/Y';
 			if (str_contains($dbObject->birth_date, ':'))
 			{
-				$birthDate = \DateTimeImmutable::createFromFormat('d/m/Y H:i:s', $dbObject->birth_date);
+				$dbFormat = 'd/m/Y H:i:s';
 			}
-			else
+
+			if(str_contains($dbObject->birth_date, '-'))
 			{
-				$birthDate = \DateTimeImmutable::createFromFormat('d/m/Y', $dbObject->birth_date);
+				$dbFormat = 'Y-m-d';
 			}
+
+			$birthDate = \DateTimeImmutable::createFromFormat($dbFormat, $dbObject->birth_date);
 
 			// if createFromFormat fails, it returns false. In that case, we set birthDate to null
 			if ($birthDate === false)

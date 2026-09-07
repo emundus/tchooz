@@ -24,6 +24,7 @@ export default {
 				translatable: field.translatable || false,
 				editable: !field.readonly,
 				copyable: field.copyable || false,
+				preserveValueWhenHidden: field.preserveValueWhenHidden || false,
 			};
 
 			switch (field.type) {

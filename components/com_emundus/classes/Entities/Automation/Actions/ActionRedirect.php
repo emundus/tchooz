@@ -6,6 +6,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
+use Joomla\Database\ParameterType;
 use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
@@ -166,7 +167,29 @@ class ActionRedirect extends ActionEntity
 
 	private function routeMenuItem(int $menuId): string
 	{
-		return $this->route(!empty($menuId) ? 'index.php?Itemid=' . $menuId : 'index.php');
+		if (empty($menuId))
+		{
+			return $this->route('index.php');
+		}
+
+		$item = Factory::getApplication()->getMenu()->getItem($menuId);
+
+		// The root of the menu tree (id 1), a heading or a separator has no page of its own:
+		// routing to its Itemid answers a 404.
+		if (empty($item) || (int) $item->level === 0 || in_array($item->type, ['heading', 'separator'], true))
+		{
+			Log::add('Redirect action [' . $this->getId() . '] cannot route to menu item [' . $menuId . '], it has no page of its own.', Log::WARNING, 'com_emundus.action');
+
+			return '';
+		}
+
+		// A "url" item is a plain link: its destination is that link, not a route to the item.
+		if ($item->type === 'url')
+		{
+			return $item->link;
+		}
+
+		return $this->route('index.php?Itemid=' . $menuId);
 	}
 
 	private function routeMenuLink(string $link): string
@@ -266,6 +289,9 @@ class ActionRedirect extends ActionEntity
 			->from($db->quoteName('#__menu'))
 			->where($db->quoteName('published') . ' = 1')
 			->where($db->quoteName('client_id') . ' = 0')
+			// Only items with a page of their own: not the root of the tree, not a heading.
+			->where($db->quoteName('level') . ' > 0')
+			->whereNotIn($db->quoteName('type'), ['heading', 'separator'], ParameterType::STRING)
 			->order($db->quoteName('lft'));
 
 		$db->setQuery($query);
