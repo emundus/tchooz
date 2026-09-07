@@ -50,6 +50,7 @@ Text::script('COM_EMUNDUS_CART_PAYMENT_RULES');
 Text::script('COM_EMUNDUS_CART_PAYMENT_PAY_ADVANCE_OR_TOTAL_LABEL');
 Text::script('COM_EMUNDUS_CART_PAYMENT_PAY_ADVANCE');
 Text::script('COM_EMUNDUS_CART_PAYMENT_PAY_TOTAL');
+Text::script('COM_EMUNDUS_CART_CANCEL_TRANSACTION');
 
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();
@@ -63,6 +64,7 @@ $datas = [
     'cart' => $this->cart->serialize(),
     'step' => $this->cart->getPaymentStep()->serialize(),
     'readOnly' => $readonly,
+    'cancellableTransaction' => false,
 ];
 
 if ($readonly) {
@@ -71,6 +73,8 @@ if ($readonly) {
 
     if (!empty($transaction) && $transaction->getStatus() === TransactionStatus::WAITING) {
         $app->enqueueMessage(Text::_('COM_EMUNDUS_TRANSACTION_IS_WAITING_FOR_VALIDATION'));
+
+        $datas['cancellableTransaction'] = $this->cart->getCustomer()->getUserId() == $this->user->id;
     }
 }
 ?>

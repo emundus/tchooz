@@ -36,6 +36,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		cancellableTransaction: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	data() {
 		return {
@@ -181,6 +185,16 @@ export default {
 			return product.mandatory || (availableProduct && availableProduct.mandatory == 1);
 		},
 
+		cancelCartTransaction() {
+			paymentService.cancelCartTransaction(this.cart.id).then((response) => {
+				if (response.status) {
+					window.location.reload();
+				} else {
+					this.alertError(response.msg);
+				}
+			});
+		},
+
 		checkoutCart() {
 			// Each call creates a transaction server-side, so a double click would leave orphans
 			// behind. The flag is only released on failure: on success the browser navigates away.
@@ -197,7 +211,7 @@ export default {
 					if (response.status) {
 						if (response.data && response.data.transaction_confirmed) {
 							if (response.data.message) {
-								this.alertSuccess(response.data.message).then(() => {
+								this.alertSuccess(response.data.message, '', false, null, 4000).then(() => {
 									if (response.data.redirect) {
 										window.location.href = response.data.redirect;
 									}
@@ -867,6 +881,15 @@ export default {
 
 			<button v-if="isManager === true && !readOnly" id="confirm-cart" class="tw-btn-primary" @click="confirmCart">
 				{{ translate('COM_EMUNDUS_CONFIRM_CART') }}
+			</button>
+
+			<button
+				v-if="cancellableTransaction"
+				id="cancel-cart-transaction"
+				class="tw-btn-secondary"
+				@click="cancelCartTransaction"
+			>
+				{{ translate('COM_EMUNDUS_CART_CANCEL_TRANSACTION') }}
 			</button>
 		</div>
 	</div>

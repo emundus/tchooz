@@ -550,6 +550,11 @@ export default {
 		draggable: VueDraggableNext,
 	},
 	mixins: [errors],
+	setup() {
+		return {
+			globalStore: useGlobalStore(),
+		};
+	},
 	data() {
 		return {
 			workflow: {
@@ -618,8 +623,7 @@ export default {
 		this.getEvaluationForms();
 		this.getGroups();
 
-		const globalStore = useGlobalStore();
-		this.coordinatorAccess = globalStore.hasCoordinatorAccess;
+		this.coordinatorAccess = this.globalStore.hasCoordinatorAccess;
 	},
 	methods: {
 		getWorkflow() {
@@ -690,7 +694,7 @@ export default {
 					return (this.statuses = response.data.map((status) => {
 						return {
 							id: status.step,
-							label: status.label[useGlobalStore().shortLang],
+							label: status.label[this.globalStore.shortLang],
 						};
 					}));
 				})
@@ -705,7 +709,7 @@ export default {
 					this.programsOptions = response.data.datas.map((program) => {
 						return {
 							id: program.id,
-							label: program.label[useGlobalStore().shortLang],
+							label: program.label[this.globalStore.shortLang],
 							workflows: [],
 						};
 					});
@@ -756,7 +760,7 @@ export default {
 					this.evaluationForms = response.data.datas.map((form) => {
 						return {
 							id: form.id,
-							label: form.label[useGlobalStore().shortLang],
+							label: form.label[this.globalStore.shortLang],
 						};
 					});
 				}

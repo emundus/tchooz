@@ -60,6 +60,20 @@ class EmundusHelperFabrik
 
 	private static array $dataTableTimestamps = [];
 
+	/**
+	 * Request-scoped cache for column existence checks. `SHOW COLUMNS` is expensive and was fired
+	 * several times per element; keyed by "table.column" it now runs once per pair per request.
+	 */
+	private static array $columnExistenceCache = [];
+
+	/**
+	 * Request-scoped cache for the encrypted table names and the repository used to fetch them,
+	 * so they are resolved once instead of once per element read.
+	 */
+	private static ?array $encryptedTablesCache = null;
+
+	private static ?FabrikRepository $sharedFabrikRepository = null;
+
 	public function __construct()
 	{
 		Log::addLogger(['text_file' => 'com_emundus.fabrik.helper.php'], Log::ALL, ['com_emundus.fabrik.helper']);
@@ -3408,7 +3422,12 @@ class EmundusHelperFabrik
 		$isRaw = $return === ValueFormatEnum::RAW;
 		$params      = json_decode($fabrik_element['params']);
 		$groupParams = json_decode($fabrik_element['group_params']);
-		$fabrikRepository = new FabrikRepository();
+
+		if (self::$sharedFabrikRepository === null)
+		{
+			self::$sharedFabrikRepository = new FabrikRepository();
+		}
+		$fabrikRepository = self::$sharedFabrikRepository;
 
 		$date_format = null;
 		if ($plugin->isDateField())
@@ -3420,7 +3439,11 @@ class EmundusHelperFabrik
 			}
 		}
 
-		$encrypted_tables = $fabrikRepository->getEncryptedTables();
+		if (self::$encryptedTablesCache === null)
+		{
+			self::$encryptedTablesCache = $fabrikRepository->getEncryptedTables();
+		}
+		$encrypted_tables = self::$encryptedTablesCache;
 
 		$isRepeatGroup = !empty($groupParams) && isset($groupParams->repeat_group_button) && $groupParams->repeat_group_button == 1;
 
@@ -4181,11 +4204,20 @@ class EmundusHelperFabrik
 
 	private function tableHasColumn(string $tableName, string $columnName): bool
 	{
+		$cacheKey = $tableName . '.' . $columnName;
+
+		if (array_key_exists($cacheKey, self::$columnExistenceCache))
+		{
+			return self::$columnExistenceCache[$cacheKey];
+		}
+
 		$db  = Factory::getContainer()->get('DatabaseDriver');
 		$sql = 'SHOW COLUMNS FROM ' . $db->quoteName($tableName) . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($columnName);
 		$res = $db->setQuery($sql)->loadResult();
 
-		return !empty($res);
+		self::$columnExistenceCache[$cacheKey] = !empty($res);
+
+		return self::$columnExistenceCache[$cacheKey];
 	}
 
 	/**

@@ -10,6 +10,7 @@
 namespace Tchooz\Entities\Emails\Providers;
 
 use Tchooz\Entities\Emails\TagContext;
+use Tchooz\Entities\Payment\TransactionEntity;
 use Tchooz\Entities\Payment\TransactionStatus;
 use Tchooz\Interfaces\TagProviderInterface;
 use Tchooz\Repositories\Payment\PaymentRepository;
@@ -36,7 +37,12 @@ class TransactionTagProvider implements TagProviderInterface
 
 	public function getProvidedTags(): array
 	{
-		return ['LAST_CONFIRMED_TRANSACTION_AMOUNT'];
+		return [
+			'LAST_CONFIRMED_TRANSACTION_AMOUNT',
+			'LAST_CONFIRMED_TRANSACTION_REFERENCE',
+			'LAST_TRANSACTION_AMOUNT',
+			'LAST_TRANSACTION_REFERENCE',
+		];
 	}
 
 	public function supports(TagContext $context): bool
@@ -52,20 +58,48 @@ class TransactionTagProvider implements TagProviderInterface
 
 	public function provide(TagContext $context): array
 	{
-		$amount = '';
+		$last_confirmed = $this->getLastTransaction($context->getFnum(), TransactionStatus::CONFIRMED);
+		$last           = $this->getLastTransaction($context->getFnum());
 
-		$last_confirmed_transactions = $this->getTransactionRepository()->getTransactions(1, 1, [
-			'fnum'   => $context->getFnum(),
-			'status' => TransactionStatus::CONFIRMED->value,
-		]);
+		return [
+			'LAST_CONFIRMED_TRANSACTION_AMOUNT'    => $this->formatAmount($last_confirmed),
+			'LAST_CONFIRMED_TRANSACTION_REFERENCE' => $last_confirmed?->getExternalReference() ?? '',
+			'LAST_TRANSACTION_AMOUNT'              => $this->formatAmount($last),
+			'LAST_TRANSACTION_REFERENCE'           => $last?->getExternalReference() ?? '',
+		];
+	}
 
-		if (!empty($last_confirmed_transactions[0]))
+	/**
+	 * The repository orders by creation date descending, so the first row of a single item page is
+	 * the most recent transaction matching the filters.
+	 *
+	 * @param   string                  $fnum
+	 * @param   TransactionStatus|null  $status  Omitted to consider every transaction, whatever its status.
+	 *
+	 * @return TransactionEntity|null
+	 */
+	private function getLastTransaction(string $fnum, ?TransactionStatus $status = null): ?TransactionEntity
+	{
+		$filters = ['fnum' => $fnum];
+
+		if ($status !== null)
 		{
-			$last_confirmed_transaction = $last_confirmed_transactions[0];
-			$amount = $last_confirmed_transaction->getAmount() . ' ' . $last_confirmed_transaction->getCurrency()->getSymbol();
+			$filters['status'] = $status->value;
 		}
 
-		return ['LAST_CONFIRMED_TRANSACTION_AMOUNT' => $amount];
+		$transactions = $this->getTransactionRepository()->getTransactions(1, 1, $filters);
+
+		return $transactions[0] ?? null;
+	}
+
+	private function formatAmount(?TransactionEntity $transaction): string
+	{
+		if ($transaction === null)
+		{
+			return '';
+		}
+
+		return $transaction->getAmount() . ' ' . $transaction->getCurrency()->getSymbol();
 	}
 
 	private function getPaymentRepository(): PaymentRepository

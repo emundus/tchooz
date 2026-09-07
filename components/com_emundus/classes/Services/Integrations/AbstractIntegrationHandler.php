@@ -111,6 +111,11 @@ abstract class AbstractIntegrationHandler implements HandlerInterface
 					continue;
 				}
 
+				if ($value === null)
+				{
+					continue;
+				}
+
 				if ($parameter->isRequired() && empty($value))
 				{
 					throw new \InvalidArgumentException(

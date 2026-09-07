@@ -186,25 +186,38 @@ class FileModel extends AdminModel
 		$steps = [];
 
 		$workflowRepository = new WorkflowRepository();
-		$workflow           = $workflowRepository->getWorkflowByFnum($item->fnum);
+		$workflow           = $workflowRepository->getWorkflowByFnum($item->fnum, true);
 
 		$profile_ids      = [(int) $item->profile_id];
+		$stepsLabel = [];
 		$management_steps = [];
 
 		if (!empty($workflow))
 		{
-			foreach ($workflow->getSteps() as $step)
+			// Steps can live on the parent workflow, the current one, or its child workflows.
+			$workflows = array_merge(
+				$workflow->getParentWorkflow() ? [$workflow->getParentWorkflow()] : [],
+				[$workflow],
+				array_values($workflow->getChildWorkflows())
+			);
+
+			foreach ($workflows as $workflowItem)
 			{
-				if ($step->isApplicantStep())
+				foreach ($workflowItem->getSteps() as $step)
 				{
-					if (!empty($step->getProfileId()))
+					assert($step instanceof StepEntity);
+					if ($step->isApplicantStep())
 					{
-						$profile_ids[] = $step->getProfileId();
+						if (!empty($step->getProfileId()))
+						{
+							$profile_ids[] = $step->getProfileId();
+							$stepsLabel[$step->getProfileId()] = $step->getLabel();
+						}
 					}
-				}
-				elseif ($step->isEvaluationStep() && !empty($step->getFormId()))
-				{
-					$management_steps[] = $step;
+					elseif ($step->isEvaluationStep() && !empty($step->getFormId()))
+					{
+						$management_steps[] = $step;
+					}
 				}
 			}
 		}
@@ -243,6 +256,7 @@ class FileModel extends AdminModel
 				'id'    => $profile->getId(),
 				'type'  => 'applicant',
 				'label' => $this->translateLabel($profile->getLabel()),
+				'step' => !empty($stepsLabel[$profile_id]) ? $stepsLabel[$profile_id] : '',
 				'forms' => $forms,
 			];
 		}
