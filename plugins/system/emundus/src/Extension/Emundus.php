@@ -37,7 +37,7 @@ use Tchooz\Entities\Emails\TagModifierRegistry;
 use Tchooz\Enums\User\AuthenticationModeEnum;
 use Tchooz\Providers\DbLanguageProvider;
 use Tchooz\Providers\EmundusSubscriberProvider;
-use Tchooz\Services\Automation\RedirectIntentRegistry;
+use Tchooz\Services\Automation\RedirectIntentTransport;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -88,7 +88,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		if ($app->isClient('site'))
 		{
-			// Full-page transport of the unified redirect channel (see RedirectIntentRegistry).
+			// Fallback transport of the unified redirect channel (see RedirectIntentTransport).
 			$mapping['onAfterDispatch'] = 'onAfterDispatch';
 		}
 
@@ -124,41 +124,16 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 	}
 
 	/**
-	 * Full-page transport of the unified redirect channel: an automation action that redirects no
-	 * longer calls $app->redirect() itself, it registers its URL in RedirectIntentRegistry. We
-	 * consume it here once the request has been dispatched and perform the actual redirect — but
-	 * only on the site client and outside AJAX/raw responses (the fetch endpoint already consumes
-	 * the intent to return it in its JSON response).
+	 * Fallback transport of the unified redirect channel: an automation action that redirects no
+	 * longer calls $app->redirect() itself, it registers its URL in RedirectIntentRegistry. An
+	 * intent registered inside an event chain is already transported by the custom_event_handler
+	 * plugin, right after the automations, so that it preempts the rest of the chain. We catch here
+	 * the intents registered outside any event chain (application file action outside a fetch call,
+	 * queued action replayed in a web request).
 	 */
 	public function onAfterDispatch(AfterDispatchEvent $event): void
 	{
-		$app = $this->getApplication();
-
-		if (!$app->isClient('site'))
-		{
-			return;
-		}
-
-		$format = $app->getInput()->get('format', 'html');
-		if (in_array($format, ['json', 'raw'], true))
-		{
-			return;
-		}
-
-		$intent = RedirectIntentRegistry::consume();
-		if ($intent === null || empty($intent->getUrl()))
-		{
-			return;
-		}
-
-		// Built like ActionRedirect::route() does, otherwise the comparison fails as soon as a language segment is present.
-		$active     = $app->getMenu()->getActive();
-		$currentUrl = !empty($active) ? Route::_('index.php?Itemid=' . $active->id, false) : '';
-
-		if ($intent->getUrl() !== $currentUrl)
-		{
-			$app->redirect($intent->getUrl());
-		}
+		(new RedirectIntentTransport($this->getApplication()))->transportPending();
 	}
 
 	public function onAfterInitialise(AfterInitialiseEvent $event): void

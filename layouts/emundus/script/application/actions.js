@@ -180,7 +180,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
         formData.append('fnum', fnum);
 
-        fetch(langPath + '/index.php?option=com_emundus&controller=application&task=executeApplicationAction', {
+        fetch(langPath + '/index.php?option=com_emundus&controller=application&task=executeApplicationAction&format=json', {
             method: 'POST',
             body: formData,
             headers: {
