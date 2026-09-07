@@ -577,12 +577,24 @@ class MigrateJoomlaJob extends TchoozJob
 					unset($module['id']);
 					unset($module['checked_out']);
 					unset($module['checked_out_time']);
-					unset($module['publish_up']);
-					unset($module['publish_down']);
+
+					foreach (['publish_up', 'publish_down'] as $date_column)
+					{
+						if (empty($module[$date_column]) || str_starts_with($module[$date_column], '0000-00-00'))
+						{
+							$module[$date_column] = null;
+						}
+					}
+
+					$values = array_map(
+						fn($value) => $value === null ? 'NULL' : $this->databaseService->getDatabase()->quote($value),
+						$module
+					);
+
 					$query->clear()
 						->insert($this->databaseService->getDatabase()->quoteName('jos_modules'))
 						->columns($this->databaseService->getDatabase()->quoteName(array_keys($module)))
-						->values(implode(',', $this->databaseService->getDatabase()->quote($module)));
+						->values(implode(',', $values));
 					$this->databaseService->getDatabase()->setQuery($query);
 
 					if ($this->databaseService->getDatabase()->execute())
