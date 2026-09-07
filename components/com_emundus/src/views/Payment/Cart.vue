@@ -197,7 +197,7 @@ export default {
 					if (response.status) {
 						if (response.data && response.data.transaction_confirmed) {
 							if (response.data.message) {
-								this.alertSuccess(response.data.message).then(() => {
+								this.alertSuccess(response.data.message, '', false, null, 4000).then(() => {
 									if (response.data.redirect) {
 										window.location.href = response.data.redirect;
 									}

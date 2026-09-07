@@ -12,11 +12,15 @@ use Tchooz\Entities\Payment\TransactionEntity;
 use Tchooz\Entities\Payment\TransactionStatus;
 use Tchooz\Enums\Payment\WorldlineEnvironmentEnum;
 use Tchooz\Enums\Payment\WorldlineStatusCategoryEnum;
+use Tchooz\Entities\Reference\ExternalReferenceEntity;
 use Tchooz\Repositories\CountryRepository;
+use Tchooz\Repositories\Reference\ExternalReferenceRepository;
 use Tchooz\Repositories\Payment\TransactionRepository;
+use Tchooz\Services\Integrations\Configurations\WorldlineIntegrationConfiguration;
 use Worldline\Connect\Sdk\Client;
 use Worldline\Connect\Sdk\Communicator;
 use Worldline\Connect\Sdk\CommunicatorConfiguration;
+use Worldline\Connect\Sdk\Communication\InvalidResponseException;
 use Worldline\Connect\Sdk\V1\Domain\Address;
 use Worldline\Connect\Sdk\V1\Domain\AmountOfMoney;
 use Worldline\Connect\Sdk\V1\Domain\CardPaymentMethodSpecificInputBase;
@@ -59,15 +63,15 @@ class Worldline implements PaymentSynchronizerInterface
 				require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
 			}
 
-			$auth = $this->config['authentication'] ?? [];
+			$auth = $this->getAuthentication();
 
-			$this->merchant_id = $auth['merchant_id'] ?? '';
-			$api_key_id        = $auth['api_key_id'] ?? '';
+			$this->merchant_id = $auth['merchant_id'];
+			$api_key_id        = $auth['api_key_id'];
 			$api_secret        = !empty($auth['api_secret']) ? \EmundusHelperFabrik::decryptDatas($auth['api_secret']) : '';
 
 			if (empty($this->merchant_id) || empty($api_key_id) || empty($api_secret))
 			{
-				throw new \Exception('Worldline credentials are not set in configuration');
+				throw new \Exception('Worldline credentials are not set for the ' . $this->getEnvironment()->value . ' environment');
 			}
 
 			$communicatorConfiguration = new CommunicatorConfiguration(
@@ -125,6 +129,31 @@ class Worldline implements PaymentSynchronizerInterface
 		return WorldlineEnvironmentEnum::fromProductionFlag($this->config['authentication']['mode'] ?? 0);
 	}
 
+	/**
+	 * Credentials of the active environment, keyed without their prefix. Each environment holds its
+	 * own set, so switching the mode switches the whole set at once rather than silently reusing
+	 * production keys against the preproduction endpoint.
+	 *
+	 * @return array<string, string>
+	 */
+	private function getAuthentication(): array
+	{
+		$auth = $this->config['authentication'] ?? [];
+
+		$prefix = $this->getEnvironment() === WorldlineEnvironmentEnum::PRODUCTION
+			? WorldlineIntegrationConfiguration::PRODUCTION_PREFIX
+			: WorldlineIntegrationConfiguration::PREPRODUCTION_PREFIX;
+
+		$authentication = [];
+
+		foreach (WorldlineIntegrationConfiguration::CREDENTIAL_KEYS as $key)
+		{
+			$authentication[$key] = $auth[$prefix . $key] ?? '';
+		}
+
+		return $authentication;
+	}
+
 	public function prepareCheckout(TransactionEntity $transaction, CartEntity $cart): array
 	{
 		$amountOfMoney                = new AmountOfMoney();
@@ -176,7 +205,12 @@ class Worldline implements PaymentSynchronizerInterface
 		}
 		catch (\Exception $e)
 		{
-			Log::add('Worldline hosted checkout creation failed: ' . $e->getMessage(), Log::ERROR, self::LOG_CHANNEL);
+			Log::add(
+				'Worldline hosted checkout creation failed on ' . $this->getEnvironment()->getEndpoint()
+				. ' (merchant ' . $this->merchant_id . '): ' . $e->getMessage() . $this->describeResponse($e),
+				Log::ERROR,
+				self::LOG_CHANNEL
+			);
 			throw new \Exception('Failed to create Worldline hosted checkout');
 		}
 
@@ -186,6 +220,28 @@ class Worldline implements PaymentSynchronizerInterface
 			'data'   => [],
 			'type'   => 'redirect',
 		];
+	}
+
+	/**
+	 * An InvalidResponseException carries the raw HTTP response the SDK refused to parse.
+	 * Without it the log only says "expected application/json", which never identifies the
+	 * responder — an auth rejection, a WAF page and a proxy interception all look identical.
+	 *
+	 * @param   \Exception  $e
+	 *
+	 * @return string
+	 */
+	private function describeResponse(\Exception $e): string
+	{
+		if (!$e instanceof InvalidResponseException)
+		{
+			return '';
+		}
+
+		$response = $e->getResponse();
+
+		return ' [HTTP ' . $response->getHttpStatusCode() . ', body: '
+			. substr(preg_replace('/\s+/', ' ', $response->getBody()), 0, 500) . ']';
 	}
 
 	/**
@@ -241,7 +297,7 @@ class Worldline implements PaymentSynchronizerInterface
 			throw new \Exception('Failed to create Worldline hosted checkout');
 		}
 
-		$subdomain          = trim($this->config['authentication']['checkout_subdomain'] ?? '');
+		$subdomain          = trim($this->getAuthentication()['checkout_subdomain']);
 		$subdomain          = trim(preg_replace('#^https?://#', '', $subdomain), './');
 		$partialRedirectUrl = ltrim($partialRedirectUrl, '/');
 
@@ -268,14 +324,14 @@ class Worldline implements PaymentSynchronizerInterface
 	 */
 	public function verifySignature(string $payload, array $headers): bool
 	{
-		$auth = $this->config['authentication'] ?? [];
+		$auth = $this->getAuthentication();
 
-		$key_id = $auth['webhook_key_id'] ?? '';
+		$key_id = $auth['webhook_key_id'];
 		$secret = !empty($auth['webhook_secret']) ? \EmundusHelperFabrik::decryptDatas($auth['webhook_secret']) : '';
 
 		if (empty($key_id) || empty($secret))
 		{
-			Log::add('Worldline webhook keys are not set in configuration', Log::ERROR, self::LOG_CHANNEL);
+			Log::add('Worldline webhook keys are not set for the ' . $this->getEnvironment()->value . ' environment', Log::ERROR, self::LOG_CHANNEL);
 
 			return false;
 		}
@@ -295,6 +351,55 @@ class Worldline implements PaymentSynchronizerInterface
 			Log::add('Worldline signature verification failed: ' . $e->getMessage(), Log::ERROR, self::LOG_CHANNEL);
 
 			return false;
+		}
+	}
+
+	/**
+	 * Keeps Worldline's own payment id alongside the transaction.
+	 *
+	 * The reference eMundus generates is sent as merchantReference and is enough to recognise a
+	 * callback, but Worldline's payment endpoints — cancel, refund, capture — address a payment by
+	 * its own id and do not accept a merchant reference. Nothing exposes that id after the callback,
+	 * so it is stored here.
+	 *
+	 * The row is stamped with the synchronizer id, which is what distinguishes a third party
+	 * reference from the eMundus one, the latter carrying no sync_id. Writing is an upsert keyed on
+	 * that trio, so replaying a callback rewrites the same row.
+	 *
+	 * A failure here is logged, never fatal: the payment status is what the callback is really about.
+	 *
+	 * @param   TransactionEntity  $transaction
+	 * @param   string             $payment_id
+	 *
+	 * @return void
+	 */
+	private function storePaymentReference(TransactionEntity $transaction, string $payment_id): void
+	{
+		if (empty($payment_id) || empty($this->sync_id))
+		{
+			return;
+		}
+
+		$reference = new ExternalReferenceEntity(
+			0,
+			TransactionRepository::REFERENCE_COLUMN,
+			(string) $transaction->getId(),
+			$payment_id,
+			$this->sync_id,
+			'payment',
+			'id'
+		);
+
+		try
+		{
+			if (!(new ExternalReferenceRepository())->flush($reference))
+			{
+				Log::add('Could not store the Worldline payment id ' . $payment_id . ' for transaction ' . $transaction->getId(), Log::WARNING, self::LOG_CHANNEL);
+			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error storing the Worldline payment id for transaction ' . $transaction->getId() . ': ' . $e->getMessage(), Log::WARNING, self::LOG_CHANNEL);
 		}
 	}
 
@@ -326,6 +431,8 @@ class Worldline implements PaymentSynchronizerInterface
 
 			return false;
 		}
+
+		$this->storePaymentReference($transaction, (string) ($payment['id'] ?? ''));
 
 		$status   = $payment['status'] ?? '';
 		$category = $payment['statusOutput']['statusCategory'] ?? '';

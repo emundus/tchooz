@@ -49,9 +49,11 @@ class TransactionRepository extends EmundusRepository
 	use TraitTable;
 
 	/**
-	 * Value of #__emundus_external_reference.column identifying references pointing to a transaction
+	 * Value of #__emundus_external_reference.column identifying references pointing to a transaction.
+	 * Public so a synchronizer storing its own reference for a transaction addresses the same column
+	 * rather than repeating the literal.
 	 */
-	private const REFERENCE_COLUMN = 'jos_emundus_payment_transaction.id';
+	public const REFERENCE_COLUMN = 'jos_emundus_payment_transaction.id';
 
 	private TransactionFactory $factory;
 
