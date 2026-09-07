@@ -4036,10 +4036,26 @@ class EmundusModelEvaluation extends JModelList
 									}
 								}
 
+								// TODO: this code is duplicated in multiple places, should be refactored
+								// setTagsFabrik() (emails.php), here and EmundusHelperFabrik::getValueByAlias()
+								$fnumFormElements = [];
+								if (!empty($aliasFabrik))
+								{
+									if (!class_exists('EmundusModelApplication'))
+									{
+										require_once(JPATH_SITE . DS . 'components/com_emundus/models/application.php');
+									}
+									$m_application    = new EmundusModelApplication();
+									$fnumFormElements = $m_application->getFabrikDataByFnum($fnum, 'element');
+								}
+
 								foreach ($aliasFabrik as $alias => $ids) {
 									$value_found = false;
 									$preg['patterns'][] = '/\$\{' . $alias . '\}/';
-									$aliasFabrik[$alias] = EmundusHelperFabrik::sortElementIdsByDataFreshness($ids, $fnum);
+									// Keep only the alias elements belonging to this file's current campaign forms: a file
+									// moved to another campaign would otherwise resolve the alias with its former element.
+									$scopedIds = $_mEmail->scopeAliasElementsToFnumForms($ids, $fnumFormElements);
+									$aliasFabrik[$alias] = EmundusHelperFabrik::sortElementIdsByDataFreshness($scopedIds, $fnum);
 									foreach($aliasFabrik[$alias] as $id) {
 										if (!empty($fabrikValues[$id][$fnum]) && !empty($fabrikValues[$id][$fnum]['val'])) {
 											$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
