@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension type="plugin" group="task" method="upgrade">
+    <name>plg_task_sylvia</name>
+    <author>eMundus</author>
+    <creationDate>2026-07</creationDate>
+    <copyright>(C) 2026 Open Source Matters, Inc.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.23.2</version>
+    <namespace path="src">Joomla\Plugin\Task\Sylvia</namespace>
+    <files>
+        <folder plugin="sylvia">services</folder>
+        <folder>forms</folder>
+        <folder>src</folder>
+    </files>
+    <languages>
+        <language tag="fr-FR">language/fr-FR/plg_task_sylvia.ini</language>
+        <language tag="fr-FR">language/fr-FR/plg_task_sylvia.sys.ini</language>
+        <language tag="en-GB">language/en-GB/plg_task_sylvia.ini</language>
+        <language tag="en-GB">language/en-GB/plg_task_sylvia.sys.ini</language>
+    </languages>
+</extension>

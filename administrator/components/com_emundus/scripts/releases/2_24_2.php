@@ -11,6 +11,8 @@
 namespace scripts;
 
 use EmundusHelperUpdate;
+use Tchooz\Entities\Synchronizer\SynchronizerEntity;
+use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 
 class Release2_24_2Installer extends ReleaseInstaller
 {
@@ -53,6 +55,8 @@ class Release2_24_2Installer extends ReleaseInstaller
 
 			$this->tasks[] = $this->renameWorldlineReferenceLabels();
 			$this->tasks[] = $this->resetWorldlineConfiguration();
+
+			$this->initSylvia();
 
 			$result['status'] = !in_array(false, $this->tasks);
 
@@ -159,4 +163,60 @@ class Release2_24_2Installer extends ReleaseInstaller
 		return true;
 	}
 
+	private function initSylvia(): void
+	{
+		// sylvia api implementation
+		$synchronizerRepository = new SynchronizerRepository();
+
+		$sylviaSynchronizer = $synchronizerRepository->getByType('sylvia');
+		if (empty($sylviaSynchronizer))
+		{
+			$sylviaSynchronizer = new SynchronizerEntity(
+				0,
+				'sylvia',
+				'Sylvia',
+				'Identification des étudiants auprès de Sylvia',
+				[],
+				[
+					'authentication' => [
+						'api_key' => '',
+					],
+					'configuration'  => [
+						'base_url' => '',
+						'api_path' => '',
+					]
+				],
+				false,
+				false,
+				'sylvia.svg'
+			);
+
+			$this->tasks[] = $synchronizerRepository->flush($sylviaSynchronizer);
+			$sylviaSynchronizer = $synchronizerRepository->getByType('sylvia');
+		}
+
+		// Daily scheduled task that synchronises applicants with Sylvia.
+		// Unpublished by default: enabling the Sylvia integration publishes it (see SylviaIntegrationHandler).
+		$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_task_sylvia', 'sylvia', null, 'plugin', 1, 'task');
+
+		$execution_rules = [
+			'rule-type'     => 'interval-days',
+			'interval-days' => '1',
+			'exec-day'      => date('d'),
+			'exec-time'     => '23:30',
+		];
+		$cron_rules      = [
+			'type' => 'interval',
+			'exp'  => 'P1D',
+		];
+
+		$this->tasks[] = \EmundusHelperUpdate::createSchedulerTask(
+			'Synchronise applicants with Sylvia',
+			'plg_task_sylvia',
+			$execution_rules,
+			$cron_rules,
+			[],
+			(!empty($sylviaSynchronizer) && $sylviaSynchronizer->isEnabled()) ? 1 : 0
+		);
+	}
 }
