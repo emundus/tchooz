@@ -262,6 +262,10 @@ class FilesController extends ApiController
 			{
 				throw new \RuntimeException('Error when try to move file of ' . $applicationFileEntity->getUser()->name . ' from campaign ' . $applicationFileEntity->getCampaign()->getLabel() . ' to ' . $campaign->getLabel());
 			}
+
+			// Update ApplicationFileEntity campaign attribute
+			$applicationFileEntity->setCampaign($campaign);
+			$applicationFileEntity->setCampaignId($campaign->getId());
 		}
 		//
 
