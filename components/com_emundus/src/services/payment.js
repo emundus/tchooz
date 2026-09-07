@@ -267,6 +267,18 @@ export default {
 			};
 		}
 	},
+	async cancelCartTransaction(cartId) {
+		try {
+			return await client.post('cancelCartTransaction', {
+				cart_id: cartId,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
 	async confirmCart(cartId, customExternalReference = '') {
 		try {
 			return await client.post('confirmCart', {

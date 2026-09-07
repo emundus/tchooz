@@ -1571,6 +1571,38 @@ class EmundusControllerPayment extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
+	public function cancelCartTransaction()
+	{
+		$this->checkToken('post');
+		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
+
+		$cart_id = $this->input->getInt('cart_id', 0);
+
+		if (!empty($cart_id)) {
+			$cart_repository = new CartRepository();
+			$cart            = $cart_repository->getCartById($cart_id);
+			$current_user    = $this->app->getIdentity();
+
+			if (!empty($cart) && $cart->getCustomer()->getUserId() == $current_user->id) {
+				$transaction_repository = new TransactionRepository();
+				$transaction            = $transaction_repository->getTransactionByCart($cart);
+
+				// Only a payment still waiting for a manual validation can be taken back.
+				if (!empty($transaction) && $transaction->getStatus() === TransactionStatus::WAITING) {
+					$transaction->setStatus(TransactionStatus::CANCELLED);
+
+					if ($transaction_repository->saveTransaction($transaction, $current_user->id)) {
+						$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_CART_TRANSACTION_CANCELLED'), 'status' => true];
+					} else {
+						$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_ERROR_CANCELLING_TRANSACTION'), 'status' => false];
+					}
+				}
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
 	public function confirmCart()
 	{
 		$this->checkToken('post');
