@@ -43,6 +43,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
 use Joomla\Ldap\LdapClient;
 use Joomla\Registry\Registry;
+use Joomla\Utilities\ArrayHelper;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use \Joomla\CMS\User\User;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
@@ -4151,10 +4152,17 @@ class EmundusModelUsers extends ListModel
 
 		$query = $this->db->getQuery(true);
 
+		$aids = ArrayHelper::toInteger(is_array($aids) ? $aids : explode(',', (string) $aids));
+		$aids = array_filter($aids);
+
+		if (empty($aids)) {
+			return false;
+		}
+
 		try {
 			$query->select('eua.*')
 				->from($this->db->quoteName('#__emundus_users_attachments', 'eua'))
-				->where($this->db->quoteName('eua.attachment_id') . ' IN (' . $aids . ')')
+				->where($this->db->quoteName('eua.attachment_id') . ' IN (' . implode(',', $aids) . ')')
 				->andWhere($this->db->quoteName('eua.user_id') . ' = ' . $this->db->quote($uid));
 			$this->db->setQuery($query);
 			$attachments_to_copy = $this->db->loadObjectList();
