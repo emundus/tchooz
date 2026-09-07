@@ -146,12 +146,12 @@ $canView    = $user->authorise('core.viewthesis', 'com_emundus');
                     </td>
 					<?php if (!$user->guest): ?>
                         <td class="align-left">
-                            <a href='<?php echo JRoute::_('index.php?option=com_emundus&task=pdf_thesis&user=' . $item->user . '&rowid=' . $item->id, false, 2); ?>'
+                            <a href='<?php echo JRoute::_('index.php?option=com_emundus&task=pdf_thesis&user=' . $item->user . '&rowid=' . $item->id . '&fnum=' . $item->fnum, false, 2); ?>'
                                ;" class="glyphicon glyphicon-file"
                             target="_blank"><?php echo JText::_('COM_EMUNDUS_THESIS_PDF'); ?></a><br>
 							<?php if ($canEdit || $canDelete): ?>
 								<?php if ($canEdit): ?>
-                                    <button onclick="this.disabled = true; window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&task=pdf_thesis&user=' . $item->user . '&rowid=' . $item->id, false, 2); ?>';"
+                                    <button onclick="this.disabled = true; window.location.href = '<?php echo JRoute::_('index.php?option=com_emundus&task=pdf_thesis&user=' . $item->user . '&rowid=' . $item->id . '&fnum=' . $item->fnum, false, 2); ?>';"
                                             class="btn-xs btn-mini"
                                             type="button"><?php echo JText::_('COM_EMUNDUS_THESIS_PDF'); ?></button>
 								<?php endif; ?>
