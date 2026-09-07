@@ -36,6 +36,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		cancellableTransaction: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	data() {
 		return {
@@ -179,6 +183,16 @@ export default {
 			);
 
 			return product.mandatory || (availableProduct && availableProduct.mandatory == 1);
+		},
+
+		cancelCartTransaction() {
+			paymentService.cancelCartTransaction(this.cart.id).then((response) => {
+				if (response.status) {
+					window.location.reload();
+				} else {
+					this.alertError(response.msg);
+				}
+			});
 		},
 
 		checkoutCart() {
@@ -867,6 +881,15 @@ export default {
 
 			<button v-if="isManager === true && !readOnly" id="confirm-cart" class="tw-btn-primary" @click="confirmCart">
 				{{ translate('COM_EMUNDUS_CONFIRM_CART') }}
+			</button>
+
+			<button
+				v-if="cancellableTransaction"
+				id="cancel-cart-transaction"
+				class="tw-btn-secondary"
+				@click="cancelCartTransaction"
+			>
+				{{ translate('COM_EMUNDUS_CART_CANCEL_TRANSACTION') }}
 			</button>
 		</div>
 	</div>
