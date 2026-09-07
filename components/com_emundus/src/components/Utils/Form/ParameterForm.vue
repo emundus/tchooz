@@ -285,7 +285,7 @@ export default {
 										parameter.reload += 1;
 									}
 
-									if (parameter.value != null) {
+									if (parameter.value != null && !parameter.preserveValueWhenHidden) {
 										parameter.value = null;
 										this.onParameterValueUpdated(parameter, group, rowIndex);
 									}
@@ -325,7 +325,7 @@ export default {
 									parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
 								}
 
-								if (parameter.value !== null) {
+								if (parameter.value !== null && !parameter.preserveValueWhenHidden) {
 									parameter.value = null;
 								}
 							}

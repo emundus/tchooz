@@ -168,7 +168,7 @@ class SynchronizerEntity
 	private function checkSecurityConfig(array $config): array
 	{
 		foreach ($config as $name => $value) {
-			if (str_contains($name, 'client_secret') || $name === 'token' || str_contains($name, 'password')) {
+			if (str_contains($name, 'client_secret') || $name === 'token' || str_contains($name, 'password') || str_contains($name, 'api_secret') || str_contains($name, 'webhook_secret')) {
 				$config[$name] = '********';
 			}
 		}
@@ -187,7 +187,7 @@ class SynchronizerEntity
 				continue;
 			}
 
-			if (str_contains($name, 'client_secret') || str_contains($name, 'token') || str_contains($name, 'password')) {
+			if (str_contains($name, 'client_secret') || str_contains($name, 'token') || str_contains($name, 'password') || str_contains($name, 'api_secret') || str_contains($name, 'webhook_secret')) {
 				$config[$name] = '********';
 			}
 		}
