@@ -25,6 +25,7 @@ use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Repositories\Automation\AutomationRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\NumericSign\RequestRepository;
+use Tchooz\Services\Automation\RedirectIntentTransport;
 use Tchooz\Traits\TraitDispatcher;
 use Tchooz\Entities\Payment\AlterationEntity;
 use Tchooz\Repositories\Payment\CartRepository;
@@ -2056,6 +2057,11 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		finally
 		{
 			AutomationExecutionContext::endProcessing();
+		}
+
+		if ($ran)
+		{
+			(new RedirectIntentTransport(Factory::getApplication()))->transportPending();
 		}
 
 		return $ran;
