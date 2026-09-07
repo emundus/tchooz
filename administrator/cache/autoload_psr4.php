@@ -314,6 +314,7 @@ return [
 	'Joomla\\Plugin\\Task\\SessionGC\\' => [JPATH_PLUGINS . '/task/sessiongc/src'],
 	'Joomla\\Plugin\\Task\\SignatureRequests\\' => [JPATH_PLUGINS . '/task/signature_requests/src'],
 	'Joomla\\Plugin\\Task\\SiteStatus\\' => [JPATH_PLUGINS . '/task/sitestatus/src'],
+	'Joomla\\Plugin\\Task\\Sylvia\\' => [JPATH_PLUGINS . '/task/sylvia/src'],
 	'Joomla\\Plugin\\Task\\SyncTranslations\\' => [JPATH_PLUGINS . '/task/synctranslations/src'],
 	'Joomla\\Plugin\\Task\\UpdateNotification\\' => [JPATH_PLUGINS . '/task/updatenotification/src'],
 	'Joomla\\Plugin\\Task\\Yousign\\' => [JPATH_PLUGINS . '/task/yousign/src'],

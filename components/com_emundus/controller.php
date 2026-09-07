@@ -206,17 +206,25 @@ class EmundusController extends JControllerLegacy
 		}
 	}
 
+	/**
+	 * @deprecated
+	 *
+	 * @return void
+	 * @throws Exception
+	 */
 	function pdf_by_form()
 	{
 		$user = $this->app->getSession()->get('emundusUser');
 
-		$student_id = $this->input->get('user', null, 'string');
-		$fnum       = $this->input->get('fnum', null, 'string');
-		$formid     = [$this->input->get('form', null, 'string')];
+		// Cast to int: used to build a filesystem path (mkdir below). A string filter would let
+		// "../" through and allow path traversal.
+		$student_id = $this->input->getInt('user', 0);
+		$fnum       = $this->input->getString('fnum', null);
+		$formid     = [$this->input->getString('form', null)];
 
 		$fnum       = !empty($fnum) ? $fnum : $user->fnum;
-		$m_profile  = $this->getModel('profile');
-		$m_campaign = $this->getModel('campaign');
+		$m_profile  = $this->getModel('Profile');
+		$m_campaign = $this->getModel('Campaign');
 
 		$options = array(
 			'aemail',
@@ -226,21 +234,23 @@ class EmundusController extends JControllerLegacy
 		);
 
 		$infos = $m_profile->getFnumDetails($fnum);
-
-
 		if (!empty($fnum)) {
 			$candidature = $m_profile->getFnumDetails($fnum);
 			$campaign    = $m_campaign->getCampaignByID($candidature['campaign_id']);
 		}
 
-		$file        = JPATH_LIBRARIES . DS . 'emundus/pdf_' . $campaign['training'] . '.php';
-		$file_custom = JPATH_LIBRARIES . DS . 'emundus/custom/pdf_' . $campaign['training'] . '.php';
-		if (!file_exists($file) && !file_exists($file_custom)) {
-			$file = JPATH_LIBRARIES . DS . 'emundus/pdf.php';
-		}
-		else {
-			if (file_exists($file_custom)) {
-				$file = $file_custom;
+		// "training" is concatenated into a require_once() path below, so it must be a safe token:
+		// anything other than [A-Za-z0-9_] could enable path traversal / local file inclusion.
+		$file     = JPATH_LIBRARIES . DS . 'emundus/pdf.php';
+		$training = $campaign['training'] ?? '';
+		if (!empty($training) && preg_match('/^[A-Za-z0-9_]+$/', $training)) {
+			$trainingFile = JPATH_LIBRARIES . DS . 'emundus/pdf_' . $training . '.php';
+			$customFile   = JPATH_LIBRARIES . DS . 'emundus/custom/pdf_' . $training . '.php';
+			if (file_exists($customFile)) {
+				$file = $customFile;
+			}
+			elseif (file_exists($trainingFile)) {
+				$file = $trainingFile;
 			}
 		}
 
@@ -254,7 +264,10 @@ class EmundusController extends JControllerLegacy
 		// Here we call the profile by fnum function, which will get the candidate's profile in the status table
 		// $profile_id = $m_profile->getProfileByFnum($fnum);
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+		// Authorize on THIS fnum: application_form_pdf() fetches the file by fnum and performs no
+		// access control of its own. Without the per-fnum check a partner could export any
+		// candidate's file by passing an arbitrary fnum (IDOR).
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum)) {
 			//application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile_id,null,null);
 			application_form_pdf(!empty($student_id) ? $student_id : $user->id, $fnum, true, 1, $formid, $options);
 			exit;
@@ -266,6 +279,7 @@ class EmundusController extends JControllerLegacy
 
 
 	/**
+	 * @deprecated
 	 * Function that will print the candidat's PDF depending on their file status
 	 * Returns
 	 * @throws Exception
@@ -274,10 +288,11 @@ class EmundusController extends JControllerLegacy
 	{
 		$user = $this->app->getSession()->get('emundusUser');
 
-		$student_id = $this->input->get('user', null, 'string');
-		$profile    = $this->input->get('profile', null, 'string');
-
-		$fnum = $this->input->get('fnum', null, 'string');
+		// Cast to int: this is a user id and it is used to build a filesystem path (mkdir below).
+		// A string filter would let "../" through and allow path traversal.
+		$student_id = $this->input->getInt('user', 0);
+		$profile    = $this->input->getString('profile', null);
+		$fnum = $this->input->getString('fnum', null);
 		$fnum = !empty($fnum) ? $fnum : $user->fnum;
 		// Don't go any further if we don't find a fnum
 		if (empty($fnum)) {
@@ -292,25 +307,22 @@ class EmundusController extends JControllerLegacy
 		if (empty($infos['profile'])) {
 			$infos = $m_profile->getFnumDetails($fnum);
 		}
-
 		if (empty($profile)) {
 			$profile = !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
 		}
 
-		// Now we can start gettting the forms linked to the correct profile
-		$h_menu     = new EmundusHelperMenu;
-		$getformids = $h_menu->getUserApplicationMenu($profile);
-
-		$formid = [];
-		foreach ($getformids as $getformid) {
-			$formid[] = $getformid->form_id;
-		}
-
 		$campaign = $m_campaign->getCampaignByID($infos['campaign_id']);
 
-		$file = JPATH_LIBRARIES . DS . 'emundus/pdf_' . @$campaign['training'] . '.php';
-		if (!file_exists($file)) {
-			$file = JPATH_LIBRARIES . DS . 'emundus/pdf.php';
+		// Default export template. A campaign-specific template is only used when "training"
+		// is a safe token: it is concatenated into a require_once() path, so anything other
+		// than [A-Za-z0-9_] could enable path traversal / local file inclusion.
+		$file     = JPATH_LIBRARIES . DS . 'emundus/pdf.php';
+		$training = $campaign['training'] ?? '';
+		if (!empty($training) && preg_match('/^[A-Za-z0-9_]+$/', $training)) {
+			$trainingFile = JPATH_LIBRARIES . DS . 'emundus/pdf_' . $training . '.php';
+			if (file_exists($trainingFile)) {
+				$file = $trainingFile;
+			}
 		}
 
 		if (!file_exists(EMUNDUS_PATH_ABS . $student_id)) {
@@ -321,13 +333,19 @@ class EmundusController extends JControllerLegacy
 		if (file_exists($file)) {
 			require_once($file);
 
-			// Here we call the profile by fnum function, which will get the candidate's profile in the status table
-			if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			// Authorize on THIS fnum, not just on the caller's role: application_form_pdf() fetches
+			// the file by fnum and performs no access control of its own. Without the per-fnum check
+			// below, any partner could export any candidate's file and any applicant could export
+			// another applicant's file by passing an arbitrary fnum (IDOR).
+			$canReadFnum = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
+			$ownsFnum    = EmundusHelperAccess::isFnumMine($user->id, $fnum);
+
+			if (EmundusHelperAccess::asPartnerAccessLevel($user->id) && $canReadFnum) {
 				$student = !empty($student_id) ? $student_id : $user->id;
 				application_form_pdf($student, $fnum, true, 1, null, null, null, $profile);
 				exit;
 			}
-			elseif (EmundusHelperAccess::isApplicant($user->id)) {
+			elseif (EmundusHelperAccess::isApplicant($user->id) && $ownsFnum) {
 				application_form_pdf($user->id, $fnum, true, 1, null, null, null, $profile);
 				exit;
 			}
@@ -340,55 +358,43 @@ class EmundusController extends JControllerLegacy
 		}
 	}
 
-	function pdf_emploi()
-	{
-		$user       = $this->app->getSession()->get('emundusUser');
-		$student_id = $this->input->get('user', null, 'GET', 'none', 0);
-		$rowid      = explode('-', $this->input->get('rowid', null, 'GET', 'none', 0));
-
-		$file = JPATH_LIBRARIES . DS . 'emundus/pdf_emploi.php';
-
-		if (!file_exists($file)) {
-			die(Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND'));
-		}
-		if (!file_exists(EMUNDUS_PATH_ABS . $student_id)) {
-			mkdir(EMUNDUS_PATH_ABS . $student_id);
-			chmod(EMUNDUS_PATH_ABS . $student_id, 0755);
-		}
-
-		require_once($file);
-
-		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-			application_form_pdf(!empty($student_id) ? $student_id : $user->id, $rowid[0], true);
-		}
-		else {
-			die(Text::_('ACCESS_DENIED'));
-		}
-
-		exit();
-	}
-
+	/**
+	 * @deprecated
+	 * @return void
+	 * @throws Exception
+	 */
 	function pdf_thesis()
 	{
-		$user       = $this->app->getSession()->get('emundusUser');
-		$student_id = $this->input->get('user', null, 'GET', 'none', 0);
-		$fnum       = $this->input->get('fnum', null, 'GET', 'none', 0);
-		$rowid      = explode('-', $this->input->get('rowid', null, 'GET', 'none', 0));
+		$user  = $this->app->getSession()->get('emundusUser');
+		$fnum  = $this->input->getString('fnum');
+		// Cast rowid to int: it is concatenated into a SQL query inside pdf_thesis.php.
+		$rowid = explode('-', $this->input->getInt('rowid'));
+		$rowid_id = (int) ($rowid[0] ?? 0);
 
 		$file = JPATH_LIBRARIES . DS . 'emundus/pdf_thesis.php';
 
 		if (!file_exists($file)) {
 			die(Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND'));
 		}
-		if (!file_exists(EMUNDUS_PATH_ABS . $student_id)) {
-			mkdir(EMUNDUS_PATH_ABS . $student_id);
-			chmod(EMUNDUS_PATH_ABS . $student_id, 0755);
-		}
 
-		require_once($file);
+		// Resolve the file owner from the fnum instead of trusting a request parameter: the thesis
+		// export is scoped by user id, so an unchecked student id would let a caller export another
+		// candidate's thesis (IDOR). Authorize on the fnum, then export its real owner.
+		$m_profile = $this->getModel('profile');
+		$infos     = !empty($fnum) ? $m_profile->getFnumDetails($fnum) : [];
+		$owner     = !empty($infos['applicant_id']) ? (int) $infos['applicant_id'] : 0;
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($user->id) || EmundusHelperAccess::isApplicant($user->id)) {
-			application_form_pdf(!empty($student_id) ? $student_id : $user->id, $rowid[0], true);
+		$isPartner = EmundusHelperAccess::asPartnerAccessLevel($user->id) && !empty($fnum) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
+		$isOwner   = EmundusHelperAccess::isApplicant($user->id) && !empty($fnum) && EmundusHelperAccess::isFnumMine($user->id, $fnum);
+
+		if (($isPartner || $isOwner) && $owner > 0) {
+			if (!file_exists(EMUNDUS_PATH_ABS . $owner)) {
+				mkdir(EMUNDUS_PATH_ABS . $owner);
+				chmod(EMUNDUS_PATH_ABS . $owner, 0755);
+			}
+
+			require_once($file);
+			application_form_pdf($owner, $rowid_id, true);
 		}
 		else {
 			die(Text::_('ACCESS_DENIED'));
@@ -461,8 +467,6 @@ class EmundusController extends JControllerLegacy
 	/* complete file */
 	function completefile()
 	{
-
-
 		$m_profile = $this->getModel('Profile');
 
 		$student_id = $this->input->get->get('sid', null);

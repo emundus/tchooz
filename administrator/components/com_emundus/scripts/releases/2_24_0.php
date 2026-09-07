@@ -127,10 +127,11 @@ class Release2_24_0Installer extends ReleaseInstaller
 				$result['message'] .= $added['message'] . "\n";
 			}
 
-			// The tag itself is resolved by ChoiceCommentTagProvider. The row only makes it selectable in
-			// the email editor, hence the self referencing request, as LAST_COMMENT and VOEU already do.
-			$this->tasks[] = $this->addSelectableProviderTag(
+			// The tag itself is resolved by ChoiceCommentTagProvider. The row only makes it discoverable
+			// in the email editor and the alias list.
+			$this->tasks[] = \EmundusHelperUpdate::addSelectableProviderTag(
 				ChoiceCommentTagProvider::TAG,
+				'Choices of the file and the reason of their last status change. Accepts the STATUS and INDEX modifiers.',
 				'Voeux du dossier et motif de leur dernier changement d\'état. Accepte les modificateurs STATUS et INDEX.'
 			);
 
@@ -229,35 +230,6 @@ class Release2_24_0Installer extends ReleaseInstaller
 		$association->service_id        = $serviceId;
 
 		return $this->db->insertObject('#__emundus_setup_payment_method_sync', $association);
-	}
-
-	/**
-	 * Registers a tag whose value comes from a provider, so it shows up in the email editor picker.
-	 * Idempotent: an already known tag is left untouched.
-	 */
-	private function addSelectableProviderTag(string $tag, string $description): bool
-	{
-		$query = $this->db->createQuery();
-
-		$query->select('COUNT(id)')
-			->from($this->db->quoteName('#__emundus_setup_tags'))
-			->where($this->db->quoteName('tag') . ' = ' . $this->db->quote($tag));
-
-		if ($this->db->setQuery($query)->loadResult() > 0)
-		{
-			return true;
-		}
-
-		$query->clear()
-			->insert($this->db->quoteName('#__emundus_setup_tags'))
-			->columns($this->db->quoteName(['tag', 'request', 'description', 'published']))
-			->values(
-				$this->db->quote($tag) . ', ' .
-				$this->db->quote('[' . $tag . ']') . ', ' .
-				$this->db->quote($description) . ', 1'
-			);
-
-		return (bool) $this->db->setQuery($query)->execute();
 	}
 
 	private function initLanguagesFeature(QueryInterface $query): void

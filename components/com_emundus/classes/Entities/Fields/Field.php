@@ -25,6 +25,14 @@ abstract class Field
 	/** Adds a copy button, for a value the user has to paste somewhere else. */
 	protected bool $copyable = false;
 
+	/**
+	 * A field hidden by a display rule normally has its value cleared, so an answer that no longer
+	 * applies is not submitted. Set this when the value must survive being hidden: the credentials
+	 * of an inactive environment are still stored, and have to reappear untouched when the field
+	 * comes back rather than looking like an empty configuration.
+	 */
+	protected bool $preserveValueWhenHidden = false;
+
 	public function __construct(
 		protected string       $name,
 		protected string       $label,
@@ -171,6 +179,18 @@ abstract class Field
 		return $this->copyable;
 	}
 
+	public function preservesValueWhenHidden(): bool
+	{
+		return $this->preserveValueWhenHidden;
+	}
+
+	public function setPreserveValueWhenHidden(bool $preserveValueWhenHidden): self
+	{
+		$this->preserveValueWhenHidden = $preserveValueWhenHidden;
+
+		return $this;
+	}
+
 	public function setCopyable(bool $copyable): self
 	{
 		$this->copyable = $copyable;
@@ -219,6 +239,7 @@ abstract class Field
 			'translatable' => $this->translatable,
 			'readonly'     => $this->readonly,
 			'copyable'     => $this->copyable,
+			'preserveValueWhenHidden' => $this->preserveValueWhenHidden,
 		];
 	}
 }
