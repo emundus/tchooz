@@ -23,6 +23,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
+use Joomla\Utilities\ArrayHelper;
 use Joomla\Component\Users\Administrator\Model\MethodsModel;
 use Tchooz\Attributes\AccessAttribute;
 use Tchooz\Entities\List\AdditionalColumn;
@@ -116,7 +117,7 @@ class EmundusControllerUsers extends EmundusController
 	{
 		$this->checkToken();
 
-		if (!EmundusHelperAccess::asAccessAction(12, 'c'))
+		if (!EmundusHelperAccess::asAccessAction(12, 'c', $this->user->id))
 		{
 			echo json_encode((object) array('status' => false, 'uid' => $this->user->id, 'msg' => Text::_('ACCESS_DENIED')));
 			exit;
@@ -313,11 +314,23 @@ class EmundusControllerUsers extends EmundusController
 
 	public function getConstraintsFilter()
 	{
-		$filter_id = $this->input->get('filter_id', null, 'POST');
+		$filter_id = $this->input->getInt('filter_id', 0);
 
-		$query = "SELECT constraints FROM #__emundus_filters WHERE id=" . $filter_id;
-		$this->_db->setQuery($query);
-		echo $this->_db->loadResult();
+		if (empty($filter_id))
+		{
+			exit;
+		}
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+		$query->select($db->quoteName('constraints'))
+			->from($db->quoteName('#__emundus_filters'))
+			->where($db->quoteName('id') . ' = ' . $filter_id)
+			->where($db->quoteName('user') . ' = ' . (int) $this->user->id);
+
+		$db->setQuery($query);
+		echo $db->loadResult();
+		exit;
 	}
 
 	public function addsession()
@@ -480,9 +493,10 @@ class EmundusControllerUsers extends EmundusController
 	{
 		$current_user = $this->user;
 		$user_id      = $current_user->id;
+		$db           = Factory::getContainer()->get('DatabaseDriver');
 
-		$itemid = $this->input->get('Itemid', null, 'GET');
-		$name   = $this->input->get('name', null, 'POST');
+		$itemid = $this->input->getInt('Itemid', 0);
+		$name   = $this->input->getString('name', '');
 
 		$filt_params = JFactory::getSession()->get('filt_params');
 		$adv_params  = JFactory::getSession()->get('adv_cols');
@@ -490,23 +504,33 @@ class EmundusControllerUsers extends EmundusController
 
 		$constraints = json_encode($constraints);
 
-		if (empty($itemid))
-		{
-			$itemid = $this->input->get('Itemid', null, 'POST');
-		}
-
 		$time_date = (date('Y-m-d H:i:s'));
 
-		$query = "INSERT INTO #__emundus_filters (time_date,user,name,constraints,item_id) values('" . $time_date . "'," . $user_id . ",'" . $name . "'," . $this->_db->quote($constraints) . "," . $itemid . ")";
-		$this->_db->setQuery($query);
+		$query = $db->getQuery(true);
+		$query->insert($db->quoteName('#__emundus_filters'))
+			->columns($db->quoteName(array('time_date', 'user', 'name', 'constraints', 'item_id')))
+			->values(implode(',', array(
+				$db->quote($time_date),
+				(int) $user_id,
+				$db->quote($name),
+				$db->quote($constraints),
+				(int) $itemid,
+			)));
+		$db->setQuery($query);
 
 		try
 		{
 
-			$this->_db->Query();
-			$query = 'select f.id, f.name from #__emundus_filters as f where f.time_date = "' . $time_date . '" and user = ' . $user_id . ' and name="' . $name . '" and item_id="' . $itemid . '"';
-			$this->_db->setQuery($query);
-			$result = $this->_db->loadObject();
+			$db->execute();
+			$query = $db->getQuery(true);
+			$query->select($db->quoteName(array('f.id', 'f.name')))
+				->from($db->quoteName('#__emundus_filters', 'f'))
+				->where($db->quoteName('f.time_date') . ' = ' . $db->quote($time_date))
+				->where($db->quoteName('f.user') . ' = ' . (int) $user_id)
+				->where($db->quoteName('f.name') . ' = ' . $db->quote($name))
+				->where($db->quoteName('f.item_id') . ' = ' . (int) $itemid);
+			$db->setQuery($query);
+			$result = $db->loadObject();
 			echo json_encode((object) (array('status' => true, 'filter' => $result)));
 			exit;
 
@@ -757,7 +781,7 @@ class EmundusControllerUsers extends EmundusController
 		$this->checkToken();
 		$current_user = $this->app->getIdentity();
 
-		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::asAccessAction(12, 'u') && !EmundusHelperAccess::asAccessAction(20, 'u'))
+		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::asAccessAction(12, 'u', $current_user->id) && !EmundusHelperAccess::asAccessAction(20, 'u', $current_user->id))
 		{
 			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
 
@@ -768,14 +792,14 @@ class EmundusControllerUsers extends EmundusController
 
 
 		// if is anonym, do not update firstname, lastname, username, login
-		$m_users      = $this->getModel('Users');
-		$current_user = $m_users->getUserInfos($newuser['id']);
-		if ($current_user['is_anonym'] == 1)
+		$m_users     = $this->getModel('Users');
+		$target_user = $m_users->getUserInfos($newuser['id']);
+		if ($target_user['is_anonym'] == 1)
 		{
-			$newuser['firstname'] = $current_user['firstname'];
-			$newuser['lastname']  = $current_user['lastname'];
-			$newuser['username']  = $current_user['login'];
-			$newuser['email']     = $current_user['email'];
+			$newuser['firstname'] = $target_user['firstname'];
+			$newuser['lastname']  = $target_user['lastname'];
+			$newuser['username']  = $target_user['login'];
+			$newuser['email']     = $target_user['email'];
 		}
 		else
 		{
@@ -862,7 +886,7 @@ class EmundusControllerUsers extends EmundusController
 	{
 		$this->checkToken();
 
-		if (!EmundusHelperAccess::asAccessAction(12, 'd') && !EmundusHelperAccess::asAccessAction(20, 'd'))
+		if (!EmundusHelperAccess::asAccessAction(12, 'd', $this->user->id) && !EmundusHelperAccess::asAccessAction(20, 'd', $this->user->id))
 		{
 			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
 
@@ -964,7 +988,7 @@ class EmundusControllerUsers extends EmundusController
 	public function ldapsearch()
 	{
 
-		if (!EmundusHelperAccess::asAccessAction(12, 'c'))
+		if (!EmundusHelperAccess::asAccessAction(12, 'c', $this->user->id))
 		{
 			echo json_encode((object) array('status' => false));
 			exit;
@@ -1061,7 +1085,7 @@ class EmundusControllerUsers extends EmundusController
 				$this->app->redirect(Route::_('index.php?option=com_users&view=reset&layout=confirm'));
 			}
 		}
-		elseif (EmundusHelperAccess::asAccessAction(12, 'u') || EmundusHelperAccess::asAccessAction(20, 'u'))
+		elseif (EmundusHelperAccess::asAccessAction(12, 'u', $this->user->id) || EmundusHelperAccess::asAccessAction(20, 'u', $this->user->id))
 		{
 			$response['msg'] = Text::_('COM_EMUNDUS_USERS_RESET_REQUEST_LINK_SENDED');
 			$users           = $this->input->post->getString('users', null);
@@ -1322,7 +1346,8 @@ class EmundusControllerUsers extends EmundusController
 	public function uploadprofileattachmenttofile()
 	{
 
-		$aids = $this->input->getString('aids');
+		$aids = ArrayHelper::toInteger(explode(',', $this->input->getString('aids', '')));
+		$aids = array_filter($aids);
 
 		$current_user = $this->user;
 
@@ -1535,22 +1560,6 @@ class EmundusControllerUsers extends EmundusController
 			echo json_encode((object) (array('status' => false, 'msg' => Text::_('INVALID_EMAIL'))));
 			exit();
 		}
-	}
-
-	public function updateemundussession()
-	{
-
-		$param = $this->input->getString('param', null);
-		$value = $this->input->getBool('value', null);
-
-		$session   = JFactory::getSession();
-		$e_session = $session->get('emundusUser');
-
-		$e_session->{$param} = $value;
-		$session->set('emundusUser', $e_session);
-
-		echo json_encode(array('status' => true));
-		exit;
 	}
 
 	public function addapplicantprofile()

@@ -186,3 +186,14 @@ media/com_hikashop/upload/safe/logs/
 .claude/settings.local.json
 .claude/worktrees
 /.ai/
+
+# dompdf runtime font cache (regenerated at runtime, do not track)
+# keep shipped vendor base fonts (.afm/.ttf/.ufm), ignore generated caches
+libraries/fabrik/vendor/vendor/dompdf/dompdf/lib/fonts/installed-fonts.json
+libraries/fabrik/vendor/vendor/dompdf/dompdf/lib/fonts/*.afm.json
+libraries/fabrik/vendor/vendor/dompdf/dompdf/lib/fonts/*.ufm.json
+libraries/fabrik/vendor/vendor/dompdf/dompdf/lib/fonts/emundus_unicode_*
+/libraries/emundus/vendor/dompdf/dompdf/lib/fonts/installed-fonts.json
+/libraries/emundus/vendor/dompdf/dompdf/lib/fonts/*.afm.json
+/libraries/emundus/vendor/dompdf/dompdf/lib/fonts/*.ufm.json
+/libraries/emundus/vendor/dompdf/dompdf/lib/fonts/emundus_unicode_*
