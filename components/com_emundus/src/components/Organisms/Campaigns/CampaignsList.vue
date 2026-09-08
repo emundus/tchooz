@@ -103,7 +103,7 @@ export default {
 				:legend-color="programColor(campaign.program)"
 				class="tw-mb-4"
 			>
-				<template #legend v-if="this.parameters.campaign_show_programme === 1">
+				<template #legend v-if="this.parameters.campaign_show_programme">
 					{{ campaign.program.label }}
 				</template>
 
@@ -115,24 +115,24 @@ export default {
 					<div class="tw-flex tw-items-center tw-gap-1">
 						<p
 							class="tw-text-neutral-600"
-							v-if="campaign.status === 'closed' && this.parameters.campaign_show_end_date == 1"
+							v-if="campaign.status === 'closed' && this.parameters.campaign_show_end_date"
 						>
 							<span class="material-symbols-outlined tw-text-neutral-600" aria-hidden="true">schedule</span>
 							{{ translate('COM_EMUNDUS_CAMPAIGNS_CLOSED_ON') }} {{ formatDateForCampaign(campaign.end_date.date) }}
 						</p>
 						<p
 							class="tw-text-neutral-600"
-							v-else-if="campaign.status === 'upcoming' && this.parameters.campaign_show_start_date == 1"
+							v-else-if="campaign.status === 'upcoming' && this.parameters.campaign_show_start_date"
 						>
 							<span class="material-symbols-outlined tw-text-neutral-600" aria-hidden="true">schedule</span>
 							{{ translate('COM_EMUNDUS_CAMPAIGNS_OPENING_ON') }} {{ formatDateForCampaign(campaign.start_date.date) }}
 						</p>
-						<p class="tw-text-neutral-600" v-else-if="this.parameters.campaign_show_end_date == 1">
+						<p class="tw-text-neutral-600" v-else-if="this.parameters.campaign_show_end_date">
 							<span class="material-symbols-outlined tw-text-neutral-600" aria-hidden="true">schedule</span>
 							{{ translate('COM_EMUNDUS_CAMPAIGNS_CLOSE_DATE') }} : {{ formatDateForCampaign(campaign.end_date.date) }}
 						</p>
 					</div>
-					<div class="tw-flex tw-items-center tw-gap-1" v-if="this.parameters.campaign_show_timezone == 1">
+					<div class="tw-flex tw-items-center tw-gap-1" v-if="this.parameters.campaign_show_timezone">
 						<span class="material-symbols-outlined tw-text-neutral-600" aria-hidden="true">public</span>
 						<p class="tw-text-neutral-600">
 							{{ campaign.timezone }}
