@@ -97,8 +97,14 @@ class Sylvia extends CMSPlugin implements SubscriberInterface
 			require_once JPATH_SITE . '/components/com_emundus/models/files.php';
 		}
 
+		if (!class_exists('EmundusModelApplication'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+		}
+
 		$userRepository = new EmundusUserRepository();
 		$mFiles         = new \EmundusModelFiles();
+		$mApplication   = new \EmundusModelApplication();
 		$tagNotFound    = $api->getTagNotFound();
 		$tagDoublon     = $api->getTagDoublon();
 		$hasError       = false;
@@ -107,7 +113,7 @@ class Sylvia extends CMSPlugin implements SubscriberInterface
 		{
 			try
 			{
-				$this->syncStudent($student, $api, $userRepository, $mFiles, $tagNotFound, $tagDoublon);
+				$this->syncStudent($student, $api, $userRepository, $mFiles, $mApplication, $tagNotFound, $tagDoublon);
 			}
 			catch (\Throwable $e)
 			{
@@ -123,7 +129,7 @@ class Sylvia extends CMSPlugin implements SubscriberInterface
 	 * Identify a single applicant against Sylvia and write back the result (immat number,
 	 * transmissible flag, or "not found" / "doublon" tags).
 	 */
-	private function syncStudent(object $student, SylviaSynchronizer $api, EmundusUserRepository $userRepository, \EmundusModelFiles $mFiles, ?string $tagNotFound, ?string $tagDoublon): void
+	private function syncStudent(object $student, SylviaSynchronizer $api, EmundusUserRepository $userRepository, \EmundusModelFiles $mFiles, \EmundusModelApplication $mApplication, ?string $tagNotFound, ?string $tagDoublon): void
 	{
 		$emundusUser = $userRepository->getByUserId((int) $student->applicant_id);
 		if (empty($emundusUser))
@@ -152,11 +158,18 @@ class Sylvia extends CMSPlugin implements SubscriberInterface
 			$this->fillElementByAlias($student->fnum, 'no_immat', $result['no_immat']);
 			$this->fillElementByAlias($student->fnum, 'transmissible_expert', $result['transmissible_expert'] ? 1 : 0);
 
+			// Student was previously "not found" / "doublon" but is now identified:
+			// drop those tags so they don't skew filtering.
+			$this->removeSyncTags($student->fnum, $mApplication, $tagNotFound, $tagDoublon);
+
 			return;
 		}
 
 		if (!empty($result['homonyms']))
 		{
+			// Switched from "not found" to "doublon": drop the stale opposite tag.
+			$this->removeSyncTags($student->fnum, $mApplication, $tagNotFound);
+
 			if (!empty($tagDoublon))
 			{
 				$mFiles->tagFile([$student->fnum], [$tagDoublon]);
@@ -165,12 +178,30 @@ class Sylvia extends CMSPlugin implements SubscriberInterface
 			return;
 		}
 
+		// Switched from "doublon" to "not found": drop the stale opposite tag.
+		$this->removeSyncTags($student->fnum, $mApplication, $tagDoublon);
+
 		if (!empty($tagNotFound))
 		{
 			$mFiles->tagFile([$student->fnum], [$tagNotFound]);
 		}
 
 		$this->fillElementByAlias($student->fnum, 'transmissible_expert', 0);
+	}
+
+	/**
+	 * Remove the given "not found" / "doublon" tags from a file when the applicant's
+	 * identification state changes, so stale tags don't make status filtering inconsistent.
+	 */
+	private function removeSyncTags(string $fnum, \EmundusModelApplication $mApplication, ?string ...$tags): void
+	{
+		foreach ($tags as $tag)
+		{
+			if (!empty($tag))
+			{
+				$mApplication->deleteTag($tag, $fnum);
+			}
+		}
 	}
 
 	/**
