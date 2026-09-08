@@ -124,7 +124,7 @@ class EmundusViewApplication extends HtmlView
 
 			$this->logged = $application->getlogged($aid);
 
-			$this->forms = $application->getForms($aid);
+			$this->forms = $application->getForms($aid, 0, 9, [0, 1]);
 
 			$this->email = $application->getEmail($aid);
 

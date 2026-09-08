@@ -703,7 +703,7 @@ class EmundusViewApplication extends HtmlView
 
 						$this->pids          = array_merge($profiles_by_phase, $noPhasePids);
 						$this->formsProgress = $m_application->getFormsProgress($fnum);
-						$this->forms         = $m_application->getForms($this->sid, $fnum, $this->defaultpid->pid);
+						$this->forms         = $m_application->getForms($this->sid, $fnum, $this->defaultpid->pid, EmundusHelperAccess::asPartnerAccessLevel($this->user->id) ? [0, 1] : [0]);
 						$this->applicant     = $applicant[0];
 
 						$addonRepository = new AddonRepository();

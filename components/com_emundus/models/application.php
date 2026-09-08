@@ -2163,7 +2163,7 @@ class EmundusModelApplication extends ListModel
 	}
 
 	// Get form to display in application page layout view
-	public function getForms($aid, $fnum = 0, $pid = 9)
+	public function getForms($aid, $fnum = 0, $pid = 9, array $hidden = ['0'])
 	{
 		$h_menu    = new EmundusHelperMenu;
 		$h_access  = new EmundusHelperAccess;
@@ -2291,10 +2291,10 @@ class EmundusModelApplication extends ListModel
 						}
 
 						$query = $this->_db->getQuery(true);
-						$query->select('fe.id,fe.name,fe.label,fe.plugin,fe.params,fe.default,fe.eval')
+						$query->select('fe.id,fe.name,fe.label,fe.plugin,fe.params,fe.default,fe.eval,fe.hidden')
 							->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
 							->where($this->_db->quoteName('fe.published') . ' = 1')
-							->where($this->_db->quoteName('fe.hidden') . ' = 0')
+							->where($this->_db->quoteName('fe.hidden') . ' IN (' . implode(',', $this->_db->quote($hidden)) . ')')
 							->where($this->_db->quoteName('fe.group_id') . ' = ' . $this->_db->quote($itemg->group_id))
 							->order($this->_db->quoteName('fe.ordering'));
 
@@ -2771,7 +2771,7 @@ class EmundusModelApplication extends ListModel
 									$forms .= '<table class="em-mt-8 em-mb-16 em-personalDetail-table-inline tw-p-6 tw-border-separate tw-rounded-coordinator-cards tw-shadow-card tw-bg-neutral-0">';
 
 									$forms .= '<div class="tw-flex tw-flex-row tw-justify-between form-group-title">';
-									$forms .= '<h3 style="font-size: var(--em-coordinator-h3); font-weight: inherit; padding-left: 0;">' . JText::_($itemg->label) . '</h3>';
+									$forms .= '<h3 style="font-size: var(--em-coordinator-h3); font-weight: inherit; padding-left: 0;">' . Text::_($itemg->label) . '</h3>';
 									if ($can_comment) {
 										$comment_classes = 'comment-icon material-symbols-outlined tw-cursor-pointer tw-p-1 tw-h-fit ';
 										foreach ($file_comments as $comment) {
@@ -3120,7 +3120,7 @@ class EmundusModelApplication extends ListModel
 												$class = "table-strip-2 !tw-bg-neutral-0";
 											}
 
-											$tds = !empty(Text::_($element->label)) ? '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"><b>' . Text::_($element->label) . '</b></td>' : '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"></td>';
+											$tds = !empty(Text::_($element->label)) ? '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"><b>' . Text::_($element->label) . ($element->hidden ? ' (' . Text::_('COM_EMUNDUS_FORM_BUILDER_HIDDEN') . ')' : '') . '</b></td>' : '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"></td>';
 											$tds .= '<td class="tw-w-full" style="width:100%; border-bottom: 1px solid var(--neutral-400); vertical-align: middle;"><div class="tw-flex tw-flex-row tw-justify-between tw-items-center tw-h-full"><span>' . ((!in_array($element->plugin,['field','textarea','calc'])) ? Text::_($elt) : $elt) . '</span>';
 
 											if ($can_comment) {
