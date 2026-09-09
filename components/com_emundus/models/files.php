@@ -40,6 +40,7 @@ use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagAddDefinition;
 use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\ValueFormatEnum;
+use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
@@ -97,13 +98,11 @@ class EmundusModelFiles extends JModelLegacy
 		if (version_compare(JVERSION, '4.0', '>')) {
 			$this->_db    = Factory::getContainer()->get('DatabaseDriver');
 			$current_user = $this->app->getIdentity();
-			$language     = $this->app->getLanguage();
 			$session      = $this->app->getSession();
 		}
 		else {
 			$this->_db    = Factory::getDbo();
 			$current_user = Factory::getUser();
-			$language     = Factory::getLanguage();
 			$session      = JFactory::getSession();
 		}
 
@@ -115,7 +114,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		$h_cache = new EmundusHelperCache();
 
-		$this->locales = substr($language->getTag(), 0, 2);
+		$this->locales = LanguageFactory::getCurrentShortLang();
 
 		JPluginHelper::importPlugin('emundus');
 
@@ -2465,7 +2464,7 @@ class EmundusModelFiles extends JModelLegacy
 		if(empty($user)) {
 			$user = $this->app->getIdentity();
 		}
-		$locales = substr($this->app->getLanguage()->getTag(), 0, 2);
+		$locales = LanguageFactory::getCurrentShortLang();
 
 		$anonymize_data = EmundusHelperAccess::isDataAnonymized($user->id);
 
