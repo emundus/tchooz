@@ -347,6 +347,17 @@ class Release2_15_0Installer extends ReleaseInstaller
 
 		foreach ($accessFileActions as $action)
 		{
+			$query->clear()
+				->select($this->db->quoteName('fnum'))
+				->from($this->db->quoteName('#__emundus_campaign_candidature'))
+				->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($action->fnum));
+			$this->db->setQuery($query);
+
+			if (!$this->db->loadResult())
+			{
+				continue;
+			}
+
 			// Check if the user/group already has the "access_file_users" action, if yes skip to avoid duplicates
 			$query->clear()
 				->select($this->db->quoteName('id'))
