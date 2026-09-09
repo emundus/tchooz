@@ -10,6 +10,7 @@
 namespace Tchooz\Enums\ApplicationFile;
 
 use Joomla\CMS\Language\Text;
+use Tchooz\Repositories\Addons\AddonRepository;
 
 // TODO: Move to database table to allow custom states
 enum ChoicesStateEnum: int
@@ -133,6 +134,47 @@ enum ChoicesStateEnum: int
 			self::RESIGNATION,
 			self::DISABLED           => 0,
 		};
+	}
+
+	/**
+	 * States required for the system to work. They can never be hidden by the manager.
+	 */
+	public function isSystemRequired(): bool
+	{
+		return match ($this)
+		{
+			self::DRAFT,
+			self::WAITING,
+			self::ACCEPTED,
+			self::REJECTED,
+			self::CONFIRMED,
+			self::DISABLED => true,
+			default        => false,
+		};
+	}
+
+	/**
+	 * States available to the manager: system-required ones plus those enabled in the "choices" addon config.
+	 * When the param was never set (null), all states stay visible to preserve the legacy behavior.
+	 *
+	 * @return ChoicesStateEnum[]
+	 */
+	public static function getAvailableStates(): array
+	{
+		$addon   = (new AddonRepository())->getByName('choices');
+		$enabled = $addon?->getParam('visible_states', 'configuration');
+
+		// The param stores a list of choice rows ([{value, label, group}]); keep only the values.
+		$enabledValues = $enabled === null ? null : array_column((array) $enabled, 'value');
+
+		return array_values(array_filter(self::cases(), function (ChoicesStateEnum $state) use ($enabledValues) {
+			if ($state->isSystemRequired() || $enabledValues === null)
+			{
+				return true;
+			}
+
+			return in_array((string) $state->value, $enabledValues, false);
+		}));
 	}
 
 	public static function isValidState(string $value): ChoicesStateEnum|null
