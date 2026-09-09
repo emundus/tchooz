@@ -284,7 +284,7 @@ class Release2_15_0Installer extends ReleaseInstaller
 				'link' => 'index.php?option=com_emundus&view=application_choices&layout=list',
 				'published' => 0,
 				'type' => 'component',
-				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id' => $this->emundusComponentId,
 				'params' => [
 					'menu_image_css' => 'format_list_numbered'
 				]

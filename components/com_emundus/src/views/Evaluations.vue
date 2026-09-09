@@ -33,7 +33,7 @@
 				<iframe
 					v-else-if="selectedEvaluationStep.evaluations.length > 0"
 					v-show="!loading"
-					:src="'/' + currentLang + selectedEvaluationStep.evaluations[0].url"
+					:src="urlPrefix + selectedEvaluationStep.evaluations[0].url"
 					class="iframe-evaluation-list tw-w-full tw-bg-coordinator-bg"
 					:key="selectedTab"
 					@load="iframeLoaded($event)"
@@ -91,8 +91,9 @@ export default {
 			ccid: 0,
 
 			loading: false,
-			currentLang: useGlobalStore().getShortLang,
 			iframeResizeObserver: null,
+
+			urlPrefix: (Joomla.getOptions('system.paths', {}).root || '') + useGlobalStore().getLanguageUrlPrefix,
 		};
 	},
 	mounted() {

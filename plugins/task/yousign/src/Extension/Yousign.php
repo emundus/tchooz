@@ -39,6 +39,11 @@ class Yousign extends CMSPlugin implements SubscriberInterface
 	use DatabaseAwareTrait;
 	use TaskPluginTrait;
 
+	private const MAX_FAILED_ATTEMPTS = 3;
+
+	// Rate limit, unavailable service and network errors : the request will be retried without consuming an attempt
+	private const LEGITIMATE_FAILURE_CODES = [0, 429, 503, 504];
+
 	protected const TASKS_MAP = [
 		'yousign.api' => [
 			'langConstPrefix' => 'PLG_TASK_YOUSIGN',
@@ -139,7 +144,34 @@ class Yousign extends CMSPlugin implements SubscriberInterface
 
 					foreach ($not_signed_requests as $not_signed_request)
 					{
-						$failed = !$yousign_service->manageRequest($not_signed_request->getId(), $yousign_requests, $api);
+						// A failing request must not prevent the following ones from being processed
+						try
+						{
+							$yousign_service->manageRequest($not_signed_request->getId(), $yousign_requests, $api);
+
+							if ($not_signed_request->getFailedAttempts() > 0)
+							{
+								$request_repository->resetFailedAttempts($not_signed_request->getId());
+							}
+						}
+						catch (\Exception $e)
+						{
+							$failed = true;
+							Log::add('Yousign task failed on request ' . $not_signed_request->getId() . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.yousign');
+
+							if (in_array((int) $e->getCode(), self::LEGITIMATE_FAILURE_CODES, true))
+							{
+								Log::add('Yousign request ' . $not_signed_request->getId() . ' failure is legitimate [code ' . $e->getCode() . '], attempt not counted', Log::WARNING, 'com_emundus.yousign');
+								continue;
+							}
+
+							$failed_attempts = $request_repository->incrementFailedAttempts($not_signed_request->getId());
+							if ($failed_attempts >= self::MAX_FAILED_ATTEMPTS)
+							{
+								$request_repository->updateStatus($not_signed_request->getId(), SignStatusEnum::FAILED);
+								Log::add('Yousign request ' . $not_signed_request->getId() . ' reached ' . $failed_attempts . ' failed attempts [code ' . $e->getCode() . '], status set to ' . SignStatusEnum::FAILED->value, Log::ERROR, 'com_emundus.yousign');
+							}
+						}
 					}
 				}
 			}

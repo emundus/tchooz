@@ -442,6 +442,116 @@ class PaymentRepository
 	}
 
 	/**
+	 * Copy the whole payment configuration of a step onto another one.
+	 *
+	 * @param   int    $sourceStepId
+	 * @param   int    $targetStepId
+	 * @param   array  $stepIdsMap  source step id => target step id, used to remap steps referenced by the configuration
+	 *
+	 * @return bool
+	 */
+	public function duplicatePaymentStepConfiguration(int $sourceStepId, int $targetStepId, array $stepIdsMap = []): bool
+	{
+		if (empty($sourceStepId) || empty($targetStepId))
+		{
+			return false;
+		}
+
+		try {
+			$query = $this->db->createQuery();
+
+			// description is held by the steps table but is not handled by StepRepository::save
+			$query->select($this->db->quoteName('description'))
+				->from($this->db->quoteName('#__emundus_setup_workflows_steps'))
+				->where($this->db->quoteName('id') . ' = ' . $sourceStepId);
+
+			$this->db->setQuery($query);
+			$description = $this->db->loadResult();
+
+			$query->clear()
+				->update($this->db->quoteName('#__emundus_setup_workflows_steps'))
+				->set($this->db->quoteName('description') . ' = ' . (!is_null($description) ? $this->db->quote($description) : 'NULL'))
+				->where($this->db->quoteName('id') . ' = ' . $targetStepId);
+
+			$this->db->setQuery($query);
+			$this->db->execute();
+
+			// the adjusted step is another step of the same workflow, point to its duplicate
+			$query->clear()
+				->select($this->db->quoteName('adjust_balance_step_id'))
+				->from($this->db->quoteName('#__emundus_setup_workflow_step_payment_rules'))
+				->where($this->db->quoteName('step_id') . ' = ' . $sourceStepId);
+
+			$this->db->setQuery($query);
+			$adjustBalanceStepId = $this->db->loadResult();
+
+			$overrides = [];
+			if (!empty($adjustBalanceStepId))
+			{
+				$overrides['adjust_balance_step_id'] = $stepIdsMap[$adjustBalanceStepId] ?? null;
+			}
+
+			$this->duplicateStepRows(
+				'#__emundus_setup_workflow_step_payment_rules',
+				['adjust_balance', 'adjust_balance_step_id', 'synchronizer_id', 'advance_type', 'is_advance_amount_editable_by_applicant', 'advance_amount', 'advance_amount_type', 'installment_monthday', 'installment_effect_date'],
+				$sourceStepId,
+				$targetStepId,
+				$overrides
+			);
+
+			$this->duplicateStepRows('#__emundus_setup_workflow_step_product', ['product_id', 'mandatory'], $sourceStepId, $targetStepId);
+			$this->duplicateStepRows('#__emundus_setup_workflow_step_product_category', ['product_category', 'mandatory'], $sourceStepId, $targetStepId);
+			$this->duplicateStepRows('#__emundus_setup_workflow_step_payment_method', ['payment_method'], $sourceStepId, $targetStepId);
+			$this->duplicateStepRows('#__emundus_setup_workflow_step_installment_rule', ['from_amount', 'to_amount', 'min_installments', 'max_installments'], $sourceStepId, $targetStepId);
+		}
+		catch (\Exception $e) {
+			Log::add('Error duplicating payment configuration of step ' . $sourceStepId . ' to step ' . $targetStepId . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.payment');
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param   string  $table      table holding rows attached to a step through a step_id column
+	 * @param   array   $columns    columns to copy, step_id excluded
+	 * @param   int     $sourceStepId
+	 * @param   int     $targetStepId
+	 * @param   array   $overrides  column => value to write instead of the source one
+	 *
+	 * @return void
+	 */
+	private function duplicateStepRows(string $table, array $columns, int $sourceStepId, int $targetStepId, array $overrides = []): void
+	{
+		$query = $this->db->createQuery();
+		$query->select($this->db->quoteName($columns))
+			->from($this->db->quoteName($table))
+			->where($this->db->quoteName('step_id') . ' = ' . $sourceStepId);
+
+		$this->db->setQuery($query);
+		$rows = $this->db->loadObjectList();
+
+		foreach ($rows as $row)
+		{
+			$values = [$targetStepId];
+			foreach ($columns as $column)
+			{
+				$value    = array_key_exists($column, $overrides) ? $overrides[$column] : $row->$column;
+				$values[] = is_null($value) ? 'NULL' : $this->db->quote($value);
+			}
+
+			$query->clear()
+				->insert($this->db->quoteName($table))
+				->columns($this->db->quoteName(array_merge(['step_id'], $columns)))
+				->values(implode(',', $values));
+
+			$this->db->setQuery($query);
+			$this->db->execute();
+		}
+	}
+
+	/**
 	 * @return array<PaymentMethodEntity>
 	 */
 	public function getPaymentMethods(): array

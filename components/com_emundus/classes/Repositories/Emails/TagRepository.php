@@ -24,6 +24,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Traits\TraitTable;
 
 #[TableAttribute(table: '#__emundus_setup_tags')]
@@ -36,6 +37,11 @@ final class TagRepository
 		't.tag',
 		't.description',
 	];
+
+	/**
+	 * Elements of the campaign additional informations form that hold no user data.
+	 */
+	private const CAMPAIGN_MORE_TECHNICAL_ELEMENTS = ['id', 'date_time', 'campaign_id'];
 
 	private DatabaseInterface $db;
 
@@ -302,16 +308,7 @@ final class TagRepository
 
 							$plugin       = ElementPluginEnum::tryFrom($value->element_plugin);
 							$plugin_label = !empty($plugin) ? Text::_($plugin->getLabel()) : $value->element_plugin;
-							if ($plugin->value === ElementPluginEnum::PANEL->value)
-							{
-								// Display 25 first characters of default column
-								$default_label = strip_tags($value->element_default);
-								$element_label = ' - ' . (strlen($default_label) > 25 ? substr($default_label, 0, 25) . '...' : $default_label);
-							}
-							else
-							{
-								$element_label = !empty(Text::_($value->element_label)) ? Text::_($value->element_label) : '[' . $plugin_label . ']';
-							}
+							$element_label = $this->formatElementLabel($value, $plugin, $plugin_label);
 
 							$value->id            = $key;
 							$value->form_label    = Text::_($value->form_label);
@@ -396,16 +393,7 @@ final class TagRepository
 
 							$plugin       = ElementPluginEnum::tryFrom($value->element_plugin);
 							$plugin_label = !empty($plugin) ? Text::_($plugin->getLabel()) : $value->element_plugin;
-							if ($plugin->value === ElementPluginEnum::PANEL->value)
-							{
-								// Display 25 first characters of default column
-								$default_label = strip_tags($value->element_default);
-								$element_label = ' - ' . (strlen($default_label) > 25 ? substr($default_label, 0, 25) . '...' : $default_label);
-							}
-							else
-							{
-								$element_label = !empty(Text::_($value->element_label)) ? Text::_($value->element_label) : '[' . $plugin_label . ']';
-							}
+							$element_label = $this->formatElementLabel($value, $plugin, $plugin_label);
 
 							$value->form_label    = Text::_($value->form_label);
 							$value->table_label   = '';
@@ -423,6 +411,13 @@ final class TagRepository
 				}
 
 				$elts = array_merge($elts, $management_elts);
+			}
+
+			// The campaign additional informations form hangs off no profile and no workflow step,
+			// so it is left out as soon as the search is narrowed down to a step.
+			if (($formtype == 'all' || $formtype == 'campaign') && empty($step_id))
+			{
+				$elts = array_merge($elts, $this->getCampaignMoreTags($cache));
 			}
 
 			$tags['count'] = count($elts);
@@ -454,6 +449,108 @@ final class TagRepository
 		}
 
 		return $tags;
+	}
+
+	/**
+	 * Elements of the campaign additional informations form (jos_emundus_setup_campaigns_more).
+	 * Their value belongs to a campaign and not to a file, so they belong to no applicant profile
+	 * and to no evaluation form: they would never show up along the other form tags.
+	 *
+	 * @param   object  $cache
+	 *
+	 * @return  array
+	 */
+	private function getCampaignMoreTags(object $cache): array
+	{
+		$cache_key = 'fabrik_tags_campaign_more';
+		if ($cache->contains($cache_key))
+		{
+			$cached_tags = $cache->get($cache_key);
+			if (!empty($cached_tags))
+			{
+				return $cached_tags;
+			}
+		}
+
+		$tags = [];
+
+		$campaignRepository = new CampaignRepository(false);
+		$form_id            = $campaignRepository->getCampaignMoreFormId();
+
+		if (empty($form_id))
+		{
+			return $tags;
+		}
+
+		$columns = [
+			'e.id',
+			'e.name AS element_name',
+			'e.label AS element_label',
+			'e.plugin AS element_plugin',
+			'e.default as element_default',
+			'g.id AS group_id',
+			'g.label AS group_label',
+			'f.id AS form_id',
+			'f.label AS form_label'
+		];
+
+		$query = $this->db->createQuery();
+		$query->select($columns)
+			->from($this->db->quoteName('#__fabrik_elements', 'e'))
+			->innerJoin($this->db->quoteName('#__fabrik_groups', 'g') . ' ON ' . $this->db->quoteName('g.id') . ' = ' . $this->db->quoteName('e.group_id'))
+			->innerJoin($this->db->quoteName('#__fabrik_formgroup', 'fg') . ' ON ' . $this->db->quoteName('fg.group_id') . ' = ' . $this->db->quoteName('g.id'))
+			->innerJoin($this->db->quoteName('#__fabrik_forms', 'f') . ' ON ' . $this->db->quoteName('f.id') . ' = ' . $this->db->quoteName('fg.form_id'))
+			->where($this->db->quoteName('fg.form_id') . ' = ' . (int) $form_id)
+			->where($this->db->quoteName('e.published') . ' = 1')
+			->where($this->db->quoteName('g.published') . ' = 1')
+			->where($this->db->quoteName('e.hidden') . ' = 0')
+			->where($this->db->quoteName('e.name') . ' NOT IN (' . implode(',', array_map([$this->db, 'quote'], self::CAMPAIGN_MORE_TECHNICAL_ELEMENTS)) . ')')
+			->order($this->db->quoteName('fg.ordering') . ', ' . $this->db->quoteName('e.ordering'));
+
+		$this->db->setQuery($query);
+		$elements = $this->db->loadObjectList('id');
+
+		foreach ($elements as $key => $element)
+		{
+			$plugin       = ElementPluginEnum::tryFrom($element->element_plugin);
+			$plugin_label = !empty($plugin) ? Text::_($plugin->getLabel()) : $element->element_plugin;
+
+			$element->id            = $key;
+			$element->table_label   = Text::_('COM_EMUNDUS_CAMPAIGN_MORE');
+			$element->form_label    = Text::_($element->form_label);
+			$element->group_label   = Text::_($element->group_label);
+			$element->element_label = $this->formatElementLabel($element, $plugin, $plugin_label);
+			$element->plugin_label  = $plugin_label;
+
+			$tags[] = $element;
+		}
+
+		if (!empty($tags))
+		{
+			$cache->store($tags, $cache_key);
+		}
+
+		return $tags;
+	}
+
+	/**
+	 * @param   object                  $element
+	 * @param   ElementPluginEnum|null  $plugin
+	 * @param   string                  $plugin_label
+	 *
+	 * @return  string  The element label, or its plugin between brackets when it has none.
+	 */
+	private function formatElementLabel(object $element, ?ElementPluginEnum $plugin, string $plugin_label): string
+	{
+		if ($plugin?->value === ElementPluginEnum::PANEL->value)
+		{
+			// Display 25 first characters of default column
+			$default_label = strip_tags($element->element_default);
+
+			return ' - ' . (strlen($default_label) > 25 ? substr($default_label, 0, 25) . '...' : $default_label);
+		}
+
+		return !empty(Text::_($element->element_label)) ? Text::_($element->element_label) : '[' . $plugin_label . ']';
 	}
 
 	public function getAllOtherTags(

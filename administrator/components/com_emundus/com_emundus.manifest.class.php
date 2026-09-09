@@ -17,6 +17,7 @@ use Joomla\Database\DatabaseInterface;
 use Tchooz\Entities\Addons\AddonEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Reference\InternalReferenceEntity;
+use Tchooz\Services\ExtensionService;
 use Tchooz\Services\Language\DbLanguage;
 use Tchooz\Traits\TraitVersion;
 
@@ -32,6 +33,10 @@ class Com_EmundusInstallerScript
 
 	public function __construct()
 	{
+		// Clear ComponentHelper caches (in-memory static + persistent _system group) so component ids/params
+		// resolve against the current #__extensions state during install/update, avoiding stale id = 0 results.
+		ExtensionService::clearComponentHelperCache();
+
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		$query    = $this->db->getQuery(true);
 

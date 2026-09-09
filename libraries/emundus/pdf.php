@@ -7,47 +7,6 @@ use Joomla\CMS\Date\Date;
 use Joomla\CMS\HTML\HTMLHelper;
 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
-// Fabrik ships an older dompdf (v2) whose Composer autoloader may be registered first and
-// would shadow emundus' dompdf (v3), since both share the Dompdf\ namespace and only one
-// version can load per PHP process. Find emundus' ClassLoader in the spl stack and re-register
-// it as prepended so v3 wins the autoload race and matches this file's API usage.
-// Skipped when Dompdf is already loaded (nothing left to influence).
-if (!class_exists('Dompdf\\Dompdf', false))
-{
-	$emundusVendorReal = JPATH_LIBRARIES . '/emundus/vendor/';
-
-	foreach ((array) spl_autoload_functions() as $autoloadFunction)
-	{
-		if (!is_array($autoloadFunction) || !($autoloadFunction[0] instanceof \Composer\Autoload\ClassLoader))
-		{
-			continue;
-		}
-
-		$classLoader     = $autoloadFunction[0];
-		$psr4Prefixes    = $classLoader->getPrefixesPsr4();
-		$isEmundusLoader = false;
-
-		foreach ($psr4Prefixes as $paths)
-		{
-			foreach ((array) $paths as $path)
-			{
-				if (strpos((string) $path, $emundusVendorReal) === 0)
-				{
-					$isEmundusLoader = true;
-					break 2;
-				}
-			}
-		}
-
-		if ($isEmundusLoader)
-		{
-			$classLoader->unregister();
-			$classLoader->register(true);
-			break;
-		}
-	}
-}
-
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Dompdf\Css;

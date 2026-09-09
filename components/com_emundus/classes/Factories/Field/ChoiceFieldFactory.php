@@ -2,6 +2,7 @@
 
 namespace Tchooz\Factories\Field;
 
+use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
@@ -105,6 +106,23 @@ class ChoiceFieldFactory
 			}
 
 			$options[] = new ChoiceFieldValue($case->value, $label);
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Published languages of the platform, as choices.
+	 *
+	 * @return array<ChoiceFieldValue>
+	 */
+	public static function makeLanguageOptions(): array
+	{
+		$options = [];
+
+		foreach (LanguageHelper::getLanguages() as $language)
+		{
+			$options[] = new ChoiceFieldValue($language->lang_code, $language->title_native);
 		}
 
 		return $options;

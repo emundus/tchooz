@@ -228,6 +228,44 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 		return $applicationFileEntity;
 	}
 
+	/**
+	 * Load several application files in a single query, keyed by fnum.
+	 *
+	 * Batches relation preloading (status/user/campaign) across the whole set via the factory,
+	 * instead of running the per-file relation queries once per fnum.
+	 *
+	 * @param   string[]  $fnums
+	 *
+	 * @return array<string, ApplicationFileEntity>
+	 */
+	public function getByFnums(array $fnums): array
+	{
+		$results = [];
+
+		$fnums = array_values(array_unique(array_filter($fnums)));
+		if (empty($fnums))
+		{
+			return $results;
+		}
+
+		$query = $this->buildQuery();
+		$this->applyFilters($query, ['fnum' => $fnums]);
+
+		$this->db->setQuery($query);
+		$dbObjects = $this->db->loadObjectList();
+
+		if (!empty($dbObjects))
+		{
+			$entities = $this->factory->fromDbObjects($dbObjects, $this->withRelations, $this->exceptRelations);
+			foreach ($entities as $entity)
+			{
+				$results[$entity->getFnum()] = $entity;
+			}
+		}
+
+		return $results;
+	}
+
 	public function getCampaignIds(array $fnums): array
 	{
 		$campaignIds = [];

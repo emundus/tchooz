@@ -100,7 +100,7 @@ class Release2_4_0Installer extends ReleaseInstaller
 					'path'              => '2fa-methods',
 					'link'              => 'index.php?option=com_users&view=methods',
 					'type'              => 'component',
-					'component_id'      => ComponentHelper::getComponent('com_users')->id,
+					'component_id'      => $this->extensionService::getExtensionId('com_users'),
 					'template_style_id' => 0,
 					'params'            => [],
 				];
@@ -364,7 +364,7 @@ class Release2_4_0Installer extends ReleaseInstaller
 					'path'              => 'edit-trigger',
 					'link'              => 'index.php?option=com_emundus&view=emails&layout=triggeredit',
 					'type'              => 'component',
-					'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id'      => $this->emundusComponentId,
 					'template_style_id' => 0,
 					'params'            => [
 						'menu_show' => 0,

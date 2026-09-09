@@ -356,7 +356,7 @@ class Release2_8_0Installer extends ReleaseInstaller
 				'link' => 'index.php?option=com_fabrik&view=form&formid=' . $form['id'],
 				'published' => 0,
 				'type' => 'component',
-				'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
+				'component_id' => $this->extensionService::getExtensionId('com_fabrik'),
 				'params' => [
 					'menu_show' => 0
 				]
@@ -517,7 +517,7 @@ class Release2_8_0Installer extends ReleaseInstaller
 					'link' => 'index.php?option=com_fabrik&view=form&formid=' . $form['id'],
 					'published' => 0,
 					'type' => 'component',
-					'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
+					'component_id' => $this->extensionService::getExtensionId('com_fabrik'),
 					'params' => [
 						'menu_show' => 0
 					]

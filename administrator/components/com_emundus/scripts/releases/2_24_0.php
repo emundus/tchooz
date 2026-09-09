@@ -88,7 +88,7 @@ class Release2_24_0Installer extends ReleaseInstaller
 					'alias'        => 'my-imports',
 					'link'         => 'index.php?option=com_emundus&view=imports&layout=imports',
 					'type'         => 'component',
-					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id' => $this->emundusComponentId,
 					'params'       => [
 						'menu_image_css' => 'archive',
 						'menu_show'      => 0
@@ -251,7 +251,7 @@ class Release2_24_0Installer extends ReleaseInstaller
 				'path'              => 'languages',
 				'link'              => 'index.php?option=com_emundus&view=languages',
 				'type'              => 'component',
-				'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id'      => $this->emundusComponentId,
 				'access'            => AccessLevelEnum::ADMINISTRATOR->value,
 				'template_style_id' => 0,
 				'params'            => [
@@ -397,7 +397,7 @@ class Release2_24_0Installer extends ReleaseInstaller
 				'path'              => 'resources',
 				'link'              => 'index.php?option=com_emundus&view=resources',
 				'type'              => 'component',
-				'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id'      => $this->emundusComponentId,
 				'access'            => AccessLevelEnum::COORDINATOR->value,
 				'template_style_id' => 0,
 				'params'            => [
@@ -428,7 +428,7 @@ class Release2_24_0Installer extends ReleaseInstaller
 				'path'              => 'my-resources',
 				'link'              => 'index.php?option=com_emundus&view=resources',
 				'type'              => 'component',
-				'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id'      => $this->emundusComponentId,
 				'access'            => AccessLevelEnum::REGISTERED->value,
 				'template_style_id' => 0,
 				'params'            => [

@@ -6,6 +6,8 @@
  * @subpackage  Fabrik.cron.email
  * @copyright   Copyright (C) 2015 emundus.fr - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
+ *
+ * TODO: this should be move to an interconnexion module, in pair with the mapping module
  */
 
 // No direct access
@@ -13,6 +15,9 @@ defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
+
+use Joomla\CMS\Factory;
+use Tchooz\Transformers\PhoneNumberTransformer;
 
 /**
  * A cron task to email records to a give set of users (incomplete application)
@@ -58,7 +63,7 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 		JLog::addLogger(['text_file' => 'com_emundus.emundusnantesscholargpush.error.php'], JLog::ERROR, 'com_emundus.emundusnantesscholargpush');
 
 		$http = new JHttp();
-		$db = JFactory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		$params = $this->getParams();
 		$api_url = $params->get('api_url');
@@ -215,9 +220,18 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
                 unset($file->codSpecialite2);
             }
             
-			// Telephone numbers need to be without spaces
-			$file->numPortable = str_pad(trim(str_replace(' ', '', $file->numPortable), '_'), 10, "0", STR_PAD_LEFT);
-			$file->numTelephoneAF = str_pad(trim(str_replace(' ', '', $file->numTelephoneAF), '_'), 10, "0", STR_PAD_LEFT);
+			// The API only accepts french numbers on 10 digits (0612345678), international formats are refused.
+			$file->numPortable = $this->normalizePhoneNumber($file->numPortable);
+			$file->numTelephoneAF = $this->normalizePhoneNumber($file->numTelephoneAF);
+
+			if (empty($file->numPortable)) {
+				JLog::add('Unusable phone number for file : ' . $fnum . ' (' . $files[$fnum]->numPortable . ')', JLog::ERROR, 'com_emundus.emundusnantesscholargpush');
+				unset($file->numPortable);
+			}
+			if (empty($file->numTelephoneAF)) {
+				unset($file->numTelephoneAF);
+			}
+
 
 			// Split address into street and number.
 			preg_match('/^\d+/', $file->numVoieAF, $matches);
@@ -298,5 +312,26 @@ class PlgFabrik_Cronemundusnantesscholargpush extends PlgFabrik_Cron {
 
 		$this->log .= "\n process " . count($files) . " user(s)";
 		return count($files);
+	}
+
+	/**
+	 * Convert a phone number to the only format accepted by the API : a french number on 10 digits.
+	 *
+	 * @param   string|null  $number  Raw phone number
+	 *
+	 * @return  string  Normalized number, empty string if it cannot be represented in the expected format
+	 *
+	 * @since 6.9.3
+	 */
+	private function normalizePhoneNumber($number)
+	{
+		// Numbers from another country cannot be represented on 10 digits, whatever the format
+		if (PhoneNumberTransformer::getRegionCode($number, 'FR') !== 'FR') {
+			return '';
+		}
+
+		$national = PhoneNumberTransformer::toNational($number, 'FR');
+
+		return strlen($national) === 10 ? $national : '';
 	}
 }
