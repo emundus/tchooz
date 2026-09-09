@@ -15,6 +15,11 @@ use Tchooz\Transformers\Language\TranslationListItemTransformer;
 
 class LanguageController extends EmundusController
 {
+	/**
+	 * Time-to-live (seconds) of the #__overrider cache before search() rebuilds it.
+	 */
+	private const OVERRIDER_CACHE_TTL = 86400;
+
 	private LanguageRepository $languageRepository;
 
 	private TranslationListItemTransformer $transformer;
@@ -263,6 +268,38 @@ class LanguageController extends EmundusController
 		$model = $this->app->bootComponent('com_languages')
 			->getMVCFactory()->createModel('Strings', 'Administrator', ['ignore_request' => true]);
 
+		$this->ensureOverriderCache($model);
+
 		return EmundusResponse::ok($model->search());
+	}
+
+	/**
+	 * Rebuilds the #__overrider cache only when it is empty or older than the TTL.
+	 *
+	 * The com_languages "refresh" parses every ini file across the platform, which is slow.
+	 * Language strings only change on install/update, so a daily cache is enough and keeps
+	 * search() fast on every call.
+	 *
+	 * @param   object  $model  The com_languages Strings model exposing refresh().
+	 */
+	private function ensureOverriderCache(object $model): void
+	{
+		$client   = $this->app->getUserState('com_languages.overrides.filter.client', 'site') ? 'administrator' : 'site';
+		$language = $this->app->getUserState('com_languages.overrides.filter.language', 'en-GB');
+
+		$db    = Factory::getDbo();
+		$count = (int) $db->setQuery(
+			$db->getQuery(true)
+				->select('COUNT(id)')
+				->from($db->quoteName('#__overrider'))
+		)->loadResult();
+
+		$cachedTime = (int) $this->app->getUserState('com_languages.overrides.cachedtime.' . $client . '.' . $language, 0);
+		$isStale    = (time() - $cachedTime) > self::OVERRIDER_CACHE_TTL;
+
+		if ($count === 0 || $isStale)
+		{
+			$model->refresh();
+		}
 	}
 }

@@ -75,7 +75,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 				'path' => 'modify-cart-products',
 				'alias' => 'modify-cart-products',
 				'type' => 'component',
-				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id' => $this->emundusComponentId,
 				'access' => 7,
 				'note' => 'payment|c|1',
 				'params'       => [
@@ -213,7 +213,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 			'link' => 'index.php?option=com_emundus&view=automation',
 			'published' => 1,
 			'type' => 'component',
-			'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+			'component_id' => $this->emundusComponentId,
 			'access' => 8,
 			'params' => [
 				'menu_show' => 1,
@@ -232,7 +232,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 				'link' => 'index.php?option=com_emundus&view=automation&layout=edit',
 				'published' => 1,
 				'type' => 'component',
-				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id' => $this->emundusComponentId,
 				'params' => [
 					'menu_show' => 1,
 					'menu_image_css' => 'automation'
@@ -323,7 +323,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 				'published' => 1,
 				'type' => 'component',
 				'access' => 8,
-				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id' => $this->emundusComponentId,
 				'params' => [
 					'menu_show' => 1,
 					'menu_image_css' => 'schedule'
@@ -636,7 +636,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 				'path'              => 'relation-client',
 				'link'              => 'index.php?option=com_emundus&view=crc',
 				'type'              => 'component',
-				'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id'      => $this->emundusComponentId,
 				'template_style_id' => 0,
 				'params'            => [
 					'menu_image_css' => 'sensor_occupied',
@@ -667,7 +667,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 					'path'              => 'contact-form',
 					'link'              => 'index.php?option=com_emundus&view=crc&layout=contactform',
 					'type'              => 'component',
-					'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id'      => $this->emundusComponentId,
 					'template_style_id' => 0,
 					'params'            => [],
 				];
@@ -692,7 +692,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 					'path'              => 'organization-form',
 					'link'              => 'index.php?option=com_emundus&view=crc&layout=organizationform',
 					'type'              => 'component',
-					'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id'      => $this->emundusComponentId,
 					'template_style_id' => 0,
 					'params'            => [],
 				];
@@ -922,7 +922,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 				'menutype'     => 'application',
 				'type'         => 'component',
 				'link'         => 'index.php?option=com_emundus&view=application&layout=applicationchoices&format=raw',
-				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id' => $this->emundusComponentId,
 				'note'         => $action_id . '|r'
 			];
 			$menu_id = EmundusHelperUpdate::addJoomlaMenu($datas, 1, 0)['id'];
@@ -947,7 +947,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 				'menutype'     => 'applicantmenu',
 				'type'         => 'component',
 				'link'         => 'index.php?option=com_emundus&view=application_choices',
-				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id' => $this->emundusComponentId,
 				'params'       => [
 					'menu_show' => 0
 				]

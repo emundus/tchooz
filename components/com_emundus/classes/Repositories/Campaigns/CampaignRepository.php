@@ -1103,10 +1103,10 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 		return [
 			'campaign_date_format'     => $emConfig->get('campaign_date_format', 'd/m/Y H:i'),
-			'campaign_show_start_date' => $emConfig->get('campaign_show_start_date', 1),
-			'campaign_show_end_date'   => $emConfig->get('campaign_show_end_date', 1),
-			'campaign_show_timezone'   => $emConfig->get('campaign_show_timezone', 1),
-			'campaign_show_programme'  => $emConfig->get('campaign_show_programme', 1)
+			'campaign_show_start_date' => $emConfig->get('campaign_show_start_date', 1) == 1,
+			'campaign_show_end_date'   => $emConfig->get('campaign_show_end_date', 1) == 1,
+			'campaign_show_timezone'   => $emConfig->get('campaign_show_timezone', 1) == 1,
+			'campaign_show_programme'  => $emConfig->get('campaign_show_programme', 1) == 1
 		];
 	}
 

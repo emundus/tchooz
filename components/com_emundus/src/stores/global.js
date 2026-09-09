@@ -19,6 +19,7 @@ export const useGlobalStore = defineStore('global', {
 		getCurrentLang: (state) => state.currentLanguage,
 		getShortLang: (state) => state.shortLang,
 		hasManyLanguages: (state) => state.manyLanguages,
+		getLanguageUrlPrefix: (state) => (state.currentLanguage !== state.defaultLang ? '/' + state.shortLang : ''),
 		hasSysadminAccess: (state) => state.sysadminAccess,
 		hasCoordinatorAccess: (state) => state.coordinatorAccess,
 		isAnonyme: (state) => state.anonyme,

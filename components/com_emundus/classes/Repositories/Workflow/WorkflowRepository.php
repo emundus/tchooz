@@ -5,9 +5,11 @@ namespace Tchooz\Repositories\Workflow;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Tchooz\Attributes\TableAttribute;
+use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\WorkflowEntity;
 use Tchooz\Factories\Workflow\WorkflowFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Traits\TraitTable;
 use Joomla\Database\DatabaseDriver;
 
@@ -222,13 +224,14 @@ class WorkflowRepository
 			$already_used_entry_status = [];
 			foreach ($workflow->getSteps() as $step)
 			{
-				if (!$step->isEvaluationStep())
+				if ($step->isApplicantStep())
 				{
 					$intersect = array_intersect($already_used_entry_status, $step->getEntryStatus());
 					if (!empty($intersect))
 					{
 						throw new \InvalidArgumentException('Two steps of the same type cannot have the same entry status: ' . implode(',', $intersect) . ' in workflow ' . $workflow->getLabel() . ' and step ' . $step->getLabel());
-					} else
+					}
+					else
 					{
 						$already_used_entry_status = array_merge($already_used_entry_status, $step->getEntryStatus());
 					}
@@ -404,9 +407,18 @@ class WorkflowRepository
 
 		if (!empty($workflow->getId()))
 		{
-			$steps = $workflow->getSteps();
+			$steps           = $workflow->getSteps();
+			$originalStepIds = [];
 			foreach ($steps as $key => $step)
 			{
+				if ($step->getState() < 1) {
+					// Skip steps that are not published or inactive
+					unset($steps[$key]);
+					continue;
+				}
+
+				$originalStepIds[$key] = $step->getId();
+
 				$step->setId(0); // Reset step ID for duplication
 				$step->setWorkflowId(0); // Reset workflow ID for duplication
 
@@ -428,10 +440,44 @@ class WorkflowRepository
 			$this->save($newWorkflow);
 			if (!empty($newWorkflow->getId()))
 			{
+				$this->duplicateStepsConfigurations($newWorkflow->getSteps(), $originalStepIds);
+
 				$duplicatedWorkflow = $newWorkflow;
 			}
 		}
 
 		return $duplicatedWorkflow;
+	}
+
+	/**
+	 * Configurations stored outside of the steps table (payment configuration for instance) are not handled by
+	 * StepRepository::save, they have to be copied once the duplicated steps got their new ids.
+	 *
+	 * @param   array<StepEntity>  $newSteps         duplicated steps, keyed as $originalStepIds
+	 * @param   array<int>         $originalStepIds  key => id of the step it has been duplicated from
+	 *
+	 * @return void
+	 */
+	private function duplicateStepsConfigurations(array $newSteps, array $originalStepIds): void
+	{
+		$stepIdsMap = [];
+		foreach ($originalStepIds as $key => $originalStepId)
+		{
+			if (!empty($newSteps[$key]) && !empty($newSteps[$key]->getId()))
+			{
+				$stepIdsMap[$originalStepId] = $newSteps[$key]->getId();
+			}
+		}
+
+		$paymentRepository = new PaymentRepository();
+		foreach ($originalStepIds as $key => $originalStepId)
+		{
+			if (empty($stepIdsMap[$originalStepId]) || !$newSteps[$key]->isPaymentStep())
+			{
+				continue;
+			}
+
+			$paymentRepository->duplicatePaymentStepConfiguration($originalStepId, $stepIdsMap[$originalStepId], $stepIdsMap);
+		}
 	}
 }

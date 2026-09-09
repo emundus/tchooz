@@ -47,7 +47,7 @@ class Release2_10_0Installer extends ReleaseInstaller
 					'alias'        => 'liste-des-alias',
 					'link'         => 'index.php?option=com_emundus&view=export_select_columns&layout=aliases',
 					'type'         => 'component',
-					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id' => $this->emundusComponentId,
 					'access'       => 6,
 					'params'       => [
 						'menu_show' => 0,

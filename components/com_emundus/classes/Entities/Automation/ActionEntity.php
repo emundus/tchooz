@@ -2,7 +2,6 @@
 
 namespace Tchooz\Entities\Automation;
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Fields\ChoiceField;
@@ -12,6 +11,7 @@ use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\ActionMessageTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\Task\TaskPriorityEnum;
+use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Traits\TraitAutomatedTask;
 
 abstract class ActionEntity
@@ -223,7 +223,7 @@ abstract class ActionEntity
 				// resolve the value for the current language, with a fallback on the first entry.
 				if ($parameter->isTranslatable() && is_array($value))
 				{
-					$currentLanguage = substr(Factory::getApplication()->getLanguage()->getTag(), 0, 2);
+					$currentLanguage = LanguageFactory::getCurrentShortLang();
 					$resolved        = $value[$currentLanguage] ?? reset($value);
 					$value           = ($resolved === false) ? '' : $resolved;
 				}

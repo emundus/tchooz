@@ -81,7 +81,8 @@ class YousignSynchronizer extends Api
 		{
 			Log::add('Error on Yousign api init request : ' . $e->getMessage(), Log::ERROR, 'com_emundus.yousign');
 
-			return [];
+			// Return the failed response so the caller can report why Yousign refused the request
+			return $response ?? ['status' => $e->getCode(), 'message' => $e->getMessage(), 'data' => '', 'error' => ''];
 		}
 	}
 
@@ -233,13 +234,13 @@ class YousignSynchronizer extends Api
 		{
 			Log::add('Error on Yousign api add document : file is not a pdf', Log::ERROR, 'com_emundus.yousign');
 
-			return [];
+			return ['status' => 422, 'message' => 'File is not a pdf', 'data' => '', 'error' => ''];
 		}
 		if (!file_exists($file_path))
 		{
 			Log::add('Error on Yousign api add document : file not found', Log::ERROR, 'com_emundus.yousign');
 
-			return [];
+			return ['status' => 422, 'message' => 'File not found', 'data' => '', 'error' => ''];
 		}
 
 		$payload = [
@@ -276,7 +277,8 @@ class YousignSynchronizer extends Api
 		{
 			Log::add('Error on Yousign api add document : ' . $e->getMessage(), Log::ERROR, 'com_emundus.yousign');
 
-			return [];
+			// Return the failed response so the caller can report why Yousign refused the document
+			return $response ?? ['status' => $e->getCode(), 'message' => $e->getMessage(), 'data' => '', 'error' => ''];
 		}
 	}
 
@@ -387,6 +389,11 @@ class YousignSynchronizer extends Api
 
 	public function addSigner(string $procedure_id, \stdClass $signer, string $document_id, object|string|null $signature_position = '', string $signature_level = 'electronic_signature', string $signature_authentication_mode = 'otp_email', string $signature_display_mode = 'minimal'): array
 	{
+		if (!$this->validateSigner($signer))
+		{
+			throw new \Exception('Invalid signer data', 400);
+		}
+
 		switch ($signature_level)
 		{
 			case 'advanced_electronic_signature':
@@ -400,15 +407,15 @@ class YousignSynchronizer extends Api
 		$payload = [
 			'info'                          => [
 				'email'      => trim($signer->email),
-				'first_name' => trim($signer->firstname),
-				'last_name'  => trim($signer->lastname),
+				'first_name' => $this->sanitizeName($signer->firstname),
+				'last_name'  => $this->sanitizeName($signer->lastname),
 				'locale'     => 'fr',
 			],
 			'signature_level'               => $signature_level,
 			'signature_authentication_mode' => $signature_authentication_mode
 		];
 		
-		if($signature_authentication_mode == 'otp_sms')
+		if ($signature_authentication_mode == 'otp_sms')
 		{
 			$phoneUtil = PhoneNumberUtil::getInstance();
 
@@ -479,8 +486,64 @@ class YousignSynchronizer extends Api
 		{
 			Log::add('Error on Yousign api add signer : ' . $e->getMessage(), Log::ERROR, 'com_emundus.yousign');
 
-			return [];
+			// Return the failed response so the caller can report which param Yousign rejected
+			return $response ?? ['status' => $e->getCode(), 'message' => $e->getMessage(), 'data' => '', 'error' => ''];
 		}
+	}
+
+	private function validateSigner(\stdClass $signer): bool
+	{
+		$missing_fields = [];
+		$invalid_fields = [];
+
+		if (empty($signer->email))
+		{
+			$missing_fields[] = 'email';
+		}
+
+		foreach (['firstname', 'lastname'] as $field)
+		{
+			$name = $this->sanitizeName($signer->{$field} ?? '');
+
+			if (empty($name))
+			{
+				$missing_fields[] = $field;
+				continue;
+			}
+
+			// Without a single letter the signer cannot be identified, and Yousign refuses the name anyway
+			if (!preg_match('/\p{L}/u', $name))
+			{
+				$invalid_fields[] = $field . ' (only special characters)';
+			}
+			// An email address instead of a name means the contact has been filled wrong
+			elseif (str_contains($name, '@'))
+			{
+				$invalid_fields[] = $field . ' (email address)';
+			}
+		}
+
+		if (!empty($missing_fields))
+		{
+			Log::add('Error on Yousign api add signer : empty required fields ' . implode(', ', $missing_fields), Log::ERROR, 'com_emundus.yousign');
+		}
+		if (!empty($invalid_fields))
+		{
+			Log::add('Error on Yousign api add signer : invalid fields ' . implode(', ', $invalid_fields), Log::ERROR, 'com_emundus.yousign');
+		}
+
+		return empty($missing_fields) && empty($invalid_fields);
+	}
+
+	/**
+	 * Yousign rejects the typographic apostrophe of "O’Connor", it is replaced by the ASCII one rather than
+	 * blocking the whole request.
+	 */
+	private function sanitizeName(?string $name): string
+	{
+		$name = str_replace('’', '\'', (string) $name);
+
+		return trim(preg_replace('/\s+/u', ' ', (string) $name));
 	}
 
 	public function sendReminder(string $procedure_id, string $signer_id): array

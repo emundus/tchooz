@@ -131,7 +131,7 @@ class Release2_12_0Installer extends ReleaseInstaller
 					'alias'        => 'my-exports',
 					'link'         => 'index.php?option=com_emundus&view=export_select_columns&layout=exports',
 					'type'         => 'component',
-					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id' => $this->emundusComponentId,
 					'params'       => [
 						'menu_image_css' => 'archive',
 						'menu_show'      => 0

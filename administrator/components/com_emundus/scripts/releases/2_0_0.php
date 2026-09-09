@@ -1117,7 +1117,7 @@ if(value == 1) {
 			}
 			//
 
-			$emConfig = ComponentHelper::getComponent('com_emundus')->getParams();
+			$emConfig = ComponentHelper::getParams('com_emundus');
 
 			if (empty($emConfig->get('default_email_smtphost', '')))
 			{
@@ -1365,7 +1365,7 @@ if(value == 1) {
 				'alias'        => 'export-tags',
 				'link'         => 'index.php?option=com_emundus&view=export_select_columns&layout=allprograms',
 				'type'         => 'component',
-				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id' => $this->emundusComponentId,
 				'params'       => [
 					'menu_show' => 0
 				]
@@ -1583,7 +1583,7 @@ if(value == 1) {
 				'alias'        => 'error',
 				'link'         => 'index.php?option=com_emundus&view=error',
 				'type'         => 'component',
-				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id' => $this->emundusComponentId,
 				'params'       => [
 					'menu_show'     => 0,
 					'pageclass_sfx' => 'error-page'
@@ -1667,7 +1667,7 @@ if(value == 1) {
 				'alias'        => 'finalisation-creation-compte',
 				'link'         => 'index.php?option=com_users&view=reset',
 				'type'         => 'component',
-				'component_id' => ComponentHelper::getComponent('com_users')->id,
+				'component_id' => $this->extensionService::getExtensionId('com_users'),
 				'params'       => [
 					'menu_show' => 0
 				]
@@ -1969,7 +1969,7 @@ if(value == 1) {
 				'alias'        => 'preview',
 				'link'         => 'index.php?option=com_fabrik&view=form',
 				'type'         => 'component',
-				'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
+				'component_id' => $this->extensionService::getExtensionId('com_fabrik'),
 				'params'       => ['menu_show' => 0]
 			];
 			$preview_menu = EmundusHelperUpdate::addJoomlaMenu($datas, $forms_menu);

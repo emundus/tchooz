@@ -39,7 +39,7 @@ class onAfterApplicationChoiceUpdateDefinition extends EventDefinition
 			[
 				new BooleanField(self::IS_NEW_PARAMETER, 'COM_EMUNDUS_AUTOMATION_EVENT_FIELD_CHOICE_IS_NEW', true),
 				new NumericField(self::ORDER_PARAMETER, 'COM_EMUNDUS_AUTOMATION_EVENT_FIELD_CHOICE_ORDER', true),
-				new ChoiceField(self::STATE_PARAMETER, 'COM_EMUNDUS_AUTOMATION_EVENT_FIELD_CHOICE_STATE', ChoiceFieldFactory::makeOptionsFromEnum(ChoicesStateEnum::cases()), false, true),
+				new ChoiceField(self::STATE_PARAMETER, 'COM_EMUNDUS_AUTOMATION_EVENT_FIELD_CHOICE_STATE', ChoiceFieldFactory::makeOptionsFromEnum(ChoicesStateEnum::getAvailableStates()), false, true),
 				(new ChoiceField(self::CAMPAIGN_PARAMETER, 'COM_EMUNDUS_AUTOMATION_EVENT_FIELD_CHOICE_CAMPAIGN', $campaignOptions, false, true))
 			],
 			EventCategoryEnum::CHOICES

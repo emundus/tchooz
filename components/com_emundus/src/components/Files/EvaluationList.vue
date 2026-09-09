@@ -8,7 +8,7 @@
 			></Tabs>
 
 			<iframe
-				:src="'/' + currentLang + selectedEvaluation.url"
+				:src="urlPrefix + selectedEvaluation.url"
 				:key="selectedEvaluation.id"
 				@load="iframeLoaded($event)"
 				class="iframe-selected-evaluation tw-w-full tw-rounded-coordinator-cards tw-shadow-card"
@@ -46,7 +46,7 @@ export default {
 		return {
 			selectedEvaluation: 0,
 
-			currentLang: useGlobalStore().getShortLang,
+			urlPrefix: (Joomla.getOptions('system.paths', {}).root || '') + useGlobalStore().getLanguageUrlPrefix,
 		};
 	},
 	created() {

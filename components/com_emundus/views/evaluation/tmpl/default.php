@@ -18,6 +18,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Tchooz\Entities\Fields\ChoiceField;
+use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Services\Field\FieldResearch;
 
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
@@ -206,6 +207,8 @@ $datas = [
 				'type'      => 'evaluation',
 				'base'      => Uri::base(),
                 'shortLang' => substr(Factory::getLanguage()->getTag(), 0, 2),
+                'currentLang' => Factory::getLanguage()->getTag(),
+                'defaultLang' => LanguageFactory::getDefaultLanguageCode(),
 			];
 			?>
             <div id="em-files"

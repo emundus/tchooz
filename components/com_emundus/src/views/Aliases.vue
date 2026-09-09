@@ -122,6 +122,10 @@ export default {
 											value: 'management',
 											label: 'COM_EMUNDUS_ONBOARD_TAGS_FILTER_FORM_TYPE_MANAGEMENT',
 										},
+										{
+											value: 'campaign',
+											label: 'COM_EMUNDUS_CAMPAIGN_MORE',
+										},
 									],
 								},
 								{

@@ -9,10 +9,12 @@
 
 namespace Tchooz\Factories\Language;
 
+use Joomla\CMS\Application\WebApplication;
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Language;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
@@ -26,6 +28,11 @@ use Tchooz\Services\Language\ObjectsRegistry;
 
 class LanguageFactory implements DBFactory
 {
+	private static ?string $pinnedLanguageCode = null;
+
+	/** @var array<string, Language> */
+	private static array $languages = [];
+
 	public function fromDbObject(object|array $dbObject, bool|array $withRelations = true, array $exceptRelations = [], ?DatabaseDriver $db = null): LanguageEntity
 	{
 		if (is_array($dbObject))
@@ -218,6 +225,101 @@ class LanguageFactory implements DBFactory
 	public static function getDefaultLanguageCode(): string
 	{
 		return ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+	}
+
+	/**
+	 * Language tag to use when resolving multilingual content ({shortlang} placeholders, translated columns...).
+	 * An execution context, an automated action for instance, can pin it through runWithLanguage().
+	 * Otherwise the language of the application is used, except in CLI where the application is built with the
+	 * locale stored in configuration.php: that one is the installation language and not necessarily the language
+	 * of the site, so the site default language is used instead.
+	 */
+	public static function getCurrentLanguageCode(): string
+	{
+		if (!empty(self::$pinnedLanguageCode))
+		{
+			return self::$pinnedLanguageCode;
+		}
+
+		$app = Factory::getApplication();
+
+		if ($app->isClient('cli'))
+		{
+			return self::getDefaultLanguageCode();
+		}
+
+		return $app->getLanguage()->getTag();
+	}
+
+	public static function getCurrentShortLang(): string
+	{
+		return substr(self::getCurrentLanguageCode(), 0, 2);
+	}
+
+	/**
+	 * Execute a callback with $langCode as the language of the platform: Joomla translations (Text::_),
+	 * language overrides and every multilingual content resolved through getCurrentLanguageCode().
+	 * The previous language is always restored afterwards.
+	 */
+	public static function runWithLanguage(string $langCode, callable $callback): mixed
+	{
+		$previousLanguageCode = self::$pinnedLanguageCode;
+		$previousAppLanguage  = Factory::getApplication()->getLanguage();
+		$previousTextLanguage = Factory::$language;
+
+		self::$pinnedLanguageCode = $langCode;
+		self::applyLanguage(self::createLanguage($langCode));
+
+		try
+		{
+			return $callback();
+		}
+		finally
+		{
+			self::$pinnedLanguageCode = $previousLanguageCode;
+			self::applyLanguage($previousAppLanguage);
+			// The application and Text::_ languages can differ (CLI), restore the exact previous state.
+			Factory::$language = $previousTextLanguage;
+		}
+	}
+
+	private static function applyLanguage(?Language $language): void
+	{
+		if ($language === null)
+		{
+			return;
+		}
+
+		$app = Factory::getApplication();
+
+		if ($app instanceof WebApplication)
+		{
+			$app->loadLanguage($language);
+		}
+
+		// Text::_ only reads the language through the deprecated Factory::getLanguage(), and the console
+		// application has no way to swap its own language: setting the global is the only option left.
+		// Keep it here, nowhere else, so that it is the single spot to revisit when Joomla drops it.
+		Factory::$language = $language;
+	}
+
+	private static function createLanguage(string $langCode): Language
+	{
+		// A task run can generate a lot of documents in a row, keep the loaded languages around.
+		if (isset(self::$languages[$langCode]))
+		{
+			return self::$languages[$langCode];
+		}
+
+		$container = Factory::getContainer();
+
+		$languageFactory = $container->has(DbLanguageFactory::class) ? $container->get(DbLanguageFactory::class) : new DbLanguageFactory();
+		$language        = $languageFactory->createLanguage($langCode, false);
+		$language->load('com_emundus', JPATH_SITE, $langCode, true);
+
+		self::$languages[$langCode] = $language;
+
+		return $language;
 	}
 
 	public static function cleanTag($tag): string

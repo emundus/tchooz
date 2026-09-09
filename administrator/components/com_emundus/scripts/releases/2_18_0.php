@@ -68,7 +68,7 @@ class Release2_18_0Installer extends ReleaseInstaller
 					'path'              => 'update-owner',
 					'link'              => 'index.php?option=com_emundus&view=files&layout=updateowner&format=raw',
 					'type'              => 'component',
-					'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id'      => $this->emundusComponentId,
 					'template_style_id' => 0,
 					'params'            => [],
 					'note'              => 'update_owner|c|1',

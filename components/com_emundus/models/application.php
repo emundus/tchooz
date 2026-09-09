@@ -36,6 +36,7 @@ use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
@@ -102,10 +103,9 @@ class EmundusModelApplication extends ListModel
 		$this->h_cache        = new EmundusHelperCache();
 
 		$session  = $this->_mainframe->getSession();
-		$language = $this->_mainframe->getLanguage();
 
 		$this->_user   = $session->get('emundusUser');
-		$this->locales = substr($language->getTag(), 0, 2);
+		$this->locales = LanguageFactory::getCurrentShortLang();
 
 		if (!class_exists('HtmlSanitizerSingleton')) {
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/html.php');
@@ -2290,12 +2290,14 @@ class EmundusModelApplication extends ListModel
 							continue;
 						}
 
+						$excludedElements = ['id', 'parent_id'];
 						$query = $this->_db->getQuery(true);
 						$query->select('fe.id,fe.name,fe.label,fe.plugin,fe.params,fe.default,fe.eval,fe.hidden')
 							->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
 							->where($this->_db->quoteName('fe.published') . ' = 1')
 							->where($this->_db->quoteName('fe.hidden') . ' IN (' . implode(',', $this->_db->quote($hidden)) . ')')
 							->where($this->_db->quoteName('fe.group_id') . ' = ' . $this->_db->quote($itemg->group_id))
+							->where($this->_db->quoteName('fe.name') . ' NOT IN (' . implode(',', $this->_db->quote($excludedElements)) . ')')
 							->order($this->_db->quoteName('fe.ordering'));
 
 						try {

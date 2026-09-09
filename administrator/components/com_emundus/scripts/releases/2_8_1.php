@@ -181,7 +181,7 @@ class Release2_8_1Installer extends ReleaseInstaller
 			$query->clear()
 				->update('#__menu')
 				->set('link = ' . $this->db->quote('index.php?option=com_emundus&view=accessibility'))
-				->set('component_id = ' . ComponentHelper::getComponent('com_emundus')->id)
+				->set('component_id = ' . $this->emundusComponentId)
 				->where('alias = ' . $this->db->quote('accessibilite'));
 			$this->db->setQuery($query);
 			$tasks[] = $this->db->execute();
