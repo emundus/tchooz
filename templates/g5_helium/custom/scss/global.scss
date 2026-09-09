@@ -3902,7 +3902,9 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
-/* Remove table lines on emails templates */
+/* Remove table lines on emails templates
+TODO: limit to [role="presentation"]
+*/
 .email-container table > tbody > tr > td {
   border: none;
   background: var(--neutral-0);

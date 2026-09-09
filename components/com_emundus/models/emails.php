@@ -1104,6 +1104,19 @@ class EmundusModelEmails extends JModelList
 		return array('patterns' => $patterns, 'replacements' => $replacements);
 	}
 
+	/**
+	 * Values are injected with preg_replace: a $ or a \ they hold would be read as a backreference
+	 * and silently mangle the result. HTML values, a wysiwyg textarea for instance, make it likely.
+	 *
+	 * @param   string|null  $value
+	 *
+	 * @return  string
+	 */
+	private function escapeReplacementValue(?string $value): string
+	{
+		return str_replace(['\\', '$'], ['\\\\', '\\$'], (string) $value);
+	}
+
 	public function setTagsFabrik(string $str, array $fnums = array(), bool $raw = false)
 	{
 		require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
@@ -1274,8 +1287,12 @@ class EmundusModelEmails extends JModelList
 					}
 				}
 				if ($elt['plugin'] == 'textarea') {
+					// A wysiwyg textarea stores markup meant to be rendered by the email or the
+					// generated letter: escaping it would print the tags instead of applying them.
+					$escape_textarea = empty($params->use_wysiwyg);
+
 					foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-						$fabrikValues[$elt['id']][$fnum]['val'] = htmlentities($val['val'], ENT_QUOTES);
+						$fabrikValues[$elt['id']][$fnum]['val'] = $escape_textarea ? htmlentities($val['val'], ENT_QUOTES) : $val['val'];
 					}
 				}
 				if ($elt['plugin'] == 'emundus_phonenumber') {
@@ -1315,7 +1332,7 @@ class EmundusModelEmails extends JModelList
 				foreach ($idFabrik as $id) {
 					$preg['patterns'][] = '/\$\{' . $id . '\}/';
 					if (isset($fabrikValues[$id][$fnum])) {
-						$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
+						$preg['replacements'][] = $this->escapeReplacementValue(Text::_($fabrikValues[$id][$fnum]['val']));
 					}
 					else {
 						$preg['replacements'][] = '';
@@ -1334,7 +1351,7 @@ class EmundusModelEmails extends JModelList
 
 					foreach($sortedIds as $id) {
 						if (!empty($fabrikValues[$id][$fnum]) && !empty($fabrikValues[$id][$fnum]['val'])) {
-							$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
+							$preg['replacements'][] = $this->escapeReplacementValue(Text::_($fabrikValues[$id][$fnum]['val']));
 							$value_found = true;
 							break;
 						}
@@ -1355,7 +1372,7 @@ class EmundusModelEmails extends JModelList
 							$fabrikTag->setValue($preg['replacements'][$patternKey]);
 
 							$preg['patterns'][] = $fabrikTag->getFullPatternName();
-							$preg['replacements'][] = $fabrikTag->getValueModified();
+							$preg['replacements'][] = $this->escapeReplacementValue($fabrikTag->getValueModified());
 						}
 					}
 				}
