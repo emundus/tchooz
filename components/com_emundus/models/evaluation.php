@@ -29,6 +29,8 @@ use Tchooz\Entities\Emails\TagEntity;
 use Tchooz\Enums\Emails\TagTypeEnum;
 use Tchooz\Traits\TraitDispatcher;
 use Tchooz\Transformers\PHPWord\HtmlListTransformer;
+use Tchooz\Transformers\PHPWord\HtmlStyleTransformer;
+use Tchooz\Transformers\PHPWord\HtmlXmlTransformer;
 
 defined('_JEXEC') or die('Restricted access');
 define('R_MD5_MATCH', '/^[a-f0-9]{32}$/i');
@@ -3981,7 +3983,7 @@ class EmundusModelEvaluation extends JModelList
 									}
 									elseif ($elt['plugin'] == 'yesno')
 									{
-										$fabrikValues[$elt['id']][$fnum]['val'] = $fabrikValues[$elt['id']][$fnum]['val'] == '1' ? JText::_('JYES') : JText::_('JNO');
+										$fabrikValues[$elt['id']][$fnum]['val'] = $fabrikValues[$elt['id']][$fnum]['val'] == '1' ? Text::_('JYES') : Text::_('JNO');
 									}
 									elseif ($elt['plugin'] == 'cascadingdropdown')
 									{
@@ -4059,6 +4061,9 @@ class EmundusModelEvaluation extends JModelList
 									foreach($aliasFabrik[$alias] as $id) {
 										if (!empty($fabrikValues[$id][$fnum]) && !empty($fabrikValues[$id][$fnum]['val'])) {
 											$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
+											// The tag is written with the alias, so the replacement below looks the
+											// value up under that name and not under the id it was resolved from.
+											$fabrikValues[$alias][$fnum] = $fabrikValues[$id][$fnum];
 											$value_found = true;
 											break;
 										}
@@ -4099,6 +4104,10 @@ class EmundusModelEvaluation extends JModelList
 										// Render list bullets/numbers as text: addHtml's numbering definitions are never merged
 										// into the template's numbering.xml by setComplexBlock(), so real <ul>/<ol> lose their markers.
 										$html = HtmlListTransformer::transform($fabrikValues[$fabrikTagFullName][$fnum]['val']);
+										// Editor measurements reach Word as invalid values, and addHtml reads xml
+										// and not html: without these the block comes out broken or empty.
+										$html = HtmlStyleTransformer::transform($html);
+										$html = HtmlXmlTransformer::transform($html);
 										$section = $phpWord->addSection();
 										\PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
 										$containers = $section->getElements();
@@ -4195,6 +4204,8 @@ class EmundusModelEvaluation extends JModelList
 										{
 											// Same numbering.xml limitation as the textarea block above: render list markers as text.
 											$html    = HtmlListTransformer::transform($tag->getValue());
+											$html    = HtmlStyleTransformer::transform($html);
+											$html    = HtmlXmlTransformer::transform($html);
 											$section = $phpWord->addSection();
 
 											// TODO: Parse html with DOMDocument and build table with phpWord to avoid issues with complex tables

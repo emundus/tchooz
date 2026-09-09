@@ -267,12 +267,18 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		$query = $this->buildQuery('', $user_programs, $state, $campaigns, $search, $orderings, $fileStatuses, $ids, $order_by, $sort);
 
 		$application_choices_count = 0;
-		$this->db->setQuery($query);
 		if (empty($moreFilters))
 		{
-			$application_choices_count = sizeof($this->db->loadObjectList());
+			// Count without materialising the whole result set: wrap the query so the DB returns only the total
+			$countQuery = 'SELECT COUNT(*) FROM (' . (string) $query . ') AS count_table';
+			$this->db->setQuery($countQuery);
+			$application_choices_count = (int) $this->db->loadResult();
 
 			$this->db->setQuery($query, $offset, $limit);
+		}
+		else
+		{
+			$this->db->setQuery($query);
 		}
 		$application_choices = $this->db->loadObjectList();
 

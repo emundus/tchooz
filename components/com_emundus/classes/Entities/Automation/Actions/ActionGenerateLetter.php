@@ -14,10 +14,14 @@ use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Factories\Field\ChoiceFieldFactory;
+use Tchooz\Factories\Language\LanguageFactory;
 
 class ActionGenerateLetter extends ActionEntity
 {
 	public CONST LETTER_PARAMETER = 'letter';
+
+	public CONST LANGUAGE_PARAMETER = 'language';
 
 	private array $letterChoices = [];
 
@@ -79,6 +83,7 @@ class ActionGenerateLetter extends ActionEntity
 
 			$canBeView = $this->getParameterValue('can_be_view') ?? 0;
 			$overwrite = (bool)$this->getParameterValue('overwrite') ?? false;
+			$languageCode = $this->getParameterValue(self::LANGUAGE_PARAMETER) ?: LanguageFactory::getDefaultLanguageCode();
 
 			try {
 				$db = Factory::getContainer()->get('DatabaseDriver');
@@ -106,7 +111,12 @@ class ActionGenerateLetter extends ActionEntity
 						require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
 					}
 					$evaluationModel = new \EmundusModelEvaluation();
-					$generatedLetters = $evaluationModel->generateFileLetters($context->getFile(), $letters, $context->getTriggeredBy(), $overwrite, $canBeView);
+
+					// todo: the best thing would have been to have translated letters in the database, but it's not the case yet.
+					$generatedLetters = LanguageFactory::runWithLanguage(
+						$languageCode,
+						fn() => $evaluationModel->generateFileLetters($context->getFile(), $letters, $context->getTriggeredBy(), $overwrite, $canBeView)
+					);
 
 					if (!empty($generatedLetters))
 					{
@@ -131,6 +141,12 @@ class ActionGenerateLetter extends ActionEntity
 		{
 			$this->parameters = [
 				new ChoiceField(self::LETTER_PARAMETER, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_GENERATE_LETTER_PARAMETER_LETTER_LABEL'), $this->getLetterChoices(), true, true),
+				(new ChoiceField(
+					name: self::LANGUAGE_PARAMETER,
+					label: Text::_('COM_EMUNDUS_AUTOMATION_ACTION_GENERATE_LETTER_PARAMETER_LANGUAGE_LABEL'),
+					choices: ChoiceFieldFactory::makeLanguageOptions(),
+					selectOptionLabel: 'COM_EMUNDUS_AUTOMATION_ACTION_GENERATE_LETTER_PARAMETER_LANGUAGE_DEFAULT_OPTION'
+				))->setHelpText(Text::_('COM_EMUNDUS_AUTOMATION_ACTION_GENERATE_LETTER_PARAMETER_LANGUAGE_HELP_TEXT')),
 				new BooleanField('can_be_view', Text::_('COM_EMUNDUS_AUTOMATION_ACTION_GENERATE_LETTER_PARAMETER_CAN_BE_VIEW_LABEL')),
 				new BooleanField('overwrite', Text::_('COM_EMUNDUS_AUTOMATION_ACTION_GENERATE_LETTER_PARAMETER_OVERWRITE_OLD_LABEL'))
 			];

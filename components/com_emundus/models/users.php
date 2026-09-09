@@ -2108,31 +2108,37 @@ class EmundusModelUsers extends ListModel
 	{
 		$affected = false;
 
+		// Cast all ids to int: user_id / group_id are integer columns, this neutralises any SQL injection.
+		$users  = array_filter(ArrayHelper::toInteger((array) $users));
+		$groups = array_filter(ArrayHelper::toInteger((array) $groups));
+
 		try {
-			if (!empty($users)) {
-				$query = $this->db->getQuery(true);
-				$str = "";
+			if (!empty($users) && !empty($groups)) {
+				$values = [];
 				foreach ($users as $user) {
-					$query->clear()
-						->select('group_id')
+					$query = $this->db->getQuery(true);
+					$query->select('group_id')
 						->from($this->db->quoteName('#__user_usergroup_map'))
-						->where($this->db->quoteName('user_id') . ' = ' . $user);
+						->where($this->db->quoteName('user_id') . ' = ' . (int) $user);
 					$this->db->setQuery($query);
 					$usergroups = $this->db->loadColumn();
 
 					foreach ($groups as $gid) {
 						if (!in_array($gid, $usergroups))
 						{
-							$str .= "($user, $gid),";
+							$values[] = '(' . (int) $user . ', ' . (int) $gid . ')';
 						}
 					}
 				}
-				$str = rtrim($str, ",");
 
-				$query = "INSERT INTO #__user_usergroup_map(`user_id`, `group_id`) values $str";
-				$this->db->setQuery($query);
-				$affected = $this->db->query();
-
+				if (!empty($values)) {
+					$query = $this->db->getQuery(true);
+					$query->insert($this->db->quoteName('#__user_usergroup_map'))
+						->columns($this->db->quoteName(['user_id', 'group_id']))
+						->values($values);
+					$this->db->setQuery($query);
+					$affected = $this->db->execute();
+				}
 			}
 		}
 		catch (Exception $e) {

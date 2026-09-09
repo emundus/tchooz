@@ -9,12 +9,12 @@
 namespace Tchooz\Services\Export\OptionsSchema;
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Fields\Field;
 use Tchooz\Enums\Export\ExportTabEnum;
+use Tchooz\Factories\Field\ChoiceFieldFactory;
 
 /**
  * Declarative schema of the runtime "Options" toggles shown to the user just
@@ -104,17 +104,11 @@ abstract class AbstractOptionsSchema
 	 */
 	private function buildLanguageChoices(): array
 	{
-		$languages = LanguageHelper::getLanguages();
-		$choices   = [];
+		$choices = ChoiceFieldFactory::makeLanguageOptions();
 
-		if (count($languages) > 1)
+		if (count($choices) > 1)
 		{
-			$choices[] = new ChoiceFieldValue(null, Text::_('PLEASE_SELECT'));
-		}
-
-		foreach ($languages as $language)
-		{
-			$choices[] = new ChoiceFieldValue($language->lang_code, $language->title_native);
+			array_unshift($choices, new ChoiceFieldValue(null, Text::_('PLEASE_SELECT')));
 		}
 
 		return $choices;

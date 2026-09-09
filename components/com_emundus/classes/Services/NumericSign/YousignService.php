@@ -132,7 +132,13 @@ class YousignService
 
 						if (empty($api_request))
 						{
-							$this->yousign_synchronizer->getRequest($yousign_request->getProcedureId());
+							$api_response = $this->yousign_synchronizer->getRequest($yousign_request->getProcedureId());
+							if (($api_response['status'] ?? 0) !== 200 || empty($api_response['data']))
+							{
+								throw new \Exception('Failed to get yousign request ' . $yousign_request->getProcedureId() . ' : ' . $this->formatApiError($api_response), $api_response['status'] ?? 500);
+							}
+
+							$api_request = $api_response['data'];
 						}
 					}
 
@@ -314,18 +320,21 @@ class YousignService
 		try
 		{
 			$api_request = $this->yousign_synchronizer->initRequest($yousign_request->getName(), 'email', $yousign_request->getExpirationDate(), $is_ordered);
-			if ($api_request['status'] === 201)
+			if (($api_request['status'] ?? 0) !== 201)
 			{
-				$yousign_request->setProcedureId($api_request['data']->id);
-				$yousign_request->setExpirationDate($api_request['data']->expiration_date);
-				$yousign_request->setResponsePayload(json_encode($api_request['data']));
-
-				$this->yousign_repository->flush($yousign_request);
+				throw new \Exception('Failed to initiate yousign request ' . $yousign_request->getName() . ' : ' . $this->formatApiError($api_request), $api_request['status'] ?? 500);
 			}
+
+			$yousign_request->setProcedureId($api_request['data']->id);
+			$yousign_request->setExpirationDate($api_request['data']->expiration_date);
+			$yousign_request->setResponsePayload(json_encode($api_request['data']));
+
+			$this->yousign_repository->flush($yousign_request);
 		}
 		catch (\Exception $e)
 		{
 			Log::add('Failed to initiate yousign request: ' . $e->getMessage(), Log::ERROR, 'com_emundus.yousign');
+			throw $e;
 		}
 
 		return $yousign_request;
@@ -346,45 +355,45 @@ class YousignService
 				}
 			}
 
-			if (!empty($file_to_sign) && file_exists($file_to_sign))
+			if (empty($file_to_sign) || !file_exists($file_to_sign))
 			{
-				$api_document = $this->yousign_synchronizer->addDocument($yousign_request->getProcedureId(), $file_to_sign);
-				if ($api_document['status'] == 201)
-				{
-					// Calculate payload of signature position
-					$parser    = new Parser();
-					$pdf       = $parser->parseFile($file_to_sign);
-					$last_page = count($pdf->getPages());
-					$text      = $pdf->getText();
-
-					// If we found following pattern : "{{s*|signature**}}" don't need to add signature field
-					preg_match_all('/\{\{s\d+\|signature(?:\|[^}|]+)*\}\}/', $text, $matches);
-					if (!empty($matches[0]))
-					{
-						$signature_field = null;
-					}
-					else
-					{
-						$signature_field = [
-							'page'   => $last_page,
-							'width'  => 150,
-							'height' => 42,
-							'x'      => 20,
-							'y'      => 750
-						];
-						$signature_field = json_encode($signature_field);
-					}
-
-					$yousign_request->setSignatureField($signature_field);
-					$yousign_request->setDocumentId($api_document['data']->id);
-					$yousign_request->setResponsePayload(json_encode($api_document));
-					$this->yousign_repository->flush($yousign_request);
-				}
-				else
-				{
-					Log::add('Failed to add document to yousign request: ' . $api_document['message'], Log::ERROR, 'com_emundus.yousign');
-				}
+				throw new \Exception('File to sign not found for yousign request ' . $yousign_request->getProcedureId() . ' : ' . $file_to_sign, 404);
 			}
+
+			$api_document = $this->yousign_synchronizer->addDocument($yousign_request->getProcedureId(), $file_to_sign);
+			if (($api_document['status'] ?? 0) != 201)
+			{
+				throw new \Exception('Failed to add document to yousign request ' . $yousign_request->getProcedureId() . ' : ' . $this->formatApiError($api_document), $api_document['status'] ?? 500);
+			}
+
+			// Calculate payload of signature position
+			$parser    = new Parser();
+			$pdf       = $parser->parseFile($file_to_sign);
+			$last_page = count($pdf->getPages());
+			$text      = $pdf->getText();
+
+			// If we found following pattern : "{{s*|signature**}}" don't need to add signature field
+			preg_match_all('/\{\{s\d+\|signature(?:\|[^}|]+)*\}\}/', $text, $matches);
+			if (!empty($matches[0]))
+			{
+				$signature_field = null;
+			}
+			else
+			{
+				$signature_field = [
+					'page'   => $last_page,
+					'width'  => 150,
+					'height' => 42,
+					'x'      => 20,
+					'y'      => 750
+				];
+				$signature_field = json_encode($signature_field);
+			}
+
+			$yousign_request->setSignatureField($signature_field);
+			$yousign_request->setDocumentId($api_document['data']->id);
+			$yousign_request->setResponsePayload(json_encode($api_document));
+			$this->yousign_repository->flush($yousign_request);
 		}
 		catch (\Exception $e)
 		{
@@ -445,15 +454,44 @@ class YousignService
 				$signature_authentication_mode = !empty($signer->authentication_mode) ? $signer->authentication_mode : $this->global_signature_authentication_mode;
 
 				$api_signer = $this->yousign_synchronizer->addSigner($yousign_request->getProcedureId(), $signer, $yousign_request->getDocumentId(), $signature_position, $signature_level, $signature_authentication_mode, $this->signature_display_mode);
-				if ($api_signer['status'] == 201)
+				if (($api_signer['status'] ?? 0) != 201)
 				{
-					$yousign_request->addSigner($api_signer['data']->id, $signer->id, $api_signer['data']->signature_link, !empty($signature_position) ? json_encode($signature_position) : null);
-					$this->yousign_repository->addSigner($yousign_request->getId(), $api_signer['data']->id, $signer->id, $api_signer['data']->signature_link, !empty($signature_position) ? json_encode($signature_position) : null);
+					throw new \Exception('Failed to add signer ' . $signer->email . ' to yousign request ' . $yousign_request->getProcedureId() . ' : ' . $this->formatApiError($api_signer), $api_signer['status'] ?? 500);
 				}
+
+				$yousign_request->addSigner($api_signer['data']->id, $signer->id, $api_signer['data']->signature_link, !empty($signature_position) ? json_encode($signature_position) : null);
+				$this->yousign_repository->addSigner($yousign_request->getId(), $api_signer['data']->id, $signer->id, $api_signer['data']->signature_link, !empty($signature_position) ? json_encode($signature_position) : null);
 			}
 		}
 
 		return $yousign_request;
+	}
+
+	/**
+	 * Yousign returns its validation details in the error body, not in the reason phrase.
+	 */
+	private function formatApiError(array $api_response): string
+	{
+		$error = json_decode($api_response['error'] ?? '');
+
+		if (empty($error))
+		{
+			return $api_response['message'] ?? 'Unknown error';
+		}
+
+		$message = $error->detail ?? ($api_response['message'] ?? 'Unknown error');
+
+		if (!empty($error->invalid_params))
+		{
+			$params = [];
+			foreach ($error->invalid_params as $invalid_param)
+			{
+				$params[] = $invalid_param->name . ' (' . $invalid_param->reason . ')';
+			}
+			$message .= ' [' . implode(', ', $params) . ']';
+		}
+
+		return $message;
 	}
 
 	private function manageSigners(array $api_signers, YousignRequests $yousign_request, Request $request, array $application_file): YousignRequests

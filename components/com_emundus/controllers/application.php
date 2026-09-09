@@ -1787,7 +1787,7 @@ class EmundusControllerApplication extends EmundusController
 			return;
 		}
 
-		$choices_states = ChoicesStateEnum::cases();
+		$choices_states = ChoicesStateEnum::getAvailableStates();
 		$data           = [];
 		foreach ($choices_states as $state)
 		{
@@ -1814,7 +1814,7 @@ class EmundusControllerApplication extends EmundusController
 			return;
 		}
 
-		$choices_states = ChoicesStateEnum::cases();
+		$choices_states = ChoicesStateEnum::getAvailableStates();
 		$data           = [];
 		foreach ($choices_states as $state)
 		{

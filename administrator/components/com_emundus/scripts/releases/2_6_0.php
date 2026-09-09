@@ -476,7 +476,7 @@ class Release2_6_0Installer extends ReleaseInstaller
 					'path'              => 'signature',
 					'link'              => 'index.php?option=com_emundus&view=sign',
 					'type'              => 'component',
-					'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id'      => $this->emundusComponentId,
 					'template_style_id' => 0,
 					'params'            => [
 						'menu_image_css' => 'signature'
@@ -503,7 +503,7 @@ class Release2_6_0Installer extends ReleaseInstaller
 					'path'              => 'create-sign-request',
 					'link'              => 'index.php?option=com_emundus&view=sign&layout=add',
 					'type'              => 'component',
-					'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id'      => $this->emundusComponentId,
 					'template_style_id' => 0,
 					'params'            => [],
 				];
@@ -1725,7 +1725,7 @@ class Release2_6_0Installer extends ReleaseInstaller
 			}
 		}
 
-		$component_id = ComponentHelper::getComponent('com_emundus')->id;
+		$component_id = $this->emundusComponentId;
 		EmundusHelperUpdate::addJoomlaMenu([
 				'menutype' => 'onboardingmenu',
 				'title' => 'Produits',

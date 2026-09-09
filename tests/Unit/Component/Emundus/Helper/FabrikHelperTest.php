@@ -219,6 +219,50 @@ class FabrikHelperTest extends UnitTestCase
 		$this->assertEmpty($fabrik_aliases_grouped['datas'], 'There should be no aliases in the datas group when a non-existing alias is used as filter');
 	}
 
+	/**
+	 * @covers EmundusHelperFabrik::getFabrikValue
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testGetFabrikValueOnCampaignKeyedTable()
+	{
+		$table_name = 'jos_emundus_setup_campaigns_more';
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		// The additional informations of a campaign are stored once per campaign, so reuse the row
+		// when the dataset campaign already has one instead of adding a second one.
+		$query->select('date_time')
+			->from($db->quoteName($table_name))
+			->where($db->quoteName('campaign_id') . ' = ' . $db->quote($this->dataset['campaign']));
+		$db->setQuery($query);
+		$expected_value = $db->loadResult();
+
+		if (empty($expected_value)) {
+			$expected_value = '2026-01-15';
+
+			$query->clear()
+				->insert($db->quoteName($table_name))
+				->columns($db->quoteName('campaign_id') . ', ' . $db->quoteName('date_time'))
+				->values($db->quote($this->dataset['campaign']) . ', ' . $db->quote($expected_value));
+			$db->setQuery($query);
+			$inserted = $db->execute();
+			$this->assertTrue($inserted, 'The campaign additional informations should be inserted in the database');
+
+			// Track the row so tearDown can remove it and keep the test re-runnable.
+			$this->insertedDataRows[] = ['table' => $table_name, 'id' => (int) $db->insertid()];
+		}
+
+		$values = $this->helper->getFabrikValue([$this->dataset['fnum']], $table_name, 'date_time');
+
+		$this->assertArrayHasKey($this->dataset['fnum'], $values, 'A campaign keyed value should be returned indexed by the fnum of the files of the campaign');
+		$this->assertEquals($expected_value, $values[$this->dataset['fnum']]['val'], 'The value obtained should be the one stored for the campaign of the file');
+
+		$values = $this->helper->getFabrikValue(['fnum_that_does_not_exist'], $table_name, 'date_time');
+		$this->assertEmpty($values, 'No value should be returned for a file belonging to no campaign');
+	}
+
 	// -------------------------------------------------------------------------
 	// sortElementIdsByDataFreshness
 	// -------------------------------------------------------------------------

@@ -136,7 +136,10 @@ $accessibilityItem = $menu->getItems('link', 'index.php?option=com_emundus&view=
 
         fetch(window.location.origin + '/index.php?option=com_emundus&controller=users&task=updateprofilepicture', {
             body: formData,
-            method: 'post'
+            method: 'post',
+            headers: {
+                'X-CSRF-Token': '<?php echo $app->getSession()->getFormToken(); ?>'
+            }
         }).then((response) => {
             if (response.ok) {
                 return response.json();

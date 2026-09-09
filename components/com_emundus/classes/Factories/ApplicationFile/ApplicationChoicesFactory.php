@@ -164,11 +164,19 @@ class ApplicationChoicesFactory extends AbstractFactory
 			$cacheNs = self::RELATION_APPLICATION_FILE;
 			$repo    = $this->getApplicationFileRepository($config['withRelations'], $config['exceptRelations']);
 
-			foreach ($fnums as $fnum)
+			$fnumsToLoad = array_values(array_filter(
+				$fnums,
+				fn($fnum) => !RelationCache::has($cacheNs, $fnum . $subConfigKey)
+			));
+
+			if (!empty($fnumsToLoad))
 			{
-				if (!RelationCache::has($cacheNs, $fnum . $subConfigKey))
+				// One query for the whole page, with relations preloaded across the batch
+				$applicationFiles = $repo->getByFnums($fnumsToLoad);
+				foreach ($fnumsToLoad as $fnum)
 				{
-					RelationCache::set($cacheNs, $fnum . $subConfigKey, $repo->getByFnum($fnum));
+					// Cache null for orphan fnums too, so the miss is not retried per row
+					RelationCache::set($cacheNs, $fnum . $subConfigKey, $applicationFiles[$fnum] ?? null);
 				}
 			}
 		}

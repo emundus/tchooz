@@ -5,12 +5,29 @@
 var lastIndex = 0;
 var loading;
 
+function getEmundusCsrfHeaders() {
+	let headers = {};
+
+	if (typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
+		var csrf = Joomla.getOptions('csrf.token', '');
+		if (csrf) {
+			headers = {
+				'X-CSRF-Token': csrf,
+			};
+		}
+	}
+
+	return headers;
+}
+
 function reloadActions(view) {
 	let multi = document.querySelectorAll('.em-check:checked').length;
 	let root = Joomla.getOptions('system.paths', {}).root || '';
 	let url = root + '/index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=inline&multi=' + multi;
 
-	fetch(url)
+	fetch(url, {
+		headers: getEmundusCsrfHeaders(),
+	})
 		.then(response => response.text())
 		.then(data => {
 			let navbar = $('.navbar.navbar-inverse');
@@ -130,6 +147,7 @@ function reloadData(loader = true) {
 	let url = window.location.origin+'/index.php?option=com_emundus&view=users&format=raw&layout=user&Itemid=' + itemId;
 	fetch(url, {
 		method: 'GET',
+		headers: getEmundusCsrfHeaders(),
 	}).then((response) => {
 		loader ? removeLoader() : '';
 		if (response.ok) {
@@ -151,6 +169,7 @@ function refreshFilter() {
 
 	fetch(url, {
 		method: 'GET',
+		headers: getEmundusCsrfHeaders(),
 	}).then((response) => {
 		if (response.ok) {
 			return response.text();
@@ -173,6 +192,7 @@ function tableOrder(order) {
 	fetch(url, {
 		method: 'POST',
 		body: formData,
+		headers: getEmundusCsrfHeaders(),
 	}).then((response) => {
 		if (response.ok) {
 			return response.json();
@@ -234,6 +254,7 @@ function search() {
 	fetch(url, {
 		method: 'POST',
 		body: formData,
+		headers: getEmundusCsrfHeaders(),
 	}).then((response) => {
 		if (response.ok) {
 			return response.json();
@@ -277,6 +298,7 @@ $(document).ready(function () {
 				fetch(url, {
 					method: 'POST',
 					body: formData,
+					headers: getEmundusCsrfHeaders(),
 				}).then((response) => {
 					if (response.ok) {
 						return response.json();
@@ -303,6 +325,7 @@ $(document).ready(function () {
 			let url = window.location.origin+'/index.php?option=com_emundus&controller=files&task=getfnuminfos&fnum=' + fnum.fnum;
 			fetch(url, {
 				method: 'GET',
+				headers: getEmundusCsrfHeaders(),
 			}).then((response) => {
 				if (response.ok) {
 					return response.json();
@@ -336,6 +359,7 @@ $(document).ready(function () {
 						fetch(url, {
 							method: 'POST',
 							body: formData,
+							headers: getEmundusCsrfHeaders(),
 						}).then((response) => {
 							if (response.ok) {
 								return response.json();
@@ -372,6 +396,7 @@ $(document).ready(function () {
 						fetch(url, {
 							method: 'POST',
 							body: formData,
+							headers: getEmundusCsrfHeaders(),
 						}).then((response) => {
 							if (response.ok) {
 								return response.json();
@@ -420,6 +445,7 @@ $(document).ready(function () {
 					let url = window.location.origin+'/index.php?option=com_emundus&controller=files&task=getfnuminfos&fnum=' + fnum.fnum;
 					fetch(url, {
 						method: 'GET',
+						headers: getEmundusCsrfHeaders(),
 					}).then((response) => {
 						if (response.ok) {
 							return response.json();
@@ -449,6 +475,7 @@ $(document).ready(function () {
 						fetch(url, {
 							method: 'POST',
 							body: formData,
+							headers: getEmundusCsrfHeaders(),
 						}).then((response) => {
 							if (response.ok) {
 								return response.json();
@@ -491,6 +518,7 @@ $(document).ready(function () {
 			fetch(url, {
 				method: 'POST',
 				body: formData,
+				headers: getEmundusCsrfHeaders(),
 			}).then((response) => {
 				if (response.ok) {
 					return response.json();
@@ -517,6 +545,7 @@ $(document).ready(function () {
 		fetch(url, {
 			method: 'POST',
 			body: formData,
+			headers: getEmundusCsrfHeaders(),
 		}).then((response) => {
 			if (response.ok) {
 				return response.json();
@@ -532,6 +561,7 @@ $(document).ready(function () {
 				fetch(url, {
 					method: 'POST',
 					body: formData,
+					headers: getEmundusCsrfHeaders(),
 				}).then((response) => {
 					if (response.ok) {
 						return response.json();
@@ -562,6 +592,7 @@ $(document).ready(function () {
 		fetch(url, {
 			method: 'POST',
 			body: formData,
+			headers: getEmundusCsrfHeaders(),
 		}).then((response) => {
 			if (response.ok) {
 				return response.json();
@@ -712,15 +743,7 @@ $(document).ready(function () {
 				break;
 		}
 
-		let headers = {};
-		if (typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
-			var csrf = Joomla.getOptions('csrf.token', '');
-			if (csrf) {
-				headers = {
-					'X-CSRF-Token': csrf,
-				};
-			}
-		}
+		let headers = getEmundusCsrfHeaders();
 
 		switch (id) {
 
@@ -759,6 +782,7 @@ $(document).ready(function () {
 
 				fetch(url, {
 					method: 'GET',
+					headers: headers,
 				}).then((response) => {
 					if (response.ok) {
 						return response.text();
@@ -901,7 +925,8 @@ $(document).ready(function () {
 
 				await fetch(url, {
 					method: 'POST',
-					body: new URLSearchParams({})
+					body: new URLSearchParams({}),
+					headers: headers,
 				})
 					.then((response) => {
 						if (!response.ok) {
@@ -927,7 +952,8 @@ $(document).ready(function () {
 
 				await fetch(url, {
 					method: 'POST',
-					body: new URLSearchParams({})
+					body: new URLSearchParams({}),
+					headers: headers,
 				})
 					.then((response) => {
 						if (!response.ok) {
@@ -1038,7 +1064,8 @@ $(document).ready(function () {
 
 						fetch('/index.php?option=com_emundus&controller=users&task=passrequest&Itemid=' + itemId, {
 							method: 'POST',
-							body: formData
+							body: formData,
+							headers: headers,
 						}).then((response) => {
 							if (response.ok) {
 								return response.json();
@@ -1104,6 +1131,7 @@ $(document).ready(function () {
 				fetch(url, {
 					method: 'POST',
 					body: formData,
+					headers: headers,
 				}).then((response) => {
 					if (response.ok) {
 						return response.text();
@@ -1154,15 +1182,7 @@ $(document).ready(function () {
 	function runAction(id, url = '', option = '') {
 		var formData = new FormData();
 
-		let headers = {};
-		if (typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
-			var csrf = Joomla.getOptions('csrf.token', '');
-			if (csrf) {
-				headers = {
-					'X-CSRF-Token': csrf,
-				};
-			}
-		}
+		let headers = getEmundusCsrfHeaders();
 
 		if ($('#em-check-all-all').is(':checked')) {
 			var checkInput = 'all';
@@ -1627,7 +1647,7 @@ $(document).ready(function () {
 							},
 						});
 					}
-				})
+				});
 
 				break;
 

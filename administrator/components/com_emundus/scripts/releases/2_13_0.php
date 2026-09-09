@@ -118,7 +118,7 @@ class Release2_13_0Installer extends ReleaseInstaller
 				'link' => 'index.php?option=com_emundus&view=mapping',
 				'published' => 0,
 				'type' => 'component',
-				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id' => $this->emundusComponentId,
 				'access' => 8,
 				'params' => [
 					'menu_show' => 1,

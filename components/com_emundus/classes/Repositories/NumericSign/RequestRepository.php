@@ -323,10 +323,11 @@ class RequestRepository
 	{
 		try
 		{
-			$signed = SignStatusEnum::SIGNED->value;
+			// A failed request has reached its maximum attempts, it must not be processed again
+			$excluded_statuses = [SignStatusEnum::SIGNED->value, SignStatusEnum::FAILED->value, SignStatusEnum::CANCELLED->value];
 
 			$query = $this->buildQuery(['esr.id']);
-			$query->where($this->db->quoteName('esr.status') . ' <> ' . $this->db->quote($signed))
+			$query->whereNotIn($this->db->quoteName('esr.status'), $excluded_statuses, ParameterType::STRING)
 				->where($this->db->quoteName('esr.connector') . ' = :connector')
 				->bind(':connector', $connector, ParameterType::STRING);
 
