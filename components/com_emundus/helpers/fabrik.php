@@ -33,6 +33,7 @@ use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\TransformerFactory;
+use Tchooz\Interfaces\FabrikTransformerInterface;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
@@ -57,6 +58,14 @@ class EmundusHelperFabrik
 	 * for replacing what is left of it before the value reaches a human.
 	 */
 	public const VALUE_SEPARATOR_MARKER = '[SEPARATOR]';
+
+	/**
+	 * Column linking a table to a campaign instead of to a file. Elements of the campaign
+	 * additional informations form (jos_emundus_setup_campaigns_more) are stored that way: their
+	 * value is shared by every file of the campaign, so it is reached through
+	 * jos_emundus_campaign_candidature.
+	 */
+	public const CAMPAIGN_KEY_COLUMN = 'campaign_id';
 
 	private static array $dataTableTimestamps = [];
 
@@ -3605,6 +3614,12 @@ class EmundusHelperFabrik
 			$isMulti = isset($params->database_join_display_type) && ($params->database_join_display_type == 'multilist' || $params->database_join_display_type == 'checkbox');
 		}
 
+		// A campaign keyed table (jos_emundus_setup_campaigns_more) holds no fnum: the files it
+		// applies to are reached through jos_emundus_campaign_candidature, joined below as t_camp.
+		$campaignKeyed     = $this->isCampaignKeyedTable($tableName);
+		$elementTableAlias = $isDatabaseJoin ? ($groupRepeat ? 't_table' : 't_elt') : 't_origin';
+		$fnumSelector      = $campaignKeyed ? 't_camp.fnum' : $elementTableAlias . '.fnum';
+
 		$select   = '';
 		$from     = '';
 		$leftJoin = [];
@@ -3623,7 +3638,7 @@ class EmundusHelperFabrik
 
 		if ($plugin->isDateField())
 		{
-			$select_origin_val = !empty($fnums) ? 't_origin.fnum' : 't_elt.'.$userColumn.' as user_val';
+			$select_origin_val = !empty($fnums) ? $fnumSelector : 't_elt.'.$userColumn.' as user_val';
 			$date_form_format = $this->dateFormatToMysql($date_format);
 
 			if ($return === ValueFormatEnum::BOTH)
@@ -3671,7 +3686,7 @@ class EmundusHelperFabrik
 				// join_key_column = raw, join_val_column = formatted
 				if ($groupRepeat)
 				{
-					$select_origin_val = !empty($fnums) ? 't_table.fnum' : 't_table.'.$userColumn.' as user_val';
+					$select_origin_val = !empty($fnums) ? $fnumSelector : 't_table.'.$userColumn.' as user_val';
 
 					if ($return === ValueFormatEnum::BOTH)
 					{
@@ -3689,7 +3704,7 @@ class EmundusHelperFabrik
 				else
 				{
 
-					$select_origin_val = !empty($fnums) ? 't_elt.fnum' : 't_elt.'.$userColumn.' as user_val';
+					$select_origin_val = !empty($fnums) ? $fnumSelector : 't_elt.'.$userColumn.' as user_val';
 
 					if ($isMulti)
 					{
@@ -3725,7 +3740,7 @@ class EmundusHelperFabrik
 			}
 			else
 			{
-				$select_origin_val = !empty($fnums) ? 't_origin.fnum' : 't_elt.'.$userColumn.' as user_val';
+				$select_origin_val = !empty($fnums) ? $fnumSelector : 't_elt.'.$userColumn.' as user_val';
 
 				if ($return === ValueFormatEnum::BOTH)
 				{
@@ -3803,28 +3818,25 @@ class EmundusHelperFabrik
 			$leftJoin[] = $db->quoteName($tableName, 't_origin') . ' ON t_origin.id = t_repeat.parent_id';
 		}
 
+		if ($campaignKeyed)
+		{
+			$leftJoin[] = $db->quoteName('#__emundus_campaign_candidature', 't_camp') . ' ON ' . $db->quoteName('t_camp.' . self::CAMPAIGN_KEY_COLUMN) . ' = ' . $db->quoteName($elementTableAlias . '.' . self::CAMPAIGN_KEY_COLUMN);
+		}
+
 		if ($isMulti || $isDatabaseJoin)
 		{
 			if (!$isFnumsNull)
 			{
-				if ($groupRepeat)
-				{
-					$where = $db->quoteName('t_table.fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')';
-					$group = $db->quoteName('t_table.fnum');
-				}
-				else
-				{
-					$where = $db->quoteName('t_elt.fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')';
-					$group = $db->quoteName('t_elt.fnum');
-				}
+				$where = $db->quoteName($fnumSelector) . ' IN (' . implode(',', $db->quote($fnums)) . ')';
+				$group = $db->quoteName($fnumSelector);
 			}
 		}
 		else
 		{
 			if (!$isFnumsNull)
 			{
-				$where = $db->quoteName('t_origin.fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')';
-				$group = $db->quoteName('t_origin.fnum');
+				$where = $db->quoteName($fnumSelector) . ' IN (' . implode(',', $db->quote($fnums)) . ')';
+				$group = $db->quoteName($fnumSelector);
 			}
 		}
 
@@ -3964,6 +3976,7 @@ class EmundusHelperFabrik
 			$user_column = 'user';
 		}
 
+		$dateTransformer = null;
 		if (!empty($dateFormat))
 		{
 			$dateTransformer = TransformerFactory::make(ElementPluginEnum::DATE->value, ['date_format' => $dateFormat]);
@@ -3991,56 +4004,37 @@ class EmundusHelperFabrik
 				$db->setQuery($query);
 				$rows = $db->loadAssocList('fnum');
 
-				if ($return === ValueFormatEnum::BOTH)
-				{
-					foreach ($rows as $fnumKey => $row)
-					{
-						$raw       = $row['val'];
-						$formatted = $raw;
-
-						if (!empty($dateFormat))
-						{
-							$formatted = $dateTransformer->transform($raw);
-						}
-
-						$values[$fnumKey] = [
-							'raw'  => $raw,
-							'val'  => $formatted,
-							'fnum' => $fnumKey
-						];
-					}
-				}
-				elseif ($return === ValueFormatEnum::RAW)
-				{
-					// keep legacy shape: val => raw value
-					foreach ($rows as $fnumKey => $row)
-					{
-						$values[$fnumKey] = [
-							'val'  => $row['val'],
-							'fnum' => $fnumKey
-						];
-					}
-				}
-				else // formatted
-				{
-					foreach ($rows as $fnumKey => $row)
-					{
-						$val = $row['val'];
-						if (!empty($dateFormat) && !empty($val))
-						{
-							$val = $dateTransformer->transform($val);
-						}
-
-						$values[$fnumKey] = [
-							'val'  => $val,
-							'fnum' => $fnumKey
-						];
-					}
-				}
+				$values = $this->formatValuesByFnum($rows, $return, $dateTransformer);
 			}
 			catch (Exception $e)
 			{
 				Log::add('Failed to get Fabrik value for ' . $name . ', error ' . $e->getMessage() . ' query : ' . $query->__toString(), Log::ERROR, 'com_emundus.fabrik.helper');
+				throw $e;
+			}
+		}
+		elseif (!empty($fnums) && $this->isCampaignKeyedTable($tableName))
+		{
+			$query->clear()
+				->select($db->quoteName('ecc.fnum') . ' as fnum, ' . $db->quoteName('t.' . $name) . ' as val')
+				->from($db->quoteName($tableName, 't'))
+				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ecc.' . self::CAMPAIGN_KEY_COLUMN) . ' = ' . $db->quoteName('t.' . self::CAMPAIGN_KEY_COLUMN))
+				->where($db->quoteName('ecc.fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')');
+
+			if (!empty($row_id))
+			{
+				$query->andWhere($db->quoteName('t.id') . ' = ' . $db->quote($row_id));
+			}
+
+			try
+			{
+				$db->setQuery($query);
+				$rows = $db->loadAssocList('fnum');
+
+				$values = $this->formatValuesByFnum($rows, $return, $dateTransformer);
+			}
+			catch (Exception $e)
+			{
+				Log::add('Failed to get campaign Fabrik value for ' . $name . ', error ' . $e->getMessage() . ' query : ' . $query->__toString(), Log::ERROR, 'com_emundus.fabrik.helper');
 				throw $e;
 			}
 		}
@@ -4200,6 +4194,69 @@ class EmundusHelperFabrik
 		$date_format = str_replace('S', '%S', $date_format);
 
 		return str_replace('s', '%s', $date_format);
+	}
+
+	/**
+	 * A table is campaign keyed when its rows belong to a campaign and not to a file: there is no
+	 * fnum to match, the link to a file goes through jos_emundus_campaign_candidature.
+	 *
+	 * @param   string  $tableName
+	 *
+	 * @return  bool
+	 */
+	private function isCampaignKeyedTable(string $tableName): bool
+	{
+		return !$this->tableHasColumn($tableName, 'fnum') && $this->tableHasColumn($tableName, self::CAMPAIGN_KEY_COLUMN);
+	}
+
+	/**
+	 * Shape rows already keyed by fnum into the value structure expected by the callers.
+	 *
+	 * @param   array                          $rows             Rows holding a val column, keyed by fnum.
+	 * @param   ValueFormatEnum                $return
+	 * @param   FabrikTransformerInterface|null  $dateTransformer  Applied on the formatted value only.
+	 *
+	 * @return  array
+	 */
+	private function formatValuesByFnum(array $rows, ValueFormatEnum $return, ?FabrikTransformerInterface $dateTransformer = null): array
+	{
+		$values = [];
+
+		foreach ($rows as $fnumKey => $row)
+		{
+			$raw       = $row['val'];
+			$formatted = $raw;
+
+			if ($dateTransformer !== null && !empty($raw))
+			{
+				$formatted = $dateTransformer->transform($raw);
+			}
+
+			if ($return === ValueFormatEnum::BOTH)
+			{
+				$values[$fnumKey] = [
+					'raw'  => $raw,
+					'val'  => $formatted,
+					'fnum' => $fnumKey
+				];
+			}
+			elseif ($return === ValueFormatEnum::RAW)
+			{
+				$values[$fnumKey] = [
+					'val'  => $raw,
+					'fnum' => $fnumKey
+				];
+			}
+			else
+			{
+				$values[$fnumKey] = [
+					'val'  => $formatted,
+					'fnum' => $fnumKey
+				];
+			}
+		}
+
+		return $values;
 	}
 
 	private function tableHasColumn(string $tableName, string $columnName): bool
