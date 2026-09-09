@@ -15,10 +15,8 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Event\MultiFactor\NotifyActionLog;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
@@ -261,57 +259,7 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
-	public function delincomplete()
-	{
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
-
-			return;
-		}
-
-		$query = 'SELECT u.id FROM #__users AS u LEFT JOIN #__emundus_declaration AS d ON u.id=d.user WHERE u.usertype = "Registered" AND d.user IS NULL';
-		$this->_db->setQuery($query);
-		$this->delusers($this->_db->loadResultArray());
-	}
-
-	public function delrefused()
-	{
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
-
-			return;
-		}
-
-		$this->_db->setQuery('SELECT student_id FROM #__emundus_final_grade WHERE Final_grade=2 AND type_grade ="candidature"');
-		$this->delusers($this->_db->loadResultArray());
-	}
-
-	public function delnonevaluated()
-	{
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
-
-			return;
-		}
-
-		$this->_db->setQuery('SELECT u.id FROM #__users AS u LEFT JOIN #__emundus_final_grade AS efg ON u.id=efg.student_id WHERE u.usertype = "Registered" AND efg.student_id IS NULL');
-		$this->delusers($this->_db->loadResultArray());
-	}
-
-	/*
-	 * todo: why here ?
-	 */
-	public function lastSavedFilter()
-	{
-		$query = "SELECT MAX(id) FROM #__emundus_filters";
-		$this->_db->setQuery($query);
-		$result = $this->_db->loadResult();
-		echo $result;
-	}
-
+	#[AccessAttribute(AccessLevelEnum::REGISTERED)]
 	public function getConstraintsFilter()
 	{
 		$filter_id = $this->input->getInt('filter_id', 0);
@@ -555,6 +503,7 @@ class EmundusControllerUsers extends EmundusController
 
 	public function setlimitstart()
 	{
+		$this->checkToken();
 
 		$limistart  = $this->input->getInt('limitstart', null);
 		$limit      = intval(JFactory::getSession()->get('limit'));
@@ -947,18 +896,13 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
-	// Edit actions rights for group
+	#[AccessAttribute(AccessLevelEnum::PARTNER)]
 	public function setgrouprights()
 	{
+		$this->checkToken();
+
 		$current_user = $this->user;
 		$msg          = '';
-
-		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id))
-		{
-			$msg = Text::_('ACCESS_DENIED');
-			echo json_encode((object) array('status' => false, 'msg' => $msg));
-			exit;
-		}
 
 		$id     = $this->input->getInt('id', null);
 		$action = $this->input->get('action', null, 'WORD');
@@ -976,7 +920,6 @@ class EmundusControllerUsers extends EmundusController
 		{
 			JLog::add('Cannot clear cache : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
-
 
 		echo json_encode((object) array('status' => $res, 'msg' => $msg));
 		exit;
@@ -1213,7 +1156,8 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
-	public function getprofileform()
+	#[AccessAttribute(AccessLevelEnum::REGISTERED)]
+	public function getprofileform(): void
 	{
 		$m_users = $this->getModel('Users');
 		$form    = $m_users->getProfileForm();
@@ -1222,7 +1166,8 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
-	public function getprofilegroups()
+	#[AccessAttribute(AccessLevelEnum::REGISTERED)]
+	public function getprofilegroups(): void
 	{
 		$formid = $this->input->getInt('formid', null);
 		if (!empty($formid))
@@ -1239,7 +1184,8 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
-	public function getprofileelements()
+	#[AccessAttribute(AccessLevelEnum::REGISTERED)]
+	public function getprofileelements(): void
 	{
 		$groupid = $this->input->getInt('groupid', null);
 		if (!empty($groupid))
@@ -1277,6 +1223,8 @@ class EmundusControllerUsers extends EmundusController
 	#[AccessAttribute(AccessLevelEnum::REGISTERED)]
 	public function uploaddefaultattachment()
 	{
+		$this->checkToken();
+
 		$user = $this->user;
 
 		$file             = $this->input->files->get('file');
@@ -1386,8 +1334,11 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::REGISTERED)]
 	public function updateprofilepicture()
 	{
+		$this->checkToken();
+
 		$result = array('status' => false, 'profile_picture' => '');
 
 		try
@@ -1398,6 +1349,12 @@ class EmundusControllerUsers extends EmundusController
 
 			if (isset($file))
 			{
+				if (!FileSecurityService::isAllowedUploadExtension($file['name']))
+				{
+					echo json_encode((object) ['status' => false, 'msg' => Text::_('COM_EMUNDUS_ERROR_INVALID_FILETYPE')]);
+					exit;
+				}
+
 				$root_dir   = "images/emundus/files/" . $user->id;
 				$target_dir = $root_dir . '/profile/';
 
@@ -1602,58 +1559,51 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
 	public function affectjoomlagroups()
 	{
-		$response = array('status' => false, 'msg' => Text::_("ACCESS_DENIED"));
+		$this->checkToken();
 
+		$params = $this->input->getArray();
+		$users  = json_decode($params['users'], true);
+		$groups = explode(',', $params['groups']);
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		if (!empty($users) && !empty($groups))
 		{
-			$params = $this->input->getArray();
-			$users  = json_decode($params['users'], true);
-			$groups = explode(',', $params['groups']);
-
-			if (!empty($users) && !empty($groups))
-			{
-				$m_users  = $this->getModel('Users');
-				$affected = $m_users->affectToJoomlaGroups($users, $groups);
-			}
-			else
-			{
-				$affected = false;
-			}
-
-			$response = array('status' => $affected, 'msg' => Text::_("GROUPS_AFFECTED"));
+			$m_users  = $this->getModel('Users');
+			$affected = $m_users->affectToJoomlaGroups($users, $groups);
 		}
+		else
+		{
+			$affected = false;
+		}
+
+		$response = array('status' => $affected, 'msg' => Text::_("GROUPS_AFFECTED"));
 
 		echo json_encode($response);
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
 	public function removejoomlagroups()
 	{
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$this->checkToken();
+
+		$params = $this->input->getArray();
+		$users  = json_decode($params['users'], true);
+		$groups = explode(',', $params['groups']);
+
+		if (!empty($users) && !empty($groups))
 		{
-			$params = $this->input->getArray();
-			$users  = json_decode($params['users'], true);
-			$groups = explode(',', $params['groups']);
-
-			if (!empty($users) && !empty($groups))
-			{
-				$m_users = $this->getModel('Users');
-				$removed = $m_users->removeJoomlaGroups($users, $groups);
-			}
-			else
-			{
-				$removed = false;
-			}
-
-			$tab = array('status' => $removed, 'msg' => Text::_("GROUPS_REMOVED"));
+			$m_users = $this->getModel('Users');
+			$removed = $m_users->removeJoomlaGroups($users, $groups);
 		}
 		else
 		{
-			$tab = array('status' => false, 'msg' => Text::_("ACCESS_DENIED"));
+			$removed = false;
 		}
+
+		$tab = array('status' => $removed, 'msg' => Text::_("GROUPS_REMOVED"));
 
 		echo json_encode($tab);
 		exit;
@@ -1737,22 +1687,14 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
-	/**
-	 * @return void
-	 *
-	 * @description Export users' selected data. Extracted data are also selected by the user.
-	 *
-	 * @throws Exception
-	 */
-	public function exportusers()
+	#[AccessAttribute(AccessLevelEnum::PARTNER, [
+		['id' => ActionEnum::USER, 'mode' => CrudEnum::READ]
+	])]
+	public function exportusers(): void
 	{
-		$current_user = Factory::getApplication()->getIdentity();
-		if (!EmundusHelperAccess::asAccessAction(12, 'r', $current_user->id))
-		{
-			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
+		$this->checkToken();
 
-			return;
-		}
+		$current_user = Factory::getApplication()->getIdentity();
 
 		$m_users = new EmundusModelUsers();
 
@@ -2010,27 +1952,18 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
-	public function affectuserscategory()
+	#[AccessAttribute(AccessLevelEnum::PARTNER, [
+		['id' => ActionEnum::USER, 'mode' => CrudEnum::UPDATE]
+	])]
+	public function affectuserscategory(): void
 	{
+		$this->checkToken();
+
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
-
-		$current_user = Factory::getApplication()->getIdentity();
-		if (!EmundusHelperAccess::asAccessAction(12, 'u', $current_user->id))
-		{
-			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
-
-			return;
-		}
 
 		$m_users = new EmundusModelUsers();
 
-		// Retrieve the users' data to extract (indicated by the checkboxes checked)
-		$checkboxes = $this->input->getString('checkboxes');
 		$users      = $this->input->getString('users', null);
-
-		$checkboxes = (array) json_decode(stripslashes($checkboxes));
-
-		// If 'all' is choosed, it's necessary to retrieve the ids
 		if ($users === 'all')
 		{
 			$all_users = $m_users->getUsers(0, 0);
@@ -2047,9 +1980,7 @@ class EmundusControllerUsers extends EmundusController
 
 		if (!empty($user_ids))
 		{
-			// Get the category id
 			$user_category = $this->input->getInt('user_category', 0);
-
 			$affected = $m_users->affectUsersCategory($user_ids, $user_category);
 
 			$response = ['status' => $affected, 'msg' => Text::_('COM_EMUNDUS_USERS_CATEGORY_AFFECTED')];
@@ -2059,28 +1990,18 @@ class EmundusControllerUsers extends EmundusController
 		exit;
 	}
 
+	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
 	public function getuseremail(): void
 	{
+		$this->checkToken();
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => 0];
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
-			$this->sendJsonResponse($response);
-
-			return;
-		}
 
 		$id = $this->input->getInt('id', 0);
 
 		if (empty($id))
 		{
-			$response['code']    = 400;
 			$response['message'] = 'Missing required fields.';
 			$this->sendJsonResponse($response);
-
-			return;
 		}
 
 		try
@@ -2250,14 +2171,10 @@ class EmundusControllerUsers extends EmundusController
 
 		return EmundusResponse::ok($data);
 	}
-	
+
+	#[AccessAttribute(AccessLevelEnum::REGISTERED)]
 	public function saveaccessibilitysettings(): EmundusResponse
 	{
-		if ($this->user->guest)
-		{
-			throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
-		}
-
 		$this->user->setParam('a11y_mono', $this->input->getInt('a11y_mono', 0) === 1 ? 'monochrome' : '');
 		$this->user->setParam('a11y_contrast', $this->input->getInt('a11y_contrast', 0) === 1 ? 'high_contrast' : '');
 		$this->user->setParam('a11y_highlight', $this->input->getInt('a11y_highlight', 0) === 1 ? 'highlight' : '');
