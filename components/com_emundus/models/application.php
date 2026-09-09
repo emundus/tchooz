@@ -2290,12 +2290,14 @@ class EmundusModelApplication extends ListModel
 							continue;
 						}
 
+						$excludedElements = ['id', 'parent_id'];
 						$query = $this->_db->getQuery(true);
 						$query->select('fe.id,fe.name,fe.label,fe.plugin,fe.params,fe.default,fe.eval,fe.hidden')
 							->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
 							->where($this->_db->quoteName('fe.published') . ' = 1')
 							->where($this->_db->quoteName('fe.hidden') . ' IN (' . implode(',', $this->_db->quote($hidden)) . ')')
 							->where($this->_db->quoteName('fe.group_id') . ' = ' . $this->_db->quote($itemg->group_id))
+							->where($this->_db->quoteName('fe.name') . ' NOT IN (' . implode(',', $this->_db->quote($excludedElements)) . ')')
 							->order($this->_db->quoteName('fe.ordering'));
 
 						try {
