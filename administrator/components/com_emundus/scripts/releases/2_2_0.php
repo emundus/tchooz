@@ -909,7 +909,7 @@ class Release2_2_0Installer extends ReleaseInstaller
 						'alias'        => 'events',
 						'link'         => 'index.php?option=com_emundus&view=events',
 						'type'         => 'component',
-						'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+						'component_id' => $this->emundusComponentId,
 						'params'       => [
 							'menu_image_css' => 'event'
 						]
@@ -928,7 +928,7 @@ class Release2_2_0Installer extends ReleaseInstaller
 							'path'         => 'events/add',
 							'link'         => 'index.php?option=com_emundus&view=events&layout=add',
 							'type'         => 'component',
-							'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+							'component_id' => $this->emundusComponentId,
 							'params'       => [
 								'menu_show' => 0
 							]
@@ -952,7 +952,7 @@ class Release2_2_0Installer extends ReleaseInstaller
 							'path'         => 'events/add-location',
 							'link'         => 'index.php?option=com_emundus&view=events&layout=addlocation',
 							'type'         => 'component',
-							'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+							'component_id' => $this->emundusComponentId,
 							'params'       => [
 								'menu_show' => 0
 							]

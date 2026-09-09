@@ -78,7 +78,7 @@ class Release2_6_4Installer extends ReleaseInstaller
 					'alias'        => 'applicantmenu-voir-mon-dossier',
 					'link'         => 'index.php?option=com_emundus&view=application&layout=history',
 					'type'         => 'component',
-					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id' => $this->emundusComponentId,
 					'params' => [
 						'menu_show' => 0,
 						'tabs'      => ['history', 'forms', 'attachments']

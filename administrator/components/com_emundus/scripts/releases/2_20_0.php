@@ -61,7 +61,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 					'path'         => 'parametres-accessibilite',
 					'link'         => 'index.php?option=com_emundus&view=accessibility&layout=user',
 					'type'         => 'component',
-					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id' => $this->emundusComponentId,
 					'params'       => [
 						'menu_show' => 0
 					],
@@ -114,7 +114,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 
 				if (!empty($params['mod_emundus_applications_actions']))
 				{
-					$config = ComponentHelper::getComponent('com_emundus')->getParams();
+					$config = ComponentHelper::getParams('com_emundus');
 
 					if (in_array('rename', $params['mod_emundus_applications_actions']))
 					{
@@ -156,7 +156,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 					$config->set('action_transaction', 1);
 					$config->set('action_print', 1);
 
-					$componentId = ComponentHelper::getComponent('com_emundus')->id;
+					$componentId = $this->emundusComponentId;
 
 					$query->clear()
 						->update($this->db->quoteName('#__extensions'))
@@ -295,7 +295,7 @@ class Release2_20_0Installer extends ReleaseInstaller
 				'alias'        => 'store-token',
 				'link'         => 'index.php?option=com_emundus&view=publicaccess&layout=storetoken',
 				'type'         => 'component',
-				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id' => $this->emundusComponentId,
 				'menu_show'    => 0
 			];
 			$storeTokenMenu = \EmundusHelperUpdate::addJoomlaMenu($datas, 0, 0);

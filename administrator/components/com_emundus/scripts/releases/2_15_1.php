@@ -54,7 +54,7 @@ class Release2_15_1Installer extends ReleaseInstaller
 				foreach ($menus as $menu)
 				{
 					$menu->link         = 'index.php?option=com_emundus&view=users&layout=exceptions';
-					$menu->component_id = ComponentHelper::getComponent('com_emundus')->id;
+					$menu->component_id = $this->emundusComponentId;
 					$this->tasks[]      = $this->db->updateObject('#__menu', $menu, 'id');
 				}
 			}

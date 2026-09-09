@@ -12,6 +12,7 @@ namespace scripts;
 use EmundusHelperUpdate;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Tchooz\Services\ExtensionService;
 
 require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
 
@@ -29,10 +30,17 @@ class ReleaseInstaller
 	 */
 	protected $app;
 
+	protected ExtensionService $extensionService;
+
+	protected int $emundusComponentId;
 
 	public function __construct()
 	{
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		$this->app = Factory::getApplication();
+		$this->extensionService = new ExtensionService();
+		$this->emundusComponentId = $this->extensionService::getExtensionId('com_emundus');
 	}
+
+
 }
