@@ -23,7 +23,7 @@ class EventFactory
 					(int) $dbObject->id,
 					(string) $dbObject->label,
 					(string) $dbObject->description,
-					!empty($dbObject->category) ? EventCategoryEnum::from($dbObject->category) : null
+					!empty($dbObject->category) ? EventCategoryEnum::tryFrom($dbObject->category) ?? null : null
 				);
 			}
 		}

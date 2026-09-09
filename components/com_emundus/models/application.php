@@ -36,6 +36,7 @@ use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
@@ -102,10 +103,9 @@ class EmundusModelApplication extends ListModel
 		$this->h_cache        = new EmundusHelperCache();
 
 		$session  = $this->_mainframe->getSession();
-		$language = $this->_mainframe->getLanguage();
 
 		$this->_user   = $session->get('emundusUser');
-		$this->locales = substr($language->getTag(), 0, 2);
+		$this->locales = LanguageFactory::getCurrentShortLang();
 
 		if (!class_exists('HtmlSanitizerSingleton')) {
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/html.php');

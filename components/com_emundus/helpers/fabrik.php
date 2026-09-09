@@ -32,6 +32,7 @@ use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\ValueFormatEnum;
+use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Factories\TransformerFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
@@ -1265,7 +1266,6 @@ class EmundusHelperFabrik
 	static function formatElementValue($elt_name, $raw_value, $groupId = null, $uid = null, $html = false)
 	{
 		$formatted_value = $raw_value;
-		$app             = Factory::getApplication();
 
 		if (!empty($elt_name))
 		{
@@ -1337,7 +1337,7 @@ class EmundusHelperFabrik
 							{
 								$select = 'CONCAT(' . $params['join_val_column_concat'] . ')';
 								$select = preg_replace('#{thistable}#', 'jd', $select);
-								$select = preg_replace('#{shortlang}#', substr($app->getLanguage()->getTag(), 0, 2), $select);
+								$select = preg_replace('#{shortlang}#', LanguageFactory::getCurrentShortLang(), $select);
 								if (!empty($uid))
 								{
 									$select = preg_replace('#{my->id}#', $uid, $select);
@@ -1384,7 +1384,7 @@ class EmundusHelperFabrik
 							$where  = $r1[1] . '=' . $db->Quote($raw_value);
 							$query  = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
 							$query  = preg_replace('#{thistable}#', $from, $query);
-							$query  = preg_replace('#{shortlang}#', substr($app->getLanguage()->getTag(), 0, 2), $query);
+							$query  = preg_replace('#{shortlang}#', LanguageFactory::getCurrentShortLang(), $query);
 							if (!empty($uid))
 							{
 								$query = preg_replace('#{my->id}#', $uid, $query);
@@ -3660,7 +3660,7 @@ class EmundusHelperFabrik
 				if (!empty($params->join_val_column_concat))
 				{
 					$join_val_column_concat = str_replace('{thistable}', 't_origin', $params->join_val_column_concat);
-					$join_val_column_concat = str_replace('{shortlang}', substr(Factory::getApplication()->getLanguage()->getTag(), 0, 2), $join_val_column_concat);
+					$join_val_column_concat = str_replace('{shortlang}', LanguageFactory::getCurrentShortLang(), $join_val_column_concat);
 					$join_val_column        = (!empty($join_val_column_concat) && $join_val_column_concat != '') ? 'CONCAT(' . $join_val_column_concat . ')' : $params->join_val_column;
 				}
 				else
