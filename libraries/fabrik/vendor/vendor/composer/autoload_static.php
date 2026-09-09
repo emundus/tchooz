@@ -85,7 +85,7 @@ class ComposerStaticInit5de0835498b8cac76b6a67270594d1f9
         ),
         'Svg\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phenx/php-svg-lib/src/Svg',
+            0 => JPATH_LIBRARIES . '/emundus/vendor/dompdf/php-svg-lib/src/Svg',
         ),
         'Sabberworm\\CSS\\' => 
         array (
@@ -138,11 +138,11 @@ class ComposerStaticInit5de0835498b8cac76b6a67270594d1f9
         ),
         'FontLib\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib',
+            0 => JPATH_LIBRARIES . '/emundus/vendor/dompdf/php-font-lib/src/FontLib',
         ),
         'Dompdf\\' => 
         array (
-            0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
+            0 => JPATH_LIBRARIES . '/emundus/vendor/dompdf/dompdf/src',
         ),
         'DeepCopy\\' => 
         array (
@@ -179,7 +179,7 @@ class ComposerStaticInit5de0835498b8cac76b6a67270594d1f9
         'AWS\\CRT\\OptionValue' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Options.php',
         'AWS\\CRT\\Options' => __DIR__ . '/..' . '/aws/aws-crt-php/src/AWS/CRT/Options.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Dompdf\\Cpdf' => __DIR__ . '/..' . '/dompdf/dompdf/lib/Cpdf.php',
+        'Dompdf\\Cpdf' => JPATH_LIBRARIES . '/emundus/vendor/dompdf/dompdf/lib/Cpdf.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
