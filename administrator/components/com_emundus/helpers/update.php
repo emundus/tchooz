@@ -25,6 +25,7 @@ use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\Actions\CrudEntity;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Services\ExtensionService;
 
 require_once(__DIR__ . '/EmundusTableColumn.php');
 require_once(__DIR__ . '/EmundusColumnTypeEnum.php');
@@ -3134,7 +3135,7 @@ class EmundusHelperUpdate
 			$config->set($param, $value);
 		}
 
-		$componentid = ComponentHelper::getComponent($component)->id;
+		$componentid = ExtensionService::getExtensionId($component);
 		$db          = Factory::getContainer()->get('DatabaseDriver');
 		$query       = $db->getQuery(true);
 
@@ -4278,7 +4279,7 @@ class EmundusHelperUpdate
 			$params->set($key, $value);
 		}
 
-		$componentid = JComponentHelper::getComponent($component)->id;
+		$componentid = ExtensionService::getExtensionId($component);
 		$table       = JTable::getInstance('extension');
 		$table->load($componentid);
 		$table->bind(array('params' => $params->toString()));
@@ -4395,7 +4396,7 @@ class EmundusHelperUpdate
 						'path'         => $alias,
 						'type'         => 'component',
 						'link'         => 'index.php?option=com_emundus&view=programme',
-						'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+						'component_id' => ExtensionService::getExtensionId('com_emundus'),
 						'params'       => [
 							'com_emundus_programme_campaign_id'    => $campaign->id,
 							'com_emundus_programme_candidate_link' => 'index.php?option=com_fabrik&view=form&formid=307&Itemid=2700'

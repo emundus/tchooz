@@ -37,6 +37,7 @@ use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Services\ExtensionService;
 use Tchooz\Services\Reference\InternalReferenceService;
 use Tchooz\Entities\Language\LanguageEntity;
 use Tchooz\Repositories\Language\LanguageRepository;
@@ -965,7 +966,7 @@ class Com_EmundusPostflightTasks
 				'path'         => 'applicant-history',
 				'link'         => 'index.php?option=com_emundus&view=application&layout=history',
 				'type'         => 'component',
-				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id' => ExtensionService::getExtensionId('com_emundus'),
 				'params'       => [
 					'menu_show' => 0,
 					'tabs' => ['history','forms','attachments']
@@ -2291,10 +2292,10 @@ class Com_EmundusPostflightTasks
 					continue;
 				}
 
-				$component = ComponentHelper::getComponent($option);
-				if(!empty($component->id))
+				$componentId = ExtensionService::getExtensionId($option);
+				if(!empty($componentId))
 				{
-					$menuToRepair->component_id = $component->id;
+					$menuToRepair->component_id = $componentId;
 
 					$this->db->updateObject('#__menu', $menuToRepair, 'id');
 				}

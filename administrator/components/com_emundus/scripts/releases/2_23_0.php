@@ -181,7 +181,7 @@ class Release2_23_0Installer extends ReleaseInstaller
 				'path'              => 'my-polls',
 				'link'              => 'index.php?option=com_emundus&view=polls&layout=reply',
 				'type'              => 'component',
-				'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id'      => $this->emundusComponentId,
 				'access'            => AccessLevelEnum::PUBLIC->value,
 				'template_style_id' => 0,
 				'params'            => [
@@ -213,7 +213,7 @@ class Release2_23_0Installer extends ReleaseInstaller
 				'path'              => 'polls',
 				'link'              => 'index.php?option=com_emundus&view=polls',
 				'type'              => 'component',
-				'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id'      => $this->emundusComponentId,
 				'access'            => AccessLevelEnum::COORDINATOR->value,
 				'template_style_id' => 0,
 				'params'            => [
@@ -244,7 +244,7 @@ class Release2_23_0Installer extends ReleaseInstaller
 				'path'              => 'polls/create-poll',
 				'link'              => 'index.php?option=com_emundus&view=polls&layout=add',
 				'type'              => 'component',
-				'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id'      => $this->emundusComponentId,
 				'access'            => AccessLevelEnum::COORDINATOR->value,
 				'template_style_id' => 0,
 				'params'            => [],
@@ -274,7 +274,7 @@ class Release2_23_0Installer extends ReleaseInstaller
 				'link'              => 'index.php?option=com_emundus&view=polls&layout=edit',
 				'type'              => 'component',
 				'access'            => AccessLevelEnum::COORDINATOR->value,
-				'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+				'component_id'      => $this->emundusComponentId,
 				'template_style_id' => 0,
 				'params'            => [],
 			];

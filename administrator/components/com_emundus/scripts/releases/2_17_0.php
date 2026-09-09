@@ -82,14 +82,14 @@ class Release2_17_0Installer extends ReleaseInstaller
 			{
 				$menu->link         = 'index.php?option=com_emundus&view=groups';
 				$menu->type = 'component';
-				$menu->component_id = ComponentHelper::getComponent('com_emundus')->id;
+				$menu->component_id = $this->emundusComponentId;
 				$this->tasks[]      = $this->db->updateObject('#__menu', $menu, 'id');
 
 				$query->clear()
 					->select('id')
 					->from($this->db->quoteName('#__menu'))
 					->where($this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_emundus&view=groups&layout=form'))
-					->where($this->db->quoteName('component_id') . ' = ' . (int) ComponentHelper::getComponent('com_emundus')->id)
+					->where($this->db->quoteName('component_id') . ' = ' . (int) $this->emundusComponentId)
 					->where($this->db->quoteName('parent_id') . ' = ' . (int) $menu->id);
 				$this->db->setQuery($query);
 				$formMenuId = $this->db->loadResult();
@@ -100,7 +100,7 @@ class Release2_17_0Installer extends ReleaseInstaller
 						'title'        => 'Créer un groupe',
 						'alias'        => 'add-group-' . $menu->id,
 						'type'         => 'component',
-						'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+						'component_id' => $this->emundusComponentId,
 						'link'         => 'index.php?option=com_emundus&view=groups&layout=form',
 						'access'       => $menu->access,
 						'params'       => [

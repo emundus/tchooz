@@ -50,7 +50,7 @@ class Release2_3_0Installer extends ReleaseInstaller
 					'path'              => 'mes-reservations',
 					'link'              => 'index.php?option=com_emundus&view=events&layout=mybooking',
 					'type'              => 'component',
-					'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id'      => $this->emundusComponentId,
 					'template_style_id' => 0,
 					'params'            => [],
 				];
@@ -74,7 +74,7 @@ class Release2_3_0Installer extends ReleaseInstaller
 					'path'              => 'reservations',
 					'link'              => 'index.php?option=com_emundus&view=events&layout=registrants',
 					'type'              => 'component',
-					'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id'      => $this->emundusComponentId,
 					'template_style_id' => 0,
 					'params'            => [],
 				];
@@ -98,7 +98,7 @@ class Release2_3_0Installer extends ReleaseInstaller
 					'path'              => 'reservations-admin',
 					'link'              => 'index.php?option=com_emundus&view=events&layout=registrants',
 					'type'              => 'component',
-					'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id'      => $this->emundusComponentId,
 					'params'       => [
 						'menu_image_css' => 'calendar_clock'
 					],
@@ -387,7 +387,7 @@ class Release2_3_0Installer extends ReleaseInstaller
 					'alias' => 'sms',
 					'path' => 'sms',
 					'type' => 'component',
-					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id' => $this->emundusComponentId,
 					'access' => 6,
 					'menu_show' => 0,
 					'note' => $sms_acl . '|r'
@@ -412,7 +412,7 @@ class Release2_3_0Installer extends ReleaseInstaller
 					'alias'        => 'send-sms-action',
 					'path'         => 'send-sms-action',
 					'type'         => 'url',
-					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id' => $this->emundusComponentId,
 					'access'       => 6,
 					'menu_show'    => 0,
 					'note'         => 'sms|c|1'
@@ -464,7 +464,7 @@ class Release2_3_0Installer extends ReleaseInstaller
 					'path'         => 'sms/edit',
 					'link'         => 'index.php?option=com_emundus&view=sms&layout=edit',
 					'type'         => 'component',
-					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+					'component_id' => $this->emundusComponentId,
 					'params'       => [
 						'menu_show' => 0
 					]
