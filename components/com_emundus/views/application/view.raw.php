@@ -318,7 +318,7 @@ class EmundusViewApplication extends HtmlView
 						if ($this->_user->applicant)
 						{
 							//TODO: Add menu parameters
-							$this->columns = ['name', 'date', 'desc', 'status', 'modified', 'sign'];
+							$this->columns = ['name', 'date', 'desc', 'modified', 'sign'];
 						}
 					}
 					else
