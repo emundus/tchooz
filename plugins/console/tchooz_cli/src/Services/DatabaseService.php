@@ -208,7 +208,7 @@ class DatabaseService
 			{
 				try
 				{
-					$fixed = $this->db->setQuery('ALTER TABLE ' . $this->db->quoteName($table) . ' MODIFY COLUMN ' . $this->db->quoteName($column['Field']) . ' varchar(28)')->execute();
+					$fixed = $this->db->setQuery('ALTER TABLE ' . $this->db->quoteName($table) . ' MODIFY COLUMN ' . $this->db->quoteName($column['Field']) . ' varchar(28) CHARACTER SET utf8mb4 COLLATE ' . $this->getUtf8mb4Collation())->execute();
 				}
 				catch (\Exception $e)
 				{
@@ -221,26 +221,23 @@ class DatabaseService
 		return $fixed;
 	}
 
-	public function convertToUtf8mb4(string $table): bool
+	private function getUtf8mb4Collation(): string
 	{
 		$sql_engine = $this->db->setQuery("SHOW VARIABLES LIKE 'version_comment'")->loadAssoc();
+
 		if (empty($sql_engine))
 		{
-			$sql_engine = [
-				'Value' => 'MySQL'
-			];
+			$sql_engine = ['Value' => 'MySQL'];
 		}
 
-		$sql_engine = $sql_engine['Value'];
-		$collation  = 'utf8mb4_0900_ai_ci';
-		if (strpos($sql_engine, 'MySQL') === false)
-		{
-			$collation = 'utf8mb4_unicode_ci';
-		}
+		return str_contains($sql_engine['Value'], 'MySQL') ? 'utf8mb4_0900_ai_ci' : 'utf8mb4_unicode_ci';
+	}
 
+	public function convertToUtf8mb4(string $table): bool
+	{
 		try
 		{
-			$query = 'ALTER TABLE ' . $this->db->quoteName($table) . ' CONVERT TO CHARACTER SET utf8mb4 COLLATE ' . $collation;
+			$query = 'ALTER TABLE ' . $this->db->quoteName($table) . ' CONVERT TO CHARACTER SET utf8mb4 COLLATE ' . $this->getUtf8mb4Collation();
 
 			return $this->db->setQuery($query)->execute();
 		}
