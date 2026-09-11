@@ -191,6 +191,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 		$comments_page_alias = modemundusApplicationsHelper::getCommentsPageBaseUrl();
 	}
 	$show_application_choices = $params->get('show_application_choices', 0);
+	$show_application_choices_state = $params->get('show_application_choices_state', 0);
 
 	$visible_status = $params->get('visible_status', '');
 	if ($visible_status != "")
