@@ -317,8 +317,12 @@ class EmundusViewApplication extends HtmlView
 						$this->columns             = ['check', 'name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync', 'sign'];
 						if ($this->_user->applicant)
 						{
-							//TODO: Add menu parameters
 							$this->columns = ['name', 'date', 'desc', 'modified', 'sign'];
+
+							if ($params->get('applicant_show_document_status', 1))
+							{
+								array_splice($this->columns, 3, 0, 'status');
+							}
 						}
 					}
 					else
