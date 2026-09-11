@@ -44,7 +44,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 	
 	private AttachmentTypeRepository $attachmentTypeRepository;
 
-	private object $currentUser;
+	private ?object $currentUser = null;
 
 	public function __construct(&$subject, $config = array())
 	{
@@ -60,7 +60,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 		$this->uploadRepository = new UploadRepository();
 		$this->attachmentTypeRepository = new AttachmentTypeRepository();
 
-		$this->currentUser = $this->app->getSession()->get('emundusUser');
+		$emundusUser = $this->app->getSession()->get('emundusUser');
+		if (is_object($emundusUser)) {
+			$this->currentUser = $emundusUser;
+		}
 	}
 
 	public function onAjax_upload(): bool

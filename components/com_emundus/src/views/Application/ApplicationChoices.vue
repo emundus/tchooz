@@ -150,6 +150,14 @@ export default {
 			this.openCampaignModal = true;
 		},
 
+		closeCampaignList() {
+			this.openCampaignModal = false;
+			this.search = '';
+			this.filters = [];
+
+			this.getAvailableChoices(this.fnum || '');
+		},
+
 		removeChoice(id) {
 			this.alertConfirm(
 				'COM_EMUNDUS_APPLICATION_CHOICES_REMOVE_CHOICE_CONFIRM_TITLE',
@@ -505,7 +513,7 @@ export default {
 					<h2>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_SELECT_CAMPAIGN') }}</h2>
 					<p>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_SELECT_CAMPAIGN_DESC') }}</p>
 				</div>
-				<button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="openCampaignModal = false">
+				<button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="closeCampaignList">
 					<span class="material-symbols-outlined">close</span>
 				</button>
 			</div>
