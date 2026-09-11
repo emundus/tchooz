@@ -703,10 +703,14 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                                             {
                                                                 foreach ($choices as $index => $choice)
                                                                 {
+                                                                    $text = Text::sprintf('APPLICATION_CHOICE_NO', ($index + 1)) . ' : ' . $choice->getCampaign()->getLabel();
+                                                                    if($show_application_choices_state == 1) {
+                                                                        $text .= ' - ' . $choice->getState()->getLabel();
+                                                                    }
                                                                     ?>
                                                                     <div class="em-mb-4">
                                                                         <span
-                                                                            class="em-applicant-default-font tw-text-neutral-800"><?php echo Text::sprintf('APPLICATION_CHOICE_NO',($index+1)) . ' : ' . $choice->getCampaign()->getLabel(); ?></span>
+                                                                            class="em-applicant-default-font tw-text-neutral-800"><?php echo $text; ?></span>
                                                                     </div>
                                                                     <?php
                                                                 }
