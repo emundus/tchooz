@@ -78,12 +78,14 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 		}
 		else
 		{
-			$layout = $this->getLayout('form');
+			$displayLayout = $params->get('application_choices_layout', 'dropdown');
+			$layout        = $displayLayout === 'list' ? $this->getLayout('list') : $this->getLayout('form');
 
-			$displayData->id           = $id;
-			$displayData->name         = $name;
-			$displayData->confirmation = $params->get('confirmation_application_choices', 0);
-			$displayData->status       = $params->get('application_choices_status', '');
+			$displayData->id             = $id;
+			$displayData->name           = $name;
+			$displayData->display_layout = $displayLayout;
+			$displayData->confirmation   = $params->get('confirmation_application_choices', 0);
+			$displayData->status         = $params->get('application_choices_status', '');
 			$displayData->fnum         = !empty($data[$db_table_name . '___fnum']) ? $data[$db_table_name . '___fnum'] : '';
 			$displayData->step_id      = !empty($data[$db_table_name . '___step_id']) ? $data[$db_table_name . '___step_id'] : 0;
 			$displayData->value        = $this->getValue($data, $repeatCounter);
@@ -152,8 +154,9 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 		$id   = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
 
-		$opts->confirmation = $this->getParams()->get('confirmation_application_choices', 0);
-		$opts->layout       = $this->isEditable() ? 'form' : 'details';
+		$opts->confirmation   = $this->getParams()->get('confirmation_application_choices', 0);
+		$opts->display_layout = $this->getParams()->get('application_choices_layout', 'dropdown');
+		$opts->layout         = $this->isEditable() ? 'form' : 'details';
 
 		return array('FbApplicationChoices', $id, $opts);
 	}
