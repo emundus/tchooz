@@ -3367,6 +3367,39 @@ class EmundusHelperUpdate
 		return $collations;
 	}
 
+	/**
+	 * Return which of the given tables are still on MyISAM.
+	 *
+	 * A foreign key needs both tables on InnoDB. Tables migrated from Joomla 3 can still be on MyISAM,
+	 * where MySQL accepts ADD FOREIGN KEY without creating anything and refuses to be referenced at all,
+	 * so constraints get reported as added while nothing exists in the database.
+	 *
+	 * @param   string[]  $tables
+	 *
+	 * @return string[]
+	 */
+	public static function getMyisamTables(array $tables): array
+	{
+		if (empty($tables))
+		{
+			return [];
+		}
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		$db->setQuery(
+			'SELECT ' . $db->quoteName('TABLE_NAME')
+			. ' FROM ' . $db->quoteName('information_schema.TABLES')
+			. ' WHERE ' . $db->quoteName('TABLE_SCHEMA') . ' = DATABASE()'
+			. ' AND ' . $db->quoteName('TABLE_TYPE') . ' = ' . $db->quote('BASE TABLE')
+			. ' AND ' . $db->quoteName('ENGINE') . ' = ' . $db->quote('MyISAM')
+			. ' AND ' . $db->quoteName('TABLE_NAME') . ' IN (' . implode(',', $db->quote($tables)) . ')'
+			. ' ORDER BY ' . $db->quoteName('TABLE_NAME')
+		);
+
+		return $db->loadColumn();
+	}
+
 	public static function createTable($table, $columns = [], $foreigns_key = [], $comment = '', $unique_keys = [], $primary_key_options = []): array
 	{
 		$result = ['status' => false, 'message' => ''];
@@ -3550,6 +3583,8 @@ class EmundusHelperUpdate
 		catch (Exception $e)
 		{
 			$result['message'] = 'ADDING TABLE : Error : ' . $e->getMessage();
+
+			self::displayMessage('Échec de la création de la table ' . $table . ' : ' . $e->getMessage(), 'error');
 		}
 
 		return $result;

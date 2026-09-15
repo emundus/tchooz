@@ -96,7 +96,8 @@ class PlgFabrik_FormEmundusAttachment extends plgFabrik_Form
 
 		$update_upload = [
 			'id'       => $upload->id,
-			'filename' => $nom
+			'filename' => $nom,
+			'timedate' => Factory::getDate()->toSql()
 		];
 		$update_upload = (object) $update_upload;
 		$this->_db->updateObject('#__emundus_uploads', $update_upload, 'id');
