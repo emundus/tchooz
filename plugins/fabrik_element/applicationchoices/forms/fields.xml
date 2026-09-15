@@ -35,6 +35,15 @@
 				<option value="3">COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_CONFIRMED</option>
 			</field>
 
+			<field name="application_choices_layout"
+				   type="list"
+				   default="dropdown"
+				   label="PLG_ELEMENT_APPLICATION_CHOICES_LAYOUT_LABEL"
+				   description="PLG_ELEMENT_APPLICATION_CHOICES_LAYOUT_DESC">
+				<option value="dropdown">PLG_ELEMENT_APPLICATION_CHOICES_LAYOUT_DROPDOWN</option>
+				<option value="list">PLG_ELEMENT_APPLICATION_CHOICES_LAYOUT_LIST</option>
+			</field>
+
 		</fieldset>
 	</fields>
 </form>

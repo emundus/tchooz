@@ -14,10 +14,12 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
             if(options.layout === 'form') {
                 var choices = document.getElementById(this.element.id + '_choice');
-                choices.addEventListener('change', (e) => {
-                    this.choice = e.target.value;
-                    this.updateValue(e);
-                });
+                if(choices) {
+                    choices.addEventListener('change', (e) => {
+                        this.choice = e.target.value;
+                        this.updateValue(e);
+                    });
+                }
 
                 var statuses = document.getElementById(this.element.id + '_status');
                 if(statuses) {

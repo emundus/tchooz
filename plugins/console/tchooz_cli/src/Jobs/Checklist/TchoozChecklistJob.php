@@ -165,11 +165,37 @@ class TchoozChecklistJob extends TchoozJob
 			}
 		}
 
+		foreach ($this->findLegacyRedirectCalls($code) as [$call, $emptyMessage]) {
+			$advice = $emptyMessage
+				? 'The empty second argument is a Joomla 3 leftover: it was the message, Joomla 5 expects an HTTP status code there and throws. Remove it and call redirect($url) alone.'
+				: 'Joomla 5 redirect() takes a 3xx HTTP status code as second argument and throws on anything else. If it is a message, move it to enqueueMessage(), then call redirect($url) alone.';
+
+			$output->writeln('<error> Code [' . $call . ']: ' . $advice . '</error>');
+			$hasIssues = true;
+		}
+
 		if ($hasIssues) {
 			$helper = new QuestionHelper();
 			$question = new ConfirmationQuestion('Press enter to continue', true);
 			$helper->ask($input, $output, $question);
 		}
+	}
+
+	/**
+	 * Joomla 3 took redirect($url, $msg, $msgType), Joomla 5 takes redirect($url, $status) and throws unless
+	 * $status is an integer or a 3xx code. Returns the calls with any other second argument (string, JText::_(),
+	 * variable), each paired with whether that argument is an empty string. Variables are reported too: in
+	 * migrated Joomla 3 code they almost always hold the message.
+	 *
+	 * The first argument may hold one level of parentheses, as in redirect(JRoute::_('index.php', false), ...).
+	 *
+	 * @return array<array{0: string, 1: bool}>
+	 */
+	private function findLegacyRedirectCalls(string $code): array
+	{
+		preg_match_all('/->redirect\s*\((?:[^()]|\([^()]*\))*?,\s*(?!\d|true\b|false\b|\'3\d\d\'|"3\d\d")(\'\'|""|\S)[^;\n]*/i', $code, $matches, PREG_SET_ORDER);
+
+		return array_map(fn($match) => [$match[0], in_array($match[1], ["''", '""'], true)], $matches);
 	}
 
 	/**

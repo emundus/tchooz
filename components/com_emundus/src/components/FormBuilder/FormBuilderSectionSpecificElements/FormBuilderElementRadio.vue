@@ -9,12 +9,14 @@
 				<input
 					type="radio"
 					:name="'input_' + element.name"
-					:id="element.params.sub_options.sub_values[index]"
+					:id="'input_' + element.name + '_' + element.params.sub_options.sub_values[index]"
 					class="form-control"
 					:value="element.params.sub_options.sub_values[index]"
 					readonly
 				/>
-				<label class="tw-mb-0" :for="element.params.sub_options.sub_values[index]">{{ option }}</label>
+				<label class="tw-mb-0" :for="'input_' + element.name + '_' + element.params.sub_options.sub_values[index]">{{
+					option
+				}}</label>
 			</div>
 		</div>
 		<Loader v-else />

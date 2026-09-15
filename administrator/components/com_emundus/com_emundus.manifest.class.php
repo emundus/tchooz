@@ -189,7 +189,9 @@ class Com_EmundusInstallerScript
 						}
 						else
 						{
-							EmundusHelperUpdate::displayMessage($release_installed['message'], 'error');
+							$failure = !empty($release_installed['message']) ? $release_installed['message'] : 'aucun détail renvoyé par le script';
+
+							EmundusHelperUpdate::displayMessage('Version ' . $release_version . ' failed: ' . $failure, 'error');
 							$succeed = false;
 						}
 					}
@@ -356,6 +358,41 @@ class Com_EmundusInstallerScript
 	 *
 	 * @return bool
 	 */
+	/**
+	 * Report the tables of the foreign key description still on MyISAM, with the statement to run.
+	 *
+	 * Converting is left to the operator on purpose: a MyISAM table is rebuilt entirely, which on a
+	 * large table locks it for as long as the copy takes, so it belongs in a chosen maintenance window.
+	 */
+	private function reportMyisamTables(SimpleXMLElement $xml): void
+	{
+		$tables = [];
+
+		foreach ($xml->table as $table_node)
+		{
+			$tables[] = $this->db->replacePrefix((string) $table_node['name']);
+
+			foreach ($table_node->row as $row_node)
+			{
+				$tables[] = $this->db->replacePrefix((string) $row_node['referenced_table_name']);
+			}
+		}
+
+		$myisam_tables = EmundusHelperUpdate::getMyisamTables(array_values(array_unique(array_filter($tables))));
+
+		if (empty($myisam_tables))
+		{
+			return;
+		}
+
+		EmundusHelperUpdate::displayMessage(count($myisam_tables) . ' table(s) en MyISAM empêchent la création de clés étrangères. À convertir à la main avant de relancer la mise à jour :', 'warning');
+
+		foreach ($myisam_tables as $table)
+		{
+			EmundusHelperUpdate::displayMessage('ALTER TABLE ' . $this->db->quoteName($table) . ' ENGINE = InnoDB;');
+		}
+	}
+
 	private function checkForeignKeys(): bool
 	{
 		$xml_path = JPATH_ROOT . '/.docker/installation/vanilla/foreign_keys/foreign_keys.xml';
@@ -375,6 +412,8 @@ class Com_EmundusInstallerScript
 
 			return false;
 		}
+
+		$this->reportMyisamTables($xml);
 
 		$success = true;
 

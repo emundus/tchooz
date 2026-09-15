@@ -111,4 +111,23 @@ export default [
 		],
 		value: 0,
 	},
+	{
+		displayed: true,
+		component: 'emundus',
+		label: 'COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_SHOW_DOCUMENT_STATUS',
+		helptext: 'COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_SHOW_DOCUMENT_STATUS_DESC',
+		param: 'applicant_show_document_status',
+		type: 'yesno',
+		options: [
+			{
+				label: 'JNO',
+				value: 0,
+			},
+			{
+				label: 'JYES',
+				value: 1,
+			},
+		],
+		value: 1,
+	},
 ];

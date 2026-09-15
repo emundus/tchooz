@@ -6741,7 +6741,9 @@ class EmundusModelApplication extends ListModel
 				$path_href = JURI::base() . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
 				$html      .= '<li><b>' . $upload->value . '</b>';
 				$html      .= '<ul>';
-				$html      .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . Text::_('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
+				// $upload->timedate is already a localized display string (formatted in getUserAttachmentsByFnum via displayDate),
+				// so re-parsing it with strtotime() failed and produced the epoch "01/01/1970 00:00". Print it as-is.
+				$html      .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . $upload->timedate . ')<br/><b>' . Text::_('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
 				$html      .= '</ul>';
 				$html      .= '</li>';
 			}

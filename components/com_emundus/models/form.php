@@ -100,11 +100,20 @@ class EmundusModelForm extends ListModel
 		$filterId      = $this->db->quoteName('sp.published') . ' = 1';
 		$fullRecherche = empty($recherche) ? 1 : $this->db->quoteName('sp.label') . ' LIKE ' . $this->db->quote('%' . $recherche . '%');
 
-		$m_user           = new EmundusModelUsers();
-		$allowed_profiles = $this->getAllFormsPublished($user_id, 'form_label', SORT_ASC, [0,1]);
-		$allowed_profile_ids = array_map(function ($profile) {
-			return $profile->id;
-		}, $allowed_profiles);
+		$filterAllowedProfiles = true;
+		if (EmundusHelperAccess::canManageAllPrograms($user_id))
+		{
+			$filterAllowedProfiles = false;
+		}
+
+		if ($filterAllowedProfiles)
+		{
+			$m_user           = new EmundusModelUsers();
+			$allowed_profiles = $this->getAllFormsPublished($user_id, 'form_label', SORT_ASC, [0,1]);
+			$allowed_profile_ids = array_map(function ($profile) {
+				return $profile->id;
+			}, $allowed_profiles);
+		}
 
 		// Now we need to put the query together and get the profiles
 		$query->clear()
@@ -114,9 +123,14 @@ class EmundusModelForm extends ListModel
 			->where($filterDate)
 			->andWhere($fullRecherche)
 			->andWhere($filterId)
-			->andWhere($this->db->quoteName('sp.id') . ' IN (' . implode(',', $this->db->quote($allowed_profile_ids)) . ')')
-			->andWhere($this->db->quoteName('sp.label') . ' != ' . $this->db->quote('noprofile'))
-			->group($this->db->quoteName('sp.id'));
+			->andWhere($this->db->quoteName('sp.label') . ' != ' . $this->db->quote('noprofile'));
+
+		if ($filterAllowedProfiles)
+		{
+			$query->andWhere($this->db->quoteName('sp.id') . ' IN (' . implode(',', $this->db->quote($allowed_profile_ids)) . ')');
+		}
+
+		$query->group($this->db->quoteName('sp.id'));
 
 		$valid_columns = ['id', 'label'];
 		if(!empty($order_by) && in_array($order_by, $valid_columns))

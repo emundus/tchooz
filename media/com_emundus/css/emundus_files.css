@@ -2580,6 +2580,14 @@ footer#g-footer {
     width: 50%;
 }
 
+.em-personalDetail-table-multiplleLine tr td ul {
+    margin: 0 !important;
+}
+
+.em-personalDetail-table-multiplleLine tr td ul li {
+    white-space: nowrap;
+}
+
 .em-personalInfo > a {
     border: none;
 }

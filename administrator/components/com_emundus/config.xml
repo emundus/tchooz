@@ -431,6 +431,12 @@
                 description="COM_EMUNDUS_ONBOARD_SETTINGS_LIMIT_FILES_RULES_DESC"
                 multiple="true"
         />
+        <field name="applicant_show_document_status" menu="hide" type="list" default="1"
+               label="COM_EMUNDUS_APPLICANT_SHOW_DOCUMENT_STATUS"
+               description="COM_EMUNDUS_APPLICANT_SHOW_DOCUMENT_STATUS_DESC">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
 
     </fieldset>
 

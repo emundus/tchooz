@@ -2104,10 +2104,16 @@ class EmundusController extends JControllerLegacy
 			}
 			else
 			{
-				// Check if the user is an applicant and it is his file.
-				if (!EmundusHelperAccess::isFnumMine($current_user->id, $fnum) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+				// Check if the user is an applicant and it is his file (use the file's fnum, scoped to the applicant's own fnums by the query above).
+				$fnum_to_check = !empty($fileInfo->fnum) ? $fileInfo->fnum : $fnum;
+
+				if(!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
 				{
-					if (!empty($fileInfo) && $fileInfo->can_be_viewed != 1)
+					if (!EmundusHelperAccess::isFnumMine($current_user->id, $fnum_to_check))
+					{
+						die (Text::_('ACCESS_DENIED'));
+					}
+					elseif (empty($fileInfo) || $fileInfo->can_be_viewed != 1)
 					{
 						die (Text::_('ACCESS_DENIED'));
 					}
