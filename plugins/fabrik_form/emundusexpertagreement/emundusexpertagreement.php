@@ -180,8 +180,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 
 				$jinput              = $app->input;
 				$key_id              = $jinput->get->get('keyid') ?: $formModel->formData['keyid_raw'];
-				$firstname           = ucfirst($jinput->get($this->getParam('firstname_input', 'jos_emundus_files_request___firstname')) ?: $formModel->formData['firstname_raw']);
-				$lastname            = strtoupper($jinput->get($this->getParam('lastname_input', 'jos_emundus_files_request___lastname')) ?: $formModel->formData['lastname_raw']);
+				$firstname           = ucfirst($jinput->getString($this->getParam('firstname_input', 'jos_emundus_files_request___firstname')) ?: $formModel->formData['firstname_raw']);
+				$lastname            = mb_strtoupper($jinput->getString($this->getParam('lastname_input', 'jos_emundus_files_request___lastname')) ?: $formModel->formData['lastname_raw']);
 				$attachments_fields  = $this->getParam('attachments_input');
 				$attachments_ids     = $this->getParam('attachments_id');
 				$fnum_field          = $this->getParam('fnum_input', 'fnum_expertise');
