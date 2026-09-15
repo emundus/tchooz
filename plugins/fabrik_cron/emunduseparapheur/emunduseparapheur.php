@@ -15,6 +15,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Filesystem\Folder;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -109,9 +110,16 @@ class PlgFabrik_Cronemunduseparapheur extends PlgFabrik_Cron {
 							$idDocument = $edossier['data']->payload->documents->principal->identifiant;
 
 							$fnumInfos = $m_files->getFnumInfos($file_request->fnum);
+
+							$directory = JPATH_ROOT . '/images/emundus/files/' . $file_request->student_id;
+							if (!is_dir($directory) && !Folder::create($directory)) {
+								Log::add('Impossible de créer le répertoire ' . $directory, Log::ERROR, 'com_emundus.emundusrecallmissingdoc');
+								continue;
+							}
+
 							do {
 								$nom  = $h_checklist->setAttachmentName($edossier['data']->payload->documents->principal->nom, $attachments_lbl[$file_request->attachment_id]['lbl'], $fnumInfos);
-								$path = JPATH_ROOT.'/images/emundus/files/' . $file_request->student_id . '/' . $nom;
+								$path = $directory . '/' . $nom;
 							} while(file_exists($path));
 
 							$signed_file = $api->getDocumentContent($idDocument,$path);
