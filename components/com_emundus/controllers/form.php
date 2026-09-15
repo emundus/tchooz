@@ -54,8 +54,15 @@ class EmundusControllerForm extends EmundusController
 	{
 		$actionRepository = new ActionRepository();
 		$campaignAction = $actionRepository->getByName('campaign');
-		$campaignAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::READ->value, $this->user->id);
-		$campaignEditAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::UPDATE->value, $this->user->id);
+
+		if (EmundusHelperAccess::canManageAllPrograms($this->user->id))
+		{
+			$campaignAccess = true;
+			$campaignEditAccess = true;
+		} else {
+			$campaignAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::READ->value, $this->user->id);
+			$campaignEditAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::UPDATE->value, $this->user->id);
+		}
 
 		$page      = $this->input->getInt('page', 0);
 		$lim       = $this->input->getInt('lim', 0);
