@@ -567,7 +567,6 @@ class EmundusModelUsers extends ListModel
 
 	public function getApplicantProfiles()
 	{
-
 		$query = 'SELECT * FROM #__emundus_setup_profiles WHERE published=1';
 		$this->db->setQuery($query);
 
@@ -3891,23 +3890,34 @@ class EmundusModelUsers extends ListModel
 		return $return;
 	}
 
-	public function getProfileForm()
+	public function getProfileForm(): int
 	{
-		$form_id = 0;
-
-		$query = $this->db->getQuery(true);
-
-		try {
-			$query->select('form_id')
-				->from($this->db->quoteName('#__emundus_setup_formlist'))
-				->where($this->db->quoteName('type') . ' LIKE ' . $this->db->quote('profile'))
-				->andWhere($this->db->quoteName('published') . ' = 1');
-			$this->db->setQuery($query);
-
-			$form_id = $this->db->loadResult();
+		if(!class_exists('EmundusHelperCache'))
+		{
+			require_once JPATH_SITE.'/components/com_emundus/helpers/cache.php';
 		}
-		catch (Exception $e) {
-			Log::add(' com_emundus/models/users.php | Cannot get profile form for edit user : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		$hCache = new EmundusHelperCache();
+
+		$form_id = $hCache->get('profile_form_id', 0);
+
+		if(empty($form_id))
+		{
+			$query = $this->db->getQuery(true);
+
+			try
+			{
+				$query->select('form_id')
+					->from($this->db->quoteName('#__emundus_setup_formlist'))
+					->where($this->db->quoteName('type') . ' LIKE ' . $this->db->quote('profile'))
+					->andWhere($this->db->quoteName('published') . ' = 1');
+				$this->db->setQuery($query);
+
+				$form_id = $this->db->loadResult();
+			}
+			catch (Exception $e)
+			{
+				Log::add(' com_emundus/models/users.php | Cannot get profile form for edit user : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
 		}
 
 		return $form_id;

@@ -4259,7 +4259,7 @@ class EmundusHelperFabrik
 		return $values;
 	}
 
-	private function tableHasColumn(string $tableName, string $columnName): bool
+	public function tableHasColumn(string $tableName, string $columnName): bool
 	{
 		$cacheKey = $tableName . '.' . $columnName;
 
