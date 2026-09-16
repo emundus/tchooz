@@ -49,6 +49,7 @@ use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Label\LabelRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
+use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Controller\EmundusController;
@@ -3709,48 +3710,56 @@ class EmundusControllerApplication extends EmundusController
     #[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
     public function updatelotstatus(): void
     {
-        $response = array('status' => false, 'message' => '');
+	    $response = array('status' => false, 'message' => '');
 
-        $datas  = $this->input->getArray();
-        $ids    = $datas['lots_ids'];
-        $status = $datas['status'];
-        $user = $this->app->getIdentity()->id;
+	    $datas  = $this->input->getArray();
+	    $ids    = $datas['lots_ids'];
+	    $status = $datas['status'];
+	    $user   = $this->app->getIdentity()->id;
 
-        if (!empty($ids) && !empty($status))
-        {
-            if (!class_exists('EmundusModelApplication'))
-            {
-                require_once JPATH_SITE . '/components/com_emundus/models/application.php';
-            }
-            $m_application = new EmundusModelApplication();
+	    if (!empty($ids) && !empty($status))
+	    {
+		    if (!class_exists('EmundusModelApplication'))
+		    {
+			    require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+		    }
+		    $m_application = new EmundusModelApplication();
 
-            $fnums = $m_application->getFilesLot($ids[0]);
+		    $fnums = $m_application->getFilesLot($ids[0]);
 
-            if ($status == 2)
-            {
-                $files_to_send = $m_application->exportLotPdf($ids[0]);
-                foreach ($files_to_send as $file)
-                {
-                    PluginHelper::importPlugin('emundus', 'eparapheur');
-                    $this->app->triggerEvent('onSyncEparapheur', [
-                        [
-                            'fnums'         => $fnums,
-                            'signer_email'  => 'jean-pierre.test@sorbonne-universite.fr',
-                            'attachment_id' => 71,
-                            'file'          => basename($file['filename']),
-                            'filepath'      => $file['filename'],
-                            'name'          => $file['name'],
-                            'nature'        => 'BA759DA06F21237DC9AF16E0CFBD6203'
-                        ]
-                    ]);
-                }
-            }
+		    if ($status == 2)
+		    {
+			    $synchronizerRepository  = new SynchronizerRepository();
+			    $ixparapheurSynchronizer = $synchronizerRepository->getByType('ixparapheur');
 
-            $response['status'] = $m_application->updateLotStatus($ids[0], $status, $user);
-        }
+			    $ixparapheurConfiguration = $ixparapheurSynchronizer->getConfig();
+			    $defaultSignerEmail       = $ixparapheurConfiguration['configuration']['default_signer_email'] ?? '';
+			    $defaultAttachmentId      = $ixparapheurConfiguration['configuration']['default_attachment_id'] ?? 0;
+			    $nature                   = $ixparapheurConfiguration['configuration']['nature'] ?? '';
 
-        echo json_encode($response);
-        exit;
+			    $files_to_send = $m_application->exportLotPdf($ids[0]);
+			    foreach ($files_to_send as $file)
+			    {
+				    PluginHelper::importPlugin('emundus', 'eparapheur');
+				    $this->app->triggerEvent('onSyncEparapheur', [
+					    [
+						    'fnums'         => $fnums,
+						    'signer_email'  => $defaultSignerEmail,
+						    'attachment_id' => $defaultAttachmentId,
+						    'file'          => basename($file['filename']),
+						    'filepath'      => $file['filename'],
+						    'name'          => $file['name'],
+						    'nature'        => $nature
+					    ]
+				    ]);
+			    }
+		    }
+
+		    $response['status'] = $m_application->updateLotStatus($ids[0], $status, $user);
+	    }
+
+	    echo json_encode($response);
+	    exit;
     }
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
