@@ -26,6 +26,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Database\ParameterType;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagRemoveDefinition;
@@ -6472,6 +6473,8 @@ class EmundusModelApplication extends ListModel
 
 		$query = $this->_db->getQuery(true);
 
+		$fabrikComponentId = ComponentHelper::getComponent('com_fabrik')->id;
+
 		if (!empty($fnums)) {
 			$query->select(['CONCAT(m.link,"&Itemid=", m.id) as link', $this->_db->quoteName('cc.fnum')])
 				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
@@ -6480,6 +6483,12 @@ class EmundusModelApplication extends ListModel
 				->leftJoin($this->_db->quoteName('#__menu', 'm') . ' ON ' . $this->_db->quoteName('m.menutype') . ' = ' . $this->_db->quoteName('esp.menutype') . ' AND ' . $this->_db->quoteName('m.published') . '>=0 AND ' . $this->_db->quoteName('m.level') . '=1 AND ' . $this->_db->quoteName('m.link') . ' <> "" AND ' . $this->_db->quoteName('m.link') . ' <> "#"')
 				->where($this->_db->quoteName('cc.fnum') . ' IN(' . implode(',', $fnums) . ')')
 				->order($this->_db->quoteName('m.lft') . ' ASC');
+			
+			if(!empty($fabrikComponentId))
+			{
+				$query->andWhere($this->_db->qn('component_id') . ' = :fabrikComponentId')
+					->bind(':fabrikComponentId', $fabrikComponentId, ParameterType::INTEGER);
+			}
 
 			$this->_db->setQuery($query);
 			try {
@@ -6496,6 +6505,13 @@ class EmundusModelApplication extends ListModel
 					->from($this->_db->quoteName('#__menu'))
 					->where($this->_db->quoteName('published') . '=1 AND ' . $this->_db->quoteName('menutype') . ' LIKE ' . $this->_db->quote($user->menutype) . ' AND ' . $this->_db->quoteName('link') . ' <> "" AND ' . $this->_db->quoteName('link') . ' <> "#"')
 					->order($this->_db->quoteName('lft') . ' DESC');
+
+				if(!empty($fabrikComponentId))
+				{
+					$query->andWhere($this->_db->qn('component_id') . ' = :fabrikComponentId')
+						->bind(':fabrikComponentId', $fabrikComponentId, ParameterType::INTEGER);
+				}
+
 				try {
 					$this->_db->setQuery($query);
 					$res = $this->_db->loadObject();
