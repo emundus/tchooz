@@ -3048,6 +3048,12 @@ class EmundusModelForm extends ListModel
 							$this->db->setQuery($query);
 							$elt = $this->db->loadObject();
 						}
+
+						if(empty($elt))
+						{
+							continue;
+						}
+
 						$condition->elt_label = Text::_($elt->label);
 						$params = is_string($elt->params) ? json_decode($elt->params) : $elt->params;
 
