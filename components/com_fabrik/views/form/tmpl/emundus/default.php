@@ -18,6 +18,19 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Tchooz\Factories\LayoutFactory;
 
+if(!class_exists('EmundusHelperFabrik'))
+{
+    require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+}
+if(!class_exists('EmundusModelUsers'))
+{
+    require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+}
+$m_users      = new EmundusModelUsers();
+$hFabrik = new EmundusHelperFabrik();
+
+$db = Factory::getContainer()->get('DatabaseDriver');
+
 $form      = $this->form;
 $model     = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
@@ -56,8 +69,6 @@ if (!empty($fnum))
     }
 }
 
-require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
-$m_users      = new EmundusModelUsers();
 $profile_form = $m_users->getProfileForm();
 
 $this->display_comments = false;
@@ -74,13 +85,9 @@ $this->is_applicant = $is_applicant;
 
 if (($allow_to_comment || $is_applicant === 0) && !$is_preview)
 {
-    // check if form is an applicant form, there should be a column fnum in the table
-    $db    = Factory::getContainer()->get('DatabaseDriver');
-    $query = 'SHOW COLUMNS FROM `' . $form->db_table_name . '` LIKE "fnum"';
-    $db->setQuery($query);
-    $result = $db->loadObject();
+    $fnumColumnExist = $hFabrik->tableHasColumn($form->db_table_name, 'fnum');
 
-    if (!empty($result) && Factory::getApplication()->input->get('fnum', '') == $fnum)
+    if (!empty($fnumColumnExist) && $app->input->get('fnum', '') == $fnum)
     {
         $applicant_profiles_menus = array_map(function ($profile) {
             return $profile->menutype;
@@ -335,14 +342,6 @@ endif;
 </div>
 
 <?php
-$app  = Factory::getApplication();
-$user = $app->getIdentity();
-$fnum = $app->input->getString('fnum', '');
-if (empty($fnum))
-{
-    $fnum = $app->getSession()->get('emundusUser')->fnum;
-}
-
 if ($this->display_comments && !empty($fnum))
 {
     Text::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT');
