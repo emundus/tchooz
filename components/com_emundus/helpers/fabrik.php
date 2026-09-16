@@ -68,6 +68,11 @@ class EmundusHelperFabrik
 	 */
 	public const CAMPAIGN_KEY_COLUMN = 'campaign_id';
 
+	/**
+	 * The only table whose rows belong to a campaign and not to a file.
+	 */
+	public const CAMPAIGN_KEYED_TABLE = 'jos_emundus_setup_campaigns_more';
+
 	private static array $dataTableTimestamps = [];
 
 	/**
@@ -4198,7 +4203,10 @@ class EmundusHelperFabrik
 
 	/**
 	 * A table is campaign keyed when its rows belong to a campaign and not to a file: there is no
-	 * fnum to match, the link to a file goes through jos_emundus_campaign_candidature.
+	 * fnum to match, the link to a file goes through jos_emundus_campaign_candidature. The table is
+	 * named and not guessed from its columns: jos_emundus_users also carries a campaign_id without
+	 * a fnum, yet its rows belong to one applicant and reaching them through the campaign returns
+	 * another applicant's data.
 	 *
 	 * @param   string  $tableName
 	 *
@@ -4206,7 +4214,7 @@ class EmundusHelperFabrik
 	 */
 	private function isCampaignKeyedTable(string $tableName): bool
 	{
-		return !$this->tableHasColumn($tableName, 'fnum') && $this->tableHasColumn($tableName, self::CAMPAIGN_KEY_COLUMN);
+		return $tableName === self::CAMPAIGN_KEYED_TABLE;
 	}
 
 	/**
@@ -4259,7 +4267,7 @@ class EmundusHelperFabrik
 		return $values;
 	}
 
-	private function tableHasColumn(string $tableName, string $columnName): bool
+	public function tableHasColumn(string $tableName, string $columnName): bool
 	{
 		$cacheKey = $tableName . '.' . $columnName;
 

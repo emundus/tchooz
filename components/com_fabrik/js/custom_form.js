@@ -117,6 +117,15 @@ requirejs(['fab/fabrik'], function () {
     // ...
   };
 
+  Fabrik.addEvent('fabrik.date.select', function (element) {
+    if(element.options.calendarSetup && element.options.calendarSetup.inputField) {
+      var dateInput = document.querySelector('input[name="' + element.options.calendarSetup.inputField + '"');
+      if(dateInput && element.subElements[0]) {
+        dateInput.value = element.subElements[0].getAttribute('data-alt-value');
+      }
+    }
+  });
+
   Fabrik.addEvent('fabrik.form.loaded', function (form) {
     manageRepeatGroup(form);
 
