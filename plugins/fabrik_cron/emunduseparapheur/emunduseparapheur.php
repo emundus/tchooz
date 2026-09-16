@@ -109,7 +109,7 @@ class PlgFabrik_Cronemunduseparapheur extends PlgFabrik_Cron {
 						if($edossier['data']->payload->statut == 'Traite') {
 							$idDocument = $edossier['data']->payload->documents->principal->identifiant;
 
-							$fnumInfos = $m_files->getFnumInfos($file_request->fnum);
+							$fnumInfos = $m_files->getFnumInfos($file_request->fnum, $automated_task_user);
 
 							$directory = JPATH_ROOT . '/images/emundus/files/' . $file_request->student_id;
 							if (!is_dir($directory) && !Folder::create($directory)) {
