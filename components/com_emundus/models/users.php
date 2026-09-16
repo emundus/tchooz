@@ -49,6 +49,8 @@ use \Joomla\CMS\User\User;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterAddUserToGroupDefinition;
+use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Traits\TraitDispatcher;
@@ -1154,16 +1156,79 @@ class EmundusModelUsers extends ListModel
 		return $this->data;
 	}
 
+	/**
+	 * Formats a log payload the way EmundusModelLogs::setActionDetails() renders it:
+	 * verb 'u' expects a list of {description, element, old, new}, verbs 'c' and 'd' a list of {element, details}.
+	 * Multi valued fields are joined with '<#>', the separator the renderer explodes back.
+	 *
+	 * @param   string                $verb     One of the CrudEnum values
+	 * @param   array<string, mixed>  $changes  Language key => value, or Language key => ['old' => ..., 'new' => ...]
+	 * @param   string                $description
+	 *
+	 * @return string
+	 */
+	private function buildLogParams(string $verb, array $changes, string $description = ''): string
+	{
+		// Only the 'u' branch of setActionDetails explodes '<#>' back, the others print the value as is
+		$separator = $verb === CrudEnum::UPDATE->value ? '<#>' : ', ';
+
+		$flatten = static function ($value) use ($separator): string {
+			$values = is_array($value) ? $value : [$value];
+			$values = array_map(static function ($item) {
+				return is_scalar($item) ? (string) $item : json_encode($item, JSON_UNESCAPED_UNICODE);
+			}, $values);
+
+			return implode($separator, $values);
+		};
+
+		$entries = [];
+
+		foreach ($changes as $label => $value) {
+			if ($verb === CrudEnum::UPDATE->value) {
+				$diff = is_array($value) && (array_key_exists('old', $value) || array_key_exists('new', $value)) ? $value : ['new' => $value];
+
+				$entries[] = [
+					'description' => $description,
+					'element'     => Text::_($label),
+					'old'         => $flatten($diff['old'] ?? ''),
+					'new'         => $flatten($diff['new'] ?? ''),
+				];
+			}
+			else {
+				$entries[] = [
+					'element' => Text::_($label),
+					'details' => $flatten($value),
+				];
+			}
+		}
+
+		$key = match ($verb) {
+			CrudEnum::CREATE->value => 'created',
+			CrudEnum::DELETE->value => 'deleted',
+			default => 'updated',
+		};
+
+		return json_encode([$key => $entries], JSON_UNESCAPED_UNICODE);
+	}
+
 	/** Adds a user to Joomla as well as the eMundus tables.
 	 *
-	 * @param $user
-	 * @param $other_params
+	 * @param   User      $user
+	 * @param             $other_params
+	 * @param   int       $testing_account
+	 * @param   int|null  $current_user
 	 *
 	 * @return int user_id, 0 if failed
+	 * @throws Exception
 	 */
-	public function adduser($user, $other_params, $testing_account = 0)
+	public function adduser(User $user, $other_params, $testing_account = 0, ?int $current_user = null)
 	{
 		$new_user_id = 0;
+
+		if (empty($current_user))
+		{
+			$current_user = Factory::getApplication()->getIdentity()->id;
+		}
 
 		try {
 			if (!$user->save()) {
@@ -1197,6 +1262,23 @@ class EmundusModelUsers extends ListModel
 
 				$this->addEmundusUser($user->id, $other_params);
 				$new_user_id = $user->id;
+
+				$created = [
+					'COM_EMUNDUS_USERNAME'             => $user->username,
+					'COM_EMUNDUS_EMAIL'                => $user->email,
+					'COM_EMUNDUS_FIRSTNAME'            => $other_params['firstname'] ?? '',
+					'COM_EMUNDUS_LASTNAME'             => $other_params['lastname'] ?? '',
+					'COM_EMUNDUS_PROFILE'              => $other_params['profile'] ?? '',
+					'COM_EMUNDUS_USERS_OTHER_PROFILES' => $other_params['em_oprofiles'] ?? '',
+					'COM_EMUNDUS_GROUPS'               => $other_params['em_groups'] ?? '',
+					'COM_EMUNDUS_ONBOARD_CAMPAIGNS'    => $other_params['em_campaigns'] ?? '',
+					'COM_EMUNDUS_USER_CATEGORY'        => $other_params['user_category'] ?? '',
+				];
+				$created = array_filter($created, static function ($value) {
+					return $value !== '' && $value !== null && $value !== [] && $value !== 0;
+				});
+
+				EmundusModelLogs::log($current_user, $new_user_id, '', ActionEnum::ADD_USER->value, CrudEnum::CREATE->value, 'COM_EMUNDUS_ADD_USER_CREATE', $this->buildLogParams(CrudEnum::CREATE->value, $created));
 			}
 		}
 		catch (Exception $e) {
@@ -1807,7 +1889,7 @@ class EmundusModelUsers extends ListModel
 	{
 
 		try {
-			$query = 'UPDATE `#__emundus_acl` SET `' . $action . '`=' . $value . ' WHERE `id`=' . $id;
+			$query = 'UPDATE `#__emundus_acl` SET `' . $action . '` = ' . $value . ' WHERE `id`=' . $id;
 			$this->db->setQuery($query);
 
 			return $this->db->execute();
@@ -1921,29 +2003,57 @@ class EmundusModelUsers extends ListModel
 		}
 	}
 
-	public function changeActivation($users, $state)
+	/**
+	 * @param   array<int>  $users
+	 * @param   int         $state
+	 * @param   ?int        $current_user
+	 *
+	 * @return bool true only if every given user was updated
+	 */
+	public function changeActivation(array $users, int $state, ?int $current_user = null): bool
 	{
+		$changed = false;
+		$failed  = false;
 
-		try {
+		if (empty($current_user))
+		{
+			$current_user = Factory::getApplication()->getIdentity()->id;
+		}
 
-			foreach ($users as $uid) {
-				$uid   = intval($uid);
-				$query = "UPDATE #__users SET activation = " . $state . " WHERE id =" . $uid;
+		$new_state = Text::_($state === 1 ? 'COM_EMUNDUS_ACTIVATE' : 'COM_EMUNDUS_DEACTIVATE');
 
-				$this->db->setQuery($query);
-				$res = $this->db->execute();
-
-				EmundusModelLogs::log(JFactory::getUser()->id, $uid, null, 20, 'u', 'COM_EMUNDUS_ADD_USER_UPDATE');
+		foreach ($users as $uid) {
+			if (!is_numeric($uid)) {
+				continue;
 			}
 
-			return $res;
+			try {
+				$query = $this->db->getQuery(true);
 
-		}
-		catch (Exception $e) {
-			error_log($e->getMessage(), 0);
+				$query->update('#__users')
+					->set('activation = ' . $state)
+					->where('id = ' . (int) $uid);
 
-			return false;
+				$this->db->setQuery($query);
+				$updated = $this->db->execute();
+			}
+			catch (Exception $e) {
+				Log::add('Error on changing activation of user ' . $uid . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+				$updated = false;
+			}
+
+			if (!$updated) {
+				$failed = true;
+				continue;
+			}
+
+			$changed = true;
+			EmundusModelLogs::log($current_user, (int) $uid, null, ActionEnum::EDIT_USER->value, CrudEnum::UPDATE->value, 'COM_EMUNDUS_ADD_USER_UPDATE', $this->buildLogParams(CrudEnum::UPDATE->value, [
+				'COM_EMUNDUS_BLOCK' => $new_state,
+			]));
 		}
+
+		return $changed && !$failed;
 	}
 
 	/**
@@ -1952,6 +2062,7 @@ class EmundusModelUsers extends ListModel
 	 * @param   null  $user_id
 	 *
 	 * @return bool
+	 * @deprecated no usage, remove later
 	 * @since version
 	 */
 	public function createParam($param, $user_id)
@@ -2068,10 +2179,23 @@ class EmundusModelUsers extends ListModel
 							]
 						);
 						$this->app->getDispatcher()->dispatch('onCallEventHandler', $cehEvent);
+
+						// TODO: log once per batch instead of once per user when #2225 lands
+						$log_params = $this->buildLogParams(CrudEnum::UPDATE->value, [
+							'COM_EMUNDUS_GROUPS' => $groups,
+						]);
+
+						foreach ($userIds as $userId) {
+							if (!class_exists('EmundusModelLogs'))
+							{
+								require_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
+							}
+
+							EmundusModelLogs::log($currentUser->id, $userId, '', ActionEnum::AFFECT_GROUP->value, CrudEnum::UPDATE->value, 'COM_EMUNDUS_AFFECT_GROUP_TO_USER', $log_params);
+						}
 					}
 				}
 				catch (Exception $e) {
-					dd($query->__toString(), $e->getMessage());
 					Log::add('Error on affecting users to groups: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					$affected = false;
 				}
@@ -2081,9 +2205,14 @@ class EmundusModelUsers extends ListModel
 		return $affected;
 	}
 
-	public function removeFromGroups($users, $groups): bool
+	public function removeFromGroups($users, $groups, $currentUser = null): bool
 	{
 		$removed = false;
+
+		if (empty($currentUser))
+		{
+			$currentUser = $this->user;
+		}
 
 		try {
 			if (!empty($users) && !empty($groups)) {
@@ -2095,6 +2224,17 @@ class EmundusModelUsers extends ListModel
 				$this->db->setQuery($query);
 				$removed = $this->db->execute();
 				self::clearUserGroupsCache($users);
+
+				if ($removed) {
+					// TODO: log once per batch instead of once per user when #2225 lands
+					$log_params = $this->buildLogParams(CrudEnum::DELETE->value, [
+						'COM_EMUNDUS_GROUPS' => $groups,
+					]);
+
+					foreach ($users as $userId) {
+						EmundusModelLogs::log($currentUser->id, $userId, '', ActionEnum::AFFECT_GROUP->value, CrudEnum::DELETE->value, 'COM_EMUNDUS_REMOVE_GROUP_FROM_USER', $log_params);
+					}
+				}
 			}
 		}
 		catch (Exception $e) {
@@ -3171,12 +3311,30 @@ class EmundusModelUsers extends ListModel
 			}
 		}
 
+		$updated_fields = [
+			'COM_EMUNDUS_FIRSTNAME'         => $user['firstname'] ?? '',
+			'COM_EMUNDUS_LASTNAME'          => $user['lastname'] ?? '',
+			'COM_EMUNDUS_USERNAME'          => $user['username'] ?? '',
+			'COM_EMUNDUS_EMAIL'             => $user['email'] ?? '',
+			'COM_EMUNDUS_ONBOARD_CAMPAIGNS' => $user['em_campaigns'] ?? '',
+			'COM_EMUNDUS_USER_CATEGORY'     => $user['user_category'] ?? '',
+		];
+		$updated_fields = array_filter($updated_fields, static function ($value) {
+			return $value !== '' && $value !== null && $value !== [] && $value !== 0;
+		});
+
+		EmundusModelLogs::log($current_user->id, $user['id'], '', ActionEnum::EDIT_USER->value, CrudEnum::UPDATE->value, 'COM_EMUNDUS_USER_EDIT', $this->buildLogParams(CrudEnum::UPDATE->value, $updated_fields));
+
 		return true;
 	}
 
-	public function editUserProfiles(int $user_id, int $profile_id, array $other_profiles = [], array $groups = []): bool
+	public function editUserProfiles(int $user_id, int $profile_id, array $other_profiles = [], array $groups = [], ?int $current_user = null): bool
 	{
 		$updated = false;
+
+		if (empty($current_user)) {
+			$current_user = Factory::getApplication()->getIdentity()->id;
+		}
 
 		if (!empty($user_id) && !empty($profile_id)) {
 			$update_tasks = [];
@@ -3261,6 +3419,14 @@ class EmundusModelUsers extends ListModel
 			}
 
 			$updated = !in_array(false, $update_tasks);
+		}
+
+		if ($updated) {
+			EmundusModelLogs::log($current_user, $user_id, '', ActionEnum::EDIT_USER_ROLE->value, CrudEnum::UPDATE->value, 'COM_EMUNDUS_USER_EDIT_PROFILES', $this->buildLogParams(CrudEnum::UPDATE->value, [
+				'COM_EMUNDUS_PROFILE'              => $profile_id,
+				'COM_EMUNDUS_USERS_OTHER_PROFILES' => $other_profiles,
+				'COM_EMUNDUS_GROUPS'               => $groups,
+			]));
 		}
 
 		return $updated;
