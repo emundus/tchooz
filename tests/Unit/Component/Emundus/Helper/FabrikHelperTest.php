@@ -263,6 +263,81 @@ class FabrikHelperTest extends UnitTestCase
 		$this->assertEmpty($values, 'No value should be returned for a file belonging to no campaign');
 	}
 
+	/**
+	 * jos_emundus_users carries a campaign_id and no fnum, yet its rows belong to one applicant:
+	 * reaching them through the campaign returns the data of another applicant of that campaign.
+	 *
+	 * @covers EmundusHelperFabrik::getFabrikValue
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testGetFabrikValueOnUserTableSharingACampaign()
+	{
+		$table_name = 'jos_emundus_users';
+
+		$applicant_firstname   = 'ApplicantOfTheFile';
+		$coordinator_firstname = 'OtherUserOfTheCampaign';
+
+		$backup = $this->readUsersRows([$this->dataset['applicant'], $this->dataset['coordinator']]);
+
+		// Both users are put on the campaign of the file so that a campaign wide lookup would have
+		// two rows to choose from.
+		$this->writeUsersRow($this->dataset['applicant'], $applicant_firstname, (int) $this->dataset['campaign']);
+		$this->writeUsersRow($this->dataset['coordinator'], $coordinator_firstname, (int) $this->dataset['campaign']);
+
+		try {
+			$values = $this->helper->getFabrikValue([$this->dataset['fnum']], $table_name, 'firstname');
+
+			$this->assertArrayHasKey($this->dataset['fnum'], $values, 'A value should be returned for the file');
+			$this->assertEquals($applicant_firstname, $values[$this->dataset['fnum']]['val'], 'The value obtained should belong to the applicant of the file and not to another user of its campaign');
+		}
+		finally {
+			foreach ($backup as $user_id => $row) {
+				$this->writeUsersRow($user_id, $row['firstname'], $row['campaign_id']);
+			}
+		}
+	}
+
+	/**
+	 * @param   int[]  $userIds
+	 *
+	 * @return  array<int, array{firstname: string, campaign_id: int|null}>
+	 */
+	private function readUsersRows(array $userIds): array
+	{
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		$query->select('user_id, firstname, campaign_id')
+			->from($db->quoteName('#__emundus_users'))
+			->where($db->quoteName('user_id') . ' IN (' . implode(',', array_map('intval', $userIds)) . ')');
+		$db->setQuery($query);
+
+		$rows = [];
+		foreach ($db->loadAssocList('user_id') as $user_id => $row) {
+			$rows[(int) $user_id] = [
+				'firstname'   => $row['firstname'],
+				'campaign_id' => $row['campaign_id'] === null ? null : (int) $row['campaign_id'],
+			];
+		}
+
+		return $rows;
+	}
+
+	private function writeUsersRow(int $userId, string $firstname, ?int $campaignId): void
+	{
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		$query->update($db->quoteName('#__emundus_users'))
+			->set($db->quoteName('firstname') . ' = ' . $db->quote($firstname))
+			->set($db->quoteName('campaign_id') . ' = ' . ($campaignId === null ? 'NULL' : (int) $campaignId))
+			->where($db->quoteName('user_id') . ' = ' . (int) $userId);
+
+		$db->setQuery($query);
+		$db->execute();
+	}
+
 	// -------------------------------------------------------------------------
 	// sortElementIdsByDataFreshness
 	// -------------------------------------------------------------------------

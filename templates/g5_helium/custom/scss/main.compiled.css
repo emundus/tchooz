@@ -153928,6 +153928,9 @@ video {
 .\!tw-text-neutral-50 {
     color: var(--neutral-50) !important;
 }
+.\!tw-text-neutral-500 {
+    color: var(--neutral-500) !important;
+}
 .\!tw-text-neutral-600 {
     color: var(--neutral-600) !important;
 }
