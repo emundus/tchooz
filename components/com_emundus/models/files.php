@@ -4520,7 +4520,7 @@ class EmundusModelFiles extends JModelLegacy
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null, $row_id = 0, bool $rawValue = false): array
+	public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null, $row_id = 0, bool $rawValue = false, ?int $date_offset = 1): array
 	{
 		if (!class_exists('EmundusHelperFabrik')) {
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
@@ -4531,7 +4531,7 @@ class EmundusModelFiles extends JModelLegacy
 		if ($rawValue) {
 			$format = ValueFormatEnum::RAW;
 		}
-		return $helper->getFabrikValue($fnums, $tableName, $name, $dateFormat, $row_id, $format);
+		return $helper->getFabrikValue($fnums, $tableName, $name, $dateFormat, $row_id, $format, 0, $date_offset);
 	}
 
 	/**

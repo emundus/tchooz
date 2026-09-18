@@ -1707,7 +1707,10 @@ class EmundusModelApplication extends ListModel
 
 								if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
 									if (!empty($element->content) && ($element->content != '0000-00-00 00:00:00' && $element->content != '0000-00-00')) {
-										$elt = date(EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), strtotime($element->content));
+										// dateOffset can be 0 (UTC) or 1 (local)
+										$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($element, 'date_store_as_local');
+
+										$elt = EmundusHelperDate::displayDate($element->content, EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), $dateOffset);
 									}
 									else {
 										$elt = '';
@@ -1850,7 +1853,10 @@ class EmundusModelApplication extends ListModel
 
 										if (in_array($elements[$j]->plugin,['date','jdate'])) {
 											if (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00')) {
-												$elt = date(EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), strtotime($r_elt));
+												// dateOffset can be 0 (UTC) or 1 (local)
+												$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_store_as_local');
+
+												$elt = EmundusHelperDate::displayDate($r_elt, EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), $dateOffset);
 											}
 											else {
 												$elt = '';
@@ -1977,7 +1983,10 @@ class EmundusModelApplication extends ListModel
 								}
 								if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
 									if (!empty($element->content) && ($element->content != '0000-00-00 00:00:00' && $element->content != '0000-00-00')) {
-										$elt = date(EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), strtotime($element->content));
+										// dateOffset can be 0 (UTC) or 1 (local)
+										$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($element, 'date_store_as_local');
+
+										$elt = EmundusHelperDate::displayDate($element->content, EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), $dateOffset);
 									}
 									else {
 										$elt = '';
@@ -2475,7 +2484,10 @@ class EmundusModelApplication extends ListModel
 
 													if (in_array($elements[$j]->plugin,['date','jdate'])) {
 														if (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00')) {
-															$elt = date(EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), strtotime($r_elt));
+															// dateOffset can be 0 (UTC) or 1 (local)
+															$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_store_as_local');
+
+															$elt = EmundusHelperDate::displayDate($r_elt, EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), $dateOffset);
 														}
 														else {
 															$elt = '';
@@ -2847,7 +2859,10 @@ class EmundusModelApplication extends ListModel
 
 											if (in_array($element->plugin,['date','jdate']) && !empty($element->content)) {
 												if ($element->content != '0000-00-00 00:00:00' && $element->content != '0000-00-00') {
-													$elt = date(EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), strtotime($element->content));
+													// dateOffset can be 0 (UTC) or 1 (local)
+													$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($element, 'date_store_as_local');
+
+													$elt = EmundusHelperDate::displayDate($element->content, EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), $dateOffset);
 												}
 												else {
 													$elt = '';
@@ -4444,7 +4459,10 @@ class EmundusModelApplication extends ListModel
 							foreach ($elements as $element) {
 								if (!empty($element->label) && $element->label != ' ') {
 									if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
-										$elt = date(EmundusHelperFabrik::getFabrikDateParam($element,'date_form_format'), strtotime($element->content));
+										// dateOffset can be 0 (UTC) or 1 (local)
+										$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($element, 'date_store_as_local');
+
+										$elt = EmundusHelperDate::displayDate($element->content, EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), $dateOffset);
 									}
 									else {
 										$elt = $element->content;
@@ -4493,7 +4511,10 @@ class EmundusModelApplication extends ListModel
 
 										if (in_array($elements[$j]->plugin,['date','jdate'])) {
 											if (!empty($elements[$j]->content) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00')) {
-												$elt = date(EmundusHelperFabrik::getFabrikDateParam($elements[$j],'date_form_format'), strtotime($r_elt));
+												// dateOffset can be 0 (UTC) or 1 (local)
+												$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_store_as_local');
+
+												$elt = EmundusHelperDate::displayDate($r_elt, EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), $dateOffset);
 											}
 											else {
 												$elt = '';
@@ -4594,7 +4615,10 @@ class EmundusModelApplication extends ListModel
 
 									if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
 										if (!empty($element->content) && ($element->content != '0000-00-00 00:00:00' && $element->content != '0000-00-00')) {
-											$elt = date(EmundusHelperFabrik::getFabrikDateParam($element,'date_form_format'), strtotime($element->content));
+											// dateOffset can be 0 (UTC) or 1 (local)
+											$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($element, 'date_store_as_local');
+
+											$elt = EmundusHelperDate::displayDate($element->content, EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), $dateOffset);
 										}
 										else {
 											$elt = '';
