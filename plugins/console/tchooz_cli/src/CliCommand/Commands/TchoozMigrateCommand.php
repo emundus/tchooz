@@ -22,6 +22,7 @@ use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Emundus\Plugin\Console\Tchooz\Services\StorageService;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Registry\Registry;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidOptionException;
@@ -163,6 +164,8 @@ class TchoozMigrateCommand extends TchoozCommand
 
 		$this->ioStyle->success("Migration completed successfully!");
 
+		$this->checkAllRightsGroup();
+
 		// Ask if we have to run update command
 		$choice           = new ConfirmationQuestion(
 			'Do you want to run the update command? (yes/no)'
@@ -188,6 +191,67 @@ class TchoozMigrateCommand extends TchoozCommand
 		return Command::SUCCESS;
 	}
 
+
+	/**
+	 * Releases grant each new action to the group set in the all_rights_group parameter of com_emundus. On a
+	 * migrated platform that id can point to a group that does not exist, and the update then fails on the
+	 * jos_emundus_acl foreign key: let the operator compare it with the real groups before updating.
+	 */
+	private function checkAllRightsGroup(): void
+	{
+		$db = $this->databaseService->getDatabase();
+
+		$groups = $db->setQuery(
+			$db->createQuery()
+				->select($db->quoteName(['id', 'label']))
+				->from($db->quoteName('#__emundus_setup_groups'))
+				->order($db->quoteName('id'))
+		)->loadAssocList('id');
+
+		$extensionWhere = [
+			$db->quoteName('element') . ' = ' . $db->quote('com_emundus'),
+			$db->quoteName('type') . ' = ' . $db->quote('component'),
+		];
+
+		$params = new Registry($db->setQuery(
+			$db->createQuery()
+				->select($db->quoteName('params'))
+				->from($db->quoteName('#__extensions'))
+				->where($extensionWhere)
+		)->loadResult());
+
+		$allRightsGroup = (int) $params->get('all_rights_group', 1);
+		$groupExists    = isset($groups[$allRightsGroup]);
+
+		$this->ioStyle->section('All rights group');
+		$this->ioStyle->table(['id', 'label'], array_values($groups));
+		$this->ioStyle->writeln('Current all_rights_group: ' . $allRightsGroup . ' (' . ($groupExists ? $groups[$allRightsGroup]['label'] : 'no such group, the update will fail') . ')');
+
+		if (!$this->ioStyle->confirm('Do you want to change it?', false))
+		{
+			return;
+		}
+
+		$newGroup = (int) $this->ioStyle->ask('New all_rights_group id', null, function ($answer) use ($groups) {
+			if (!isset($groups[(int) $answer]))
+			{
+				throw new \RuntimeException('No group with id ' . $answer);
+			}
+
+			return $answer;
+		});
+
+		$params->set('all_rights_group', $newGroup);
+
+		$db->setQuery(
+			$db->createQuery()
+				->update($db->quoteName('#__extensions'))
+				->set($db->quoteName('params') . ' = ' . $db->quote($params->toString()))
+				->where($extensionWhere)
+		)->execute();
+
+		$this->ioStyle->success('all_rights_group set to ' . $newGroup . ' (' . $groups[$newGroup]['label'] . ')');
+	}
 
 	private function validateProjectPath(string $projectPath): void
 	{
