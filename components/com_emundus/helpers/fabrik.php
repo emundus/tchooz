@@ -3444,12 +3444,18 @@ class EmundusHelperFabrik
 		$fabrikRepository = self::$sharedFabrikRepository;
 
 		$date_format = null;
+		$date_offset = 1;
 		if ($plugin->isDateField())
 		{
 			$date_format_parameter = $plugin->getDateFormatParameter();
+			$date_store_parameter = $plugin->getDateStoreParameter();
 			if (!empty($date_format_parameter))
 			{
 				$date_format = !empty($params->$date_format_parameter) ? $params->$date_format_parameter : 'Y-m-d H:i:s';
+			}
+			if (!empty($date_store_parameter))
+			{
+				$date_offset = !empty($params->$date_store_parameter) ? (int)$params->$date_store_parameter : 1;
 			}
 		}
 
@@ -3463,11 +3469,11 @@ class EmundusHelperFabrik
 
 		if (in_array($plugin, [ElementPluginEnum::DATABASEJOIN, ElementPluginEnum::CASCADINGDROPDOWN]) || $isRepeatGroup)
 		{
-			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id, $exportMode, $separator);
+			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id, $exportMode, $separator, $date_offset);
 		}
 		else
 		{
-			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValue($fnums, $fabrik_element['db_table_name'], $fabrik_element['name'], $date_format, $row_id, $return, $user_id);
+			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValue($fnums, $fabrik_element['db_table_name'], $fabrik_element['name'], $date_format, $row_id, $return, $user_id, $date_offset);
 		}
 
 		// Transform value if needed
@@ -3576,7 +3582,8 @@ class EmundusHelperFabrik
 		?string           $date_format = null,
 		int               $user_id = 0,
 		ExportModeEnum    $exportMode = ExportModeEnum::GROUP_CONCAT,
-		?string           $separator = null
+		?string           $separator = null,
+		?int              $date_offset = 1,
 	)
 	{
 		if (!is_array($fnums) && $fnums !== null)
@@ -3951,7 +3958,8 @@ class EmundusHelperFabrik
 		?string           $dateFormat = null,
 		int               $row_id = 0,
 		ValueFormatEnum   $return = ValueFormatEnum::FORMATTED,
-		int               $user_id = 0
+		int               $user_id = 0,
+		?int              $date_offset = 1,
 	): array
 	{
 		$values = [];
@@ -3984,7 +3992,7 @@ class EmundusHelperFabrik
 		$dateTransformer = null;
 		if (!empty($dateFormat))
 		{
-			$dateTransformer = TransformerFactory::make(ElementPluginEnum::DATE->value, ['date_format' => $dateFormat]);
+			$dateTransformer = TransformerFactory::make(ElementPluginEnum::DATE->value, ['date_format' => $dateFormat, 'date_offset' => $date_offset]);
 		}
 
 		if ($fnum_column_existing && !empty($fnums))
