@@ -1831,6 +1831,7 @@ class EmundusModelEmails extends JModelList
 				];
 				$tags      = $this->setTags($example_user_id, $post, $example_fnum);
 				$mail_body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
+				$mail_subject = preg_replace($tags['patterns'], $tags['replacements'], $mail_subject);
 
 				// Tags from Fabrik ID
 				$element_ids = $this->getFabrikElementIDs($mail_body);
