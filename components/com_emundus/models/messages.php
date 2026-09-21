@@ -14,6 +14,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
+use Joomla\Database\ParameterType;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -42,29 +43,27 @@ class EmundusModelMessages extends ListModel
 		parent::__construct($config);
 	}
 
-	/**
-	 * Gets all published message templates of a certain type.
-	 *
-	 * @param   Int  $type  The type of email to get, type 2 is by default (Templates).
-	 *
-	 * @return Mixed False if the query fails and nothing can be loaded. An array of objects describing the messages. (sender, subject, body, etc..)
-	 */
 	function getAllMessages($type = 2)
 	{
 		$query = $this->db->getQuery(true);
 
+		// Force int-only values in the IN clause (accepts scalar, array or comma-separated string)
+		$types = is_array($type) ? $type : explode(',', (string) $type);
+		$types = array_values(array_unique(array_map('intval', $types)));
+		if (empty($types))
+		{
+			$types = [2];
+		}
+
 		$query->select('*')
 			->from($this->db->quoteName('#__emundus_setup_emails'))
-			->where($this->db->quoteName('type') . ' IN (' . $this->db->Quote($type) . ')')
+			->where($this->db->quoteName('type') . ' IN (' . implode(',', $types) . ')')
 			->andWhere($this->db->quoteName('published') . ' = ' . $this->db->quote(1))
 			->order($this->db->quoteName('subject'));
 
 		try {
-
 			$this->db->setQuery($query);
-
 			return $this->db->loadObjectList();
-
 		}
 		catch (Exception $e) {
 			Log::add('Error getting emails in model/messages at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
@@ -74,104 +73,35 @@ class EmundusModelMessages extends ListModel
 
 	}
 
-
-	/**
-	 * Gets all published message categories of a certain type.
-	 *
-	 * @param   Int  $type  The type of category to get, type 2 is by default (Templates).
-	 *
-	 * @return Mixed False if the query fails and nothing can be loaded. An array of the categories.
-	 */
 	function getAllCategories($type = 2)
 	{
 		$query = $this->db->getQuery(true);
 
+		// Force int-only values in the IN clause (accepts scalar, array or comma-separated string)
+		$types = is_array($type) ? $type : explode(',', (string) $type);
+		$types = array_values(array_unique(array_map('intval', $types)));
+		if (empty($types))
+		{
+			$types = [2];
+		}
+
 		$query->select('DISTINCT(category)')
 			->from($this->db->quoteName('#__emundus_setup_emails'))
-			->where($this->db->quoteName('type') . ' IN (' . $this->db->Quote($type) . ')')
+			->where($this->db->quoteName('type') . ' IN (' . implode(',', $types) . ')')
 			->andWhere($this->db->quoteName('published') . ' = ' . $this->db->quote(1))
 			->order($this->db->quoteName('category'));
 
 		try {
-
 			$this->db->setQuery($query);
-
 			return $this->db->loadColumn();
-
 		}
 		catch (Exception $e) {
 			Log::add('Error getting email categories in model/messages at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
-
 	}
 
-
-	/**
-	 * Gets all published attachments unless a filter is active.
-	 *
-	 * @return Boolean|array False if the query fails and nothing can be loaded. or An array of objects describing attachments.
-	 */
-	function getAttachments()
-	{
-		$session = Factory::getApplication()->getSession();
-
-		$filt_params = $session->get('filt_params');
-
-		$query = $this->db->getQuery(true);
-
-		// Get all info about the attachments in the table.
-		$query->select('a.*')
-			->from($this->db->quoteName('#__emundus_setup_attachments', 'a'));
-
-		$where = '1 = 1 ';
-
-		// if a filter is added then we need to filter out the attachemnts that dont match.
-		if (isset($filt_params['campaign'][0]) && $filt_params['campaign'][0] != '%') {
-
-			// Joins are added in the ifs, even though some are redundant it's better than doing tons of joins when not needed.
-			$query->leftJoin($this->db->quoteName('#__emundus_setup_attachment_profiles', 'ap') . ' ON ' . $this->db->QuoteName('ap.attachment_id') . ' = ' . $this->db->QuoteName('a.id'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_profiles', 'p') . ' ON ' . $this->db->QuoteName('ap.profile_id') . ' = ' . $this->db->QuoteName('p.id'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->db->QuoteName('c.profile_id') . ' = ' . $this->db->QuoteName('p.id'));
-
-			$where .= ' AND ' . $this->db->quoteName('c.id') . ' LIKE ' . $filt_params['campaign'][0];
-
-		}
-		else if (isset($filt_params['programme'][0]) && $filt_params['programme'][0] != '%') {
-
-			$query->leftJoin($this->db->quoteName('#__emundus_setup_attachment_profiles', 'ap') . ' ON ' . $this->db->QuoteName('ap.attachment_id') . ' = ' . $this->db->QuoteName('a.id'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_profiles', 'p') . ' ON ' . $this->db->QuoteName('ap.profile_id') . ' = ' . $this->db->QuoteName('p.id'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->db->QuoteName('c.profile_id') . ' = ' . $this->db->QuoteName('p.id'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'pr') . ' ON ' . $this->db->QuoteName('c.training') . ' = ' . $this->db->QuoteName('pr.code'));
-
-			$where .= ' AND ' . $this->db->quoteName('pr.code') . ' LIKE ' . $this->db->Quote($filt_params['programme'][0]);
-
-		}
-
-		$query->where($where . ' AND ' . $this->db->quoteName('a.published') . '=1');
-
-		try {
-
-			$this->db->setQuery($query);
-
-			return $this->db->loadObjectList();
-
-		}
-		catch (Exception $e) {
-			Log::add('Error getting attachments in model/messages at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
-
-			return false;
-		}
-
-	}
-
-
-	/**
-	 * Gets all published letters unless a filter is active.
-	 *
-	 * @return array An array of objects describing letters.
-	 */
 	function getLetters(): array
 	{
 		$letters = [];
@@ -190,15 +120,15 @@ class EmundusModelMessages extends ListModel
 			if (isset($filt_params['campaign'][0]) && $filt_params['campaign'][0] != '%') {
 
 				$query->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'lrt') . ' ON ' . $this->db->quoteName('lrt.parent_id') . ' = ' . $this->db->quoteName('l.id'))
-					->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'p') . ' ON ' . $this->db->QuoteName('lrt.training') . ' = ' . $this->db->QuoteName('p.code'))
-					->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->db->QuoteName('c.training') . ' = ' . $this->db->QuoteName('p.code'))
-					->where($this->db->quoteName('c.id') . ' LIKE ' . $filt_params['campaign'][0]);
+					->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'p') . ' ON ' . $this->db->quoteName('lrt.training') . ' = ' . $this->db->quoteName('p.code'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->db->quoteName('c.training') . ' = ' . $this->db->quoteName('p.code'))
+					->where($this->db->quoteName('c.id') . ' = ' . (int)$filt_params['campaign'][0]);
 
 			}
 			else if (isset($filt_params['programme'][0]) && $filt_params['programme'][0] != '%') {
 
 				$query->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'lrt') . ' ON ' . $this->db->quoteName('lrt.parent_id') . ' = ' . $this->db->quoteName('l.id'))
-					->where($this->db->quoteName('lrt.training') . ' LIKE ' . $this->db->Quote($filt_params['programme'][0]));
+					->where($this->db->quoteName('lrt.training') . ' = ' . $this->db->quote($filt_params['programme'][0]));
 			}
 		}
 
@@ -274,14 +204,13 @@ class EmundusModelMessages extends ListModel
 			->andWhere($this->db->quoteName('published') . ' = 1');
 
 		if ($category != 'all')
+		{
 			$query->andWhere($this->db->quoteName('category') . ' = ' . $this->db->quote($category));
+		}
 
 		try {
-
 			$this->db->setQuery($query);
-
 			return $this->db->loadObjectList();
-
 		}
 		catch (Exception $e) {
 			Log::add('Error getting emails by category in model/messages at query ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
@@ -303,20 +232,17 @@ class EmundusModelMessages extends ListModel
 	 * @since 3.8.6
 	 *
 	 */
-	function get_upload($fnum, $attachment_id)
+	function get_upload(string $fnum, int $attachment_id)
 	{
 		$query = $this->db->getQuery(true);
 
 		$query->select($this->db->quoteName('filename'))
 			->from($this->db->quoteName('#__emundus_uploads'))
-			->where($this->db->quoteName('attachment_id') . ' = ' . $attachment_id . ' AND ' . $this->db->quoteName('fnum') . ' = ' . $this->db->Quote($fnum));
+			->where($this->db->quoteName('attachment_id') . ' = ' . $attachment_id . ' AND ' . $this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum));
 
 		try {
-
 			$this->db->setQuery($query);
-
 			return $this->db->loadResult();
-
 		}
 		catch (Exception $e) {
 			Log::add('Error getting upload filename in model/messages at query ' . $query, Log::ERROR, 'com_emudus');
@@ -334,18 +260,17 @@ class EmundusModelMessages extends ListModel
 	 * @since 3.8.13
 	 *
 	 */
-	function get_filename($attachment_id)
+	function get_filename(int $attachment_id)
 	{
 		$query = $this->db->getQuery(true);
 
 		$query->select($this->db->quoteName('value'))
 			->from($this->db->quoteName('#__emundus_setup_attachments'))
-			->where($this->db->quoteName('id') . ' = ' . $attachment_id);
+			->where($this->db->quoteName('id') . ' = :attachmentId')
+			->bind(':attachmentId', $attachment_id, ParameterType::INTEGER);
 
 		try {
-
 			$this->db->setQuery($query);
-
 			return $this->db->loadResult();
 		}
 		catch (Exception $e) {
@@ -363,7 +288,7 @@ class EmundusModelMessages extends ListModel
 	 * @return Object|false The letter object as found in the DB, also contains the status and training.
 	 * @since 3.8.6
 	 */
-	function get_letter($letter_id)
+	function get_letter(int $letter_id)
 	{
 		$query = $this->db->getQuery(true);
 
@@ -371,77 +296,15 @@ class EmundusModelMessages extends ListModel
 			->from($this->db->quoteName('#__emundus_setup_letters', 'l'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_status', 'lrs') . ' ON ' . $this->db->quoteName('lrs.parent_id') . ' = ' . $this->db->quoteName('l.id'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'lrt') . ' ON ' . $this->db->quoteName('lrt.parent_id') . ' = ' . $this->db->quoteName('l.id'))
-			->where($this->db->quoteName('l.id') . ' = ' . $letter_id);
+			->where($this->db->quoteName('l.id') . ' = :letterId')
+			->bind(':letterId', $letter_id, ParameterType::INTEGER);
 
 		try {
-
 			$this->db->setQuery($query);
-
 			return $this->db->loadObject();
 		}
 		catch (Exception $e) {
 			Log::add('Error getting upload filename in model/messages at query ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emudus');
-
-			return false;
-		}
-
-	}
-
-	/**
-	 * Gets the names of candidate files.
-	 *
-	 * @param   String The IDs of the candidate files to get the names of
-	 *
-	 * @return Array|false A list of objects containing the names and ids of the candidate files.
-	 * @since 3.8.6
-	 */
-	function getCandidateFileNames($ids)
-	{
-		$query = $this->db->getQuery(true);
-
-		$query->select($this->db->quoteName(['id', 'value']))
-			->from($this->db->quoteName('#__emundus_setup_attachments'))
-			->where($this->db->quoteName('id') . ' IN (' . $ids . ')');
-
-		try {
-
-			$this->db->setQuery($query);
-
-			return $this->db->loadObjectList();
-		}
-		catch (Exception $e) {
-			Log::add('Error getting candidate file attachment name in model/messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
-
-			return false;
-		}
-
-	}
-
-	/**
-	 * Gets the names of candidate files.
-	 *
-	 * @param   String The IDs of the candidate files to get the names of
-	 *
-	 * @return Array|false A list of objects containing the names and ids of the candidate files.
-	 * @since 3.8.6
-	 */
-	function getLetterFileNames($ids)
-	{
-		$query = $this->db->getQuery(true);
-
-		$query->select($this->db->quoteName(['id', 'title']))
-			->from($this->db->quoteName('#__emundus_setup_letters'))
-			->where($this->db->quoteName('id') . ' IN (' . $ids . ')');
-
-		try {
-
-			$this->db->setQuery($query);
-
-			return $this->db->loadObjectList();
-
-		}
-		catch (Exception $e) {
-			Log::add('Error getting letter attachment name in model/messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -458,6 +321,8 @@ class EmundusModelMessages extends ListModel
 	 * @throws \PhpOffice\PhpWord\Exception\CopyFileException
 	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
 	 * @throws \PhpOffice\PhpWord\Exception\Exception
+	 *
+	 * @deprecated Used for old Yousign form plugin, use the new integration instead
 	 */
 	function generateLetterDoc($letter, $fnum)
 	{
@@ -640,97 +505,6 @@ class EmundusModelMessages extends ListModel
 
 			return false;
 		}
-
-	}
-
-
-
-	///// All functions from here are for the messages view
-
-	/** get all contacts the current user has received or sent a message as well as their latest message.
-	 *
-	 * @param   null  $user
-	 *
-	 * @return bool|mixed
-	 */
-	public function getContacts($user = null)
-	{
-		if (empty($user)) {
-			$user = $this->user->id;
-		}
-
-		$query = "SELECT jos_messages.*, sender.name as name_from, sp_sender.label as profile_from, recipient.name as name_to, sp_recipient.label as profile_to, recipientUpload.attachment_id as photo_to, senderUpload.attachment_id as photo_from
-                  FROM jos_messages
-                  INNER JOIN jos_emundus_users AS sender ON sender.user_id = jos_messages.user_id_from
-                  INNER JOIN jos_emundus_users AS recipient ON recipient.user_id = jos_messages.user_id_to
-                  LEFT JOIN jos_emundus_setup_profiles sp_recipient ON sp_recipient.id =  recipient.profile
-                  LEFT JOIN jos_emundus_setup_profiles sp_sender ON sp_sender.id =  sender.profile
-                  LEFT JOIN jos_emundus_uploads recipientUpload ON recipientUpload.user_id = recipient.user_id AND recipientUpload.attachment_id = 10
-                  LEFT JOIN jos_emundus_uploads senderUpload ON senderUpload.user_id = sender.user_id AND senderUpload.attachment_id = 10
-                  INNER JOIN (
-                      SELECT MAX(message_id) AS most_recent_message_id
-                      FROM jos_messages
-                      WHERE (folder_id = 2 OR (folder_id = 3 AND user_id_to = " . $user . "))
-                      GROUP BY CASE WHEN user_id_from > user_id_to
-                          THEN user_id_to
-                          ELSE user_id_from
-                      END,
-                      CASE WHEN user_id_from < user_id_to
-                          THEN user_id_to
-                          ELSE user_id_from
-                      END) T ON T.most_recent_message_id = jos_messages.message_id
-				  WHERE user_id_from = " . $user . "
-                  OR user_id_to = " . $user . "
-                  ORDER BY date_time DESC";
-
-		try {
-			$this->db->setQuery($query);
-			return $this->db->loadObjectList();
-		}
-		catch (Exception $e) {
-			Log::add('Error getting candidate file attachment name in model/messages at query: ' . $query, Log::ERROR, 'com_emundus');
-
-			return false;
-		}
-	}
-
-	/** gets all messages received after the message $lastID
-	 *
-	 * @param         $lastId
-	 * @param   null  $user
-	 * @param   null  $other_user
-	 *
-	 * @return bool|mixed
-	 */
-	public function updateMessages($lastId, $user = null, $other_user = null)
-	{
-
-		if (empty($user)) {
-			$user = $this->user->id;
-		}
-
-		$where = $this->db->quoteName('message_id') . ' > ' . $lastId . ' AND ' . $this->db->quoteName('user_id_to') . ' = ' . $user . ' AND ' . $this->db->quoteName('state') . ' = 1 AND ' . $this->db->quoteName('folder_id') . ' = 2';
-		if (!empty($other_user)) {
-			$where .= ' AND ' . $this->db->quoteName('user_id_from') . ' = ' . $other_user;
-		}
-
-		$query = $this->db->getQuery(true);
-		$query->select('*')
-			->from($this->db->quoteName('#__messages'))
-			->where($where)
-			->order('message_id DESC');
-
-		try {
-			$this->db->setQuery($query);
-
-			return $this->db->loadObjectList();
-		}
-		catch (Exception $e) {
-			Log::add('Error loading messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
-
-			return false;
-		}
-
 	}
 
 
@@ -743,7 +517,6 @@ class EmundusModelMessages extends ListModel
 	 */
 	public function getUnread($sender, $receiver = null)
 	{
-
 		if (empty($receiver)) {
 			$receiver = $this->user->id;
 		}
