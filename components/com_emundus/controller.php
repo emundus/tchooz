@@ -2476,8 +2476,6 @@ class EmundusController extends JControllerLegacy
 					$files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
 				if ($decision == 1)
 					$files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
-				if ($admission == 1)
-					$files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
 
 				if (array_keys($pdf_elements)[0] == "" and $attachments[0] == "" and ($assessment != 1) and ($decision != 1) and ($admission != 1) and ($options[0] != "0")) {
 					$files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
