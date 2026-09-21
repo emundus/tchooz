@@ -4778,12 +4778,32 @@ class EmundusModelUsers extends ListModel
 		return $connected;
 	}
 
+	/**
+	 * @param $user_id
+	 *
+	 * @return bool
+	 */
 	private function connectUserFromId($user_id): bool
 	{
 		$connected = false;
 		$app       = $this->app;
 
 		$query = $this->db->getQuery(true);
+
+		if (!class_exists('EmundusHelperAccess'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+		}
+
+		if (
+			EmundusHelperAccess::asPartnerAccessLevel($user_id) ||
+			EmundusHelperAccess::asCoordinatorAccessLevel($user_id) ||
+			EmundusHelperAccess::asAdministratorAccessLevel($user_id) ||
+			EmundusHelperAccess::asManagerAccessLevel($user_id))
+		{
+			// no direct connection from token to high access level
+			return false;
+		}
 
 		$jUser    = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
 		$instance = $jUser;

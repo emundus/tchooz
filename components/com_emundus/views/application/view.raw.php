@@ -810,69 +810,6 @@ class EmundusViewApplication extends HtmlView
 					}
 					break;
 
-				case 'admission':
-					if (EmundusHelperAccess::asAccessAction(32, 'r', $this->user->id, $fnum))
-					{
-
-						if (!class_exists('EmundusModelAdmission'))
-						{
-							require_once(JPATH_BASE . '/components/com_emundus/models/admission.php');
-						}
-						$m_admission = new EmundusModelAdmission();
-						if (!class_exists('EmundusModelFiles'))
-						{
-							require_once(JPATH_BASE . '/components/com_emundus/models/files.php');
-						}
-						$m_files = new EmundusModelFiles();
-
-						$myAdmission_form_id = $m_files->getAdmissionFormidByFnum($fnum);
-						$admission_form      = $m_admission->getAdmissionFormByProgramme($this->applicationFile->getCampaign()->getProgram()->getCode());
-
-						if (!empty($admission_form))
-						{
-							$admission_row_id = $m_admission->getAdmissionId($admission_form->db_table_name, $fnum);
-						}
-
-						if (empty($myAdmission_form_id))
-						{
-							$this->html_form = '<p>' . Text::_('COM_EMUNDUS_NO_USER_ADMISSION_FORM') . '</p>';
-						}
-						else
-						{
-							$this->html_form = $m_application->getFormByFabrikFormID($myAdmission_form_id, $this->student->id, $fnum);
-						}
-
-						$this->url_form = '';
-						if (!empty($admission_form->form_id))
-						{
-							if (EmundusHelperAccess::asAccessAction(32, 'u', $this->user->id, $fnum))
-							{
-								$this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $admission_form->form_id . '&rowid=' . $admission_row_id . '&' . $admission_form->db_table_name . '___student_id[value]=' . $this->student->id . '&' . $admission_form->db_table_name . '___campaign_id[value]=' . $this->campaign_id . '&' . $admission_form->db_table_name . '___fnum[value]=' . $fnum . '&student_id=' . $this->student->id . '&tmpl=component&iframe=1';
-							}
-							elseif (EmundusHelperAccess::asAccessAction(32, 'r', $this->user->id, $fnum))
-							{
-								$this->url_form = 'index.php?option=com_fabrik&c=form&view=details&formid=' . $admission_form->form_id . '&rowid=' . $admission_row_id . '&' . $admission_form->db_table_name . '___student_id[value]=' . $this->student->id . '&' . $admission_form->db_table_name . '___campaign_id[value]=' . $this->campaign_id . '&' . $admission_form->db_table_name . '___fnum[value]=' . $fnum . '&student_id=' . $this->student->id . '&tmpl=component&iframe=1';
-							}
-							elseif (EmundusHelperAccess::asAccessAction(32, 'c', $this->user->id, $fnum))
-							{
-								$this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $admission_form->form_id . '&rowid=&' . $admission_form->db_table_name . '___student_id[value]=' . $this->student->id . '&' . $admission_form->db_table_name . '___campaign_id[value]=' . $this->campaign_id . '&' . $admission_form->db_table_name . '___fnum[value]=' . $fnum . '&student_id=' . $this->student->id . '&tmpl=component&iframe=1';
-							}
-						}
-
-						$this->form_id = $admission_form->form_id;
-
-						// TRACK THE LOGS
-						EmundusModelLogs::log($this->user->id, $this->sid, $fnum, 32, 'r', 'COM_EMUNDUS_ADMISSION_READ');
-
-					}
-					else
-					{
-						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
-						exit();
-					}
-
-					break;
-
 				case 'interview':
 					if (EmundusHelperAccess::asAccessAction(34, 'r', $this->user->id, $fnum))
 					{
