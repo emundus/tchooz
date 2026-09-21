@@ -16,12 +16,14 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\Utilities\ArrayHelper;
 
 /**
  * eMundus Component Controller
  *
  * @package    Joomla.eMundus
  * @subpackage Components
+ * @deprecated
  */
 class EmundusControllerQcm extends BaseController
 {
@@ -50,11 +52,19 @@ class EmundusControllerQcm extends BaseController
 
 	public function getQuestions()
 	{
-		$results = [];
+		$results = [
+			'status' => false,
+			'error'  => '',
+		];
 
-		$questions = $this->input->getString('questions');
+		if ($this->app->getIdentity()->guest == 1) {
+			echo json_encode((object) $results);
+		}
 
-		// todo: check user is inside qcm environment ?
+		$questions = $this->input->getString('questions', '');
+		$questions = explode(',', $questions);
+		$questions = ArrayHelper::toInteger($questions);
+
 		if (!empty($questions)) {
 			$m_qcm   = $this->model;
 			$results = $m_qcm->getQuestions($questions);
@@ -66,12 +76,10 @@ class EmundusControllerQcm extends BaseController
 
 	public function saveanwser()
 	{
-		$session      = JFactory::getSession();
+		$session      = $this->app->getSession();
 		$current_user = $session->get('emundusUser');
 
 		$m_qcm = $this->model;
-
-
 		$answers  = $this->input->getRaw('answer');
 		$question = $this->input->getString('question');
 		$formid   = $this->input->getString('formid');
@@ -85,7 +93,7 @@ class EmundusControllerQcm extends BaseController
 
 	public function updatepending()
 	{
-		$session      = JFactory::getSession();
+		$session      = $this->app->getSession();
 		$current_user = $session->get('emundusUser');
 
 		$m_qcm = $this->model;
@@ -104,9 +112,7 @@ class EmundusControllerQcm extends BaseController
 	{
 		$m_qcm = $this->model;
 
-
 		$module = $this->input->getInt('module');
-
 		$results = $m_qcm->getIntro($module);
 
 		echo json_encode((object) $results);

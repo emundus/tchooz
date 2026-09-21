@@ -1202,9 +1202,9 @@ class EmundusModelEmails extends JModelList
 				else {
 					if ($isDate) {
 						if($elt['plugin'] == 'jdate') {
-							$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->jdate_form_format);
+							$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->jdate_form_format, 0, false, $params->jdate_store_as_local);
 						} else {
-							$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+							$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format, 0, false, $params->date_store_as_local);
 						}
 					}
 					else {
