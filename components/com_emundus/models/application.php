@@ -2300,7 +2300,7 @@ class EmundusModelApplication extends ListModel
 							continue;
 						}
 
-						$excludedElements = ['id', 'parent_id'];
+						$excludedElements = ['id', 'parent_id', 'time_date', 'fnum', 'user'];
 						$query = $this->_db->getQuery(true);
 						$query->select('fe.id,fe.name,fe.label,fe.plugin,fe.params,fe.default,fe.eval,fe.hidden')
 							->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
