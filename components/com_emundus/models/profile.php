@@ -1439,7 +1439,6 @@ class EmundusModelProfile extends ListModel
 	{
 		include_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 		include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
-		include_once(JPATH_SITE . '/components/com_emundus/models/admission.php');
 		include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
 
 		$m_application = new EmundusModelApplication;
@@ -1577,11 +1576,6 @@ class EmundusModelProfile extends ListModel
 		}
 
 		$session->set('emundusUser', $emundusSession);
-
-		if (isset($admissionInfo))
-		{
-			$app->redirect("index.php?option=com_fabrik&view=form&formid=" . $admissionInfo->form_id . "&Itemid='.$admissionInfo->item_id.'&usekey=fnum&rowid=" . $campaign['fnum']);
-		}
 	}
 
 
