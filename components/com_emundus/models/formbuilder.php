@@ -1630,13 +1630,7 @@ class EmundusModelFormbuilder extends ListModel
 				$dbtype  = $this->h_fabrik->getDBType($plugin);
 				$dbnull  = 'NULL';
 				$default = '';
-				$eval    = 1;
-
-				if ($plugin === 'display' || $plugin === 'panel')
-				{
-					$eval    = 0;
-					$default = 'Ajoutez du texte personnalisé pour vos candidats';
-				}
+				$eval    = 0;
 
 				// Prepare parameters
 				$params = $this->h_fabrik->prepareElementParameters($plugin);
