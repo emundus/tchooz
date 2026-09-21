@@ -22,10 +22,12 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail;
-use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
+use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Services\FileSecurityService;
+use Tchooz\Controller\EmundusController;
 
 /**
  * eMundus Component Controller
@@ -33,21 +35,12 @@ use Tchooz\Services\FileSecurityService;
  * @package    Joomla.eMundus
  * @subpackage Components
  */
-class EmundusControllerMessages extends BaseController
+class EmundusControllerMessages extends EmundusController
 {
-
 	protected $app;
 
 	private $_user;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     \JController
-	 * @since   1.0.0
-	 */
 	function __construct($config = array())
 	{
 		parent::__construct($config);
@@ -62,66 +55,26 @@ class EmundusControllerMessages extends BaseController
 		$this->_user = $this->app->getIdentity();
 	}
 
-	/**
-	 * Get all of the information for an email template.
-	 *
-	 * @since 3.8.6
-	 */
-	function gettemplate()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function setcategory(): void
 	{
-		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'msg' => Text::_('NO_EMAIL_FOUND')];
 
+		$category = $this->input->get->getString('category', 'all');
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			$response['msg'] = Text::_('NO_EMAIL_FOUND');
+		$m_messages = $this->getModel('Messages');
+		$templates = $m_messages->getEmailsByCategory($category);
 
-			$template_id = $this->input->post->getInt('select', null);
-			$m_messages = $this->getModel('Messages');
-			$template = $m_messages->getEmail($template_id);
-
-			if ($template) {
-				$response = ['status' => true, 'msg' => Text::_('EMAIL_FOUND'), 'tmpl' => $template];
-			}
+		if ($templates) {
+			$response = (['status'    => true, 'templates' => $templates]);
 		}
 
 		echo json_encode((object) $response);
 		exit;
-
 	}
 
-	/**
-	 * Get email templates by category.
-	 *
-	 * @since 3.8.6
-	 */
-	public function setcategory()
-	{
-		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			$response['msg'] = Text::_('NO_EMAIL_FOUND');
-			$category = $this->input->get->getString('category', 'all');
-
-			$m_messages = $this->getModel('Messages');
-			$templates = $m_messages->getEmailsByCategory($category);
-
-			if ($templates) {
-				$response = (['status'    => true, 'templates' => $templates]);
-			}
-		}
-
-		echo json_encode((object) $response);
-		exit;
-
-	}
-
-
-	/**
-	 * Upload a file from computer to be attached to the emails sent.
-	 *
-	 * @since 3.8.6
-	 */
-	public function uploadfiletosend()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function uploadfiletosend(): void
 	{
 		$result = ['status' => false, 'file_name' => '', 'file_path' => '', 'msg' => ''];
 
@@ -195,74 +148,10 @@ class EmundusControllerMessages extends BaseController
 
 	}
 
-
-	/**
-	 * Gets the names of the candidate files.
-	 * @since 3.8.6
-	 */
-	public function getcandidatefilenames()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function previewemail(): void
 	{
-
-		$m_messages = $this->getModel('Messages');
-
-
-		$attachment_ids = $this->input->post->getString('attachments', null);
-
-		if (empty($attachment_ids)) {
-			echo json_encode((object) ['status' => false]);
-			exit;
-		}
-
-		$attachments = $m_messages->getCandidateFileNames($attachment_ids);
-
-		if (!$attachments) {
-			echo json_encode((object) ['status' => false]);
-			exit;
-		}
-
-		echo json_encode((object) ['status' => true, 'attachments' => $attachments]);
-		exit;
-
-	}
-
-	/**
-	 * Gets the names of the letter files.
-	 * @since 3.8.6
-	 */
-	public function getletterfilenames()
-	{
-
-		$m_messages = $this->getModel('Messages');
-
-
-		$attachment_ids = $this->input->post->getString('attachments', null);
-
-		if (empty($attachment_ids)) {
-			echo json_encode((object) ['status' => false]);
-			exit;
-		}
-
-		$attachments = $m_messages->getLetterFileNames($attachment_ids);
-
-		if (!$attachments) {
-			echo json_encode((object) ['status' => false]);
-			exit;
-		}
-
-		echo json_encode((object) ['status' => true, 'attachments' => $attachments]);
-		exit;
-
-	}
-
-
-	/**
-	 * Builds an HTML preview of the message to be sent alongside a recap of other information.
-	 *
-	 * @since 3.8.13
-	 */
-	public function previewemail()
-	{
-		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
+		if (!EmundusHelperAccess::asAccessAction(9, 'c', $this->_user->id)) {
 			die(Text::_("ACCESS_DENIED"));
 		}
 
@@ -479,7 +368,7 @@ class EmundusControllerMessages extends BaseController
 		}
 
 		// Files gotten from candidate files, requires attachment read rights.
-		if (EmundusHelperAccess::asAccessAction(4, 'r') && !empty($attachments['candidate_file'])) {
+		if (EmundusHelperAccess::asAccessAction(4, 'r', $this->_user->id) && !empty($attachments['candidate_file'])) {
 
 			// Get from DB by fnum.
 			foreach ($attachments['candidate_file'] as $candidate_file) {
@@ -493,7 +382,7 @@ class EmundusControllerMessages extends BaseController
 		}
 
 		// Files generated using the Letters system. Requires attachment creation and doc generation rights.
-		if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($attachments['setup_letters'])) {
+		if (EmundusHelperAccess::asAccessAction(4, 'c', $this->_user->id) && EmundusHelperAccess::asAccessAction(27, 'c', $this->_user->id) && !empty($attachments['setup_letters'])) {
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
@@ -561,15 +450,10 @@ class EmundusControllerMessages extends BaseController
 		exit;
 	}
 
-
-	/**
-	 * Send the email defined in the dialog.
-	 *
-	 * @since 3.8.6
-	 */
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
 	public function applicantemail()
 	{
-		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
+		if (!EmundusHelperAccess::asAccessAction(9, 'c', $this->_user->id)) {
 			die(Text::_("ACCESS_DENIED"));
 		}
 
@@ -762,7 +646,7 @@ class EmundusControllerMessages extends BaseController
 			}
 
 			// Files generated using the Letters system. Requires attachment creation and doc generation rights.
-			if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($attachments['setup_letters'])) {
+			if (EmundusHelperAccess::asAccessAction(4, 'c', $this->_user->id) && EmundusHelperAccess::asAccessAction(27, 'c', $this->_user->id) && !empty($attachments['setup_letters'])) {
 				foreach ($attachments['setup_letters'] as $setup_letter) {
 					$_letter = $m_eval->getLetterTemplateForFnum($fnum->fnum, [$setup_letter]);
 
@@ -781,7 +665,7 @@ class EmundusControllerMessages extends BaseController
 			}
 
 			// Files gotten from candidate files, requires attachment read rights.
-			if (EmundusHelperAccess::asAccessAction(4, 'r') && !empty($attachments['candidate_file'])) {
+			if (EmundusHelperAccess::asAccessAction(4, 'r', $this->_user->id) && !empty($attachments['candidate_file'])) {
 				// Get from DB by fnum.
 				foreach ($attachments['candidate_file'] as $candidate_file) {
 
@@ -881,15 +765,10 @@ class EmundusControllerMessages extends BaseController
 		exit;
 	}
 
-
-	/**
-	 * Send an email to a user, regardless of fnum.
-	 *
-	 * @since 3.8.10
-	 */
-	public function useremail()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function useremail(): void
 	{
-		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
+		if (!EmundusHelperAccess::asAccessAction(9, 'c', $this->_user->id)) {
 			die(Text::_("ACCESS_DENIED"));
 		}
 
@@ -1087,16 +966,6 @@ class EmundusControllerMessages extends BaseController
 		exit;
 	}
 
-	/** The generic function used for sending emails.
-	 *
-	 * @param          $fnum
-	 * @param          $email_id
-	 * @param   null   $post
-	 * @param   array  $attachments
-	 * @param   bool   $bcc
-	 *
-	 * @return bool
-	 */
 	function sendEmail($fnum, $email_id, $post = null, $attachments = [], $bcc = false, $sender_id = null) {
 		$sent = false;
 		$user = $this->app->getIdentity();
@@ -1140,438 +1009,8 @@ class EmundusControllerMessages extends BaseController
 		return $sent;
 	}
 
-/////// chat functions
-
-	/** send message in chat
-	 *
-	 */
-	public function sendMessage()
-	{
-
-		$user       = JFactory::getSession()->get('emundusUser');
-		$m_messages = $this->getModel('Messages');
-
-		$message    = $this->input->post->getRaw('message', null);
-		$receiver   = $this->input->post->get('receiver', null);
-		$message    = str_replace("&nbsp;", "", $message);
-		$cifre_link = $this->input->post->get('cifre_link', null);
-
-		// Get receiver info
-		$m_profile        = $this->getModel('Profile');
-		$receiver_profile = $m_profile->getProfileByApplicant($receiver);
-		$user_id          = JFactory::getUser($receiver)->id;
-		$email            = JFactory::getUser($receiver)->email;
-
-		// Send notification email to the receiver
-		$post = [
-			'USER_NAME' => strtoupper($receiver_profile["lastname"]) . ' ' . ucfirst($receiver_profile["firstname"]),
-			'SENDER'    => strtoupper($user->lastname) . ' ' . ucfirst($user->firstname),
-			'MESSAGE'   => $message
-		];
-
-		if (!empty($cifre_link)) {
-
-			// Find out if we should notify the receiver using the CIFRE notification system.
-			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'cifre.php');
-			$m_cifre = $this->getModel('Cifre');
-			$notify  = $m_cifre->checkNotify($user->id, $receiver);
-			if (!empty($notify)) {
-				$this->sendEmailNoFnum($email, 'notification_mail', $post, $user_id);
-			}
-
-
-		}
-		else {
-			// check if the receiver is online
-			// IF he isn't connected we send them a notification email
-			$m_user       = $this->getModel('Users');
-			$online_users = $m_user->getOnlineUsers();
-			if (!in_array($receiver, $online_users)) {
-				$this->sendEmailNoFnum($email, 'notification_mail', $post, $user_id);
-			}
-		}
-
-
-		echo json_encode((object) ['status' => $m_messages->sendMessage($receiver, $message)]);
-		exit;
-	}
-
-
-	/** send message in chatroom
-	 *
-	 */
-	public function sendChatroomMessage()
-	{
-
-		$m_messages = $this->getModel('Messages');
-
-		$message  = $this->input->post->getRaw('message', null);
-		$chatroom = $this->input->post->getInt('chatroom', null);
-		$message  = str_replace("&nbsp;", "", $message);
-
-		// Here we need to notify those that have a bell based on the link.
-		if ($m_messages->sendChatroomMessage($chatroom, $message)) {
-
-			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'cifre.php');
-			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-			$m_cifre   = $this->getModel('Cifre');
-			$m_profile = $this->getModel('Profile');
-
-			$users        = $m_messages->getChatroomUsersId($chatroom);
-			$current_user = JFactory::getSession()->get('emundusUser');
-			foreach ($users as $receiver) {
-
-				if ($receiver === $current_user->id) {
-					continue;
-				}
-
-				$receiver_profile = $m_profile->getProfileByApplicant($receiver);
-				// Send notification email to the receiver
-				$post = [
-					'USER_NAME' => strtoupper($receiver_profile["lastname"]) . ' ' . ucfirst($receiver_profile["firstname"]),
-					'SENDER'    => strtoupper($current_user->lastname) . ' ' . ucfirst($current_user->firstname),
-					'MESSAGE'   => $message
-				];
-
-				// Find out if we should notify the receiver using the CIFRE notification system.
-				$notify = $m_cifre->checkNotify($current_user->id, $receiver);
-				if (!empty($notify)) {
-					$this->sendEmailNoFnum(JFactory::getUser($receiver)->email, 'notification_mail', $post, JFactory::getUser($receiver)->id);
-				}
-			}
-
-		}
-
-		echo json_encode((object) ['status' => true]);
-		exit;
-	}
-
-	/** update message list
-	 *
-	 */
-	public function updatemessages()
-	{
-
-		$m_messages = $this->getModel('Messages');
-
-
-		$lastId     = $this->input->post->get('id', null);
-		$other_user = $this->input->post->get('user', null);
-		$chatroom   = $this->input->post->getInt('chatroom', null);
-
-		if (empty($other_user) && !empty($chatroom)) {
-			$messages = $m_messages->updateChatroomMessages($lastId, $chatroom);
-		}
-		else {
-			$messages = $m_messages->updateMessages($lastId, null, $other_user);
-		}
-
-		if (!empty($messages)) {
-			foreach ($messages as $message) {
-				$message->date_time = date("d/m/Y", strtotime($message->date_time));
-			}
-			echo json_encode((object) ['status' => 'true', 'messages' => $messages]);
-		}
-		else {
-			echo json_encode((object) ['status' => 'false']);
-		}
-
-		exit;
-	}
-
-
-	public function getTypeAttachment($id)
-	{
-		$db = JFactory::getDbo();
-
-		$query = $db->getQuery(true);
-
-		$query
-			->select('esa.*')
-			->from($db->quoteName('#__emundus_setup_attachments', 'esa'))
-			->where($db->quoteName('esa.id') . ' = ' . $id);
-
-		$db->setQuery($query);
-
-		return $db->loadObjectList();
-	}
-
-
-	public function getTypeLetters($id)
-	{
-		$db = JFactory::getDbo();
-
-		$query = $db->getQuery(true);
-
-		$query
-			->select('esl.*')
-			->from($db->quoteName('#__emundus_setup_letters', 'esl'))
-			->where($db->quoteName('esl.id') . ' = ' . $id);
-
-		$db->setQuery($query);
-
-		return $db->loadObjectList();
-	}
-
-	// get recap info by fnum
-	public function getrecapbyfnum()
-	{
-
-
-		$fnum = $this->input->post->getRaw('fnum', null);
-
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-		$_mFiles = $this->getModel('Files');
-
-		$_recap = $_mFiles->getFnumInfos($fnum);
-
-
-		/// call to com_emundus_onbooard/settings
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'settings.php');
-		$_mSettings = $this->getModel('Settings');
-
-		echo json_encode((object) ['status' => true, 'recap' => $_recap, 'color' => $_mSettings->getColorClasses()[$_recap['class']]]);
-		exit;
-	}
-
-	// get message (subject, preview) + all attached documents by fnums
-	public function getmessagerecapbyfnum()
-	{
-
-
-		$fnum = $this->input->post->getRaw('fnum', null);
-
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-		$_mEmails = $this->getModel('Messages');
-		$_emails  = $_mEmails->getMessageRecapByFnum($fnum);
-
-		if ($_emails) {
-			echo json_encode((object) ['status' => true, 'email_recap' => $_emails]);
-		}
-		else {
-			echo json_encode((object) ['status' => false, 'email_recap' => $_emails]);
-		}
-		exit;
-	}
-
-	/// send email to candidat with attached letters
-	public function sendemailtocandidat()
-	{
-
-
-		$fnum = $this->input->post->getRaw('fnum', null);
-
-		$raw               = $this->input->post->getRaw('raw', null);
-		$template_email_id = $this->input->post->getString('tmpl', null);
-
-		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
-			die(Text::_("ACCESS_DENIED"));
-		}
-
-		require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
-		$h_emails      = new EmundusHelperEmails();
-		$can_send_mail = $h_emails->assertCanSendMailToUser(null, $fnum);
-		if (!$can_send_mail) {
-			echo json_encode(['status' => false, 'msg' => 'Can not send mail to this user']);
-			exit;
-		}
-
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-
-		$m_emails   = $this->getModel('Emails');
-		$m_users    = $this->getModel('Users');
-		$m_files    = $this->getModel('Files');
-		$m_campaign = $this->getModel('Campaign');
-		$_meval     = $this->getModel('Evaluation');
-
-		$user   = JFactory::getUser();
-		$config = JFactory::getConfig();
-
-		// Get default mail sender info
-		$mail_from_sys      = $config->get('mailfrom');
-		$mail_from_sys_name = $config->get('fromname');
-
-		// If no mail sender info is provided, we use the system global config.
-		$mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
-		$mail_from      = $this->input->post->getString('mail_from', $mail_from_sys);
-
-		/// end of default mail sender
-
-		/// from fnum --> detect candidat email
-		$fnum_info = $m_files->getFnumInfos($fnum);
-
-		// get programme info
-		$programme = $m_campaign->getProgrammeByTraining($fnum_info['training']);
-
-		$toAttach = [];
-		$post     = [
-			'FNUM'           => $fnum_info['fnum'],
-			'USER_NAME'      => $fnum_info['name'],
-			'COURSE_LABEL'   => $programme->label,
-			'CAMPAIGN_LABEL' => $fnum_info['label'],
-			'CAMPAIGN_YEAR'  => $fnum_info['year'],
-			'CAMPAIGN_START' => $fnum_info['start_date'],
-			'CAMPAIGN_END'   => $fnum_info['end_date'],
-			'SITE_URL'       => JURI::base(),
-			'USER_EMAIL'     => $fnum_info['email'],
-		];
-
-		/* old code
-		$body = $m_emails->setTagsFabrik($email_recap[0]->message, [$fnum_info['fnum']]);
-		$subject = $m_emails->setTagsFabrik($email_recap[0]->subject, [$fnum_info['fnum']]);
-		*/
-
-		/* get email template */
-		$template_id = $raw['template'];
-		$letters     = $raw['files'];
-		$types       = $raw['types'];
-
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName('Template'))
-			->from($db->quoteName('#__emundus_email_templates'))
-			->where($db->quoteName('id') . ' = ' . $template_id);
-		$db->setQuery($query);
-		$template = $db->loadResult();
-
-		/* get email template */
-
-		$body    = $m_emails->setTagsFabrik($raw['content'], [$fnum_info['fnum']]);
-		$subject = $m_emails->setTagsFabrik($raw['title'], [$fnum_info['fnum']]);
-
-		/* get tags from subject, body, mail from and mail address */
-		$tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum_info['fnum'], '', $mail_from . $mail_from_name . $subject . $body);
-
-		/* attach email template to body */
-		$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template);
-
-		// Tags are replaced with their corresponding values using the PHP preg_replace function.
-		$subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
-		$body    = preg_replace($tags['patterns'], $tags['replacements'], $body);
-
-		$mail_from      = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
-		$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
-
-		// If the email sender has the same domain as the system sender address.
-		/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
-			$mail_from_address = $mail_from;
-		} else {*/
-		$mail_from_address = $mail_from_sys;
-		//}
-
-		// Set sender
-		$sender = [
-			$mail_from_address,
-			$mail_from_name
-		];
-
-		// Check if user defined a cc address
-		$cc           = [];
-		$emundus_user = $m_users->getUserById($fnum_info['applicant_id'])[0];
-		if (isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
-			if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
-				$cc[] = $emundus_user->email_cc;
-			}
-		}
-
-		// Configure email sender
-		$mailer = JFactory::getMailer();
-		$mailer->setSender($sender);
-		$mailer->addReplyTo($mail_from, $mail_from_name);
-		$mailer->addRecipient($fnum_info['email']);
-		if (!empty($cc)) {
-			$mailer->addCC($cc);
-		}
-		$mailer->setSubject($subject);
-		$mailer->isHTML(true);
-		$mailer->Encoding = 'base64';
-		$mailer->setBody($body);
-
-		$attachments = $_meval->getLettersByFnums($fnum, true);
-
-		$attachment_ids = array();
-		foreach ($attachments as $key => $value) {
-			$attachment_ids[] = $value['id'];
-		}
-
-		$attachment_ids = array_unique(array_filter($attachment_ids));
-
-		/// get attachment letters by fnum
-		$files     = '<ul>';
-		$file_path = [];
-
-		foreach ($letters as $letter) {
-			$folder_id = current($m_files->getFnumsInfos(array($fnum)))['applicant_id'];
-
-			$file_path[] = EMUNDUS_PATH_ABS . $folder_id . DS . $letter;
-		}
-
-		foreach ($types as $type) {
-			$files .= '<li>' . $type . '</li>';
-		}
-
-		$mailer->addAttachment($file_path);
-		$send = $mailer->Send();
-
-		$this->app->triggerEvent('onAfterEmailSend', ['fnum', 'template_id']);
-		$this->app->triggerEvent('onCallEventHandler', ['onAfterEmailSend', ['fnum' => $fnum, 'template_id' => $template_email_id]]);
-		/* track the log of email */
-		if ($send !== true) {
-			$failed[] = $fnum_info['email'];
-			echo 'Error sending email: ' . $send->__toString();
-			Log::add($send->__toString(), Log::ERROR, 'com_emundus');
-		}
-		else {
-			$sent[] = $fnum_info['email'];
-			$log    = [
-				'user_id_from' => $user->id,
-				'user_id_to'   => $fnum_info['applicant_id'],
-				'subject'      => $subject,
-				'message' => $body . $files,
-				'type'         => (empty($template->type)) ? '' : $template->type,
-				'email_id'     => $template_email_id,
-				'email_to' => $fnum_info['email']
-			];
-			$m_emails->logEmail($log, $fnum);
-		}
-		// Due to mailtrap now limiting emails sent to fast, we add a long sleep.
-		if ($config->get('smtphost') === 'smtp.mailtrap.io') {
-			sleep(15);
-		}
-
-		echo json_encode(['status' => true, 'email' => $fnum_info['email']]);
-		exit;
-	}
-
-	/// set tags to fnum --> params :: fnum
-	public function addtagsbyfnum()
-	{
-
-
-		$fnum = $this->input->post->getRaw('fnum');
-		$tmpl = $this->input->post->getRaw('tmpl');
-
-		if (!empty($fnum)) {
-			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'messages.php');
-			$_mMessages = $this->getModel('Messages');
-
-			$_tags = $_mMessages->addTagsByFnum($fnum, $tmpl);
-			echo json_encode(['status' => true]);
-		}
-		else {
-			echo json_encode(['status' => false]);
-		}
-		exit;
-	}
-
-	// get all documents being letters
-	public function getalldocumentsletters()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getalldocumentsletters(): void
 	{
 		$_mMessages = $this->getModel('Messages');
 		$_documents = $_mMessages->getAllDocumentsLetters();
@@ -1585,83 +1024,45 @@ class EmundusControllerMessages extends BaseController
 		exit;
 	}
 
-	// get attachments by profiles
-	public function getattachmentsbyprofiles()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getattachmentsbyprofiles(): void
 	{
 		$response = ['status' => false, 'attachments' => null];
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			$fnums = explode(',', $this->input->post->getRaw('fnums'));
-			$_mMessages = $this->getModel('Messages');
-			$_results   = $_mMessages->getAttachmentsByProfiles($fnums);
-			if ($_results) {
-				$response = ['status' => true, 'attachments' => $_results];
-			}
+		$fnums = explode(',', $this->input->post->getRaw('fnums'));
+		$_mMessages = $this->getModel('Messages');
+		$_results   = $_mMessages->getAttachmentsByProfiles($fnums);
+		if ($_results) {
+			$response = ['status' => true, 'attachments' => $_results];
 		}
 
 		echo json_encode($response);
 		exit;
 	}
 
-	// get all attachments
-	public function getallattachments()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getallattachments(): void
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			$m_messages = $this->getModel('Messages');
-			$_documents = $m_messages->getAllAttachments();
+		$m_messages = $this->getModel('Messages');
+		$_documents = $m_messages->getAllAttachments();
 
-			if ($_documents) {
-				$response = ['status' => true, 'attachments' => $_documents];
-			} else {
-				$response = ['status' => false, 'attachments' => null];
-			}
+		if ($_documents) {
+			$response = ['status' => true, 'attachments' => $_documents];
+		} else {
+			$response = ['status' => false, 'attachments' => null];
 		}
 
 		echo json_encode($response);
 		exit;
 	}
 
-	/// set tags to fnums --> params : [fnums]
-	public function addtagsbyfnums()
-	{
-		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
-
-		$valid_fnums = [];
-
-		/// get data from jinput
-		$data = $this->input->post->getRaw('data');
-
-		/// get fnums and email tmpl
-		$fnums      = explode(',', $data['recipients']);
-		$email_tmpl = $data['template'];
-
-		foreach ($fnums as $fnum) {
-			if (EmundusHelperAccess::asAccessAction(14, 'c', $fnum)) {
-				$valid_fnums[] = $fnum;
-			}
-		}
-
-		if (!empty($valid_fnums)) {
-			$response['msg'] = Text::_('FAILED');
-
-			$_mMessages = $this->getModel('Messages');
-			$tagged = $_mMessages->addTagsByFnums($fnums, $email_tmpl);
-
-			if ($tagged) {
-				$response = ['status' => true, 'msg' => Text::_('SUCCESS')];
-			}
-		}
-
-		echo json_encode($response);
-		exit;
-	}
-
-	public function getAllCategories()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getAllCategories(): void
 	{
 		$res = ['status' => true, 'data' => []];
-		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
+		if (!EmundusHelperAccess::asAccessAction(9, 'c', $this->_user->id)) {
 			$res['status'] = false;
 			echo json_encode($res);
 			exit;
@@ -1669,22 +1070,6 @@ class EmundusControllerMessages extends BaseController
 
 		$_mMessages  = $this->getModel('Messages');
 		$res['data'] = $_mMessages->getAllCategories();
-
-		echo json_encode($res);
-		exit;
-	}
-
-	public function getAllMessages()
-	{
-		$res = ['status' => true, 'data' => []];
-		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
-			$res['status'] = false;
-			echo json_encode($res);
-			exit;
-		}
-
-		$_mMessages  = $this->getModel('Messages');
-		$res['data'] = $_mMessages->getAllMessages();
 
 		echo json_encode($res);
 		exit;

@@ -136,6 +136,16 @@ enum ElementPluginEnum: string
 		};
 	}
 
+	public function getDateStoreParameter(): string
+	{
+		return match ($this)
+		{
+			self::DATE => 'date_store_as_local',
+			self::JDATE => 'jdate_store_as_local',
+			default => '',
+		};
+	}
+
 	public function isDateField(): bool
 	{
 		return match ($this)
