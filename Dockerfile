@@ -1,4 +1,4 @@
-FROM joomla:5-php8.2-apache
+FROM joomla:5.4-php8.3-apache
 LABEL maintainer="eMundus <dev@emundus.fr>, EMUNDUS Development Team <support@emundus.fr>"
 
 # Enable Apache Rewrite Module
