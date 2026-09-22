@@ -40,9 +40,9 @@ else {
     <input type="hidden" id="fnum_hidden" value="<?php echo $this->fnum ?>">
 
     <div class="row">
-        <div class="panel panel-default widget em-container-logs <?php if ($this->euser->applicant == 1) : ?>tw-bg-transparent<?php else : ?>tw-bg-neutral-100<?php endif; ?>">
+        <div class="panel panel-default widget em-container-logs <?php if ($this->_user->applicant == 1) : ?>tw-bg-transparent<?php else : ?>tw-bg-neutral-100<?php endif; ?>">
 
-			<?php if ($this->euser->applicant == 0) : ?>
+			<?php if ($this->_user->applicant == 0) : ?>
                 <div class="panel-heading em-container-logs-heading !tw-bg-profile-full">
 
                     <h3 class="panel-title">
@@ -62,7 +62,7 @@ else {
 
             <br class="panel-body em-container-logs-body">
 
-	        <?php if ($this->euser->applicant == 0) : ?>
+	        <?php if ($this->_user->applicant == 0) : ?>
                 <div class="view-type tw-flex tw-items-center tw-justify-end tw-mr-4 ">
                     <span style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center; background: var(--neutral-0);"
                           id="table_view_button"
@@ -76,7 +76,7 @@ else {
             <?php endif; ?>
 
 			<?php if (!empty($this->fileLogs)) : ?>
-				<?php if ($this->euser->applicant == 0) : ?>
+				<?php if ($this->_user->applicant == 0) : ?>
                     <div id="filters-logs" class="em-flex-row">
                         <!-- add CRUD filters (multi-chosen) -->
                         <div id="actions" class="em-w-33 em-mr-16">
@@ -125,7 +125,7 @@ else {
                     </div>
 				<?php endif; ?>
 
-                <div class="<?php if ($this->euser->applicant == 1) : ?>!tw-pl-0<?php endif; ?> logs_grids <?php if ($this->euser->applicant == 0) : ?>tw-pr-1 tw-hidden<?php endif; ?>">
+                <div class="<?php if ($this->_user->applicant == 1) : ?>!tw-pl-0<?php endif; ?> logs_grids <?php if ($this->_user->applicant == 0) : ?>tw-pr-1 tw-hidden<?php endif; ?>">
                     <div id="logs_list_grid" class="tw-flex tw-flex-col tw-gap-3">
                         <?php foreach ($this->fileLogs as $log) : ?>
                             <div class="tw-border-1 tw-border-neutral-300 tw-shadow-sm tw-py-4 tw-px-6 tw-bg-white tw-rounded-lg">
@@ -151,7 +151,7 @@ else {
 
                 </div>
 
-                <table class="table table-hover logs_table <?php if ($this->euser->applicant == 1) : ?>tw-hidden<?php endif; ?>">
+                <table class="table table-hover logs_table <?php if ($this->_user->applicant == 1) : ?>tw-hidden<?php endif; ?>">
                     <caption class="hidden"><?= Text::_('COM_EMUNDUS_LOGS_CAPTION'); ?></caption>
                     <thead>
                     <tr>

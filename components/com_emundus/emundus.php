@@ -1466,6 +1466,9 @@ Text::script('COM_EMUNDUS_IFRAME_FORMBUILDER_PREVIEW_TITLE');
 Text::script('COM_EMUNDUS_VIEWS_TABLE_VIEW');
 Text::script('COM_EMUNDUS_VIEWS_GRID_VIEW');
 
+Text::script('COM_EMUNDUS_RESOURCES_PREVIEW_PREVIOUS');
+Text::script('COM_EMUNDUS_RESOURCES_PREVIEW_NEXT');
+
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
 foreach ($actionlog_translation_tags as $tag => $translation)
