@@ -405,9 +405,9 @@ module.exports = {
                 },
 
                 '.btn-info': {
-                    backgroundColor: 'var(--blue-500)',
+                    backgroundColor: 'var(--blue-600)',
                     color: 'var(--neutral-0) !important',
-                    border: '1px solid var(--blue-500) !important',
+                    border: '1px solid var(--blue-600) !important',
                     textShadow: 'none',
                     textTransform: 'math-auto',
                     textDecoration: 'none',
@@ -427,14 +427,14 @@ module.exports = {
                     boxShadow: 'none',
 
                     '&:hover': {
-                        backgroundColor: 'color-mix(in srgb, var(--blue-500), var(--neutral-900) 30%) !important',
+                        backgroundColor: 'color-mix(in srgb, var(--blue-600), var(--neutral-900) 30%) !important',
                         color: 'var(--neutral-0) !important',
-                        border: '1px solid var(--blue-500) !important',
+                        border: '1px solid var(--blue-600) !important',
                         textDecoration: 'none',
                     },
 
                     '&:active': {
-                        backgroundColor: 'color-mix(in srgb, var(--blue-500), var(--neutral-900) 60%)'
+                        backgroundColor: 'color-mix(in srgb, var(--blue-600), var(--neutral-900) 60%)'
                     },
 
                     '&:disabled': {
