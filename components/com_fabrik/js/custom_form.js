@@ -215,6 +215,12 @@ requirejs(['fab/fabrik'], function () {
         }
       }
     }
+
+    // Set columnheader role to all td with class day-name
+    let calendarDayNames = document.querySelectorAll('td.day-name');
+    calendarDayNames.forEach((dayName) => {
+      dayName.setAttribute('role', 'columnheader');
+    })
   });
 
   Fabrik.addEvent('fabrik.form.group.duplicate.end', function (form, event) {
