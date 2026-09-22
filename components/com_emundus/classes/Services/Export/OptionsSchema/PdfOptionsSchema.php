@@ -47,21 +47,29 @@ class PdfOptionsSchema extends AbstractOptionsSchema
 		];
 	}
 
-	protected function getFormatDefaults(): array
+	/**
+	 * Filename template used when the export does not carry one. The untouched `application_form_pdf`
+	 * default gets [FNUM] appended so two files never render to the same name.
+	 */
+	public static function defaultFilename(): string
 	{
-		$emConfig            = ComponentHelper::getParams('com_emundus');
-		$applicationFormName = (string) $emConfig->get('application_form_name', '');
+		$applicationFormName = (string) ComponentHelper::getParams('com_emundus')->get('application_form_name', '');
 
 		if ($applicationFormName === 'application_form_pdf')
 		{
 			$applicationFormName .= '_[FNUM]';
 		}
 
+		return $applicationFormName;
+	}
+
+	protected function getFormatDefaults(): array
+	{
 		return [
 			self::DISPLAY_HEADER         => true,
 			self::DISPLAY_PAGE_NUMBERS   => true,
 			self::DISPLAY_EVALUATOR_NAME => true,
-			self::FILENAME               => $applicationFormName,
+			self::FILENAME               => self::defaultFilename(),
 		];
 	}
 }

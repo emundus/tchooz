@@ -194,7 +194,7 @@ if (!empty($this->custom_title)) :?>
                          </div>';
 			}
 
-			$div .= '<table id="' . $attachment->id . '" class="table em-fieldset-attachment-table">';
+			$div .= '<table role="presentation" id="' . $attachment->id . '" class="table em-fieldset-attachment-table">';
 			if ($attachment->nb > 0) {
 				foreach ($attachment->liste as $key => $item) {
 					$nb  = $key + 1;
@@ -214,13 +214,13 @@ if (!empty($this->custom_title)) :?>
 					$div .= '<tr class="em-added-files">
                     <td class="em-flex-row">';
 					if ($item->can_be_viewed == 1) {
-						$div .= '<a class="em-flex-row em-mr-16 tw-btn-tertiary" href="' . $chemin . $this->_user->id . '/' . $item->filename . '" target="_blank"><span class="material-symbols-outlined em-mr-4">visibility</span>' . Text::_('COM_EMUNDUS_ATTACHMENTS_VIEW') . '</a>';
+						$div .= '<a class="em-flex-row em-mr-16 tw-btn-info" href="' . $chemin . $this->_user->id . '/' . $item->filename . '" target="_blank"><span class="material-symbols-outlined em-mr-4">visibility</span>' . Text::_('COM_EMUNDUS_ATTACHMENTS_VIEW') . '</a>';
 					}
 					else {
 						$div .= Text::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW') . '</br>';
 					}
 					if (($item->can_be_deleted == 1 || $item->is_validated == "0") && !$block_upload) {
-						$div .= '<a onclick="deletedoc(this)" class="em-flex-row em-error-button tw-cursor-pointer" data-url="' . JRoute::_('index.php?option=com_emundus&task=delete&uid=' . $item->id . '&aid=' . $item->attachment_id . '&duplicate=' . $attachment->duplicate . '&nb=' . $attachment->nb . '&Itemid=' . $itemid . '#a' . $attachment->id) . '">
+						$div .= '<a onclick="deletedoc(this)" role="button" tabindex="0" aria-label="'. Text::_('COM_EMUNDUS_ACTIONS_DELETE').'" class="em-flex-row tw-btn-red tw-cursor-pointer" data-url="' . JRoute::_('index.php?option=com_emundus&task=delete&uid=' . $item->id . '&aid=' . $item->attachment_id . '&duplicate=' . $attachment->duplicate . '&nb=' . $attachment->nb . '&Itemid=' . $itemid . '#a' . $attachment->id) . '">
 						<span class="material-symbols-outlined em-mr-4">delete_outline</span> ' . Text::_('COM_EMUNDUS_ACTIONS_DELETE') . '</a>';
 					}
 					else {

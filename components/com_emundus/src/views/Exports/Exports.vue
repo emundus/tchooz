@@ -1,12 +1,13 @@
 <script>
 import { defineComponent } from 'vue';
 import exportService from '@/services/export.js';
+import { useGlobalStore } from '@/stores/global.js';
 import alerts from '@/mixins/alerts.js';
 import Stepper from '@/components/Molecules/Stepper.vue';
 import FormatSelector from '@/components/Atoms/FormatSelector.vue';
 import Tabs from '@/components/Utils/Tabs.vue';
 import Dropdown from '@/components/Molecules/Dropdown.vue';
-import { Alert, Button, Icon, MenuItem } from '@emundus/ui';
+import { Alert, Button, Checkbox, Icon, MenuItem } from '@emundus/ui';
 import ExportContent from '@/components/Exports/ExportContent.vue';
 import ExportOptions from '@/components/Exports/ExportOptions.vue';
 import ExportResume from '@/components/Exports/ExportResume.vue';
@@ -16,6 +17,7 @@ export default defineComponent({
 	name: 'Exports',
 	components: {
 		Icon,
+		Checkbox,
 		ExportContent,
 		ExportOptions,
 		ExportResume,
@@ -56,6 +58,7 @@ export default defineComponent({
 			exportName: '',
 			exportId: 0,
 			newTemplate: false,
+			systemTemplate: false,
 
 			// Pending template deletion (kept until the undo window closes, then committed to the backend)
 			pendingDelete: null,
@@ -275,7 +278,7 @@ export default defineComponent({
 			this.loading = true;
 
 			if (this.exportName === '') {
-				this.alertError('COM_EMUNDUS_EXPORT_ERROR_TITLE', 'Veuillez saisir un nom pour votre export enregistré.');
+				this.alertError('COM_EMUNDUS_EXPORT_ERROR_TITLE', this.translate('COM_EMUNDUS_EXPORT_TEMPLATE_NAME_REQUIRED'));
 				this.loading = false;
 				return;
 			}
@@ -305,25 +308,40 @@ export default defineComponent({
 					selectedAttachmentIds,
 					this.exportId,
 					this.exportSettings,
+					this.systemTemplate,
 				)
 				.then((response) => {
 					this.loading = false;
 
-					if (response.status) {
-						this.displayExportSavedContent = false;
-						this.exportId = response.data;
-
-						this.message = response.msg;
-						setTimeout(() => {
-							this.message = '';
-						}, 3000);
+					if (!response.status) {
+						this.alertError('COM_EMUNDUS_EXPORT_ERROR_TITLE', response.msg);
+						return;
 					}
+
+					this.displayExportSavedContent = false;
+					this.exportId = response.data;
+
+					this.message = response.msg;
+					setTimeout(() => {
+						this.message = '';
+					}, 3000);
+
+					// The list carries the system flag and drives the template selector, so it has to be
+					// read back: a template created or promoted here would otherwise stay invisible.
+					this.getExportTemplates();
 				});
 		},
 		deleteExport() {
 			const id = this.exportId;
 			const index = this.exportTemplates.findIndex((template) => parseInt(template.id) === id);
 			if (index === -1) {
+				return;
+			}
+
+			// A system template can drive automations, and the optimistic undo window would report a
+			// refusal five seconds too late: ask first, then delete for real.
+			if (this.selectedTemplateIsSystem) {
+				this.confirmDeleteSystemExport(id, index);
 				return;
 			}
 
@@ -338,6 +356,7 @@ export default defineComponent({
 			this.displayExportSavedContent = false;
 			this.exportId = 0;
 			this.exportName = '';
+			this.systemTemplate = false;
 
 			this.message = this.translate('COM_EMUNDUS_EXPORT_TEMPLATE_DELETED_UNDO_MESSAGE').replace('%s', template.name);
 
@@ -346,6 +365,41 @@ export default defineComponent({
 				this.commitDeleteExport();
 				this.message = '';
 			}, 5000);
+		},
+		confirmDeleteSystemExport(id, index) {
+			this.alertConfirm(
+				'COM_EMUNDUS_EXPORT_TEMPLATE_DELETE_SYSTEM_CONFIRM',
+				'COM_EMUNDUS_EXPORT_TEMPLATE_DELETE_SYSTEM_CONFIRM_TEXT',
+				false,
+				'COM_EMUNDUS_EXPORT_TEMPLATE_DELETE',
+			).then((result) => {
+				if (!result.value) {
+					return;
+				}
+
+				const template = this.exportTemplates[index];
+
+				exportService.deleteExport(id).then((response) => {
+					if (!response.status) {
+						this.alertError('COM_EMUNDUS_EXPORT_ERROR_TITLE', response.msg);
+						return;
+					}
+
+					this.exportTemplates = this.exportTemplates.filter((t) => parseInt(t.id) !== id);
+					this.displayExportSavedContent = false;
+					this.exportId = 0;
+					this.exportName = '';
+					this.systemTemplate = false;
+
+					this.message = this.translate('COM_EMUNDUS_EXPORT_TEMPLATE_DELETED_UNDO_MESSAGE').replace(
+						'%s',
+						template.name,
+					);
+					setTimeout(() => {
+						this.message = '';
+					}, 3000);
+				});
+			});
 		},
 		commitDeleteExport() {
 			if (!this.pendingDelete) {
@@ -406,6 +460,7 @@ export default defineComponent({
 					this.selectedSynthesis = response.data.synthesis;
 					this.selectedAttachments = response.data.attachments;
 					this.exportSettings = response.data.settings ?? {};
+					this.systemTemplate = this.selectedTemplateIsSystem;
 				}
 
 				return this.getElements().then(() => {
@@ -440,6 +495,22 @@ export default defineComponent({
 		},
 	},
 	computed: {
+		sysadmin() {
+			return parseInt(useGlobalStore().hasSysadminAccess);
+		},
+		selectedTemplateIsSystem() {
+			const template = this.exportTemplates.find((t) => parseInt(t.id) === this.exportId);
+
+			return !!template && !!parseInt(template.is_system);
+		},
+		isDemotingSystemTemplate() {
+			return !this.newTemplate && this.selectedTemplateIsSystem && !this.systemTemplate;
+		},
+		canWriteSelectedTemplate() {
+			// A system template is shared with everyone who can export, but only a sysadmin may rename,
+			// overwrite or delete it.
+			return this.exportId !== 0 && (this.sysadmin || !this.selectedTemplateIsSystem);
+		},
 		steps() {
 			let steps = [];
 			steps.push({ label: 'COM_EMUNDUS_EXPORTS_FORMAT', code: 'formats', active: true, completed: false });
@@ -574,6 +645,7 @@ export default defineComponent({
 				if (newView === 'format') {
 					this.exportId = 0;
 					this.exportName = '';
+					this.systemTemplate = false;
 				}
 			},
 		},
@@ -692,6 +764,14 @@ export default defineComponent({
 						style="margin: 0"
 					/>
 				</div>
+
+				<div v-if="sysadmin" class="tw-mt-4 tw-flex tw-flex-col tw-gap-2">
+					<Checkbox v-model="systemTemplate" :label="this.translate('COM_EMUNDUS_EXPORT_TEMPLATE_SYSTEM')" />
+					<span>{{ this.translate('COM_EMUNDUS_EXPORT_TEMPLATE_SYSTEM_HELP') }}</span>
+					<Alert v-if="isDemotingSystemTemplate" state="warning">
+						{{ this.translate('COM_EMUNDUS_EXPORT_TEMPLATE_DEMOTE_WARNING') }}
+					</Alert>
+				</div>
 			</div>
 
 			<div
@@ -715,12 +795,13 @@ export default defineComponent({
 				>
 					<MenuItem icon="download" :label="runExportLabel" :aria-label="runExportLabel" @click="runExport" />
 					<MenuItem
-						v-if="exportId !== 0"
+						v-if="canWriteSelectedTemplate"
 						icon="edit"
 						:label="translate('COM_EMUNDUS_EXPORT_TEMPLATE_UPDATE')"
 						:aria-label="translate('COM_EMUNDUS_EXPORT_TEMPLATE_UPDATE')"
 						@click="
 							newTemplate = false;
+							systemTemplate = selectedTemplateIsSystem;
 							displayExportSavedContent = true;
 						"
 					/>
@@ -731,11 +812,24 @@ export default defineComponent({
 						@click="
 							newTemplate = true;
 							exportName = '';
+							systemTemplate = false;
 							displayExportSavedContent = true;
 						"
 					/>
 					<MenuItem
-						v-if="exportId !== 0"
+						v-if="sysadmin"
+						icon="settings"
+						:label="translate('COM_EMUNDUS_EXPORT_TEMPLATE_CREATE_SYSTEM')"
+						:aria-label="translate('COM_EMUNDUS_EXPORT_TEMPLATE_CREATE_SYSTEM')"
+						@click="
+							newTemplate = true;
+							exportName = '';
+							systemTemplate = true;
+							displayExportSavedContent = true;
+						"
+					/>
+					<MenuItem
+						v-if="canWriteSelectedTemplate"
 						danger
 						icon="delete"
 						:label="translate('COM_EMUNDUS_EXPORT_TEMPLATE_DELETE')"
