@@ -309,6 +309,7 @@ if ($layout !== 'cart' || $paid) {
                     'href'     => $confirm_form_url,
                     'title'    => $text,
                     'disabled' => !$active,
+                    'role' => 'button'
                 ]);
             ?>
 
