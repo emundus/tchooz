@@ -44,6 +44,7 @@ use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Services\Export\Excel\ExcelService;
 use Tchooz\Services\Export\Export;
+use Tchooz\Services\Export\ExportTemplateAccess;
 use Tchooz\Traits\TraitResponse;
 
 class EmundusControllerExport extends BaseController
@@ -61,6 +62,8 @@ class EmundusControllerExport extends BaseController
 	private AccessActionEntity $exportActionZip;
 
 	private ExportRepository $exportRepository;
+
+	private ExportTemplateAccess $exportTemplateAccess;
 
 	public function __construct(array $config = array())
 	{
@@ -86,7 +89,8 @@ class EmundusControllerExport extends BaseController
 
 		$this->exportAction = EmundusHelperAccess::asAccessAction($this->exportActionExcel->getId(), CrudEnum::CREATE->value, $this->_user->id) || EmundusHelperAccess::asAccessAction($this->exportActionPdf->getId(), CrudEnum::CREATE->value, $this->_user->id) || EmundusHelperAccess::asAccessAction($this->exportActionZip->getId(), CrudEnum::CREATE->value, $this->_user->id);
 
-		$this->exportRepository = new ExportRepository();
+		$this->exportRepository     = new ExportRepository();
+		$this->exportTemplateAccess = new ExportTemplateAccess($this->exportRepository);
 		Log::addLogger(['text_file' => 'export.php'], Log::ALL, ['export']);
 	}
 
@@ -1303,8 +1307,8 @@ class EmundusControllerExport extends BaseController
 				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_PARAMETERS'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 
-			$exportTemplate = $this->exportRepository->getExportTemplate($id);
-			if (empty($exportTemplate) || $exportTemplate->user !== $this->_user->id)
+			$exportTemplate = $this->exportTemplateAccess->getReadable($id, (int) $this->_user->id);
+			if (empty($exportTemplate))
 			{
 				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_TEMPLATE_NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
 			}
@@ -1434,14 +1438,33 @@ class EmundusControllerExport extends BaseController
 				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
-			$id = $this->input->getInt('id', 0);
+			$id             = $this->input->getInt('id', 0);
+			$exportTemplate = null;
 			if ($id > 0)
 			{
-				// Check if export template exist and belong to user
-				$exportTemplate = $this->exportRepository->getExportTemplate($id);
-				if (empty($exportTemplate) || $exportTemplate->user !== $this->_user->id)
+				$exportTemplate = $this->exportTemplateAccess->getWritable($id, (int) $this->_user->id);
+				if (empty($exportTemplate))
 				{
 					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_TEMPLATE_NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
+				}
+			}
+
+			$system = $this->input->getInt('is_system', 0) === 1;
+			if ($system && !$this->exportTemplateAccess->canFlagAsSystem((int) $this->_user->id))
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_TEMPLATE_SYSTEM_FORBIDDEN'), EmundusResponse::HTTP_FORBIDDEN);
+			}
+
+			// Unflagging drops the template from the print action's choices exactly like a deletion does.
+			if (!$system && !empty($exportTemplate) && !empty($exportTemplate->is_system))
+			{
+				$usedBy = $this->exportTemplateAccess->getAutomationsUsing($id);
+				if (!empty($usedBy))
+				{
+					throw new Exception(
+						Text::sprintf('COM_EMUNDUS_EXPORT_TEMPLATE_USED_BY_AUTOMATIONS', implode(', ', $usedBy)),
+						EmundusResponse::HTTP_CONFLICT
+					);
 				}
 			}
 
@@ -1471,7 +1494,7 @@ class EmundusControllerExport extends BaseController
 
 			$settings = $this->parseSettingsInput($this->input->get('settings', null, 'RAW'), $format);
 
-			$saved = $this->exportRepository->saveExportTemplate($name, $format, $elements, $headers, $synthesis, $attachments, $this->_user->id, $id, $settings);
+			$saved = $this->exportRepository->saveExportTemplate($name, $format, $elements, $headers, $synthesis, $attachments, $this->_user->id, $id, $settings, $system);
 
 			$response = EmundusResponse::ok(
 				$saved,
@@ -1501,10 +1524,18 @@ class EmundusControllerExport extends BaseController
 				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_PARAMETERS'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 
-			$exportTemplate = $this->exportRepository->getExportTemplate($id);
-			if (empty($exportTemplate) || $exportTemplate->user !== $this->_user->id)
+			if (empty($this->exportTemplateAccess->getWritable($id, (int) $this->_user->id)))
 			{
 				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_TEMPLATE_NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
+			}
+
+			$usedBy = $this->exportTemplateAccess->getAutomationsUsing($id);
+			if (!empty($usedBy))
+			{
+				throw new Exception(
+					Text::sprintf('COM_EMUNDUS_EXPORT_TEMPLATE_USED_BY_AUTOMATIONS', implode(', ', $usedBy)),
+					EmundusResponse::HTTP_CONFLICT
+				);
 			}
 
 			$this->exportRepository->deleteExportTemplate($id);

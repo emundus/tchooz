@@ -53,6 +53,7 @@ enum ElementPluginEnum: string
 	case ACTION = 'action';
 	case APPLICATION_CHOICES = 'applicationchoices';
 	case GEOLOCATION = 'emundus_geolocalisation';
+	case BUTTON = 'button';
 
 	case EMUNDUS_CALCULATION = 'emundus_calculation';
 

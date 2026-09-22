@@ -59,6 +59,48 @@ class ActionRepository
 	}
 
 	/**
+	 * Automations that would silently change behaviour if the referenced item disappeared: the choices of
+	 * a parameter are rebuilt on load, and ActionEntity nulls a value that is no longer among them.
+	 *
+	 * The rows are filtered in PHP because params is a JSON column holding the value either as a string
+	 * or as a number depending on where the action was saved from.
+	 *
+	 * @return string[] Names of the automations whose $actionName action carries $value in $parameter.
+	 */
+	public function getAutomationNamesByActionParameter(string $actionName, string $parameter, string|int $value): array
+	{
+		$query = $this->db->getQuery(true);
+		$query->select([$this->db->quoteName('a.params'), $this->db->quoteName('au.name')])
+			->from($this->db->quoteName('#__emundus_action', 'a'))
+			->innerJoin(
+				$this->db->quoteName('#__emundus_automation', 'au')
+				. ' ON ' . $this->db->quoteName('au.id') . ' = ' . $this->db->quoteName('a.automation_id')
+			)
+			->where($this->db->quoteName('a.name') . ' = :name')
+			->bind(':name', $actionName);
+
+		$this->db->setQuery($query);
+		$rows = $this->db->loadObjectList() ?: [];
+
+		$names = [];
+		foreach ($rows as $row)
+		{
+			$params = json_decode($row->params, true);
+			if (!is_array($params) || !isset($params[$parameter]))
+			{
+				continue;
+			}
+
+			if ((string) $params[$parameter] === (string) $value)
+			{
+				$names[$row->name] = $row->name;
+			}
+		}
+
+		return array_values($names);
+	}
+
+	/**
 	 * @param   int  $automationId
 	 *
 	 * @return array<ActionEntity>

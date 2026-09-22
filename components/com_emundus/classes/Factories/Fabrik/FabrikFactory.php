@@ -162,7 +162,8 @@ class FabrikFactory
 			$dbObject->default ?? '',
 			(int) ($dbObject->eval ?? 0),
 			(bool) ($dbObject->published ?? true),
-			(int) ($dbObject->hidden ?? 0)
+			(int) ($dbObject->hidden ?? 0),
+			(int) ($dbObject->show_in_list_summary ?? 0)
 		);
 
 		if (!empty($dbObject->form_id))

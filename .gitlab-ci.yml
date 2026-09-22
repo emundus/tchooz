@@ -168,14 +168,28 @@ release-patch:
   variables:
     MERGE_MESSAGE: "Merge branch 'hotfix' into 'master'"
     RELEASE_TYPE: "patch"
+    CI_SERVER_URL: $CI_SERVER_URL
+    GITLAB_TOOLS_TRIGGER_TOKEN: $GITLAB_TOOLS_TRIGGER_TOKEN
     JIRA_RELEASE_TRANSITION_ID: 6
+    GITLAB_PROJECT_ID: 110
+    JIRA_HOTFIX_PROJECT_KEY: HOT
+    JIRA_HOTFIX_ISSUE_STATUS_RESOLVED: "Terminé Gitlab"
+    MATTERMOST_WEBHOOK_RELEASE: $MATTERMOST_WEBHOOK_RELEASE
+    VERSION_FILEPATH: "administrator/components/com_emundus/emundus.xml"
 
 release-minor:
   extends: .release-template
   variables:
     MERGE_MESSAGE: "Merge branch 'dev' into 'master'"
     RELEASE_TYPE: "minor"
+    CI_SERVER_URL: $CI_SERVER_URL
+    GITLAB_TOOLS_TRIGGER_TOKEN: $GITLAB_TOOLS_TRIGGER_TOKEN
     JIRA_RELEASE_TRANSITION_ID: 6
+    GITLAB_PROJECT_ID: 110
+    JIRA_HOTFIX_PROJECT_KEY: HOT
+    JIRA_HOTFIX_ISSUE_STATUS_RESOLVED: "Terminé Gitlab"
+    MATTERMOST_WEBHOOK_RELEASE: $MATTERMOST_WEBHOOK_RELEASE
+    VERSION_FILEPATH: "administrator/components/com_emundus/emundus.xml"
 
 #test_playwright:
 #  image: mcr.microsoft.com/playwright:v1.43.0-jammy

@@ -28,32 +28,93 @@ window.addEventListener('DOMContentLoaded', (event) => {
         container.style.left = `${left}px`;
     }
 
+    // Reflect open/closed state on the trigger that owns this container (a11y).
+    function syncExpanded(container, isOpen) {
+        const owner = document.querySelector(
+            `.emundus-application-file-actions-wrapper[data-fnum="${container.dataset.fnum}"] .emundus-application-file-actions`
+        );
+        if (owner) owner.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    }
+
     document.querySelectorAll('.emundus-application-file-actions').forEach((trigger) => {
         const wrapper = trigger.closest('.emundus-application-file-actions-wrapper');
         if (!wrapper) return;
         const container = wrapper.querySelector('.emundus-application-file-actions-container');
         if (!container) return;
 
-        trigger.addEventListener('click', (e) => {
-            e.stopPropagation();
+        const openMenu = () => {
             moveContainerToBody(container);
 
             // close all other open containers
             document.querySelectorAll('.emundus-application-file-actions-container').forEach((c) => {
-                if (c !== container) c.classList.add('tw-hidden');
+                if (c !== container) {
+                    c.classList.add('tw-hidden');
+                    syncExpanded(c, false);
+                }
             });
 
-            const willOpen = container.classList.contains('tw-hidden');
-            if (willOpen)
-            {
-                container.classList.remove('tw-hidden');
-            }
-            else
-            {
-                container.classList.add('tw-hidden');
-            }
+            container.classList.remove('tw-hidden');
+            positionContainer(trigger, container);
+            syncExpanded(container, true);
+        };
 
-            if (willOpen) positionContainer(trigger, container);
+        const closeMenu = () => {
+            container.classList.add('tw-hidden');
+            syncExpanded(container, false);
+        };
+
+        const toggleMenu = () => {
+            if (container.classList.contains('tw-hidden')) openMenu();
+            else closeMenu();
+        };
+
+        const focusFirstItem = () => {
+            const first = container.querySelector('.file-action');
+            if (first) first.focus();
+        };
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMenu();
+        });
+
+        // Keyboard support on the trigger (WAI-ARIA menu button / RGAA).
+        trigger.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                e.preventDefault();
+                toggleMenu();
+                if (!container.classList.contains('tw-hidden')) focusFirstItem();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                openMenu();
+                focusFirstItem();
+            } else if (e.key === 'Escape') {
+                closeMenu();
+            }
+        });
+
+        // Roving focus + Escape inside the menu.
+        container.addEventListener('keydown', (e) => {
+            const items = Array.from(container.querySelectorAll('.file-action'));
+            if (!items.length) return;
+            const currentIndex = items.indexOf(document.activeElement);
+
+            if (e.key === 'Escape') {
+                closeMenu();
+                trigger.focus();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                items[(currentIndex + 1) % items.length].focus();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                items[(currentIndex - 1 + items.length) % items.length].focus();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                items[0].focus();
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                items[items.length - 1].focus();
+            }
         });
 
         // reposition on scroll/resize when open
@@ -147,6 +208,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     executeAction(foundAction, fnum);
                 }
             });
+
+            // Activate the action with Enter/Space when focused via keyboard.
+            action.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    action.click();
+                }
+            });
         }
         else
         {
@@ -165,6 +234,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             if (!container.contains(e.target) && trigger && !trigger.contains(e.target))
             {
                 container.classList.add('tw-hidden');
+                syncExpanded(container, false);
             }
         });
     });

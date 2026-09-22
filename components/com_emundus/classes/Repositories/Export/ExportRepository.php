@@ -385,36 +385,72 @@ class ExportRepository extends EmundusRepository implements RepositoryInterface
 		return $query;
 	}
 
-	public function getAllExportTemplates(int $user_id): array
+	/**
+	 * @param   int  $user_id  Owner of the templates. Its own templates plus the system ones, which are
+	 *                         shared with everyone. Pass 0 to retrieve every user's templates.
+	 */
+	public function getAllExportTemplates(int $user_id = 0): array
 	{
-		$query = $this->db->getQuery(true);
+		$query = $this->buildExportTemplatesQuery();
 
-		$mode = 'export';
-
-		$query->select('*')
-			->from($this->db->qn('#__emundus_filters'))
-			->where('user = :user_id')
-			->where('mode = :mode')
-			->bind(':user_id', $user_id, ParameterType::INTEGER)
-			->bind(':mode', $mode)
-			->order('time_date DESC');
-		$this->db->setQuery($query);
-		$templates = $this->db->loadObjectList();
-
-		if (!empty($templates))
+		if (!empty($user_id))
 		{
-			foreach ($templates as $key => $template)
-			{
-				// Decode constraints
-				$constraints         = json_decode($template->constraints, true);
-				$template->format    = $constraints['format'] ?? null;
-				$template->elements  = $constraints['elements'] ? json_decode($constraints['elements'], true) : [];
-				$template->headers   = $constraints['headers'] ?? [];
-				$template->synthesis = $constraints['synthesis'] ?? [];
-			}
+			$query->where('(' . $this->db->qn('user') . ' = :user_id OR ' . $this->db->qn('is_system') . ' = 1)')
+				->bind(':user_id', $user_id, ParameterType::INTEGER);
 		}
 
-		return $templates ?: [];
+		$this->db->setQuery($query);
+
+		return $this->hydrateExportTemplates($this->db->loadObjectList() ?: []);
+	}
+
+	/**
+	 * Templates a sysadmin saved as system ones: the only templates an automation may print with.
+	 *
+	 * @return array
+	 */
+	public function getSystemExportTemplates(): array
+	{
+		$query = $this->buildExportTemplatesQuery()
+			->where($this->db->qn('is_system') . ' = 1');
+
+		$this->db->setQuery($query);
+
+		return $this->hydrateExportTemplates($this->db->loadObjectList() ?: []);
+	}
+
+	private function buildExportTemplatesQuery(): QueryInterface
+	{
+		$mode = 'export';
+
+		return $this->db->getQuery(true)
+			->select('*')
+			->from($this->db->qn('#__emundus_filters'))
+			->where('mode = :mode')
+			->bind(':mode', $mode)
+			->order('time_date DESC');
+	}
+
+	/**
+	 * Surface the format and the selections buried in the constraints JSON column on each row.
+	 */
+	private function hydrateExportTemplates(array $templates): array
+	{
+		foreach ($templates as $template)
+		{
+			$constraints = json_decode($template->constraints, true);
+			if (!is_array($constraints))
+			{
+				$constraints = [];
+			}
+
+			$template->format    = $constraints['format'] ?? null;
+			$template->elements  = !empty($constraints['elements']) ? json_decode($constraints['elements'], true) : [];
+			$template->headers   = $constraints['headers'] ?? [];
+			$template->synthesis = $constraints['synthesis'] ?? [];
+		}
+
+		return $templates;
 	}
 
 	public function getExportTemplate(int $id): ?object
@@ -431,7 +467,7 @@ class ExportRepository extends EmundusRepository implements RepositoryInterface
 		return $template ?: null;
 	}
 
-	public function saveExportTemplate(string $name, ExportFormatEnum $format, array $elements, array $headers, array $synthesis, array $attachments, int $user_id, int $id = 0, array $settings = []): int
+	public function saveExportTemplate(string $name, ExportFormatEnum $format, array $elements, array $headers, array $synthesis, array $attachments, int $user_id, int $id = 0, array $settings = [], bool $system = false): int
 	{
 		$constraints = [
 			'format'      => $format->value,
@@ -446,7 +482,8 @@ class ExportRepository extends EmundusRepository implements RepositoryInterface
 			'name'        => $name,
 			'constraints' => json_encode($constraints),
 			'item_id'     => 0,
-			'mode'        => 'export'
+			'mode'        => 'export',
+			'is_system'   => $system ? 1 : 0
 		];
 
 		if (!empty($id))

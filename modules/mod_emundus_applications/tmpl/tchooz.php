@@ -291,12 +291,18 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 
 <?php if ($show_tabs == 1 && sizeof($applications) > 0) : ?>
     <div class="em-mt-12 em-flex-row em-border-bottom-neutral-400 tw-gap-2"
-         style="height: 50px; overflow:hidden; overflow-x: auto;">
+         style="height: 50px; overflow:hidden; overflow-x: auto;"
+         role="tablist" aria-label="<?php echo Text::_('MOD_EM_APPLICATION_TABS_LABEL') ?>">
 		<?php foreach ($tabs as $tab) :
             $tab['name'] = $sanitizer->sanitize($tab['name']);
+            $is_selected = ($current_tab == $tab['id']);
             ?>
             <div id="tab_link_<?php echo $tab['id'] ?>" onclick="updateTab(<?php echo $tab['id'] ?>)"
-                 class="em-flex-row em-light-tabs em-pointer <?php if ($current_tab == $tab['id']) : ?>em-light-selected-tab<?php endif; ?>">
+                 onkeydown="onTabKeydown(event, <?php echo $tab['id'] ?>)"
+                 role="tab" tabindex="<?php echo $is_selected ? '0' : '-1' ?>"
+                 aria-selected="<?php echo $is_selected ? 'true' : 'false' ?>"
+                 aria-controls="group_application_tab_<?php echo $tab['id'] ?>"
+                 class="em-flex-row em-light-tabs em-pointer <?php if ($is_selected) : ?>em-light-selected-tab<?php endif; ?>">
                 <p class="em-font-size-14"
                    style="white-space: nowrap"><?php echo Text::_($tab['name']) ?></p>
 				<?php if ($tab['id'] != 0) : ?>
@@ -304,13 +310,15 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 				<?php endif; ?>
             </div>
 		<?php endforeach; ?>
-        <div id="tab_adding_link" onclick="createTab()"
+        <div id="tab_adding_link" onclick="createTab()" onkeydown="onActionKeydown(event, createTab)"
+             role="button" tabindex="0"
              class="em-light-tabs em-flex-row em-pointer <?php if (count($tabs) > 1) : ?>em-display-none<?php endif; ?>">
             <a class="em-flex-row em-no-hover-underline em-font-size-14 em-pointer" style="white-space: nowrap"><span
-                    class="material-symbols-outlined em-font-size-14 em-mr-4">add</span><?php echo Text::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>
+                    class="material-symbols-outlined em-font-size-14 em-mr-4" aria-hidden="true">add</span><?php echo Text::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>
             </a>
         </div>
-        <div id="tab_manage_links" onclick="manageTabs()"
+        <div id="tab_manage_links" onclick="manageTabs()" onkeydown="onActionKeydown(event, manageTabs)"
+             role="button" tabindex="0"
              class="em-light-tabs em-flex-row em-pointer <?php if (count($tabs) == 1) : ?>em-display-none<?php endif; ?>">
             <a class="em-flex-row em-no-hover-underline em-font-size-14 em-pointer"
                style="white-space: nowrap"><?php echo Text::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS') ?></a>
@@ -373,19 +381,24 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                 </div>
 			<?php endif; ?>
 			<?php if (sizeof($available_views) > 1) : ?>
-                <div class="em-flex-row" style="gap: 8px">
+                <div class="em-flex-row" style="gap: 8px" role="group"
+                     aria-label="<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEWS_AVAILABLE') ?>">
 					<?php if (in_array('grid', $available_views)) : ?>
                         <div id="button_switch_card"
                              class="em-pointer mod_emundus_application___buttons_switch_view mod_emundus_application___buttons_enable"
-                             onclick="updateView('card')">
-                            <span
+                             onclick="updateView('card')" onkeydown="onActionKeydown(event, () => updateView('card'))"
+                             role="button" tabindex="0" aria-pressed="true"
+                             aria-label="<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEWS_GRID') ?>">
+                            <span aria-hidden="true"
                                 class="material-symbols-outlined mod_emundus_application___buttons_switch_view_enable">grid_view</span>
                         </div>
 					<?php endif; ?>
 					<?php if (in_array('list', $available_views)) : ?>
                         <div id="button_switch_list" class="em-pointer mod_emundus_application___buttons_switch_view"
-                             onclick="updateView('list')">
-                            <span
+                             onclick="updateView('list')" onkeydown="onActionKeydown(event, () => updateView('list'))"
+                             role="button" tabindex="0" aria-pressed="false"
+                             aria-label="<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEWS_LIST') ?>">
+                            <span aria-hidden="true"
                                 class="material-symbols-outlined mod_emundus_application___buttons_switch_view_disabled">menu</span>
                         </div>
 					<?php endif; ?>
@@ -478,6 +491,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 			<?php foreach ($group as $g_key => $sub_group) : ?>
 				<?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
+                         role="tabpanel" aria-labelledby="tab_link_<?php echo $key ?>" tabindex="0"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
 						<?php if (isset($sub_group['label'])) : ?>
                             <h3 class="em-ml-8"><?php echo $sub_group['label'] ?></h3>
@@ -647,7 +661,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                                             </div>
 															<?php if ($mod_emundus_applications_show_programme != 1) : ?>
                                                                 <div class="mod_emundus_applications__container"
-                                                                     id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>">
+                                                                     id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>" tabindex="0" role="button">
                                                                     <?php
                                                                     $data = [
                                                                         'fnum' => $application->fnum,
@@ -895,6 +909,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 			<?php foreach ($group as $g_key => $sub_group) : ?>
 				<?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
+                         role="tabpanel" aria-labelledby="tab_link_<?php echo $key ?>" tabindex="0"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
 
 						<?php if (isset($sub_group['label'])) : ?>
@@ -1321,11 +1336,13 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
             document.querySelector('#applications_list_view').style.display = 'block'
             if (document.querySelector('#button_switch_card')) {
                 document.querySelector('#button_switch_card').classList.remove('mod_emundus_application___buttons_enable')
+                document.querySelector('#button_switch_card').setAttribute('aria-pressed', 'false')
                 document.querySelector('#button_switch_card span').classList.remove('mod_emundus_application___buttons_switch_view_enable')
                 document.querySelector('#button_switch_card span').classList.add('mod_emundus_application___buttons_switch_view_disabled')
             }
             if (document.querySelector('#button_switch_list')) {
                 document.querySelector('#button_switch_list').classList.add('mod_emundus_application___buttons_enable')
+                document.querySelector('#button_switch_list').setAttribute('aria-pressed', 'true')
                 document.querySelector('#button_switch_list span').classList.remove('mod_emundus_application___buttons_switch_view_disabled')
                 document.querySelector('#button_switch_list span').classList.add('mod_emundus_application___buttons_switch_view_enable')
             }
@@ -1334,11 +1351,13 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
             document.querySelector('#applications_card_view').style.display = 'block'
             if (document.querySelector('#button_switch_list')) {
                 document.querySelector('#button_switch_list').classList.remove('mod_emundus_application___buttons_enable')
+                document.querySelector('#button_switch_list').setAttribute('aria-pressed', 'false')
                 document.querySelector('#button_switch_list span').classList.remove('mod_emundus_application___buttons_switch_view_enable')
                 document.querySelector('#button_switch_list span').classList.add('mod_emundus_application___buttons_switch_view_disabled')
             }
             if (document.querySelector('#button_switch_card')) {
                 document.querySelector('#button_switch_card').classList.add('mod_emundus_application___buttons_enable')
+                document.querySelector('#button_switch_card').setAttribute('aria-pressed', 'true')
                 document.querySelector('#button_switch_card span').classList.remove('mod_emundus_application___buttons_switch_view_disabled')
                 document.querySelector('#button_switch_card span').classList.add('mod_emundus_application___buttons_switch_view_enable')
             }
@@ -1355,11 +1374,10 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 
         sessionStorage.setItem('mod_emundus_applications___selected_tab', tab)
         document.querySelectorAll('div[id*="tab_link_"]').forEach((elt) => {
-            if (elt.id !== 'tab_link_' + tab) {
-                elt.classList.remove('em-light-selected-tab')
-            } else {
-                elt.classList.add('em-light-selected-tab')
-            }
+            const selected = elt.id === 'tab_link_' + tab
+            elt.classList.toggle('em-light-selected-tab', selected)
+            elt.setAttribute('aria-selected', selected ? 'true' : 'false')
+            elt.setAttribute('tabindex', selected ? '0' : '-1')
         })
 
         document.querySelectorAll('div[id*="group_application_tab_"]').forEach((elt) => {
@@ -1376,6 +1394,38 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
             })
 
             document.getElementById('applications_header_filter_sort').style.display = 'none'
+        }
+    }
+
+    // Keyboard support for the tablist (WAI-ARIA / RGAA): Enter/Space activates, arrows move focus.
+    function onTabKeydown(event, tab) {
+        if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+            event.preventDefault()
+            updateTab(tab)
+            return
+        }
+
+        if (['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) {
+            event.preventDefault()
+            const tabsList = Array.from(document.querySelectorAll('div[id^="tab_link_"][role="tab"]'))
+            const current = document.getElementById('tab_link_' + tab)
+            const currentIndex = tabsList.indexOf(current)
+            let nextIndex = currentIndex
+
+            if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabsList.length
+            else if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabsList.length) % tabsList.length
+            else if (event.key === 'Home') nextIndex = 0
+            else if (event.key === 'End') nextIndex = tabsList.length - 1
+
+            tabsList[nextIndex].focus()
+        }
+    }
+
+    // Keyboard support for action buttons (add / manage tabs) exposed as role="button".
+    function onActionKeydown(event, callback) {
+        if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+            event.preventDefault()
+            callback()
         }
     }
 

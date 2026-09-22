@@ -160,6 +160,7 @@ export default {
 		selectedAttachmentIds,
 		id,
 		settings = {},
+		system = false,
 	) {
 		try {
 			return await client.post('saveexport', {
@@ -171,6 +172,7 @@ export default {
 				attachments: selectedAttachmentIds,
 				settings: JSON.stringify(settings || {}),
 				id: id,
+				is_system: system ? 1 : 0,
 			});
 		} catch (e) {
 			return {

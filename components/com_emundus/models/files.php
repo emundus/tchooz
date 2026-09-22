@@ -1940,6 +1940,7 @@ class EmundusModelFiles extends JModelLegacy
 							$students[$fnum]->campaign_id = $fnumInfos['campaign_id'];
 							$students[$fnum]->code = $fnumInfos['training'];
 							$students[$fnum]->is_anonym = $fnumInfos['is_anonym'];
+							$students[$fnum]->anonymous = $fnumInfos['anonymous'];
 
 							$logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $new_status_lbl, 'old_id' => $old_status_step, 'new_id' => $state]]];
 							EmundusModelLogs::log($user_id, $fnumInfos['applicant_id'], $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
@@ -5315,8 +5316,10 @@ class EmundusModelFiles extends JModelLegacy
                         if ($emails_sent[0] === false) {
                             continue;
                         } else {
+							$anonymize = EmundusHelperFiles::shouldAnonymize($user_from, $student->is_anonym == 1, !empty($student->anonymous));
+
                             foreach(array_unique($emails_sent) as $recipient) {
-								if ($student->is_anonym == 1) {
+								if ($anonymize) {
 									$msg .= Text::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$student->fnum.'<br>';
 								} else {
 									$msg .= Text::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$recipient.'<br>';

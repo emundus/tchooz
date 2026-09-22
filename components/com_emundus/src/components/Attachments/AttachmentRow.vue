@@ -8,7 +8,7 @@
 				:checked="checkedAttachments.includes(attachment.aid)"
 			/>
 		</td>
-		<td v-if="columns.includes('name')" class="td-document" @click="openModal">
+		<td v-if="columns.includes('name')" class="td-document" role="rowheader" @click="openModal">
 			<span
 				v-if="!attachment.existsOnServer"
 				class="material-symbols-outlined warning file-not-found tw-mr-4"

@@ -679,7 +679,10 @@ function togglePasswordVisibility() {
     spanShowPassword.style.position = "absolute";
     spanShowPassword.style.top = "10px";
     spanShowPassword.style.right = "10px";
-    spanShowPassword.style.opacity = "0.3";
+    spanShowPassword.setAttribute('role', 'button');
+    spanShowPassword.setAttribute('tabindex', 0);
+    spanShowPassword.setAttribute('aria-label', Joomla.Text._('JSHOWPASSWORD'));
+    spanShowPassword.setAttribute('title', Joomla.Text._('JSHOWPASSWORD'));
 
     passwordInput.parentNode.style.position = "relative";
 
@@ -689,9 +692,13 @@ function togglePasswordVisibility() {
         if (spanShowPassword.innerText === "visibility_off") {
             spanShowPassword.innerText = "visibility";
             passwordInput.type = "password";
+            spanShowPassword.setAttribute('aria-label', Joomla.Text._('JSHOWPASSWORD'));
+            spanShowPassword.setAttribute('title', Joomla.Text._('JSHOWPASSWORD'));
         } else {
             spanShowPassword.innerText = "visibility_off";
             passwordInput.type = "text";
+            spanShowPassword.setAttribute('title', Joomla.Text._('JHIDEPASSWORD'));
+            spanShowPassword.setAttribute('aria-label', Joomla.Text._('JHIDEPASSWORD'));
         }
     });
 }

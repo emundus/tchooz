@@ -1090,9 +1090,9 @@ video {
     text-decoration: none;
 }
 .tw-btn-info {
-    background-color: var(--blue-500);
+    background-color: var(--blue-600);
     color: var(--neutral-0) !important;
-    border: 1px solid var(--blue-500) !important;
+    border: 1px solid var(--blue-600) !important;
     text-shadow: none;
     text-transform: math-auto;
     text-decoration: none;
@@ -1112,13 +1112,13 @@ video {
     box-shadow: none;
 }
 .tw-btn-info:hover {
-    background-color: color-mix(in srgb, var(--blue-500), var(--neutral-900) 30%) !important;
+    background-color: color-mix(in srgb, var(--blue-600), var(--neutral-900) 30%) !important;
     color: var(--neutral-0) !important;
-    border: 1px solid var(--blue-500) !important;
+    border: 1px solid var(--blue-600) !important;
     text-decoration: none;
 }
 .tw-btn-info:active {
-    background-color: color-mix(in srgb, var(--blue-500), var(--neutral-900) 60%);
+    background-color: color-mix(in srgb, var(--blue-600), var(--neutral-900) 60%);
 }
 .tw-btn-info:disabled {
     opacity: 0.6;
@@ -1816,11 +1816,6 @@ video {
             background-image: unset;
         }
 
-        .com_fabrik .dropdown-menu > .\!active > a, .com_fabrik .dropdown-menu > .\!active > a:hover, .com_fabrik .dropdown-menu > .\!active > a:focus {
-            background-color: var(--blue-500) !important;
-            background-image: unset !important;
-        }
-
         .com_fabrik .dropdown-menu > li > a:hover, .com_fabrik .dropdown-menu > li > a:focus, .com_fabrik .dropdown-submenu:hover > a, .com_fabrik .dropdown-submenu:focus > a {
             background-color: var(--blue-400);
         }
@@ -2299,18 +2294,8 @@ video {
             width: 200px !important;
         }
 
-        form.fabrikForm .plg-radiobutton .btn-group label.btn-outline-secondary.btn.\!active[for*="input_1"] {
-            border: 1px solid var(--neutral-500) !important;
-            background: var(--em-green-2) !important;
-            width: 200px !important;
-        }
-
         form.fabrikForm .plg-radiobutton .btn-group label.btn-outline-secondary.btn.active[for*="input_1"] span {
             color: var(--neutral-0);
-        }
-
-        form.fabrikForm .plg-radiobutton .btn-group label.btn-outline-secondary.btn.\!active[for*="input_1"] span {
-            color: var(--neutral-0) !important;
         }
 
         form.fabrikForm .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_1"]:hover {
@@ -2352,18 +2337,8 @@ video {
             width: 200px !important;
         }
 
-        form.fabrikForm .plg-radiobutton .btn-group label.btn-outline-secondary.btn.\!active[for*="input_0"] {
-            border: 1px solid var(--neutral-500) !important;
-            background: var(--red-700) !important;
-            width: 200px !important;
-        }
-
         form.fabrikForm .plg-radiobutton .btn-group label.btn-outline-secondary.btn.active[for*="input_0"] span {
             color: var(--neutral-0);
-        }
-
-        form.fabrikForm .plg-radiobutton .btn-group label.btn-outline-secondary.btn.\!active[for*="input_0"] span {
-            color: var(--neutral-0) !important;
         }
 
         form.fabrikForm .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_0"]:hover {
@@ -169028,6 +169003,8 @@ a,span,li,div {
 a:focus {
     color: color-mix(in srgb, var(--em-profile-color), var(--neutral-900) 30%);
 }
+
+p, h1, h2, h3, h4, h5, h6, a, button, li, dt, dd, blockquote, cite, q, abbr, figcaption, label, input, select, textarea, caption { background-color : transparent ; }
 
 /***********
 /* TCHOOZY *

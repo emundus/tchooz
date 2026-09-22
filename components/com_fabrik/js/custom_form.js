@@ -215,6 +215,12 @@ requirejs(['fab/fabrik'], function () {
         }
       }
     }
+
+    // Set columnheader role to all td with class day-name
+    let calendarDayNames = document.querySelectorAll('td.day-name');
+    calendarDayNames.forEach((dayName) => {
+      dayName.setAttribute('role', 'columnheader');
+    })
   });
 
   Fabrik.addEvent('fabrik.form.group.duplicate.end', function (form, event) {
@@ -317,8 +323,8 @@ requirejs(['fab/fabrik'], function () {
   function removeFabrikFormSkeleton() {
     let header = document.querySelector('.page-header');
     if (header) {
-      if (header.querySelector('h1')) {
-        document.querySelector('.page-header h1').style.opacity = 1;
+      if (header.querySelector('h1') || header.querySelector('h2')) {
+        document.querySelector('.page-header h1, .page-header h2').style.opacity = 1;
       }
       header.classList.remove('skeleton');
     }

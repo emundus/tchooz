@@ -1469,7 +1469,7 @@ class EmundusModelFormbuilder extends ListModel
 		return $created_elements;
 	}
 
-	function createElement($name, $group_id, $plugin, $label, $default = '', $hidden = 0, $create_column = 1, $show_in_list_summary = 1, $published = 1, $parent_id = 0, $width = 20, $user = null, ?string $after = null)
+	function createElement($name, $group_id, $plugin, $label, $default = '', $hidden = 0, $create_column = 1, $show_in_list_summary = 0, $published = 1, $parent_id = 0, $width = 20, $user = null, ?string $after = null)
 	{
 		$query = $this->db->getQuery(true);
 

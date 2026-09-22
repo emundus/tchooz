@@ -1146,8 +1146,26 @@ class EmundusHelperEvents
 
 							if (!empty($alias_value['raw']))
 							{
-								$formModel->data[$elt->getFullName()]          = $alias_value['raw'];
-								$formModel->data[$elt->getFullName() . '_raw'] = $alias_value['raw'];
+								if (in_array($elt->getElement()->plugin, ['date', 'jdate']))
+								{
+									$eltObject = new stdClass();
+									$eltObject->plugin = $elt->getElement()->plugin;
+									$eltObject->params = $elt->getParams()->toArray();
+
+									// storage format (UTC [0], Local [1])
+									$timeStorageFormat = EmundusHelperFabrik::getFabrikDateParam($eltObject, 'date_store_as_local');
+									$timeStorageFormat = empty($timeStorageFormat) ? 0 : (int)$timeStorageFormat;
+
+									$store = EmundusHelperDate::displayDate($alias_value['raw'], 'Y-m-d H:i:s', $timeStorageFormat);
+
+									$formModel->data[$elt->getFullName()]          = $store;
+									$formModel->data[$elt->getFullName() . '_raw'] = $store;
+								}
+								else
+								{
+									$formModel->data[$elt->getFullName()]          = $alias_value['raw'];
+									$formModel->data[$elt->getFullName() . '_raw'] = $alias_value['raw'];
+								}
 							}
 						}
 					}
@@ -1219,6 +1237,7 @@ class EmundusHelperEvents
 										{
 											// storage format (UTC [0], Local [1])
 											$timeStorageFormat = EmundusHelperFabrik::getFabrikDateParam($elt, 'date_store_as_local');
+											$timeStorageFormat = empty($timeStorageFormat) ? 0 : (int)$timeStorageFormat;
 
 											$store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
 										}
@@ -1286,8 +1305,26 @@ class EmundusHelperEvents
 									{
 										if (!empty($profile_details->{$elt_name}) && empty($formModel->data[$element->getFullName()]) || empty($formModel->data[$element->getFullName() . '_raw']))
 										{
-											$formModel->data[$element->getFullName()]          = $profile_details->{$elt_name};
-											$formModel->data[$element->getFullName() . '_raw'] = $profile_details->{$elt_name};
+											if (in_array($element->getElement()->plugin, ['date', 'jdate']))
+											{
+												$eltObject = new stdClass();
+												$eltObject->plugin = $element->getElement()->plugin;
+												$eltObject->params = $element->getParams()->toArray();
+
+												// storage format (UTC [0], Local [1])
+												$timeStorageFormat = EmundusHelperFabrik::getFabrikDateParam($eltObject, 'date_store_as_local');
+												$timeStorageFormat = empty($timeStorageFormat) ? 0 : (int)$timeStorageFormat;
+
+												$store = EmundusHelperDate::displayDate($profile_details->{$elt_name}, 'Y-m-d H:i:s', $timeStorageFormat);
+
+												$formModel->data[$element->getFullName()]          = $store;
+												$formModel->data[$element->getFullName() . '_raw'] = $store;
+											}
+											else
+											{
+												$formModel->data[$element->getFullName()]          = $profile_details->{$elt_name};
+												$formModel->data[$element->getFullName() . '_raw'] = $profile_details->{$elt_name};
+											}
 										}
 									}
 								}
