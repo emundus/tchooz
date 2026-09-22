@@ -45,22 +45,25 @@ if (!empty($actions))
 	<div class="tw-relative emundus-application-file-actions-wrapper" data-fnum="<?= $fnum; ?>">
 
         <?php if ($context === 'single') : ?>
-            <button class="tw-w-auto tw-items-center tw-gap-1 tw-rounded-coordinator tw-btn-secondary emundus-application-file-actions" style="line-height: 1.5rem;">
+            <button type="button" class="tw-w-auto tw-items-center tw-gap-1 tw-rounded-coordinator tw-btn-secondary emundus-application-file-actions" style="line-height: 1.5rem;"
+                    aria-haspopup="true" aria-expanded="false">
                 <?=  Text::_('COM_EMUNDUS_ACTIONS'); ?>
-                <span class="material-symbols-outlined popover-toggle-btn not-to-close-modal tw-cursor-pointer">keyboard_arrow_down</span>
+                <span class="material-symbols-outlined popover-toggle-btn not-to-close-modal tw-cursor-pointer" aria-hidden="true">keyboard_arrow_down</span>
             </button>
         <?php else: ?>
-             <span class="emundus-application-file-actions material-symbols-outlined tw-cursor-pointer !tw-flex tw-justify-self-center !tw-text-[24px]">
+             <span class="emundus-application-file-actions material-symbols-outlined tw-cursor-pointer !tw-flex tw-justify-self-center !tw-text-[24px]"
+                   role="button" tabindex="0" aria-haspopup="true" aria-expanded="false"
+                   aria-label="<?= Text::_('COM_EMUNDUS_ACTIONS'); ?>">
                  more_vert
              </span>
         <?php endif; ?>
-		<div class="emundus-application-file-actions-container tw-fixed tw-bg-white tw-shadow-md tw-rounded-coordinator tw-p-2 tw-hidden tw-flex tw-flex-col tw-z-50" data-fnum="<?= $fnum; ?>">
+		<div class="emundus-application-file-actions-container tw-fixed tw-bg-white tw-shadow-md tw-rounded-coordinator tw-p-2 tw-hidden tw-flex tw-flex-col tw-z-50" data-fnum="<?= $fnum; ?>" role="menu" aria-label="<?= Text::_('COM_EMUNDUS_ACTIONS'); ?>">
 			<?php
             foreach ($actions as $action)
 			{
                 if (!($action instanceof CustomApplicationFileAction)) {
 				?>
-                    <div id="<?= $action->getActionType()->value ?>-action" data-actionid="<?= $action->getActionType()->value ?>" tabindex=0 data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
+                    <div id="<?= $action->getActionType()->value ?>-action" data-actionid="<?= $action->getActionType()->value ?>" tabindex=0 role="menuitem" data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
                         <span class="material-symbols-outlined <?= $action->getActionType()->getClass() ?>">
                             <?= $action->getActionType()->getIcon() ?>
                         </span>
@@ -69,7 +72,7 @@ if (!empty($actions))
                 <?php
                 } else {
                 ?>
-                    <div id="<?= $action->getId() ?>-action" data-actionid="<?= $action->getId() ?>" tabindex=0 data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
+                    <div id="<?= $action->getId() ?>-action" data-actionid="<?= $action->getId() ?>" tabindex=0 role="menuitem" data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
                         <?php if (!empty($action->getIcon())) : ?>
                             <span class="material-symbols-outlined">
                                 <?= $action->getIcon() ?>
