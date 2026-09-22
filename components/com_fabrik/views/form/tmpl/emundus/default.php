@@ -219,7 +219,11 @@ endif;
                             <p class="tw-mb-5 tw-text-neutral-600"><?= Text::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
                         <?php endif; ?>
                         <div class="page-header">
+                            <?php if($is_applicant) : ?>
+                            <h2 class="after-em-border after:tw-bg-red-800"><?= Text::_($form->label) ?></h2>
+                            <?php else: ?>
                             <h1 class="after-em-border after:tw-bg-red-800"><?= Text::_($form->label) ?></h1>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -290,7 +294,11 @@ endif;
                         <div>
                             <?php
                             if ($group->showLegend) :?>
+                                <?php if($is_applicant) : ?>
+                                <h3 class="after-em-border after:tw-bg-neutral-500"><?php echo $group->title; ?></h3>
+                                <?php else : ?>
                                 <h2 class="after-em-border after:tw-bg-neutral-500"><?php echo $group->title; ?></h2>
+                                <?php endif; ?>
                             <?php
                             endif;
 
@@ -455,8 +463,8 @@ if ($this->display_comments && !empty($fnum))
         // Load skeleton
         let header = document.querySelector('.page-header')
         if (header) {
-            if (header.querySelector('h1')) {
-                document.querySelector('.page-header h1').style.opacity = 0
+            if (header.querySelector('h1') || header.querySelector('h2')) {
+                document.querySelector('.page-header h1, .page-header h2').style.opacity = 0
             }
             header.classList.add('skeleton')
         }
