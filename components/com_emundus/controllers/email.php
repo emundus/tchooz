@@ -95,12 +95,6 @@ class EmundusControllerEmail extends EmundusController
 		$this->setRedirect('index.php?option=com_emundus&view=' . $this->input->get('view') . '&limitstart=' . $limitstart . '&filter_order=' . $filter_order . '&filter_order_Dir=' . $filter_order_Dir . '&Itemid=' . $itemid);
 	}
 
-	function applicantEmail(): void
-	{
-		require_once(JPATH_BASE . '/components/com_emundus/helpers/emails.php');
-		EmundusHelperEmails::sendApplicantEmail();
-	}
-
 	function getTemplate(): void
 	{
 		require_once(JPATH_BASE . '/components/com_emundus/helpers/emails.php');
