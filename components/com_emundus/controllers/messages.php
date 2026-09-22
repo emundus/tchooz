@@ -339,7 +339,7 @@ class EmundusControllerMessages extends EmundusController
 		}
 
 
-		if ($fnum->is_anonym == 1 || $fnum->anonymous == 1) {
+		if (EmundusHelperFiles::shouldAnonymize($this->_user->id, $fnum->is_anonym == 1, $fnum->anonymous == 1)) {
 			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_TO') . '</strong> ' . Text::_('COM_EMUNDUS_ANONYM_EMAIL') . ' </br>';
 
 			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_SUBJECT') . '</strong> ' . $subject . ' </br>' .
@@ -722,8 +722,10 @@ class EmundusControllerMessages extends EmundusController
 
 			// Send and log the email.
 			$send = $mailer->Send();
+			$anonymize = EmundusHelperFiles::shouldAnonymize($this->_user->id, $fnum->is_anonym == 1, $fnum->anonymous == 1);
+
 			if ($send !== true) {
-				$failed[] = $fnum->is_anonym  == 1 ? $fnum->fnum : $fnum->email;
+				$failed[] = $anonymize ? $fnum->fnum : $fnum->email;
 				echo 'Error sending email: ' . $send->__toString();
 				Log::add($send->__toString(), Log::ERROR, 'com_emundus');
 			}
@@ -739,7 +741,7 @@ class EmundusControllerMessages extends EmundusController
 				}
 
 				// Log email
-				$sent[] = $fnum->is_anonym  == 1 ? $fnum->fnum : $fnum->email;
+				$sent[] = $anonymize ? $fnum->fnum : $fnum->email;
 				$log    = [
 					'user_id_from' => $user->id,
 					'user_id_to'   => $fnum->applicant_id,

@@ -11,6 +11,7 @@
 namespace Unit\Component\Emundus\Model;
 
 use EmundusModelApplication;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\Tests\Unit\UnitTestCase;
 use stdClass;
@@ -143,6 +144,64 @@ class ApplicationModelTest extends UnitTestCase
 
 		// Clear datasets
 		$this->h_dataset->deleteSampleUpload($upload);
+	}
+
+	/**
+	 * Visibility of the generated application file follows its own setting, not export_application_pdf
+	 * which only decides whether it is produced on submission.
+	 *
+	 * @group application
+	 * @covers EmundusModelApplication::getUserAttachmentsByFnum
+	 *
+	 * @return void
+	 */
+	public function testGetUserAttachmentsByFnumApplicationFormVisibilityHasItsOwnParameter()
+	{
+		if (!defined('EMUNDUS_PATH_ABS'))
+		{
+			define('EMUNDUS_PATH_ABS', JPATH_ROOT);
+		}
+
+		$config = ComponentHelper::getParams('com_emundus');
+		// Generation is off: it must not have a say in what the documents list shows.
+		$config->set('export_application_pdf', 0);
+
+		$fnum     = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$uploadId = $this->h_dataset->createSampleUpload($fnum, $this->dataset['campaign'], (int) $this->dataset['applicant'], 26);
+		$this->assertGreaterThan(0, $uploadId, 'The generated application form should be saved');
+
+		try
+		{
+			$config->set('display_application_form_document', 1);
+			$this->assertContains(
+				'_application_form',
+				$this->getAttachmentLabels($fnum),
+				'The generated application file should be listed when its own parameter is on'
+			);
+
+			$config->set('display_application_form_document', 0);
+			$this->assertNotContains(
+				'_application_form',
+				$this->getAttachmentLabels($fnum),
+				'The generated application file should be hidden when its own parameter is off'
+			);
+		}
+		finally
+		{
+			$config->set('display_application_form_document', 1);
+			// Other tests assert this applicant has no attachment at all: never leave one behind.
+			$this->h_dataset->deleteSampleUpload($uploadId);
+		}
+	}
+
+	/**
+	 * @return string[]
+	 */
+	private function getAttachmentLabels(string $fnum): array
+	{
+		$attachments = $this->model->getUserAttachmentsByFnum($fnum, '', null, false, $this->dataset['coordinator']);
+
+		return array_map(static fn ($attachment) => $attachment->lbl, $attachments);
 	}
 
 	/**

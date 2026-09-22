@@ -267,7 +267,7 @@ class EmundusModelApplication extends ListModel
 
 			$eMConfig           = ComponentHelper::getParams('com_emundus');
 			$expert_document_id = $eMConfig->get('expert_document_id', '36');
-			$export_pdf         = $eMConfig->get('export_application_pdf', 0);
+			$display_application_pdf = $eMConfig->get('display_application_form_document', 0);
 
 			$query = $this->_db->getQuery(true);
 
@@ -310,7 +310,10 @@ class EmundusModelApplication extends ListModel
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('eu.campaign_id'))
 				->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quoteName('eu.fnum'))
 				->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum));
-			if ($export_pdf != 1)
+			// Visibility of the generated application file has its own setting: export_application_pdf only
+			// decides whether it is produced on submission, and it is not the sole producer anymore since
+			// an automation can be configured to print it.
+			if ($display_application_pdf != 1)
 			{
 				$query->andWhere('esa.lbl NOT LIKE ' . $this->_db->quote('_application_form'));
 			}
@@ -2300,7 +2303,7 @@ class EmundusModelApplication extends ListModel
 							continue;
 						}
 
-						$excludedElements = ['id', 'parent_id'];
+						$excludedElements = ['id', 'parent_id', 'time_date', 'fnum', 'user'];
 						$query = $this->_db->getQuery(true);
 						$query->select('fe.id,fe.name,fe.label,fe.plugin,fe.params,fe.default,fe.eval,fe.hidden')
 							->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
@@ -3138,7 +3141,7 @@ class EmundusModelApplication extends ListModel
 												$class = "table-strip-2 !tw-bg-neutral-0";
 											}
 
-											$tds = !empty(Text::_($element->label)) ? '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"><b>' . Text::_($element->label) . ($element->hidden ? ' (' . Text::_('COM_EMUNDUS_FORM_BUILDER_HIDDEN') . ')' : '') . '</b></td>' : '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"></td>';
+											$tds = !empty(Text::_($element->label)) ? '<td role="rowheader" style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"><b>' . Text::_($element->label) . ($element->hidden ? ' (' . Text::_('COM_EMUNDUS_FORM_BUILDER_HIDDEN') . ')' : '') . '</b></td>' : '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"></td>';
 											$tds .= '<td class="tw-w-full" style="width:100%; border-bottom: 1px solid var(--neutral-400); vertical-align: middle;"><div class="tw-flex tw-flex-row tw-justify-between tw-items-center tw-h-full"><span>' . ((!in_array($element->plugin,['field','textarea','calc'])) ? Text::_($elt) : $elt) . '</span>';
 
 											if ($can_comment) {

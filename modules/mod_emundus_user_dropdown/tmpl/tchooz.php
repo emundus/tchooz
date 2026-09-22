@@ -311,13 +311,18 @@ if ($user != null)
         <?php endif; ?>
 
         <!-- Button which opens up the dropdown menu. -->
-        <div class='dropdown' tabindex="0" id="userDropdown" style="float: right;">
+        <div class='dropdown' id="userDropdown" style="float: right;">
             <?php if (!empty($profile_picture)): ?>
-                <div id="userDropdownLabel">
-                    <div class="em-flex-row em-flex-end em-profile-container"
+            <button type="button"
+                    id="userDropdownLabel"
+                    class="em-user-dropdown-toggle"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    aria-controls="userDropdownMenu">
+                    <span class="em-flex-row em-flex-end em-profile-container"
                          tabindex="0" aria-expanded="false" aria-haspopup="true"
                          onclick="manageHeight()">
-                        <div class="tw-mr-4">
+                        <span class="tw-mr-4">
                             <?php if (!empty($user)) : ?>
                                 <p id="current_user_fullname" class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . mb_substr($user->lastname, 0, 1) . '.'; ?></p>
                             <?php endif; ?>
@@ -325,34 +330,39 @@ if ($user != null)
                                 <p class="em-profile-color em-text-italic"
                                    title="<?= $profile_label; ?>"><?= $profile_label; ?></p>
                             <?php endif; ?>
-                        </div>
-                        <div class="em-profile-picture em-pointer em-user-dropdown-button"
+                        </span>
+                        <span class="em-profile-picture em-pointer em-user-dropdown-button"
                              style="background-image:url('<?php echo $profile_picture ?>');">
-                        </div>
-                    </div>
-                </div>
+                        </span>
+                    </span>
+            </button>
             <?php else : ?>
-                <div id="userDropdownLabel" onclick="manageHeight()">
-                    <div class="em-flex-row em-flex-end em-profile-container">
-                        <div class="tw-mr-4">
+            <button type="button"
+                    id="userDropdownLabel"
+                    class="em-user-dropdown-toggle"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    aria-controls="userDropdownMenu">
+                    <span class="em-flex-row em-flex-end em-profile-container">
+                        <span class="tw-mr-4">
                             <?php if (!empty($user)) : ?>
                                 <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . mb_substr($user->lastname, 0, 1) . '.'; ?></p>
                             <?php endif; ?>
                             <?php if (!empty($profile_label)) : ?>
                                 <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
                             <?php endif; ?>
-                        </div>
-                        <div class="em-user-dropdown-button" aria-haspopup="true" aria-expanded="false">
+                        </span>
+                        <span class="em-user-dropdown-button" aria-haspopup="true" aria-expanded="false">
                             <span class="em-user-dropdown-icon"
                                   data-initials="<?php echo mb_strtoupper(mb_substr($user->firstname, 0, 1) . mb_substr($user->lastname, 0, 1)); ?>"
                                   alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>"></span>
-                        </div>
+                        </span>
 
-                    </div>
-                </div>
+                    </span>
+            </button>
             <?php endif; ?>
             <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
-            <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
+            <nav class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
                 <div class="em-flex-column-default em-w-100">
                     <?php if (!empty($profile_picture)): ?>
                         <div class="em-profile-picture-modal"
@@ -375,6 +385,7 @@ if ($user != null)
                 </div>
                 <hr style="width: 100%" aria-hidden="true">
 
+                <ul class="tw-m-0 tw-p-0 tw-w-full tw-flex tw-flex-col tw-gap-3">
                 <?php
                 $ids_array = array();
                 if (isset($user->fnums) && $user->fnums)
@@ -486,8 +497,8 @@ if ($user != null)
                         ?>
                     </li>
                 <?php endif; ?>
-
-            </ul>
+                </ul>
+            </nav>
         </div>
     </div>
 

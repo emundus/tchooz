@@ -7,6 +7,8 @@
  */
 
 // No direct access.
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
 ?>
@@ -303,7 +305,7 @@ defined('_JEXEC') or die;
         background: var(--neutral-200);
     }
 </style>
-<nav class="g-main-nav <?php echo $class_sfx; ?>" data-g-hover-expand="true"
+<nav class="g-main-nav <?php echo $class_sfx; ?>" data-g-hover-expand="true" aria-label="<?php echo Text::_('MOD_EMUNDUSMENU_ARIA_LABEL'); ?>"
 	<?php
 	if (!empty($tag)) {
 		echo ' id="' . $tag . '"';

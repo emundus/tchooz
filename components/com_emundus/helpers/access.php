@@ -482,6 +482,14 @@ class EmundusHelperAccess
 
 	public static function isDataAnonymized(int $user_id): bool
 	{
+		// Called once per row by the listings and mailing loops, for a value that cannot change within a request.
+		static $cache = [];
+
+		if (isset($cache[$user_id]))
+		{
+			return $cache[$user_id];
+		}
+
 		$is_data_anonymized = false;
 		Log::addLogger(['text_file' => 'com_emundus.access.error.php'], Log::ERROR, 'com_emundus');
 
@@ -514,6 +522,8 @@ class EmundusHelperAccess
 				}
 			}
 		}
+
+		$cache[$user_id] = $is_data_anonymized;
 
 		return $is_data_anonymized;
 	}

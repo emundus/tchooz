@@ -1743,7 +1743,7 @@ class EmundusHelperFabrik
 
 		if (!empty($elt) && !empty($param))
 		{
-			$params = json_decode($elt->params, true);
+			$params = !is_array($elt->params) ? json_decode($elt->params, true) : $elt->params;
 			if ($elt->plugin == 'jdate' && isset($params['j' . $param]))
 			{
 				$result = $params['j' . $param];
