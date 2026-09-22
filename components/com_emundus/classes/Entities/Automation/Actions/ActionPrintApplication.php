@@ -7,15 +7,39 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Automation\ActionEntity;
+use Tchooz\Entities\Automation\ActionExecutionMessage;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
+use Tchooz\Entities\Fields\BooleanField;
+use Tchooz\Entities\Fields\ChoiceField;
+use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
+use Tchooz\Enums\Automation\ActionMessageTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\Export\ExportFormatEnum;
+use Tchooz\Repositories\Export\ExportRepository;
+use Tchooz\Services\Export\Pdf\PdfOptions;
+use Tchooz\Services\Export\Pdf\PdfService;
 
 class ActionPrintApplication extends ActionEntity
 {
 	public const ATTACHMENT_ID = 26;
+
+	public const TEMPLATE_PARAMETER = 'template';
+
+	public const CAN_BE_VIEWED_PARAMETER = 'can_be_viewed';
+
+	/**
+	 * Id of the "application form" row in #__emundus_setup_step_types. Without a template the printed
+	 * file must stay on those steps only, so no evaluation data ever lands in the applicant folder.
+	 */
+	private const APPLICATION_STEP_TYPE = 1;
+
+	/** Last resort when com_emundus carries no application_form_name at all. */
+	private const FALLBACK_FILENAME = 'application_form';
+
+	private array $templateChoices = [];
 
 	public static function getIcon(): ?string
 	{
@@ -85,10 +109,9 @@ class ActionPrintApplication extends ActionEntity
 
 				$db = Factory::getContainer()->get('DatabaseDriver');
 
-				$eMConfig              = ComponentHelper::getParams('com_emundus');
-				$application_form_name = $eMConfig->get('application_form_name', "application_form");
-				$overwrite_export_pdf  = $eMConfig->get('overwrite_old_export', 0);
-				$export_path           = $eMConfig->get('export_path', null);
+				$eMConfig             = ComponentHelper::getParams('com_emundus');
+				$overwrite_export_pdf = $eMConfig->get('overwrite_old_export', 0);
+				$export_path          = $eMConfig->get('export_path', null);
 
 				$lang = $app->getLanguage();
 				$lang->load('com_emundus', JPATH_SITE . '/components/com_emundus');
@@ -97,56 +120,44 @@ class ActionPrintApplication extends ActionEntity
 				{
 					require_once JPATH_SITE . '/components/com_emundus/models/files.php';
 				}
-				if (!class_exists('EmundusModelEmails'))
-				{
-					require_once JPATH_SITE . '/components/com_emundus/models/emails.php';
-				}
-				$mFiles  = new \EmundusModelFiles();
-				$mEmails = new \EmundusModelEmails();
+				$mFiles = new \EmundusModelFiles();
 
 				$fnum     = $context->getFile();
 				$fnumInfo = $mFiles->getFnumInfos($fnum);
 
-				// Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
-				$post                  = array('FNUM' => $fnum, 'CAMPAIGN_YEAR' => $fnumInfo['year'], 'PROGRAMME_CODE' => $fnumInfo['training']);
-				$tags                  = $mEmails->setTags($fnumInfo['applicant_id'], $post, $fnum, '', $application_form_name . $export_path);
-				$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
-				$application_form_name = $mEmails->setTagsFabrik($application_form_name, array($fnum));
-
-				// Format filename
-				$application_form_name = $mEmails->stripAccents($application_form_name);
-				$application_form_name = preg_replace('/[^A-Za-z0-9 _.-]/', '', $application_form_name);
-				$application_form_name = preg_replace('/\s/', '', $application_form_name);
-				$application_form_name = strtolower($application_form_name);
-
-				// Check if extension is present, if yes remove it
-				if (str_ends_with($application_form_name, '.pdf'))
+				$exportUser = $this->getAutomatedTaskUser();
+				if (empty($exportUser))
 				{
-					$application_form_name = substr($application_form_name, 0, -4);
+					throw new \Exception('No automated task user configured, cannot export the application file of ' . $fnum);
 				}
 
-				$file_name        = $application_form_name . '.pdf';
-				$target_file_name = $application_form_name . '.pdf';
-				if ($overwrite_export_pdf != 1)
+				$options = $this->buildPdfOptions($overwrite_export_pdf == 1, $lang->getTag());
+				$result  = (new PdfService([$fnum], $exportUser, $options))->export(JPATH_SITE . '/tmp/', null, $lang->getTag());
+
+				if (!$result->isStatus() || empty($result->getFilePath()))
 				{
-					// Add timestamp to filename to avoid overwriting
-					$target_file_name = $application_form_name . '_' . date('Ymd_His') . '.pdf';
+					// Access is not in play here (the options skip the check), so either the render or the
+					// merge with the attachments failed: com_emundus.export.pdf carries the details.
+					throw new \Exception('PDF export produced no file for ' . $fnum . ', printed as user ' . $exportUser->id);
 				}
 
-				$tmp_link       = JPATH_BASE . '/tmp/' . $file_name;
-				$applicant_link = JPATH_BASE . '/images/emundus/files/' . $fnumInfo['applicant_id'] . '/' . $target_file_name;
-
-				// If a file exists with that name, delete it
-				if (file_exists($tmp_link))
-				{
-					unlink($tmp_link);
-				}
-
-				$result = $mFiles->generatePDF([$fnum], $file_name, 1, 0, 1, 1, 0, 0, 0, null, null, null, null, [], $context->getTriggeredBy()->id);
+				// Only the exported file is final: as soon as attachments are appended PdfService merges
+				// them there and leaves the un-merged render in the applicant folder, so always copy back.
+				$tmp_link         = $result->getFilePath();
+				$target_file_name = basename($tmp_link);
+				$applicant_link   = EMUNDUS_PATH_ABS . $fnumInfo['applicant_id'] . '/' . $target_file_name;
 
 				// If export path is defined
 				if (!empty($export_path))
 				{
+					if (!class_exists('EmundusModelEmails'))
+					{
+						require_once JPATH_SITE . '/components/com_emundus/models/emails.php';
+					}
+					$mEmails = new \EmundusModelEmails();
+
+					$post        = array('FNUM' => $fnum, 'CAMPAIGN_YEAR' => $fnumInfo['year'], 'PROGRAMME_CODE' => $fnumInfo['training']);
+					$tags        = $mEmails->setTags($fnumInfo['applicant_id'], $post, $fnum, '', $export_path);
 					$export_path = preg_replace($tags['patterns'], $tags['replacements'], $export_path);
 					$export_path = $mEmails->setTagsFabrik($export_path, array($fnum));
 
@@ -180,13 +191,21 @@ class ActionPrintApplication extends ActionEntity
 				}
 				copy($tmp_link, $applicant_link);
 
+				if (file_exists($tmp_link))
+				{
+					unlink($tmp_link);
+				}
+
 				$upload = (object) [
 					'fnum'           => $fnum,
 					'attachment_id'  => self::ATTACHMENT_ID,
 					'user_id'        => $fnumInfo['applicant_id'],
+					'campaign_id'    => $fnumInfo['campaign_id'],
 					'can_be_deleted' => 0,
+					'can_be_viewed'  => $this->isVisibleToApplicant(),
 					'filename'       => $target_file_name
 				];
+
 				if ($overwrite_export_pdf == 1)
 				{
 					// Update upload if exists
@@ -239,6 +258,7 @@ class ActionPrintApplication extends ActionEntity
 			catch (\Exception $e)
 			{
 				Log::add('Error printing application file in ActionPrintApplication: ' . $e->getMessage(), Log::ERROR, 'com_emundus.action');
+				$this->addExecutionMessage(new ActionExecutionMessage($e->getMessage(), ActionMessageTypeEnum::ERROR));
 				$executed = ActionExecutionStatusEnum::FAILED;
 			}
 		}
@@ -248,12 +268,162 @@ class ActionPrintApplication extends ActionEntity
 
 	public function getParameters(): array
 	{
+		if (empty($this->parameters))
+		{
+			$this->parameters = [
+				new ChoiceField(self::TEMPLATE_PARAMETER, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_PRINT_APPLICATION_PARAMETER_TEMPLATE_LABEL'), $this->getTemplateChoices()),
+				new BooleanField(self::CAN_BE_VIEWED_PARAMETER, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_PRINT_APPLICATION_PARAMETER_CAN_BE_VIEWED_LABEL'))
+			];
+		}
+
 		return $this->parameters;
+	}
+
+	/**
+	 * Whether the applicant sees the printed file in their documents. Automations configured before this
+	 * parameter existed carry no value, and their document was visible: keep it that way.
+	 */
+	private function isVisibleToApplicant(): int
+	{
+		$canBeViewed = $this->getParameterValue(self::CAN_BE_VIEWED_PARAMETER);
+
+		if ($canBeViewed === null)
+		{
+			return 1;
+		}
+
+		return (int) filter_var($canBeViewed, FILTER_VALIDATE_BOOLEAN);
+	}
+
+	/**
+	 * Build the options of the printed PDF: those of the selected export template, or the print
+	 * defaults (application steps only, every attachment appended) when none is selected.
+	 */
+	private function buildPdfOptions(bool $overwrite, string $langTag): PdfOptions
+	{
+		$constraints = $this->getSelectedTemplateConstraints();
+
+		if (empty($constraints))
+		{
+			$options = new PdfOptions();
+			$options->setStepTypes([self::APPLICATION_STEP_TYPE]);
+			$options->setAllAttachments(true);
+		}
+		else
+		{
+			$options = PdfOptions::fromObject((object) $constraints);
+		}
+
+		// The automation was authorized when it was configured, so the export runs whatever rights the
+		// automated task user holds on the programme of the file.
+		$options->setSkipAccessCheck(true);
+		$options->setLang($langTag);
+		$options->setFilename($this->buildFilenameTemplate($options->getFilename(), $overwrite));
+
+		return $options;
+	}
+
+	/**
+	 * A template that stopped being a system one leaves the parameter's choices, and ChoiceField nulls
+	 * the stale id before execution — so only "gone" and "not PDF anymore" have to be handled here.
+	 *
+	 * @return array The constraints of the selected export template, empty when none is selected or
+	 *               when the selected one no longer holds a PDF export.
+	 */
+	private function getSelectedTemplateConstraints(): array
+	{
+		$templateId = (int) $this->getParameterValue(self::TEMPLATE_PARAMETER);
+		if ($templateId <= 0)
+		{
+			return [];
+		}
+
+		$template = (new ExportRepository())->getExportTemplate($templateId);
+		if (empty($template))
+		{
+			$this->addExecutionMessage(new ActionExecutionMessage(
+				Text::sprintf('COM_EMUNDUS_AUTOMATION_ACTION_PRINT_APPLICATION_TEMPLATE_NOT_FOUND', $templateId),
+				ActionMessageTypeEnum::WARNING
+			));
+
+			return [];
+		}
+
+		$constraints = json_decode($template->constraints, true);
+		if (!is_array($constraints) || ($constraints['format'] ?? null) !== ExportFormatEnum::PDF->value)
+		{
+			$this->addExecutionMessage(new ActionExecutionMessage(
+				Text::sprintf('COM_EMUNDUS_AUTOMATION_ACTION_PRINT_APPLICATION_TEMPLATE_NOT_PDF', $templateId),
+				ActionMessageTypeEnum::WARNING
+			));
+
+			return [];
+		}
+
+		return $constraints;
+	}
+
+	/**
+	 * The filename template handed to PdfService, which renders its tags and sanitizes it. Without the
+	 * overwrite setting a timestamp keeps every run on its own file, as the previous PDF stays attached.
+	 */
+	private function buildFilenameTemplate(string $filename, bool $overwrite): string
+	{
+		if ($filename === '')
+		{
+			$filename = self::FALLBACK_FILENAME;
+		}
+
+		if (str_ends_with($filename, '.pdf'))
+		{
+			$filename = substr($filename, 0, -4);
+		}
+
+		return $overwrite ? $filename : $filename . '_' . date('Ymd_His');
+	}
+
+	/**
+	 * @return ChoiceFieldValue[] The PDF export templates a sysadmin saved as system ones. A personal
+	 *                            template must never drive an automation behind its owner's back.
+	 */
+	private function getTemplateChoices(): array
+	{
+		if (empty($this->templateChoices))
+		{
+			$templates = (new ExportRepository())->getSystemExportTemplates();
+
+			foreach ($templates as $template)
+			{
+				if ($template->format !== ExportFormatEnum::PDF->value)
+				{
+					continue;
+				}
+
+				$this->templateChoices[] = new ChoiceFieldValue($template->id, $template->name);
+			}
+		}
+
+		return $this->templateChoices;
 	}
 
 	public function getLabelForLog(): string
 	{
-		return $this->getLabel();
+		$labelForLog = $this->getLabel();
+
+		$templateId = (int) $this->getParameterValue(self::TEMPLATE_PARAMETER);
+		if (!empty($templateId))
+		{
+			foreach ($this->getTemplateChoices() as $template)
+			{
+				if ($template->getValue() == $templateId)
+				{
+					$labelForLog .= ' (' . $template->getLabel() . ') ';
+					break;
+				}
+			}
+		}
+
+		return $labelForLog;
 	}
 
 	public static function isAsynchronous(): bool

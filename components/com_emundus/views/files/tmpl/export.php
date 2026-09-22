@@ -22,6 +22,7 @@ $link_exports = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emund
      component="Exports/Exports"
      fnums_count="<?= $this->fnumsCount; ?>"
      export_link="<?= $link_exports; ?>"
+     sysadminAccess="<?= $data['sysadmin_access']; ?>"
 ></div>
 
 <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo uniqid(); ?>"></script>

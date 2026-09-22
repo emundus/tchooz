@@ -13,6 +13,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\User;
@@ -29,6 +30,7 @@ use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Export\ExportRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Services\Export\Export;
+use Tchooz\Services\Emails\EmailService;
 use Tchooz\Services\Export\ExportInterface;
 use Tchooz\Services\Export\ExportResult;
 use Tchooz\Services\Export\FilenameRenderer;
@@ -38,6 +40,8 @@ use Tchooz\Traits\TraitAutomatedTask;
 class PdfService extends Export implements ExportInterface
 {
 	use TraitAutomatedTask;
+
+	private const LOGO_FETCH_TIMEOUT = 5;
 
 	/**
 	 * Max number of fnums rendered per export() invocation when running asynchronously.
@@ -118,7 +122,7 @@ class PdfService extends Export implements ExportInterface
 
 		$anonymizeData      = \EmundusHelperAccess::isDataAnonymized($this->user->id);
 		$allowedAttachments = \EmundusHelperAccess::getUserAllowedAttachmentIDs($this->user->id);
-		$stepTypes          = $this->loadPublishedStepTypes();
+		$stepTypes          = $this->options->getStepTypes() ?? $this->loadPublishedStepTypes();
 
 		$pending      = $state !== null ? array_slice($fnums, $state['processed']) : $fnums;
 		$processStart = microtime(true);
@@ -220,10 +224,10 @@ class PdfService extends Export implements ExportInterface
 		}
 
 		$attachments = $this->options->getAttachments();
-		if (!empty($attachments))
+		if (!empty($attachments) || $this->options->isAllAttachments())
 		{
 			$tmpArray = [];
-			$uploads  = $this->m_application->getAttachmentsByFnum($fnum, null, $attachments);
+			$uploads  = $this->m_application->getAttachmentsByFnum($fnum, null, $attachments, null, $this->user->id);
 			\EmundusHelperExport::getAttachmentPDF($files, $tmpArray, $uploads, $applicationFile->getUser()->id);
 		}
 
@@ -296,6 +300,13 @@ class PdfService extends Export implements ExportInterface
 	private function filterAccessibleFnums(array $fnums): array
 	{
 		$valid = [];
+
+		// The caller already granted the export when it was configured, so it runs whatever rights
+		// the exporting user holds on the files.
+		if ($this->options->isSkipAccessCheck())
+		{
+			return array_values($fnums);
+		}
 
 		foreach ($fnums as $fnum)
 		{
@@ -444,20 +455,46 @@ class PdfService extends Export implements ExportInterface
 		return $name . '-applications';
 	}
 
+	/**
+	 * Base64 of the program logo, empty when it cannot be read. getLogo() answers a local path when it
+	 * can resolve one and an URL otherwise (CLI runs): an unreachable logo must never fail the export.
+	 */
 	private function buildLogo(ApplicationFileEntity $applicationFile): string
 	{
-		$logo_base64 = '';
+		$code = $applicationFile->getCampaign()->getProgram()->getCode();
+		$logo = EmailService::getLogo(false, $code, true);
 
-		$logo = \EmundusHelperEmails::getLogo(false, $applicationFile->getCampaign()->getProgram()->getCode());
-
-		$type = pathinfo($logo, PATHINFO_EXTENSION);
-		$data = file_get_contents($logo);
-		if ($data)
+		if (is_file($logo))
 		{
-			$logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+			$data = file_get_contents($logo);
+		}
+		else
+		{
+			$data = $this->fetchRemoteLogo(EmailService::getLogo(false, $code));
 		}
 
-		return $logo_base64;
+		if (empty($data))
+		{
+			return '';
+		}
+
+		return 'data:image/' . pathinfo($logo, PATHINFO_EXTENSION) . ';base64,' . base64_encode($data);
+	}
+
+	private function fetchRemoteLogo(string $url): string
+	{
+		try
+		{
+			$response = HttpFactory::getHttp()->get($url, [], self::LOGO_FETCH_TIMEOUT);
+
+			return $response->getStatusCode() === 200 ? (string) $response->getBody() : '';
+		}
+		catch (\Throwable $e)
+		{
+			Log::add('Could not read the logo ' . $url . ' : ' . $e->getMessage(), Log::WARNING, 'com_emundus.export.pdf');
+
+			return '';
+		}
 	}
 
 	private function buildHeader(
@@ -471,8 +508,11 @@ class PdfService extends Export implements ExportInterface
 
 		$logo_base64 = $this->buildLogo($applicationFile);
 
-		$columns   = [];
-		$columns[] = $this->parser->createImg($logo_base64, 'auto', 60);
+		$columns = [];
+		if ($logo_base64 !== '')
+		{
+			$columns[] = $this->parser->createImg($logo_base64, 'auto', 60);
+		}
 
 		// Fixed header
 		$sub_column          = [];
@@ -577,10 +617,6 @@ class PdfService extends Export implements ExportInterface
 		if (!class_exists('EmundusHelperAccess'))
 		{
 			require_once JPATH_SITE . '/components/com_emundus/helpers/access.php';
-		}
-		if (!class_exists('EmundusHelperEmails'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/helpers/emails.php';
 		}
 		if (!class_exists('EmundusHelperDate'))
 		{

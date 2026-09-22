@@ -4,6 +4,7 @@ namespace Tchooz\Entities\Automation;
 
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Entities\Automation\Actions\ActionSendEmail;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
@@ -16,6 +17,9 @@ use Tchooz\Traits\TraitAutomatedTask;
 class AutomationEntity
 {
 	use TraitAutomatedTask;
+
+	/** Execution messages kept per action run in the history report, before truncation. */
+	private const MAX_REPORTED_MESSAGES = 5;
 
 	private int $id;
 
@@ -233,7 +237,7 @@ class AutomationEntity
 
 						if (!empty($user) && \EmundusHelperEmails::isEmailExcluded($user->email))
 						{
-							$skippedActions[] = ['action_id' => $action->getId(), 'label' => $action->getLabelForLog(), 'context' => $actionContext->serialize()];
+							$skippedActions[] = $this->buildActionReport($action, $actionContext);
 							$task = $taskRepository->addActionToQueue($action, $actionContext, $this->getAutomatedTaskUserId());
 							$task->setStatus(TaskStatusEnum::SKIPPED);
 							$task->addExecutionMessage(new ActionExecutionMessage('Action skipped because the user email is excluded from receiving Emundus emails.', ActionMessageTypeEnum::INFO));
@@ -250,26 +254,30 @@ class AutomationEntity
 						if (empty($task))
 						{
 							Log::add('Failed to queue asynchronous action [' . $action->getId() . ' - ' . $action->getType() . '] for : ' . $iterationContextIdentity . ' in automation [' . $this->getId() . '].', Log::ERROR, 'com_emundus.automation');
-							$failedActions[] = ['action_id' => $action->getId(), 'label' => $action->getLabelForLog(), 'context' => $actionContext->serialize()];
+							$failedActions[] = $this->buildActionReport($action, $actionContext);
 						}
 						else
 						{
 							Log::add('Asynchronous action [' . $action->getId() . ' - ' . $action->getType() . '] queued successfully (task id: ' . $task->getId() . ') for : ' . $iterationContextIdentity . ' in automation [' . $this->getId() . '].', Log::DEBUG, 'com_emundus.automation');
-							$successActions[] = ['action_id' => $action->getId(), 'label' => $action->getLabelForLog(), 'context' => $actionContext->serialize(), 'task_id' => $task->getId()];
+							$successActions[] = $this->buildActionReport($action, $actionContext, ['task_id' => $task->getId()]);
 						}
 					}
 					else
 					{
+						// Messages are kept on the action instance, which is reused for every target of the
+						// automation: drop the previous ones so each report only carries its own run.
+						$action->resetExecutionMessages();
+
 						$actionResult = $action->execute($actionContext, $executionContext);
 						if ($actionResult === ActionExecutionStatusEnum::FAILED)
 						{
 							Log::add('Action [' . $action->getId() . ' - ' . $action->getType() . '] failed for : ' . $iterationContextIdentity . ' in automation [' . $this->getId() . '].', Log::ERROR, 'com_emundus.automation');
-							$failedActions[] = ['action_id' => $action->getId(), 'label' => $action->getLabelForLog(), 'context' => $actionContext->serialize()];
+							$failedActions[] = $this->buildActionReport($action, $actionContext);
 						}
 						else
 						{
 							Log::add('Action [' . $action->getId() . ' - ' . $action->getType() . '] executed successfully for : ' . $iterationContextIdentity . ' in automation [' . $this->getId() . '].', Log::DEBUG, 'com_emundus.automation');
-							$successActions[] = ['action_id' => $action->getId(), 'label' => $action->getLabelForLog(), 'context' => $actionContext->serialize()];
+							$successActions[] = $this->buildActionReport($action, $actionContext);
 						}
 					}
 				}
@@ -288,7 +296,9 @@ class AutomationEntity
 					[],
 					[
 						'automation' => $this->getId(),
-						'automation_entity' => $this->serialize(),
+						// Identity only: the whole serialized automation used to be embedded in every
+						// single history row (~21 Ko) while its only consumers read the name.
+						'automation_entity' => ['id' => $this->getId(), 'name' => $this->getName()],
 						'nb_files' => count($context->getFiles()),
 						'nb_files_processed' => $nbFilesPassed,
 						'successful_actions' => $successActions,
@@ -303,6 +313,49 @@ class AutomationEntity
 		}
 
 		return empty($failedActions);
+	}
+
+	/**
+	 * One entry of the automation history, for the successful / failed / skipped collections. `messages`
+	 * is always present, empty included, so the history view never has to guard the key.
+	 *
+	 * @param   array  $extra  Additional keys for this collection, e.g. the id of the queued task.
+	 */
+	private function buildActionReport(ActionEntity $action, ActionTargetEntity $actionContext, array $extra = []): array
+	{
+		return array_merge([
+			'action_id' => $action->getId(),
+			'label'     => $action->getLabelForLog(),
+			'context'   => $actionContext->serialize(),
+			'messages'  => $this->reportableMessages($action),
+		], $extra);
+	}
+
+	/**
+	 * The whole report is persisted as a single JSON blob in a TEXT column, and it holds one entry per
+	 * (action x target): what goes in has to stay bounded. INFO messages are per-run tracing that
+	 * belongs to the log files, only what a manager must act on is kept, capped and never silently.
+	 *
+	 * @return array<array{type: string, message: string, timestamp: string|null}>
+	 */
+	private function reportableMessages(ActionEntity $action): array
+	{
+		$messages = array_values(array_filter(
+			$action->getExecutionMessages(),
+			fn(ActionExecutionMessage $message) => $message->getType() !== ActionMessageTypeEnum::INFO
+		));
+
+		$dropped = count($messages) - self::MAX_REPORTED_MESSAGES;
+		if ($dropped > 0)
+		{
+			$messages   = array_slice($messages, 0, self::MAX_REPORTED_MESSAGES);
+			$messages[] = new ActionExecutionMessage(
+				Text::sprintf('COM_EMUNDUS_AUTOMATION_MESSAGES_TRUNCATED', $dropped),
+				ActionMessageTypeEnum::INFO
+			);
+		}
+
+		return array_map(fn(ActionExecutionMessage $message) => $message->serialize(), $messages);
 	}
 
 	/**
