@@ -310,11 +310,10 @@ class EmundusModelLogs extends JModelList
 		if (!empty($crud))
 			$where .= ' AND ' . $this->db->quoteName('verb') . ' IN ( ' . $crud . ')';
 
-		$query->select('lg.*,
-			CASE WHEN us.is_anonym = 1 THEN ' . $this->db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')) . ' ELSE us.firstname END as firstname,
-			CASE WHEN us.is_anonym = 1 THEN us.user_id ELSE us.lastname END as lastname')
+		$query->select('lg.*, us.firstname, us.lastname, us.is_anonym, ecc.applicant_id, ecc.anonymous')
 			->from($this->db->quoteName('#__emundus_logs', 'lg'))
 			->leftJoin($this->db->quoteName('#__emundus_users', 'us') . ' ON ' . $this->db->QuoteName('us.user_id') . ' = ' . $this->db->QuoteName('lg.user_id_from'))
+			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quoteName('lg.fnum_to'))
 			->where($where)
 			->order($this->db->quoteName('lg.timestamp').' '.$showTimeOrder.', '.$this->db->quoteName('lg.id').' '.$showTimeOrder);
 
@@ -326,8 +325,18 @@ class EmundusModelLogs extends JModelList
 			$this->db->setQuery($query);
 			$results = $this->db->loadObjectList();
 
+			$masked_user_id = $this->getMaskedActorId($results);
+
 			foreach ($results as $result) {
 				$result->date = EmundusHelperDate::displayDate($result->timestamp, 'DATE_FORMAT_LC2', (int) $showTimeFormat);
+
+				if ($result->is_anonym == 1 || ($masked_user_id > 0 && (int) $result->user_id_from === $masked_user_id)) {
+					$result->firstname = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+					$result->lastname  = $result->user_id_from;
+					$result->ip_from   = '';
+				}
+
+				unset($result->applicant_id, $result->anonymous);
 			}
 		}
 		catch (Exception $e) {
@@ -563,6 +572,35 @@ class EmundusModelLogs extends JModelList
 		return false;
 	}
 
+	/**
+	 * Gets the id of the user whose identity must be hidden in log rows, 0 when nobody has to be.
+	 *
+	 * Only the applicant can be hidden by the file anonymity, and never to themselves. All the rows
+	 * belong to the same fnum, so the applicant_id / anonymous columns carried by the join are read once.
+	 *
+	 * @param   array  $rows  log rows selecting ecc.applicant_id and ecc.anonymous, us.is_anonym
+	 *
+	 * @return int
+	 */
+	private function getMaskedActorId(array $rows): int
+	{
+		if (empty($rows)) {
+			return 0;
+		}
+
+		$viewer_id    = (int) $this->user->id;
+		$applicant_id = (int) ($rows[0]->applicant_id ?? 0);
+
+		if (empty($applicant_id) || $applicant_id === $viewer_id) {
+			return 0;
+		}
+
+		// The applicant account flag is already carried by us.is_anonym on their own rows.
+		$anonymize = EmundusHelperFiles::shouldAnonymize($viewer_id, ($rows[0]->is_anonym ?? 0) === 1, ($rows[0]->anonymous ?? 0) === 1);
+
+		return $anonymize ? $applicant_id : 0;
+	}
+
 	public function getUsersLogsByFnum($fnum)
 	{
 		$logs  = [];
@@ -570,15 +608,26 @@ class EmundusModelLogs extends JModelList
 
 		if (!empty($fnum)) {
 			$query->clear()
-				->select('distinct(ju.id) as uid, CASE WHEN jeu.is_anonym = 1 THEN ' . $this->db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')) . ' ELSE ju.name END as name')
+				->select('distinct(ju.id) as uid, ju.name, jeu.is_anonym, ecc.applicant_id, ecc.anonymous')
 				->from($this->db->quoteName('jos_users', 'ju'))
 				->leftJoin($this->db->quoteName('#__emundus_users', 'jeu') . ' ON ' . $this->db->quoteName('jeu.user_id') . ' = ' . $this->db->quoteName('ju.id'))
 				->leftJoin($this->db->quoteName('#__emundus_logs', 'jel') . ' ON ' . $this->db->quoteName('jel.user_id_from') . ' = ' . $this->db->quoteName('ju.id'))
+				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quoteName('jel.fnum_to'))
 				->where($this->db->quoteName('jel.fnum_to') . ' = ' . $this->db->quote($fnum));
 
 			try {
 				$this->db->setQuery($query);
 				$logs = $this->db->loadObjectList();
+
+				$masked_user_id = $this->getMaskedActorId($logs);
+
+				foreach ($logs as $log) {
+					if (($masked_user_id > 0 && (int) $log->uid === $masked_user_id)) {
+						$log->name = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+					}
+
+					unset($log->applicant_id, $log->anonymous);
+				}
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/files | Error when get all affected user by fnum' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage() . '#fnum = ' . $fnum), Log::ERROR, 'com_emundus');

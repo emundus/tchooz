@@ -109,33 +109,6 @@ class EmundusControllerFiles extends EmundusController
 		return "$img$fn$end";  // new <img> tag
 	}
 
-////// EMAIL APPLICANT WITH CUSTOM MESSAGE///////////////////
-
-	/**
-	 *
-	 */
-	public function applicantemail()
-	{
-		if (EmundusHelperAccess::asAccessAction(9, 'c')) {
-			require_once(JPATH_SITE . '/components/com_emundus/helpers/emails.php');
-			$h_emails = new EmundusHelperEmails;
-			$h_emails->sendApplicantEmail();
-		}
-	}
-
-	/**
-	 *
-	 */
-	public function groupmail()
-	{
-		if (EmundusHelperAccess::asAccessAction(16, 'c'))
-		{
-			require_once(JPATH_SITE . '/components/com_emundus/helpers/emails.php');
-			$h_emails = new EmundusHelperEmails;
-			$h_emails->sendGroupEmail();
-		}
-	}
-
 	/**
 	 *
 	 */

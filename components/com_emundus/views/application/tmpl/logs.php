@@ -6,15 +6,12 @@
  * Time: 11:24
  */
 
+defined('_JEXEC') or die('Restricted access');
+
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
-if (version_compare(JVERSION, '4.0', '>')) {
-	Factory::getApplication()->getSession()->set('application_layout', 'logs');
-}
-else {
-	Factory::getSession()->set('application_layout', 'logs');
-}
+Factory::getApplication()->getSession()->set('application_layout', 'logs');
 
 ?>
 
