@@ -273,13 +273,13 @@ abstract class ActionEntity
 						}
 						foreach ($value as $val) {
 							if (!in_array($val, $availableValues)) {
-								Log::add('Invalid value "' . $val . '" for parameter "' . $name . '". Allowed values are: ' . implode(', ',  array_map(fn($choice) => $choice->toSchema(), $parameter->getChoices())), Log::ERROR, 'com_emundus.action');
+								Log::add('Invalid value "' . $val . '" for parameter "' . $name . '". Allowed values are: ' . implode(', ', $availableValues), Log::ERROR, 'com_emundus.action');
 								$value = array_filter($value, fn($v) => $v !== $val);
 							}
 						}
 					} else {
 						if (!in_array($value, $availableValues)) {
-							Log::add('Invalid value "' . $value . '" for parameter "' . $name . '". Allowed values are: ' . implode(', ',  array_map(fn($choice) => $choice->toSchema(), $parameter->getChoices())), Log::ERROR, 'com_emundus.action');
+							Log::add('Invalid value "' . $value . '" for parameter "' . $name . '". Allowed values are: ' . implode(', ', $availableValues), Log::ERROR, 'com_emundus.action');
 							$value = null;
 						}
 					}
@@ -553,6 +553,11 @@ abstract class ActionEntity
 	public function addExecutionMessage(ActionExecutionMessage $message): void
 	{
 		$this->executionMessages[] = $message;
+	}
+
+	public function resetExecutionMessages(): void
+	{
+		$this->executionMessages = [];
 	}
 
 	public function getExecutionMessages(?ActionMessageTypeEnum $type = null): array

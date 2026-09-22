@@ -1,6 +1,8 @@
 <script>
+import AutomationActionMessages from '@/components/Automation/AutomationActionMessages.vue';
 export default {
 	name: 'AutomationHistoryItem',
+	components: { AutomationActionMessages },
 	props: {
 		item: {
 			type: Object,
@@ -13,6 +15,7 @@ export default {
 			rows: [],
 			successes: [],
 			failures: [],
+			hasMessages: false,
 		};
 	},
 	mounted() {
@@ -39,21 +42,27 @@ export default {
 
 		if (this.message.successful_actions && this.message.successful_actions.length > 0) {
 			this.message.successful_actions.forEach((success) => {
-				this.successes.push({
-					label: this.translate(success.label),
-					value: success.context.file ? success.context.file : success.context.user ? success.context.user : '',
-				});
+				this.successes.push(this.buildActionRow(success));
 			});
 		}
 
 		if (this.message.failed_actions && this.message.failed_actions.length > 0) {
 			this.message.failed_actions.forEach((failure) => {
-				this.failures.push({
-					label: this.translate(failure.label),
-					value: failure.context.file ? failure.context.file : failure.context.user ? failure.context.user : '',
-				});
+				this.failures.push(this.buildActionRow(failure));
 			});
 		}
+
+		this.hasMessages = [...this.successes, ...this.failures].some((row) => row.messages.length > 0);
+	},
+	methods: {
+		buildActionRow(action) {
+			return {
+				label: this.translate(action.label),
+				value: action.context.file ? action.context.file : action.context.user ? action.context.user : '',
+				// Executions logged before the messages were reported carry no `messages` key at all.
+				messages: action.messages || [],
+			};
+		},
 	},
 };
 </script>
@@ -82,12 +91,16 @@ export default {
 					<tr>
 						<th>{{ translate('COM_EMUNDUS_AUTOMATION_ACTION') }}</th>
 						<th>{{ translate('COM_EMUNDUS_AUTOMATION_TARGET') }}</th>
+						<th v-if="hasMessages">{{ translate('COM_EMUNDUS_AUTOMATION_ACTION_MESSAGES') }}</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="success in successes" :key="success.label">
 						<td>{{ success.label }}</td>
 						<td>{{ success.value }}</td>
+						<td v-if="hasMessages">
+							<AutomationActionMessages :messages="success.messages" />
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -104,12 +117,16 @@ export default {
 					<tr>
 						<th>{{ translate('COM_EMUNDUS_AUTOMATION_ACTION') }}</th>
 						<th>{{ translate('COM_EMUNDUS_AUTOMATION_TARGET') }}</th>
+						<th v-if="hasMessages">{{ translate('COM_EMUNDUS_AUTOMATION_ACTION_MESSAGES') }}</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="failure in failures" :key="failure.label">
 						<td>{{ failure.label }}</td>
 						<td>{{ failure.value }}</td>
+						<td v-if="hasMessages">
+							<AutomationActionMessages :messages="failure.messages" />
+						</td>
 					</tr>
 				</tbody>
 			</table>

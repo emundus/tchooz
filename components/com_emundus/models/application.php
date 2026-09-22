@@ -267,7 +267,7 @@ class EmundusModelApplication extends ListModel
 
 			$eMConfig           = ComponentHelper::getParams('com_emundus');
 			$expert_document_id = $eMConfig->get('expert_document_id', '36');
-			$export_pdf         = $eMConfig->get('export_application_pdf', 0);
+			$display_application_pdf = $eMConfig->get('display_application_form_document', 0);
 
 			$query = $this->_db->getQuery(true);
 
@@ -310,7 +310,10 @@ class EmundusModelApplication extends ListModel
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('eu.campaign_id'))
 				->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quoteName('eu.fnum'))
 				->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum));
-			if ($export_pdf != 1)
+			// Visibility of the generated application file has its own setting: export_application_pdf only
+			// decides whether it is produced on submission, and it is not the sole producer anymore since
+			// an automation can be configured to print it.
+			if ($display_application_pdf != 1)
 			{
 				$query->andWhere('esa.lbl NOT LIKE ' . $this->_db->quote('_application_form'));
 			}
