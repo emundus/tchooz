@@ -6,6 +6,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Tchooz\Entities\Attachments\AttachmentType;
 use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Entities\Automation\ActionExecutionMessage;
 use Tchooz\Entities\Automation\ActionTargetEntity;
@@ -18,6 +19,7 @@ use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\ActionMessageTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
+use Tchooz\Repositories\Attachments\AttachmentTypeRepository;
 use Tchooz\Repositories\Export\ExportRepository;
 use Tchooz\Services\Export\Pdf\PdfOptions;
 use Tchooz\Services\Export\Pdf\PdfService;
@@ -27,6 +29,8 @@ class ActionPrintApplication extends ActionEntity
 	public const ATTACHMENT_ID = 26;
 
 	public const TEMPLATE_PARAMETER = 'template';
+
+	public const ATTACHMENT_TYPE_PARAMETER = 'attachment_type';
 
 	public const CAN_BE_VIEWED_PARAMETER = 'can_be_viewed';
 
@@ -110,7 +114,15 @@ class ActionPrintApplication extends ActionEntity
 				$db = Factory::getContainer()->get('DatabaseDriver');
 
 				$eMConfig             = ComponentHelper::getParams('com_emundus');
-				$overwrite_export_pdf = $eMConfig->get('overwrite_old_export', 0);
+
+				// only relevant if application_form type
+
+				if ($this->getParameterValue(self::ATTACHMENT_TYPE_PARAMETER) == self::ATTACHMENT_ID || empty($this->getParameterValue(self::ATTACHMENT_TYPE_PARAMETER))) {
+					$overwrite_export_pdf = $eMConfig->get('overwrite_old_export', 0);
+				} else {
+					$overwrite_export_pdf = 1;
+				}
+
 				$export_path          = $eMConfig->get('export_path', null);
 
 				$lang = $app->getLanguage();
@@ -198,7 +210,7 @@ class ActionPrintApplication extends ActionEntity
 
 				$upload = (object) [
 					'fnum'           => $fnum,
-					'attachment_id'  => self::ATTACHMENT_ID,
+					'attachment_id'  => $this->getParameterValue(self::ATTACHMENT_TYPE_PARAMETER) ?? self::ATTACHMENT_ID,
 					'user_id'        => $fnumInfo['applicant_id'],
 					'campaign_id'    => $fnumInfo['campaign_id'],
 					'can_be_deleted' => 0,
@@ -213,7 +225,7 @@ class ActionPrintApplication extends ActionEntity
 					$query->select('id')
 						->from($db->quoteName('#__emundus_uploads'))
 						->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
-						->where($db->quoteName('attachment_id') . ' = ' . (int) self::ATTACHMENT_ID)
+						->where($db->quoteName('attachment_id') . ' = ' . (int) $this->getParameterValue(self::ATTACHMENT_TYPE_PARAMETER) ?? self::ATTACHMENT_ID)
 						->where($db->quoteName('user_id') . ' = ' . (int) $fnumInfo['applicant_id']);
 					$db->setQuery($query);
 					$upload_id = $db->loadResult();
@@ -272,6 +284,7 @@ class ActionPrintApplication extends ActionEntity
 		{
 			$this->parameters = [
 				new ChoiceField(self::TEMPLATE_PARAMETER, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_PRINT_APPLICATION_PARAMETER_TEMPLATE_LABEL'), $this->getTemplateChoices()),
+				(new ChoiceField(self::ATTACHMENT_TYPE_PARAMETER, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_PRINT_APPLICATION_PARAMETER_ATTACHMENT_TYPE_LABEL'), $this->getAttachmentTypeChoices(), addSelectOption: false))->setDefaultValue(self::ATTACHMENT_ID),
 				new BooleanField(self::CAN_BE_VIEWED_PARAMETER, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_PRINT_APPLICATION_PARAMETER_CAN_BE_VIEWED_LABEL'))
 			];
 		}
@@ -404,6 +417,27 @@ class ActionPrintApplication extends ActionEntity
 		}
 
 		return $this->templateChoices;
+	}
+
+	/**
+	 * @return array<ChoiceFieldValue> The attachment types that can be attached to the printed PDF.
+	 */
+	private function getAttachmentTypeChoices(): array
+	{
+		$choices = [];
+
+		$attachmentTypeRepo = new AttachmentTypeRepository();
+		$types = $attachmentTypeRepo->get(['published' => 1]);
+
+		$choices[] = new ChoiceFieldValue(self::ATTACHMENT_ID, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_PRINT_APPLICATION_ATTACHMENT_TYPE_DEFAULT'));
+		foreach ($types as $type)
+		{
+			assert($type instanceof AttachmentType);
+
+			$choices[] = new ChoiceFieldValue($type->getId(), $type->getName());
+		}
+
+		return $choices;
 	}
 
 	public function getLabelForLog(): string
