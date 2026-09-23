@@ -338,7 +338,16 @@ class TagEntity
 
 									if($modifier['modifier'] instanceof IndexModifier)
 									{
-										$index = (int)($modifier['params'][0] ?? -1);
+										$indexParam = $modifier['params'][0] ?? '';
+										if(is_string($indexParam) && strtoupper(trim($indexParam)) === 'LAST')
+										{
+											$index = count($applicationChoices);
+										}
+										else
+										{
+											$index = (int)($indexParam !== '' ? $indexParam : -1);
+										}
+
 										if(isset($applicationChoices[$index-1]))
 										{
 											$applicationChoices = [$applicationChoices[$index-1]];
