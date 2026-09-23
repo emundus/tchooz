@@ -15,10 +15,8 @@ use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Enums\Automation\ActionMessageTypeEnum;
-use Tchooz\Factories\Synchronizer\SynchronizerFactory;
 use Tchooz\Repositories\Mapping\MappingRepository;
-use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
-use Tchooz\Services\Mapping\ApiMapDataInterface;
+use Tchooz\Services\Mapping\MappingExecutor;
 
 class ActionApiMap extends ActionEntity
 {
@@ -61,23 +59,11 @@ class ActionApiMap extends ActionEntity
 
 			if (!empty($mappingEntity))
 			{
-				$synchronizerRepository = new SynchronizerRepository();
-				$synchronizer           = $synchronizerRepository->getById($mappingEntity->getSynchronizerId());
-
 				try
 				{
-					$api = (new SynchronizerFactory())->getApiInstance($synchronizer);
-
-					if ($api instanceof ApiMapDataInterface)
-					{
-						// todo: add a parameter to choose the method type
-						$sent   = $api->mapRequest($mappingEntity, $context, ApiMethodEnum::POST);
-						$status = $sent ? ActionExecutionStatusEnum::COMPLETED : ActionExecutionStatusEnum::FAILED;
-					}
-					else
-					{
-						Log::add('The synchronizer does not support API mapping: ' . $synchronizer->getName(), Log::WARNING, 'com_emundus.action');
-					}
+					// todo: add a parameter to choose the method type
+					$sent   = (new MappingExecutor())->execute($mappingEntity, $context, ApiMethodEnum::POST);
+					$status = $sent ? ActionExecutionStatusEnum::COMPLETED : ActionExecutionStatusEnum::FAILED;
 				}
 				catch (\Exception $e)
 				{

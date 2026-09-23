@@ -14,7 +14,6 @@ use Tchooz\Repositories\Mapping\MappingRowRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Services\Field\FieldOptionProvider;
 use Tchooz\Services\Field\FieldWatcher;
-use Tchooz\Services\Mapping\ApiMapDataInterface;
 
 class MappingFactory
 {
@@ -93,7 +92,16 @@ class MappingFactory
 		$fields = [];
 
 		$fields[] = new StringField('label', Text::_('COM_EMUNDUS_MAPPING_FIELD_LABEL_LABEL'), true);
-		$fields[] = new ChoiceField('synchronizer_id', Text::_('COM_EMUNDUS_MAPPING_FIELD_SYNCHRONIZER_ID_LABEL'), ChoiceFieldFactory::makeOptions(new SynchronizerRepository(), 'getAll', ['filters' => [], 'limit' => 0]), true, false);
+
+		// Only offer usable connectors: published, enabled, and of a type mapping actually supports
+		// (i.e. exposing at least one object).
+		$synchronizerFilters = [
+			'type'      => (new MappingObjectFactory())->getSupportedConnectorTypes(),
+			'published' => 1,
+			'enabled'   => 1,
+		];
+
+		$fields[] = new ChoiceField('synchronizer_id', Text::_('COM_EMUNDUS_MAPPING_FIELD_SYNCHRONIZER_ID_LABEL'), ChoiceFieldFactory::makeOptions(new SynchronizerRepository(), 'getAll', ['filters' => $synchronizerFilters, 'limit' => 0]), true, false);
 
 		try
 		{
@@ -131,7 +139,8 @@ class MappingFactory
 							$objectDefinition->getLabel(),
 							null,
 							[
-								'requiredFields' => array_map(fn($field) => $field->toSchema(), $objectDefinition->getRequiredFields()),
+								'requiredFields'  => array_map(fn($field) => $field->toSchema(), $objectDefinition->getRequiredFields()),
+								'availableFields' => array_map(fn($field) => $field->toSchema(), $objectDefinition->getAvailableFields()),
 							]
 						);
 					}

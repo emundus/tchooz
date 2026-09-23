@@ -17,6 +17,7 @@ enum ConditionTargetTypeEnum: string
 	case FILEATTACHMENTDATA = 'file_attachment_data';
 	case ALIASDATA = 'alias_data';
 	case STATICVALUE = 'static_value';
+	case SYSTEMDATE = 'system_date';
 
 	public function getLabel(): string
 	{
@@ -34,6 +35,7 @@ enum ConditionTargetTypeEnum: string
 			self::FILEATTACHMENTDATA => Text::_('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_FILEATTACHMENTDATA'),
 			self::ALIASDATA => Text::_('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_ALIASDATA'),
 			self::STATICVALUE => Text::_('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_STATICVALUE'),
+			self::SYSTEMDATE => Text::_('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_SYSTEMDATE'),
 		};
 	}
 }
