@@ -66,6 +66,24 @@ class HtmlSanitizerSingleton
 		return strip_tags($input);
 	}
 
+	/**
+	 * Sanitize input, auto-detecting whether it contains HTML.
+	 * Plain text keeps special chars (', `, «, »...) untouched.
+	 * HTML is run through the full sanitizer to strip dangerous tags/attributes.
+	 */
+	public function sanitizeAuto(?string $input): string
+	{
+		if (empty($input)) {
+			return '';
+		}
+
+		if ($input !== strip_tags($input)) {
+			return $this->sanitize($input);
+		}
+
+		return $this->sanitizeNoHtml($input);
+	}
+
 	public function sanitizeFor(?string $section, string $input): string
 	{
 		if (empty($input)) {

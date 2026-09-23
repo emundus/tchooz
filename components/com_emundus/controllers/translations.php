@@ -299,7 +299,7 @@ class EmundusControllerTranslations extends BaseController
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
 		}
 		$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
-		$override      = $htmlSanitizer->sanitizeNoHtml($override);
+		$override      = $htmlSanitizer->sanitizeAuto($override);
 
 		$result = LanguageFactory::translate($tag, [$lang_to => $override], $reference_table, $reference_id);
 
@@ -329,7 +329,7 @@ class EmundusControllerTranslations extends BaseController
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
 		}
 		$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
-		$override      = $htmlSanitizer->sanitizeNoHtml($override);
+		$override      = $htmlSanitizer->sanitizeAuto($override);
 
 		$result = LanguageFactory::translate($tag, [$lang_to => $override], $reference_table, $reference_id, $reference_field);
 
