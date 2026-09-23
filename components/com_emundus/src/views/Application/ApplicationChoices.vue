@@ -789,7 +789,7 @@ export default {
 						<Button
 							variant="cancel"
 							width="fit"
-							v-if="canBeConfirm && choice.state.value === 1 && !$props.fnum"
+							v-if="choice.state.value === 1 && !$props.fnum"
 							@click="refuseChoice(choice)"
 						>
 							{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_REFUSE') }}
