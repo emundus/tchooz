@@ -6,6 +6,7 @@ use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Enums\Synchronizer\SynchronizerContextEnum;
 use Tchooz\Synchronizers\Hubspot\HubspotSynchronizer;
 use Tchooz\Synchronizers\NumericSign\DocuSignSynchronizer;
+use Tchooz\Synchronizers\Sofis\SofisSynchronizer;
 
 class SynchronizerFactory
 {
@@ -71,6 +72,8 @@ class SynchronizerFactory
 				break;
 			case 'hubspot':
 				return new HubSpotSynchronizer();
+			case 'sofis':
+				return new SofisSynchronizer();
 			// Add more cases for different synchronizer types as needed
 			default:
 				throw new \Exception('Unsupported synchronizer type: ' . $synchronizerEntity->getType());

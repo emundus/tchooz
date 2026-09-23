@@ -294,6 +294,11 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 								$foundValue = explode(',', $foundValue);
 							}
 							break;
+						case ElementPluginEnum::IBAN->value:
+							if (is_string($foundValue) && $foundValue !== '') {
+								$foundValue = \EmundusHelperFabrik::decryptDatas($foundValue);
+							}
+							break;
 						default:
 							// no transformation needed
 					}

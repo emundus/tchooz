@@ -31,7 +31,7 @@ class ProgramDataConditionResolver implements ConditionTargetResolverInterface
 		return [
 			new ChoiceField('id', Text::_('COM_EMUNDUS_PROGRAM_FIELD'), $this->getProgramsList(), false, true),
 			new StringField('label', Text::_('COM_EMUNDUS_PROGRAM_FIELD_LABEL'), false),
-			new StringField('category', Text::_('COM_EMUNDUS_PROGRAM_FIELD_CATEGORY'), false),
+			new StringField('programmes', Text::_('COM_EMUNDUS_PROGRAM_FIELD_CATEGORY'), false),
 			new StringField('code', Text::_('COM_EMUNDUS_PROGRAM_FIELD_CODE'), false),
 		];
 	}

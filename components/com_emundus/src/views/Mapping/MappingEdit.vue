@@ -41,6 +41,7 @@ export default {
 			defaultParameters: [],
 			requiredFields: [],
 			requiredFieldsKey: 0,
+			availableFields: [],
 		};
 	},
 	mixins: [transformMixin, alerts],
@@ -102,30 +103,84 @@ export default {
 		},
 		constructRequiredFields() {
 			this.requiredFields = [];
+			this.availableFields = [];
 
-			// find the target_object field in this.formGroups and get its choices
-			const targetObjectParam = this.formGroups[0].parameters.find((param) => param.param === 'target_object');
-			if (targetObjectParam) {
-				const option = targetObjectParam.options.find((option) =>
-					typeof this.mapping.target_object === 'object'
-						? option.value === this.mapping.target_object.value
-						: option.value === this.mapping.target_object,
-				);
+			const selectedValue =
+				typeof this.mapping.target_object === 'object' && this.mapping.target_object !== null
+					? this.mapping.target_object.value
+					: this.mapping.target_object;
 
-				if (option?.requiredFields) {
-					this.requiredFields = option.requiredFields.map((field) =>
-						this.fromFieldEntityToParameter(field, this.mapping.params[field.name] || null),
-					);
-				} else {
-					this.requiredFields = [];
-				}
-				this.requiredFieldsKey += 1;
+			// The selected target_object is the full option once picked (it carries requiredFields /
+			// availableFields). Prefer it: at creation the field options are loaded asynchronously in
+			// the dropdown and are not reflected in this.formGroups. Fall back to the field options
+			// (edition, where they are server-built).
+			let option =
+				typeof this.mapping.target_object === 'object' &&
+				this.mapping.target_object !== null &&
+				(this.mapping.target_object.availableFields || this.mapping.target_object.requiredFields)
+					? this.mapping.target_object
+					: null;
+
+			if (!option) {
+				const targetObjectParam = this.formGroups[0]?.parameters.find((param) => param.param === 'target_object');
+				option = targetObjectParam?.options.find((opt) => opt.value === selectedValue) || null;
 			}
+
+			if (option) {
+				this.requiredFields = (option.requiredFields || []).map((field) =>
+					this.fromFieldEntityToParameter(field, this.mapping.params[field.name] || null),
+				);
+				this.availableFields = option.availableFields || [];
+				this.syncAvailableFieldRows();
+			}
+
+			this.requiredFieldsKey += 1;
+		},
+		// Pre-fill one mapping row per available target field (source left to the admin). This only
+		// runs on a fresh mapping (no rows yet): on an already-saved mapping the persisted rows are
+		// authoritative, so we never re-add fields the admin deliberately removed. No-op when the
+		// object declares no available fields (free-form mapping).
+		syncAvailableFieldRows() {
+			if (!this.availableFields || this.availableFields.length === 0) {
+				return;
+			}
+
+			this.mapping.rows = this.mapping.rows || [];
+
+			if (this.mapping.rows.length > 0) {
+				return;
+			}
+
+			const existingTargets = this.mapping.rows.map((row) => row.target_field);
+
+			this.availableFields.forEach((field) => {
+				if (!existingTargets.includes(field.name)) {
+					const row = {
+						id: Math.floor(Math.random() * 1000000000),
+						mapping_id: this.mapping.id,
+						source_type: '',
+						source_field: '',
+						target_field: field.name,
+						transformations: [],
+					};
+
+					// Pre-fill the field default value as a static source (editable / overridable).
+					if (field.defaultValue !== null && field.defaultValue !== undefined && field.defaultValue !== '') {
+						row.source_type = 'static_value';
+						row.source_field = field.defaultValue;
+					}
+
+					this.mapping.rows.push(row);
+				}
+			});
 		},
 		onMappingParamsUpdated(params) {
 			this.mapping.params = params;
 		},
 		save() {
+			// No hard block on required fields: "required" is a POST-time constraint enforced at
+			// runtime (the object throws if a required field is missing when actually creating).
+			// The UI only pre-fills defaults and marks required fields with a *.
 			mappingService.save(this.mapping).then((response) => {
 				if (response.status) {
 					this.alertSuccess(this.translate('COM_EMUNDUS_MAPPING_SAVED_SUCCESSFULLY'));
@@ -184,6 +239,7 @@ export default {
 							:key="row.id"
 							:row="row"
 							:data-resolvers="dataResolvers"
+							:available-fields="availableFields"
 							@removeRow="removeMappingRow"
 							@rowTransformations="onRowTransformationsUpdate"
 						>

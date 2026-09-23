@@ -24,6 +24,19 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		availableFields: {
+			type: Array,
+			default: () => [],
+		},
+	},
+	computed: {
+		// When the object declares available target fields, this row's target is fixed to one of them.
+		fixedTargetField() {
+			return (this.availableFields || []).find((field) => field.name === this.row.target_field) || null;
+		},
+		isTargetRequired() {
+			return !!this.fixedTargetField?.required;
+		},
 	},
 	data() {
 		return {
@@ -75,18 +88,6 @@ export default {
 					trackBy: 'value',
 					label: 'label',
 				},
-			},
-			targetFieldParameter: {
-				param: 'target_field', // to be populated dynamically based on the selected condition type
-				type: 'select',
-				placeholder: '',
-				value: null,
-				label: '',
-				helptext: '',
-				displayed: false,
-				options: [],
-				reload: 0,
-				hideLabel: true,
 			},
 		};
 	},
@@ -293,7 +294,15 @@ export default {
 			</Parameter>
 		</td>
 		<td v-if="displayTarget">
-			<input type="text" v-model="row.target_field" />
+			<div class="tw-flex tw-w-full tw-items-center tw-gap-1">
+				<input type="text" class="tw-w-full" :list="'target-fields-' + row.id" v-model="row.target_field" />
+				<datalist :id="'target-fields-' + row.id">
+					<option v-for="field in availableFields" :key="field.name" :value="field.name">
+						{{ field.label }}
+					</option>
+				</datalist>
+				<span v-if="isTargetRequired" class="tw-text-red-500">*</span>
+			</div>
 		</td>
 		<td class="row-actions">
 			<div class="tw-flex tw--items-center tw-gap-4">
