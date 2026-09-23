@@ -601,8 +601,9 @@ class PdfService extends Export implements ExportInterface
 
 		try
 		{
-			$displayEvaluatorName = (bool) $this->options->getSetting(PdfOptionsSchema::DISPLAY_EVALUATOR_NAME, true);
-			$forms = $this->m_application->getFormsPDF($applicationFile->getUser()->id, $applicationFile->getFnum(), null, 0, null, $elementIds, true, $stepTypes, $this->user->id, $displayEvaluatorName);
+			$displayEvaluatorName   = (bool) $this->options->getSetting(PdfOptionsSchema::DISPLAY_EVALUATOR_NAME, true);
+			$displayAttachmentsList = (bool) $this->options->getSetting(PdfOptionsSchema::DISPLAY_ATTACHMENTS_LIST, false);
+			$forms = $this->m_application->getFormsPDF($applicationFile->getUser()->id, $applicationFile->getFnum(), null, 0, null, $elementIds, $displayAttachmentsList, $stepTypes, $this->user->id, $displayEvaluatorName);
 		}
 		catch (\Exception $e)
 		{

@@ -343,7 +343,8 @@ if ($user != null)
                     aria-haspopup="true"
                     aria-expanded="false"
                     aria-controls="userDropdownMenu">
-                    <span class="em-flex-row em-flex-end em-profile-container">
+                    <span class="em-flex-row em-flex-end em-profile-container" tabindex="0" aria-expanded="false" aria-haspopup="true"
+                          onclick="manageHeight()">
                         <span class="tw-mr-4">
                             <?php if (!empty($user)) : ?>
                                 <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . mb_substr($user->lastname, 0, 1) . '.'; ?></p>

@@ -15,10 +15,11 @@ use Tchooz\Enums\Export\ExportTabEnum;
 
 class PdfOptionsSchema extends AbstractOptionsSchema
 {
-	public const DISPLAY_HEADER          = 'display_header';
-	public const DISPLAY_PAGE_NUMBERS    = 'display_page_numbers';
-	public const FILENAME                = 'filename';
-	public const DISPLAY_EVALUATOR_NAME  = 'display_evaluator_name';
+	public const DISPLAY_HEADER           = 'display_header';
+	public const DISPLAY_PAGE_NUMBERS     = 'display_page_numbers';
+	public const FILENAME                 = 'filename';
+	public const DISPLAY_EVALUATOR_NAME   = 'display_evaluator_name';
+	public const DISPLAY_ATTACHMENTS_LIST = 'display_attachments_list';
 
 	protected function getFormatFields(): array
 	{
@@ -34,6 +35,12 @@ class PdfOptionsSchema extends AbstractOptionsSchema
 			new BooleanField(
 				name: self::DISPLAY_EVALUATOR_NAME,
 				label: 'COM_EMUNDUS_EXPORTS_DISPLAY_EVALUATOR_NAME',
+				required: false,
+				group: $group,
+			),
+			new BooleanField(
+				name: self::DISPLAY_ATTACHMENTS_LIST,
+				label: 'COM_EMUNDUS_EXPORTS_OPTION_DISPLAY_ATTACHMENTS_LIST',
 				required: false,
 				group: $group,
 			),
@@ -66,10 +73,11 @@ class PdfOptionsSchema extends AbstractOptionsSchema
 	protected function getFormatDefaults(): array
 	{
 		return [
-			self::DISPLAY_HEADER         => true,
-			self::DISPLAY_PAGE_NUMBERS   => true,
-			self::DISPLAY_EVALUATOR_NAME => true,
-			self::FILENAME               => self::defaultFilename(),
+			self::DISPLAY_HEADER           => true,
+			self::DISPLAY_PAGE_NUMBERS     => true,
+			self::DISPLAY_EVALUATOR_NAME   => true,
+			self::DISPLAY_ATTACHMENTS_LIST => true,
+			self::FILENAME                 => self::defaultFilename(),
 		];
 	}
 }

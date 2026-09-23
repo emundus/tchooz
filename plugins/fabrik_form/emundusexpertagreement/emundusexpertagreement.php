@@ -166,7 +166,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 		Log::addLogger(['text_file' => 'com_emundus.expertAcceptation.error.php'], Log::ERROR, 'com_emundus');
 		$current_user = Factory::getApplication()->getIdentity();
 
-		if(!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+		if(EmundusHelperAccess::isExpert($current_user->id) || $current_user->guest == 1)
 		{
 			try
 			{

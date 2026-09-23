@@ -136,7 +136,7 @@ fonts/rockettheme-apps/rockettheme-apps.ttf	2185692f8168ab2fa54c0923be97f190
 fonts/rockettheme-apps/rockettheme-apps.woff	f1258374fedaa30401743337048a64bb
 fonts/rockettheme-apps/rockettheme-apps.woff2	0b76f0674592d3d4653e6524045e890e
 gantry/presets.yaml	4edfd8f32f98ba3020831b1ed61db43f
-gantry/theme.yaml	c04f363fd9e84c00ff909048e532a460
+gantry/theme.yaml	f1efe1b18d5e795e35c1b3fa96cc621d
 html/layouts/chromes/gantry.php	a090d20a4c9e1d0f4a32cba6bd3d79d9
 html/layouts/joomla/system/message.php	cab953d9c507eceb27b1aa9fe63e8c4c
 html/modules.php	3385dcf51856d166be9ef44e0dd34ebe
@@ -243,6 +243,6 @@ scss/helium/styles/_tables.scss	84e30ada4aa5c38ee47079cfcaaefe3d
 scss/helium/styles/_typography.scss	3ceef80704646c220c50c9f2e9ec5ada
 scss/helium/styles/_utilities.scss	5d8aacbecee8059c244371deac2d938e
 scss/helium/styles/_variations.scss	d0cfbd7f75d8cca38131eeeab0e52de8
-templateDetails.xml	33b1baa92a8d32e1e304e9bcdf2fec0a
+templateDetails.xml	490263194dc54c2355b1040505cbbe45
 template_preview.png	ab4cfffd01e4869e58539c047dd9b084
 template_thumbnail.png	927912da2d23c09c87d8613905b38b74

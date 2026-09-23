@@ -96,7 +96,15 @@ class Parser implements \Twig_ParserInterface
         // tag handlers
         if (null === $this->handlers) {
             $this->handlers = $this->env->getTokenParsers();
-            $this->handlers->setParser($this);
+            if (is_object($this->handlers) && method_exists($this->handlers, 'setParser')) {
+                $this->handlers->setParser($this);
+            } elseif (is_array($this->handlers)) {
+                foreach ($this->handlers as $handler) {
+                    if (is_object($handler) && method_exists($handler, 'setParser')) {
+                        $handler->setParser($this);
+                    }
+                }
+            }
         }
 
         // node visitors
@@ -188,7 +196,13 @@ class Parser implements \Twig_ParserInterface
                         return new Node($rv, [], $lineno);
                     }
 
-                    $subparser = $this->handlers->getTokenParser($token->getValue());
+                    if (is_object($this->handlers) && method_exists($this->handlers, 'getTokenParser')) {
+                        $subparser = $this->handlers->getTokenParser($token->getValue());
+                    } elseif (is_array($this->handlers)) {
+                        $subparser = isset($this->handlers[$token->getValue()]) ? $this->handlers[$token->getValue()] : null;
+                    } else {
+                        $subparser = null;
+                    }
                     if (null === $subparser) {
                         if (null !== $test) {
                             $e = new SyntaxError(sprintf('Unexpected "%s" tag', $token->getValue()), $token->getLine(), $this->stream->getSourceContext());
