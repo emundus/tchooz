@@ -693,7 +693,7 @@
 
         .switcher .toggle-outside,
         .plg-yesno .switcher input {
-            display: none;
+            opacity: 0;
         }
 
         .plg-yesno .switcher label {
@@ -762,6 +762,12 @@
             color: var(--neutral-0);
             border: 1px solid var(--red-700);
             background: var(--red-700);
+        }
+
+        .switcher input:focus-visible + label {
+            outline: 2px solid #1a466b;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 0.2rem rgba(26, 70, 107, 0.35);
         }
 
 
