@@ -249,7 +249,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
             </span>
 		<?php endif; ?>
 		<?php if (!empty(Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'))) : ?>
-            <p>
+            <div>
 				<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'); ?>
 				<?php
 
@@ -273,11 +273,11 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 							echo ', ' . $actionLabel;
 						}
 					}
-					echo ').'; ?>
+					echo ').</p>'; ?>
 				<?php else : ?>
-					<?php echo '. '; ?>
+					<?php echo '.</p>'; ?>
 				<?php endif; ?>
-            </p>
+            </div>
 		<?php endif; ?>
 
 		<?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
