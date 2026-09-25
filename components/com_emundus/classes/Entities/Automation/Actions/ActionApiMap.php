@@ -59,10 +59,12 @@ class ActionApiMap extends ActionEntity
 
 			if (!empty($mappingEntity))
 			{
+				$executor = new MappingExecutor();
+
 				try
 				{
 					// todo: add a parameter to choose the method type
-					$sent   = (new MappingExecutor())->execute($mappingEntity, $context, ApiMethodEnum::POST);
+					$sent   = $executor->execute($mappingEntity, $context, ApiMethodEnum::POST);
 					$status = $sent ? ActionExecutionStatusEnum::COMPLETED : ActionExecutionStatusEnum::FAILED;
 				}
 				catch (\Exception $e)
@@ -70,9 +72,24 @@ class ActionApiMap extends ActionEntity
 					$this->addExecutionMessage(new ActionExecutionMessage($e->getMessage(), ActionMessageTypeEnum::ERROR));
 					Log::add('Error executing API map action: ' . $e->getMessage(), Log::ERROR, 'com_emundus.action');
 				}
+
+				// What the synchronization did, item by item — reported whether it succeeded or not,
+				// so the task history says more than "failed".
+				foreach ($executor->getExecutionMessages() as $message)
+				{
+					$this->addExecutionMessage($message);
+				}
+
+				// A synchronization can decline without throwing. Never leave the task with nothing to
+				// explain its failure.
+				if ($status === ActionExecutionStatusEnum::FAILED && empty($this->getExecutionMessages(ActionMessageTypeEnum::ERROR)))
+				{
+					$this->addExecutionMessage(new ActionExecutionMessage(Text::sprintf('TCHOOZ_AUTOMATION_ACTION_API_MAP_FAILED', $mappingEntity->getLabel()), ActionMessageTypeEnum::ERROR));
+				}
 			}
 			else
 			{
+				$this->addExecutionMessage(new ActionExecutionMessage(Text::sprintf('TCHOOZ_AUTOMATION_ACTION_API_MAP_NOT_FOUND', $this->getParameterValue('api_map_id')), ActionMessageTypeEnum::ERROR));
 				Log::add('Mapping not found for API map action with ID: ' . $this->getParameterValue('api_map_id'), Log::WARNING, 'com_emundus.action');
 			}
 		}

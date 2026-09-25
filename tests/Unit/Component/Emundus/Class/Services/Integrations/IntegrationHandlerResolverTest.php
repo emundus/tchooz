@@ -71,6 +71,19 @@ class IntegrationHandlerResolverTest extends UnitTestCase
 	/**
 	 * @covers \Tchooz\Services\Integrations\IntegrationHandlerResolver::resolve
 	 */
+	public function testResolveSacemGedReturnsHandlerAndConfiguration(): void
+	{
+		$synchronizer = $this->createSynchronizer('sacem_ged');
+
+		$handler = $this->resolver->resolve($synchronizer);
+
+		$this->assertSame('Tchooz\\Services\\Integrations\\Handlers\\SacemGedIntegrationHandler', get_class($handler));
+		$this->assertNotNull($handler->getConfiguration(), 'The sacem_ged configuration must be resolvable by the registry.');
+	}
+
+	/**
+	 * @covers \Tchooz\Services\Integrations\IntegrationHandlerResolver::resolve
+	 */
 	public function testResolveThrowsWhenFileMissing(): void
 	{
 		$synchronizer = $this->createSynchronizer('missing');

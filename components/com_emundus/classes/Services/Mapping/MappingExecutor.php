@@ -4,6 +4,7 @@ namespace Tchooz\Services\Mapping;
 
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Tchooz\Entities\Automation\ActionExecutionMessage;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Mapping\MappingEntity;
 use Tchooz\Entities\Mapping\MappingResolution;
@@ -15,6 +16,7 @@ use Tchooz\Repositories\Reference\ExternalReferenceRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Synchronizers\FileUploadInterface;
 use Tchooz\Synchronizers\Mapping\MappingObjectInterface;
+use Tchooz\Synchronizers\Mapping\ReportsExecutionMessages;
 use Tchooz\Synchronizers\Mapping\SelfExecutingMappingObject;
 use Tchooz\Synchronizers\Mapping\SupportsAssociationsInterface;
 use Tchooz\Synchronizers\MappingTransportInterface;
@@ -37,6 +39,11 @@ class MappingExecutor
 	private MappingObjectFactory $mappingObjectFactory;
 
 	private ExternalReferenceRepository $externalReferenceRepository;
+
+	/**
+	 * @var array<ActionExecutionMessage>
+	 */
+	private array $executionMessages = [];
 
 	public function __construct(
 		?SynchronizerRepository $synchronizerRepository = null,
@@ -78,6 +85,37 @@ class MappingExecutor
 
 		$object = $this->mappingObjectFactory->make($synchronizer->getType(), $mapping->getTargetObject());
 
+		try
+		{
+			return $this->run($object, $mapping, $context, $transport);
+		}
+		finally
+		{
+			// Collected even when the run threw: a partly successful run has something to say about
+			// the items it did process.
+			if ($object instanceof ReportsExecutionMessages)
+			{
+				$this->executionMessages = $object->getExecutionMessages();
+			}
+		}
+	}
+
+	/**
+	 * Messages reported by the object of the last execute() call, for the caller to hand to the task
+	 * journal. Empty when the object narrates nothing.
+	 *
+	 * @return array<ActionExecutionMessage>
+	 */
+	public function getExecutionMessages(): array
+	{
+		return $this->executionMessages;
+	}
+
+	/**
+	 * @throws \Exception
+	 */
+	private function run(MappingObjectInterface $object, MappingEntity $mapping, ActionTargetEntity $context, MappingTransportInterface $transport): bool
+	{
 		// Objects that own a multi-step choreography (e.g. Sofis vendor) drive their own execution.
 		if ($object instanceof SelfExecutingMappingObject)
 		{
