@@ -2,6 +2,7 @@
 
 namespace Tchooz\Factories\Mapping;
 
+use Tchooz\Synchronizers\GED\Sacem\Objects\DocumentObject;
 use Tchooz\Synchronizers\Hubspot\Objects\ContactObject;
 use Tchooz\Synchronizers\Hubspot\Objects\DealObject;
 use Tchooz\Synchronizers\Mapping\MappingObjectInterface;
@@ -33,6 +34,9 @@ class MappingObjectFactory
 			'vendor'                    => VendorObject::class,
 			'financial_dimension_value' => FinancialDimensionValueObject::class,
 			'purchase_order'            => PurchaseOrderObject::class,
+		],
+		'sacem_ged' => [
+			'document' => DocumentObject::class,
 		],
 	];
 

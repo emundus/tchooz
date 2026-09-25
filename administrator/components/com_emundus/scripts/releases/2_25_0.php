@@ -12,6 +12,7 @@ namespace scripts;
 
 use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
+use Tchooz\Synchronizers\GED\Sacem\SacemSynchronizer;
 
 class Release2_25_0Installer extends ReleaseInstaller
 {
@@ -54,7 +55,7 @@ class Release2_25_0Installer extends ReleaseInstaller
 					$config,
 					false,
 					false,
-					'sofis.svg'
+					'sacem.svg.webp'
 				);
 
 				$this->tasks[] = $repository->flush($sofis);
@@ -62,6 +63,36 @@ class Release2_25_0Installer extends ReleaseInstaller
 			}
 
 			$this->tasks[] = \EmundusHelperUpdate::alterColumn('jos_emundus_external_reference', 'intern_id', 'VARCHAR', 255, 0);
+
+			$sacemGED = $repository->getByType(SacemSynchronizer::TYPE);
+			if (empty($sacemGED))
+			{
+				$config = [
+					'authentication' => [
+						'idp_client_id'     => '',
+						'idp_client_secret' => '',
+						'idp_token_url'     => '',
+					],
+					'api'            => [
+						'base_url'   => '',
+						'partner_id' => '',
+					],
+				];
+
+				$sacemGED = new SynchronizerEntity(
+					0,
+					SacemSynchronizer::TYPE,
+					'GED Sacem',
+					'Synchronisation GED Sacem',
+					[],
+					$config,
+					false,
+					false,
+					'sacem.svg.webp'
+				);
+
+				$this->tasks[] = $repository->flush($sacemGED);
+			}
 
 			$result['status'] = !in_array(false, $this->tasks, true);
 		}

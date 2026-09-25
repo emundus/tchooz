@@ -64,7 +64,7 @@ class MappingRowFactory
 				isset($json['id']) ? (int) $json['id'] : 0,
 				isset($json['mapping_id']) ? (int) $json['mapping_id'] : 0,
 				isset($json['order']) ? (int) $json['order'] : 0,
-				isset($json['source_type']) ? ConditionTargetTypeEnum::from((string) $json['source_type']) : ConditionTargetTypeEnum::FIELD,
+				isset($json['source_type']) ? ConditionTargetTypeEnum::from((string) $json['source_type']) : ConditionTargetTypeEnum::FORMDATA,
 				isset($json['source_field']) ? (string) $json['source_field'] : '',
 				isset($json['target_field']) ? (string) $json['target_field'] : '',
 				$transformations,
