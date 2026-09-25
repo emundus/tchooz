@@ -696,6 +696,11 @@ class EmundusControllerCampaign extends EmundusController
 		}
 
 		$campaign = $this->m_campaign->getCampaignDetailsById($id, $lang);
+		if(is_null($campaign->campaign->description))
+		{
+			$campaign->campaign->description = '';
+		}
+		
 		if (empty($campaign))
 		{
 			throw new \RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_CAMPAIGN'), EmundusResponse::HTTP_NOT_FOUND);
