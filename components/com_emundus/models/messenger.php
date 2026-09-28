@@ -794,24 +794,52 @@ class EmundusModelMessenger extends ListModel
 
 				if (!empty($notifications) && $messages_content)
 				{
+					// Resolve access for every fnum in a single batch instead of 4+ queries per notification.
+					// asAccessAction() already checks isUserAllowedToAccessFnum() internally, so the action-36
+					// check alone is sufficient. asAccessActionOnFnums() is its batched equivalent.
+					$fnums            = array_column($notifications, 'fnum');
+					$authorized_fnums = EmundusHelperAccess::asAccessActionOnFnums(36, 'c', $user_id, $fnums);
+
+					// Drop unauthorized notifications and collect every message id to load them in one query.
+					$all_message_ids = [];
 					foreach ($notifications as $key => $notification)
 					{
-						if (EmundusHelperAccess::isUserAllowedToAccessFnum($user_id, $notification['fnum']) === false || EmundusHelperAccess::asAccessAction(36, 'c', $user_id, $notification['fnum']) === false)
+						if (!in_array($notification['fnum'], $authorized_fnums))
 						{
 							unset($notifications[$key]);
 							continue;
 						}
 
-						$messages_ids = explode(',', $notification['messages']);
+						$notifications[$key]['messages'] = explode(',', $notification['messages']);
+						$all_message_ids                 = array_merge($all_message_ids, $notifications[$key]['messages']);
+					}
+
+					if (!empty($all_message_ids))
+					{
+						$all_message_ids = array_unique(array_filter(array_map('intval', $all_message_ids)));
+
 						$query->clear()
 							->select('m.message_id,m.message,m.date_time')
 							->from($this->_db->quoteName('#__messages', 'm'))
-							->where($this->_db->quoteName('m.message_id') . ' IN (' . implode(',', $messages_ids) . ')');
+							->where($this->_db->quoteName('m.message_id') . ' IN (' . implode(',', $all_message_ids) . ')');
 						$this->_db->setQuery($query);
-						$notifications[$key]['messages'] = $this->_db->loadAssocList();
-						foreach ($notifications[$key]['messages'] as $k => $message)
+						$messages_rows = $this->_db->loadAssocList('message_id');
+
+						// Re-attach each notification's messages from the single result set.
+						foreach ($notifications as $key => $notification)
 						{
-							$notifications[$key]['messages'][$k]['date_time'] = EmundusHelperDate::displayDate($message['date_time']);
+							$messages = [];
+							foreach ($notification['messages'] as $message_id)
+							{
+								$message_id = (int) $message_id;
+								if (isset($messages_rows[$message_id]))
+								{
+									$message              = $messages_rows[$message_id];
+									$message['date_time'] = EmundusHelperDate::displayDate($message['date_time']);
+									$messages[]           = $message;
+								}
+							}
+							$notifications[$key]['messages'] = $messages;
 						}
 					}
 				}
