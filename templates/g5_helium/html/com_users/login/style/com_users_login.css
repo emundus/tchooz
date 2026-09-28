@@ -514,7 +514,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 .view-login .com-users-login__input .password-group .input-password-toggle {
     position: absolute;
     right: 10px;
-    opacity: 0.3;
+    opacity: 0.8;
     user-select: none;
     background: transparent;
     color: black;
@@ -524,6 +524,11 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     top: 16px;
     z-index: 20;
 }
+.view-login .com-users-login__input .password-group .input-password-toggle:focus {
+    outline: 5px auto;
+    outline-offset: 0;
+}
+
 .view-login .com-users-login__input .password-group .input-password-toggle:hover {
     background: transparent;
 }

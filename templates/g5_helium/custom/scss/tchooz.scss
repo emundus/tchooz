@@ -1758,7 +1758,7 @@ button.em-swal-cancel-button{
   border: 1px solid var(--em-coordinator-secondary-color) !important;
   font-size: var(--em-coordinator-font-size) !important;
   &:focus{
-    box-shadow: unset !important;
+    box-shadow: 0 0 0 3px rgba(112,102,224,.5);
   }
 
   &:hover {

@@ -43,6 +43,12 @@
 .fabrikWindow-modal.modal div.contentWrapper .itemContent #csvmsg .btn.btn-success {
                     width: 100%;
                 }
+
+.input-password-toggle:focus
+{
+    outline: 5px auto;
+    outline-offset: 0;
+}
 /*******************
  * TCHOOZY CLASSES
  *******************/
@@ -2463,10 +2469,6 @@ video {
 
 
         /** CHECKBOX **/
-
-        form.fabrikForm .form-check-input:focus {
-            box-shadow: none;
-        }
             form.fabrikForm .plg-checkbox .fabrikElement {
                 padding-left: 1.5em;
             }
@@ -169006,9 +169008,16 @@ a,span,li,div {
     transition: background-color 0.2s ease-in-out;
 }
 
-a:focus {
+a:focus:not(:focus-visible) {
     color: color-mix(in srgb, var(--em-profile-color), var(--neutral-900) 30%);
     text-decoration: underline;
+    outline: none;
+}
+
+/* ...et on garde un focus bien visible au clavier */
+a:focus-visible {
+    outline: 3px auto;
+    outline-offset: 2px;
 }
 
 p, h1, h2, h3, h4, h5, h6, a, button, li, dt, dd, blockquote, cite, q, abbr, figcaption, label, input, select, textarea, caption { background-color : transparent ; }
