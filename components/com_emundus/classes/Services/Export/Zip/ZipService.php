@@ -37,11 +37,11 @@ use Tchooz\Traits\TraitAutomatedTask;
 use ZipArchive;
 
 /**
- * Bundles per-fnum application PDFs and their raw attachments into a single .zip archive.
+ * Bundles per-fnum application PDFs and their raw attachments into .zip archives.
  *
- * Each call to export() processes at most BATCH_SIZE fnums (or runs until TIME_LIMIT seconds when
- * a TaskEntity is provided), persisting incremental state to JSON. The plugins/task cron resumes
- * the export until every fnum has been handled, at which point the .zip is assembled.
+ * Each resumable call to export() processes fnums until TIME_LIMIT seconds are spent, persisting
+ * incremental state to JSON. The plugins/task cron resumes the export until every fnum has been handled. Entries are written into volumes of at most
+ * MAX_VOLUME_SIZE as soon as one is full, the last volume once every fnum has been handled.
  *
  * Composition:
  *   - PdfService builds the application PDF per fnum (forms + optional inline attachments)
@@ -55,14 +55,25 @@ class ZipService extends Export implements ExportInterface
 	use TraitAutomatedTask;
 
 	/**
-	 * Max number of fnums processed per export() invocation when running asynchronously.
-	 */
-	private const BATCH_SIZE = 5;
-
-	/**
 	 * Max wall time per export() invocation when running asynchronously, in seconds.
 	 */
 	private const TIME_LIMIT = 30;
+
+	/**
+	 * Size above which the archive is split into several volumes, in bytes. Past 2 GB downloads and
+	 * extraction become unreliable (FAT32 drives, older unzip tools).
+	 */
+	public const MAX_VOLUME_SIZE = 2 * 1024 * 1024 * 1024;
+
+	/**
+	 * Formats already compressed internally: deflating them again costs CPU for a negligible size gain.
+	 */
+	private const STORED_EXTENSIONS = [
+		'pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic',
+		'zip', 'gz', '7z', 'rar',
+		'docx', 'xlsx', 'pptx', 'odt', 'ods', 'odp',
+		'mp3', 'mp4', 'mov', 'avi', 'webm',
+	];
 
 	private array $fnums;
 
@@ -88,8 +99,13 @@ class ZipService extends Export implements ExportInterface
 
 	private \EmundusModelApplication $applicationModel;
 
-	public function __construct(array $fnums = [], User $user = null, array|object $options = null, ExportEntity $exportEntity = null)
+	private PdfService $pdfService;
+
+	private int $maxVolumeSize;
+
+	public function __construct(array $fnums = [], User $user = null, array|object $options = null, ExportEntity $exportEntity = null, int $maxVolumeSize = self::MAX_VOLUME_SIZE)
 	{
+		$this->maxVolumeSize = $maxVolumeSize;
 		$this->fnums = $fnums;
 		$this->user  = $user;
 
@@ -127,7 +143,7 @@ class ZipService extends Export implements ExportInterface
 				throw new \Exception('Export has been cancelled.');
 			}
 
-			if ($isResumable && $processedNow > 0 && $this->shouldYield($processedNow, $processStart, $isAsync))
+			if ($isResumable && $processedNow > 0 && $this->shouldYield($processStart))
 			{
 				break;
 			}
@@ -145,11 +161,21 @@ class ZipService extends Export implements ExportInterface
 			$result->setProgress(round(($state['processed'] / max(1, $totalFnums)) * 99, 2));
 		}
 
-		if ($state['processed'] >= $totalFnums)
+		$isComplete = $state['processed'] >= $totalFnums;
+		$this->assembleVolumes($state, $exportPath, $isComplete);
+		$this->persistState($state);
+		// Volumes already written are exposed from the first one on, so deleting an unfinished export removes them too
+		$result->setResult(['files' => $state['volumes']]);
+
+		if ($isComplete)
 		{
-			$zipPath = $this->assembleZip($state, $exportPath);
+			if (empty($state['volumes']))
+			{
+				throw new \Exception('ZIP archive is empty: no document could be generated for the selected files.');
+			}
+
 			$result->setProgress(100.0);
-			$result->setFilePath($zipPath);
+			$result->setFilePath($state['volumes'][0]);
 			$this->cleanupStaging($state);
 		}
 		else
@@ -190,6 +216,7 @@ class ZipService extends Export implements ExportInterface
 		$this->attachmentTypeRepository  = new AttachmentTypeRepository();
 		$this->filenameRenderer          = new FilenameRenderer();
 		$this->pdfMerger                 = new PdfMerger();
+		$this->pdfService                = new PdfService([], $this->user);
 	}
 
 	private function assertExportPreconditions(string $exportPath, ?TaskEntity $task): void
@@ -215,13 +242,9 @@ class ZipService extends Export implements ExportInterface
 		return $this->exportEntity !== null && $this->exportRepository->isCancelled($this->exportEntity->getId());
 	}
 
-	/**
-	 * A task keeps its tick short by also stopping on a file count; a request has nobody else to hand
-	 * the work to before its time is up, so it only stops on time and serves small exports inline.
-	 */
-	private function shouldYield(int $processedNow, float $processStart, bool $isAsync): bool
+	private function shouldYield(float $processStart): bool
 	{
-		return ($isAsync && $processedNow >= self::BATCH_SIZE) || (microtime(true) - $processStart) >= self::TIME_LIMIT;
+		return (microtime(true) - $processStart) >= self::TIME_LIMIT;
 	}
 
 	// -----------------------------------------------------------------------
@@ -233,13 +256,19 @@ class ZipService extends Export implements ExportInterface
 	 *   - base_name:    string     filename stem of the final archive (no extension)
 	 *   - fnums:        string[]   ordered list of fnums to process (post-ACL filter)
 	 *   - processed:    int        number of fnums already handled
-	 *   - entries:      array<string, array{folder:string, pdf:?string, attachments:array, missing:string[]}>
+	 *   - entries:      array<string, array{folder:string, pdf:?string, attachments:array, missing:string[], size:int}>
+	 *                   entries not yet written to a volume
+	 *   - volumes:      string[]   JPATH-relative paths of the archives written so far
 	 *   - staging_path: string     absolute filesystem path under which per-fnum artefacts are gathered
 	 *   - state_path:   string     JPATH-relative path of the JSON state file
 	 */
 	private function loadOrInitState(string $exportPath): array
 	{
-		return $this->tryResumeState() ?? $this->initState($exportPath);
+		$state = $this->tryResumeState() ?? $this->initState($exportPath);
+		// States written before volumes existed carry no such key
+		$state['volumes'] ??= [];
+
+		return $state;
 	}
 
 	private function tryResumeState(): ?array
@@ -290,6 +319,7 @@ class ZipService extends Export implements ExportInterface
 			'fnums'        => array_values($validFnums),
 			'processed'    => 0,
 			'entries'      => [],
+			'volumes'      => [],
 			'staging_path' => $stagingPath,
 			'state_path'   => $statePath,
 		];
@@ -310,17 +340,29 @@ class ZipService extends Export implements ExportInterface
 		file_put_contents(JPATH_SITE . '/' . $state['state_path'], json_encode($state));
 	}
 
+	/**
+	 * Runs once every volume is written: a leftover here only wastes disk space, so it must never turn
+	 * a finished export into a failed one. Whatever stays is removed by ExportStorageCleaner once the
+	 * export row is purged.
+	 */
 	private function cleanupStaging(array $state): void
 	{
-		if (!empty($state['staging_path']) && is_dir($state['staging_path']))
+		try
 		{
-			Folder::delete($state['staging_path']);
+			if (!empty($state['staging_path']) && is_dir($state['staging_path']))
+			{
+				Folder::delete($state['staging_path']);
+			}
+		}
+		catch (\Throwable $e)
+		{
+			Log::add('Could not remove staging ' . $state['staging_path'] . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine(), Log::WARNING, 'com_emundus.export.zip');
 		}
 
 		$statePath = JPATH_SITE . '/' . $state['state_path'];
-		if (file_exists($statePath))
+		if (file_exists($statePath) && !@unlink($statePath))
 		{
-			unlink($statePath);
+			Log::add('Could not remove export state ' . $statePath, Log::WARNING, 'com_emundus.export.zip');
 		}
 	}
 
@@ -335,18 +377,11 @@ class ZipService extends Export implements ExportInterface
 		$accessName = ExportFormatEnum::ZIP->getAccessName();
 		$valid      = [];
 
-		foreach ($fnums as $fnum)
+		if ($this->isAutomatedTaskUser((int) $this->user->id)) {
+			$valid = $fnums;
+		} else
 		{
-			if (
-				is_string($fnum)
-				&& (
-					$this->isAutomatedTaskUser((int) $this->user->id)
-					|| \EmundusHelperAccess::asAccessAction($accessName, CrudEnum::CREATE->value, $this->user->id, $fnum)
-				)
-			)
-			{
-				$valid[] = $fnum;
-			}
+			$valid = \EmundusHelperAccess::asAccessActionOnFnums($accessName, CrudEnum::CREATE->value, $this->user->id, $fnums);
 		}
 
 		return $valid;
@@ -396,12 +431,15 @@ class ZipService extends Export implements ExportInterface
 			? [[], []]
 			: $this->collectRawAttachments($applicationFile, $folderName);
 
-		return [
+		$entry = [
 			'folder'      => $folderName,
 			'pdf'         => $pdfPath,
 			'attachments' => $attachments,
 			'missing'     => $missing,
 		];
+		$entry['size'] = $this->entrySize($entry);
+
+		return $entry;
 	}
 
 	private function resolveFolderName(ApplicationFileEntity $applicationFile, ?EmundusUserEntity $emundusUser): string
@@ -474,8 +512,7 @@ class ZipService extends Export implements ExportInterface
 	private function renderMainApplicationPdf(ApplicationFileEntity $applicationFile, string $folderName, string $fnumStagingDir): ?string
 	{
 		$pdfOptions = $this->buildPdfOptions($folderName, $applicationFile);
-		$pdfService = new PdfService([$applicationFile->getFnum()], $this->user, $pdfOptions);
-		$pdfResult  = $pdfService->export($fnumStagingDir, null, $this->options->getLang());
+		$pdfResult  = $this->pdfService->exportFnum($applicationFile->getFnum(), $pdfOptions, $fnumStagingDir, $this->options->getLang());
 
 		return $pdfResult->isStatus() && !empty($pdfResult->getFilePath()) ? $pdfResult->getFilePath() : null;
 	}
@@ -695,8 +732,9 @@ class ZipService extends Export implements ExportInterface
 				return null;
 			}
 
+			// The legacy helper writes into the applicant folder: moving the file leaves nothing behind there
 			$dest = $fnumStagingDir . $folderName . '_evaluations.pdf';
-			copy($evalPath, $dest);
+			rename($evalPath, $dest);
 
 			return $dest;
 		}
@@ -736,17 +774,16 @@ class ZipService extends Export implements ExportInterface
 	 */
 	private function collectRawAttachments(ApplicationFileEntity $applicationFile, string $folderName): array
 	{
-		$attachmentTypeIds = $this->resolveAttachmentTypeIds($applicationFile);
-
-		if ($this->options->getAttachmentDefault() === 0 && empty($attachmentTypeIds))
+		$selectedTypeIds = $this->resolveSelectedAttachmentTypeIds($applicationFile);
+		if ($selectedTypeIds === [])
 		{
 			return [[], []];
 		}
 
 		$filters = ['fnum' => $applicationFile->getFnum()];
-		if (!empty($attachmentTypeIds))
+		if ($selectedTypeIds !== null)
 		{
-			$filters['attachment_id'] = $attachmentTypeIds;
+			$filters['attachment_id'] = $selectedTypeIds;
 		}
 
 		$uploads = $this->uploadRepository->get($filters);
@@ -774,7 +811,7 @@ class ZipService extends Export implements ExportInterface
 			}
 		}
 
-		$missing = array_merge($missing, $this->collectMissingTypePlaceholders($attachmentTypeIds, $present, $folderName));
+		$missing = array_merge($missing, $this->collectMissingTypePlaceholders($selectedTypeIds ?? [], $present, $folderName));
 
 		return [$entries, $missing];
 	}
@@ -855,16 +892,10 @@ class ZipService extends Export implements ExportInterface
 	 */
 	private function resolveAttachmentsToMerge(ApplicationFileEntity $applicationFile): array
 	{
-		$attachments = $this->options->getAttachments();
-		if (!empty($attachments))
+		$selectedTypeIds = $this->resolveSelectedAttachmentTypeIds($applicationFile);
+		if ($selectedTypeIds !== null)
 		{
-			return $attachments;
-		}
-
-		$resolved = $this->resolveAttachmentTypeIds($applicationFile);
-		if (!empty($resolved) || $this->options->getAttachmentDefault() === 0)
-		{
-			return $resolved;
+			return $selectedTypeIds;
 		}
 
 		$uploads = $this->uploadRepository->get(['fnum' => $applicationFile->getFnum()]);
@@ -875,15 +906,108 @@ class ZipService extends Export implements ExportInterface
 		)));
 	}
 
+	/**
+	 * The attachment types to export, shared by the raw copy and the concatenation so both always
+	 * pick the same documents: the types chosen on the export screen, else the legacy attach_ids
+	 * tokens, else every document or none depending on the "attachment" default.
+	 *
+	 * @return int[]|null  null for every document of the file, [] for none
+	 */
+	private function resolveSelectedAttachmentTypeIds(ApplicationFileEntity $applicationFile): ?array
+	{
+		$selected = array_values(array_unique(array_map('intval', $this->options->getAttachments())));
+		if (!empty($selected))
+		{
+			return $selected;
+		}
+
+		$resolved = $this->resolveAttachmentTypeIds($applicationFile);
+		if (!empty($resolved))
+		{
+			return $resolved;
+		}
+
+		return $this->options->getAttachmentDefault() === 0 ? [] : null;
+	}
+
 	// -----------------------------------------------------------------------
 	// ZIP assembly
 	// -----------------------------------------------------------------------
 
-	private function assembleZip(array $state, string $exportPath): string
+	private function entrySize(array $entry): int
 	{
-		$zipFilename = $state['base_name'] . '.zip';
-		$zipAbsPath  = JPATH_SITE . '/' . $exportPath . $zipFilename;
-		$zip         = new ZipArchive();
+		$size = !empty($entry['pdf']) && is_file($entry['pdf']) ? (int) filesize($entry['pdf']) : 0;
+
+		foreach ($entry['attachments'] as $attachment)
+		{
+			$size += is_file($attachment['source']) ? (int) filesize($attachment['source']) : 0;
+		}
+
+		return $size;
+	}
+
+	/**
+	 * Write every pending entry that fills a whole volume, and the remainder too once the export is
+	 * complete. Each volume is written in a single ZipArchive::close(): libzip rewrites the whole
+	 * archive on every close, so appending batch by batch would copy it again on each tick.
+	 */
+	private function assembleVolumes(array &$state, string $exportPath, bool $isComplete): void
+	{
+		$groups  = [];
+		$current = [];
+		$size    = 0;
+
+		foreach ($state['entries'] as $fnum => $entry)
+		{
+			$entrySize = $entry['size'] ?? $this->entrySize($entry);
+
+			if (!empty($current) && $size + $entrySize > $this->maxVolumeSize)
+			{
+				$groups[] = $current;
+				$current  = [];
+				$size     = 0;
+			}
+
+			$current[$fnum] = $entry;
+			$size           += $entrySize;
+		}
+
+		if ($isComplete && !empty($current))
+		{
+			$groups[] = $current;
+		}
+
+		// An export fitting in one archive keeps the historical, unsuffixed name.
+		$singleArchive = $isComplete && empty($state['volumes']) && count($groups) === 1;
+
+		foreach ($groups as $group)
+		{
+			$suffix  = $singleArchive ? '' : sprintf('_part%02d', count($state['volumes']) + 1);
+			$zipPath = $this->writeVolume($group, $exportPath . $state['base_name'] . $suffix . '.zip');
+			if ($zipPath !== null)
+			{
+				$state['volumes'][] = $zipPath;
+			}
+
+			foreach ($group as $fnum => $entry)
+			{
+				unset($state['entries'][$fnum]);
+				// The PDF is already in its volume: failing to drop the staged copy only costs disk space
+				if (!empty($entry['pdf']) && is_file($entry['pdf']) && !@unlink($entry['pdf']))
+				{
+					Log::add('Could not remove staged PDF ' . $entry['pdf'], Log::WARNING, 'com_emundus.export.zip');
+				}
+			}
+		}
+	}
+
+	/**
+	 * @return string|null  JPATH-relative path of the archive, null when none of the entries holds a file.
+	 */
+	private function writeVolume(array $entries, string $zipPath): ?string
+	{
+		$zipAbsPath = JPATH_SITE . '/' . $zipPath;
+		$zip        = new ZipArchive();
 
 		if (file_exists($zipAbsPath))
 		{
@@ -895,20 +1019,19 @@ class ZipService extends Export implements ExportInterface
 			throw new \Exception('Failed to open ZIP archive for writing at ' . $zipAbsPath);
 		}
 
-		foreach ($state['entries'] as $entry)
+		foreach ($entries as $entry)
 		{
 			$this->addEntryToZip($zip, $entry);
 		}
 
-		// An archive with zero entries is never written to disk by ZipArchive::close().
-		// Returning its path anyway would store a phantom filename whose download serves an
-		// HTML 404 page instead of the .zip, so fail loudly instead.
+		// An archive with zero entries is never written to disk by ZipArchive::close(): returning its
+		// path would store a phantom filename whose download serves an HTML 404 page instead.
 		if ($zip->numFiles === 0)
 		{
 			$zip->close();
-			Log::add('ZIP archive is empty (no PDF/attachment could be added) for ' . $zipAbsPath, Log::ERROR, 'com_emundus.export.zip');
+			Log::add('ZIP volume is empty (no PDF/attachment could be added) for ' . $zipAbsPath, Log::WARNING, 'com_emundus.export.zip');
 
-			throw new \Exception('ZIP archive is empty: no document could be generated for the selected files.');
+			return null;
 		}
 
 		if ($zip->close() !== true || !file_exists($zipAbsPath))
@@ -918,21 +1041,21 @@ class ZipService extends Export implements ExportInterface
 			throw new \Exception('Failed to write ZIP archive at ' . $zipAbsPath);
 		}
 
-		return $exportPath . $zipFilename;
+		return $zipPath;
 	}
 
 	private function addEntryToZip(ZipArchive $zip, array $entry): void
 	{
 		if (!empty($entry['pdf']) && file_exists($entry['pdf']))
 		{
-			$zip->addFile($entry['pdf'], $entry['folder'] . '/' . basename($entry['pdf']));
+			$this->addFileToZip($zip, $entry['pdf'], $entry['folder'] . '/' . basename($entry['pdf']));
 		}
 
 		foreach ($entry['attachments'] as $attachment)
 		{
 			if (file_exists($attachment['source']))
 			{
-				$zip->addFile($attachment['source'], $attachment['name']);
+				$this->addFileToZip($zip, $attachment['source'], $attachment['name']);
 			}
 			else
 			{
@@ -943,6 +1066,16 @@ class ZipService extends Export implements ExportInterface
 		foreach ($entry['missing'] as $missingName)
 		{
 			$zip->addFromString($missingName, '');
+		}
+	}
+
+	private function addFileToZip(ZipArchive $zip, string $source, string $name): void
+	{
+		$zip->addFile($source, $name);
+
+		if (in_array(strtolower(pathinfo($name, PATHINFO_EXTENSION)), self::STORED_EXTENSIONS, true))
+		{
+			$zip->setCompressionName($name, ZipArchive::CM_STORE);
 		}
 	}
 }

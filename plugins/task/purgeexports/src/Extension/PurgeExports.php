@@ -10,6 +10,7 @@ use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\SubscriberInterface;
 use Tchooz\Repositories\Export\ExportRepository;
+use Tchooz\Services\Export\ExportStorageCleaner;
 
 class PurgeExports extends CMSPlugin implements SubscriberInterface
 {
@@ -63,6 +64,17 @@ class PurgeExports extends CMSPlugin implements SubscriberInterface
 		}
 
 		Log::addLogger(['text_file' => 'task_purgeexports.log.php'], Log::ALL, ['task_purgeexports']);
+
+		try
+		{
+			$removed = (new ExportStorageCleaner($exportRepository))->deleteOrphans();
+			Log::add('Removed ' . $removed . ' orphan export leftovers.', Log::INFO, 'task_purgeexports');
+		}
+		catch (\Throwable $e)
+		{
+			$failed = true;
+			Log::add('Failed to remove orphan export leftovers: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine(), Log::ERROR, 'task_purgeexports');
+		}
 
 		return $failed ? TaskStatus::INVALID_EXIT : TaskStatus::OK;
 	}

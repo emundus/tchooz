@@ -37,6 +37,7 @@ use Tchooz\Repositories\RepositoryInterface;
 		'progress'   => 'progress',
 		'cancelled'  => 'cancelled',
 		'failed'     => 'failed',
+		'result'     => 'result',
 	]
 )]
 class ExportRepository extends EmundusRepository implements RepositoryInterface
@@ -106,13 +107,15 @@ class ExportRepository extends EmundusRepository implements RepositoryInterface
 				$this->db->setQuery($query);
 				$deleted = $this->db->execute();
 				
-				if($deleted && !empty($exportEntity) && !empty($exportEntity->getFilename()) && str_starts_with($exportEntity->getFilename(), 'images/emundus/exports/'))
+				if ($deleted && !empty($exportEntity))
 				{
-					// Delete the export file from the filesystem
-					$exportFilePath = JPATH_ROOT . '/' . $exportEntity->getFilename();
-					if (file_exists($exportFilePath))
+					foreach ($exportEntity->getFiles() as $file)
 					{
-						unlink($exportFilePath);
+						$exportFilePath = JPATH_ROOT . '/' . $file;
+						if (str_starts_with($file, 'images/emundus/exports/') && file_exists($exportFilePath))
+						{
+							unlink($exportFilePath);
+						}
 					}
 				}
 			}
@@ -167,6 +170,56 @@ class ExportRepository extends EmundusRepository implements RepositoryInterface
 		}
 
 		return $exportEntity;
+	}
+
+	/**
+	 * The export a file belongs to: its filename or one of the volumes of a split archive.
+	 */
+	public function getByFileAndUser(string $file, int $userId): ?ExportEntity
+	{
+		$exportEntity = null;
+
+		$query = $this->db->getQuery(true);
+
+		$query->select($this->columns)
+			->from($this->db->qn($this->tableName, $this->alias))
+			->where('created_by = :created_by')
+			// JSON_VALID first: a single malformed result would otherwise make MySQL fail the whole query
+			->where('(filename = :filename OR (JSON_VALID(result) AND JSON_CONTAINS(result, JSON_QUOTE(:volume), ' . $this->db->quote('$.files') . ')))')
+			->bind(':created_by', $userId, ParameterType::INTEGER)
+			->bind(':filename', $file)
+			->bind(':volume', $file);
+		$this->db->setQuery($query);
+		$dbObject = $this->db->loadObject();
+
+		if ($dbObject)
+		{
+			$exportEntity = $this->factory->fromDbObject($dbObject, $this->withRelations, $this->exceptRelations, $this->db);
+		}
+
+		return $exportEntity;
+	}
+
+	/**
+	 * @param   int[]  $ids
+	 *
+	 * @return int[] the ids among $ids that still have an export row
+	 */
+	public function getExistingIds(array $ids): array
+	{
+		$ids = array_values(array_unique(array_map('intval', $ids)));
+		if (empty($ids))
+		{
+			return [];
+		}
+
+		$query = $this->db->getQuery(true)
+			->select($this->db->qn('id'))
+			->from($this->db->qn($this->tableName))
+			->whereIn($this->db->qn('id'), $ids);
+		$this->db->setQuery($query);
+
+		return array_map('intval', $this->db->loadColumn() ?: []);
 	}
 
 	public function getExportByTask(int $task_id): ?ExportEntity
