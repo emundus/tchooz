@@ -9,14 +9,18 @@ use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Fields\MixedField;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Automation\ConditionRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
+use Tchooz\Services\Automation\Condition\FormDataConditionResolver;
 use Tchooz\Services\Automation\ConditionRegistry;
 use Tchooz\Services\Field\FieldOptionProvider;
 use Tchooz\Services\Field\FieldResearch;
@@ -92,11 +96,34 @@ class ActionUpdateFileData extends ActionEntity
 					$fabrikRepository->setFactory($fabrikFactory);
 					$element                   = $fabrikRepository->getElementById($elementId);
 					$applicationFileRepository = new ApplicationFileRepository();
+
+					// Read before writing: insertDatas does not return the value it replaced.
+					$resolver = new FormDataConditionResolver();
+					$oldValue = $resolver->resolveValue($context, $fieldName, ValueFormatEnum::FORMATTED);
+
 					$result                  = $applicationFileRepository->insertDatas([
 						$element->getName() => $newValue
 					], $element->getDbTableName(), $context->getFile(), 0, $context->getTriggeredBy()->id);
 
 					$executionStatus = $result ? ActionExecutionStatusEnum::COMPLETED : ActionExecutionStatusEnum::FAILED;
+
+					if ($result)
+					{
+						$this->log(
+							ActionEnum::FILE,
+							CrudEnum::UPDATE,
+							'COM_EMUNDUS_ACCESS_FILE_UPDATE',
+							['updated' => [[
+								'description' => $element->getLabel(),
+								'element'     => $element->getLabel(),
+								'old'         => (string) $oldValue,
+								'new'         => (string) $resolver->resolveValue($context, $fieldName, ValueFormatEnum::FORMATTED)
+							]]],
+							$context->getFile(),
+							$context->getTriggeredBy()->id,
+							$context->getUserId()
+						);
+					}
 
 					break;
 				case ConditionTargetTypeEnum::ALIASDATA->value:

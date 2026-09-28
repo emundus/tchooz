@@ -15,7 +15,9 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
-use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Entities\Logs\LogEntity;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Repositories\Logs\LogRepository;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -58,117 +60,89 @@ class EmundusModelLogs extends JModelList
 	 */
 	static function log($user_from, $user_to, $fnum, int|string $action, $crud = '', $message = '', $params = '')
 	{
-		$logged = false;
+		$applicants = empty($user_to) && !empty($fnum) ? self::getApplicantsByFnum([$fnum]) : [];
 
-		jimport('joomla.log.log');
-		Log::addLogger(['text_file' => 'com_emundus.logs.php'], Log::ERROR, 'com_emundus');
-
-		if(is_string($action))
-		{
-			$actionRepository = new ActionRepository();
-			$actionEntity = $actionRepository->getByName($action);
-			if(!empty($actionEntity))
-			{
-				$action = $actionEntity->getId();
-			}
-		}
-
-		if (!empty($user_from)) {
-			$eMConfig                 = ComponentHelper::getParams('com_emundus');
-
-			$log_actions_exclude      = $eMConfig->get('log_actions_exclude', []);
-			if (!empty($log_actions_exclude)) {
-				$log_actions_exclude = explode(',', $log_actions_exclude);
-			}
-			$log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', 62);
-			$log_actions_exclude_user = empty($log_actions_exclude_user) ? [] : explode(',', $log_actions_exclude_user);
-
-			if ($eMConfig->get('logs', 0)) {
-				if (!in_array($action, $log_actions_exclude)) {
-					if (!in_array($user_from, $log_actions_exclude_user)) {
-						$db    = Factory::getContainer()->get('DatabaseDriver');
-						$query = $db->getQuery(true);
-
-						$ip      = Factory::getApplication()->input->server->get('REMOTE_ADDR', '');
-						$user_to = empty($user_to) ? '' : $user_to;
-
-						$now = EmundusHelperDate::getNow();
-
-						$columns = ['timestamp', 'user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
-						$values  = [$db->quote($now), $db->quote($user_from), $db->quote($user_to), $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip)];
-
-						$query->insert($db->quoteName('#__emundus_logs'))
-							->columns($db->quoteName($columns))
-							->values(implode(',', $values));
-
-						try {
-							$db->setQuery($query);
-							$logged = $db->execute();
-						}
-						catch (Exception $e) {
-							Log::add('Error logging at the following query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
-						}
-					}
-				}
-			}
-		}
-		else {
-			Log::add('Error in action [' . $action . ' - ' . $crud . '] - ' . $message . ' user_from cannot be null in EmundusModelLogs::log', Log::WARNING, 'com_emundus');
-		}
-
-		return $logged;
+		return (new LogRepository())->add(self::buildLogEntity($user_from, $user_to, $fnum, $action, $crud, $message, $params, $applicants));
 	}
 
-	static function logs($user_from, $fnums, $action, $crud = '', $message = '', $params = '') {
-		$logged = false;
-		jimport('joomla.log.log');
-		Log::addLogger(['text_file' => 'com_emundus.logs.php'], Log::ERROR, 'com_emundus');
+	static function logs($user_from, $fnums, $action, $crud = '', $message = '', $params = '', $user_to = null)
+	{
+		if (empty($fnums))
+		{
+			Log::add('Error in action [' . $action . ' - ' . $crud . '] - ' . $message . ' fnums cannot be empty in EmundusModelLogs::logs', Log::WARNING, 'com_emundus');
 
-		if (!empty($user_from) && !empty($fnums)) {
-			if (!is_array($fnums)) {
-				$fnums = [$fnums];
-			}
-
-			$m_files = new EmundusModelFiles();
-
-			$eMConfig = ComponentHelper::getParams('com_emundus');
-			$log_actions_exclude = $eMConfig->get('log_actions_exclude', null);
-			$log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', 62);
-
-			if ($eMConfig->get('logs', 0)) {
-				if (!in_array($action, explode(',', $log_actions_exclude))) {
-					if (!in_array($user_from, explode(',', $log_actions_exclude_user))) {
-						$db = Factory::getContainer()->get('DatabaseDriver');
-						$query = $db->getQuery(true);
-
-						$ip = Factory::getApplication()->input->server->get('REMOTE_ADDR','');
-
-						$now = EmundusHelperDate::getNow();
-
-						$columns = ['timestamp', 'user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
-						$query->insert($db->quoteName('#__emundus_logs'))
-							->columns($db->quoteName($columns));
-
-						foreach($fnums as $fnum) {
-							$user_to = $m_files->getFnumInfos($fnum)['applicant_id'];
-							$query->values($db->quote($now) . ',' . $db->quote($user_from) . ',' . $db->quote($user_to) . ',' . $db->quote($fnum) . ',' . $action . ',' . $db->quote($crud) . ',' . $db->quote($message). ',' . $db->quote($params) . ',' . $db->quote($ip));
-						}
-
-						try {
-							$db->setQuery($query);
-							$logged = $db->execute();
-						} catch (Exception $e) {
-							Log::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), Log::ERROR, 'com_emundus.error');
-						}
-					}
-				}
-			}
-		} else {
-			Log::add('Error in action [' . $action . ' - ' . $crud . '] - ' . $message . ' user_from cannot be null in EmundusModelLogs::logs', Log::WARNING, 'com_emundus');
+			return false;
 		}
 
+		$fnums      = is_array($fnums) ? $fnums : [$fnums];
+		$applicants = empty($user_to) ? self::getApplicantsByFnum($fnums) : [];
 
-		return $logged;
+		$entities = [];
+		foreach ($fnums as $fnum)
+		{
+			$entities[] = self::buildLogEntity($user_from, $user_to, $fnum, $action, $crud, $message, $params, $applicants);
+		}
+
+		return (new LogRepository())->addMany($entities);
+	}
+
+	/**
+	 * Bridges the legacy signature onto LogEntity, which LogRepository is the single writer of.
+	 *
+	 * Without an explicit recipient, the entry goes to the applicant of the file.
+	 *
+	 * @param   array<string, int>  $applicants  applicant ids indexed by fnum
+	 */
+	private static function buildLogEntity($user_from, $user_to, $fnum, int|string $action, $crud, $message, $params, array $applicants = []): LogEntity
+	{
+		if (empty($user_to) && !empty($fnum))
+		{
+			$user_to = $applicants[$fnum] ?? null;
+		}
+
+		if (is_string($params) && $params !== '')
+		{
+			$decoded = json_decode($params, true);
+
+			// Some callers pass plain text: kept as is, since setActionDetails never rendered it.
+			$params = is_array($decoded) ? $decoded : ['raw' => $params];
+		}
+
+		return new LogEntity(
+			userFrom: (int) $user_from,
+			action: $action,
+			crud: CrudEnum::tryFrom((string) $crud),
+			message: (string) $message,
+			params: is_array($params) ? $params : [],
+			fnum: !empty($fnum) ? $fnum : null,
+			userTo: !empty($user_to) ? (int) $user_to : null
+		);
+	}
+
+	/**
+	 * @return array<string, int>
+	 */
+	private static function getApplicantsByFnum(array $fnums): array
+	{
+		$applicants = [];
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true)
+			->select($db->quoteName(['fnum', 'applicant_id']))
+			->from($db->quoteName('#__emundus_campaign_candidature'))
+			->where($db->quoteName('fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')');
+
+		try
+		{
+			$db->setQuery($query);
+			$applicants = array_map('intval', $db->loadAssocList('fnum', 'applicant_id'));
+		}
+		catch (Exception $e)
+		{
+			Log::add('Could not resolve the applicants of the logged files : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $applicants;
 	}
 
 	/**
@@ -401,14 +375,16 @@ class EmundusModelLogs extends JModelList
 	/**
 	 * Writes the details that will be shown in the logs menu.
 	 *
-	 * @param   int     $action
-	 * @param   string  $crud
-	 * @param   string  $params
+	 * @param   int          $action
+	 * @param   string       $crud
+	 * @param   string       $params
+	 * @param   string|null  $message  Language key stored on the entry. Omitted, the name falls
+	 *                                 back to the key derived from the action label and the verb.
 	 *
 	 * @return Mixed Returns false on error and an array of strings on success.
 	 * @since 3.8.8
 	 */
-	public function setActionDetails($action = null, $crud = null, $params = null)
+	public function setActionDetails($action = null, $crud = null, $params = null, ?string $message = null)
 	{
 		// Get the action label
 		$query = $this->db->getQuery(true);
@@ -430,13 +406,13 @@ class EmundusModelLogs extends JModelList
 		switch ($crud) {
 			case ('c'):
 				$action_name = $action_category . '_CREATE';
-				foreach ($params->created as $value) {
+				foreach ($params->created ?? [] as $value) {
 					if (is_object($value)) {
 						if (!empty($value->element)) {
 							$action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
 						}
 						if (!empty($value->details)) {
-							$action_details .= '<div class="tw-flew tw-items-center"><span class="em-red-600-color">' . $value->details . '</span></div>';
+							$action_details .= '<div class="tw-flex tw-items-center"><span class="tw-text-green-600">' . $value->details . '</span></div>';
 						}
 					}
 					else {
@@ -451,7 +427,8 @@ class EmundusModelLogs extends JModelList
 				$action_name = $action_category . '_UPDATE';
 
 				if (!empty($params->updated)) {
-					$action_details = '<b>' . reset($params->updated)->description . '</b>';
+					$description    = reset($params->updated)->description ?? '';
+					$action_details = !empty($description) ? '<b>' . $description . '</b>' : '';
 
 					foreach ($params->updated as $value) {
 						$action_details .= '<div class="tw-flex tw-items-center">';
@@ -466,10 +443,10 @@ class EmundusModelLogs extends JModelList
 
 							foreach ($value->old as $_old) {
 								if (empty(trim($_old))) {
-									$action_details .= '<span class="em-blue-500-color">' . Text::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF') . '</span>&nbsp';
+									$action_details .= '<span class="tw-text-blue-500">' . Text::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF') . '</span>&nbsp';
 								}
 								else {
-									$action_details .= '<span class="em-red-600-color" style="text-decoration: line-through">' . $_old . '</span>&nbsp';
+									$action_details .= '<span class="tw-text-red-700" style="text-decoration: line-through">' . $_old . '</span>&nbsp';
 								}
 							}
 						}
@@ -480,10 +457,10 @@ class EmundusModelLogs extends JModelList
 							$value->new = explode('<#>', $value->new);
 							foreach ($value->new as $_new) {
 								if (empty(trim($_new))) {
-									$action_details .= '<span class="em-blue-500-color">' . Text::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF') . '</span>&nbsp';
+									$action_details .= '<span class="tw-text-blue-500">' . Text::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF') . '</span>&nbsp';
 								}
 								else {
-									$action_details .= '<span class="tw-text-red-700">' . $_new . '</span>&nbsp';
+									$action_details .= '<span class="tw-text-green-600">' . $_new . '</span>&nbsp';
 								}
 							}
 						}
@@ -494,13 +471,13 @@ class EmundusModelLogs extends JModelList
 				break;
 			case ('d'):
 				$action_name = $action_category . '_DELETE';
-				foreach ($params->deleted as $value) {
+				foreach ($params->deleted ?? [] as $value) {
 					if (is_object($value)) {
 						if (!empty($value->element)) {
 							$action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
 						}
 						if (!empty($value->details)) {
-							$action_details .= '<div class="em-flex-row"><span class="em-red-600-color">' . $value->details . '</span></div>';
+							$action_details .= '<div class="tw-flex tw-flex-row"><span class="tw-text-red-700">' . $value->details . '</span></div>';
 						}
 					}
 					else {
@@ -516,10 +493,33 @@ class EmundusModelLogs extends JModelList
 		// All action details are set, time to return them
 		$details                    = [];
 		$details['action_category'] = Text::_($action_category);
-		$details['action_name']     = Text::_($action_name);
+		$details['action_name']     = $this->getActionDisplayName($action_name, $message, $params);
 		$details['action_details']  = $action_details;
 
 		return $details;
+	}
+
+	/**
+	 * What the history shows in the action column.
+	 *
+	 * An entry written by an automation names the automation, so a reader can tell which one
+	 * acted on the file; otherwise the stored language key wins, and the key derived from the
+	 * action label and the verb is the last resort.
+	 */
+	private function getActionDisplayName(string $derivedKey, ?string $message, $params): string
+	{
+		$automation = $params->automation ?? null;
+
+		if (empty($automation->label))
+		{
+			return Text::_(!empty($message) ? $message : $derivedKey);
+		}
+
+		// Author-supplied text reaching a template that echoes action_name unescaped.
+		$label = htmlspecialchars($automation->label, ENT_QUOTES, 'UTF-8');
+
+		// Concatenated rather than interpolated: a missing key must never swallow the origin.
+		return Text::_('COM_EMUNDUS_LOGS_AUTOMATION_ORIGIN') . ' - ' . $label;
 	}
 
 	public function exportLogs($fnum, $users, $actions, $crud)
@@ -536,7 +536,7 @@ class EmundusModelLogs extends JModelList
 				]
 			];
 			foreach ($actions as $action) {
-				$details        = $this->setActionDetails($action->action_id, $action->verb, $action->params);
+				$details        = $this->setActionDetails($action->action_id, $action->verb, $action->params, $action->message);
 				$action_details = str_replace('&nbsp', ' ', strip_tags($details['action_details']));
 				$action_details = str_replace('\n', '', $action_details);
 				$action_details = str_replace("arrow_forward", " -> ", $action_details);
@@ -545,7 +545,7 @@ class EmundusModelLogs extends JModelList
 					HTMLHelper::_('date', $action->timestamp, Text::_('DATE_FORMAT_LC2')),
 					$action->firstname . ' ' . $action->lastname,
 					$fnum,
-					Text::_($action->message),
+					trim(html_entity_decode(strip_tags($details['action_name']), ENT_QUOTES, 'UTF-8')),
 					trim($action_details)
 				];
 			}
