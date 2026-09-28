@@ -16,6 +16,8 @@ enum MappingTransformersEnum: string
 	case SEQUENTIAL = 'sequential';
 	case BOOLEAN = 'boolean';
 	case EXTRACT_VALUE_AT_INDEX = 'extract_value_at_index';
+	case REMOVE_WHITESPACES = 'remove_whitespaces';
+	case FULLNAME_FORMAT = 'fullname_format';
 
 	public function getLabel(): string
 	{
@@ -30,6 +32,8 @@ enum MappingTransformersEnum: string
 			self::BOOLEAN => Text::_('COM_EMUNDUS_MAPPING_TRANSFORMER_BOOLEAN'),
 			self::EXTRACT_VALUE_AT_INDEX => Text::_('COM_EMUNDUS_MAPPING_TRANSFORMER_EXTRACT_VALUE_AT_INDEX'),
 			self::SEQUENTIAL => Text::_('COM_EMUNDUS_MAPPING_TRANSFORMER_SEQUENTIAL'),
+			self::REMOVE_WHITESPACES => Text::_('COM_EMUNDUS_MAPPING_TRANSFORMER_REMOVE_WHITESPACES'),
+			self::FULLNAME_FORMAT => Text::_('COM_EMUNDUS_MAPPING_TRANSFORMER_FULLNAME_FORMAT'),
 		};
 	}
 }

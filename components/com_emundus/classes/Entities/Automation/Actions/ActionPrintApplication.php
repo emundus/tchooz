@@ -14,6 +14,7 @@ use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Fields\BooleanField;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\ActionMessageTypeEnum;
@@ -23,6 +24,7 @@ use Tchooz\Repositories\Attachments\AttachmentTypeRepository;
 use Tchooz\Repositories\Export\ExportRepository;
 use Tchooz\Services\Export\Pdf\PdfOptions;
 use Tchooz\Services\Export\Pdf\PdfService;
+use Tchooz\Enums\CrudEnum;
 
 class ActionPrintApplication extends ActionEntity
 {
@@ -265,6 +267,24 @@ class ActionPrintApplication extends ActionEntity
 					{
 						$executed = ActionExecutionStatusEnum::FAILED;
 					}
+				}
+
+				if ($executed === ActionExecutionStatusEnum::COMPLETED)
+				{
+					$attachmentType = (new AttachmentTypeRepository())->loadAttachmentTypeById((int) ($this->getParameterValue(self::ATTACHMENT_TYPE_PARAMETER) ?: self::ATTACHMENT_ID));
+
+					$this->log(
+						ActionEnum::ATTACHMENT,
+						CrudEnum::CREATE,
+						'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE',
+						['created' => [[
+							'element' => '[' . ($attachmentType?->getLbl() ?? '') . ']',
+							'details' => $target_file_name
+						]]],
+						$fnum,
+						$context->getTriggeredBy()->id,
+						(int) $fnumInfo['applicant_id']
+					);
 				}
 			}
 			catch (\Exception $e)

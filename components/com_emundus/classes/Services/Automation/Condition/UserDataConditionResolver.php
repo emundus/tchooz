@@ -11,8 +11,8 @@ use Tchooz\Entities\Automation\TableJoin;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Fields\DateField;
+use Tchooz\Entities\Fields\NumericField;
 use Tchooz\Entities\Fields\StringField;
-use Tchooz\Entities\Fields\YesnoField;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\ValueFormatEnum;
@@ -36,7 +36,9 @@ class UserDataConditionResolver implements ConditionTargetResolverInterface
 			new ChoiceField('group', Text::_('COM_EMUNDUS_USER_FIELD_GROUP'), $this->getGroupList(), false, true),
 			new StringField('firstname', Text::_('COM_EMUNDUS_USER_FIELD_FIRSTNAME'), false),
 			new StringField('lastname', Text::_('COM_EMUNDUS_USER_FIELD_LASTNAME'), false),
+			new StringField('fullname', Text::_('COM_EMUNDUS_USER_FIELD_FULLNAME'), false),
 			new StringField('email', Text::_('COM_EMUNDUS_USER_FIELD_EMAIL'), false),
+			new NumericField('id', Text::_('COM_EMUNDUS_USER_FIELD_ID'), false),
 			new DateField('lastvisitDate', Text::_('COM_EMUNDUS_USER_FIELD_LASTVISITDATE'), false)
 		];
 		$formId = $this->getProfileAreaFormId();
@@ -121,6 +123,19 @@ class UserDataConditionResolver implements ConditionTargetResolverInterface
 						$db->setQuery($query);
 						$value = $db->loadResult();
 						break;
+					case 'fullname':
+						$query->select($db->quoteName(['u.firstname', 'u.lastname']))
+							->from($db->quoteName('#__emundus_users', 'u'))
+							->where($db->quoteName('u.user_id') . ' = ' . $db->quote($userId));
+
+						$db->setQuery($query);
+						$names = $db->loadObject();
+
+						if (!empty($names))
+						{
+							$value = trim($names->firstname . ' ' . $names->lastname);
+						}
+						break;
 					default:
 						if (str_contains($fieldName, '.'))
 						{
@@ -202,6 +217,9 @@ class UserDataConditionResolver implements ConditionTargetResolverInterface
 			case 'lastname':
 				$columns = ['eu.' . $field];
 				break;
+			case 'fullname':
+				$columns = ['eu.firstname', 'eu.lastname'];
+				break;
 			case 'profile':
 				$columns = ['eu.' . $field, 'eup.profile_id'];
 				break;
@@ -242,6 +260,7 @@ class UserDataConditionResolver implements ConditionTargetResolverInterface
 				break;
 			case 'firstname':
 			case 'lastname':
+			case 'fullname':
 				$joins[] = new TableJoin(
 					'#__emundus_users',
 					'eu',

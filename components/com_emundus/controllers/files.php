@@ -4429,7 +4429,7 @@ class EmundusControllerFiles extends EmundusController
 			}
 			else {
 				foreach ($res as $log) {
-					$details[] = $m_logs->setActionDetails($log->action_id, $log->verb, $log->params);
+					$details[] = $m_logs->setActionDetails($log->action_id, $log->verb, $log->params, $log->message);
 				}
 			}
 		}

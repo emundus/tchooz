@@ -38,6 +38,7 @@ use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Export\ExportRepository;
+use Tchooz\Services\FileStreamService;
 use Tchooz\Repositories\Resource\ResourceRepository;
 use Tchooz\Services\FileSecurityService;
 use Tchooz\Services\Import\ImportModelGenerator;
@@ -1992,7 +1993,7 @@ class EmundusController extends JControllerLegacy
 
 			// Check access to export file
 			$exportRepository = new ExportRepository();
-			$export = $exportRepository->getByFilenameAndUser($url, $user->id);
+			$export = $exportRepository->getByFileAndUser($url, $user->id);
 			if(empty($export) || $export->getCreatedBy()->id != $user->id || !EmundusHelperAccess::asPartnerAccessLevel($user->id))
 			{
 				die (Text::_('ACCESS_DENIED'));
@@ -2144,20 +2145,11 @@ class EmundusController extends JControllerLegacy
                 }
             }
 
-			//TODO If data ara anonimized remove metadata
-			header('Content-type: ' . $mime_type);
-			header('Content-Disposition: inline; filename=' . basename($fileName));
-			header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-			header('Cache-Control: no-store, no-cache, must-revalidate');
-			header('Cache-Control: pre-check=0, post-check=0, max-age=0');
-			header('Pragma: anytextexeptno-cache', true);
-			header('Cache-control: private');
-			header('Expires: 0');
+			// A download of several GB must not hold the session lock for its whole duration
+			$this->app->getSession()->close();
 
-			ob_clean();
-			ob_end_flush();
-			readfile($file);
-			exit;
+			//TODO If data ara anonimized remove metadata
+			(new FileStreamService())->stream($file, $fileName, $mime_type, str_starts_with($url, 'images/emundus/exports'));
 		}
 		else {
 			JError::raiseWarning(500, Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND') . ' ' . $url);

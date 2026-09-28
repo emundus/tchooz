@@ -18,22 +18,24 @@ export default {
 		this.shortDefaultLang = globalStore.defaultLang ? globalStore.defaultLang.substring(0, 2) : 'fr';
 	},
 	methods: {
-		translate(key, replacements) {
-			if (typeof key === 'undefined' || key === null || typeof Joomla === 'undefined' || Joomla === null) {
+		translate(key, ...args) {
+			if (typeof key === 'undefined' || key == null || typeof Joomla === 'undefined' || Joomla === null) {
 				return '';
 			}
 
-			const translated = Joomla.Text._(key) ? Joomla.Text._(key) : key;
+			const translation = Joomla.Text._(key) ? Joomla.Text._(key) : key;
 
-			if (!replacements || typeof replacements !== 'object') {
-				return translated;
-			}
+			return args.length > 0 ? this.sprintf(translation, args) : translation;
+		},
+		// Minimal sprintf: sequential %s / %d and positional %1$s (matching Joomla .ini conventions).
+		sprintf(str, args) {
+			let index = 0;
 
-			return Object.entries(replacements).reduce((acc, [token, value]) => {
-				const safeToken = String(token).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-				const pattern = new RegExp(`\\{${safeToken}\\}`, 'g');
-				return acc.replace(pattern, value ?? '');
-			}, translated);
+			return str.replace(/%(\d+)\$s|%s|%d/g, (match, position) => {
+				const value = position ? args[position - 1] : args[index++];
+
+				return typeof value !== 'undefined' ? value : match;
+			});
 		},
 	},
 };

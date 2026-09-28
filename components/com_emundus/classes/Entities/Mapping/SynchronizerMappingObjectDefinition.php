@@ -38,8 +38,17 @@ class SynchronizerMappingObjectDefinition
 	 */
 	private array $associations = [];
 
+	/**
+	 * Target fields the object can receive from a mapping (each Field carries its required flag).
+	 * Used by the configuration UI to pre-fill the mapping rows and block saving when a required
+	 * target field is left unmapped. Empty = free-form mapping (no constraint).
+	 *
+	 * @var array<Field>
+	 */
+	private array $availableFields = [];
 
-	public function __construct(string $name, string $label, string $route, ExternalReferenceEntity $externalReference, array $methods = [ApiMethodEnum::GET, ApiMethodEnum::POST], array $requiredFields = [], array $metadata = [], array $associations = [])
+
+	public function __construct(string $name, string $label, string $route, ExternalReferenceEntity $externalReference, array $methods = [ApiMethodEnum::GET, ApiMethodEnum::POST], array $requiredFields = [], array $metadata = [], array $associations = [], array $availableFields = [])
 	{
 		$this->name = $name;
 		$this->label = Text::_($label);
@@ -49,6 +58,7 @@ class SynchronizerMappingObjectDefinition
 		$this->requiredFields = $requiredFields;
 		$this->metadata = $metadata;
 		$this->associations = $associations;
+		$this->availableFields = $availableFields;
 	}
 
 	public function getName(): string
@@ -105,6 +115,18 @@ class SynchronizerMappingObjectDefinition
 		return $this->associations;
 	}
 
+	public function getAvailableFields(): array
+	{
+		return $this->availableFields;
+	}
+
+	public function setAvailableFields(array $availableFields): self
+	{
+		$this->availableFields = $availableFields;
+
+		return $this;
+	}
+
 	public function serialize(): array
 	{
 		return [
@@ -114,6 +136,7 @@ class SynchronizerMappingObjectDefinition
 			'methods' => array_map(fn($method) => $method->value, $this->methods),
 			'externalReference' => $this->externalReference->serialize(),
 			'requiredFields' => array_map(fn($field) => $field->toSchema(), $this->getRequiredFields()),
+			'availableFields' => array_map(fn($field) => $field->toSchema(), $this->getAvailableFields()),
 			'metadata' => $this->metadata,
 		];
 	}
