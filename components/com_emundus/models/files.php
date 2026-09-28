@@ -3668,9 +3668,15 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getCommentsByFnum($fnums)
 	{
-		try {
+		if (empty($fnums)) {
+			return [];
+		}
 
-			$query = 'select * from #__emundus_comments where fnum in ("' . implode('","', $fnums) . '")';
+		try {
+			$query = $this->_db->getQuery(true);
+			$query->select('*')
+				->from($this->_db->quoteName('#__emundus_comments'))
+				->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
 			$this->_db->setQuery($query);
 
 			return $this->_db->loadAssocList();

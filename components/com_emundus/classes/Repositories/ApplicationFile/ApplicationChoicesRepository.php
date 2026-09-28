@@ -355,29 +355,67 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 	/**
 	 * @return ApplicationChoicesEntity[]
 	 */
-	public function getChoicesByFnum(string $fnum, array $user_programs = [], ChoicesStateEnum $state = null, int $more_form_id = 0): array
+	public function getChoicesByFnum(string $fnum, array $user_programs = [], ?ChoicesStateEnum $state = null, int $more_form_id = 0): array
 	{
-		$application_choices_entity = [];
+		return $this->getChoicesByFnums([$fnum], $user_programs, $state, true, $more_form_id)[$fnum] ?? [];
+	}
 
-		if(empty($more_form_id))
+	/**
+	 * Batch variant of getChoicesByFnum(): loads the choices for many fnums in a single query and
+	 * returns them grouped by fnum. Relations (campaign, user, file) are preloaded across the whole
+	 * batch by the factory. The heavy per-choice "more data" joins are only resolved when
+	 * $with_more_data is true — list displays that only need the campaign should leave it false.
+	 *
+	 * @param   string[]  $fnums
+	 *
+	 * @return array<string, ApplicationChoicesEntity[]>
+	 */
+	public function getChoicesByFnums(array $fnums, array $user_programs = [], ?ChoicesStateEnum $state = null, bool $with_more_data = false, int $more_form_id = 0): array
+	{
+		$choices_by_fnum = [];
+
+		if (empty($fnums))
 		{
-			$more_form_id = $this->getMoreFormId();
+			return $choices_by_fnum;
 		}
-		$elements   = $this->getChoicesMoreElements($more_form_id);
-		$table_name = $this->getMoreTableName($more_form_id);
 
-		$query = $this->buildQuery($fnum, $user_programs, $state);
+		$elements   = [];
+		$table_name = '';
+		if ($with_more_data)
+		{
+			if (empty($more_form_id))
+			{
+				$more_form_id = $this->getMoreFormId();
+			}
+			$elements   = $this->getChoicesMoreElements($more_form_id);
+			$table_name = $this->getMoreTableName($more_form_id);
+		}
 
+		$query = $this->buildQuery(user_programs: $user_programs, state: $state, fnums: $fnums);
 		$this->db->setQuery($query);
 		$application_choices = $this->db->loadObjectList();
 
-		foreach ($application_choices as $application_choice)
+		if (empty($application_choices))
 		{
-			$application_choice->more_data = $this->getMoreData((int) $application_choice->id, $more_form_id, $elements, $table_name);
-			$application_choices_entity[]  = $this->factory->fromDbObject($application_choice, $this->withRelations, [], null, $elements);
+			return $choices_by_fnum;
 		}
 
-		return $application_choices_entity;
+		if ($with_more_data)
+		{
+			foreach ($application_choices as $application_choice)
+			{
+				$application_choice->more_data = $this->getMoreData((int) $application_choice->id, $more_form_id, $elements, $table_name);
+			}
+		}
+
+		$entities = $this->factory->fromDbObjects($application_choices, $this->withRelations, [], null, $elements);
+
+		foreach ($entities as $entity)
+		{
+			$choices_by_fnum[$entity->getFnum()][] = $entity;
+		}
+
+		return $choices_by_fnum;
 	}
 
 	public function getMoreFormId(): int
@@ -546,7 +584,8 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		array $fileStatuses = [],
 		array $ids = [],
 		string $order_by = 'eccc.order',
-		string $sort = 'ASC'
+		string $sort = 'ASC',
+		array $fnums = []
 	): QueryInterface
 	{
 		$query = $this->db->getQuery(true);
@@ -572,6 +611,11 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		if (!empty($fnum))
 		{
 			$query->where($this->alias . '.fnum = ' . $this->db->quote($fnum));
+		}
+
+		if (!empty($fnums))
+		{
+			$query->where($this->alias . '.fnum IN (' . implode(',', array_map([$this->db, 'quote'], $fnums)) . ')');
 		}
 
 		if(!empty($user_programs) || $order_by === 'c.label')
