@@ -14,6 +14,7 @@ use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Fields\BooleanField;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Import\FieldTypeEnum;
 use Tchooz\Enums\Import\ImportConflictModeEnum;
 use Tchooz\Services\Automation\Condition\FormDataConditionResolver;
@@ -255,6 +256,9 @@ trait GeneratesEntityFromImportTrait
 	 * pipeline: SKIP/UPDATE consult exists(); CREATE_NEW always inserts.
 	 * Throws on persistence failure so the caller can flag the target.
 	 *
+	 * Returns what actually happened to the record, or null when an existing one was
+	 * left untouched, so callers can report the outcome rather than assume it.
+	 *
 	 * @param array<string, mixed> $row
 	 */
 	protected function applyImport(
@@ -262,18 +266,22 @@ trait GeneratesEntityFromImportTrait
 		array $row,
 		ImportContext $context,
 		ImportConflictModeEnum $mode
-	): void {
+	): ?CrudEnum {
 		if ($mode !== ImportConflictModeEnum::CREATE_NEW && $importer->exists($row, $context))
 		{
 			if ($mode === ImportConflictModeEnum::UPDATE && $importer instanceof UpdatableEntityImporter)
 			{
 				$importer->update($row, $context);
+
+				return CrudEnum::UPDATE;
 			}
 
 			// SKIP: leave the existing record untouched.
-			return;
+			return null;
 		}
 
 		$importer->persist($row, $context);
+
+		return CrudEnum::CREATE;
 	}
 }

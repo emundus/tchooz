@@ -10,7 +10,6 @@ use Tchooz\Entities\Mapping\MappingEntity;
 use Tchooz\Factories\LayoutFactory;
 use Tchooz\Factories\Mapping\MappingFactory;
 use Tchooz\Repositories\Mapping\MappingRepository;
-use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Services\Automation\ConditionRegistry;
 use Tchooz\Services\Transformation\TransformationsRegistry;
 
@@ -28,9 +27,6 @@ else
 }
 
 $mappingFactory = new MappingFactory();
-
-$synchronizersRepository = new SynchronizerRepository();
-$synchronizers = $synchronizersRepository->getAll(['published' => 1, 'enabled' => 1], 0);
 
 $mappingTransformationsRegistry = new TransformationsRegistry();
 $conditionsRegistry = new ConditionRegistry();
@@ -86,6 +82,7 @@ Text::script('COM_EMUNDUS_MAPPING_ROW_TRANSFORMATIONS_MODAL_DESCRIPTION');
 Text::script('COM_EMUNDUS_MAPPING_SAVE_ERROR');
 Text::script('COM_EMUNDUS_MAPPING_OTHER_PARAMETERS');
 Text::script('COM_EMUNDUS_MAPPING_DELETE_CONFIRM');
+Text::script('COM_EMUNDUS_MAPPING_REQUIRED_FIELD_NOT_MAPPED');
 ?>
 
 <div id="em-component-vue"

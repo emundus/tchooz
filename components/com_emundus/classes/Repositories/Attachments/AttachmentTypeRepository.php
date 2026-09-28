@@ -121,12 +121,12 @@ class AttachmentTypeRepository extends EmundusRepository
 	 * @param   bool          $buildEntity
 	 *
 	 * @return array<AttachmentType>
+	 *
+	 * TODO: use EmundusRepository get method
 	 */
-	public function get(array $filters = [], int $limit = 10, int $page = 1, string|array $select = '*', string $order = '', string $search = '', bool $buildEntity = true): array
+	public function get(array $filters = [], int $limit = 0, int $page = 1, string|array $select = '*', string $order = '', string $search = '', bool $buildEntity = true): array
 	{
 		$types = [];
-
-		// todo: use EmundusRepository get method
 
 		$query = $this->db->createQuery();
 		$query->select($this->alias . '.*')

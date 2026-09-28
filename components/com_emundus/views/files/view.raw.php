@@ -203,21 +203,12 @@ class EmundusViewFiles extends JViewLegacy
 					$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 				}
 
+				$fnums = array_values(array_filter(
+					array_map(fn($fnum) => $fnum->fnum, $fnums),
+					fn($fnum) => !empty($fnum) && $fnum !== 'em-check-all'
+				));
 
-				foreach ($fnums as $key => $fnum)
-				{
-
-					if ($fnum->fnum === 'em-check-all')
-					{
-						unset($fnums[$key]);
-						continue;
-					}
-
-					if (EmundusHelperAccess::asAccessAction($exportAction->getId(), CrudEnum::CREATE->value, $this->user->id, $fnum->fnum))
-					{
-						$fnum_array[] = $fnum->fnum;
-					}
-				}
+				$fnum_array = EmundusHelperAccess::asAccessActionOnFnums($exportAction->getId(), CrudEnum::CREATE->value, $this->user->id, $fnums);
 
 				// Store the fnums in the session
 				$this->app->setUserState('com_emundus.files.export.fnums', $fnum_array);

@@ -174,6 +174,21 @@ class ExportEntity
 		$this->result = $result;
 	}
 
+	/**
+	 * Every file produced by the export: the volumes of a split archive, otherwise the single filename.
+	 *
+	 * @return string[] JPATH-relative paths
+	 */
+	public function getFiles(): array
+	{
+		if (!empty($this->result['files']))
+		{
+			return $this->result['files'];
+		}
+
+		return $this->filename !== '' ? [$this->filename] : [];
+	}
+
 	public function __serialize(): array
 	{
 		return [

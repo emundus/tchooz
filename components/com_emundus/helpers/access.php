@@ -1162,10 +1162,10 @@ class EmundusHelperAccess
 	/**
 	 * Get action access right for a certain user for multiple files at once
 	 *
-	 * @param   int     $action_id  Id of the action.
-	 * @param   string  $crud       create/read/update/delete.
-	 * @param   null    $user_id    The user id.
-	 * @param   array   $fnums      File numbers
+	 * @param   int|string  $action_id  Id or name of the action.
+	 * @param   string      $crud       create/read/update/delete.
+	 * @param   null        $user_id    The user id.
+	 * @param   array       $fnums      File numbers
 	 *
 	 * @return  array   Files on which the user can do the action
 	 * @since   2.8.1
@@ -1173,6 +1173,18 @@ class EmundusHelperAccess
 	static function asAccessActionOnFnums($action_id, $crud, $user_id, array $fnums)
 	{
 		$authorized_fnums = [];
+
+		// The explicit denials below are looked up by action id: a name left as is would never match
+		// them, silently granting files the user was explicitly refused.
+		if (!is_numeric($action_id) && !empty($action_id))
+		{
+			$actionEntity = (new ActionRepository())->getByName($action_id);
+			if (empty($actionEntity))
+			{
+				return [];
+			}
+			$action_id = $actionEntity->getId();
+		}
 
 		if (!empty($user_id) && !empty($fnums))
 		{

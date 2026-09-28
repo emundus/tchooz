@@ -10,15 +10,17 @@ use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
+use Tchooz\Entities\Mapping\MappingEntity;
 use Tchooz\Enums\Api\ApiMethodEnum;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Enums\Automation\ActionMessageTypeEnum;
-use Tchooz\Factories\Synchronizer\SynchronizerFactory;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Mapping\MappingRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
-use Tchooz\Services\Mapping\ApiMapDataInterface;
+use Tchooz\Services\Mapping\MappingExecutor;
 
 class ActionApiMap extends ActionEntity
 {
@@ -61,22 +63,17 @@ class ActionApiMap extends ActionEntity
 
 			if (!empty($mappingEntity))
 			{
-				$synchronizerRepository = new SynchronizerRepository();
-				$synchronizer           = $synchronizerRepository->getById($mappingEntity->getSynchronizerId());
+				$executor = new MappingExecutor();
 
 				try
 				{
-					$api = (new SynchronizerFactory())->getApiInstance($synchronizer);
+					// todo: add a parameter to choose the method type
+					$sent   = $executor->execute($mappingEntity, $context, ApiMethodEnum::POST);
+					$status = $sent ? ActionExecutionStatusEnum::COMPLETED : ActionExecutionStatusEnum::FAILED;
 
-					if ($api instanceof ApiMapDataInterface)
+					if ($sent)
 					{
-						// todo: add a parameter to choose the method type
-						$sent   = $api->mapRequest($mappingEntity, $context, ApiMethodEnum::POST);
-						$status = $sent ? ActionExecutionStatusEnum::COMPLETED : ActionExecutionStatusEnum::FAILED;
-					}
-					else
-					{
-						Log::add('The synchronizer does not support API mapping: ' . $synchronizer->getName(), Log::WARNING, 'com_emundus.action');
+						$this->logSent($mappingEntity, is_array($context) ? $context : [$context]);
 					}
 				}
 				catch (\Exception $e)
@@ -84,9 +81,24 @@ class ActionApiMap extends ActionEntity
 					$this->addExecutionMessage(new ActionExecutionMessage($e->getMessage(), ActionMessageTypeEnum::ERROR));
 					Log::add('Error executing API map action: ' . $e->getMessage(), Log::ERROR, 'com_emundus.action');
 				}
+
+				// What the synchronization did, item by item — reported whether it succeeded or not,
+				// so the task history says more than "failed".
+				foreach ($executor->getExecutionMessages() as $message)
+				{
+					$this->addExecutionMessage($message);
+				}
+
+				// A synchronization can decline without throwing. Never leave the task with nothing to
+				// explain its failure.
+				if ($status === ActionExecutionStatusEnum::FAILED && empty($this->getExecutionMessages(ActionMessageTypeEnum::ERROR)))
+				{
+					$this->addExecutionMessage(new ActionExecutionMessage(Text::sprintf('TCHOOZ_AUTOMATION_ACTION_API_MAP_FAILED', $mappingEntity->getLabel()), ActionMessageTypeEnum::ERROR));
+				}
 			}
 			else
 			{
+				$this->addExecutionMessage(new ActionExecutionMessage(Text::sprintf('TCHOOZ_AUTOMATION_ACTION_API_MAP_NOT_FOUND', $this->getParameterValue('api_map_id')), ActionMessageTypeEnum::ERROR));
 				Log::add('Mapping not found for API map action with ID: ' . $this->getParameterValue('api_map_id'), Log::WARNING, 'com_emundus.action');
 			}
 		}
@@ -143,5 +155,29 @@ class ActionApiMap extends ActionEntity
 	public function getPriority(): TaskPriorityEnum
 	{
 		return TaskPriorityEnum::HIGH;
+	}
+
+	/**
+	 * @param   ActionTargetEntity[]  $targets
+	 */
+	private function logSent(MappingEntity $mappingEntity, array $targets): void
+	{
+		$synchronizerName = (new SynchronizerRepository())->getById($mappingEntity->getSynchronizerId())?->getName() ?? '';
+
+		foreach ($targets as $target)
+		{
+			$this->log(
+				ActionEnum::EXTERNAL_EXPORT,
+				CrudEnum::CREATE,
+				'COM_EMUNDUS_LOGS_AUTOMATION_API_MAP',
+				['created' => [[
+					'element' => $synchronizerName,
+					'details' => $mappingEntity->getLabel()
+				]]],
+				$target->getFile(),
+				$target->getTriggeredBy()->id,
+				$target->getUserId()
+			);
+		}
 	}
 }

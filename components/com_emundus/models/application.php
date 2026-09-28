@@ -609,53 +609,41 @@ class EmundusModelApplication extends ListModel
 			$this->_db->execute();
 
 			// Logging requires the fnum, we have to get this from the comment ID being edited.
-			// Only get the fnum if logging is on and comments are in the list of actions to be logged.
-			$eMConfig    = JComponentHelper::getParams('com_emundus');
-			$log_actions = $eMConfig->get('log_action', null);
-			if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array(10, explode(',', $log_actions)))) {
+			$query = $this->_db->getQuery(true);
+			$query->select($this->_db->quoteName('fnum'))
+				->from($this->_db->quoteName('#__emundus_comments'))
+				->where($this->_db->quoteName('id') . '=' . $id);
 
-				$query = $this->_db->getQuery(true);
-				$query->select($this->_db->quoteName('fnum'))
-					->from($this->_db->quoteName('#__emundus_comments'))
-					->where($this->_db->quoteName('id') . '=' . $id);
+			$this->_db->setQuery($query);
+			$fnum = $this->_db->loadResult();
 
-				$this->_db->setQuery($query);
-				$fnum = $this->_db->loadResult();
+			// Log the comment in the eMundus logging system.
+			$logsParams = array('updated' => []);
 
-				// Log the comment in the eMundus logging system.
-				$logsParams = array('updated' => []);
+			if (empty(trim($old_comment->reason))) {
+				$old_comment->reason = Text::_('COM_EMUNDUS_COMMENT_NO_TITLE');
+			}
 
-				if (empty(trim($old_comment->reason))) {
-					$old_comment->reason = Text::_('COM_EMUNDUS_COMMENT_NO_TITLE');
-				}
+			if (empty(trim($title))) {
+				$title = Text::_('COM_EMUNDUS_COMMENT_NO_TITLE');
+			}
 
-				if (empty(trim($title))) {
-					$title = Text::_('COM_EMUNDUS_COMMENT_NO_TITLE');
-				}
+			if ($old_comment->reason !== $title) {
+				array_push($logsParams['updated'], ['description' => '<b>' . '[' . $old_comment->reason . ']' . '</b>', 'element' => '<span>' . Text::_('COM_EMUNDUS_EDIT_COMMENT_TITLE') . '</span>',
+				                                    'old'         => $old_comment->reason,
+				                                    'new'         => $title]);
+			}
 
-				if ($old_comment->reason !== $title) {
-					array_push($logsParams['updated'], ['description' => '<b>' . '[' . $old_comment->reason . ']' . '</b>', 'element' => '<span>' . Text::_('COM_EMUNDUS_EDIT_COMMENT_TITLE') . '</span>',
-					                                    'old'         => $old_comment->reason,
-					                                    'new'         => $title]);
-				}
+			/////////////
+			if ($old_comment->comment_body !== $text) {
+				array_push($logsParams['updated'], ['description' => '<b>' . '[' . $old_comment->reason . ']' . '</b>', 'element' => '<span>' . Text::_('COM_EMUNDUS_EDIT_COMMENT_BODY') . '</span>',
+				                                    'old'         => $old_comment->comment_body,
+				                                    'new'         => $text]);
+			}
 
-				/////////////
-				if ($old_comment->comment_body !== $text) {
-					array_push($logsParams['updated'], ['description' => '<b>' . '[' . $old_comment->reason . ']' . '</b>', 'element' => '<span>' . Text::_('COM_EMUNDUS_EDIT_COMMENT_BODY') . '</span>',
-					                                    'old'         => $old_comment->comment_body,
-					                                    'new'         => $text]);
-				}
-
-				if (!empty($logsParams['updated'])) {
-                    if (!class_exists('EmundusModelFiles')) {
-                        require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
-                    }
-                    $m_files = new EmundusModelFiles;
-                    $fnumInfos = $m_files->getFnumInfos($fnum);
-
-					$logsParams['updated'] = array_values($logsParams['updated']);
-					EmundusModelLogs::log(JFactory::getUser()->id, (int)$fnumInfos['applicant_id'], $fnum, 10, 'u', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-				}
+			if (!empty($logsParams['updated'])) {
+				$logsParams['updated'] = array_values($logsParams['updated']);
+				EmundusModelLogs::log(JFactory::getUser()->id, null, $fnum, 10, 'u', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 			}
 
 			return true;
