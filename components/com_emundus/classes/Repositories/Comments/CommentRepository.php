@@ -12,6 +12,7 @@ namespace Tchooz\Repositories\Comments;
 use Exception;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\Database\ParameterType;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Comments\CommentEntity;
 use Tchooz\Enums\Comments\CommentTargetTypeEnum;
@@ -180,6 +181,43 @@ class CommentRepository extends EmundusRepository implements RepositoryInterface
 		}
 
 		return $comments;
+	}
+
+	/**
+	 * @param   array<string>  $fnums
+	 *
+	 * @return array<string, int> comments count keyed by fnum, fnums without comments are absent
+	 */
+	public function countByFnums(array $fnums): array
+	{
+		$counts = [];
+
+		$fnums = array_values(array_filter($fnums));
+		if (empty($fnums))
+		{
+			return $counts;
+		}
+
+		$query = $this->db->createQuery();
+		$query->select([$this->db->quoteName($this->alias . '.fnum'), 'COUNT(*) AS ' . $this->db->quoteName('nb')])
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->whereIn($this->db->quoteName($this->alias . '.fnum'), $fnums, ParameterType::STRING)
+			->group($this->db->quoteName($this->alias . '.fnum'));
+
+		try
+		{
+			$this->db->setQuery($query);
+			foreach ($this->db->loadAssocList() as $row)
+			{
+				$counts[$row['fnum']] = (int) $row['nb'];
+			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error while counting comments by fnums: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.comment');
+		}
+
+		return $counts;
 	}
 
 	/**
