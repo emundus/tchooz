@@ -39,6 +39,8 @@ class Release2_25_1Installer extends ReleaseInstaller
 			$result['message'] .=  $result['message'] . "\n";
 			$this->tasks[] = $result['status'];
 
+			$this->deleteTranslationsFalangForm();
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
@@ -48,5 +50,27 @@ class Release2_25_1Installer extends ReleaseInstaller
 		}
 
 		return $result;
+	}
+
+	private function deleteTranslationsFalangForm(): void
+	{
+		$query = $this->db->createQuery(true);
+
+		$query->select('reference_id')
+			->from($this->db->qn('#__falang_content'))
+			->where($this->db->qn('value') . ' LIKE ' . $this->db->q('index.php?option=com_fabrik&view=form%'))
+			->where($this->db->qn('reference_table') . ' LIKE ' . $this->db->q('menu'));
+		$this->db->setQuery($query);
+		$falangFormTranslations = $this->db->loadColumn();
+
+		if(!empty($falangFormTranslations))
+		{
+			$query->clear()
+				->delete($this->db->qn('#__falang_content'))
+				->where($this->db->qn('reference_table') . ' LIKE ' . $this->db->q('menu'))
+				->whereIn($this->db->qn('reference_id'), $falangFormTranslations);
+			$this->db->setQuery($query);
+			$this->tasks[] = $this->db->execute();
+		}
 	}
 }
