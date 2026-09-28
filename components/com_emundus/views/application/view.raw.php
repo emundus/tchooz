@@ -538,8 +538,7 @@ class EmundusViewApplication extends HtmlView
 						foreach ($this->fileLogs as $log)
 						{
 							$log->timestamp                  = EmundusHelperDate::displayDate($log->timestamp);
-							$log->details                    = $m_logs->setActionDetails($log->action_id, $log->verb, $log->params);
-							$log->details['action_name']     = Text::_($log->message);
+							$log->details                    = $m_logs->setActionDetails($log->action_id, $log->verb, $log->params, $log->message);
 							$log->details['action_category'] = Text::_($log->details['action_category']);
 						}
 					}

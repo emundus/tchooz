@@ -256,4 +256,49 @@ class AccessHelperTest extends UnitTestCase
 			'An unknown program code should never be manageable by a scoped user'
 		);
 	}
+
+	// -------------------------------------------------------------------------
+	// asAccessActionOnFnums
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @covers EmundusHelperAccess::asAccessActionOnFnums
+	 * @dataProvider actionReferenceProvider
+	 */
+	public function testAsAccessActionOnFnumsHonoursExplicitDenialWhateverTheActionReference(bool $byName): void
+	{
+		$action   = (new \Tchooz\Repositories\Actions\ActionRepository())->getByName('export_zip');
+		$this->assertNotNull($action, 'The export_zip action must exist');
+		$actionRef = $byName ? 'export_zip' : $action->getId();
+		$fnum      = $this->dataset['fnum'];
+		$userId    = (int) $this->dataset['coordinator'];
+
+		$this->assertSame([$fnum], EmundusHelperAccess::asAccessActionOnFnums($actionRef, 'c', $userId, [$fnum]), 'Precondition: the coordinator may export the file');
+
+		$db     = \Joomla\CMS\Factory::getContainer()->get('DatabaseDriver');
+		$denial = (object) ['fnum' => $fnum, 'user_id' => $userId, 'action_id' => $action->getId(), 'c' => -2, 'r' => 0, 'u' => 0, 'd' => 0];
+		$db->insertObject('#__emundus_users_assoc', $denial, 'id');
+
+		try
+		{
+			$this->assertSame([], EmundusHelperAccess::asAccessActionOnFnums($actionRef, 'c', $userId, [$fnum]), 'An explicit denial on the file must win over the program right');
+		}
+		finally
+		{
+			$db->setQuery('DELETE FROM #__emundus_users_assoc WHERE id = ' . (int) $denial->id)->execute();
+		}
+	}
+
+	public static function actionReferenceProvider(): array
+	{
+		return ['action id' => [false], 'action name' => [true]];
+	}
+
+	/**
+	 * @covers EmundusHelperAccess::asAccessActionOnFnums
+	 */
+	public function testAsAccessActionOnFnumsDeniesAnUnknownActionName(): void
+	{
+		$this->assertSame([], EmundusHelperAccess::asAccessActionOnFnums('unknown_action_' . rand(), 'c', (int) $this->dataset['coordinator'], [$this->dataset['fnum']]));
+	}
 }

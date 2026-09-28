@@ -7,9 +7,12 @@ use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Entities\Automation\ActionExecutionMessage;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
+use Tchooz\Enums\Automation\ActionMessageTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 
 class ActionAnonymize extends ActionEntity
@@ -76,9 +79,21 @@ class ActionAnonymize extends ActionEntity
 				if (!$applicationFileRepository->flush($applicationFile)) {
 					$this->addExecutionMessage(new ActionExecutionMessage(
 						Text::sprintf('COM_EMUNDUS_ACTION_ANONYMIZE_FAILED_MESSAGE', $applicationFile->getFnum()),
-						ActionExecutionMessage::TYPE_ERROR
+						ActionMessageTypeEnum::ERROR
 					));
 					$allSuccessful = false;
+				}
+				else
+				{
+					$this->log(
+						ActionEnum::FILE,
+						CrudEnum::UPDATE,
+						'COM_EMUNDUS_LOGS_AUTOMATION_ANONYMIZE',
+						['updated' => [['description' => Text::_('COM_EMUNDUS_LOGS_AUTOMATION_ANONYMIZE')]]],
+						$target->getFile(),
+						$target->getTriggeredBy()->id,
+						$target->getUserId()
+					);
 				}
 			}
 

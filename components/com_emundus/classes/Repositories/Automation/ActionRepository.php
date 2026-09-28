@@ -14,10 +14,46 @@ class ActionRepository
 
 	private TargetRepository $targetRepository;
 
+	private static array $automationSummaries = [];
+
 	public function __construct(?DatabaseDriver $db = null)
 	{
 		$this->db = $db ?? Factory::getContainer()->get('DatabaseDriver');
 		$this->targetRepository = new TargetRepository($this->db);
+	}
+
+	/**
+	 * The automation an action row belongs to, as id and name only.
+	 *
+	 * Used to stamp history entries with their origin without hydrating the whole automation
+	 * (which would load every action, target and condition just to read a name).
+	 *
+	 * @return array{id: int, name: string}|array{}
+	 */
+	public function getAutomationSummary(int $actionId): array
+	{
+		if (empty($actionId) || $actionId <= 0)
+		{
+			return [];
+		}
+
+		if (array_key_exists($actionId, self::$automationSummaries))
+		{
+			return self::$automationSummaries[$actionId];
+		}
+
+		$query = $this->db->getQuery(true)
+			->select([$this->db->quoteName('au.id'), $this->db->quoteName('au.name')])
+			->from($this->db->quoteName('#__emundus_action', 'a'))
+			->leftJoin($this->db->quoteName('#__emundus_automation', 'au') . ' ON ' . $this->db->quoteName('au.id') . ' = ' . $this->db->quoteName('a.automation_id'))
+			->where($this->db->quoteName('a.id') . ' = ' . $actionId);
+
+		$this->db->setQuery($query);
+		$result = $this->db->loadObject();
+
+		self::$automationSummaries[$actionId] = !empty($result->id) ? ['id' => (int) $result->id, 'name' => $result->name ?? ''] : [];
+
+		return self::$automationSummaries[$actionId];
 	}
 
 	/**

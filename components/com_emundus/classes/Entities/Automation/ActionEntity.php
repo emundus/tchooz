@@ -11,12 +11,16 @@ use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\ActionMessageTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\Task\TaskPriorityEnum;
+use Tchooz\Repositories\Automation\ActionRepository;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Traits\TraitAutomatedTask;
+use Tchooz\Traits\TraitLoggable;
 
 abstract class ActionEntity
 {
 	use TraitAutomatedTask;
+
+	use TraitLoggable;
 
 	private ?int $id = null;
 
@@ -573,5 +577,33 @@ abstract class ActionEntity
 	public function getPriority(): TaskPriorityEnum
 	{
 		return TaskPriorityEnum::MEDIUM;
+	}
+
+	/**
+	 * An automation acts on its own behalf: the history names the automated task user rather than
+	 * whoever happened to trigger the event, who did not decide on this action. The trigger is
+	 * kept in the params.
+	 */
+	protected function getLogAuthor(?int $userFrom): int
+	{
+		return $this->getAutomatedTaskUserId() ?: (int) $userFrom;
+	}
+
+	/**
+	 * Stamps every history entry written by an action with the automation it came from, so no
+	 * individual action has to remember to do it.
+	 */
+	protected function getLogContext(): array
+	{
+		$context = ['action_type' => static::getType()];
+
+		$automation = !empty($this->id) ? (new ActionRepository())->getAutomationSummary($this->id) : [];
+
+		if (!empty($automation))
+		{
+			$context['automation'] = ['id' => $automation['id'], 'label' => $automation['name']];
+		}
+
+		return $context;
 	}
 }

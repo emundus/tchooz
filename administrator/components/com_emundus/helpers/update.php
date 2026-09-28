@@ -2567,7 +2567,7 @@ class EmundusHelperUpdate
 			return $result;
 		}
 
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 		$db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name));
 		$column_existing = $db->loadResult();
 

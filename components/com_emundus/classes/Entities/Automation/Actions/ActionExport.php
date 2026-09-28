@@ -14,9 +14,11 @@ use Tchooz\Entities\Export\ExportEntity;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Task\TaskEntity;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
 use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Repositories\Export\ExportRepository;
@@ -162,6 +164,7 @@ class ActionExport extends ActionEntity
 
 					$exportEntity->setFilename($result->getFilePath());
 					$exportEntity->setProgress($result->getProgress());
+					$exportEntity->setResult($result->getResult());
 					if ($expiredAt)
 					{
 						$exportEntity->setExpiredAt($expiredAt);
@@ -180,6 +183,7 @@ class ActionExport extends ActionEntity
 						hits: 0,
 						progress: $result->getProgress()
 					);
+					$exportEntity->setResult($result->getResult());
 				}
 
 				if (!$exportRepository->flush($exportEntity))
@@ -209,6 +213,22 @@ class ActionExport extends ActionEntity
 			}
 
 			return ActionExecutionStatusEnum::FAILED;
+		}
+
+		foreach (is_array($context) ? $context : [$context] as $target)
+		{
+			$this->log(
+				ActionEnum::EXPORT,
+				CrudEnum::CREATE,
+				'COM_EMUNDUS_LOGS_AUTOMATION_EXPORT',
+				['created' => [[
+					'element' => $format->value,
+					'details' => basename($result->getFilePath())
+				]]],
+				$target->getFile(),
+				$target->getTriggeredBy()->id,
+				$target->getUserId()
+			);
 		}
 
 		return ActionExecutionStatusEnum::COMPLETED;

@@ -752,7 +752,9 @@ class EmundusControllerExport extends BaseController
 
 				$zipParameters = [
 					'forms'                 => $this->input->getInt('forms', $hasFormContent ? 1 : 0),
-					'attachment'            => $this->input->getInt('attachment', 1),
+					// The export screen sends the selected types only: nothing selected means no document,
+					// while legacy callers relied on "every document" when they sent no selection.
+					'attachment'            => $this->input->getInt('attachment', $exportVersion === 'next' ? 0 : 1),
 					'form_ids'              => $this->input->getString('form_ids', $this->input->getString('formids', '')),
 					'attach_ids'            => $this->input->getString('attach_ids', $this->input->getString('attachids', '')),
 					'eval_steps'            => $evalSteps,
@@ -1119,6 +1121,22 @@ class EmundusControllerExport extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
+	/**
+	 * Files stored under images/emundus/exports go through the getfile PHP gateway rather than a direct
+	 * static URL: some web servers (e.g. IIS) 301-redirect .zip requests, which turns the download into
+	 * the HTML home page. The tmp/ CSV stays a direct static URL — getfile only authorizes the exports
+	 * & applicant-files paths.
+	 */
+	private function buildDownloadUrl(string $filePath): string
+	{
+		if (str_starts_with($filePath, 'images/emundus/exports'))
+		{
+			return '/index.php?option=com_emundus&task=getfile&u=' . $filePath;
+		}
+
+		return '/' . $filePath;
+	}
+
 	public function downloadexport(): void
 	{
 		try
@@ -1162,36 +1180,27 @@ class EmundusControllerExport extends BaseController
 				{
 					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_CREATE_CSV_FILE'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 				}
+				$files = [$filePath];
 			}
 			else
 			{
-				$filePath = $export->getFilename();
+				$files = $export->getFiles();
 			}
 
 			// Guard against a stored filename whose file is missing on disk (e.g. an empty/failed
 			// archive). Without this, the front fetches a non-existent static path, the Joomla rewrite
 			// returns the HTML SPA page and the browser saves it as a misleading ".html" download.
-			if (empty($filePath) || !file_exists(JPATH_SITE . '/' . $filePath))
+			$missingFiles = array_filter($files, fn(string $file) => !file_exists(JPATH_SITE . '/' . $file));
+			if (empty($files) || !empty($missingFiles))
 			{
 				throw new Exception(Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
 			}
 
-			// Serve files stored under images/emundus/exports through the getfile PHP gateway rather
-			// than as a direct static URL: some web servers (e.g. IIS) 301-redirect .zip requests, which
-			// turns the download into the HTML home page. Routing through index.php?task=getfile streams
-			// the bytes via PHP and is immune to static-file rewrite rules. The tmp/ CSV (json branch)
-			// stays a direct static URL — getfile only authorizes the exports & applicant-files paths.
-			if (str_starts_with($filePath, 'images/emundus/exports'))
-			{
-				$downloadFile = '/index.php?option=com_emundus&task=getfile&u=' . $filePath;
-			}
-			else
-			{
-				$downloadFile = '/' . $filePath;
-			}
+			$downloadFiles = array_map(fn(string $file) => $this->buildDownloadUrl($file), $files);
+			$downloadFile  = $downloadFiles[0];
 
 			$response = EmundusResponse::ok(
-				['download_file' => $downloadFile],
+				['download_file' => $downloadFile, 'download_files' => $downloadFiles],
 				Text::_('COM_EMUNDUS_EXPORT_RETRIEVED_SUCCESSFULLY')
 			);
 		}
