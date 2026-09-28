@@ -41,6 +41,26 @@ class Release2_25_1Installer extends ReleaseInstaller
 
 			$this->deleteTranslationsFalangForm();
 
+			$query->clear()
+				->select('extension_id,params')
+				->from($this->db->qn('#__extensions'))
+				->where($this->db->qn('name') . ' LIKE ' . $this->db->q('com_emundus'))
+				->where($this->db->qn('type') . ' LIKE ' . $this->db->q('component'));
+			$this->db->setQuery($query);
+			$emundusExtension = $this->db->loadObject();
+
+			if(!empty($emundusExtension) && !empty($emundusExtension->extension_id))
+			{
+				$params = json_decode($emundusExtension->params);
+				if(!isset($params->applicant_show_document_status))
+				{
+					$params->applicant_show_document_status = 1;
+				}
+				$emundusExtension->params = json_encode($params);
+
+				$this->tasks[] = $this->db->updateObject('#__extensions', $emundusExtension, 'extension_id');
+			}
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
