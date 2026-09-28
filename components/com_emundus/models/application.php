@@ -3052,7 +3052,7 @@ class EmundusModelApplication extends ListModel
 													$elt = '******';
 												}
 												elseif ($params->password == 3) {
-													$elt = '<a href="mailto:' . $element->content . '" title="' . Text::_($element->label) . '">' . $element->content . '</a>';
+													$elt = '<a href="mailto:' . $element->content . '" title="' . $element->content . '">' . $element->content . '</a>';
 												}
 												elseif ($params->password == 5) {
 													$elt = '<a href="' . $element->content . '" target="_blank" title="' . Text::_($element->label) . '">' . $element->content . '</a>';
@@ -4261,10 +4261,10 @@ class EmundusModelApplication extends ListModel
 													$elt = '******';
 												}
 												elseif ($params->password == 3) {
-													$elt = '<a href="mailto:' . $element->content . '" title="' . Text::_($element->label) . '">' . $element->content . '</a>';
+													$elt = '<a href="mailto:' . $element->content . '" title="' . $element->content . '">' . $element->content . '</a>';
 												}
 												elseif ($params->password == 5) {
-													$elt = '<a href="' . $element->content . '" target="_blank" title="' . Text::_($element->label) . '">' . $element->content . '</a>';
+													$elt = '<a href="' . $element->content . '" target="_blank" title="' . $element->content . '">' . $element->content . '</a>';
 												}
 												else {
 													$elt = $element->content;

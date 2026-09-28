@@ -2,6 +2,7 @@
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
 use Tchooz\Entities\ApplicationFile\Actions\CustomApplicationFileAction;
 use Tchooz\Enums\ApplicationFile\ApplicationFileActionsEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
@@ -64,9 +65,7 @@ if (!empty($actions))
                 if (!($action instanceof CustomApplicationFileAction)) {
 				?>
                     <div id="<?= $action->getActionType()->value ?>-action" data-actionid="<?= $action->getActionType()->value ?>" tabindex=0 role="menuitem" data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
-                        <span class="material-symbols-outlined <?= $action->getActionType()->getClass() ?>">
-                            <?= $action->getActionType()->getIcon() ?>
-                        </span>
+                        <?php echo LayoutHelper::render('emundus.icon', ['name' => $action->getActionType()->getIcon(), 'class' => $action->getActionType()->getClass()]); ?>
                         <p class="tw-whitespace-nowrap <?= $action->getActionType()->getClass() ?>"><?= $action->getActionType()->getLabel() ?></p>
                     </div>
                 <?php
@@ -74,9 +73,7 @@ if (!empty($actions))
                 ?>
                     <div id="<?= $action->getId() ?>-action" data-actionid="<?= $action->getId() ?>" tabindex=0 role="menuitem" data-fnum="<?= $fnum; ?>" class="file-action tw-flex tw-flex-row tw-items-center tw-justify-start tw-cursor-pointer tw-gap-2 tw-p-2 tw-rounded tw-transition-all hover:tw-bg-neutral-200">
                         <?php if (!empty($action->getIcon())) : ?>
-                            <span class="material-symbols-outlined">
-                                <?= $action->getIcon() ?>
-                            </span>
+                            <?php echo LayoutHelper::render('emundus.icon', ['name' => $action->getIcon()]); ?>
                         <?php endif; ?>
                         <p class="tw-whitespace-nowrap"><?= $action->getLabel() ?></p>
                     </div>
