@@ -4,6 +4,9 @@ namespace Unit\Component\Emundus\Class\Entities\Task;
 
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Automation\Actions\ActionUpdateStatus;
+use Tchooz\Entities\Automation\ActionTargetEntity;
+use Tchooz\Entities\Automation\AutomationExecutionContext;
+use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
@@ -67,5 +70,25 @@ class TaskEntityTest extends UnitTestCase
 		$task->execute();
 		$this->assertEquals(1, $task->getAttempts(), "Task attempts should be incremented after execution.");
 		$this->assertEquals(TaskStatusEnum::FAILED, $task->getStatus(), 'Task status should be updated to FAILED when there are no target entities to execute the action on.');
+	}
+
+	/**
+	 * @covers \Tchooz\Entities\Task\TaskEntity::execute
+	 * @return void
+	 */
+	public function testTaskExecutePendingDoesNotConsumeAttempt(): void
+	{
+		$action = new class([ActionUpdateStatus::STATUS_PARAMETER => 1]) extends ActionUpdateStatus {
+			public function execute(ActionTargetEntity|array $context, ?AutomationExecutionContext $executionContext = null): ActionExecutionStatusEnum
+			{
+				return ActionExecutionStatusEnum::PENDING;
+			}
+		};
+		$task = new TaskEntity(1, TaskStatusEnum::PENDING, $action, 1, [], new \DateTimeImmutable(), new \DateTimeImmutable(), null, null, 2, TaskPriorityEnum::MEDIUM);
+		$task->setMetadata(['fnums' => [$this->dataset['fnum']]]);
+
+		$task->execute();
+		$this->assertEquals(2, $task->getAttempts(), 'A resumable action yielding PENDING should not consume an attempt.');
+		$this->assertEquals(TaskStatusEnum::PENDING, $task->getStatus());
 	}
 }

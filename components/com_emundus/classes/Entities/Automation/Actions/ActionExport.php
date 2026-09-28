@@ -164,6 +164,7 @@ class ActionExport extends ActionEntity
 
 					$exportEntity->setFilename($result->getFilePath());
 					$exportEntity->setProgress($result->getProgress());
+					$exportEntity->setResult($result->getResult());
 					if ($expiredAt)
 					{
 						$exportEntity->setExpiredAt($expiredAt);
@@ -182,6 +183,7 @@ class ActionExport extends ActionEntity
 						hits: 0,
 						progress: $result->getProgress()
 					);
+					$exportEntity->setResult($result->getResult());
 				}
 
 				if (!$exportRepository->flush($exportEntity))

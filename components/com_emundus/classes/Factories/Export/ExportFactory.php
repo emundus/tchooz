@@ -40,7 +40,7 @@ class ExportFactory implements DBFactory
 			throw new \InvalidArgumentException('Invalid export format value: ' . $dbObject['format']);
 		}
 
-		return new ExportEntity(
+		$export = new ExportEntity(
 			id: $dbObject['id'],
 			createdAt: new \DateTime($dbObject['created_at']),
 			createdBy: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $dbObject['created_by']),
@@ -53,6 +53,16 @@ class ExportFactory implements DBFactory
 			cancelled: $dbObject['cancelled'] == 1,
 			failed: $dbObject['failed'] == 1,
 		);
+		$export->setResult(self::decodeResult($dbObject['result'] ?? null));
+
+		return $export;
+	}
+
+	private static function decodeResult(?string $result): array
+	{
+		$decoded = !empty($result) ? json_decode($result, true) : null;
+
+		return is_array($decoded) ? $decoded : [];
 	}
 
 	public function fromDbObjects(array $dbObjects, bool|array $withRelations = true, array $exceptRelations = [], ?DatabaseDriver $db = null): array
@@ -80,19 +90,21 @@ class ExportFactory implements DBFactory
 				throw new \InvalidArgumentException('Invalid export format value: ' . $dbObject['format']);
 			}
 
-			$entities[] = new ExportEntity(
+			$export = new ExportEntity(
 				id: $dbObject['id'],
 				createdAt: new \DateTime($dbObject['created_at']),
 				createdBy: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $dbObject['created_by']),
 				filename: $dbObject['filename'],
 				format: $format,
-				expiredAt: !empty($dbObject['expired_date']) ? new \DateTime($dbObject['expired_at']) : null,
+				expiredAt: !empty($dbObject['expired_at']) ? new \DateTime($dbObject['expired_at']) : null,
 				task: $task,
 				hits: $dbObject['hits'],
 				progress: $dbObject['progress'],
 				cancelled: $dbObject['cancelled'] == 1,
 				failed: $dbObject['failed'] == 1,
 			);
+			$export->setResult(self::decodeResult($dbObject['result'] ?? null));
+			$entities[] = $export;
 		}
 
 		return $entities;
