@@ -986,11 +986,6 @@
 
 
         /** CHECKBOX **/
-
-        .form-check-input:focus {
-            box-shadow: none;
-        }
-
         .plg-checkbox {
             .fabrikElement {
                 padding-left: 1.5em;
@@ -1934,4 +1929,10 @@
             }
         }
     }
+}
+
+.input-password-toggle:focus
+{
+    outline: 5px auto;
+    outline-offset: 0;
 }
