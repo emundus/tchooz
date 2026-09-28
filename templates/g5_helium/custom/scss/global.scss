@@ -762,7 +762,7 @@ div#frame.outline {
 
 #g-footer a[target="_blank"]::after,
 .view-article .item-page a[target="_blank"]::after {
-  content: 'open_in_new';
+  content: 'open_in_new' / '';
   display: inline-block;
   font-family: "Material Icons";
   margin-left: 4px;

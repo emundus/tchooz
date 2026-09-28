@@ -179,7 +179,7 @@ endif;
 
     if ($form->gobackButton)
     {
-        echo '<div class="back-button-link tw-text-link-regular tw-cursor-pointer tw-font-semibold tw-flex tw-items-center tw-mb-4 tw-mt-2"><span class="material-symbols-outlined tw-text-link-regular tw-mr-1">navigate_before</span>';
+        echo '<div class="back-button-link tw-text-link-regular tw-cursor-pointer tw-font-semibold tw-flex tw-items-center tw-mb-4 tw-mt-2"><span class="material-symbols-outlined tw-text-link-regular tw-mr-1" aria-hidden="true">navigate_before</span>';
         echo $form->gobackButton;
         echo '</div>';
     }
