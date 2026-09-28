@@ -176,7 +176,7 @@ class FormbuilderModelTest extends UnitTestCase
 
 		if (!empty($group['group_id'])) {
 			$this->assertGreaterThan(0, $group['group_id'], 'Le groupe a bien été créé.');
-			$this->model->updateGroupParams($group['group_id'], ['is_sample' => true, 'repeat_group_button' => 0]);
+			$this->model->updateGroupParams('Groupe Tests unitaires', $group['group_id'], ['is_sample' => true, 'repeat_group_button' => 0]);
 
 			
 			$query = $this->db->getQuery(true);
@@ -219,7 +219,7 @@ class FormbuilderModelTest extends UnitTestCase
 
 
 			$new_intro = 'Mon introduction';
-			$this->model->updateGroupParams($group['group_id'], ['intro' => $new_intro, 'is_sample' => true, 'repeat_group_button' => 0], 'fr');
+			$this->model->updateGroupParams('Groupe Tests unitaires', $group['group_id'], ['intro' => $new_intro, 'is_sample' => true, 'repeat_group_button' => 0], 'fr');
 
 			
 			$query = $this->db->getQuery(true);

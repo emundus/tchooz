@@ -924,6 +924,10 @@ class EmundusModelForm extends ListModel
 			{
 				require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
 			}
+			if(!class_exists('EmundusHelperUpdate'))
+			{
+				require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+			}
 			$profileRepository  = new ProfileRepository();
 			$fabrikRepository  = new FabrikRepository(true, $user);
 
@@ -969,7 +973,6 @@ class EmundusModelForm extends ListModel
 						Log::add('Could not find heading menu when copying profile ' . $profileid, Log::INFO, 'com_emundus.form');
 
 						$default_heading_menu                    = new stdClass();
-						$default_heading_menu->id                = 1;
 						$default_heading_menu->menutype          = '';
 						$default_heading_menu->title             = "PROFILE $profileid - Copy";
 						$default_heading_menu->alias             = '';
@@ -992,31 +995,24 @@ class EmundusModelForm extends ListModel
 						$headingToDuplicate                    = $default_heading_menu;
 					}
 
-					if(empty($headingToDuplicate->id)) {
-						Log::add('Failed to duplicate form, no heading menu found', Log::WARNING, 'com_emundus.error');
-						continue;
-					}
-
-					$insert = [];
-					foreach ($headingToDuplicate as $key => $val) {
-						if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path' && $key != 'checked_out' && $key != 'checked_out_time') {
-							$insert[$key] = $val;
-						}
-						elseif ($key == 'menutype') {
-							$insert[$key] = $newmenutype;
-						}
-						elseif ($key == 'path') {
-							$insert[$key] = $newmenutype;
-						}
-						elseif ($key == 'alias') {
-							$insert[$key] = str_replace(EmundusHelperMenu::getSpecialCharacters(), '-', strtolower($new_title)) . '-' . $profile->getId();
-						}
-					}
-					$insert = (object)$insert;
-					$inserted_heading = $this->db->insertObject('#__menu', $insert);
-					if(!$inserted_heading)
+					$headingParams = [
+						'menutype'          => $newmenutype,
+						'title'             => $headingToDuplicate->title,
+						'alias'             => str_replace(EmundusHelperMenu::getSpecialCharacters(), '-', strtolower($new_title)) . '-' . $profile->getId(),
+						'path'              => $newmenutype,
+						'note'              => $headingToDuplicate->note,
+						'link'              => $headingToDuplicate->link,
+						'type'              => $headingToDuplicate->type,
+						'access'            => $headingToDuplicate->access,
+						'component_id'      => $headingToDuplicate->component_id,
+						'template_style_id' => $headingToDuplicate->template_style_id,
+						'client_id'         => $headingToDuplicate->client_id,
+						'params'            => $headingToDuplicate->params,
+					];
+					$inserted_heading = EmundusHelperUpdate::addJoomlaMenu($headingParams, 1, $headingToDuplicate->published);
+					if ($inserted_heading['status'] !== true)
 					{
-						Log::add('Failed to duplicate form, heading has not been created properly', Log::WARNING, 'com_emundus.error');
+						Log::add('Failed to duplicate form, heading has not been created properly : ' . $inserted_heading['message'], Log::WARNING, 'com_emundus.error');
 						continue;
 					}
 
@@ -1217,14 +1213,8 @@ class EmundusModelForm extends ListModel
 		$query = $this->db->getQuery(true);
 
 		// Create profile
-		$query->clear()
-			->select('id')
-			->from($this->db->quoteName('#__emundus_setup_profiles'))
-			->order('id DESC');
-		$this->db->setQuery($query);
-		$lastprofile = $this->db->loadObjectList()[0];
-
 		$columns = array(
+			'id',
 			'label',
 			'description',
 			'published',
@@ -1237,6 +1227,7 @@ class EmundusModelForm extends ListModel
 			'class');
 
 		$values = array(
+			(new ProfileRepository(false))->getNextFreeId(),
 			'Nouveau formulaire',
 			'',
 			1,
@@ -1249,10 +1240,6 @@ class EmundusModelForm extends ListModel
 			null
 		);
 
-		if ($lastprofile->id == '999' || $lastprofile->id == '1000') {
-			array_unshift($columns, 'id');
-			array_unshift($values, 1001);
-		}
 		$query->clear()
 			->insert($this->db->quoteName('#__emundus_setup_profiles'))
 			->columns($this->db->quoteName($columns))
