@@ -3581,14 +3581,14 @@ class EmundusModelEmails extends JModelList
 	 * @param   int|string   $email
 	 * @param   array|null   $post
 	 * @param   int|null     $user_id
-	 * @param   array        $attachments
+	 * @param   array|null   $attachments
 	 * @param   string|null  $fnum
 	 * @param   int|bool     $log_email
-	 * @param   array        $emails_cc
+	 * @param   array|null   $emails_cc
 	 * @param   int|null     $user_id_from
 	 *
 	 * @return bool
-	 * @throws Exception
+	 * @throws \PHPMailer\PHPMailer\Exception
 	 */
 	public function sendEmailNoFnum(string $email_address, int|string $email, ?array $post = null, ?int $user_id = null, ?array $attachments = [], ?string $fnum = null, int|bool $log_email = true, ?array $emails_cc = [], ?int $user_id_from = null)
 	{
@@ -3651,8 +3651,34 @@ class EmundusModelEmails extends JModelList
 					'LOGO' => EmundusHelperEmails::getLogo(),
 					'BUTTON_TEXT' => $button_text,
 				];
-				if(!empty($fnum)) {
+
+				if (!empty($fnum)) {
 					$default_post['FNUM'] = $fnum;
+
+					if (!empty($template->candidate_attachments)) {
+						if (!class_exists('EmundusHelperFiles'))
+						{
+							require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+						}
+
+						$applicant_id = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
+						if (!is_array($template->candidate_attachments))
+						{
+							$template->candidate_attachments = explode(',', $template->candidate_attachments);
+						}
+
+						foreach ($template->candidate_attachments as $candidate_file) {
+							$filename = $m_messages->get_upload($fnum, $candidate_file);
+
+							if ($filename) {
+								// Build the path to the file we are searching for on the disk.
+								$path = EMUNDUS_PATH_ABS.$applicant_id.DS.$filename;
+								if (file_exists($path)) {
+									$toAttach[] = $path;
+								}
+							}
+						}
+					}
 				}
 
 				if (!empty($post)) {
@@ -3793,7 +3819,7 @@ class EmundusModelEmails extends JModelList
 			}
 
 			if (empty($user)) {
-				$user   = JFactory::getUser();
+				$user   = Factory::getApplication()->getIdentity();
 			}
 
 			require_once (JPATH_ROOT.'/components/com_emundus/helpers/emails.php');
