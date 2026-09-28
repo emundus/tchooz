@@ -10,12 +10,16 @@ use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
+use Tchooz\Entities\Mapping\MappingEntity;
 use Tchooz\Enums\Api\ApiMethodEnum;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Enums\Automation\ActionMessageTypeEnum;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Mapping\MappingRepository;
+use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Services\Mapping\MappingExecutor;
 
 class ActionApiMap extends ActionEntity
@@ -66,6 +70,11 @@ class ActionApiMap extends ActionEntity
 					// todo: add a parameter to choose the method type
 					$sent   = $executor->execute($mappingEntity, $context, ApiMethodEnum::POST);
 					$status = $sent ? ActionExecutionStatusEnum::COMPLETED : ActionExecutionStatusEnum::FAILED;
+
+					if ($sent)
+					{
+						$this->logSent($mappingEntity, is_array($context) ? $context : [$context]);
+					}
 				}
 				catch (\Exception $e)
 				{
@@ -146,5 +155,29 @@ class ActionApiMap extends ActionEntity
 	public function getPriority(): TaskPriorityEnum
 	{
 		return TaskPriorityEnum::HIGH;
+	}
+
+	/**
+	 * @param   ActionTargetEntity[]  $targets
+	 */
+	private function logSent(MappingEntity $mappingEntity, array $targets): void
+	{
+		$synchronizerName = (new SynchronizerRepository())->getById($mappingEntity->getSynchronizerId())?->getName() ?? '';
+
+		foreach ($targets as $target)
+		{
+			$this->log(
+				ActionEnum::EXTERNAL_EXPORT,
+				CrudEnum::CREATE,
+				'COM_EMUNDUS_LOGS_AUTOMATION_API_MAP',
+				['created' => [[
+					'element' => $synchronizerName,
+					'details' => $mappingEntity->getLabel()
+				]]],
+				$target->getFile(),
+				$target->getTriggeredBy()->id,
+				$target->getUserId()
+			);
+		}
 	}
 }

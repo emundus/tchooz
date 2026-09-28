@@ -21,11 +21,6 @@
                value_field="label"
         />
 
-        <field name="logs" label="LOGS_ACTIVE" type="radio" default="0" description="LOGS_ACTIVE_DESC">
-            <option value="0">JNO</option>
-            <option value="1">JYES</option>
-        </field>
-
         <field name="emundus_email" type="text" label="COM_EMUNDUS_EMAIL" default="support@emundus.fr"
                description="COM_EMUNDUS_EMAIL_DESC" size="60"/>
 
@@ -35,8 +30,6 @@
         -->
         <field name="log_actions_exclude" label="LOG_ACTIONS_EXCLUDE" type="field"
                description="LOG_ACTIONS_EXCLUDE_DESC"/>
-        <field name="log_actions_exclude_user" label="LOG_ACTIONS_EXCLUDE_USER" default="" type="field"
-               description="LOG_ACTIONS_EXCLUDE_USER_DESC"/>
         <field name="log_forms_update" type="radio" default="0" label="COM_EMUNDUS_LOG_FORMS_UPDATE"
                description="COM_EMUNDUS_LOG_FORMS_UPDATE_DESC">
             <option value="0">JNo</option>

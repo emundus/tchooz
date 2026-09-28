@@ -16,9 +16,12 @@ jimport('joomla.application.component.model');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
+use Tchooz\Traits\TraitAutomatedTask;
 
 class EmundusModelPayment extends JModelList
 {
+	use TraitAutomatedTask;
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -529,14 +532,14 @@ class EmundusModelPayment extends JModelList
 				if (!empty($hikashop_status)) {
 					$updated         = $this->updateHikashopPayment($fnum, $hikashop_status, $data, 'flywire', $data['id']);
 					$data['updated'] = $updated;
-					EmundusModelLogs::log(95, $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_FLYWIRE_PAYMENT_INFOS', json_encode($data));
+					EmundusModelLogs::log($this->getAutomatedTaskUserId(), $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_FLYWIRE_PAYMENT_INFOS', json_encode($data));
 				}
 				else {
-					EmundusModelLogs::log(95, $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_FLYWIRE_PAYMENT_INFOS', 'Error updating flywire payment infos from given data ' . json_encode($data));
+					EmundusModelLogs::log($this->getAutomatedTaskUserId(), $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_FLYWIRE_PAYMENT_INFOS', 'Error updating flywire payment infos from given data ' . json_encode($data));
 				}
 			}
 			else {
-				EmundusModelLogs::log(95, $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_FLYWIRE_INCOHERENT_PAYMENT_INFOS', $data['amount'] . ' != ' . $this->getPrice($fnum));
+				EmundusModelLogs::log($this->getAutomatedTaskUserId(), $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_FLYWIRE_INCOHERENT_PAYMENT_INFOS', $data['amount'] . ' != ' . $this->getPrice($fnum));
 				JLog::add('Error updating flywire payment infos : amount is not coherent for fnum ' . $fnum, JLog::ERROR, 'com_emundus.payment');
 			}
 		}
@@ -1069,10 +1072,10 @@ class EmundusModelPayment extends JModelList
 			if (!empty($hikashop_status)) {
 				$data['id'] = $id;
 				$updated    = $this->updateHikashopPayment($fnum, $hikashop_status, $data, 'axepta');
-				EmundusModelLogs::log(95, $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_AXEPTA_PAYMENT_INFOS', json_encode($data));
+				EmundusModelLogs::log($this->getAutomatedTaskUserId(), $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_AXEPTA_PAYMENT_INFOS', json_encode($data));
 			}
 			else {
-				EmundusModelLogs::log(95, $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_AXEPTA_PAYMENT_INFOS', 'Error updating axepta payment infos from given data ' . $status . ',' . $order . ',' . $id);
+				EmundusModelLogs::log($this->getAutomatedTaskUserId(), $fnum_infos['applicant_id'], $fnum, 38, 'u', 'COM_EMUNDUS_PAYMENT_UPDATE_AXEPTA_PAYMENT_INFOS', 'Error updating axepta payment infos from given data ' . $status . ',' . $order . ',' . $id);
 			}
 
 			if (!empty($mail_template)) {
