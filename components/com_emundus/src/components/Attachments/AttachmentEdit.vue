@@ -19,6 +19,7 @@
 				</div>
 
 				<div
+					v-if="columns.includes('status')"
 					class="valid-state tw-flex tw-flex-col"
 					:class="{
 						success: attachmentIsValidated == 1,
