@@ -59,6 +59,7 @@ class ProfileRepository extends EmundusRepository
 
 		if(empty($profile->getId()))
 		{
+			$data->id = $this->getNextFreeId();
 			if (!$this->db->insertObject($this->tableName, $data))
 			{
 				throw new \RuntimeException('Error while inserting profile: ' . $this->db->getErrorMsg());
@@ -75,6 +76,52 @@ class ProfileRepository extends EmundusRepository
 		}
 
 		return true;
+	}
+
+	/**
+	 * Profiles deleted without cleanup (v1 platforms) leave menus, campaigns and documents keyed on their id:
+	 * reusing that id would attach them to the new profile, so the next id skips every id still referenced.
+	 */
+	public function getNextFreeId(): int
+	{
+		$query = $this->db->getQuery(true);
+
+		$query->select('MAX(id)')
+			->from($this->db->quoteName($this->tableName));
+		$this->db->setQuery($query);
+		$maxProfileId = (int) $this->db->loadResult();
+
+		$menutypeSuffix = 'CAST(SUBSTRING(menutype, ' . (strlen('menu-profile') + 1) . ') AS UNSIGNED)';
+		$menutypeRegex  = $this->db->quote('^menu-profile[0-9]+$');
+		$maxUsedIds     = [$maxProfileId];
+
+		foreach (['#__menu_types', '#__menu'] as $table)
+		{
+			$query->clear()
+				->select('MAX(' . $menutypeSuffix . ')')
+				->from($this->db->quoteName($table))
+				->where($this->db->quoteName('menutype') . ' REGEXP ' . $menutypeRegex);
+			$this->db->setQuery($query);
+			$maxUsedIds[] = (int) $this->db->loadResult();
+		}
+
+		foreach (['#__emundus_setup_campaigns', '#__emundus_setup_attachment_profiles', '#__emundus_setup_formlist'] as $table)
+		{
+			$query->clear()
+				->select('MAX(profile_id)')
+				->from($this->db->quoteName($table));
+			$this->db->setQuery($query);
+			$maxUsedIds[] = (int) $this->db->loadResult();
+		}
+
+		$nextId = max($maxUsedIds) + 1;
+
+		if ($maxProfileId === 999 || $maxProfileId === 1000)
+		{
+			$nextId = max($nextId, 1001);
+		}
+
+		return $nextId;
 	}
 
 	public function getById(int $id): ?ProfileEntity

@@ -25,8 +25,10 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\MVC\Model\ListModel;
+use Joomla\CMS\Table\Menu as MenuTable;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseDriver;
+use Joomla\Database\ParameterType;
 use Tchooz\Entities\Calculation\Templates\CalculateDatesDiff;
 use Tchooz\Entities\Fabrik\FabrikElementEntity;
 use Tchooz\Entities\Indexer\IndexEntity;
@@ -3341,42 +3343,59 @@ class EmundusModelFormbuilder extends ListModel
 
 		if (!empty($profile))
 		{
+			if (!class_exists('EmundusHelperMenu'))
+			{
+				require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+			}
 
-			$query = $this->db->getQuery(true);
+			$menutype = 'menu-profile' . $profile;
+			$query    = $this->db->getQuery(true);
 
 			try
 			{
-				$rgt = 2;
-				foreach ($menus as $key => $menu)
+				$heading = EmundusHelperMenu::getHeaderMenu($menutype);
+				if (empty($heading))
 				{
-					$rgt = $menu->rgt + $key + 3;
-					$lft = $menu->rgt + $key + 2;
+					throw new Exception('No heading menu found for menutype ' . $menutype);
+				}
 
-					if (!empty($menu->link))
+				usort($menus, fn($a, $b) => $a->rgt <=> $b->rgt);
+				$links = array_values(array_filter(array_column($menus, 'link')));
+
+				if (!empty($links))
+				{
+					// Only the pages of the heading are sortable, the submission page stays where it is
+					$query->select('id, link')
+						->from($this->db->quoteName('#__menu'))
+						->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($menutype))
+						->andWhere($this->db->quoteName('parent_id') . ' = ' . (int) $heading->id)
+						->whereIn($this->db->quoteName('link'), $links, ParameterType::STRING);
+					$this->db->setQuery($query);
+					$menuIdsByLink = $this->db->loadAssocList('link', 'id');
+
+					$menuTable = new MenuTable($this->db);
+					foreach ($links as $link)
 					{
-						$query->clear()
-							->update($this->db->quoteName('#__menu'))
-							->set('rgt = ' . $this->db->quote($rgt))
-							->set('lft = ' . $this->db->quote($lft))
-							->where('link = ' . $this->db->quote($menu->link));
-						$this->db->setQuery($query);
-						$this->db->execute();
+						if (empty($menuIdsByLink[$link]))
+						{
+							continue;
+						}
+
+						if (!$menuTable->moveByReference($heading->id, 'last-child', $menuIdsByLink[$link]))
+						{
+							throw new Exception('Cannot move menu ' . $menuIdsByLink[$link] . ' : ' . $menuTable->getError());
+						}
 					}
 				}
 
-				$query->clear()
-					->update($this->db->quoteName('#__menu'))
-					->set('lft = ' . $this->db->quote(1))
-					->set('rgt = ' . $this->db->quote($rgt - 1))
-					->where('menutype = ' . $this->db->quote('menu-profile' . $profile))
-					->andWhere($this->db->quoteName('type') . ' = ' . $this->db->quote('heading'));
-				$this->db->setQuery($query);
+				$updated = true;
 
-				$updated = $this->db->execute();
+				$hCache = new EmundusHelperCache('com_emundus.menus');
+				$hCache->clean();
 			}
 			catch (Exception $e)
 			{
-				Log::add('component/com_emundus/models/formbuilder | Error at reorder the menu with link : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/formbuilder | Error at reorder the menus of profile ' . $profile . ' : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
