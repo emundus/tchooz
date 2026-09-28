@@ -288,6 +288,47 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 		$this->clearFixtures();
 	}
 
+	public function testGetChoicesByFnumsWithEmptyFnumsReturnsEmptyArray()
+	{
+		$this->assertSame([], $this->model->getChoicesByFnums([]));
+	}
+
+	public function testGetChoicesByFnumsGroupsChoicesByFnumInOrder()
+	{
+		$this->loadFixtures();
+
+		$user        = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['applicant']);
+		$otherFnum   = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$emptyFnum   = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+
+		$firstChoice  = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0], $this->campaignsFixtures[0]->getId());
+		$secondChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[1], $this->campaignsFixtures[1]->getId(), 0, ChoicesStateEnum::ACCEPTED);
+		$otherChoice  = new ApplicationChoicesEntity($otherFnum, $user, $this->campaignsFixtures[1], $this->campaignsFixtures[1]->getId());
+		// Rules skipped: the fixture has no choices step, so the maximum falls back to one choice per file.
+		$this->model->flush($firstChoice, false);
+		$this->model->flush($secondChoice, false);
+		$this->model->flush($otherChoice, false);
+
+		$choicesByFnum = $this->model->getChoicesByFnums([$this->dataset['fnum'], $otherFnum, $emptyFnum]);
+
+		$this->assertEqualsCanonicalizing([$this->dataset['fnum'], $otherFnum], array_keys($choicesByFnum), 'Only fnums having choices are returned');
+		$this->assertCount(2, $choicesByFnum[$this->dataset['fnum']]);
+		$this->assertCount(1, $choicesByFnum[$otherFnum]);
+
+		$this->assertEquals($firstChoice->getId(), $choicesByFnum[$this->dataset['fnum']][0]->getId(), 'Choices keep their order within a fnum');
+		$this->assertEquals($secondChoice->getId(), $choicesByFnum[$this->dataset['fnum']][1]->getId());
+		$this->assertEquals($otherChoice->getId(), $choicesByFnum[$otherFnum][0]->getId());
+		$this->assertEquals($this->campaignsFixtures[1]->getId(), $choicesByFnum[$otherFnum][0]->getCampaign()->getId(), 'Campaign relation is loaded');
+
+		$accepted = $this->model->getChoicesByFnums([$this->dataset['fnum'], $otherFnum], [], ChoicesStateEnum::ACCEPTED);
+		$this->assertSame([$this->dataset['fnum']], array_keys($accepted));
+		$this->assertEquals($secondChoice->getId(), $accepted[$this->dataset['fnum']][0]->getId());
+
+		$this->h_dataset->deleteSampleFile($otherFnum);
+		$this->h_dataset->deleteSampleFile($emptyFnum);
+		$this->clearFixtures();
+	}
+
 	// =====================
 	// assertApplicantCanUpdate — la règle affichée par le front, imposée côté serveur
 	// =====================

@@ -17,6 +17,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Enums\Addons\AddonEnum;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
@@ -325,6 +326,7 @@ class EmundusViewEvaluation extends JViewLegacy
 					$m_workflow = new EmundusModelWorkflow();
 
 					$unread_messages   = array();
+					$messengerAuthorizedFnums = EmundusHelperAccess::asAccessActionOnFnums(36, CrudEnum::CREATE->value, Factory::getApplication()->getIdentity()->id, array_column($this->users, 'fnum'));
 					if(!class_exists(JPATH_SITE.'/components/com_emundus/models/messenger.php'))
 					{
 						require_once JPATH_SITE . '/components/com_emundus/models/messenger.php';
@@ -333,7 +335,7 @@ class EmundusViewEvaluation extends JViewLegacy
 					if($m_messenger->checkMessengerState())
 					{
 						$unread_messages[] = $m_files->getUnreadMessages($this->_user->id);
-						$unread_messages   = $h_files->createUnreadMessageList($unread_messages[0]);
+						$unread_messages   = $h_files->createUnreadMessageList($unread_messages[0], $messengerAuthorizedFnums);
 						$keys              = array_keys($unread_messages);
 						natsort($keys);
 					}
