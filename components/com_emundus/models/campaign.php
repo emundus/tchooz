@@ -253,18 +253,7 @@ class EmundusModelCampaign extends ListModel
 			$allowed_campaigns = [];
 		}
 
-		if (!empty($allowed_campaigns))
-		{
-			foreach ($allowed_campaigns as $cid => $campaign)
-			{
-				if ($this->isLimitObtained($cid))
-				{
-					unset($allowed_campaigns[$cid]);
-				}
-			}
-		}
-
-		return $allowed_campaigns;
+		return array_values(array_filter($allowed_campaigns, fn($campaign_id) => !$this->isLimitObtained($campaign_id)));
 	}
 
 	/**
