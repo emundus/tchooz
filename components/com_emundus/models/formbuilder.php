@@ -2630,46 +2630,46 @@ class EmundusModelFormbuilder extends ListModel
 			//
 
 			// Manage translations for helptext (rollover)
-			if (!empty($element['params']['rollover']) && is_array($element['params']['rollover']))
+			if (!empty($element['params']['rollover']))
 			{
-				// Sanitize override to avoid XSS
-				foreach ($element['params']['rollover'] as $lang => $value)
+				if (!class_exists('HtmlSanitizerSingleton'))
 				{
-					if (!class_exists('HtmlSanitizerSingleton'))
-					{
-						require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
-					}
-					$htmlSanitizer                        = HtmlSanitizerSingleton::getInstance();
-					$element['params']['rollover'][$lang] = $htmlSanitizer->sanitize($value);
+					require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+				}
+				$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
+
+				// The frontend sends the help text as a plain string for the current language.
+				// Wrap it so LanguageFactory::translate seeds an override for every language (no orphans).
+				$rolloverValues = is_array($element['params']['rollover'])
+					? $element['params']['rollover']
+					: [$lang => $element['params']['rollover']];
+
+				foreach ($rolloverValues as $rolloverLang => $rolloverValue)
+				{
+					// Sanitize override to avoid XSS
+					$rolloverValues[$rolloverLang] = $htmlSanitizer->sanitizeNoHtml($rolloverValue);
 				}
 
-
-				$existing_rollover_translation = 0;
+				// Reuse the existing language tag if there is one, otherwise create a new tag
+				$rolloverKey = 'ELEMENT_HELP_' . $dbElement->group_id . '_' . $element['id'];
 				if (!empty($element['rollover_tag']))
 				{
-					$query->clear()
-						->select('id')
-						->from($this->db->quoteName('#__emundus_setup_languages'))
-						->where($this->db->quoteName('reference_id') . ' = ' . $element['id'])
-						->where($this->db->quoteName('reference_table') . ' = ' . $this->db->quote('fabrik_elements'))
-						->where($this->db->quoteName('reference_field') . ' = ' . $this->db->quote('rollover'))
-						->where($this->db->quoteName('tag') . ' = ' . $this->db->quote($element['rollover_tag']));
-					$this->db->setQuery($query);
-					$existing_translation = $this->db->loadResult();
+					// The tag comes from the client payload, only reuse it if it really belongs to this element
+					$translations = $languageRepository->get([
+						'tag' => $element['rollover_tag'],
+						'reference_table' => 'fabrik_elements',
+						'reference_id' => $element['id'],
+						'reference_field' => 'rollover'
+					]);
+					if (!empty($translations))
+					{
+						$rolloverKey = $element['rollover_tag'];
+					}
 				}
 
-				if (empty($existing_translation))
-				{
-					$element['rollover_tag'] = 'ELEMENT_HELP_' . $element['group_id'] . '_' . $element['id'];
+				LanguageFactory::translate($rolloverKey, $rolloverValues, 'fabrik_elements', $element['id'], 'rollover', $user);
 
-					LanguageFactory::translate($element['rollover_tag'], $element['params']['rollover'], 'fabrik_elements', $element['id'], 'rollover', $user);
-				}
-				else
-				{
-					LanguageFactory::translate($element['rollover_tag'], $element['params']['rollover'], 'fabrik_elements', $element['id'], 'rollover', $user);
-				}
-
-				$element['params']['rollover'] = $element['rollover_tag'];
+				$element['params']['rollover'] = $rolloverKey;
 			}
 			//
 
