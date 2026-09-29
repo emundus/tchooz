@@ -10,12 +10,18 @@
 namespace Unit\Component\Emundus\Class\Services\ApplicationFile;
 
 use DateTime;
+use EmundusModelApplication;
 use Joomla\CMS\User\User;
 use PHPUnit\Framework\TestCase;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
+use Tchooz\Entities\Campaigns\CampaignEntity;
+use Tchooz\Entities\Programs\ProgramEntity;
 use Tchooz\Entities\Comments\CommentEntity;
+use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Enums\Comments\CommentTargetTypeEnum;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Comments\CommentRepository;
+use Tchooz\Repositories\Groups\GroupRepository;
 use Tchooz\Services\ApplicationFile\ApplicationChoicesService;
 
 /**
@@ -26,6 +32,13 @@ use Tchooz\Services\ApplicationFile\ApplicationChoicesService;
  */
 class ApplicationChoicesServiceTest extends TestCase
 {
+	private const ALL_RIGHTS_GROUP = 1;
+
+	public static function setUpBeforeClass(): void
+	{
+		require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+	}
+
 	// -------------------------------------------------------------------------
 	// addStateComment
 	// -------------------------------------------------------------------------
@@ -216,8 +229,173 @@ class ApplicationChoicesServiceTest extends TestCase
 	}
 
 	// -------------------------------------------------------------------------
+	// confirmChoice
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @covers \Tchooz\Services\ApplicationFile\ApplicationChoicesService::confirmChoice
+	 * @return void
+	 */
+	public function testConfirmChoiceConfirmsTheChoiceWithTheOutputStatus(): void
+	{
+		$confirmed = $this->realChoice(1, 'PROG1');
+
+		$repository = $this->createMock(ApplicationChoicesRepository::class);
+		$repository->method('getChoicesByFnum')->willReturn([$confirmed]);
+		$repository->expects($this->once())->method('flush')->with($confirmed, false, 5)->willReturn(true);
+
+		$service = $this->confirmService($repository, [], $this->createMock(EmundusModelApplication::class));
+		$service->confirmChoice($confirmed, 42, 5);
+
+		$this->assertSame(ChoicesStateEnum::CONFIRMED, $confirmed->getState(), 'The choice is confirmed');
+	}
+
+	/**
+	 * @covers \Tchooz\Services\ApplicationFile\ApplicationChoicesService::confirmChoice
+	 * @return void
+	 */
+	public function testConfirmChoiceRejectsTheOtherChoices(): void
+	{
+		$confirmed = $this->realChoice(1, 'PROG1');
+		$other     = $this->realChoice(2, 'PROG2', ChoicesStateEnum::ACCEPTED);
+
+		$repository = $this->createMock(ApplicationChoicesRepository::class);
+		$repository->method('getChoicesByFnum')->willReturn([$confirmed, $other]);
+		$repository->expects($this->exactly(2))->method('flush')->willReturn(true);
+
+		$service = $this->confirmService($repository, [], $this->createMock(EmundusModelApplication::class));
+		$service->confirmChoice($confirmed, 42);
+
+		$this->assertSame(ChoicesStateEnum::REJECTED, $other->getState(), 'The other choices are rejected');
+		$this->assertSame(ChoicesStateEnum::CONFIRMED, $confirmed->getState(), 'The confirmed choice is not rejected while looping on the file choices');
+	}
+
+	/**
+	 * @covers \Tchooz\Services\ApplicationFile\ApplicationChoicesService::confirmChoice
+	 * @return void
+	 */
+	public function testConfirmChoiceDoesNotRewriteAnAlreadyRejectedChoice(): void
+	{
+		$confirmed = $this->realChoice(1, 'PROG1');
+		$rejected  = $this->realChoice(2, 'PROG2', ChoicesStateEnum::REJECTED);
+
+		$repository = $this->createMock(ApplicationChoicesRepository::class);
+		$repository->method('getChoicesByFnum')->willReturn([$confirmed, $rejected]);
+		$repository->expects($this->once())->method('flush')->with($confirmed)->willReturn(true);
+
+		$service = $this->confirmService($repository, [], $this->createMock(EmundusModelApplication::class));
+		$service->confirmChoice($confirmed, 42);
+	}
+
+	/**
+	 * @covers \Tchooz\Services\ApplicationFile\ApplicationChoicesService::confirmChoice
+	 * @return void
+	 */
+	public function testConfirmChoiceRemovesOnlyTheGroupsSpecificToTheRejectedPrograms(): void
+	{
+		$confirmed = $this->realChoice(1, 'PROG1');
+		$other     = $this->realChoice(2, 'PROG2', ChoicesStateEnum::ACCEPTED);
+
+		$repository = $this->createMock(ApplicationChoicesRepository::class);
+		$repository->method('getChoicesByFnum')->willReturn([$confirmed, $other]);
+		$repository->method('flush')->willReturn(true);
+
+		$applicationModel = $this->createMock(EmundusModelApplication::class);
+		$applicationModel->expects($this->once())
+			->method('deleteGroupsAccess')
+			->with('fnum-test', [12], 42)
+			->willReturn(true);
+
+		$service = $this->confirmService($repository, [
+			'PROG1' => [10, 11],
+			'PROG2' => [11, 12, self::ALL_RIGHTS_GROUP],
+		], $applicationModel);
+		$service->confirmChoice($confirmed, 42);
+	}
+
+	/**
+	 * @covers \Tchooz\Services\ApplicationFile\ApplicationChoicesService::confirmChoice
+	 * @return void
+	 */
+	public function testConfirmChoiceRemovesTheGroupsOfAnAlreadyRejectedChoiceToo(): void
+	{
+		$confirmed = $this->realChoice(1, 'PROG1');
+		$rejected  = $this->realChoice(2, 'PROG2', ChoicesStateEnum::REJECTED);
+
+		$repository = $this->createMock(ApplicationChoicesRepository::class);
+		$repository->method('getChoicesByFnum')->willReturn([$confirmed, $rejected]);
+		$repository->method('flush')->willReturn(true);
+
+		$applicationModel = $this->createMock(EmundusModelApplication::class);
+		$applicationModel->expects($this->once())
+			->method('deleteGroupsAccess')
+			->with('fnum-test', [20], 42)
+			->willReturn(true);
+
+		$service = $this->confirmService($repository, ['PROG1' => [10], 'PROG2' => [20]], $applicationModel);
+		$service->confirmChoice($confirmed, 42);
+	}
+
+	/**
+	 * @covers \Tchooz\Services\ApplicationFile\ApplicationChoicesService::confirmChoice
+	 * @return void
+	 */
+	public function testConfirmChoiceWithoutGroupSpecificToTheRejectedProgramsKeepsEveryAccess(): void
+	{
+		$confirmed = $this->realChoice(1, 'PROG1');
+		$other     = $this->realChoice(2, 'PROG2', ChoicesStateEnum::ACCEPTED);
+
+		$repository = $this->createMock(ApplicationChoicesRepository::class);
+		$repository->method('getChoicesByFnum')->willReturn([$confirmed, $other]);
+		$repository->method('flush')->willReturn(true);
+
+		$applicationModel = $this->createMock(EmundusModelApplication::class);
+		$applicationModel->expects($this->never())->method('deleteGroupsAccess');
+
+		$service = $this->confirmService($repository, [
+			'PROG1' => [10, 11],
+			'PROG2' => [11, self::ALL_RIGHTS_GROUP],
+		], $applicationModel);
+		$service->confirmChoice($confirmed, 42);
+	}
+
+	// -------------------------------------------------------------------------
 	// Fixtures
 	// -------------------------------------------------------------------------
+
+	/**
+	 * @param   array<string, array<int>>  $groupsByProgram
+	 */
+	private function confirmService(ApplicationChoicesRepository $repository, array $groupsByProgram, EmundusModelApplication $applicationModel): ApplicationChoicesService
+	{
+		$groupRepository = $this->createMock(GroupRepository::class);
+		$groupRepository->method('get')->willReturnCallback(
+			function (array $filters) use ($groupsByProgram) {
+				$code = $filters[1]->getValue();
+
+				return array_map(fn(int $id) => (object) ['id' => (string) $id], $groupsByProgram[$code] ?? []);
+			}
+		);
+
+		return new ApplicationChoicesService(
+			$this->createMock(CommentRepository::class),
+			$repository,
+			$groupRepository,
+			$applicationModel,
+			self::ALL_RIGHTS_GROUP
+		);
+	}
+
+	private function realChoice(int $id, string $programCode, ChoicesStateEnum $state = ChoicesStateEnum::DRAFT): ApplicationChoicesEntity
+	{
+		$program = $this->createMock(ProgramEntity::class);
+		$program->method('getCode')->willReturn($programCode);
+
+		$campaign = $this->createMock(CampaignEntity::class);
+		$campaign->method('getProgram')->willReturn($program);
+
+		return new ApplicationChoicesEntity('fnum-test', $this->createMock(User::class), $campaign, $id * 100, $id, $state, $id);
+	}
 
 	private function choice(int $id = 7, string $fnum = 'fnum-test'): ApplicationChoicesEntity
 	{

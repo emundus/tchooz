@@ -48,6 +48,26 @@ class Export
 	 */
 	protected ?string $valueSeparator = null;
 
+	/**
+	 * Separator the rows of a multiple table (several rows per file, see isMultipleTable()) are
+	 * concatenated with, or null for the readable one. The Excel pivot needs it distinct from
+	 * $valueSeparator: a repeat group of such a table holds several repetitions per row, and each
+	 * repetition has to stay with the row it belongs to.
+	 */
+	protected ?string $multipleSeparator = null;
+
+	public const MULTIPLE_SEPARATOR_MARKER = '[MULTIPLE]';
+
+	private const EVALUATION_TABLE_PREFIX = 'jos_emundus_evaluations_';
+
+	/**
+	 * Whether a form table holds several rows per file. Evaluation tables are the only ones today.
+	 */
+	public static function isMultipleTable(string $tableName): bool
+	{
+		return str_starts_with($tableName, self::EVALUATION_TABLE_PREFIX);
+	}
+
 	const CAMPAIGN_ELEMENTS = [
 		1 => [
 			'id'    => HeadersEnum::CAMPAIGN_LABEL->value,
@@ -156,6 +176,11 @@ class Export
 	protected function setValueSeparator(string $separator): void
 	{
 		$this->valueSeparator = $separator;
+	}
+
+	protected function setMultipleSeparator(string $separator): void
+	{
+		$this->multipleSeparator = $separator;
 	}
 
 	/**
@@ -342,7 +367,7 @@ class Export
 				$result['db_table_name'] = $element->getDbTableName();
 
 
-				if (!str_starts_with($element->getDbTableName(), 'jos_emundus_evaluations_'))
+				if (!self::isMultipleTable($element->getDbTableName()))
 				{
 					$elementValue = $this->helperFabrik->getFabrikElementValues($elementSerialized, array_map(function ($file) {
 						return $file->getFnum();
@@ -353,12 +378,12 @@ class Export
 					$result['is_evaluation'] = true;
 
 					$query->clear()
-						->select($db->quoteName('fnum') . ', GROUP_CONCAT(' . $db->quoteName('id') . ') as id')
+						// Same order as the evaluator column (ExcelService): the pivot pairs them by position.
+						->select($db->quoteName('fnum') . ', GROUP_CONCAT(' . $db->quoteName('id') . ' ORDER BY ' . $db->quoteName('evaluator') . ' ASC, ' . $db->quoteName('id') . ' ASC) as id')
 						->from($db->quoteName($element->getDbTableName()))
 						->where($db->quoteName('fnum') . ' IN (' . implode(',', array_map([$db, 'quote'], array_map(function ($file) {
 							return $file->getFnum();
 						}, $files))) . ')')
-						->order('evaluator ASC')
 						->group('fnum');
 					$db->setQuery($query);
 					$rowIdsByFnum = $db->loadObjectList('fnum');
@@ -369,18 +394,16 @@ class Export
 					if ($result['is_evaluation']) {
 						$rowIds = !empty($rowIdsByFnum[$file->getFnum()]) ? explode(',', $rowIdsByFnum[$file->getFnum()]->id) : [];
 
-						$evaluationValues = [];
+						$tableRowValues = [];
 						foreach ($rowIds as $rowId)
 						{
 							$elementValuePart = $this->helperFabrik->getFabrikElementValue($elementSerialized, $file->getFnum(), $rowId, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations, $this->valueSeparator);
-							if ($elementValuePart && !empty($elementValuePart[$element->getId()]) && !empty($elementValuePart[$element->getId()][$file->getFnum()]))
-							{
-								$evaluationValues[$rowId] = $elementValuePart[$element->getId()][$file->getFnum()]['val'];
-							}
+							// An empty row keeps its slot, otherwise the next ones shift onto the wrong evaluator.
+							$tableRowValues[$rowId] = $elementValuePart[$element->getId()][$file->getFnum()]['val'] ?? '';
 						}
 
 						$elementValue[$element->getId()][$file->getFnum()]['raw'] = true;
-						$elementValue[$element->getId()][$file->getFnum()]['val'] = implode(',', $evaluationValues);
+						$elementValue[$element->getId()][$file->getFnum()]['val'] = implode('', $tableRowValues) === '' ? '' : implode($this->multipleSeparator ?? \EmundusHelperFabrik::VALUE_SEPARATOR, $tableRowValues);
 					} else if (empty($elementValue) || empty($elementValue[$element->getId()]))
 					{
 						$elementValue = $this->helperFabrik->getFabrikElementValue($elementSerialized, $file->getFnum(), 0, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations, $this->valueSeparator);
@@ -441,31 +464,37 @@ class Export
 						}
 						elseif (in_array($element->getPlugin(), [ElementPluginEnum::CHECKBOX, ElementPluginEnum::DROPDOWN, ElementPluginEnum::RADIO]))
 						{
-							if ($element->getGroupParamsArray()['repeat_group_button'] == 1 || $element->getPlugin() == ElementPluginEnum::CHECKBOX)
+							// Up to three levels of concatenation: the rows of a multiple table, the
+							// repetitions inside one row, the values selected inside one repetition
+							// (','). Translating each value keeps every level intact.
+							$multipleSeparator = $this->multipleSeparator ?? \EmundusHelperFabrik::VALUE_SEPARATOR;
+							$tableRows         = self::isMultipleTable($element->getDbTableName()) ? explode($multipleSeparator, $result['data'][$file->getFnum()]) : [$result['data'][$file->getFnum()]];
+							foreach ($tableRows as $tableRowKey => $tableRow)
 							{
-								// Two levels of concatenation: the repetitions are joined with the
-								// separator this export asked for, the values selected inside one
-								// repetition with ','. Translating each one keeps both levels intact.
-								$separator   = $this->valueSeparator ?? \EmundusHelperFabrik::VALUE_SEPARATOR;
-								$repetitions = explode($separator, $result['data'][$file->getFnum()]);
-								foreach ($repetitions as $key => $repetition)
+								if ($element->getGroupParamsArray()['repeat_group_button'] == 1 || $element->getPlugin() == ElementPluginEnum::CHECKBOX)
 								{
-									$transformedValues = [];
-									foreach (explode(',', $repetition) as $value)
+									$separator   = $this->valueSeparator ?? \EmundusHelperFabrik::VALUE_SEPARATOR;
+									$repetitions = explode($separator, $tableRow);
+									foreach ($repetitions as $key => $repetition)
 									{
-										$transformedValues[] = Text::_(trim($value));
+										$transformedValues = [];
+										foreach (explode(',', $repetition) as $value)
+										{
+											$transformedValues[] = Text::_(trim($value));
+										}
+
+										$repetitions[$key] = implode(', ', $transformedValues);
 									}
 
-									$repetitions[$key] = implode(', ', $transformedValues);
+									$tableRows[$tableRowKey] = implode($separator, $repetitions);
 								}
+								else
+								{
+									$tableRows[$tableRowKey] = Text::_($tableRow);
+								}
+							}
 
-								$result['data'][$file->getFnum()] = implode($separator, $repetitions);
-							}
-							else
-							{
-								// Translate value
-								$result['data'][$file->getFnum()] = Text::_($result['data'][$file->getFnum()]);
-							}
+							$result['data'][$file->getFnum()] = implode($multipleSeparator, $tableRows);
 						}
 					}
 

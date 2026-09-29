@@ -1,5 +1,6 @@
 <?php
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
 
 $default_tab = 'history';
 $jinput = JFactory::getApplication()->input;
@@ -22,9 +23,8 @@ $icons = [
         <div class="tw-py-4 tw-px-5 tw-border-b tw-flex tw-gap-2 <?php if ($key == 0) : ?>tw-border-main-500<?php else : ?>tw-border-neutral-400<?php endif; ?> tw-cursor-pointer"
              id="tab_<?php echo $tab; ?>"
              onclick="selectTab('<?php echo $tab; ?>')">
-            <span class="material-symbols-outlined -tw-mb-2 tw-text-neutral-900">
-                <?php echo $icons[$tab] ?? 'help'; ?>
-            </span>
+
+            <?php echo LayoutHelper::render('emundus.icon', ['name' => $icons[$tab] ?? 'help', 'class' => '-tw-mb-2 tw-text-neutral-900']); ?>
             <span class="em-font-size-14"><?php echo Text::_('COM_EMUNDUS_APPLICATION_HISTORY_TAB_' . strtoupper($tab)); ?></span>
         </div>
     <?php endforeach; ?>

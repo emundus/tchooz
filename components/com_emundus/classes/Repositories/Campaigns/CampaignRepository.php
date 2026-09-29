@@ -160,7 +160,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 				// Apply filters if needed
 				if (!empty($search))
 				{
-					$conditions = $this->buildSearchConditions(['label', 'description', 'short_description'], $search);
+					$conditions = $this->buildSearchConditions(['label', 'description', 'short_description', 'esp.label'], $search);
 
 					if (!empty($conditions))
 					{
@@ -251,7 +251,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 					$query->where($this->db->quoteName($this->alias . '.training') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $codes)) . ')');
 				}
 
-				if ($order_by === 'esp.label')
+				if ($order_by === 'esp.label' || !empty($search))
 				{
 					$query->leftJoin(
 						$this->db->quoteName('#__emundus_setup_programmes', 'esp') .

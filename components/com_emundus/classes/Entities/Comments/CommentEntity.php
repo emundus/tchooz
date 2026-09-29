@@ -225,6 +225,7 @@ class CommentEntity
 			'date'         => $this->getCreatedAt()->format('Y-m-d H:i:s'),
 			'comment_body' => $this->getContent(),
 			'ccid'         => $this->getCcid(),
+			'fnum'         => $this->getFnum() ?: null,
 			'parent_id'    => $this->getParentId(),
 			'opened'       => $this->getOpened(),
 			'updated'      => $this->getUpdatedAt()?->format('Y-m-d H:i:s'),

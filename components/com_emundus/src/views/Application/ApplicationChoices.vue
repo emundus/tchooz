@@ -223,6 +223,12 @@ export default {
 			).then((result) => {
 				if (result.isConfirmed) {
 					applicationService.sendChoicesStep().then((response) => {
+						if (!response.status) {
+							this.loading = false;
+							this.alertError('COM_EMUNDUS_FORM_BUILDER_ERROR', response.error || response.message);
+							return;
+						}
+
 						this.alertSuccess(
 							'COM_EMUNDUS_APPLICATION_CHOICES_SEND_SUCCESS_TITLE',
 							'COM_EMUNDUS_APPLICATION_CHOICES_SEND_SUCCESS_TEXT',
@@ -249,6 +255,12 @@ export default {
 				if (result.isConfirmed) {
 					this.loading = true;
 					applicationService.confirmChoice(choice.id, fnum).then((response) => {
+						if (!response.status) {
+							this.loading = false;
+							this.alertError('COM_EMUNDUS_FORM_BUILDER_ERROR', response.error || response.message);
+							return;
+						}
+
 						this.alertSuccess(
 							'COM_EMUNDUS_APPLICATION_CHOICES_CONFIRM_CHOICE_SUCCESS_TITLE',
 							'COM_EMUNDUS_APPLICATION_CHOICES_CONFIRM_CHOICE_SUCCESS_TEXT',

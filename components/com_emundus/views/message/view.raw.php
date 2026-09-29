@@ -151,8 +151,17 @@ class EmundusViewMessage extends JViewLegacy
 				$fnum_array = [];
 
 				$tables = array('u.name', 'u.username', 'u.email', 'u.id', 'eu.is_anonym');
+
+				$fnumsToCheck = array_column($fnums, 'fnum');
+				$authorizedFnums = EmundusHelperAccess::asAccessActionOnFnums(9, 'c', $current_user->id, $fnumsToCheck);
+
 				foreach ($fnums as $fnum) {
-					if (EmundusHelperAccess::asAccessAction(9, 'c', $current_user->id, $fnum->fnum) && !empty($fnum->sid)) {
+					if(empty($fnum->sid))
+					{
+						$fnum->sid = EmundusHelperFiles::getApplicantIdFromFnum($fnum->fnum);
+					}
+
+					if (in_array($fnum->fnum, $authorizedFnums) && !empty($fnum->sid)) {
 						if (!isset($fnum->anonymous))
 						{
 							$fnum->anonymous = EmundusHelperFiles::isFnumAnonymized($fnum->fnum, $current_user->id);

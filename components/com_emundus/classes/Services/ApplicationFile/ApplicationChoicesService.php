@@ -10,14 +10,21 @@
 namespace Tchooz\Services\ApplicationFile;
 
 use DateTime;
+use EmundusModelApplication;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Entities\Comments\CommentEntity;
 use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
+use Tchooz\Enums\Automation\ConditionOperatorEnum;
 use Tchooz\Enums\Comments\CommentTargetTypeEnum;
 use Tchooz\Enums\CrudEnum;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\ColumnFilter;
 use Tchooz\Repositories\Comments\CommentRepository;
+use Tchooz\Repositories\Groups\GroupRepository;
 
 /**
  * Business operations around the choices of an application file.
@@ -25,7 +32,11 @@ use Tchooz\Repositories\Comments\CommentRepository;
 class ApplicationChoicesService
 {
 	public function __construct(
-		private readonly CommentRepository $commentRepository = new CommentRepository()
+		private readonly CommentRepository $commentRepository = new CommentRepository(),
+		private ?ApplicationChoicesRepository $choicesRepository = null,
+		private ?GroupRepository $groupRepository = null,
+		private ?EmundusModelApplication $applicationModel = null,
+		private ?int $allRightsGroupId = null
 	)
 	{
 		Log::addLogger(['text_file' => 'com_emundus.service.application_choices.php'], Log::ALL, ['com_emundus.service.application_choices']);
@@ -163,5 +174,97 @@ class ApplicationChoicesService
 		}
 
 		return $commentsByChoice;
+	}
+
+	/**
+	 * Confirms a choice and rejects the other choices of the file. The groups of the rejected programs lose
+	 * their access to the file, except the ones also tied to the confirmed program and the all rights group.
+	 *
+	 * @param   ApplicationChoicesEntity  $choice
+	 * @param   int                       $userId        the user confirming, logged on the access removals
+	 * @param   int|null                  $outputStatus  status given to the file once the choice is confirmed
+	 *
+	 * @return void
+	 *
+	 * @throws \Exception when a choice cannot be persisted
+	 */
+	public function confirmChoice(ApplicationChoicesEntity $choice, int $userId, ?int $outputStatus = null): void
+	{
+		$fnum = $choice->getFnum();
+
+		$choice->setState(ChoicesStateEnum::CONFIRMED);
+		$this->getChoicesRepository()->flush($choice, false, $outputStatus);
+
+		$keptGroups = [...$this->getProgramGroupIds($choice), $this->getAllRightsGroupId()];
+
+		foreach ($this->getChoicesRepository()->getChoicesByFnum($fnum) as $otherChoice)
+		{
+			$rejectedGroups = array_values(array_diff($this->getProgramGroupIds($otherChoice), $keptGroups));
+
+			if (!empty($rejectedGroups) && !$this->getApplicationModel()->deleteGroupsAccess($fnum, $rejectedGroups, $userId))
+			{
+				Log::add('Failed to remove the access of groups ' . implode(',', $rejectedGroups) . ' to file ' . $fnum . ' after confirming choice ' . $choice->getId(), Log::WARNING, 'com_emundus.service.application_choices');
+			}
+
+			if ($otherChoice->getId() !== $choice->getId() && $otherChoice->getState() !== ChoicesStateEnum::REJECTED)
+			{
+				$otherChoice->setState(ChoicesStateEnum::REJECTED);
+				$this->getChoicesRepository()->flush($otherChoice, false);
+			}
+		}
+	}
+
+	/**
+	 * @param   ApplicationChoicesEntity  $choice
+	 *
+	 * @return array<int>
+	 */
+	private function getProgramGroupIds(ApplicationChoicesEntity $choice): array
+	{
+		$code = $choice->getCampaign()?->getProgram()?->getCode();
+		if (empty($code))
+		{
+			return [];
+		}
+
+		$groups = $this->getGroupRepository()->get(
+			filters: [
+				new ColumnFilter('published', ConditionOperatorEnum::EQUALS, 1),
+				new ColumnFilter('esgrc.course', ConditionOperatorEnum::EQUALS, $code),
+			],
+			select: 'id',
+			buildEntity: false
+		);
+
+		return array_map(fn(object $group) => (int) $group->id, $groups);
+	}
+
+	private function getChoicesRepository(): ApplicationChoicesRepository
+	{
+		return $this->choicesRepository ??= new ApplicationChoicesRepository();
+	}
+
+	private function getGroupRepository(): GroupRepository
+	{
+		return $this->groupRepository ??= new GroupRepository();
+	}
+
+	private function getApplicationModel(): EmundusModelApplication
+	{
+		if (empty($this->applicationModel))
+		{
+			if (!class_exists('EmundusModelApplication'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+			}
+			$this->applicationModel = new EmundusModelApplication();
+		}
+
+		return $this->applicationModel;
+	}
+
+	private function getAllRightsGroupId(): int
+	{
+		return $this->allRightsGroupId ??= (int) ComponentHelper::getParams('com_emundus')->get('all_rights_group', 1);
 	}
 }

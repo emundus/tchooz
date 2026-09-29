@@ -688,7 +688,7 @@ function togglePasswordVisibility() {
 
     passwordInput.parentNode.insertBefore(spanShowPassword, passwordInput.nextSibling);
 
-    spanShowPassword.addEventListener('click', function() {
+    function togglePassword() {
         if (spanShowPassword.innerText === "visibility_off") {
             spanShowPassword.innerText = "visibility";
             passwordInput.type = "password";
@@ -699,6 +699,15 @@ function togglePasswordVisibility() {
             passwordInput.type = "text";
             spanShowPassword.setAttribute('title', Joomla.Text._('JHIDEPASSWORD'));
             spanShowPassword.setAttribute('aria-label', Joomla.Text._('JHIDEPASSWORD'));
+        }
+    }
+
+    spanShowPassword.addEventListener('click', togglePassword);
+
+    spanShowPassword.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+            event.preventDefault();
+            togglePassword();
         }
     });
 }

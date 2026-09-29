@@ -29,6 +29,11 @@ class ExcelPivotProcessorTest extends TestCase
 	 */
 	private const SEP = '[SEPARATOR]';
 
+	/**
+	 * Separator ExcelService aggregates the rows of a multiple table with (Export::MULTIPLE_SEPARATOR_MARKER).
+	 */
+	private const MULTIPLE_SEP = '[MULTIPLE]';
+
 	private FabrikRepository $fabrikRepository;
 
 	private ExcelPivotProcessor $processor;
@@ -53,7 +58,7 @@ class ExcelPivotProcessorTest extends TestCase
 		$files   = ['abc' => ['header_fnum' => 'abc', 42 => 'v1,v2']];
 		$headers = ['header_fnum' => 'Fnum', 42 => 'Column'];
 
-		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 0, self::SEP);
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 0, self::SEP, self::MULTIPLE_SEP);
 
 		$this->assertSame($files, $out, 'Un targetId <= 0 doit court-circuiter le pivot');
 	}
@@ -64,7 +69,7 @@ class ExcelPivotProcessorTest extends TestCase
 	 */
 	public function testProcessReturnsEmptyWhenNoFiles(): void
 	{
-		$out = $this->processor->process([], ['header_fnum' => 'Fnum'], PivotScopeEnum::ELEMENT, 42, self::SEP);
+		$out = $this->processor->process([], ['header_fnum' => 'Fnum'], PivotScopeEnum::ELEMENT, 42, self::SEP, self::MULTIPLE_SEP);
 
 		$this->assertSame([], $out, 'Un tableau vide de files doit être renvoyé tel quel');
 	}
@@ -87,7 +92,7 @@ class ExcelPivotProcessorTest extends TestCase
 		];
 		$headers = ['header_fnum' => 'Fnum', 42 => 'Values'];
 
-		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP);
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP, self::MULTIPLE_SEP);
 
 		$this->assertCount(3, $out, 'Trois valeurs agrégées doivent produire trois lignes');
 		$this->assertSame('v1', $out['abc'][42], 'La ligne de base doit contenir la 1re valeur');
@@ -114,7 +119,7 @@ class ExcelPivotProcessorTest extends TestCase
 		];
 		$headers = ['header_fnum' => 'Fnum', 42 => 'Pivot', 43 => 'Sibling'];
 
-		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP);
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP, self::MULTIPLE_SEP);
 
 		$this->assertSame('a', $out['abc'][42], 'La ligne de base doit prendre la 1re valeur du pivot');
 		$this->assertSame('x', $out['abc'][43], 'La ligne de base doit prendre la 1re valeur du sibling');
@@ -145,7 +150,8 @@ class ExcelPivotProcessorTest extends TestCase
 			['header_fnum' => 'Fnum', 42 => 'Pivot'],
 			PivotScopeEnum::ELEMENT,
 			42,
-			self::SEP
+			self::SEP,
+			self::MULTIPLE_SEP
 		);
 	}
 
@@ -158,7 +164,7 @@ class ExcelPivotProcessorTest extends TestCase
 		$this->fabrikRepository->method('getElementById')->willReturn(null);
 
 		$files = ['abc' => ['header_fnum' => 'abc']];
-		$out = $this->processor->process($files, ['header_fnum' => 'Fnum'], PivotScopeEnum::ELEMENT, 999, self::SEP);
+		$out = $this->processor->process($files, ['header_fnum' => 'Fnum'], PivotScopeEnum::ELEMENT, 999, self::SEP, self::MULTIPLE_SEP);
 
 		$this->assertSame($files, $out, 'Un elementId inconnu doit laisser les files inchangés');
 	}
@@ -184,7 +190,7 @@ class ExcelPivotProcessorTest extends TestCase
 		];
 		$headers = ['header_fnum' => 'Fnum', 42 => 'Décision', 43 => 'Montant'];
 
-		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP);
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP, self::MULTIPLE_SEP);
 
 		$this->assertCount(1, $out, 'Une seule répétition doit produire une seule ligne');
 		$this->assertSame('600,00 € (EUR)', $out['abc'][43], 'Le montant doit rester entier');
@@ -211,11 +217,61 @@ class ExcelPivotProcessorTest extends TestCase
 		];
 		$headers = ['header_fnum' => 'Fnum', 42 => 'Décision', 43 => 'Montant'];
 
-		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP);
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP, self::MULTIPLE_SEP);
 
 		$this->assertCount(2, $out, 'Deux répétitions doivent produire deux lignes');
 		$this->assertSame('600,00 € (EUR)', $out['abc'][43], 'La 1re ligne garde le 1er montant');
 		$this->assertSame('1 200,50 € (EUR)', $out['abc_1'][43], 'La 2e ligne garde le 2e montant');
+	}
+
+	// -------------------------------------------------------------------------
+	// scope=group — evaluation form
+	// -------------------------------------------------------------------------
+
+	/**
+	 * A repeat group of an evaluation form: each repetition row has to carry the evaluator and the
+	 * other values of the evaluation it belongs to, not the list of every evaluation of the file.
+	 *
+	 * @covers \Tchooz\Services\Export\Excel\ExcelPivotProcessor::process
+	 * @return void
+	 */
+	public function testGroupScopeInEvaluationFormKeepsEachRepetitionWithItsEvaluation(): void
+	{
+		$table   = 'jos_emundus_evaluations_01';
+		$opinion = $this->mockElement(50, 9, null, ElementPluginEnum::TEXTAREA, null, $table);
+		$subject = $this->mockElement(60, 10, ['repeat_group_button' => 1], null, null, $table);
+		$comment = $this->mockElement(61, 10, ['repeat_group_button' => 1], ElementPluginEnum::TEXTAREA, null, $table);
+
+		$elements = [50 => $opinion, 60 => $subject, 61 => $comment];
+		$this->fabrikRepository->method('getElementById')->willReturnCallback(fn(int $id) => $elements[$id] ?? null);
+		$this->fabrikRepository->method('getElementsByGroupId')->with(10)->willReturn([$subject, $comment]);
+
+		$files = [
+			'abc' => [
+				'header_fnum'       => 'abc',
+				'evaluator_' . $table => 'Admin' . self::MULTIPLE_SEP . 'Dev',
+				50                  => 'Réponse, avec des virgules.' . self::MULTIPLE_SEP . 'Ajout par le coordinateur',
+				60                  => 'Math' . self::SEP . 'Français' . self::MULTIPLE_SEP . 'Histoire' . self::SEP . 'Français',
+				61                  => 'Texte avec, des virgules' . self::SEP . 'Caractères farfelus, n\'est ce pas ?' . self::MULTIPLE_SEP . 'Très pertinente' . self::SEP . 'Pas terrible, médiocre',
+			],
+		];
+		$headers = ['header_fnum' => 'Fnum', 'evaluator_' . $table => 'Évaluateur', 50 => 'Avis', 60 => 'Matière', 61 => 'Commentaire'];
+
+		$out = array_values($this->processor->process($files, $headers, PivotScopeEnum::GROUP, 10, self::SEP, self::MULTIPLE_SEP));
+
+		$this->assertCount(4, $out, 'Une ligne par répétition de chaque évaluation');
+		$this->assertSame(['Admin', 'Admin', 'Dev', 'Dev'], array_column($out, 'evaluator_' . $table), 'Chaque répétition garde son évaluateur');
+		$this->assertSame(
+			['Réponse, avec des virgules.', 'Réponse, avec des virgules.', 'Ajout par le coordinateur', 'Ajout par le coordinateur'],
+			array_column($out, 50),
+			'Chaque répétition garde l\'avis de son évaluation'
+		);
+		$this->assertSame(['Math', 'Français', 'Histoire', 'Français'], array_column($out, 60));
+		$this->assertSame(
+			['Texte avec, des virgules', 'Caractères farfelus, n\'est ce pas ?', 'Très pertinente', 'Pas terrible, médiocre'],
+			array_column($out, 61),
+			'Les virgules d\'un commentaire ne le coupent pas'
+		);
 	}
 
 	// -------------------------------------------------------------------------
@@ -240,7 +296,7 @@ class ExcelPivotProcessorTest extends TestCase
 		];
 		$headers = ['header_fnum' => 'Fnum', 42 => 'A', 43 => 'B'];
 
-		$out = $this->processor->process($files, $headers, PivotScopeEnum::GROUP, 10, self::SEP);
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::GROUP, 10, self::SEP, self::MULTIPLE_SEP);
 
 		$this->assertSame('a', $out['abc'][42], 'Ligne de base doit prendre la 1re valeur de 42');
 		$this->assertSame('x', $out['abc'][43], 'Ligne de base doit prendre la 1re valeur de 43');
@@ -257,7 +313,7 @@ class ExcelPivotProcessorTest extends TestCase
 		$this->fabrikRepository->method('getElementsByGroupId')->willReturn([]);
 
 		$files = ['abc' => ['header_fnum' => 'abc']];
-		$out = $this->processor->process($files, ['header_fnum' => 'Fnum'], PivotScopeEnum::GROUP, 99, self::SEP);
+		$out = $this->processor->process($files, ['header_fnum' => 'Fnum'], PivotScopeEnum::GROUP, 99, self::SEP, self::MULTIPLE_SEP);
 
 		$this->assertSame($files, $out, 'Un groupe vide doit laisser les files inchangés');
 	}
@@ -275,7 +331,7 @@ class ExcelPivotProcessorTest extends TestCase
 		$files = ['abc' => ['header_fnum' => 'abc', 42 => 'a,b']];
 		$headers = ['header_fnum' => 'Fnum'];
 
-		$out = $this->processor->process($files, $headers, PivotScopeEnum::GROUP, 10, self::SEP);
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::GROUP, 10, self::SEP, self::MULTIPLE_SEP);
 
 		$this->assertSame($files, $out, 'Aucune colonne du groupe dans les headers → pas d\'expansion');
 	}
@@ -300,7 +356,7 @@ class ExcelPivotProcessorTest extends TestCase
 		];
 		$headers = ['header_fnum' => 'Fnum', 42 => 'Pivot'];
 
-		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP);
+		$out = $this->processor->process($files, $headers, PivotScopeEnum::ELEMENT, 42, self::SEP, self::MULTIPLE_SEP);
 
 		$keys = array_keys($out);
 		$this->assertSame(['abc', 'abc_1', 'def', 'def_1'], $keys, 'Les lignes issues d\'un même fnum doivent être contigües');
@@ -331,13 +387,15 @@ class ExcelPivotProcessorTest extends TestCase
 	 * @param   array<string,mixed>|null  $groupParams   Populates the stdClass returned by getGroupParams()
 	 * @param   ElementPluginEnum|null    $plugin        Defaults to FIELD (non-pivotable)
 	 * @param   object|null               $elementParams Overrides the stdClass returned by getParams()
+	 * @param   string                    $dbTableName   Returned by getDbTableName()
 	 */
 	private function mockElement(
 		int $id,
 		int $groupId,
 		?array $groupParams,
 		?ElementPluginEnum $plugin,
-		?object $elementParams = null
+		?object $elementParams = null,
+		string $dbTableName = ''
 	) {
 		$element = $this->createMock(FabrikElementEntity::class);
 		$element->method('getId')->willReturn($id);
@@ -354,6 +412,7 @@ class ExcelPivotProcessorTest extends TestCase
 		$element->method('getGroupParams')->willReturn($groupParamsObject);
 		$element->method('getPlugin')->willReturn($plugin ?? ElementPluginEnum::FIELD);
 		$element->method('getParams')->willReturn($elementParams ?? new stdClass());
+		$element->method('getDbTableName')->willReturn($dbTableName);
 
 		return $element;
 	}

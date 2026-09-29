@@ -218,6 +218,11 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 			$query->where($this->db->qn('type') . ' = ' . $this->db->q($filters['type']));
 		}
 
+		if (in_array('tag', array_keys($filters)))
+		{
+			$query->where($this->db->qn('tag') . ' = ' . $this->db->q($filters['tag']));
+		}
+
 		if (in_array('reference_table', array_keys($filters)))
 		{
 			$query->where($this->db->qn('reference_table') . ' = ' . $this->db->q($filters['reference_table']));
@@ -234,6 +239,11 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 			{
 				$query->where($this->db->qn('reference_id') . ' = ' . $filters['reference_id']);
 			}
+		}
+
+		if (in_array('reference_field', array_keys($filters)))
+		{
+			$query->where($this->db->qn('reference_field') . ' = ' . $this->db->q($filters['reference_field']));
 		}
 
 		if (in_array('reference_fields', array_keys($filters)))

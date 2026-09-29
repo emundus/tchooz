@@ -709,6 +709,143 @@ class ApplicationModelTest extends UnitTestCase
 	}
 
 	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::deleteGroupsAccess
+	 */
+	public function testDeleteGroupsAccessWhenNoGroupGivenThenReturnsFalseAndKeepsAccess()
+	{
+		$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$this->shareFileToGroups($fnum, [2, 3]);
+
+		$deleted = $this->model->deleteGroupsAccess($fnum, [], $this->dataset['coordinator']);
+
+		$this->assertFalse($deleted, 'deleteGroupsAccess should return false when no group is given');
+		$this->assertSame([2, 3], $this->getFileGroups($fnum), 'deleteGroupsAccess should not remove any access when no group is given');
+
+		$this->h_dataset->deleteSampleFile($fnum);
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::deleteGroupsAccess
+	 */
+	public function testDeleteGroupsAccessWhenNoFnumGivenThenReturnsFalse()
+	{
+		$this->assertFalse($this->model->deleteGroupsAccess('', [2], $this->dataset['coordinator']), 'deleteGroupsAccess should return false when no fnum is given');
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::deleteGroupsAccess
+	 */
+	public function testDeleteGroupsAccessWhenSeveralGroupsGivenThenAllOfThemLoseAccess()
+	{
+		$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$this->shareFileToGroups($fnum, [2, 3]);
+
+		$deleted = $this->model->deleteGroupsAccess($fnum, [2, 3], $this->dataset['coordinator']);
+
+		$this->assertTrue($deleted, 'deleteGroupsAccess should return true when the access is removed');
+		$this->assertSame([], $this->getFileGroups($fnum), 'deleteGroupsAccess should remove the access of every given group');
+
+		$this->h_dataset->deleteSampleFile($fnum);
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::deleteGroupsAccess
+	 */
+	public function testDeleteGroupsAccessWhenSomeGroupsGivenThenOtherGroupsKeepAccess()
+	{
+		$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$this->shareFileToGroups($fnum, [2, 3]);
+
+		$this->model->deleteGroupsAccess($fnum, [2], $this->dataset['coordinator']);
+
+		$this->assertSame([3], $this->getFileGroups($fnum), 'deleteGroupsAccess should only remove the access of the given groups');
+
+		$this->h_dataset->deleteSampleFile($fnum);
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::deleteGroupsAccess
+	 */
+	public function testDeleteGroupsAccessWhenGroupsRemovedThenOneLogIsWrittenPerGroup()
+	{
+		$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$this->shareFileToGroups($fnum, [2, 3]);
+
+		$this->model->deleteGroupsAccess($fnum, [2, 3], $this->dataset['coordinator']);
+
+		$query = $this->db->getQuery(true);
+		$query->select('COUNT(*)')
+			->from($this->db->quoteName('#__emundus_logs'))
+			->where($this->db->quoteName('fnum_to') . ' = ' . $this->db->quote($fnum))
+			->where($this->db->quoteName('message') . ' = ' . $this->db->quote('COM_EMUNDUS_ACCESS_ACCESS_FILE_DELETE'));
+		$this->db->setQuery($query);
+
+		$this->assertSame(2, (int) $this->db->loadResult(), 'deleteGroupsAccess should write one log per removed group');
+
+		$this->h_dataset->deleteSampleFile($fnum);
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::deleteGroupAccess
+	 */
+	public function testDeleteGroupAccessWhenGroupGivenThenOnlyThisGroupLosesAccess()
+	{
+		$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$this->shareFileToGroups($fnum, [2, 3]);
+
+		$deleted = $this->model->deleteGroupAccess($fnum, 3, $this->dataset['coordinator']);
+
+		$this->assertTrue($deleted, 'deleteGroupAccess should return true when the access is removed');
+		$this->assertSame([2], $this->getFileGroups($fnum), 'deleteGroupAccess should only remove the access of the given group');
+
+		$this->h_dataset->deleteSampleFile($fnum);
+	}
+
+	/**
+	 * @param   string  $fnum
+	 * @param   int[]   $groupIds
+	 *
+	 * @return void
+	 */
+	private function shareFileToGroups(string $fnum, array $groupIds): void
+	{
+		$query = $this->db->getQuery(true);
+		$query->insert($this->db->quoteName('#__emundus_group_assoc'))
+			->columns($this->db->quoteName(['group_id', 'action_id', 'fnum', 'c', 'r', 'u', 'd']));
+
+		foreach ($groupIds as $groupId)
+		{
+			$query->values((int) $groupId . ', 1, ' . $this->db->quote($fnum) . ', 0, 1, 0, 0');
+		}
+
+		$this->db->setQuery($query);
+		$this->db->execute();
+	}
+
+	/**
+	 * @param   string  $fnum
+	 *
+	 * @return int[]
+	 */
+	private function getFileGroups(string $fnum): array
+	{
+		$query = $this->db->getQuery(true);
+		$query->select('DISTINCT ' . $this->db->quoteName('group_id'))
+			->from($this->db->quoteName('#__emundus_group_assoc'))
+			->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum))
+			->order($this->db->quoteName('group_id'));
+		$this->db->setQuery($query);
+
+		return array_map('intval', $this->db->loadColumn());
+	}
+
+	/**
 	 * @param   int  $uploadId
 	 *
 	 * @return string

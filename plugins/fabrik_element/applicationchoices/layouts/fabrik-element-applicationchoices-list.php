@@ -19,9 +19,12 @@ $d = $displayData;
     <?php else : ?>
         <ul class="tw-flex tw-flex-col tw-gap-2 tw-list-none tw-m-0 tw-p-0">
             <?php foreach ($d->choices as $choice) : ?>
-                <li class="tw-flex tw-items-center tw-justify-between tw-gap-4 tw-py-1">
-                    <span><?php echo $choice['campaign']['label']; ?></span>
-                    <?php echo $choice['state_html']; ?>
+                <li>
+                    <div class="tw-flex tw-items-center tw-justify-between tw-gap-4 tw-py-1">
+                        <p class="!tw-font-semibold"><?php echo $choice['campaign']['label']; ?></p>
+                        <?php echo $choice['state_html']; ?>
+                    </div>
+                    <?php echo $choice['state_comment']['content']; ?>
                 </li>
             <?php endforeach; ?>
         </ul>

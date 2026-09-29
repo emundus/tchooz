@@ -17,6 +17,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\UI\ButtonVariantEnum;
 use Tchooz\Enums\UI\ButtonWidthEnum;
@@ -51,9 +52,10 @@ $allowDefaultLogin = (bool)$eMConfig->get('allow_default_login', 1);
 	<?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header tw-flex tw-flex-col tw-items-center">
 			<?php if (file_exists($this->favicon)) : ?>
-                <a href="index.php" alt="Logo" class="em-profile-picture tw-mb-8"
+                <a href="index.php" class="em-profile-picture tw-mb-8"
+                   title="<?php echo Text::_('JHOMEPAGE') . ' - ' . Uri::base(); ?>"
                    style="width: 50px;height: 50px;background-image: url(<?php echo $this->favicon ?>)">
-                    <span class="sr-only">Logo</span>
+                    <span class="sr-only"><?php echo Text::_('JHOMEPAGE') . ' - ' . Uri::base(); ?></span>
                 </a>
 			<?php endif; ?>
             <h1 class="tw-mb-4">
