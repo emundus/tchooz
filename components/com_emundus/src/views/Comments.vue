@@ -57,7 +57,7 @@
 					<div class="tw-flex tw-flex-row tw-items-center tw-justify-between">
 						<div
 							class="file-comment-header-left tw-flex tw-w-full tw-cursor-pointer tw-flex-row tw-items-center tw-justify-between"
-							@click="replyToComment(comment.id)"
+							@click="access.c ? replyToComment(comment.id) : null"
 						>
 							<div class="tw-flex tw-flex-row tw-items-center">
 								<div
@@ -126,7 +126,12 @@
 						v-if="editable != comment.id"
 						class="file-comment-header-right tw-flex tw-flex-row tw-opacity-0 tw-duration-300 tw-ease-in-out group-hover:tw-opacity-100"
 					>
-						<span class="material-symbols-outlined tw-cursor-pointer" @click="replyToComment(comment.id)">reply</span>
+						<span
+							v-if="access.c"
+							class="material-symbols-outlined tw-cursor-pointer"
+							@click="replyToComment(comment.id)"
+							>reply</span
+						>
 						<span
 							v-if="access.d || comment.user_id == user"
 							class="material-symbols-outlined em-red-500-color tw-cursor-pointer"

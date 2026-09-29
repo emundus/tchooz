@@ -13,6 +13,8 @@ use DateTime;
 use EmundusModelProfile;
 use EmundusModelProgramme;
 use Exception;
+use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\User\UserCategoryEntity;
 use Tchooz\Repositories\User\UserCategoryRepository;
@@ -431,5 +433,76 @@ class CampaignModelTest extends UnitTestCase
 
 		$values = $this->model->getCampaignUserCategoriesValues($this->dataset['campaign']);
 		$this->assertIsArray($values, 'Récupération des valeurs de catégorie utilisateur pour une campagne existante');
+	}
+
+	/**
+	 * @covers EmundusModelCampaign::isLimitObtained
+	 */
+	function testIsLimitObtained()
+	{
+		$campaign_id = $this->dataset['campaign'];
+		$user_property = new \ReflectionProperty($this->model, '_user');
+		$user_property->setValue($this->model, Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['applicant']));
+
+		$this->setCampaignLimit($campaign_id, 1, 1, []);
+
+		$sent_fnum  = $this->h_dataset->createSampleFile($campaign_id, $this->dataset['applicant']);
+		$draft_fnum = $this->h_dataset->createSampleFile($campaign_id, $this->dataset['applicant']);
+
+		try
+		{
+			$this->setFileStatus($sent_fnum, 1);
+
+			$this->assertTrue($this->model->isLimitObtained($campaign_id), 'La limite est atteinte avec un dossier envoyé');
+			$this->assertTrue($this->model->isLimitObtained($campaign_id, $draft_fnum), 'Un brouillon est bloqué par la limite atteinte');
+			$this->assertFalse($this->model->isLimitObtained($campaign_id, $sent_fnum), 'Un dossier envoyé n\'est pas bloqué par la limite');
+
+			$this->setFileStatus($sent_fnum, 2);
+			$this->assertFalse($this->model->isLimitObtained($campaign_id, $sent_fnum), 'Un dossier dans une étape suivante n\'est pas bloqué par la limite');
+			$this->assertTrue($this->model->isLimitObtained($campaign_id, $draft_fnum), 'Un brouillon reste bloqué quand le dossier compté change d\'étape');
+
+			$this->setCampaignLimit($campaign_id, 1, 1, [1, 2]);
+			$this->assertTrue($this->model->isLimitObtained($campaign_id, $draft_fnum), 'Avec des statuts de limite, un brouillon est bloqué');
+			$this->assertFalse($this->model->isLimitObtained($campaign_id, $sent_fnum), 'Avec des statuts de limite, un dossier compté n\'est pas bloqué');
+		}
+		finally
+		{
+			$this->setCampaignLimit($campaign_id, 0, 0, []);
+			$this->h_dataset->deleteSampleFile($sent_fnum);
+			$this->h_dataset->deleteSampleFile($draft_fnum);
+		}
+	}
+
+	private function setCampaignLimit(int $campaign_id, int $is_limited, int $limit, array $statuses): void
+	{
+		$query = $this->db->getQuery(true);
+		$query->update($this->db->quoteName('#__emundus_setup_campaigns'))
+			->set($this->db->quoteName('is_limited') . ' = ' . $is_limited)
+			->set($this->db->quoteName('limit') . ' = ' . $limit)
+			->where($this->db->quoteName('id') . ' = ' . $campaign_id);
+		$this->db->setQuery($query)->execute();
+
+		$query->clear()
+			->delete($this->db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'))
+			->where($this->db->quoteName('parent_id') . ' = ' . $campaign_id);
+		$this->db->setQuery($query)->execute();
+
+		foreach ($statuses as $status)
+		{
+			$query->clear()
+				->insert($this->db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'))
+				->set($this->db->quoteName('parent_id') . ' = ' . $campaign_id)
+				->set($this->db->quoteName('limit_status') . ' = ' . $status);
+			$this->db->setQuery($query)->execute();
+		}
+	}
+
+	private function setFileStatus(string $fnum, int $status): void
+	{
+		$query = $this->db->getQuery(true);
+		$query->update($this->db->quoteName('#__emundus_campaign_candidature'))
+			->set($this->db->quoteName('status') . ' = ' . $status)
+			->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum));
+		$this->db->setQuery($query)->execute();
 	}
 }
