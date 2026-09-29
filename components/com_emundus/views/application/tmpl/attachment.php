@@ -23,8 +23,8 @@ $app = Factory::getApplication();
 $offset = $app->getConfig()->get('offset');
 $app->getSession()->set('application_layout', 'attachment');
 
-$can_export          = EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $this->fnum);
-$can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
+$can_export           = EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $this->fnum);
+$can_see_attachments  = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
 ?>
 
 
@@ -33,7 +33,7 @@ $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_
         <div class="panel-heading em-container-form-heading !tw-bg-profile-full">
             <h3 class="panel-title">
                 <span class="material-symbols-outlined">file_present</span>
-				<?= Text::_('COM_EMUNDUS_ONBOARD_DOCUMENTS') . ' - ' . $this->attachmentsProgress . ' % ' . Text::_('COM_EMUNDUS_APPLICATION_SENT'); ?>
+                <?= Text::_('COM_EMUNDUS_ONBOARD_DOCUMENTS') . ' - ' . $this->attachmentsProgress . ' % ' . Text::_('COM_EMUNDUS_APPLICATION_SENT'); ?>
             </h3>
             <div class="btn-group pull-right">
                 <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span>

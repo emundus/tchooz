@@ -11,11 +11,17 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
+use Tchooz\Entities\Comments\CommentEntity;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
+use Tchooz\Services\Addons\Configurations\ChoicesAddonConfiguration;
+use Tchooz\Services\ApplicationFile\ApplicationChoicesService;
 
 jimport('joomla.application.component.model');
 
@@ -117,7 +123,8 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 			}
 
 			// Get choices
-			$displayData->choices            = $this->getChoices($displayData->fnum, $displayData->step_id, $displayData->status);
+			$applicationChoices           = $this->getChoices($displayData->fnum, $displayData->step_id, $displayData->status);
+			$displayData->choices            = $this->serializeChoices($applicationChoices);
 			$available_statuses              = ChoicesStateEnum::cases();
 			$displayData->available_statuses = [];
 			foreach ($available_statuses as $status)
@@ -263,16 +270,60 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 		{
 			$applicationChoicesEntities = $repository->getChoicesByFnum($fnum, $user_programs, $status);
 		}
-
+		
+		return $applicationChoicesEntities;
+	}
+	
+	private function serializeChoices(array $applicationChoicesEntities): array
+	{
 		$choices = [];
+
+		$choicesAddon = (new AddonRepository())->getByName(AddonEnum::CHOICES->value);
+		$canSeeComments = $choicesAddon?->getParam(ChoicesAddonConfiguration::APPLICANT_CAN_SEE_REASON, ChoicesAddonConfiguration::CONFIGURATION_GROUP) ?? false;
+
+		// Fetched for every choice in one query rather than per choice
+		$applicationChoicesServices = new ApplicationChoicesService();
+		$commentsByChoice = $canSeeComments ? $applicationChoicesServices->getStateCommentsByChoice($applicationChoicesEntities) : [];
+
 		foreach ($applicationChoicesEntities as $entity)
 		{
 			$entityObject               = $entity->__serialize();
 			$entityObject['state_html'] = $entity->getState()->getHtmlBadge();
+			$entityObject['state_comment'] = $this->serializeChoiceStateComment($commentsByChoice[$entity->getId()][0] ?? null);
 			$choices[]                  = $entityObject;
 		}
 
 		return $choices;
+	}
+
+	private function serializeChoiceStateComment(?CommentEntity $comment): ?array
+	{
+		if (empty($comment))
+		{
+			return null;
+		}
+
+		// The table is shared with the legacy comment write path, so the content is sanitized on read too
+		if (!class_exists('Component\\Emundus\\Helpers\\HtmlSanitizerSingleton'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/helpers/html.php';
+		}
+
+		if (!class_exists('EmundusHelperDate'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/helpers/date.php';
+		}
+
+		return [
+			// Plain text, to prefill the edition field: the sanitized content carries <br> tags
+			'raw'       => $comment->getContent(),
+			'content'   => HtmlSanitizerSingleton::getInstance()->sanitize(nl2br($comment->getContent())),
+			'signature' => Text::sprintf(
+				'COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_COMMENT_SIGNATURE',
+				'',
+				EmundusHelperDate::displayDate($comment->getCreatedAt()->format('Y-m-d H:i:s'), 'COM_EMUNDUS_DATE_FORMAT', 0)
+			)
+		];
 	}
 
 	/**
