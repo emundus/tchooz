@@ -336,7 +336,8 @@ class TchoozAnonymizeUsersCommand extends AbstractCommand
 		$query = $db->createQuery()
 			->update($db->quoteName('#__users'))
 			->set($db->quoteName('password') . " = ''")
-			->set($db->quoteName('requireReset') . ' = 1');
+			->set($db->quoteName('requireReset') . ' = 1')
+			->where($db->quoteName('authProvider') . ' <> ' . $db->quote('sso'));
 
 		$db->setQuery($query);
 		$db->execute();
