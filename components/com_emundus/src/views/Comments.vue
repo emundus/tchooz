@@ -287,7 +287,7 @@
 
 		<hr />
 
-		<div id="add-comment-container">
+		<div id="add-comment-container" v-if="access.c">
 			<label for="new-comment" class="tw-font-medium">{{ translate('COM_EMUNDUS_COMMENTS_ADD_GLOBAL_COMMENT') }}</label>
 			<textarea
 				id="new-comment"
