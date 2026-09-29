@@ -70,7 +70,7 @@ if (!$mainframe->isAdmin()) {
     if (!empty($fnum)) {
 
         // Check campaign limit, if the limit is obtained, then we set the deadline to true
-        $isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id);
+        $isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id, $fnum);
 
         if ($fnum == @$user->fnum) {
             //try to access edit view
