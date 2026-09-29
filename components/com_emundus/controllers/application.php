@@ -2624,10 +2624,6 @@ class EmundusControllerApplication extends EmundusController
 			return;
 		}
 
-		if (!class_exists('EmundusHelperFiles'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
-		}
 		if (!class_exists('EmundusModelWorkflow'))
 		{
 			require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
@@ -2637,7 +2633,20 @@ class EmundusControllerApplication extends EmundusController
 		$choicesStep = $m_workflow->getChoicesStepFromFnum($current_fnum);
 
 		$outputStatus = !empty($choicesStep->output_status) ? (int) $choicesStep->output_status : null;
-		$this->applicationChoicesService->confirmChoice($choice, $this->_user->id, $outputStatus);
+
+		try
+		{
+			$this->applicationChoicesService->confirmChoice($choice, $this->_user->id, $outputStatus);
+		}
+		catch (\Throwable $e)
+		{
+			Log::add('EmundusControllerApplication::confirmchoice | ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
+			$response['code']    = 500;
+			$response['status']  = false;
+			$response['message'] = Text::_('COM_EMUNDUS_APPLICATION_CHOICES_CONFIRM_CHOICE_ERROR');
+			$this->sendJsonResponse($response);
+		}
 
 		$choiceObject               = $choice->__serialize();
 		$choiceObject['state_html'] = $choice->getState()->getHtmlBadge();

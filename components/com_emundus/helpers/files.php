@@ -1073,6 +1073,8 @@ class EmundusHelperFiles
 		}
 		catch (Exception $e)
 		{
+			Log::add('EmundusHelperFiles::getPhotosList | ' . $e->getMessage(), Log::ERROR, 'com_emundus.helper.files');
+
 			return $pictures;
 		}
 
