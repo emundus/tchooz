@@ -318,8 +318,8 @@ class TchoozAnonymizeUsersCommand extends AbstractCommand
 
 	/**
 	 * Empties the password of every Joomla account and sets requireReset=1 so
-	 * the next login goes through the reset flow. Applied platform-wide (SSO
-	 * covers in-house managers).
+	 * the next login goes through the reset flow. Applied to every account
+	 * except SSO ones, which cannot go through a password reset.
 	 *
 	 * Emptying the column rather than storing a shared random hash is a
 	 * deliberate security choice: with no secret in the database there is no

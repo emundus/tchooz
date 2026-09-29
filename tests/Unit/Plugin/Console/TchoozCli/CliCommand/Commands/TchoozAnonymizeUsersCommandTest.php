@@ -379,11 +379,11 @@ class TchoozAnonymizeUsersCommandTest extends TestCase
 	public function testEnforcePasswordResetEmptiesPasswordAndSetsRequireResetWithoutCandidateFilter(): void
 	{
 		// Password reset is a security control, not an anonymisation step: it
-		// must reach every #__users row (managers, super users, applicants).
+		// must reach every non-SSO #__users row (managers, super users, applicants).
 		// The password column is emptied rather than filled with a shared random
 		// hash so there is no secret to brute-force in the pre-prod database.
 		$capturedSetFragments = [];
-		$capturedWhereCalled  = false;
+		$capturedWhereFragments = [];
 
 		$queryMock = $this->createMock(QueryInterface::class);
 		$queryMock->method('update')->willReturnSelf();
@@ -392,8 +392,8 @@ class TchoozAnonymizeUsersCommandTest extends TestCase
 
 			return $queryMock;
 		});
-		$queryMock->method('where')->willReturnCallback(function () use (&$capturedWhereCalled, $queryMock) {
-			$capturedWhereCalled = true;
+		$queryMock->method('where')->willReturnCallback(function ($fragment) use (&$capturedWhereFragments, $queryMock) {
+			$capturedWhereFragments[] = (string) $fragment;
 
 			return $queryMock;
 		});
@@ -422,9 +422,10 @@ class TchoozAnonymizeUsersCommandTest extends TestCase
 			$joined,
 			'requireReset=1 must be set so Joomla forces a reset at next login.'
 		);
-		$this->assertFalse(
-			$capturedWhereCalled,
-			'The password reset must be platform-wide (no WHERE clause) - filtering to candidates would leave manager credentials from prod alive on pre-prod.'
+		$this->assertSame(
+			["`authProvider` <> 'sso'"],
+			$capturedWhereFragments,
+			'The password reset must only exclude SSO accounts (they cannot reset) - filtering to candidates would leave manager credentials from prod alive on pre-prod.'
 		);
 	}
 
