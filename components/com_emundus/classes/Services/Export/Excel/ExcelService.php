@@ -138,6 +138,7 @@ class ExcelService extends Export implements ExportInterface
 			if ($this->options->getPivotScope() !== null && $this->options->getPivotTargetId() !== null)
 			{
 				$this->setValueSeparator(\EmundusHelperFabrik::VALUE_SEPARATOR_MARKER);
+				$this->setMultipleSeparator(self::MULTIPLE_SEPARATOR_MARKER);
 			}
 
 			$metadata = [];
@@ -493,13 +494,13 @@ class ExcelService extends Export implements ExportInterface
 										->from($db->quoteName($data['db_table_name'], 'd'))
 										->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('d.evaluator') . ' = ' . $db->quoteName('u.id'))
 										->where($db->quoteName('d.fnum') . ' = ' . $db->quote($file->getFnum()))
-										->order('d.evaluator ASC');
+										->order('d.evaluator ASC, d.id ASC');
 
 									$db->setQuery($query);
 									$evaluatorsName = $db->loadColumn();
 
 									$json['files'][$file->getFnum()][$evaluatorElementId] =
-										!empty($evaluatorsName) ? implode(', ', $evaluatorsName) : '';
+										!empty($evaluatorsName) ? implode($this->multipleSeparator ?? \EmundusHelperFabrik::VALUE_SEPARATOR, $evaluatorsName) : '';
 								}
 							}
 
@@ -552,7 +553,8 @@ class ExcelService extends Export implements ExportInterface
 						$json['headers'],
 						$pivotScope,
 						$pivotTargetId,
-						$this->valueSeparator ?? \EmundusHelperFabrik::VALUE_SEPARATOR
+						$this->valueSeparator ?? \EmundusHelperFabrik::VALUE_SEPARATOR,
+						$this->multipleSeparator ?? \EmundusHelperFabrik::VALUE_SEPARATOR
 					);
 				}
 
@@ -677,7 +679,7 @@ class ExcelService extends Export implements ExportInterface
 				// Any marker left here belongs to a column the pivot did not split: what stays is
 				// several values in one cell, which a human reads with the readable separator.
 				$row[] = str_replace(
-					\EmundusHelperFabrik::VALUE_SEPARATOR_MARKER,
+					[\EmundusHelperFabrik::VALUE_SEPARATOR_MARKER, self::MULTIPLE_SEPARATOR_MARKER],
 					\EmundusHelperFabrik::VALUE_SEPARATOR,
 					$file[$key] ?? ''
 				);

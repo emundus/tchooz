@@ -254,6 +254,14 @@ requirejs(['fab/fabrik'], function () {
     });
   });
 
+  Fabrik.addEvent('fabrik.emundus_calculation.update', function (event, value) {
+    event.form.elements.forEach(function (element) {
+      if(element.baseElementId === event.baseElementId) {
+        manageRules(event.form, element);
+      }
+    });
+  });
+
   Fabrik.addEvent('fabrik.form.elements.added', function (form, event) {
     let formHeight = document.getElementById(form.getBlock()).offsetHeight;
     if (!form_loaded) {

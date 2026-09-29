@@ -9,6 +9,7 @@
  */
 
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Uri\Uri;
 
 defined('_JEXEC') or die;
@@ -22,6 +23,6 @@ defined('_JEXEC') or die;
         onclick="window.location.href='<?php echo $back_link; ?>'"
 	<?php endif; ?>
 >
-    <span class="material-symbols-outlined tw-mr-1 tw-text-link-regular" aria-hidden="true">navigate_before</span>
+    <?php echo LayoutHelper::render('emundus.icon', ['name' => 'navigate_before', 'class' => 'tw-mr-1 tw-text-link-regular']); ?>
 	<span class="group-hover:tw-underline"><?php echo Text::_($params->get('button_text', 'MOD_EMUNDUS_BACK_BUTTON_LABEL')); ?></span>
 </button>

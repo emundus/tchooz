@@ -262,4 +262,50 @@ class CommentRepositoryTest extends UnitTestCase
 
 		$this->clearFixtures();
 	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Comments\CommentRepository::countByFnums
+	 * @return void
+	 */
+	public function testCountByFnumsWithEmptyFnumsReturnsEmptyArray()
+	{
+		$this->assertSame([], $this->model->countByFnums([]));
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Comments\CommentRepository::countByFnums
+	 * @return void
+	 */
+	public function testCountByFnumsCountsCommentsPerFnum()
+	{
+		$otherFnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$emptyFnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+
+		foreach ([$this->dataset['fnum'], $this->dataset['fnum'], $otherFnum] as $fnum)
+		{
+			$ccid    = (int) \EmundusHelperFiles::getIdFromFnum($fnum);
+			$comment = new CommentEntity(
+				id: 0,
+				targetType: CommentTargetTypeEnum::APPLICATION_FILE,
+				targetId: $ccid,
+				content: 'Commentaire de test countByFnums',
+				createdBy: $this->dataset['coordinator'],
+				createdAt: new DateTime(),
+				fnum: $fnum,
+				ccid: $ccid
+			);
+			$this->model->flush($comment);
+			$this->commentFixtures[] = $comment;
+		}
+
+		$counts = $this->model->countByFnums([$this->dataset['fnum'], $otherFnum, $emptyFnum]);
+
+		$this->assertSame(2, $counts[$this->dataset['fnum']] ?? null);
+		$this->assertSame(1, $counts[$otherFnum] ?? null);
+		$this->assertArrayNotHasKey($emptyFnum, $counts, 'Fnums without comments are absent');
+
+		$this->clearFixtures();
+		$this->h_dataset->deleteSampleFile($otherFnum);
+		$this->h_dataset->deleteSampleFile($emptyFnum);
+	}
 }

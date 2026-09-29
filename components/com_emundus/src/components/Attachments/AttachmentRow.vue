@@ -62,16 +62,16 @@
 		<td v-if="sign && columns.includes('sign')" v-html="attachment.signers"></td>
 		<td v-if="columns.includes('permissions')" class="permissions">
 			<span
-				class="material-symbols-outlined visibility-permission tw-cursor-pointer"
-				:class="{ active: attachment.can_be_viewed == '1' }"
-				@click="changePermission('can_be_viewed', attachment)"
+				class="material-symbols-outlined visibility-permission"
+				:class="{ active: attachment.can_be_viewed == '1', 'tw-cursor-pointer': canUpdate }"
+				@click="canUpdate ? changePermission('can_be_viewed', attachment) : null"
 				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW')"
 				>visibility</span
 			>
 			<span
-				class="material-symbols-outlined delete-permission tw-cursor-pointer"
-				:class="{ active: attachment.can_be_deleted == '1' }"
-				@click="changePermission('can_be_deleted', attachment)"
+				class="material-symbols-outlined delete-permission"
+				:class="{ active: attachment.can_be_deleted == '1', 'tw-cursor-pointer': canUpdate }"
+				@click="canUpdate ? changePermission('can_be_deleted', attachment) : null"
 				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')"
 				>delete</span
 			>
@@ -328,8 +328,6 @@ export default {
 
 	.material-icons,
 	.material-symbols-outlined {
-		cursor: pointer;
-
 		&.success {
 			color: var(--success-color);
 		}

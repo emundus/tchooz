@@ -20,10 +20,10 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
-use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use Joomla\Utilities\ArrayHelper;
 use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Controller\EmundusController;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectTo;
@@ -35,7 +35,7 @@ use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnTag;
 use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Enums\Actions\ActionEnum;
-use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\List\ListColumnTypesEnum;
@@ -43,8 +43,8 @@ use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
-use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Label\LabelRepository;
@@ -52,13 +52,13 @@ use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
-use Tchooz\Controller\EmundusController;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
+use Tchooz\Services\Addons\Configurations\ChoicesAddonConfiguration;
 use Tchooz\Services\ApplicationFile\ApplicationChoicesService;
+use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
 use Tchooz\Services\Automation\RedirectIntentRegistry;
 use Tchooz\Traits\TraitDispatcher;
-use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 
 class EmundusControllerApplication extends EmundusController
 {
@@ -1964,12 +1964,14 @@ class EmundusControllerApplication extends EmundusController
 		}
 
 		$choicesConfiguration = $m_workflow->getChoicesConfigurationFromFnum($current_fnum);
+		$choicesAddon = (new AddonRepository())->getByName(AddonEnum::CHOICES->value);
+		$canSeeComments = $as_manager || ($choicesAddon?->getParam(ChoicesAddonConfiguration::APPLICANT_CAN_SEE_REASON, ChoicesAddonConfiguration::CONFIGURATION_GROUP) ?? false);
 
 		$applicationChoicesRepository = new ApplicationChoicesRepository();
 		$applicationChoicesEntities   = $applicationChoicesRepository->getChoicesByFnum($current_fnum, $programs, null, $choicesConfiguration['form_id'] ?? 0);
 
 		// Fetched for every choice in one query rather than per choice
-		$commentsByChoice = $as_manager ? $this->applicationChoicesService->getStateCommentsByChoice($applicationChoicesEntities) : [];
+		$commentsByChoice = $canSeeComments ? $this->applicationChoicesService->getStateCommentsByChoice($applicationChoicesEntities) : [];
 
 		$choices = [];
 		foreach ($applicationChoicesEntities as $entity)
@@ -1979,7 +1981,7 @@ class EmundusControllerApplication extends EmundusController
 			// Program scope only, the CRUD rights are carried by the choices configuration.
 			$entityObject['can_be_managed'] = !$as_manager || EmundusHelperAccess::canManageProgram($this->_user->id, $entity->getCampaign()?->getProgram()?->getCode());
 			// Managers only: the message justifying a state change is never restituted to the applicant
-			$entityObject['state_comment'] = $this->serializeChoiceStateComment($commentsByChoice[$entity->getId()][0] ?? null);
+			$entityObject['state_comment'] = $this->serializeChoiceStateComment($commentsByChoice[$entity->getId()][0] ?? null, $as_manager);
 			$choices[]                     = $entityObject;
 		}
 
@@ -2602,7 +2604,8 @@ class EmundusControllerApplication extends EmundusController
 		$repository = new ApplicationChoicesRepository();
 		$choice     = $repository->getById($id);
 
-		if (empty($choice))
+		// The choice is picked by id: it must belong to the file the access was checked on
+		if (empty($choice) || $choice->getFnum() !== $current_fnum)
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -2621,10 +2624,6 @@ class EmundusControllerApplication extends EmundusController
 			return;
 		}
 
-		if (!class_exists('EmundusHelperFiles'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
-		}
 		if (!class_exists('EmundusModelWorkflow'))
 		{
 			require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
@@ -2633,18 +2632,20 @@ class EmundusControllerApplication extends EmundusController
 
 		$choicesStep = $m_workflow->getChoicesStepFromFnum($current_fnum);
 
-		$choice->setState(ChoicesStateEnum::CONFIRMED);
-		$repository->flush($choice, false, (!empty($choicesStep) && !empty($choicesStep->output_status)) ? $choicesStep->output_status : null);
+		$outputStatus = !empty($choicesStep->output_status) ? (int) $choicesStep->output_status : null;
 
-		// Set other choices to rejected
-		$other_choices = $repository->getChoicesByFnum($current_fnum);
-		foreach ($other_choices as $other_choice)
+		try
 		{
-			if ($other_choice->getId() != $choice->getId() && $other_choice->getState() != ChoicesStateEnum::REJECTED)
-			{
-				$other_choice->setState(ChoicesStateEnum::REJECTED);
-				$repository->flush($other_choice, false);
-			}
+			$this->applicationChoicesService->confirmChoice($choice, $this->_user->id, $outputStatus);
+		}
+		catch (\Throwable $e)
+		{
+			Log::add('EmundusControllerApplication::confirmchoice | ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
+			$response['code']    = 500;
+			$response['status']  = false;
+			$response['message'] = Text::_('COM_EMUNDUS_APPLICATION_CHOICES_CONFIRM_CHOICE_ERROR');
+			$this->sendJsonResponse($response);
 		}
 
 		$choiceObject               = $choice->__serialize();
@@ -2705,7 +2706,8 @@ class EmundusControllerApplication extends EmundusController
 		$repository = new ApplicationChoicesRepository();
 		$choice     = $repository->getById($id);
 
-		if (empty($choice))
+		// The choice is picked by id: it must belong to the file the access was checked on
+		if (empty($choice) || $choice->getFnum() !== $current_fnum)
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -2722,6 +2724,8 @@ class EmundusControllerApplication extends EmundusController
 
 		$choice->setState(ChoicesStateEnum::REJECTED);
 		$repository->flush($choice, false);
+
+
 
 		$choiceObject               = $choice->__serialize();
 		$choiceObject['state_html'] = $choice->getState()->getHtmlBadge();
@@ -3012,7 +3016,7 @@ class EmundusControllerApplication extends EmundusController
 	 *
 	 * @return array{raw: string, content: string, signature: string}|null  null when the choice has no message
 	 */
-	private function serializeChoiceStateComment(?CommentEntity $comment): ?array
+	private function serializeChoiceStateComment(?CommentEntity $comment, bool $asManager = true): ?array
 	{
 		if (empty($comment))
 		{
@@ -3036,7 +3040,7 @@ class EmundusControllerApplication extends EmundusController
 			'content'   => HtmlSanitizerSingleton::getInstance()->sanitize(nl2br($comment->getContent())),
 			'signature' => Text::sprintf(
 				'COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_COMMENT_SIGNATURE',
-				$comment->getAuthorName() ?? '',
+				$asManager && !empty($comment->getAuthorName()) ? $comment->getAuthorName() . ', ' : '',
 				EmundusHelperDate::displayDate($comment->getCreatedAt()->format('Y-m-d H:i:s'), 'COM_EMUNDUS_DATE_FORMAT', 0)
 			)
 		];

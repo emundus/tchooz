@@ -49,12 +49,12 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
                 <h2><?php echo Text::_($preliminary_documents_title) ?></h2>
             </div>
             <span id="mod_emundus_checklist___expand_icon" class="material-symbols-outlined"
-                  style="transform: rotate(-90deg);">expand_more</span>
+                  style="transform: rotate(-90deg);" aria-hidden="true">expand_more</span>
         </div>
         <div id="mod_emundus_checklist___content" class="em-mt-24">
 			<?php foreach ($preliminary_documents as $document): ?>
                 <div class="em-flex-row em-mb-16 mod_emundus_campaign__details_file">
-                    <span class="material-symbols-outlined mod_emundus_campaign__details_file_icon">insert_drive_file</span>
+                    <?php echo LayoutHelper::render('emundus.icon', ['name' => 'insert_drive_file', 'class' => 'mod_emundus_campaign__details_file_icon']); ?>
                     <a href="<?php echo $document->href ?>" target="_blank" rel="noopener noreferrer">
 						<?php echo $document->title_file . "." . $document->ext; ?>
                     </a>
@@ -68,7 +68,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
         <div class="em-flex-row">
             <h2> <?php echo Text::_($forms_title) . ' ' . $index_form . '/' . $pages_no ?></h2>
         </div>
-        <span id="mod_emundus_checklist___expand_icon" class="material-symbols-outlined">expand_more</span>
+        <?php echo LayoutHelper::render('emundus.icon', ['name' => 'expand_more', 'id' => 'mod_emundus_checklist___expand_icon']); ?>
     </div>
 
     <div id="mod_emundus_checklist___content" class="em-mt-24 tw-pl-1">
@@ -87,7 +87,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
                     <div id="mlf<?php echo $form->id; ?>"
                          class="<?php if ($form->id == $menuid) echo 'active' ?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item tw-relative">
 	                    <?php if ($class == 'need_ok' && $form->id != $menuid) : ?>
-                            <span class="material-symbols-outlined mod_emundus_checklist___check_circle">check_circle</span>
+                            <?php echo LayoutHelper::render('emundus.icon', ['name' => 'check_circle', 'class' => 'mod_emundus_checklist___check_circle']); ?>
 	                    <?php endif; ?>
                         <div class="mod_emundus_checklist___grid tw-group">
                             <div class="mod_emundus_checklist___step_count group-hover:!tw-bg-blue-100 group-hover:!tw-border-blue-100">
@@ -134,7 +134,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 			?>
             <div class="<?php if ($itemid['id'] == $menuid) echo 'active' ?> mod_emundus_checklist_<?php echo $attachment_class; ?> mod_emundus_checklist___form_item tw-relative">
 	            <?php if ($attachment_class == 'need_ok' && $itemid['id'] != $menuid) : ?>
-                    <span class="material-symbols-outlined mod_emundus_checklist___check_circle">check_circle</span>
+                    <?php echo LayoutHelper::render('emundus.icon', ['name' => 'check_circle', 'class' => 'mod_emundus_checklist___check_circle']); ?>
 	            <?php endif; ?>
                 <div class="mod_emundus_checklist___grid tw-group">
                     <div class="mod_emundus_checklist___step_count group-hover:!tw-bg-blue-100 group-hover:!tw-border-blue-100">
@@ -172,7 +172,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 						<?php foreach ($uploads as $upload) : ?>
                             <div class="em-flex-row em-mb-8">
                                 <span class="material-symbols-outlined"
-                                      style="color:var(--main-500);font-size: 16px;">check_circle</span>
+                                      style="color:var(--main-500);font-size: 16px;" aria-hidden="true">check_circle</span>
                                 <a class="em-font-size-12 em-ml-8 mod_emundus_checklist___attachment_links"
                                    href="<?php echo $itemid['link'] . '&Itemid=' . $itemid['id'] . '#a' . $upload->attachment_id ?>">
 									<?php echo $upload->attachment_name ?>
@@ -190,7 +190,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 		<?php if ($show_optional_documents == 1 && count($optional_documents) > 0) : ?>
             <div class="<?php if ($itemid['id'] == $menuid) echo 'active' ?> mod_emundus_checklist_<?php echo $attachment_class; ?> mod_emundus_checklist___form_item tw-relative">
 	            <?php if ($attachment_class == 'need_ok' && $itemid['id'] != $menuid) : ?>
-                    <span class="material-symbols-outlined mod_emundus_checklist___check_circle">check_circle</span>
+                    <?php echo LayoutHelper::render('emundus.icon', ['name' => 'check_circle', 'class' => 'mod_emundus_checklist___check_circle']); ?>
 	            <?php endif; ?>
                 <div class="mod_emundus_checklist___grid tw-group">
                     <div class="mod_emundus_checklist___step_count group-hover:!tw-bg-blue-100 group-hover:!tw-border-blue-100">
@@ -244,9 +244,9 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
                 <div class="mod_emundus_checklist___grid tw-group">
                     <div class="mod_emundus_checklist___step_count group-hover:!tw-bg-blue-100 group-hover:!tw-border-blue-100">
 	                    <?php if ($paid_class == 'need_missing') : ?>
-                            <span class="material-symbols-outlined !tw-text-neutral-900 group-hover:!tw-text-blue-900">shopping_cart</span>
+                            <?php echo LayoutHelper::render('emundus.icon', ['name' => 'shopping_cart', 'class' => '!tw-text-neutral-900 group-hover:!tw-text-blue-900']); ?>
 	                    <?php elseif ($paid_class == 'need_ok') : ?>
-                            <span class="material-symbols-outlined tw-text-white">done</span>
+                            <?php echo LayoutHelper::render('emundus.icon', ['name' => 'done', 'class' => 'tw-text-white']); ?>
 	                    <?php endif; ?>
 
                     </div>
@@ -269,9 +269,9 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
                 <div class="mod_emundus_checklist___grid tw-group">
                     <div class="mod_emundus_checklist___step_count group-hover:!tw-bg-blue-100 group-hover:!tw-border-blue-100">
 						<?php if ($paid_class == 'need_missing') : ?>
-                            <span class="material-symbols-outlined">close</span>
+                            <?php echo LayoutHelper::render('emundus.icon', ['name' => 'close']); ?>
 						<?php elseif ($paid_class == 'need_ok') : ?>
-                            <span class="material-symbols-outlined tw-text-white">done</span>
+                            <?php echo LayoutHelper::render('emundus.icon', ['name' => 'done', 'class' => 'tw-text-white']); ?>
 						<?php endif; ?>
                     </div>
                     <a href="<?php echo $confirm_form_url; ?>"><?php echo Text::_('MOD_EMUNDUS_CHECKLIST_PAYMENT') ?></a>

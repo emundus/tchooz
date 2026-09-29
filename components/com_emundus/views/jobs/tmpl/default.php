@@ -101,7 +101,10 @@ $labels   = $domaines->sub_labels;
                         </a>
                     </td>
                     <td>
-                        <?php echo $labels[$i]; ?>
+                        <?php
+                        $domainIndex = array_search($item->domaine, $values);
+                        echo $domainIndex !== false ? $labels[$domainIndex] : '';
+                        ?>
                     </td>
                     <td>
 						<?php echo $item->etablissement; ?>

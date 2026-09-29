@@ -25,8 +25,10 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\MVC\Model\ListModel;
+use Joomla\CMS\Table\Menu as MenuTable;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseDriver;
+use Joomla\Database\ParameterType;
 use Tchooz\Entities\Calculation\Templates\CalculateDatesDiff;
 use Tchooz\Entities\Fabrik\FabrikElementEntity;
 use Tchooz\Entities\Indexer\IndexEntity;
@@ -2628,46 +2630,46 @@ class EmundusModelFormbuilder extends ListModel
 			//
 
 			// Manage translations for helptext (rollover)
-			if (!empty($element['params']['rollover']) && is_array($element['params']['rollover']))
+			if (!empty($element['params']['rollover']))
 			{
-				// Sanitize override to avoid XSS
-				foreach ($element['params']['rollover'] as $lang => $value)
+				if (!class_exists('HtmlSanitizerSingleton'))
 				{
-					if (!class_exists('HtmlSanitizerSingleton'))
-					{
-						require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
-					}
-					$htmlSanitizer                        = HtmlSanitizerSingleton::getInstance();
-					$element['params']['rollover'][$lang] = $htmlSanitizer->sanitize($value);
+					require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+				}
+				$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
+
+				// The frontend sends the help text as a plain string for the current language.
+				// Wrap it so LanguageFactory::translate seeds an override for every language (no orphans).
+				$rolloverValues = is_array($element['params']['rollover'])
+					? $element['params']['rollover']
+					: [$lang => $element['params']['rollover']];
+
+				foreach ($rolloverValues as $rolloverLang => $rolloverValue)
+				{
+					// Sanitize override to avoid XSS
+					$rolloverValues[$rolloverLang] = $htmlSanitizer->sanitizeNoHtml($rolloverValue);
 				}
 
-
-				$existing_rollover_translation = 0;
+				// Reuse the existing language tag if there is one, otherwise create a new tag
+				$rolloverKey = 'ELEMENT_HELP_' . $dbElement->group_id . '_' . $element['id'];
 				if (!empty($element['rollover_tag']))
 				{
-					$query->clear()
-						->select('id')
-						->from($this->db->quoteName('#__emundus_setup_languages'))
-						->where($this->db->quoteName('reference_id') . ' = ' . $element['id'])
-						->where($this->db->quoteName('reference_table') . ' = ' . $this->db->quote('fabrik_elements'))
-						->where($this->db->quoteName('reference_field') . ' = ' . $this->db->quote('rollover'))
-						->where($this->db->quoteName('tag') . ' = ' . $this->db->quote($element['rollover_tag']));
-					$this->db->setQuery($query);
-					$existing_translation = $this->db->loadResult();
+					// The tag comes from the client payload, only reuse it if it really belongs to this element
+					$translations = $languageRepository->get([
+						'tag' => $element['rollover_tag'],
+						'reference_table' => 'fabrik_elements',
+						'reference_id' => $element['id'],
+						'reference_field' => 'rollover'
+					]);
+					if (!empty($translations))
+					{
+						$rolloverKey = $element['rollover_tag'];
+					}
 				}
 
-				if (empty($existing_translation))
-				{
-					$element['rollover_tag'] = 'ELEMENT_HELP_' . $element['group_id'] . '_' . $element['id'];
+				LanguageFactory::translate($rolloverKey, $rolloverValues, 'fabrik_elements', $element['id'], 'rollover', $user);
 
-					LanguageFactory::translate($element['rollover_tag'], $element['params']['rollover'], 'fabrik_elements', $element['id'], 'rollover', $user);
-				}
-				else
-				{
-					LanguageFactory::translate($element['rollover_tag'], $element['params']['rollover'], 'fabrik_elements', $element['id'], 'rollover', $user);
-				}
-
-				$element['params']['rollover'] = $element['rollover_tag'];
+				$element['params']['rollover'] = $rolloverKey;
 			}
 			//
 
@@ -3341,42 +3343,59 @@ class EmundusModelFormbuilder extends ListModel
 
 		if (!empty($profile))
 		{
+			if (!class_exists('EmundusHelperMenu'))
+			{
+				require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+			}
 
-			$query = $this->db->getQuery(true);
+			$menutype = 'menu-profile' . $profile;
+			$query    = $this->db->getQuery(true);
 
 			try
 			{
-				$rgt = 2;
-				foreach ($menus as $key => $menu)
+				$heading = EmundusHelperMenu::getHeaderMenu($menutype);
+				if (empty($heading))
 				{
-					$rgt = $menu->rgt + $key + 3;
-					$lft = $menu->rgt + $key + 2;
+					throw new Exception('No heading menu found for menutype ' . $menutype);
+				}
 
-					if (!empty($menu->link))
+				usort($menus, fn($a, $b) => $a->rgt <=> $b->rgt);
+				$links = array_values(array_filter(array_column($menus, 'link')));
+
+				if (!empty($links))
+				{
+					// Only the pages of the heading are sortable, the submission page stays where it is
+					$query->select('id, link')
+						->from($this->db->quoteName('#__menu'))
+						->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($menutype))
+						->andWhere($this->db->quoteName('parent_id') . ' = ' . (int) $heading->id)
+						->whereIn($this->db->quoteName('link'), $links, ParameterType::STRING);
+					$this->db->setQuery($query);
+					$menuIdsByLink = $this->db->loadAssocList('link', 'id');
+
+					$menuTable = new MenuTable($this->db);
+					foreach ($links as $link)
 					{
-						$query->clear()
-							->update($this->db->quoteName('#__menu'))
-							->set('rgt = ' . $this->db->quote($rgt))
-							->set('lft = ' . $this->db->quote($lft))
-							->where('link = ' . $this->db->quote($menu->link));
-						$this->db->setQuery($query);
-						$this->db->execute();
+						if (empty($menuIdsByLink[$link]))
+						{
+							continue;
+						}
+
+						if (!$menuTable->moveByReference($heading->id, 'last-child', $menuIdsByLink[$link]))
+						{
+							throw new Exception('Cannot move menu ' . $menuIdsByLink[$link] . ' : ' . $menuTable->getError());
+						}
 					}
 				}
 
-				$query->clear()
-					->update($this->db->quoteName('#__menu'))
-					->set('lft = ' . $this->db->quote(1))
-					->set('rgt = ' . $this->db->quote($rgt - 1))
-					->where('menutype = ' . $this->db->quote('menu-profile' . $profile))
-					->andWhere($this->db->quoteName('type') . ' = ' . $this->db->quote('heading'));
-				$this->db->setQuery($query);
+				$updated = true;
 
-				$updated = $this->db->execute();
+				$hCache = new EmundusHelperCache('com_emundus.menus');
+				$hCache->clean();
 			}
 			catch (Exception $e)
 			{
-				Log::add('component/com_emundus/models/formbuilder | Error at reorder the menu with link : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/formbuilder | Error at reorder the menus of profile ' . $profile . ' : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 

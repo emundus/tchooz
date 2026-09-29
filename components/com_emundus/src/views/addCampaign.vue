@@ -195,7 +195,9 @@
 							<strong class="b em-toggle-switch"></strong>
 							<strong class="b em-toggle-track"></strong>
 						</div>
-						<span for="published" class="tw-ml-2">{{ translate('COM_EMUNDUS_ONBOARD_CAMPAIGN_PUBLISH') }}</span>
+						<label for="published" class="tw-mb-0 tw-ml-2 tw-cursor-pointer">{{
+							translate('COM_EMUNDUS_ONBOARD_CAMPAIGN_PUBLISH')
+						}}</label>
 					</div>
 
 					<div class="tw-flex tw-items-center">
@@ -212,7 +214,9 @@
 							<strong class="b em-toggle-switch"></strong>
 							<strong class="b em-toggle-track"></strong>
 						</div>
-						<span for="limit" class="tw-ml-2">{{ translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT') }}</span>
+						<label for="limit" class="tw-mb-0 tw-ml-2 tw-cursor-pointer">{{
+							translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT')
+						}}</label>
 					</div>
 
 					<transition name="'slide-down'">
@@ -242,6 +246,27 @@
 									</div>
 								</div>
 							</div>
+
+							<div>
+								<label for="limitStatus">{{ translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS') }}</label>
+								<p class="tw-text-base tw-text-neutral-600">
+									{{ translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS_HELPTEXT') }}
+								</p>
+								<multiselect
+									id="limitStatus"
+									class="tw-mt-1"
+									v-model="limitStatusSelection"
+									label="label"
+									track-by="value"
+									:options="statusOptions"
+									:multiple="true"
+									:taggable="false"
+									:placeholder="translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS_PLACEHOLDER')"
+									select-label=""
+									selected-label=""
+									deselect-label=""
+								></multiselect>
+							</div>
 						</div>
 					</transition>
 
@@ -260,9 +285,9 @@
 							<strong class="b em-toggle-switch"></strong>
 							<strong class="b em-toggle-track"></strong>
 						</div>
-						<span for="visible" class="tw-ml-2 tw-flex tw-items-center">
+						<label for="visible" class="tw-ml-2 tw-flex tw-cursor-pointer tw-items-center">
 							{{ translate('COM_EMUNDUS_CAMPAIGNS_VISIBLE') }}
-						</span>
+						</label>
 					</div>
 
 					<div class="tw-flex tw-items-center">
@@ -280,16 +305,16 @@
 							<strong class="b em-toggle-switch"></strong>
 							<strong class="b em-toggle-track"></strong>
 						</div>
-						<span for="pinned" class="tw-ml-2 tw-flex tw-items-center"
+						<label for="pinned" class="tw-ml-2 tw-flex tw-cursor-pointer tw-items-center"
 							>{{ translate('COM_EMUNDUS_CAMPAIGNS_PIN') }}
 							<span
 								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
-								@click="
+								@click.stop.prevent="
 									displayTip('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP', 'COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP_TEXT')
 								"
 								>help_outline</span
 							>
-						</span>
+						</label>
 					</div>
 
 					<div v-if="publicAddonActivated" class="tw-flex tw-items-center">
@@ -307,16 +332,16 @@
 							<strong class="b em-toggle-switch"></strong>
 							<strong class="b em-toggle-track"></strong>
 						</div>
-						<span for="public" class="tw-ml-2 tw-flex tw-items-center"
+						<label for="public" class="tw-ml-2 tw-flex tw-cursor-pointer tw-items-center"
 							>{{ translate('COM_EMUNDUS_CAMPAIGNS_PUBLIC') }}
 							<span
 								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
-								@click="
+								@click.stop.prevent="
 									displayTip('COM_EMUNDUS_ONBOARD_PUBLIC_CAMPAIGN_TIP', 'COM_EMUNDUS_ONBOARD_PUBLIC_CAMPAIGN_TIP_TEXT')
 								"
 								>help_outline</span
 							>
-						</span>
+						</label>
 					</div>
 
 					<div class="tw-flex tw-flex-col tw-gap-2" v-if="anonymizationPolicies.length > 0">
@@ -703,6 +728,7 @@ export default {
 		languages: [],
 		aliases: [],
 		userCategories: [],
+		statuses: [],
 		otherCampaigns: [],
 		editorPlugins: [
 			'history',
@@ -823,6 +849,12 @@ export default {
 			});
 		});
 
+		settingsService.getStatus().then((response) => {
+			if (response.status) {
+				this.statuses = response.data || [];
+			}
+		});
+
 		campaignService.getAllItemsAlias(this.campaignId).then((response) => {
 			this.aliases = response.data;
 		});
@@ -880,6 +912,8 @@ export default {
 							}
 						});
 						//
+
+						this.form.limit_status = response.data.campaign.limit_status || [];
 
 						// Convert date
 						this.form.start_date = new Date(this.form.start_date);
@@ -1345,6 +1379,23 @@ export default {
 					value: category.id,
 				};
 			});
+		},
+		statusOptions() {
+			return this.statuses.map((status) => {
+				return {
+					label: status.label?.[this.actualLanguage] || status.value,
+					value: String(status.step),
+				};
+			});
+		},
+		limitStatusSelection: {
+			get() {
+				const selected = (this.form.limit_status || []).map(String);
+				return this.statusOptions.filter((option) => selected.includes(option.value));
+			},
+			set(options) {
+				this.form.limit_status = options.map((option) => option.value);
+			},
 		},
 		campaignsOptions() {
 			return this.otherCampaigns.map((campaign) => {

@@ -27,6 +27,8 @@ class ChoicesAddonConfiguration extends EmundusAddonConfiguration
 	 */
 	public const APPLICANT_CAN_UPDATE_ANYTIME = 'applicant_can_update_anytime';
 
+	public const APPLICANT_CAN_SEE_REASON = 'applicant_can_see_reason';
+
 	/**
 	 * Rules applied while editing outside the phases. Inside a phase the choices step keeps ruling: its
 	 * values are the ones the applicant was given, and reusing them out of context would silently apply
@@ -56,6 +58,7 @@ class ChoicesAddonConfiguration extends EmundusAddonConfiguration
 			new ChoiceField('status_when_refused', Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_STATUS_REFUSED_LABEL'), $this->getStatusChoices(), false, false, $configGroup),
 			new ChoiceField('status_when_accepted', Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_STATUS_ACCEPTED_LABEL'), $this->getStatusChoices(), false, false, $configGroup),
 			new BooleanField(self::APPLICANT_CAN_UPDATE_ANYTIME, Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_APPLICANT_CAN_UPDATE_ANYTIME_LABEL'), false, $configGroup),
+			new BooleanField(self::APPLICANT_CAN_SEE_REASON, Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_APPLICANT_CAN_SEE_REASON'), false, $configGroup),
 			new NumericField(self::DEFAULT_MAX, Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_DEFAULT_MAX_LABEL'), false, $configGroup),
 			new BooleanField(self::DEFAULT_CAN_BE_ORDERING, Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_DEFAULT_CAN_BE_ORDERING_LABEL'), false, $configGroup),
 			new BooleanField(self::DEFAULT_CAN_BE_CONFIRMED, Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_DEFAULT_CAN_BE_CONFIRMED_LABEL'), false, $configGroup),
