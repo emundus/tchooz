@@ -425,6 +425,161 @@ class FormbuilderModelTest extends UnitTestCase
 	}
 
 	/**
+	 * @covers EmundusModelFormbuilder::UpdateParams
+	 *
+	 * @since version 1.0.0
+	 */
+	public function testUpdateParamsRolloverTranslation()
+	{
+		$coordinator    = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
+		$group_eval_id  = 552;
+		$new_element_id = $this->model->createSimpleElement($group_eval_id, 'field', null, 0, null, $coordinator);
+		$this->assertGreaterThan(0, $new_element_id, 'A field element has been created for the rollover test.');
+
+		// Read the freshly created element to build the payload UpdateParams expects
+		$query = $this->db->getQuery(true);
+		$query->select('label, plugin, params, group_id')
+			->from('#__fabrik_elements')
+			->where('id = ' . $new_element_id);
+		$this->db->setQuery($query);
+		$db_element = $this->db->loadObject();
+
+		$params                = json_decode($db_element->params, true) ?: [];
+		$params['validations'] = $params['validations'] ?? ['plugin' => []];
+		$params['alias']       = $params['alias'] ?? 'rollover_test';
+		$params['password']    = $params['password'] ?? 0;
+
+		// The frontend sends the help text as a plain string (bug: it was never turned into a translation tag)
+		$help_text          = 'Mon texte d\'aide';
+		$params['rollover'] = $help_text;
+
+		$element = [
+			'id'       => $new_element_id,
+			'group_id' => $db_element->group_id,
+			'label'    => $db_element->label,
+			'plugin'   => $db_element->plugin,
+			'default'  => '',
+			'FRequire' => 'false',
+			'params'   => $params,
+		];
+
+		$updated = $this->model->UpdateParams($element, $this->dataset['coordinator']);
+		$this->assertNotFalse($updated, 'UpdateParams succeeds when a rollover help text is provided.');
+
+		// The rollover value must have been replaced by a well-formed translation tag in the element params
+		$query->clear()
+			->select('params')
+			->from('#__fabrik_elements')
+			->where('id = ' . $new_element_id);
+		$this->db->setQuery($query);
+		$saved_params = json_decode($this->db->loadResult(), true);
+
+		$expected_tag = 'ELEMENT_HELP_' . $db_element->group_id . '_' . $new_element_id;
+		$this->assertSame($expected_tag, $saved_params['rollover'], 'The rollover help text is stored as a translation tag.');
+
+		// A translation entry must exist for every language so the help text is translatable in the manager
+		$query->clear()
+			->select('lang_code, override')
+			->from('#__emundus_setup_languages')
+			->where('reference_id = ' . $new_element_id)
+			->andWhere('reference_table = ' . $this->db->quote('fabrik_elements'))
+			->andWhere('reference_field = ' . $this->db->quote('rollover'));
+		$this->db->setQuery($query);
+		$translations = $this->db->loadObjectList('lang_code');
+
+		$this->assertGreaterThanOrEqual(2, count($translations), 'The rollover help text is registered for every language (FR/EN).');
+		$this->assertArrayHasKey('fr-FR', $translations, 'A French rollover translation has been created.');
+		// The help text is stored HTML-sanitized, so quotes come back as entities
+		$sanitized_help_text = "Mon texte d'aide";
+		$this->assertSame($sanitized_help_text, $translations['fr-FR']->override, 'The French rollover override holds the entered help text.');
+
+		$this->deleteTranslation($new_element_id);
+	}
+
+	/**
+	 * @covers EmundusModelFormbuilder::UpdateParams
+	 *
+	 * @since version 1.0.0
+	 */
+	public function testUpdateParamsRolloverTagIsNotReusedWhenItBelongsToAnotherReference()
+	{
+		$coordinator    = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
+		$group_eval_id  = 552;
+		$new_element_id = $this->model->createSimpleElement($group_eval_id, 'field', null, 0, null, $coordinator);
+		$this->assertGreaterThan(0, $new_element_id, 'A field element has been created for the foreign rollover tag test.');
+
+		$query = $this->db->getQuery(true);
+		$query->select('label, plugin, params, group_id')
+			->from('#__fabrik_elements')
+			->where('id = ' . $new_element_id);
+		$this->db->setQuery($query);
+		$db_element = $this->db->loadObject();
+
+		// A translation that has nothing to do with this element
+		$foreign_tag      = 'UNIT_TEST_FOREIGN_TAG_' . $new_element_id;
+		$foreign_override = 'Libellé à ne pas écraser';
+		$foreign          = (object) [
+			'tag'             => $foreign_tag,
+			'lang_code'       => 'fr-FR',
+			'override'        => $foreign_override,
+			'override_md5'    => md5($foreign_override),
+			'type'            => 'override',
+			'reference_id'    => 0,
+			'reference_table' => 'emundus_setup_campaigns',
+			'reference_field' => 'label',
+			'published'       => 1,
+			'location'        => '',
+		];
+		$this->db->insertObject('#__emundus_setup_languages', $foreign);
+
+		$params                = json_decode($db_element->params, true) ?: [];
+		$params['validations'] = $params['validations'] ?? ['plugin' => []];
+		$params['alias']       = $params['alias'] ?? 'rollover_foreign_test';
+		$params['password']    = $params['password'] ?? 0;
+		$params['rollover']    = 'Mon texte d\'aide';
+
+		$element = [
+			'id'           => $new_element_id,
+			'group_id'     => $db_element->group_id,
+			'label'        => $db_element->label,
+			'plugin'       => $db_element->plugin,
+			'default'      => '',
+			'FRequire'     => 'false',
+			'rollover_tag' => $foreign_tag,
+			'params'       => $params,
+		];
+
+		$updated = $this->model->UpdateParams($element, $this->dataset['coordinator']);
+		$this->assertNotFalse($updated, 'UpdateParams succeeds when a foreign rollover tag is sent.');
+
+		$query->clear()
+			->select('params')
+			->from('#__fabrik_elements')
+			->where('id = ' . $new_element_id);
+		$this->db->setQuery($query);
+		$saved_params = json_decode($this->db->loadResult(), true);
+
+		$expected_tag = 'ELEMENT_HELP_' . $db_element->group_id . '_' . $new_element_id;
+		$this->assertSame($expected_tag, $saved_params['rollover'], 'A rollover tag owned by another reference is ignored, the element gets its own tag.');
+
+		$query->clear()
+			->select('override')
+			->from('#__emundus_setup_languages')
+			->where('tag = ' . $this->db->quote($foreign_tag))
+			->andWhere('lang_code = ' . $this->db->quote('fr-FR'));
+		$this->db->setQuery($query);
+		$this->assertSame($foreign_override, $this->db->loadResult(), 'The foreign translation override has not been overwritten by the help text.');
+
+		$query->clear()
+			->delete('#__emundus_setup_languages')
+			->where('tag = ' . $this->db->quote($foreign_tag));
+		$this->db->setQuery($query);
+		$this->db->execute();
+
+		$this->deleteTranslation($new_element_id);
+	}
+
+	/**
 	 * @covers EmundusModelFormbuilder::checkIfModelTableIsUsedInForm
 	 *
 	 * @since version 1.0.0
