@@ -5,8 +5,10 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Export\ExportEntity;
 use Tchooz\Enums\Export\ExportFormatEnum;
+use Tchooz\Enums\Export\PivotScopeEnum;
 use Tchooz\Repositories\Export\ExportRepository;
 use Tchooz\Services\Export\Excel\ExcelService;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 /**
  * @package     Unit\Component\Emundus\Class\Services\Export\Excel
@@ -449,5 +451,174 @@ class ExcelServiceTest extends UnitTestCase
 		$this->expectException(\Exception::class);
 		$service = new ExcelService([$this->dataset['fnum']], $applicant, $options, $exportEntity);
 		$service->export('tmp/', null, 'fr-FR');
+	}
+
+	/**
+	 * The evaluator column is sorted by evaluator id; the evaluation values must follow the same
+	 * order, whatever the order they were submitted in, and a comma inside a value must not be
+	 * mistaken for the boundary between two evaluations.
+	 *
+	 * @covers \Tchooz\Services\Export\Excel\ExcelService::export()
+	 * @covers \Tchooz\Services\Export\Export::getData()
+	 * @covers \Tchooz\Services\Export\Excel\ExcelPivotProcessor
+	 * @return void
+	 */
+	public function testPivotByEvaluationKeepsEachEvaluatorWithItsOwnEvaluation(): void
+	{
+		$evaluation = $this->createEvaluationFormWithTextarea();
+		[$lowId, $highId] = $this->createEvaluators();
+
+		// Submitted by the higher id first, so submission order and evaluator order disagree.
+		$this->insertEvaluation($evaluation['table'], $evaluation['column'], $highId, 'Service très soutenu, supérieur à 192 h. En 2022-2023 : 208,5 h.');
+		$this->insertEvaluation($evaluation['table'], $evaluation['column'], $lowId, 'Responsable de l\'UE M1S61, puis de l\'UE PHS411.');
+
+		$rows = $this->exportPivotByEvaluation($evaluation);
+
+		$this->assertCount(2, $rows, 'Une ligne par évaluation');
+		$this->assertSame('Eval LOW', $rows[0]['evaluator'], 'La 1re ligne est celle de l\'évaluateur au plus petit id');
+		$this->assertSame('Responsable de l\'UE M1S61, puis de l\'UE PHS411.', $rows[0]['value'], 'La 1re ligne porte l\'évaluation de son évaluateur, entière');
+		$this->assertSame('Eval HIGH', $rows[1]['evaluator']);
+		$this->assertSame('Service très soutenu, supérieur à 192 h. En 2022-2023 : 208,5 h.', $rows[1]['value'], 'La 2e ligne porte l\'évaluation de son évaluateur, entière');
+	}
+
+	/**
+	 * An evaluation that left the element empty keeps its position, otherwise the next evaluations
+	 * shift onto the wrong evaluator.
+	 *
+	 * @covers \Tchooz\Services\Export\Excel\ExcelService::export()
+	 * @covers \Tchooz\Services\Export\Export::getData()
+	 * @covers \Tchooz\Services\Export\Excel\ExcelPivotProcessor
+	 * @return void
+	 */
+	public function testPivotByEvaluationKeepsTheSlotOfAnEmptyEvaluation(): void
+	{
+		$evaluation = $this->createEvaluationFormWithTextarea();
+		[$lowId, $highId] = $this->createEvaluators();
+
+		$this->insertEvaluation($evaluation['table'], $evaluation['column'], $lowId, null);
+		$this->insertEvaluation($evaluation['table'], $evaluation['column'], $highId, 'Avis favorable.');
+
+		$rows = $this->exportPivotByEvaluation($evaluation);
+
+		$this->assertCount(2, $rows, 'Une ligne par évaluation');
+		$this->assertSame('Eval LOW', $rows[0]['evaluator']);
+		$this->assertSame('', $rows[0]['value'], 'L\'évaluation vide reste vide sur la ligne de son évaluateur');
+		$this->assertSame('Eval HIGH', $rows[1]['evaluator']);
+		$this->assertSame('Avis favorable.', $rows[1]['value'], 'L\'évaluation suivante reste sur la ligne de son évaluateur');
+	}
+
+	/**
+	 * @return array{form_id: int, table: string, element_id: int, column: string}
+	 */
+	private function createEvaluationFormWithTextarea(): array
+	{
+		require_once JPATH_ROOT . '/components/com_emundus/models/form.php';
+		require_once JPATH_ROOT . '/components/com_emundus/models/formbuilder.php';
+
+		$coord  = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
+		$formId = (new \EmundusModelForm())->createFormEval($coord);
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true)
+			->select($db->quoteName('group_id'))
+			->from($db->quoteName('#__fabrik_formgroup'))
+			->where($db->quoteName('form_id') . ' = ' . $formId);
+		$db->setQuery($query);
+		// createSimpleElement() cannot compute an ordering in an empty group, so the textarea goes
+		// in the group createFormEval() already filled with the default elements.
+		$groupId = (int) $db->loadResult();
+
+		$elementId = (int) (new \EmundusModelFormbuilder())->createSimpleElement($groupId, 'textarea', null, 1, null, $coord);
+		$this->assertNotEmpty($elementId, 'Le textarea d\'évaluation est créé');
+
+		$query->clear()
+			->select($db->quoteName('db_table_name'))
+			->from($db->quoteName('#__fabrik_lists'))
+			->where($db->quoteName('form_id') . ' = ' . $formId);
+		$db->setQuery($query);
+
+		return [
+			'form_id'    => $formId,
+			'table'      => $db->loadResult(),
+			'element_id' => $elementId,
+			'column'     => 'criteria_' . $groupId . '_' . $elementId,
+		];
+	}
+
+	/**
+	 * @return array{0: int, 1: int} Ids of two evaluators, the lower one first
+	 */
+	private function createEvaluators(): array
+	{
+		$suffix = uniqid();
+		$first  = $this->h_dataset->createSampleUser(null, 'eval.low.' . $suffix . '@emundus.fr', 'test1234', [2], 'Eval', 'LOW');
+		$second = $this->h_dataset->createSampleUser(null, 'eval.high.' . $suffix . '@emundus.fr', 'test1234', [2], 'Eval', 'HIGH');
+		$this->assertLessThan($second, $first);
+
+		return [$first, $second];
+	}
+
+	private function insertEvaluation(string $table, string $column, int $evaluatorId, ?string $value): void
+	{
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true)
+			->select($db->quoteName('id'))
+			->from($db->quoteName('#__emundus_campaign_candidature'))
+			->where($db->quoteName('fnum') . ' = ' . $db->quote($this->dataset['fnum']));
+		$db->setQuery($query);
+		$ccid = (int) $db->loadResult();
+
+		$row = (object) [
+			'ccid'       => $ccid,
+			'fnum'       => $this->dataset['fnum'],
+			'evaluator'  => $evaluatorId,
+			'updated_by' => $evaluatorId,
+			'step_id'    => 0,
+			$column      => $value,
+		];
+		$db->insertObject($table, $row);
+	}
+
+	/**
+	 * @return array<int, array{evaluator: string, value: string}>
+	 */
+	private function exportPivotByEvaluation(array $evaluation): array
+	{
+		$coord            = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
+		$exportEntity     = new ExportEntity(0, new \DateTime(), $coord, '', ExportFormatEnum::XLSX, null, null, 0);
+		$exportRepository = new ExportRepository();
+		$exportRepository->flush($exportEntity);
+		$exportEntity = $exportRepository->getById($exportEntity->getId());
+
+		$options = [
+			'export_version' => 'next',
+			'format'         => ExportFormatEnum::XLSX->value,
+			'elements'       => (string) $evaluation['element_id'],
+			'headers'        => '',
+			'synthesis'      => 'fnum',
+			'attachments'    => '',
+			'lang'           => 'fr-FR',
+			'settings'       => [
+				'pivot_scope'  => PivotScopeEnum::EVALUATION->value,
+				'pivot_target' => $evaluation['form_id'],
+			],
+		];
+
+		$service = new ExcelService([$this->dataset['fnum']], $coord, $options, $exportEntity);
+		$result  = $service->export('tmp/', null);
+		$this->assertTrue($result->isStatus(), 'L\'export aboutit');
+
+		// Columns: A = fnum, B = evaluator, C = the textarea. Row 1 holds the headers.
+		$sheet = IOFactory::load($result->getFilePath())->getActiveSheet();
+		$rows  = [];
+		for ($line = 2; $line <= $sheet->getHighestRow(); $line++)
+		{
+			$rows[] = [
+				'evaluator' => (string) $sheet->getCell('B' . $line)->getValue(),
+				'value'     => (string) $sheet->getCell('C' . $line)->getValue(),
+			];
+		}
+
+		return $rows;
 	}
 }
