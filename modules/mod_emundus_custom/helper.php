@@ -54,7 +54,7 @@ class modEmundusCustomHelper
 		}
 
 		if (empty($res->max_occupants)) {
-			die(json_encode((object) ['status' => true, 'msg' => 'Candidat inscrit.', 'attente' => false]));
+			die(json_encode((object) ['status' => true, 'msg' => 'Déposant inscrit.', 'attente' => false]));
 		}
 
 		// If user is from program FCESHU or FCSEXO then the $occupants needs to be from all of THOSE cc entries combined.

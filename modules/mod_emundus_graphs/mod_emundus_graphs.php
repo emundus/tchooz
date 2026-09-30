@@ -25,7 +25,7 @@ $viewArray = [
 	"jos_emundus_stats_gender"                              => "Genre",
 	"jos_emundus_stats_files_graph"                         => "Dossiers",
 	"jos_emundus_stats_relation_realise_accepte_par_profil" => " Nombre de demandes réalisée/acceptées par profil",
-	"jos_emundus_stats_files_age"                           => " Age moyen des candidats par campagne"
+	"jos_emundus_stats_files_age"                           => " Age moyen des déposants par campagne"
 ];
 
 $tableField = "";
