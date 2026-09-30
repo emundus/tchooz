@@ -18,7 +18,6 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
@@ -35,7 +34,9 @@ use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Services\Addons\Configurations\CollaborateAddonConfiguration;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Providers\DateProvider;
@@ -7653,6 +7654,62 @@ class EmundusModelApplication extends ListModel
 	}
 
 	/**
+	 * Same shape as a getSharedFileUsers() row, so the owner can be listed alongside the collaborators.
+	 */
+	public function getSharedFileOwner(int $ccid): ?object
+	{
+		$query = $this->_db->getQuery(true);
+
+		$query->select('ecc.applicant_id as user_id, u.email, eu.firstname as user_firstname, eu.lastname as user_lastname, eu.profile_picture')
+			->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+			->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('ecc.applicant_id'))
+			->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('ecc.applicant_id'))
+			->where($this->_db->quoteName('ecc.id') . ' = ' . $ccid);
+
+		try {
+			$this->_db->setQuery($query);
+			$owner = $this->_db->loadObject();
+		}
+		catch (Exception $e) {
+			Log::add('Failed to get owner of shared file ' . $ccid . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			$owner = null;
+		}
+
+		if (!empty($owner)) {
+			$owner->id       = 'owner';
+			$owner->is_owner = true;
+		}
+
+		return $owner ?: null;
+	}
+
+	/**
+	 * Read from the database, not from the session: the owner can change this right at any time.
+	 */
+	public function canSeeSharedUsers(int $ccid, int $user_id): bool
+	{
+		$query = $this->_db->getQuery(true);
+
+		$query->select('1')
+			->from($this->_db->quoteName('#__emundus_files_request'))
+			->where($this->_db->quoteName('ccid') . ' = ' . $ccid)
+			->where($this->_db->quoteName('user_id') . ' = ' . $user_id)
+			->where($this->_db->quoteName('uploaded') . ' = 1')
+			->where($this->_db->quoteName('show_shared_users') . ' = 1');
+
+		try {
+			$this->_db->setQuery($query);
+
+			return !empty($this->_db->loadResult());
+		}
+		catch (Exception $e) {
+			Log::add('Failed to check shared users visibility on file ' . $ccid . ' for user ' . $user_id . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
+			return false;
+		}
+	}
+
+	/**
 	 * Share a file with users
 	 *
 	 * @param $emails
@@ -7667,19 +7724,10 @@ class EmundusModelApplication extends ListModel
 	 */
 	public function shareFileWith($emails, $ccid, $user_id = null, $auto_accept = 0)
 	{
-		$default_rights = [
-			'r',
-			'u',
-			'show_history',
-			'show_shared_users',
-		];
-		$application_module = ModuleHelper::getModule('mod_emundus_applications');
-		if (!empty($application_module->id)) {
-			$params = json_decode($application_module->params);
-
-			if (!empty($params->mod_emundus_applications_collaborate_default_rights)) {
-				$default_rights = $params->mod_emundus_applications_collaborate_default_rights;
-			}
+		$collaborate_addon = (new AddonRepository())->getByName(AddonEnum::COLLABORATE->value);
+		$default_rights = $collaborate_addon?->getParam(CollaborateAddonConfiguration::DEFAULT_RIGHTS, CollaborateAddonConfiguration::CONFIGURATION_GROUP);
+		if (empty($default_rights)) {
+			$default_rights = CollaborateAddonConfiguration::DEFAULT_RIGHTS_VALUE;
 		}
 
 		$results = ['status' => true, 'emails' => [], 'failed_emails' => []];
@@ -7807,8 +7855,8 @@ class EmundusModelApplication extends ListModel
 	{
 		$collaboration_url = '';
 
-		$emundus_config = ComponentHelper::getParams('com_emundus');
-		$collaboration_id = $emundus_config->get('collaborate_link', 0);
+		$collaborate_addon = (new AddonRepository())->getByName(AddonEnum::COLLABORATE->value);
+		$collaboration_id = (int) $collaborate_addon?->getParam(CollaborateAddonConfiguration::ACCEPTANCE_MENU, CollaborateAddonConfiguration::CONFIGURATION_GROUP);
 
 		if (!empty($collaboration_id)) {
 			$menu_item = Factory::getApplication()->getMenu()->getItems('id', $collaboration_id, true);
@@ -7871,10 +7919,14 @@ class EmundusModelApplication extends ListModel
 				}
 				$fnum = EmundusHelperFiles::getFnumFromId($ccid);
 
-				if (!empty($sharedUser['id'])) {
+				$this->h_cache->set('shared_file_users_' . $ccid, null);
+
+				if (!empty($sharedUser['user_id'])) {
+					$this->clearMyFilesRequestsCache((int) $sharedUser['user_id']);
+
 					$query->clear()
 						->delete($this->_db->quoteName('#__emundus_users_assoc'))
-						->where($this->_db->quoteName('user_id') . ' = ' . $sharedUser['id'])
+						->where($this->_db->quoteName('user_id') . ' = ' . $sharedUser['user_id'])
 						->andWhere($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
 
 					$this->_db->setQuery($query);
@@ -7967,7 +8019,8 @@ class EmundusModelApplication extends ListModel
 	{
 		$updated = false;
 
-		if (!empty($request_id) && !empty($ccid) && !empty($right)) {
+		// $right is a column name: anything else than a right would let the caller rewrite ccid, user_id, uploaded...
+		if (!empty($request_id) && !empty($ccid) && in_array($right, CollaborateAddonConfiguration::RIGHTS, true)) {
 			try {
 				$query = $this->_db->getQuery(true);
 
@@ -7984,6 +8037,17 @@ class EmundusModelApplication extends ListModel
 
 			if ($updated) {
 				$this->h_cache->set('shared_file_users_' . $ccid, null);
+
+				$query->clear()
+					->select($this->_db->quoteName('user_id'))
+					->from($this->_db->quoteName('#__emundus_files_request'))
+					->where($this->_db->quoteName('id') . ' = ' . $request_id);
+				$this->_db->setQuery($query);
+				$collaborator_id = (int) $this->_db->loadResult();
+
+				if (!empty($collaborator_id)) {
+					$this->clearMyFilesRequestsCache($collaborator_id);
+				}
 			}
 		}
 
@@ -8005,7 +8069,7 @@ class EmundusModelApplication extends ListModel
 			$user_id = $this->_user->id;
 		}
 
-		$cache_key      = 'my_shared_files_' . $user_id;
+		$cache_key      = $this->getMyFilesRequestsCacheKey((int) $user_id);
 		$files = $this->h_cache->get($cache_key);
 
 		if (empty($files)) {
@@ -8032,6 +8096,21 @@ class EmundusModelApplication extends ListModel
 		}
 
 		return $files;
+	}
+
+	private function getMyFilesRequestsCacheKey(int $user_id): string
+	{
+		return 'my_shared_files_' . $user_id;
+	}
+
+	/**
+	 * The collaborator's rights are copied from this cache into their session: clear it whenever a request changes.
+	 */
+	public function clearMyFilesRequestsCache(int $user_id): void
+	{
+		if (!empty($user_id)) {
+			$this->h_cache->set($this->getMyFilesRequestsCacheKey($user_id), null);
+		}
 	}
 
 	/**

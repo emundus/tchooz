@@ -206,6 +206,13 @@ class PlgFabrik_FormEmundusCollaborate extends plgFabrik_Form
 				->where($this->_db->quoteName('keyid') . ' = ' . $this->_db->quote($key));
 			$this->_db->setQuery($query);
 			$result = $this->_db->execute();
+
+			if ($result) {
+				if (!class_exists('EmundusModelApplication')) {
+					require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+				}
+				(new EmundusModelApplication())->clearMyFilesRequestsCache((int) $user_id);
+			}
 		}
 		catch (Exception $e) {
 			$this->setError($e->getMessage());

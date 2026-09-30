@@ -42,8 +42,17 @@ if (!empty($actions))
 	Text::script('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_DELETE_CONFIRM');
     Text::script('COM_EMUNDUS_APPLICATION_FILE_ACTIONS_UNANONYMIZE_CONFIRM');
 
+    foreach ($actions as $action)
+    {
+        if ($action->getActionType() === ApplicationFileActionsEnum::COLLABORATE)
+        {
+            LayoutHelper::render('emundus.application.collaborate');
+            break;
+        }
+    }
+
 	?>
-	<div class="tw-relative emundus-application-file-actions-wrapper" data-fnum="<?= $fnum; ?>">
+	<div class="tw-relative emundus-application-file-actions-wrapper" data-fnum="<?= $fnum; ?>" data-ccid="<?= $application->getId(); ?>">
 
         <?php if ($context === 'single') : ?>
             <button type="button" class="tw-w-auto tw-items-center tw-gap-1 tw-rounded-coordinator tw-btn-secondary emundus-application-file-actions" style="line-height: 1.5rem;"

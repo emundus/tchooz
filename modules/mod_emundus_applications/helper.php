@@ -119,7 +119,8 @@ class modemundusApplicationsHelper
 			];
 			$select        = array_merge($select, $select_collab);
 
-			$query->leftJoin($db->quoteName('#__emundus_files_request', 'efr') . ' ON efr.ccid = ecc.id');
+			// Only the current user's request: another collaborator's rights must not leak onto this card
+			$query->leftJoin($db->quoteName('#__emundus_files_request', 'efr') . ' ON efr.ccid = ecc.id AND efr.user_id = ' . $user->id);
 			$query->orWhere($db->quoteName('efr.user_id') . ' = ' . $user->id . ' AND ' . $db->quoteName('efr.uploaded') . ' = 1');
 		}
 
@@ -189,25 +190,60 @@ class modemundusApplicationsHelper
 
 	static function getCollaborators(&$applications)
 	{
-		foreach ($applications as $fnum => $application)
+		if (empty($applications))
 		{
-			$db    = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->getQuery(true);
+			return;
+		}
 
-			$query->select('efr.email, efr.user_id')
-				->from($db->quoteName('#__emundus_files_request', 'efr'))
-				->where($db->quoteName('efr.ccid') . ' = ' . $application->application_id)
-				->andWhere($db->quoteName('efr.show_shared_users') . ' = 1');
+		$user_id = (int) Factory::getApplication()->getIdentity()->id;
+		$ccids   = array_map(fn($application) => (int) $application->application_id, $applications);
 
-			try
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->select('efr.ccid, efr.email, efr.user_id, efr.uploaded')
+			->from($db->quoteName('#__emundus_files_request', 'efr'))
+			->where($db->quoteName('efr.ccid') . ' IN (' . implode(',', $ccids) . ')');
+
+		try
+		{
+			$db->setQuery($query);
+			$requests = $db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Module emundus applications failed to get collaborators for applications ' . implode(',', $ccids) . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
+			return;
+		}
+
+		foreach ($applications as $application)
+		{
+			$is_owner      = (int) $application->applicant_id === $user_id;
+			$collaborators = [];
+
+			foreach ($requests as $request)
 			{
-				$db->setQuery($query);
-				$application->collaborators = $db->loadObjectList();
+				if ((int) $request->ccid !== (int) $application->application_id)
+				{
+					continue;
+				}
+
+				// A collaborator sees the owner and the other accepted collaborators
+				if (!$is_owner && ($request->uploaded != 1 || (int) $request->user_id === $user_id))
+				{
+					continue;
+				}
+
+				$collaborators[] = (object) ['email' => $request->email, 'user_id' => $request->user_id];
 			}
-			catch (Exception $e)
+
+			if (!$is_owner)
 			{
-				Log::add('Module emundus applications failed to get collaborators for application ' . $application->application_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+				array_unshift($collaborators, (object) ['email' => null, 'user_id' => (int) $application->applicant_id]);
 			}
+
+			$application->collaborators = $collaborators;
 		}
 	}
 
