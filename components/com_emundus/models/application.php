@@ -1791,6 +1791,7 @@ class EmundusModelApplication extends ListModel
 					elseif ((int) $g_params->repeated === 1 || (int) $g_params->repeat_group_button === 1) {
 
 						$form .= '<table class="table table-bordered table-striped">
+                            <caption class="tw-sr-only">' . Text::_($itemg->label) . '</caption>
                             <thead>
                             <tr> ';
 
@@ -1951,6 +1952,7 @@ class EmundusModelApplication extends ListModel
 					}
 					else {
 						$form   .= '<table class="em-personalDetail-table-inline">';
+						$form   .= '<caption class="tw-sr-only">' . Text::_($itemg->label) . '</caption>';
 						$modulo = 0;
 						foreach ($elements as &$element) {
 
@@ -2285,6 +2287,7 @@ class EmundusModelApplication extends ListModel
 							$forms .= '<fieldset class="em-personalDetail">
 											<h3 style="font-size: var(--em-coordinator-h3); font-weight: inherit; padding-left: 0;">' . Text::_($itemg->label) . '</h3>
 											<table class="em-restricted-group">
+												<caption class="tw-sr-only">' . Text::_($itemg->label) . '</caption>
 												<thead><tr><td>' . Text::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</td></tr></thead>
 											</table>
 										</fieldset>';
@@ -2357,7 +2360,7 @@ class EmundusModelApplication extends ListModel
 
 									$forms .= '</div>';
 
-									$forms .= '<table class="em-mt-8 em-mb-16 table table-bordered table-striped em-personalDetail-table-multiplleLine tw-p-6 tw-shadow-card !tw-rounded-coordinator-cards tw-border-separate !tw-border tw-border-neutral-400 tw-bg-neutral-0"><thead><tr class="!tw-border-0"> ';
+									$forms .= '<table class="em-mt-8 em-mb-16 table table-bordered table-striped em-personalDetail-table-multiplleLine tw-p-6 tw-shadow-card !tw-rounded-coordinator-cards tw-border-separate !tw-border tw-border-neutral-400 tw-bg-neutral-0"><caption class="tw-sr-only">' . Text::_($itemg->label) . '</caption><thead><tr class="!tw-border-0"> ';
 
 									$repeated_elements = [];
 
@@ -2775,6 +2778,7 @@ class EmundusModelApplication extends ListModel
 
 								if($check_not_empty_group && !GroupVisibilityEnum::fromParams($g_params->repeat_group_show_first ?? null)->isHidden()) {
 									$forms .= '<table class="em-mt-8 em-mb-16 em-personalDetail-table-inline tw-p-6 tw-border-separate tw-rounded-coordinator-cards tw-shadow-card tw-bg-neutral-0">';
+								$forms .= '<caption class="tw-sr-only">' . Text::_($itemg->label) . '</caption>';
 
 									$forms .= '<div class="tw-flex tw-flex-row tw-justify-between form-group-title">';
 									$forms .= '<h3 style="font-size: var(--em-coordinator-h3); font-weight: inherit; padding-left: 0;">' . Text::_($itemg->label) . '</h3>';
