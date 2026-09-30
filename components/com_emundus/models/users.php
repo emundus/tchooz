@@ -3531,6 +3531,11 @@ class EmundusModelUsers extends ListModel
 	{
 		$groups = [];
 
+		$group_ids = array_filter(array_map('intval', $group_ids));
+		if (empty($group_ids)) {
+			return $groups;
+		}
+
 		$query = $this->db->getQuery(true);
 
 		$query->select($this->db->quoteName('sg.id'))
