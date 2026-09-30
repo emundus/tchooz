@@ -440,6 +440,7 @@ return array(
     'Joomla\\CMS\\Authentication\\Password\\MD5Handler' => $baseDir . '/libraries/src/Authentication/Password/MD5Handler.php',
     'Joomla\\CMS\\Authentication\\Password\\PHPassHandler' => $baseDir . '/libraries/src/Authentication/Password/PHPassHandler.php',
     'Joomla\\CMS\\Authentication\\ProviderAwareAuthenticationPluginInterface' => $baseDir . '/libraries/src/Authentication/ProviderAwareAuthenticationPluginInterface.php',
+    'Joomla\\CMS\\Authentication\\RememberMe' => $baseDir . '/libraries/src/Authentication/RememberMe.php',
     'Joomla\\CMS\\Autoload\\ClassLoader' => $baseDir . '/libraries/src/Autoload/ClassLoader.php',
     'Joomla\\CMS\\Button\\ActionButton' => $baseDir . '/libraries/src/Button/ActionButton.php',
     'Joomla\\CMS\\Button\\FeaturedButton' => $baseDir . '/libraries/src/Button/FeaturedButton.php',
