@@ -63,7 +63,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
         </div>
     </div>
 <?php endif; ?>
-<div class="mod_emundus_checklist tw-border tw-border-neutral-300">
+<nav role="navigation" aria-label="<?php echo htmlspecialchars(Text::_($forms_title), ENT_QUOTES); ?>" class="mod_emundus_checklist tw-border tw-border-neutral-300">
     <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand">
         <div class="em-flex-row">
             <h2> <?php echo Text::_($forms_title) . ' ' . $index_form . '/' . $pages_no ?></h2>
@@ -279,7 +279,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
             </div>
 		<?php endif; ?>
     </div>
-</div>
+</nav>
 
 <?php
 $details_view = false;
