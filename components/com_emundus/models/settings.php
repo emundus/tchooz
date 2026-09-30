@@ -2285,7 +2285,7 @@ class EmundusModelSettings extends ListModel
 	 *
 	 * @return  void
 	 */
-	private function toggleApplicationHistoryTab(string $tab, bool $enable): void
+	public function toggleApplicationHistoryTab(string $tab, bool $enable): void
 	{
 		$query = $this->db->getQuery(true);
 		$query->select('id, params')
@@ -2330,6 +2330,9 @@ class EmundusModelSettings extends ListModel
 		{
 			$this->db->setQuery($query);
 			$this->db->execute();
+
+			$hCache = new EmundusHelperCache('com_menus');
+			$hCache->clean();
 		}
 		catch (Exception $e)
 		{
