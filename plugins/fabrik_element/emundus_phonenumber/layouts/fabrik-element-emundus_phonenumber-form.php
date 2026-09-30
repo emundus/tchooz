@@ -42,13 +42,13 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 			   value="<?php echo $displayData->attributes['inputValue']; ?>" autocomplete="tel"
 		>
 
-		<input id="hasValidation" type="checkbox" class="check"
+		<input id="hasValidation" type="checkbox" class="check" tabindex="-1" aria-hidden="true"
 			<?php if ($displayData->attributes['mustValidate']) :?>
 				checked
 			<?php endif ?>
 		>
 
-		<input id="validationValue" name="<?php echo $displayData->attributes['name'].'[is_valid]'; ?>" class="fabrikinput check" type="checkbox"
+		<input id="validationValue" name="<?php echo $displayData->attributes['name'].'[is_valid]'; ?>" class="fabrikinput check" type="checkbox" tabindex="-1" aria-hidden="true"
 		>
 	</div>
 
