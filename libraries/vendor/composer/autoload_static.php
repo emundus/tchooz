@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitb1fe10069e0536da45c28054b2343af5
+class ComposerStaticInit3294e9e54a3faa1aee29edfad418666b
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -990,6 +990,7 @@ class ComposerStaticInitb1fe10069e0536da45c28054b2343af5
         'Joomla\\CMS\\Authentication\\Password\\MD5Handler' => __DIR__ . '/../../..' . '/libraries/src/Authentication/Password/MD5Handler.php',
         'Joomla\\CMS\\Authentication\\Password\\PHPassHandler' => __DIR__ . '/../../..' . '/libraries/src/Authentication/Password/PHPassHandler.php',
         'Joomla\\CMS\\Authentication\\ProviderAwareAuthenticationPluginInterface' => __DIR__ . '/../../..' . '/libraries/src/Authentication/ProviderAwareAuthenticationPluginInterface.php',
+        'Joomla\\CMS\\Authentication\\RememberMe' => __DIR__ . '/../../..' . '/libraries/src/Authentication/RememberMe.php',
         'Joomla\\CMS\\Autoload\\ClassLoader' => __DIR__ . '/../../..' . '/libraries/src/Autoload/ClassLoader.php',
         'Joomla\\CMS\\Button\\ActionButton' => __DIR__ . '/../../..' . '/libraries/src/Button/ActionButton.php',
         'Joomla\\CMS\\Button\\FeaturedButton' => __DIR__ . '/../../..' . '/libraries/src/Button/FeaturedButton.php',
@@ -4043,9 +4044,9 @@ class ComposerStaticInitb1fe10069e0536da45c28054b2343af5
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitb1fe10069e0536da45c28054b2343af5::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitb1fe10069e0536da45c28054b2343af5::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitb1fe10069e0536da45c28054b2343af5::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit3294e9e54a3faa1aee29edfad418666b::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit3294e9e54a3faa1aee29edfad418666b::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit3294e9e54a3faa1aee29edfad418666b::$classMap;
 
         }, null, ClassLoader::class);
     }
