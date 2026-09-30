@@ -30,6 +30,7 @@ use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\WorkflowEntity;
 use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
+use Tchooz\Enums\Fabrik\ElementDatabaseJoinDisplayTypeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\Language\LanguageFactory;
@@ -3467,6 +3468,13 @@ class EmundusHelperFabrik
 
 		$isRepeatGroup = !empty($groupParams) && isset($groupParams->repeat_group_button) && $groupParams->repeat_group_button == 1;
 
+		$displayType   = match ($plugin) {
+			ElementPluginEnum::DATABASEJOIN => $params->database_join_display_type ?? '',
+			ElementPluginEnum::CASCADINGDROPDOWN => $params->cdd_display_type ?? '',
+			default => '',
+		};
+		$isMultiSelect = in_array(ElementDatabaseJoinDisplayTypeEnum::tryFrom($displayType), ElementDatabaseJoinDisplayTypeEnum::multiselectTypes(), true);
+
 		if (in_array($plugin, [ElementPluginEnum::DATABASEJOIN, ElementPluginEnum::CASCADINGDROPDOWN]) || $isRepeatGroup)
 		{
 			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id, $exportMode, $separator, $date_offset);
@@ -3541,6 +3549,10 @@ class EmundusHelperFabrik
 					} else {
 						$fabrikElementValues[$fabrik_element['id']][$fnumKey]['val'] = $formatted_values;
 					}
+				}
+				elseif ($isMultiSelect && is_array($fabrikElementValues[$fabrik_element['id']][$fnumKey]['val']))
+				{
+					$fabrikElementValues[$fabrik_element['id']][$fnumKey]['val'] = $formatted_values;
 				}
 				else
 				{
