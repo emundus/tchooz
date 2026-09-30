@@ -5524,7 +5524,7 @@
     <field name="access">1</field>
     <field name="img"> </field>
     <field name="template_style_id">22</field>
-    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu-anchor_rel&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:0,&quot;tabs&quot;:[&quot;history&quot;,&quot;forms&quot;,&quot;attachments&quot;]}</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu-anchor_rel&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:0,&quot;tabs&quot;:[&quot;forms&quot;,&quot;attachments&quot;]}</field>
     <field name="lft">523</field>
     <field name="rgt">494</field>
     <field name="home">0</field>
