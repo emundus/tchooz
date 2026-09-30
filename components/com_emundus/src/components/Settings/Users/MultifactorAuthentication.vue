@@ -122,7 +122,12 @@ export default {
 					settingsService.get2faParameters().then((paramsResponse) => {
 						if (paramsResponse.status) {
 							this.profiles = paramsResponse.data.profiles;
-							this.fields[2].value = paramsResponse.data.mfaForSso;
+							this.fields[3].value = paramsResponse.data.mfaForSso;
+
+							// Reset async-loaded options so the profiles multiselect re-fetches
+							// on remount and re-emits ajaxOptionsLoaded, which restores the
+							// selected profiles and the force toggle after a save.
+							this.fields[2].multiselectOptions.options = [];
 
 							this.loading = false;
 						} else {
