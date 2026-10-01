@@ -5553,6 +5553,9 @@ video {
 .tw-min-w-\[40px\] {
     min-width: 40px;
 }
+.tw-min-w-\[50rem\] {
+    min-width: 50rem;
+}
 .tw-min-w-\[70vw\] {
     min-width: 70vw;
 }
