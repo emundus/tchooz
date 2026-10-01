@@ -81,7 +81,7 @@ $template_type = array(
         dataType: 'JSON',
         data: {fnums: fnums},
         success: function (result) {
-            if (result.status) {
+            if (result.status && result.attachment_letters.length > 0) {
                 let attachment_letters = result.attachment_letters;
                 $('#export-div').show();
 
@@ -109,7 +109,18 @@ $template_type = array(
                 if (merge_div != null) {
                     document.getElementById('merge-div').remove();
                 }
-                document.getElementsByClassName('swal2-confirm')[0].remove();
+
+                var confirm_button = document.getElementsByClassName('swal2-confirm')[0];
+                if (confirm_button != null) {
+                    confirm_button.disabled = true;
+                }
+
+                var no_document_message = document.createElement('div');
+                no_document_message.id = 'em-doc-no-document-message';
+                no_document_message.className = 'alert alert-info em-mt-16';
+                no_document_message.setAttribute('role', 'alert');
+                no_document_message.textContent = "<?php echo Text::_('COM_EMUNDUS_DOCS_NO_DOCUMENT_AVAILABLE'); ?>";
+                document.getElementById('em-documents').appendChild(no_document_message);
             }
 
             $('#em-doc-tmpl').chosen({width: '100%'});
