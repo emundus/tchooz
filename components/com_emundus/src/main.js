@@ -160,10 +160,15 @@ if (document) {
 
 				switch (componentName) {
 					case 'Attachments':
+						if (datas.rights) {
+							datas.rights = JSON.parse(atob(datas.rights));
+						}
+
 						app = createApp(Attachments, {
 							fnum: datas.fnum,
 							user: datas.user,
 							defaultAttachments: datas.attachments ? datas.attachments : null,
+							defaultRights: datas.rights ? datas.rights : null,
 							columns: datas.columns,
 							is_applicant: datas.is_applicant,
 							centerPreview: datas.center_preview ? datas.center_preview == 1 : false,

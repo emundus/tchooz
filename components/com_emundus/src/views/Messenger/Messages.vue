@@ -122,8 +122,12 @@ export default {
 		},
 
 		createChatroom() {
-			if (this.fileSelected === null && this.fnum === null) {
-				return;
+			if (this.fileSelected === null && (this.fnum === null || this.fnum === '')) {
+				if (this.files.length === 0) {
+					return;
+				}
+
+				this.fileSelected = { fnum: this.files[0].fnum };
 			} else if (this.fileSelected === null && this.fnum !== null) {
 				this.fileSelected = { fnum: this.fnum };
 			}
@@ -335,6 +339,14 @@ export default {
 			this.scrollToBottom();
 			this.attachOpen = !this.attachOpen;
 		},
+
+		onClickCreateNewChatroom() {
+			if (this.files.length > 1) {
+				this.createNewChatroom = true;
+			} else {
+				this.createChatroom();
+			}
+		},
 	},
 	computed: {
 		messageByDates() {
@@ -388,13 +400,6 @@ export default {
 			// Display the close chatroom button if the user is not a coordinator and the chatroom is open and the last message is not from the user
 			if (this.currentChatroom.status === 1 && this.messages.length > 0) {
 				return this.messages[this.messages.length - 1].me === false;
-			}
-		},
-		onClickCreateNewChatroom() {
-			if (this.files.length > 1) {
-				this.createNewChatroom = true;
-			} else {
-				this.createChatroom();
 			}
 		},
 	},
@@ -730,7 +735,7 @@ export default {
 							</button>
 
 							<div
-								v-if="currentChatroom.status == 0"
+								v-if="currentChatroom.status == 0 || currentChatroom.status == null"
 								class="tw-flex tw-items-center tw-gap-1 tw-bg-white tw-p-2"
 								:class="{
 									'tw-rounded-applicant': applicant == true,

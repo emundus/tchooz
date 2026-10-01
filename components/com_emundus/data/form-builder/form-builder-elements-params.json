@@ -842,7 +842,26 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": false
-    }
+    },
+		{
+			"label": "COM_EMUNDUS_ONBOARD_BUILDER_APPLICATIONCHOICES_RENDER_LAYOUT",
+			"name": "application_choices_layout",
+			"type": "dropdown",
+			"options": [
+				{
+					"value": "dropdown",
+					"label": "COM_EMUNDUS_ONBOARD_BUILDER_APPLICATIONCHOICES_RENDER_LAYOUT_DROPDOWN"
+				},
+				{
+					"value": "list",
+					"label": "COM_EMUNDUS_ONBOARD_BUILDER_APPLICATIONCHOICES_RENDER_LAYOUT_LIST"
+				}
+			],
+			"helptext": "",
+			"placeholder": "",
+			"published": true,
+			"sysadmin_only": false
+		}
   ],
 	"orderlist": [],
 	"numeric": [

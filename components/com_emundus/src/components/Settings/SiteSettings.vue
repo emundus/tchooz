@@ -95,9 +95,9 @@ export default {
 			} else {
 				console.error('Failed to load ' + this.$props.json_source + ' content.');
 			}
-		});
 
-		this.getEmundusParams();
+			this.getEmundusParams();
+		});
 	},
 	methods: {
 		getEmundusParams() {

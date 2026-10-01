@@ -10,6 +10,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Filter\InputFilter;
 use Tchooz\Entities\Fabrik\FabrikFormEntity;
 use Tchooz\Entities\Workflow\StepEntity;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
@@ -84,26 +85,35 @@ class FileModel extends AdminModel
 
 					if (!empty($item))
 					{
-						$statusRepository = new StatusRepository();
-						$status           = $statusRepository->getByStep($item->status);
-						$item->status     = $status->__serialize();
-						$statusReferences = [];
-
-						// TODO: Manage external references
 						$externalReferenceRepository = new ExternalReferenceRepository();
-						$externalReferences          = $externalReferenceRepository->getItemsByFields(['column' => 'jos_emundus_setup_status.step', 'intern_id' => $status->getStep()]);
-						if (!empty($externalReferences))
+
+						$statusRepository = new StatusRepository();
+						$status           = $statusRepository->getByStep((int) $item->status);
+						if (!empty($status))
 						{
-							foreach ($externalReferences as $externalReference)
+							$item->status     = $status->__serialize();
+							$statusReferences = [];
+
+							// TODO: Manage external references
+							$externalReferences = $externalReferenceRepository->getItemsByFields(['column' => 'jos_emundus_setup_status.step', 'intern_id' => $status->getStep()]);
+							if (!empty($externalReferences))
 							{
-								$statusReferences[] = [
-									'reference'           => $externalReference->reference,
-									'reference_object'    => $externalReference->reference_object,
-									'reference_attribute' => $externalReference->reference_attribute,
-								];
+								foreach ($externalReferences as $externalReference)
+								{
+									$statusReferences[] = [
+										'reference'           => $externalReference->reference,
+										'reference_object'    => $externalReference->reference_object,
+										'reference_attribute' => $externalReference->reference_attribute,
+									];
+								}
 							}
+							$item->status['external_references'] = $statusReferences;
 						}
-						$item->status['external_references'] = $statusReferences;
+						else
+						{
+							Log::add('FileModel::getItem() - unknown status ' . $item->status . ' for fnum ' . $item->fnum, Log::WARNING, 'com_emundus.api');
+							$item->status = null;
+						}
 
 
 						$query->clear()
@@ -119,8 +129,9 @@ class FileModel extends AdminModel
 
 						// Add application choices
 						$addonRepository = new AddonRepository();
-						$choices_addon   = $addonRepository->getByName('choices');
-						if ($choices_addon->isActivated())
+						$choices_addon   = $addonRepository->getByName(AddonEnum::CHOICES->value);
+
+						if (!empty($choices_addon) && $choices_addon->isActivated())
 						{
 							$applicationChoicesRepository = new ApplicationChoicesRepository();
 							$moreFormId = $applicationChoicesRepository->getMoreFormId();
@@ -138,7 +149,7 @@ class FileModel extends AdminModel
 						$emundusUserRepository = new EmundusUserRepository();
 						$applicant             = $emundusUserRepository->getByUserId($item->applicant_id);
 						$item->applicant       = $applicant?->__serialize();
-						if(!empty($applicant->getUserCategory()))
+						if (!empty($applicant) && !empty($applicant->getUserCategory()))
 						{
 							$userCategoryReferences = [];
 							$externalReferences = $externalReferenceRepository->getItemsByFields(['column' => 'data_user_category.id', 'intern_id' => $applicant->getUserCategory()->getId()]);
@@ -161,8 +172,9 @@ class FileModel extends AdminModel
 						$item->steps = $this->getSteps($item, $filters);
 					}
 				}
-				catch (\Exception $e)
+				catch (\Throwable $e)
 				{
+					Log::add('FileModel::getItem() - fnum ' . $pk . ' : ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine(), Log::ERROR, 'com_emundus.api');
 					$app->enqueueMessage($e->getMessage(), 'error');
 				}
 			}

@@ -2156,6 +2156,8 @@ class EmundusModelSettings extends ListModel
 	{
 		$updated = false;
 
+		$query       = $this->db->getQuery(true);
+
 		if (!empty($param))
 		{
 			$params = $this->getEmundusParams();
@@ -2180,12 +2182,22 @@ class EmundusModelSettings extends ListModel
 							$value = implode(',', $value);
 						}
 
+						if ($param === 'action_history')
+						{
+							$this->toggleApplicationHistoryTab('history', !empty($value));
+						}
+
+						if ($param === 'action_documents')
+						{
+							$this->toggleApplicationHistoryTab('attachments', !empty($value));
+						}
+
 						$eMConfig = ComponentHelper::getParams('com_emundus');
 						$eMConfig->set($param, $value);
 						$componentid = ComponentHelper::getComponent('com_emundus')->id;
-						$query       = $this->db->getQuery(true);
 
-						$query->update($this->db->quoteName('#__extensions'))
+						$query->clear()
+							->update($this->db->quoteName('#__extensions'))
 							->set($this->db->quoteName('params') . ' = ' . $this->db->quote($eMConfig->toString()))
 							->where($this->db->quoteName('extension_id') . ' = ' . $this->db->quote($componentid));
 
@@ -2263,6 +2275,66 @@ class EmundusModelSettings extends ListModel
 
 		return $updated;
 
+	}
+
+	/**
+	 * Add or remove a tab in the application history menu params.
+	 *
+	 * @param   string  $tab     Tab identifier (e.g. 'history', 'attachments').
+	 * @param   bool    $enable  True to add the tab, false to remove it.
+	 *
+	 * @return  void
+	 */
+	private function toggleApplicationHistoryTab(string $tab, bool $enable): void
+	{
+		$query = $this->db->getQuery(true);
+		$query->select('id, params')
+			->from($this->db->qn('#__menu'))
+			->where($this->db->qn('link') . ' LIKE ' . $this->db->q('index.php?option=com_emundus&view=application&layout=history'));
+		$this->db->setQuery($query);
+		$historyMenu = $this->db->loadObject();
+
+		if (empty($historyMenu) || empty($historyMenu->id) || empty($historyMenu->params))
+		{
+			return;
+		}
+
+		$params = json_decode($historyMenu->params);
+		if (!is_object($params))
+		{
+			$params = new stdClass();
+		}
+		$tabs = (isset($params->tabs) && is_array($params->tabs)) ? $params->tabs : [];
+
+		if ($enable)
+		{
+			if (!in_array($tab, $tabs, true))
+			{
+				$tabs[] = $tab;
+			}
+		}
+		else
+		{
+			$tabs = array_filter($tabs, static function ($t) use ($tab) {
+				return $t !== $tab;
+			});
+		}
+		$params->tabs = array_values($tabs);
+
+		$query = $this->db->getQuery(true);
+		$query->update($this->db->qn('#__menu'))
+			->set($this->db->qn('params') . ' = ' . $this->db->q(json_encode($params)))
+			->where($this->db->qn('id') . ' = ' . $this->db->q($historyMenu->id));
+
+		try
+		{
+			$this->db->setQuery($query);
+			$this->db->execute();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error updating tab ' . $tab . ' on menu ' . $historyMenu->id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
 	}
 
 	public function setArticleNeedToBeModify()

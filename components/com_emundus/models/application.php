@@ -3040,7 +3040,7 @@ class EmundusModelApplication extends ListModel
 													$elt = '******';
 												}
 												elseif ($params->password == 3) {
-													$elt = '<a href="mailto:' . $element->content . '" title="' . Text::_($element->label) . '">' . $element->content . '</a>';
+													$elt = '<a href="mailto:' . $element->content . '" title="' . $element->content . '">' . $element->content . '</a>';
 												}
 												elseif ($params->password == 5) {
 													$elt = '<a href="' . $element->content . '" target="_blank" title="' . Text::_($element->label) . '">' . $element->content . '</a>';
@@ -4249,10 +4249,10 @@ class EmundusModelApplication extends ListModel
 													$elt = '******';
 												}
 												elseif ($params->password == 3) {
-													$elt = '<a href="mailto:' . $element->content . '" title="' . Text::_($element->label) . '">' . $element->content . '</a>';
+													$elt = '<a href="mailto:' . $element->content . '" title="' . $element->content . '">' . $element->content . '</a>';
 												}
 												elseif ($params->password == 5) {
-													$elt = '<a href="' . $element->content . '" target="_blank" title="' . Text::_($element->label) . '">' . $element->content . '</a>';
+													$elt = '<a href="' . $element->content . '" target="_blank" title="' . $element->content . '">' . $element->content . '</a>';
 												}
 												else {
 													$elt = $element->content;
@@ -5272,9 +5272,23 @@ class EmundusModelApplication extends ListModel
 	 */
 	public function deleteGroupAccess(string $fnum, int $gid, ?int $current_user = null): bool
 	{
+		return $this->deleteGroupsAccess($fnum, [$gid], $current_user);
+	}
+
+	/**
+	 * @param   string    $fnum
+	 * @param   int[]     $gids
+	 * @param   int|null  $current_user  If null, the current user will be used
+	 *
+	 * @return bool
+	 */
+	public function deleteGroupsAccess(string $fnum, array $gids, ?int $current_user = null): bool
+	{
 		$deleted = false;
 
-		if (!empty($fnum) && !empty($gid)) {
+		$gids = array_values(array_filter(array_map('intval', $gids)));
+
+		if (!empty($fnum) && !empty($gids)) {
 			if (empty($current_user)) {
 				$current_user = Factory::getApplication()->getIdentity()->id;
 			}
@@ -5282,7 +5296,7 @@ class EmundusModelApplication extends ListModel
 			$query = $this->_db->getQuery(true);
 
 			$query->delete('#__emundus_group_assoc')
-				->where($this->_db->quoteName('group_id') . ' = ' . $gid)
+				->where($this->_db->quoteName('group_id') . ' IN (' . implode(',', $gids) . ')')
 				->andWhere($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
 
 			try {
@@ -5296,10 +5310,10 @@ class EmundusModelApplication extends ListModel
 				$query->clear()
 					->select('label')
 					->from('#__emundus_setup_groups')
-					->where('id = ' . $gid);
+					->where('id IN (' . implode(',', $gids) . ')');
 
 				$this->_db->setQuery($query);
-				$label = $this->_db->loadResult();
+				$labels = $this->_db->loadColumn();
 
                 if (!class_exists('EmundusModelFiles')) {
                     require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
@@ -5307,15 +5321,15 @@ class EmundusModelApplication extends ListModel
                 $m_files = new EmundusModelFiles;
                 $fnumInfos = $m_files->getFnumInfos($fnum);
 
-				$logsParams = ['deleted' => ['details' => $label]];
-				EmundusModelLogs::log($current_user, $fnumInfos['applicant_id'], $fnum, ActionEnum::ACCESS_FILE->value, CrudEnum::DELETE->value, 'COM_EMUNDUS_ACCESS_ACCESS_FILE_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+				foreach ($labels as $label) {
+					$logsParams = ['deleted' => ['details' => $label]];
+					EmundusModelLogs::log($current_user, $fnumInfos['applicant_id'], $fnum, ActionEnum::ACCESS_FILE->value, CrudEnum::DELETE->value, 'COM_EMUNDUS_ACCESS_ACCESS_FILE_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+				}
 			}
 		}
 
 		return $deleted;
 	}
-
-	//TODO: Add the deleteGroupsAccess function here (multiple groups, if no id provided all groups of fnum
 
 	/**
 	 * @param $fnum string

@@ -15,12 +15,12 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Router\Route;
-use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Favorite\FavoriteFileRepository;
 
 if(!class_exists('EmundusHelperCache'))
@@ -1039,6 +1039,46 @@ class EmundusHelperFiles
 		{
 			return false;
 		}
+	}
+
+	/**
+	 * Build the photo thumbnail markup for many fnums in a single query, keyed by fnum.
+	 * Use this instead of calling getPhotos($fnum) per row (one query each).
+	 *
+	 * @param   array  $fnums
+	 *
+	 * @return array<string, string>
+	 */
+	public function getPhotosList($fnums = array())
+	{
+		$pictures = array();
+
+		if (empty($fnums))
+		{
+			return $pictures;
+		}
+
+		$m_files = new EmundusModelFiles;
+
+		try
+		{
+			$photos = $m_files->getPhotos($fnums);
+			foreach ($photos as $photo)
+			{
+				$folder                   = JURI::base() . EMUNDUS_PATH_REL . $photo['user_id'];
+				$pictures[$photo['fnum']] = file_exists($folder . '/tn_' . $photo['filename'])
+					? '<img class="img-responsive" alt="photo" src="' . $folder . '/tn_' . $photo['filename'] . '" width="60" /></img>'
+					: '<img class="img-responsive" alt="photo" src="' . $folder . DS . $photo['filename'] . '" width="60" /></img>';
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('EmundusHelperFiles::getPhotosList | ' . $e->getMessage(), Log::ERROR, 'com_emundus.helper.files');
+
+			return $pictures;
+		}
+
+		return $pictures;
 	}
 
 
@@ -2600,22 +2640,36 @@ class EmundusHelperFiles
 		}
 
 		$tagsList = array();
+
+		if (empty($tags))
+		{
+			return $tagsList;
+		}
+
+		// Batch access checks once per fnum instead of calling asAccessAction (multiple queries) per tag.
+		$fnums          = array_values(array_unique(array_column($tags, 'fnum')));
+		$readable_fnums = EmundusHelperAccess::asAccessActionOnFnums(14, CrudEnum::READ->value, $user_id, $fnums);
+
+		// The create-right branch only matters for tags the current user owns.
+		$has_own_tags    = !empty(array_filter($tags, static fn($tag) => $tag['user_id'] === $user_id));
+		$creatable_fnums = $has_own_tags ? EmundusHelperAccess::asAccessActionOnFnums(14, 'c', $user_id, $fnums) : array();
+
 		foreach ($tags as $tag)
 		{
 			$fnum = $tag['fnum'];
 
-			if (EmundusHelperAccess::asAccessAction(14, 'r', $user_id, $fnum) || (EmundusHelperAccess::asAccessAction(14, 'c', $user_id, $fnum) && $tag['user_id'] === $user_id))
+			$allowed = in_array($fnum, $readable_fnums)
+				|| (in_array($fnum, $creatable_fnums) && $tag['user_id'] === $user_id);
+
+			if (!$allowed)
 			{
-				$class = str_replace('label-', '', $tag['class']);
-				if (!isset($tagsList[$fnum]))
-				{
-					$tagsList[$fnum] = '<div class="tw-flex tw-items-center tw-gap-2 sticker label-' . $class . '"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-w-[150px] tw-text-sm">' . $tag['label'] . '</span></div>';
-				}
-				else
-				{
-					$tagsList[$fnum] .= '<div class="tw-flex tw-items-center tw-gap-2 sticker label-' . $class . '"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-w-[150px] tw-text-sm">' . $tag['label'] . '</span></div>';
-				}
+				continue;
 			}
+
+			$class   = str_replace('label-', '', $tag['class']);
+			$sticker = '<div class="tw-flex tw-items-center tw-gap-2 sticker label-' . $class . '"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-w-[150px] tw-text-sm">' . $tag['label'] . '</span></div>';
+
+			$tagsList[$fnum] = isset($tagsList[$fnum]) ? $tagsList[$fnum] . $sticker : $sticker;
 		}
 
 		return $tagsList;
@@ -2727,12 +2781,16 @@ class EmundusHelperFiles
 	}
 
 
-	public function createUnreadMessageList($unread_messages)
+	public function createUnreadMessageList($unread_messages, $authorizedFnums = [])
 	{
 		$unreadmessagesList = array();
 
 		foreach ($unread_messages as $unread_message)
 		{
+			if(!in_array($unread_message['fnum'], $authorizedFnums))
+			{
+				continue;
+			}
 
 			$fnum = $unread_message['fnum'];
 

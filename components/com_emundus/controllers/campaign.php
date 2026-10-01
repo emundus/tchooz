@@ -701,6 +701,11 @@ class EmundusControllerCampaign extends EmundusController
 			throw new \RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_CAMPAIGN'), EmundusResponse::HTTP_NOT_FOUND);
 		}
 
+		if(isset($campaign->campaign) && (!isset($campaign->campaign->description) || is_null($campaign->campaign->description)))
+		{
+			$campaign->campaign->description ??= '';
+		}
+
 		return EmundusResponse::ok($campaign, Text::_('CAMPAIGN_RETRIEVED'));
 	}
 

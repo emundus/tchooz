@@ -93,6 +93,8 @@ class FormModelTest extends UnitTestCase
 	public function testDuplicateForm()
 	{
 		$coord = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
+		// Menu table save triggers onAfterCheckin (plg_actionlog_joomla), which reads the application identity
+		Factory::getApplication()->loadIdentity($coord);
 
 		$pids      = [0];
 		$duplicate = $this->model->duplicateForm($pids, $coord);

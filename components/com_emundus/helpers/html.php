@@ -55,6 +55,10 @@ class HtmlSanitizerSingleton
 			return '';
 		}
 
+		// Decode entities first so escaped chars (apostrophes, quotes, «, »...) are restored to their
+		// readable form, then strip any tags that decoding may have revealed.
+		$input = html_entity_decode($input, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
 		// For excel we need to remove = signs if they are at the start of the string to prevent formula injection
 		if (str_starts_with($input, '=')) {
 			$input = substr($input, 1);

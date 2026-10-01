@@ -151,6 +151,59 @@ class ProfileRepositoryTest extends UnitTestCase
 	}
 
 	// =========================================================================
+	// getNextFreeId
+	// =========================================================================
+
+	/**
+	 * @covers \Tchooz\Repositories\Profile\ProfileRepository::getNextFreeId
+	 */
+	public function testGetNextFreeIdIsGreaterThanExistingProfiles(): void
+	{
+		$query = $this->db->getQuery(true)
+			->select('MAX(id)')
+			->from($this->db->quoteName('#__emundus_setup_profiles'));
+		$this->db->setQuery($query);
+		$maxProfileId = (int) $this->db->loadResult();
+
+		$this->assertGreaterThan($maxProfileId, $this->repository->getNextFreeId());
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Profile\ProfileRepository::getNextFreeId
+	 * @covers \Tchooz\Repositories\Profile\ProfileRepository::flush
+	 */
+	public function testGetNextFreeIdSkipsIdOfOrphanMenutype(): void
+	{
+		$orphanId = $this->repository->getNextFreeId() + 5;
+		$orphan   = (object) [
+			'menutype'    => 'menu-profile' . $orphanId,
+			'title'       => 'Orphan menutype',
+			'description' => '',
+			'client_id'   => 0,
+		];
+		$this->db->insertObject('#__menu_types', $orphan);
+
+		try
+		{
+			$this->assertSame($orphanId + 1, $this->repository->getNextFreeId(), 'An id still used by a menutype must not be reused');
+
+			$profile = $this->makeProfileEntity(label: 'Orphan menutype test ' . uniqid());
+			$this->repository->flush($profile);
+			$this->createdProfileIds[] = $profile->getId();
+
+			$this->assertSame($orphanId + 1, $profile->getId(), 'flush should insert the profile with the next free id');
+		}
+		finally
+		{
+			$query = $this->db->getQuery(true)
+				->delete($this->db->quoteName('#__menu_types'))
+				->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($orphan->menutype));
+			$this->db->setQuery($query);
+			$this->db->execute();
+		}
+	}
+
+	// =========================================================================
 	// getById
 	// =========================================================================
 
