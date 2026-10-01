@@ -371,6 +371,11 @@ class EmundusModelApplication extends ListModel
 						}
 					}
 
+					if ($applicant)
+					{
+						$attachment->user_name          = '';
+						$attachment->modified_user_name = '';
+					}
 
 					if (!file_exists(EMUNDUS_PATH_ABS . $attachment->applicant_id . '/' . $attachment->filename)) {
 						$attachment->existsOnServer = false;
