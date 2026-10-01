@@ -13,6 +13,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 $input = Factory::getApplication()->input;
 $group = $this->group;
@@ -37,9 +38,12 @@ foreach ($group->subgroups as $key => $subgroup) :
 
 	$introData = array_merge($input->getArray(), array('i' => $i));
     $index = !empty($subgroup['id']->value) ? $subgroup['id']->value : $key;
+
+    $groupTitle = trim(strip_tags($group->title ?? ''));
+    $repeatAria = ($groupTitle !== '' ? $groupTitle : Text::_('COM_FABRIK_REPEAT_GROUP_ARIA')) . ' ' . $i;
 	?>
     <span class="fabrik-anchor" id="<?php echo 'fabrikSubGroup_'.$index; ?>"></span>
-    <div class="fabrikSubGroup <?php if (!$can_see) : ?> hidden<?php endif; ?>">
+    <div class="fabrikSubGroup <?php if (!$can_see) : ?> hidden<?php endif; ?>" role="group" aria-label="<?php echo htmlspecialchars($repeatAria, ENT_QUOTES); ?>">
         <?php if(!empty($group->repeatIntro)) : ?>
             <div data-role="group-repeat-intro">
                 <?php echo $w->parseMessageForPlaceHolder($group->repeatIntro, $introData);?>
