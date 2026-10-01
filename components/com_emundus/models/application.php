@@ -2180,6 +2180,10 @@ class EmundusModelApplication extends ListModel
 
 		$eMConfig          = ComponentHelper::getParams('com_emundus');
 		$show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+		$defaultPleaseSelectValue       = [
+			'Veuillez sélectionner',
+			'Please select'
+		];
 
 		$forms = '';
 
@@ -2396,7 +2400,7 @@ class EmundusModelApplication extends ListModel
 
 									foreach ($elements as $element)
 									{
-										if (in_array($element->plugin, ['id', 'panel'])) continue;
+										if (in_array($element->plugin, ['id', 'parent_id', 'panel'])) continue;
 
 										if ($show_empty_fields == 1)
 										{
@@ -2409,6 +2413,19 @@ class EmundusModelApplication extends ListModel
 											{
 												if (isset($row->{$element->name}) && $row->{$element->name} !== '' && $row->{$element->name} !== null)
 												{
+													if($element->plugin == 'dropdown')
+													{
+														$params = json_decode($element->params);
+														$index = array_search($row->{$element->name}, $params->sub_options->sub_values);
+														if (strlen($index) > 0) {
+															$valueLabel = Text::_($params->sub_options->sub_labels[$index]);
+															if(in_array($valueLabel, $defaultPleaseSelectValue))
+															{
+																continue;
+															}
+														}
+													}
+
 													$hasValue = true;
 													break;
 												}
@@ -2662,7 +2679,14 @@ class EmundusModelApplication extends ListModel
 													elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
 														$index = array_search($r_elt, $params->sub_options->sub_values);
 														if (strlen($index) > 0) {
-															$elt = Text::_($params->sub_options->sub_labels[$index]);
+															$valueLabel = Text::_($params->sub_options->sub_labels[$index]);
+															if(!in_array($valueLabel, $defaultPleaseSelectValue))
+															{
+																$elt = $valueLabel;
+															}
+															else {
+																$elt = '';
+															}
 														}
 														elseif (!empty($params->dropdown_populate)) {
 															$elt = $r_elt;
@@ -2803,9 +2827,7 @@ class EmundusModelApplication extends ListModel
 									$modulo = 0;
 									foreach ($elements as &$element) {
 
-										if($element->plugin === 'panel') {
-											continue;
-										}
+										if (in_array($element->plugin, ['id', 'parent_id', 'panel'])) continue;
 
 										if (!empty(trim($element->label)) || $element->plugin === ElementPluginEnum::EMUNDUS_FILEUPLOAD->value) {
 											// TODO : If databasejoin checkbox or multilist get value from children table. Add a query to get join table from jos_fabrik_joins where element_id = $element->id
@@ -2992,13 +3014,24 @@ class EmundusModelApplication extends ListModel
 												$index  = array_search($element->content, $params->sub_options->sub_values);
 
 												if (strlen($index) > 0) {
-													$elt = Text::_($params->sub_options->sub_labels[$index]);
+													$valueLabel = Text::_($params->sub_options->sub_labels[$index]);
+													if(in_array($valueLabel, $defaultPleaseSelectValue))
+													{
+														if($show_empty_fields == 0) {
+															continue;
+														}
+														else {
+															$valueLabel = '';
+														}
+													}
+
+													$elt = $valueLabel;
 												}
 												elseif (!empty($params->dropdown_populate)) {
 													$elt = $element->content;
 												}
-												elseif ($params->multiple == 1) {
-													$elt = $elt = "<ul><li>" . implode("</li><li>", json_decode(@$element->content)) . "</li></ul>";
+												elseif ($params->multiple == 1 && !empty($element->content)) {
+													$elt = "<ul><li>" . implode("</li><li>", json_decode(@$element->content)) . "</li></ul>";
 												}
 												else {
 													$elt = "";
@@ -3189,6 +3222,11 @@ class EmundusModelApplication extends ListModel
 		/* COULEURS*/
 		$eMConfig          = JComponentHelper::getParams('com_emundus');
 		$show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+		$defaultPleaseSelectValue       = [
+			'Veuillez sélectionner',
+			'Please select'
+		];
+
 		$em_breaker        = $eMConfig->get('export_application_pdf_breaker', '0');
 
 		require_once(JPATH_SITE . '/components/com_emundus/helpers/list.php');
@@ -3723,16 +3761,77 @@ class EmundusModelApplication extends ListModel
 								$repeated_elements = $this->_db->loadObjectList();
 								unset($t_elt);
 
+								$visible_elements = [];
+
+								foreach ($elements as $element)
+								{
+									if (in_array($element->plugin, ['id', 'parent_id', 'panel'])) continue;
+
+									if ($show_empty_fields == 1)
+									{
+										$visible_elements[] = $element;
+									}
+									else
+									{
+										$hasValue = false;
+										foreach ($repeated_elements as $row)
+										{
+											if (isset($row->{$element->name}) && $row->{$element->name} !== '' && $row->{$element->name} !== null)
+											{
+												if($element->plugin == 'dropdown')
+												{
+													$params = json_decode($element->params);
+													$index = array_search($row->{$element->name}, $params->sub_options->sub_values);
+													if (strlen($index) > 0) {
+														$valueLabel = Text::_($params->sub_options->sub_labels[$index]);
+														if(in_array($valueLabel, $defaultPleaseSelectValue))
+														{
+															continue;
+														}
+													}
+												}
+
+												$hasValue = true;
+												break;
+											}
+										}
+
+										if ($hasValue)
+										{
+											$visible_elements[] = $element;
+										}
+									}
+								}
+
 								// -- Ligne du tableau --
 								if (count($repeated_elements) > 0) {
 									$i = 1;
+
+									$visible_names = array_map(function($el) { return $el->name; }, $visible_elements);
 
 									foreach ($repeated_elements as $r_element) {
 										$j     = 0;
 										$forms .= '<p class="pdf-repeat-count">---- ' . $i . ' ----</p>';
 										$forms .= '<table class="pdf-forms">';
 										foreach ($r_element as $key => $r_elt) {
-											$params = json_decode($elements[$j]->params);
+											if (!in_array($key, $visible_names)) {
+												$j++;
+												continue;
+											}
+
+											$element = null;
+											foreach ($visible_elements as $el) {
+												if ($el->name === $key) {
+													$element = $el;
+													break;
+												}
+											}
+
+											if ($element) {
+												$params = json_decode($element->params);
+											} else {
+												$params = null;
+											}
 
 											// Do not display elements with no value inside them.
 											if (($show_empty_fields == 0 && trim($r_elt) == '') || empty($params->store_in_db)) {
@@ -3908,7 +4007,14 @@ class EmundusModelApplication extends ListModel
 													$index  = array_search($r_elt, $params->sub_options->sub_values);
 
 													if ($index !== false) {
-														$elt = Text::_($params->sub_options->sub_labels[$index]);
+														$valueLabel = Text::_($params->sub_options->sub_labels[$index]);
+														if(!in_array($valueLabel, $defaultPleaseSelectValue))
+														{
+															$elt = $valueLabel;
+														}
+														else {
+															$elt = '';
+														}
 													}
 													elseif (!empty($params->dropdown_populate)) {
 														$elt = $r_elt;
@@ -4208,9 +4314,20 @@ class EmundusModelApplication extends ListModel
 											elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
 												$index = array_search($element->content, $params->sub_options->sub_values);
 												if (strlen($index) > 0) {
-													$elt = Text::_($params->sub_options->sub_labels[$index]);
+													$valueLabel = Text::_($params->sub_options->sub_labels[$index]);
+													if(in_array($valueLabel, $defaultPleaseSelectValue))
+													{
+														if($show_empty_fields == 0) {
+															continue;
+														}
+														else {
+															$valueLabel = '';
+														}
+													}
+
+													$elt = $valueLabel;
 												}
-												elseif ($params->multiple == 1) {
+												elseif ($params->multiple == 1 && !empty($element->content)) {
 													$elt = implode(", ", json_decode(@$element->content));
 												}
 												elseif (!empty($params->dropdown_populate)) {
@@ -4353,6 +4470,29 @@ class EmundusModelApplication extends ListModel
 										if($element->plugin === 'databasejoin')
 										{
 											$element->content = '';
+										}
+
+										if($element->plugin === 'dropdown')
+										{
+											$params = json_decode($element->params);
+											$index  = array_search($element->content, $params->sub_options->sub_values);
+
+											$element->content = '';
+											if ($index !== false)
+											{
+												$valueLabel = Text::_($params->sub_options->sub_labels[$index]);
+												$element->content = $valueLabel;
+												if (in_array($valueLabel, $defaultPleaseSelectValue))
+												{
+													if($show_empty_fields == 1)
+													{
+														$element->content = '';
+													}
+													else {
+														continue;
+													}
+												}
+											}
 										}
 
 										if (!empty($element->label) && $element->label != ' ') {
@@ -4703,7 +4843,7 @@ class EmundusModelApplication extends ListModel
 									}
 									elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
 										$params = json_decode($element->params);
-										$index  = array_search($element->content, $params->sub_options->sub_values);
+										$index  = (trim((string) $element->content) === '') ? false : array_search($element->content, $params->sub_options->sub_values);
 										if (strlen($index) > 0) {
 											$elt = Text::_($params->sub_options->sub_labels[$index]);
 										}
