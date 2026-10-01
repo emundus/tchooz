@@ -72,6 +72,13 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 		return true;
 	}
 
+	protected function dataAttributes()
+	{
+		return [
+			'aria-label="' . htmlspecialchars(Text::_($this->getRawLabel()), ENT_QUOTES) . '"'
+		];
+	}
+
 	/**
 	 * Returns javascript which creates an instance of the class defined in formJavascriptClass()
 	 *
