@@ -925,7 +925,7 @@ class EmundusController extends JControllerLegacy
 		$session->set('emundusUser', $aid);
 
 		if (!empty($redirect)) {
-			$this->app->redirect($redirect);
+			$this->app->redirect(Uri::base() . $redirect);
 		}
 
 		echo json_encode((object) (array('status' => true)));

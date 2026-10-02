@@ -44,13 +44,20 @@ $icons = [
 <script>
     //domready
     document.addEventListener("DOMContentLoaded", function (event) {
-        const tab = '<?= $input_tab; ?>';
+        let tab = '<?= $input_tab; ?>';
 
         // If tab is history, load history data, tab is already selected but data is not loaded
+        let selected_tab = document.getElementById('tab_' + tab);
+        if(!selected_tab)
+        {
+            tab = 'forms';
+        }
+
+        selectTab(tab);
         if (tab === 'history') {
             displayHistory();
-        } else {
-            selectTab(tab);
+        } else if (tab === 'forms') {
+            displayApplication();
         }
     });
 
@@ -134,6 +141,7 @@ $icons = [
 
     function selectTab(tab) {
         let selected_tab = document.getElementById('tab_' + tab);
+
         let old_tab = document.getElementsByClassName('tw-border-main-500');
 
         if (selected_tab && selected_tab.classList.contains('tw-border-main-500')) {

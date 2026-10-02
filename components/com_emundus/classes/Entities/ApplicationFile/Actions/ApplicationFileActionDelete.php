@@ -16,6 +16,14 @@ class ApplicationFileActionDelete extends ApplicationFileAction
 		return ApplicationFileActionsEnum::DELETE;
 	}
 
+	/**
+	 * Only the applicant who owns the file can delete it, not collaborators.
+	 */
+	public function isAvailableForFile(ApplicationFileEntity $applicationFileEntity, ?User $currentUser = null): bool
+	{
+		return $this->isFileOwner($applicationFileEntity, $currentUser);
+	}
+
 	public function execute(ApplicationFileEntity $applicationFileEntity, array $parameters = [], ?User $currentUser = null): bool
 	{
 		$deleted = false;

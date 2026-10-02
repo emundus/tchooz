@@ -127,14 +127,16 @@ Factory::getApplication()->getSession()->set('application_layout', 'logs');
                         <?php foreach ($this->fileLogs as $log) : ?>
                             <div class="tw-border-1 tw-border-neutral-300 tw-shadow-sm tw-py-4 tw-px-6 tw-bg-white tw-rounded-lg">
                                 <div class="tw-flex tw-items-center">
-                                    <span class="material-symbols-outlined"
-                                          style="font-size: 48px"
-                                          alt="<?php echo Text::_('PROFILE_ICON_ALT') ?>">
-                                        account_circle
-                                    </span>
-                                    <div class="tw-ml-3">
+                                    <?php if ($this->_user->applicant == 0) : ?>
+                                        <span class="material-symbols-outlined"
+                                              style="font-size: 48px"
+                                              alt="<?php echo Text::_('PROFILE_ICON_ALT') ?>">
+                                            account_circle
+                                        </span>
+                                    <?php endif; ?>
+                                    <div <?php if ($this->_user->applicant == 0) : ?>class="tw-ml-3"<?php endif; ?>>
                                         <span class="tw-text-sm tw-text-neutral-600"><?= $log->date; ?></span>
-                                        <p><?= $log->firstname . ' ' . $log->lastname; ?></p>
+                                        <?php if ($this->_user->applicant == 0) : ?><p><?= $log->firstname . ' ' . $log->lastname; ?></p><?php endif; ?>
                                     </div>
                                 </div>
                                 <div class="tw-mt-3">

@@ -269,6 +269,31 @@ class CartRepositoryTest extends UnitTestCase
 		$this->model->verifyCart($cart, $this->dataset['coordinator']);
 	}
 
+	/**
+	 * @covers \Tchooz\Repositories\Payment\CartRepository::resetCart
+	 * @return void
+	 */
+	public function testResetCartWithSepaPaymentMethod()
+	{
+		$this->createWorkflowWithPayment();
+		$cart_id = $this->model->createCart($this->dataset['fnum'], $this->payment_step->getId());
+		$cart = $this->model->getCartById($cart_id, $this->payment_step->getId(), $this->dataset['coordinator']);
+
+		$sepa = null;
+		foreach ($cart->getPaymentMethods() as $payment_method) {
+			if ($payment_method->getName() === 'sepa') {
+				$sepa = $payment_method;
+			}
+		}
+		$this->assertNotEmpty($sepa, 'The sepa payment method is available on the payment step.');
+		$cart->setSelectedPaymentMethod($sepa);
+
+		$reset = $this->model->resetCart($cart, $this->dataset['coordinator']);
+		$this->assertTrue($reset, 'A sepa cart can be reset even if no installment rule covers an empty total.');
+		$this->assertNull($cart->getSelectedPaymentMethod());
+		$this->assertEquals(1, $cart->getNumberInstallmentDebit());
+	}
+
 	public function tearDown(): void
 	{
 		$this->h_dataset->deleteSampleCart($this->dataset['fnum']);

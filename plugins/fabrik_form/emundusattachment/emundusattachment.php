@@ -19,6 +19,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Database\ParameterType;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -37,8 +38,16 @@ class PlgFabrik_FormEmundusAttachment extends plgFabrik_Form
 
 	public function onBeforeCalculations()
 	{
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'checklist.php');
+		$currentUser = Factory::getApplication()->getIdentity();
+
+		if(!class_exists('EmundusModelFiles'))
+		{
+			require_once(JPATH_BASE . '/components/com_emundus/models/files.php');
+		}
+		if(!class_exists('EmundusHelperChecklist'))
+		{
+			require_once(JPATH_BASE . '/components/com_emundus/helpers/checklist.php');
+		}
 
 		$baseurl              = Uri::base();
 		$eMConfig             = ComponentHelper::getParams('com_emundus');
@@ -61,7 +70,8 @@ class PlgFabrik_FormEmundusAttachment extends plgFabrik_Form
 
 		$query->select('id, user_id, filename')
 			->from($this->_db->quoteName('#__emundus_uploads'))
-			->where($this->_db->quoteName('id') . ' = ' . $upload_id);
+			->where($this->_db->quoteName('id') . ' = :uploadId')
+			->bind(':uploadId', $upload_id, ParameterType::INTEGER);
 		$this->_db->setQuery($query);
 		$upload  = $this->_db->loadObject();
 		$student = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($upload->user_id);
@@ -69,7 +79,8 @@ class PlgFabrik_FormEmundusAttachment extends plgFabrik_Form
 		$query->clear()
 			->select('profile')
 			->from($this->_db->quoteName('#__emundus_users'))
-			->where($this->_db->quoteName('user_id') . ' = ' . $upload->user_id);
+			->where($this->_db->quoteName('user_id') . ' = :userId')
+			->bind(':userId', $upload->user_id, ParameterType::INTEGER);
 		$this->_db->setQuery($query);
 		$profile = $this->_db->loadResult();
 
@@ -77,11 +88,12 @@ class PlgFabrik_FormEmundusAttachment extends plgFabrik_Form
 			->select('ap.displayed, attachment.lbl, attachment.value')
 			->from($this->_db->quoteName('#__emundus_setup_attachments', 'attachment'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'ap') . ' ON attachment.id = ap.attachment_id AND ap.profile_id = ' . $profile)
-			->where('attachment.id = ' . $aid);
+			->where('attachment.id = :attachmentId')
+			->bind(':attachmentId', $aid, ParameterType::INTEGER);
 		$this->_db->setQuery($query);
 		$attachment_params = $this->_db->loadObject();
 
-		$fnumInfos = $m_files->getFnumInfos($fnum);
+		$fnumInfos = $m_files->getFnumInfos($fnum, $currentUser->id);
 		$nom       = $h_checklist->setAttachmentName($upload->filename, $attachment_params->lbl, $fnumInfos);
 
 		if (!file_exists(EMUNDUS_PATH_ABS . $upload->user_id))
@@ -97,7 +109,9 @@ class PlgFabrik_FormEmundusAttachment extends plgFabrik_Form
 		$update_upload = [
 			'id'       => $upload->id,
 			'filename' => $nom,
-			'timedate' => Factory::getDate()->toSql()
+			'timedate' => Factory::getDate()->toSql(),
+			// Update user id to current user that upload the attachment
+			'user_id' => $currentUser->id
 		];
 		$update_upload = (object) $update_upload;
 		$this->_db->updateObject('#__emundus_uploads', $update_upload, 'id');
@@ -140,7 +154,7 @@ class PlgFabrik_FormEmundusAttachment extends plgFabrik_Form
 
 		$logsParams = array('created' => [$logsStd]);
 
-		EmundusModelLogs::log($upload->user_id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+		EmundusModelLogs::log($currentUser->id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
 
 		if ($inform_applicant_by_email == 1)

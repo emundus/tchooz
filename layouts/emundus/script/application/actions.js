@@ -147,7 +147,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
             action.addEventListener('click', (e) => {
                 const actionId = action.getAttribute('data-actionid');
 
-                if (foundAction.confirmBeforeExecute)
+                if (foundAction.name === 'collaborate')
+                {
+                    const wrapper = document.querySelector(`.emundus-application-file-actions-wrapper[data-fnum="${fnum}"]`);
+                    action.closest('.emundus-application-file-actions-container').classList.add('tw-hidden');
+                    shareApplication(fnum, wrapper ? wrapper.dataset.ccid : '');
+                }
+                else if (foundAction.confirmBeforeExecute)
                 {
                     Swal.fire({
                         title: foundAction.label,

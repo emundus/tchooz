@@ -206,14 +206,14 @@ enum HeadersEnum: string
 				return \EmundusHelperDate::displayDate($date_submitted);
 			case self::PRINTED_DATE:
 				$timezone = new \DateTimeZone(Factory::getApplication()->get('offset'));
-				$date_printed = new Date('now', $timezone);
+				$date_printed = (new Date('now', $timezone))->format('Y-m-d H:i:s', true);
 
 				if ($format == ValueFormatEnum::RAW)
 				{
-					return $date_printed->format('Y-m-d H:i:s', true);
+					return $date_printed;
 				}
 
-				return \EmundusHelperDate::displayDate($date_printed, 'DATE_FORMAT_LC2', 0);
+				return \EmundusHelperDate::displayDate($date_printed);
 			case self::STATUS:
 				return $file->getStatus()?->getLabel();
 			case self::PROGRESS_FORMS:
@@ -262,7 +262,7 @@ enum HeadersEnum: string
 					return $startDate;
 				}
 
-				return \EmundusHelperDate::displayDate($startDate, 'DATE_FORMAT_LC2', 0);
+				return \EmundusHelperDate::displayDate($startDate);
 			case self::CAMPAIGN_END_DATE:
 				$endDate = $file->getCampaign()->getEndDate();
 				$endDate = $endDate?->format('Y-m-d H:i:s') ?? '';
@@ -271,7 +271,7 @@ enum HeadersEnum: string
 					return $endDate;
 				}
 
-				return \EmundusHelperDate::displayDate($endDate, 'DATE_FORMAT_LC2', 0);
+				return \EmundusHelperDate::displayDate($endDate);
 
 			case self::PROGRAM_NAME:
 				return $file->getCampaign()->getProgram()->getLabel();

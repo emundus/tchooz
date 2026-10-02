@@ -54,6 +54,7 @@ use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Services\Addons\Configurations\ChoicesAddonConfiguration;
+use Tchooz\Services\Addons\Configurations\CollaborateAddonConfiguration;
 use Tchooz\Services\ApplicationFile\ApplicationChoicesService;
 use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
@@ -1487,7 +1488,7 @@ class EmundusControllerApplication extends EmundusController
 			$fnum   = $this->input->getString('fnum', '');
 			$e_user = $this->app->getSession()->get('emundusUser');
 
-			if (!empty($fnum) && (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || in_array($fnum, array_keys($e_user->fnums))))
+			if ($this->canManageCollaboration($fnum, $this->input->getInt('ccid', 0)))
 			{
 				$response['code']  = 500;
 				$m_application     = $this->getModel('Application');
@@ -1571,7 +1572,7 @@ class EmundusControllerApplication extends EmundusController
 		$fnum   = $this->input->getString('fnum', '');
 		$e_user = $this->app->getSession()->get('emundusUser');
 
-		if (!empty($fnum) && (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || in_array($fnum, array_keys($e_user->fnums))))
+		if ($this->canManageCollaboration($fnum, $this->input->getInt('ccid', 0)))
 		{
 			$ccid       = $this->input->getInt('ccid', 0);
 			$request_id = $this->input->getInt('request_id', 0);
@@ -1612,7 +1613,7 @@ class EmundusControllerApplication extends EmundusController
 		$fnum   = $this->input->getString('fnum', '');
 		$e_user = $this->app->getSession()->get('emundusUser');
 
-		if (!empty($fnum) && (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || in_array($fnum, array_keys($e_user->fnums))))
+		if ($this->canManageCollaboration($fnum, $this->input->getInt('ccid', 0)))
 		{
 			$ccid       = $this->input->getInt('ccid', 0);
 			$request_id = $this->input->getInt('request_id', 0);
@@ -1656,6 +1657,25 @@ class EmundusControllerApplication extends EmundusController
 	}
 
 	/**
+	 * Session fnums also hold the files shared with the current user: collaborators must not manage the collaboration.
+	 */
+	private function canManageCollaboration(string $fnum, int $ccid): bool
+	{
+		if (empty($fnum) || empty($ccid))
+		{
+			return false;
+		}
+
+		$applicationFile = (new ApplicationFileRepository())->getByFnum($fnum);
+		if (empty($applicationFile) || $applicationFile->getId() !== $ccid)
+		{
+			return false;
+		}
+
+		return EmundusHelperAccess::asPartnerAccessLevel($this->user->id) || (int) $applicationFile->getUser()->id === (int) $this->user->id;
+	}
+
+	/**
 	 * Update right of a user on a shared application file
 	 *
 	 * @throws Exception
@@ -1668,7 +1688,7 @@ class EmundusControllerApplication extends EmundusController
 		$fnum   = $this->input->getString('fnum', '');
 		$e_user = $this->app->getSession()->get('emundusUser');
 
-		if (!empty($fnum) && (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || in_array($fnum, array_keys($e_user->fnums))))
+		if ($this->canManageCollaboration($fnum, $this->input->getInt('ccid', 0)))
 		{
 			$ccid       = $this->input->getInt('ccid', 0);
 			$request_id = $this->input->getInt('request_id', 0);
@@ -1676,7 +1696,7 @@ class EmundusControllerApplication extends EmundusController
 			$value      = $this->input->getString('value', 0);
 			$value      = $value == 'true' ? 1 : 0;
 
-			if (!empty($request_id) && !empty($ccid) && !empty($right))
+			if (!empty($request_id) && !empty($ccid) && in_array($right, CollaborateAddonConfiguration::RIGHTS, true))
 			{
 				$m_application      = $this->getModel('Application');
 				$response['status'] = $m_application->updateRight($request_id, $ccid, $right, $value);

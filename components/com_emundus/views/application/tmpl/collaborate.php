@@ -17,8 +17,8 @@ Text::script('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS');
 
 ?>
 
-<div>
-    <?php if($this->_user->applicant == 1) : ?>
+<div id="collaborate_modal_content" data-can-share="<?= $this->isCollaborationOwner ? 1 : 0 ?>">
+    <?php if($this->isCollaborationOwner) : ?>
         <div id="collab_emails_block">
             <label for="collab_emails" class="tw-text-black"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_EMAILS') ?></label>
             <input type="text" name="collab_emails" id="collab_emails" class="tw-mt-2 <?php if (sizeof($this->collaborators) > 0) { echo 'tw-mb-6';} ?>" />
@@ -27,13 +27,13 @@ Text::script('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS');
 
 	<div id="collaborators_block">
 		<?php if(sizeof($this->collaborators) > 0) : ?>
-            <?php if($this->_user->applicant == 1) : ?>
+            <?php if($this->isCollaborationOwner) : ?>
                 <div class="tw-flex tw-items-center tw-justify-between tw-cursor-pointer" onclick="toggleRequests()">
                     <h3><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS') ?></h3>
                     <span class="material-symbols-outlined" id="requests_icon">expand_less</span>
                 </div>
             <?php endif; ?>
-			<div class="tw-mt-2 tw-flex tw-flex-col tw-gap-2 <?php if($this->_user->applicant == 1) : ?>tw-hidden<?php endif; ?>" id="collaborators_requests">
+			<div class="tw-mt-2 tw-flex tw-flex-col tw-gap-2 <?php if($this->isCollaborationOwner) : ?>tw-hidden<?php endif; ?>" id="collaborators_requests">
 				<?php foreach ($this->collaborators as $collaborator) : ?>
 					<div class="tw-py-4 tw-px-6 tw-border tw-border-neutral-500 tw-rounded-md tw-shadow-sm" id="collaborator_block_<?php echo $collaborator->id ?>">
 						<div class="tw-flex tw-items-center tw-justify-between">
@@ -48,14 +48,18 @@ Text::script('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS');
 									</div>
 								<?php endif; ?>
 								<div class="tw-ml-3">
-									<?php if($this->_user->applicant == 1) : ?>
+									<?php if($this->isCollaborationOwner) : ?>
 									    <span class="tw-text-sm tw-mb-3">Envoyé le <?php echo EmundusHelperDate::displayDate($collaborator->time_date,'DATE_FORMAT_LC2',0)?></span>
                                     <?php endif; ?>
 									<p><?php echo !empty($collaborator->user_id) ? $collaborator->user_lastname . ' ' . $collaborator->user_firstname : $collaborator->email; ?></p>
 								</div>
 							</div>
 
-							<?php if($this->_user->applicant == 1) : ?>
+							<?php if (!empty($collaborator->is_owner)) : ?>
+                                <span class="label label-blue-2 tw-text-white"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_OWNER_STATUS') ?></span>
+							<?php endif; ?>
+
+							<?php if($this->isCollaborationOwner) : ?>
                                 <div class="tw-flex tw-items-center tw-gap-3">
                                     <div>
                                         <?php if($collaborator->uploaded == 1) : ?>
@@ -74,9 +78,10 @@ Text::script('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS');
                             <?php endif; ?>
 						</div>
 
+						<?php if (!$this->collaboratorsReadOnly) : ?>
 						<hr/>
 
-						<div class="tw-flex <?php if($this->_user->applicant == 1) : ?>tw-items-center tw-justify-between tw-flex-wrap <?php else : ?>tw-flex-col<?php endif;?>">
+						<div class="tw-flex <?php if($this->isCollaborationOwner) : ?>tw-items-center tw-justify-between tw-flex-wrap <?php else : ?>tw-flex-col<?php endif;?>">
 							<div class="tw-flex tw-items-center tw-gap-2">
 								<input class="!tw-mt-0" type="checkbox" name="rights_"<?= $collaborator->id; ?>" id="read_<?php echo $collaborator->id; ?>" value="r" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->r == 1) : ?>checked<?php endif; ?> />
 								<label class="!tw-mb-0" for="read_<?php echo $collaborator->id; ?>"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_READ') ?></label>
@@ -97,6 +102,7 @@ Text::script('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS');
 								<label class="!tw-mb-0" for="view_others_<?php echo $collaborator->id; ?>"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_OTHERS') ?></label>
 							</div>
 						</div>
+						<?php endif; ?>
 					</div>
 				<?php endforeach; ?>
 			</div>

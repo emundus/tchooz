@@ -214,6 +214,7 @@ class EmundusFilters
 
 						break;
 					case 'average':
+					case 'numeric':
 						$filter['type'] = 'number';
 						break;
 					default:

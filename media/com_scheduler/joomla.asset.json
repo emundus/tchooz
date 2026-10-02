@@ -6,6 +6,18 @@
   "license": "GNU General Public License version 2 or later; see LICENSE.txt",
   "assets": [
     {
+      "name": "com_scheduler.admin-view-select-task-search",
+      "type": "script",
+      "uri": "com_scheduler/admin-view-select-task-search.js",
+      "dependencies": [
+        "core"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "version": "878d30"
+    },
+    {
       "name": "com_scheduler.test-task",
       "type": "script",
       "uri": "com_scheduler/admin-view-run-test-task.js",
@@ -17,18 +29,6 @@
         "type": "module"
       },
       "version": "6d6fc2"
-    },
-    {
-      "name": "com_scheduler.admin-view-select-task-search",
-      "type": "script",
-      "uri": "com_scheduler/admin-view-select-task-search.js",
-      "dependencies": [
-        "core"
-      ],
-      "attributes": {
-        "type": "module"
-      },
-      "version": "878d30"
     },
     {
       "name": "com_scheduler.scheduler-config",

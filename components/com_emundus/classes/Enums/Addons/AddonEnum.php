@@ -31,6 +31,8 @@ enum AddonEnum: string
 
 	case FAVORITE = 'favorite';
 
+	case COLLABORATE = 'collaborate';
+
 	public function getLabel(): string
 	{
 		return match ($this)
@@ -50,6 +52,7 @@ enum AddonEnum: string
 			self::POLL => Text::_('COM_EMUNDUS_ADDON_POLL'),
 			self::FAVORITE => Text::_('COM_EMUNDUS_ADDON_FAVORITE'),
 			self::RESOURCES => Text::_('COM_EMUNDUS_ADDON_RESOURCES'),
+			self::COLLABORATE => Text::_('COM_EMUNDUS_ADDON_COLLABORATE'),
 		};
 	}
 
@@ -72,6 +75,7 @@ enum AddonEnum: string
 			self::POLL => Text::_('COM_EMUNDUS_ADDON_POLL_DESC'),
 			self::FAVORITE => Text::_('COM_EMUNDUS_ADDON_FAVORITE_DESC'),
 			self::RESOURCES => Text::_('COM_EMUNDUS_ADDON_RESOURCES_DESC'),
+			self::COLLABORATE => Text::_('COM_EMUNDUS_ADDON_COLLABORATE_DESC'),
 		};
 	}
 
@@ -95,6 +99,7 @@ enum AddonEnum: string
 			self::POLL => 'voting_chip',
 			self::FAVORITE => 'favorite',
 			self::RESOURCES => 'library_books',
+			self::COLLABORATE => 'group',
 		};
 	}
 }
