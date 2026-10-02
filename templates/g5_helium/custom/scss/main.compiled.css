@@ -3289,6 +3289,17 @@ video {
                 .em-attachmentList .em-fieldset-attachment-table .em-attachment-dropzone .dz-default.dz-message {
                     margin-top: var(--em-spacing-3);
                 }
+.tw-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
 .tw-pointer-events-none {
     pointer-events: none;
 }
@@ -5541,6 +5552,9 @@ video {
 }
 .tw-min-w-\[40px\] {
     min-width: 40px;
+}
+.tw-min-w-\[50rem\] {
+    min-width: 50rem;
 }
 .tw-min-w-\[70vw\] {
     min-width: 70vw;

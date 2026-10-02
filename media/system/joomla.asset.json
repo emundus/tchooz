@@ -261,11 +261,16 @@
       ]
     },
     {
-      "name": "core",
+      "name": "messages",
       "type": "script",
-      "class": "CoreAssetItem",
-      "uri": "system/core.min.js",
-      "version": "a3d8f8"
+      "uri": "system/messages.min.js",
+      "attributes": {
+        "type": "module"
+      },
+      "dependencies": [
+        "messages-legacy"
+      ],
+      "version": "9a4811"
     },
     {
       "name": "keepalive",
@@ -281,28 +286,11 @@
       "version": "08e025"
     },
     {
-      "name": "messages",
+      "name": "core",
       "type": "script",
-      "uri": "system/messages.min.js",
-      "attributes": {
-        "type": "module"
-      },
-      "dependencies": [
-        "messages-legacy"
-      ],
-      "version": "9a4811"
-    },
-    {
-      "name": "inlinehelp",
-      "type": "script",
-      "uri": "system/inlinehelp.min.js",
-      "attributes": {
-        "type": "module"
-      },
-      "dependencies": [
-        "inlinehelp-legacy"
-      ],
-      "version": "c1a01d"
+      "class": "CoreAssetItem",
+      "uri": "system/core.min.js",
+      "version": "a3d8f8"
     },
     {
       "name": "multiselect",
@@ -326,7 +314,7 @@
       "attributes": {
         "defer": true
       },
-      "version": "d64d1d"
+      "version": "8a0d0f"
     },
     {
       "name": "showon",
@@ -339,6 +327,18 @@
         "type": "module"
       },
       "version": "e51227"
+    },
+    {
+      "name": "inlinehelp",
+      "type": "script",
+      "uri": "system/inlinehelp.min.js",
+      "attributes": {
+        "type": "module"
+      },
+      "dependencies": [
+        "inlinehelp-legacy"
+      ],
+      "version": "c1a01d"
     },
     {
       "name": "switcher",
@@ -435,18 +435,6 @@
       "version": "260670"
     },
     {
-      "name": "field.calendar",
-      "type": "script",
-      "uri": "system/fields/calendar.min.js",
-      "attributes": {
-        "defer": true
-      },
-      "dependencies": [
-        "field.calendar.helper"
-      ],
-      "version": "6a423a"
-    },
-    {
       "name": "field.color-slider",
       "type": "script",
       "uri": "system/fields/joomla-field-color-slider.min.js",
@@ -470,6 +458,18 @@
       "version": "21a476"
     },
     {
+      "name": "field.calendar",
+      "type": "script",
+      "uri": "system/fields/calendar.min.js",
+      "attributes": {
+        "defer": true
+      },
+      "dependencies": [
+        "field.calendar.helper"
+      ],
+      "version": "b858d8"
+    },
+    {
       "name": "webcomponent.field-fancy-select",
       "type": "script",
       "uri": "system/fields/joomla-field-fancy-select.min.js",
@@ -487,12 +487,6 @@
       "type": "style",
       "uri": "system/fields/joomla-field-media.min.css",
       "version": "dcc09c"
-    },
-    {
-      "name": "field.calendar",
-      "type": "style",
-      "uri": "system/fields/calendar.css",
-      "version": "5da368"
     },
     {
       "name": "webcomponent.media-select",
@@ -556,24 +550,6 @@
       "version": "ff46de"
     },
     {
-      "name": "webcomponent.field-send-test-mail",
-      "type": "script",
-      "uri": "system/fields/joomla-field-send-test-mail.min.js",
-      "attributes": {
-        "type": "module"
-      },
-      "dependencies": [
-        "webcomponent.field-send-test-mail-legacy"
-      ],
-      "version": "f8992f"
-    },
-    {
-      "name": "webcomponent.field-simple-color",
-      "type": "style",
-      "uri": "system/fields/joomla-field-simple-color.min.css",
-      "version": "08bfd7"
-    },
-    {
       "name": "webcomponent.field-simple-color",
       "type": "script",
       "uri": "system/fields/joomla-field-simple-color.min.js",
@@ -598,17 +574,22 @@
       "version": "9c9202"
     },
     {
-      "name": "webcomponent.field-user",
+      "name": "webcomponent.field-simple-color",
+      "type": "style",
+      "uri": "system/fields/joomla-field-simple-color.min.css",
+      "version": "08bfd7"
+    },
+    {
+      "name": "webcomponent.field-send-test-mail",
       "type": "script",
-      "uri": "system/fields/joomla-field-user.min.js",
+      "uri": "system/fields/joomla-field-send-test-mail.min.js",
       "attributes": {
         "type": "module"
       },
       "dependencies": [
-        "webcomponent.field-user-legacy",
-        "joomla.dialog"
+        "webcomponent.field-send-test-mail-legacy"
       ],
-      "version": "aa73f7"
+      "version": "f8992f"
     },
     {
       "name": "webcomponent.core-loader",
@@ -623,6 +604,19 @@
       "version": "d5855e"
     },
     {
+      "name": "webcomponent.toolbar-button",
+      "type": "script",
+      "uri": "system/joomla-toolbar-button.min.js",
+      "attributes": {
+        "type": "module"
+      },
+      "dependencies": [
+        "webcomponent.toolbar-button-legacy",
+        "joomla.dialog"
+      ],
+      "version": "a0c6e7"
+    },
+    {
       "name": "webcomponent.hidden-mail",
       "type": "script",
       "uri": "system/joomla-hidden-mail.min.js",
@@ -635,19 +629,6 @@
       "version": "80d9c7"
     },
     {
-      "name": "webcomponent.toolbar-button",
-      "type": "script",
-      "uri": "system/joomla-toolbar-button.min.js",
-      "attributes": {
-        "type": "module"
-      },
-      "dependencies": [
-        "webcomponent.toolbar-button-legacy",
-        "joomla.dialog"
-      ],
-      "version": "623aee"
-    },
-    {
       "name": "joomla.dialog",
       "type": "script",
       "uri": "system/joomla-dialog.min.js",
@@ -657,6 +638,18 @@
         "core"
       ],
       "version": "28819e"
+    },
+    {
+      "name": "joomla.dialog-autocreate",
+      "type": "script",
+      "uri": "system/joomla-dialog-autocreate.min.js",
+      "attributes": {
+        "type": "module"
+      },
+      "dependencies": [
+        "joomla.dialog"
+      ],
+      "version": "44fd47"
     },
     {
       "name": "list-view",
@@ -671,16 +664,17 @@
       "version": "bb814f"
     },
     {
-      "name": "joomla.dialog-autocreate",
+      "name": "webcomponent.field-user",
       "type": "script",
-      "uri": "system/joomla-dialog-autocreate.min.js",
+      "uri": "system/fields/joomla-field-user.min.js",
       "attributes": {
         "type": "module"
       },
       "dependencies": [
+        "webcomponent.field-user-legacy",
         "joomla.dialog"
       ],
-      "version": "44fd47"
+      "version": "aa73f7"
     },
     {
       "type": "script",
@@ -715,6 +709,12 @@
         "type": "module"
       },
       "version": "c1bf6e"
+    },
+    {
+      "name": "field.calendar",
+      "type": "style",
+      "uri": "system/fields/calendar.css",
+      "version": "5da368"
     }
   ]
 }

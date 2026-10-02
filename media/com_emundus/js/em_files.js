@@ -4243,7 +4243,7 @@ $(document).ready(function() {
             case 27:
                 title = 'COM_EMUNDUS_ACCESS_LETTERS';
                 swal_confirm_button = 'GENERATE_DOCUMENT';
-                swal_popup_class = 'em-w-auto';
+                swal_popup_class = 'em-w-auto tw-min-w-[50rem]';
                 addLoader();
 
                 nbFiles = await countFilesBeforeAction(checkInput, id, verb);

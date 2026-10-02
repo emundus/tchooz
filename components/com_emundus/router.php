@@ -39,6 +39,7 @@ class emundusRouter extends RouterView
 
 	public function parse(&$segments)
 	{
+		return [];
 	}
 }
 

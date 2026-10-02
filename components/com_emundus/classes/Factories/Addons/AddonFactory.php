@@ -43,12 +43,12 @@ class AddonFactory implements DBFactory
 		$params = [];
 		if(!empty($dbObject->params) && is_string($dbObject->params))
 		{
-			$params = json_decode($dbObject->params, true);
+			$params = json_decode($dbObject->params, true) ?? [];
 		}
 		$default = [];
 		 if(!empty($dbObject->default) && is_string($dbObject->default))
 		 {
-			 $default = json_decode($dbObject->default, true);
+			 $default = json_decode($dbObject->default, true) ?? [];
 		 }
 
 		 $activatedAt = !empty($dbObject->activated_at) && !DateProvider::isNullableDate($dbObject->activated_at) ? new \DateTimeImmutable($dbObject->activated_at) : null;

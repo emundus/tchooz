@@ -88,6 +88,8 @@ class EmundusViewApplication extends HtmlView
 	protected ?string $html_form;
 	protected mixed $_user;
 	protected ?array $collaborators;
+	protected bool $isCollaborationOwner = false;
+	protected bool $collaboratorsReadOnly = false;
 	protected bool $is_applicant;
 
 	protected ?ApplicationFileEntity $applicationFile = null;
@@ -881,7 +883,26 @@ class EmundusViewApplication extends HtmlView
 
 					break;
 				case 'collaborate':
-					$this->collaborators = $m_application->getSharedFileUsers($ccid, $fnum);
+					$this->isCollaborationOwner = (int) $this->applicationFile->getUser()->id === (int) $this->user->id;
+					$this->collaboratorsReadOnly = !$this->isCollaborationOwner && !EmundusHelperAccess::asPartnerAccessLevel($this->user->id);
+
+					if ($this->collaboratorsReadOnly && !$m_application->canSeeSharedUsers($this->ccid, $this->user->id))
+					{
+						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+						return;
+					}
+
+					$this->collaborators = $m_application->getSharedFileUsers($this->ccid) ?: [];
+					if ($this->collaboratorsReadOnly)
+					{
+						$this->collaborators = array_values(array_filter($this->collaborators, fn($collaborator) => $collaborator->uploaded == 1 && (int) $collaborator->user_id !== (int) $this->user->id));
+
+						$owner = $m_application->getSharedFileOwner($this->ccid);
+						if (!empty($owner))
+						{
+							array_unshift($this->collaborators, $owner);
+						}
+					}
 			}
 
 			parent::display($tpl);

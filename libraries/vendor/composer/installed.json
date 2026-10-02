@@ -1712,17 +1712,17 @@
         },
         {
             "name": "joomla/filesystem",
-            "version": "dev-3.x-shtml",
-            "version_normalized": "dev-3.x-shtml",
+            "version": "3.3.1",
+            "version_normalized": "3.3.1.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:joomla-framework/security-filesystem.git",
-                "reference": "8912e45e2aa2c119e78783d046a37ad2d1df0e61"
+                "url": "https://github.com/joomla-framework/filesystem.git",
+                "reference": "f211285c5ce7661b986867b774153fafb8282229"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/security-filesystem/zipball/8912e45e2aa2c119e78783d046a37ad2d1df0e61",
-                "reference": "8912e45e2aa2c119e78783d046a37ad2d1df0e61",
+                "url": "https://api.github.com/repos/joomla-framework/filesystem/zipball/f211285c5ce7661b986867b774153fafb8282229",
+                "reference": "f211285c5ce7661b986867b774153fafb8282229",
                 "shasum": ""
             },
             "require": {
@@ -1736,7 +1736,7 @@
                 "phpunit/phpunit": "^9.5.28",
                 "squizlabs/php_codesniffer": "^3.7.2"
             },
-            "time": "2026-08-05T17:20:15+00:00",
+            "time": "2026-08-18T15:40:35+00:00",
             "type": "joomla-package",
             "extra": {
                 "branch-alias": {
@@ -1750,11 +1750,7 @@
                     "Joomla\\Filesystem\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Joomla\\Filesystem\\Tests\\": "Tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0-or-later"
             ],
@@ -1766,34 +1762,24 @@
                 "joomla"
             ],
             "support": {
-                "source": "https://github.com/joomla-framework/security-filesystem/tree/3.x-shtml",
-                "issues": "https://github.com/joomla-framework/security-filesystem/issues"
+                "issues": "https://github.com/joomla-framework/filesystem/issues",
+                "source": "https://github.com/joomla-framework/filesystem/tree/3.3.1"
             },
-            "funding": [
-                {
-                    "type": "github",
-                    "url": "https://github.com/joomla"
-                },
-                {
-                    "type": "custom",
-                    "url": "https://community.joomla.org/sponsorship-campaigns.html"
-                }
-            ],
             "install-path": "../joomla/filesystem"
         },
         {
             "name": "joomla/filter",
-            "version": "3.0.6",
-            "version_normalized": "3.0.6.0",
+            "version": "dev-3.x-sept26-release",
+            "version_normalized": "dev-3.x-sept26-release",
             "source": {
                 "type": "git",
-                "url": "https://github.com/joomla-framework/filter.git",
-                "reference": "dde731979af1a34a0b5610281c227274628c1b6f"
+                "url": "git@github.com:joomla-framework/security-filter.git",
+                "reference": "071934c3b35457653704ec87e86afb47672845aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/filter/zipball/dde731979af1a34a0b5610281c227274628c1b6f",
-                "reference": "dde731979af1a34a0b5610281c227274628c1b6f",
+                "url": "https://api.github.com/repos/joomla-framework/security-filter/zipball/071934c3b35457653704ec87e86afb47672845aa",
+                "reference": "071934c3b35457653704ec87e86afb47672845aa",
                 "shasum": ""
             },
             "require": {
@@ -1810,7 +1796,7 @@
             "suggest": {
                 "joomla/language": "Required only if you want to use `OutputFilter::stringURLSafe`."
             },
-            "time": "2026-05-26T16:06:28+00:00",
+            "time": "2026-09-17T16:49:03+00:00",
             "type": "joomla-package",
             "extra": {
                 "branch-alias": {
@@ -1824,7 +1810,11 @@
                     "Joomla\\Filter\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Joomla\\Filter\\Tests\\": "Tests/"
+                }
+            },
             "license": [
                 "GPL-2.0-or-later"
             ],
@@ -1836,9 +1826,19 @@
                 "joomla"
             ],
             "support": {
-                "issues": "https://github.com/joomla-framework/filter/issues",
-                "source": "https://github.com/joomla-framework/filter/tree/3.0.6"
+                "source": "https://github.com/joomla-framework/security-filter/tree/3.x-sept26-release",
+                "issues": "https://github.com/joomla-framework/security-filter/issues"
             },
+            "funding": [
+                {
+                    "type": "github",
+                    "url": "https://github.com/joomla"
+                },
+                {
+                    "type": "custom",
+                    "url": "https://community.joomla.org/sponsorship-campaigns.html"
+                }
+            ],
             "install-path": "../joomla/filter"
         },
         {
@@ -2152,17 +2152,17 @@
         },
         {
             "name": "joomla/registry",
-            "version": "3.0.2",
-            "version_normalized": "3.0.2.0",
+            "version": "3.0.3",
+            "version_normalized": "3.0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/joomla-framework/registry.git",
-                "reference": "4452de9c66abfec59b535e27c62af3528a539311"
+                "reference": "f84094c218a0fb290a8decbee0c8aa97151a41f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/registry/zipball/4452de9c66abfec59b535e27c62af3528a539311",
-                "reference": "4452de9c66abfec59b535e27c62af3528a539311",
+                "url": "https://api.github.com/repos/joomla-framework/registry/zipball/f84094c218a0fb290a8decbee0c8aa97151a41f7",
+                "reference": "f84094c218a0fb290a8decbee0c8aa97151a41f7",
                 "shasum": ""
             },
             "require": {
@@ -2181,7 +2181,7 @@
                 "ext-simplexml": "ext-simplexml is needed for XML support",
                 "symfony/yaml": "Install symfony/yaml if you require YAML support."
             },
-            "time": "2025-07-19T16:26:22+00:00",
+            "time": "2026-09-04T10:03:16+00:00",
             "type": "joomla-package",
             "extra": {
                 "branch-alias": {
@@ -2208,7 +2208,7 @@
             ],
             "support": {
                 "issues": "https://github.com/joomla-framework/registry/issues",
-                "source": "https://github.com/joomla-framework/registry/tree/3.0.2"
+                "source": "https://github.com/joomla-framework/registry/tree/3.0.3"
             },
             "install-path": "../joomla/registry"
         },
@@ -2861,17 +2861,17 @@
         },
         {
             "name": "paragonie/sodium_compat",
-            "version": "v1.24.0",
-            "version_normalized": "1.24.0.0",
+            "version": "v1.24.2",
+            "version_normalized": "1.24.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/sodium_compat.git",
-                "reference": "2cb48f26130919f92f30650bdcc30e6f4ebe45ac"
+                "reference": "4524c98a826776c9a32d6ce06932563cb10f3995"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/2cb48f26130919f92f30650bdcc30e6f4ebe45ac",
-                "reference": "2cb48f26130919f92f30650bdcc30e6f4ebe45ac",
+                "url": "https://api.github.com/repos/paragonie/sodium_compat/zipball/4524c98a826776c9a32d6ce06932563cb10f3995",
+                "reference": "4524c98a826776c9a32d6ce06932563cb10f3995",
                 "shasum": ""
             },
             "require": {
@@ -2885,7 +2885,7 @@
                 "ext-libsodium": "PHP < 7.0: Better performance, password hashing (Argon2i), secure memory management (memzero), and better security.",
                 "ext-sodium": "PHP >= 7.0: Better performance, password hashing (Argon2i), secure memory management (memzero), and better security."
             },
-            "time": "2025-12-30T16:16:35+00:00",
+            "time": "2026-08-18T23:44:07+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -2944,7 +2944,7 @@
             ],
             "support": {
                 "issues": "https://github.com/paragonie/sodium_compat/issues",
-                "source": "https://github.com/paragonie/sodium_compat/tree/v1.24.0"
+                "source": "https://github.com/paragonie/sodium_compat/tree/v1.24.2"
             },
             "install-path": "../paragonie/sodium_compat"
         },

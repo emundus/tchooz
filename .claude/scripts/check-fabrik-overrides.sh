@@ -171,6 +171,29 @@ chk "form-final : isset(control) et non !empty() #1271" \
 	plugins/fabrik_element/databasejoin/layouts/fabrik-element-databasejoin-form-final.php
 
 echo
+echo "Accessibilité (RGAA 11.5 : aria-label sur le groupe de cases/radios) #1953"
+
+chk "Html : bootstrapGrid reçoit un param dataAttributes" \
+	'$spanId = null, $dataAttributes = ' \
+	libraries/fabrik/fabrik/fabrik/Helpers/Html.php
+
+chk "Html : bootstrapGrid transmet dataAttributes au layout" \
+	'$displayData->dataAttributes = $dataAttributes;' \
+	libraries/fabrik/fabrik/fabrik/Helpers/Html.php
+
+chk "Html : grid() passe dataAttributes à bootstrapGrid" \
+	', false, null, $dataAttributes)' \
+	libraries/fabrik/fabrik/fabrik/Helpers/Html.php
+
+chk "checkbox : dataAttributes() renvoie aria-label échappé" \
+	'htmlspecialchars(Text::_($this->getRawLabel()), ENT_QUOTES)' \
+	plugins/fabrik_element/checkbox/checkbox.php
+
+chk "layout bootstrap-grid : aria-label rendu sur role=group" \
+	'role="group" ' \
+	templates/g5_helium/html/layouts/com_fabrik/fabrik-bootstrap-grid.php
+
+echo
 if [ "$fail" -eq 0 ]; then
 	printf '\033[32mToutes les surcharges sont en place.\033[0m\n\n'
 else

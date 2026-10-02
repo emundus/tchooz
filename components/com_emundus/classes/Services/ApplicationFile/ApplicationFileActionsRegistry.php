@@ -9,6 +9,7 @@ use Joomla\Plugin\Emundus\Anonymization\Extension\Anonymization;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\User;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileAction;
+use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionCollaborate;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionCreateTab;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionMoveToTab;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectToFile;
@@ -118,6 +119,11 @@ class ApplicationFileActionsRegistry
 	{
 		$availableActions = [];
 
+		if (empty($currentUser))
+		{
+			$currentUser = Factory::getApplication()->getIdentity();
+		}
+
 		if ($context === 'multiple')
 		{
 			$availableActions[] = new ApplicationFileActionRedirectToFile();
@@ -152,6 +158,13 @@ class ApplicationFileActionsRegistry
 			}
 		}
 
+		// Enabled by its addon only, there is no action_collaborate toggle
+		$collaborateAction = new ApplicationFileActionCollaborate();
+		if ($collaborateAction->getActionType()->isAvailable() && $collaborateAction->isAvailableForFile($applicationFileEntity, $currentUser))
+		{
+			$availableActions[] = $collaborateAction;
+		}
+
 		$config  = ComponentHelper::getParams('com_emundus');
 
 		$deletionStatus = $config->get('status_for_delete', 0);
@@ -163,7 +176,7 @@ class ApplicationFileActionsRegistry
 			{
 				$actionEnabled = (bool) $config->get('action_' . $action->getActionType()->value, false);
 
-				if ($actionEnabled)
+				if ($actionEnabled && $action->isAvailableForFile($applicationFileEntity, $currentUser))
 				{
 					if (
 						$action->getActionType() === ApplicationFileActionsEnum::DELETE
@@ -186,11 +199,6 @@ class ApplicationFileActionsRegistry
 		$customActions = $config->get('custom_actions', '');
 		if (!empty($customActions))
 		{
-			if (empty($currentUser))
-			{
-				$currentUser = Factory::getApplication()->getIdentity();
-			}
-
 			foreach ($customActions as $id => $customAction)
 			{
 				try

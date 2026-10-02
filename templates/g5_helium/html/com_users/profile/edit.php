@@ -97,7 +97,24 @@ if (!$external && !empty($user->params))
                             </p>
                         <?php endif; ?>
                         <?php foreach ($fields as $field) : ?>
-                            <?php echo $field->renderField(); ?>
+                            <?php $fieldName = $field->fieldname; ?>
+                            <?php if ($fieldName === 'password2') : ?>
+                                <?php // Rendu dans le fieldset groupé avec password1 (RGAA 11.5) ?>
+                                <?php continue; ?>
+                            <?php elseif ($fieldName === 'password1') : ?>
+                                <fieldset class="password-fieldset">
+                                    <legend class="visually-hidden"><?php echo Text::_('COM_EMUNDUS_PROFILE_PASSWORD_FIELDSET_LEGEND'); ?></legend>
+                                    <?php echo $field->renderField(); ?>
+                                    <?php foreach ($fields as $passwordField) : ?>
+                                        <?php if ($passwordField->fieldname === 'password2') : ?>
+                                            <?php echo $passwordField->renderField(); ?>
+                                            <?php break; ?>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </fieldset>
+                            <?php else : ?>
+                                <?php echo $field->renderField(); ?>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </fieldset>
                 <?php endif; ?>
