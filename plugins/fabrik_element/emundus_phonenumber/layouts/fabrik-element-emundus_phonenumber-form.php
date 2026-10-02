@@ -20,10 +20,11 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 ?>
 
 
-<div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer fabrikEmundusPhoneNumber">
+<div id="<?php echo $displayData->attributes['id']; ?>" class="em-flex-row fabrikSubElementContainer fabrikEmundusPhoneNumber" role="group" aria-label="<?php echo JText::_('PLG_ELEMENT_PHONE_NUMBER_GROUP'); ?>">
 
 	<select id="countrySelect" name="<?php echo $displayData->attributes['name'].'[country]'; ?>" class="em-w-auto fabrikinput"
 			selectedValue="<?php echo $displayData->attributes['selectValue']; ?>"
+			aria-label="<?php echo JText::_('PLG_ELEMENT_PHONE_NUMBER_COUNTRY'); ?>"
 	>
 
 		<?php foreach ($displayData->dataSelect as $key => $value) :?>
@@ -40,15 +41,16 @@ JText::script('PLG_ELEMENT_PHONE_NUMBER_UNSUPPORTED');
 
 		<input id="inputValue" autocomplete="tel" name="<?php echo $displayData->attributes['name'].'[num_tel]'; ?>" class="input-medium fabrikinput" maxlength="16"
 			   value="<?php echo $displayData->attributes['inputValue']; ?>" autocomplete="tel"
+			   aria-label="<?php echo JText::_('PLG_ELEMENT_PHONE_NUMBER_INPUT'); ?>"
 		>
 
-		<input id="hasValidation" type="checkbox" class="check"
+		<input id="hasValidation" type="checkbox" class="check" tabindex="-1" aria-hidden="true"
 			<?php if ($displayData->attributes['mustValidate']) :?>
 				checked
 			<?php endif ?>
 		>
 
-		<input id="validationValue" name="<?php echo $displayData->attributes['name'].'[is_valid]'; ?>" class="fabrikinput check" type="checkbox"
+		<input id="validationValue" name="<?php echo $displayData->attributes['name'].'[is_valid]'; ?>" class="fabrikinput check" type="checkbox" tabindex="-1" aria-hidden="true"
 		>
 	</div>
 

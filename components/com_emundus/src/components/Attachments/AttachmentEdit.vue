@@ -98,7 +98,7 @@
 					<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ATTACHMENTS_SEND_DATE') }}</label>
 					<span class="tw-text-right">{{ attachment.timedate }}</span>
 				</div>
-				<div v-if="attachment.user_id && canSee" class="tw-gap-[12px] tw-py-2">
+				<div v-if="attachment.user_id && canSee && columns.includes('user')" class="tw-gap-[12px] tw-py-2">
 					<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY') }}</label>
 					<span class="tw-text-right">{{ attachment.user_name }}</span>
 				</div>

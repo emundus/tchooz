@@ -6,10 +6,11 @@
  * which controls whether grid gets reutrned as string, or an array.
  */
 
+use Joomla\CMS\Language\Text;
+
 defined('JPATH_BASE') or die;
 
 $d = $displayData;
-
 // a void potential divide by 0 if something went wrong and $d->columns is 0 or empty
 $span = empty($d->columns) ? 12 : floor(12 / $d->columns);
 $i    = 0;
@@ -36,7 +37,7 @@ foreach ($d->items as $i => $s)
 
     if ($newLine)
     {
-        $grid[] = '<div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-'.$d->columns.' lg:tw-grid-cols-'.$d->columns.' tw-gap-4">';
+        $grid[] = '<div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-'.$d->columns.' lg:tw-grid-cols-'.$d->columns.' tw-gap-4" role="group" ' . $d->dataAttributes . '>';
     }
 
     $grid[] = '<div class="' . $d->spanClass . ' col-sm-' . (12/$d->columns) . '"' . $id . '>' . $rowdata . '</div>';

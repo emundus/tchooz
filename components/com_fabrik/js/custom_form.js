@@ -221,6 +221,19 @@ requirejs(['fab/fabrik'], function () {
     calendarDayNames.forEach((dayName) => {
       dayName.setAttribute('role', 'columnheader');
     })
+
+    // Add a caption to every calendar table for accessibility (RGAA)
+    let calendarTables = document.querySelectorAll('.calendar-container table');
+    calendarTables.forEach((calendarTable) => {
+      if (calendarTable.querySelector(':scope > caption')) {
+        return;
+      }
+      let caption = document.createElement('caption');
+      caption.className = 'visually-hidden';
+      caption.textContent = Joomla.Text._('PLG_ELEMENT_JDATE_ARIA_LABEL_DATE');
+      calendarTable.insertBefore(caption, calendarTable.firstChild);
+    })
+
   });
 
   Fabrik.addEvent('fabrik.form.group.duplicate.end', function (form, event) {

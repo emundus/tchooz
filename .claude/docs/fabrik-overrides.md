@@ -300,6 +300,61 @@ L'amont écrit `if (!empty($d->control)) :`.
 
 ---
 
+## 11. Accessibilité RGAA 11.5 — `aria-label` sur le groupe de cases/radios (#1953)
+
+**Fichiers** `libraries/fabrik/fabrik/fabrik/Helpers/Html.php` (~lignes 2500, 2516, 2525),
+`plugins/fabrik_element/checkbox/checkbox.php` (`dataAttributes()`),
+`templates/g5_helium/html/layouts/com_fabrik/fabrik-bootstrap-grid.php` (~ligne 40)
+**Origine** patch RGAA 11.5 #1953
+**Sans elle** le `<div role="group">` qui entoure les cases à cocher / radios n'a pas de nom
+accessible — l'auditeur RGAA 11.5 exige de regrouper et nommer les champs de même nature.
+
+Le mécanisme réutilise le `dataAttributes()` existant (déjà utilisé par `yesno`/`radiobutton`
+pour injecter des attributs dans le conteneur), **pas** un nouveau paramètre dédié. La convention :
+`dataAttributes()` renvoie des chaînes d'attributs HTML prêtes à l'emploi.
+
+> **Ne pas régresser en `aria-label="'.$d->groupLabel.'"`** : version initiale ajoutait un param
+> `$groupLabel` non échappé → injection d'attribut / XSS si le libellé contient `"`. La bonne
+> version échappe dans le plugin et passe par `$dataAttributes`.
+
+**a. `checkbox.php`** — `dataAttributes()` renvoie l'attribut échappé :
+
+```php
+protected function dataAttributes()
+{
+    return [
+        'aria-label="' . htmlspecialchars(Text::_($this->getRawLabel()), ENT_QUOTES) . '"'
+    ];
+}
+```
+
+**b. `Html.php`** — `bootstrapGrid()` reçoit `$dataAttributes` et le transmet au layout ;
+`grid()` le lui passe :
+
+```php
+// dans grid(), branche else (~ligne 2500)
+$grid = self::bootstrapGrid($items, $optionsPerRow, 'form-check fabrikgrid_' . $type, false, null, $dataAttributes);
+
+// signature bootstrapGrid() (~ligne 2516)
+public static function bootstrapGrid($items, $columns, $spanClass = '', $explode = false, $spanId = null, $dataAttributes = '')
+
+// corps (~ligne 2525)
+$displayData->dataAttributes = $dataAttributes;
+```
+
+**c. layout `fabrik-bootstrap-grid.php`** — rend `$d->dataAttributes` brut sur le `role="group"` :
+
+```php
+$grid[] = '<div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-'.$d->columns.' tw-gap-4" role="group" ' . $d->dataAttributes . '>';
+```
+
+> Le layout est sous `templates/g5_helium/` — un override de **template**, pas de `com_fabrik` : une
+> maj de com_fabrik ne l'écrase pas. Mais `Html.php` et `checkbox.php` sont du vendor Fabrik : eux
+> sont à revérifier après chaque maj. L'`aria-label` ne s'applique qu'au rendu g5_helium ; la copie
+> core `components/com_fabrik/layouts/fabrik-bootstrap-grid.php` n'a pas de slot d'attributs.
+
+---
+
 ## Changements amont à NE PAS réverter
 
 - **`Helpers/Worker.php`** — nos garde-fous anti-RCE (blocage de `$_POST`/`$_GET`, `preg_replace`

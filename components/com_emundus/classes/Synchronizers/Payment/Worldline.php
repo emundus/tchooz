@@ -21,6 +21,7 @@ use Worldline\Connect\Sdk\Client;
 use Worldline\Connect\Sdk\Communicator;
 use Worldline\Connect\Sdk\CommunicatorConfiguration;
 use Worldline\Connect\Sdk\Communication\InvalidResponseException;
+use Worldline\Connect\Sdk\V1\ResponseException;
 use Worldline\Connect\Sdk\V1\Domain\Address;
 use Worldline\Connect\Sdk\V1\Domain\AmountOfMoney;
 use Worldline\Connect\Sdk\V1\Domain\CardPaymentMethodSpecificInputBase;
@@ -67,7 +68,7 @@ class Worldline implements PaymentSynchronizerInterface
 
 			$this->merchant_id = $auth['merchant_id'];
 			$api_key_id        = $auth['api_key_id'];
-			$api_secret        = !empty($auth['api_secret']) ? \EmundusHelperFabrik::decryptDatas($auth['api_secret']) : '';
+			$api_secret        = !empty($auth['api_secret']) ? trim(\EmundusHelperFabrik::decryptDatas($auth['api_secret'])) : '';
 
 			if (empty($this->merchant_id) || empty($api_key_id) || empty($api_secret))
 			{
@@ -148,7 +149,7 @@ class Worldline implements PaymentSynchronizerInterface
 
 		foreach (WorldlineIntegrationConfiguration::CREDENTIAL_KEYS as $key)
 		{
-			$authentication[$key] = $auth[$prefix . $key] ?? '';
+			$authentication[$key] = trim((string) ($auth[$prefix . $key] ?? ''));
 		}
 
 		return $authentication;
@@ -233,15 +234,29 @@ class Worldline implements PaymentSynchronizerInterface
 	 */
 	private function describeResponse(\Exception $e): string
 	{
-		if (!$e instanceof InvalidResponseException)
+		if ($e instanceof ResponseException)
 		{
-			return '';
+			$details = [];
+
+			foreach ($e->getErrors() as $error)
+			{
+				$details[] = trim(($error->code ?? '') . ' ' . ($error->message ?? '')
+					. (!empty($error->propertyName) ? ' (' . $error->propertyName . ')' : ''));
+			}
+
+			return ' [HTTP ' . $e->getHttpStatusCode() . ', errorId ' . ($e->getErrorId() ?: '-')
+				. ', errors: ' . (empty($details) ? '-' : implode(' | ', $details)) . ']';
 		}
 
-		$response = $e->getResponse();
+		if ($e instanceof InvalidResponseException)
+		{
+			$response = $e->getResponse();
 
-		return ' [HTTP ' . $response->getHttpStatusCode() . ', body: '
-			. substr(preg_replace('/\s+/', ' ', $response->getBody()), 0, 500) . ']';
+			return ' [HTTP ' . $response->getHttpStatusCode() . ', body: '
+				. substr(preg_replace('/\s+/', ' ', $response->getBody()), 0, 500) . ']';
+		}
+
+		return '';
 	}
 
 	/**
@@ -327,7 +342,7 @@ class Worldline implements PaymentSynchronizerInterface
 		$auth = $this->getAuthentication();
 
 		$key_id = $auth['webhook_key_id'];
-		$secret = !empty($auth['webhook_secret']) ? \EmundusHelperFabrik::decryptDatas($auth['webhook_secret']) : '';
+		$secret = !empty($auth['webhook_secret']) ? trim(\EmundusHelperFabrik::decryptDatas($auth['webhook_secret'])) : '';
 
 		if (empty($key_id) || empty($secret))
 		{

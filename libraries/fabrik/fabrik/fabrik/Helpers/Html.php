@@ -2497,7 +2497,7 @@ EOT;
 		}
 		else
 		{
-				$grid = self::bootstrapGrid($items, $optionsPerRow, 'form-check fabrikgrid_' . $type);
+				$grid = self::bootstrapGrid($items, $optionsPerRow, 'form-check fabrikgrid_' . $type, false, null, $dataAttributes);
 		}
 
 		return $grid;
@@ -2513,15 +2513,16 @@ EOT;
 	 *
 	 * @return mixed  string/array based on $explode parameter
 	 */
-	public static function bootstrapGrid($items, $columns, $spanClass = '', $explode = false, $spanId = null)
+	public static function bootstrapGrid($items, $columns, $spanClass = '', $explode = false, $spanId = null, $dataAttributes = '')
 	{
-		$layout                 = self::getLayout('fabrik-bootstrap-grid');
-		$displayData            = new stdClass;
-		$displayData->items     = $items;
-		$displayData->columns   = $columns;
-		$displayData->spanClass = $spanClass;
-		$displayData->spanId    = $spanId;
-		$displayData->explode   = $explode;
+		$layout                     = self::getLayout('fabrik-bootstrap-grid');
+		$displayData                = new stdClass;
+		$displayData->items         = $items;
+		$displayData->columns       = $columns;
+		$displayData->spanClass     = $spanClass;
+		$displayData->spanId        = $spanId;
+		$displayData->explode       = $explode;
+		$displayData->dataAttributes = $dataAttributes;
 
 		$grid = $layout->render($displayData);
 

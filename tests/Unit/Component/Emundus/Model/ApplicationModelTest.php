@@ -813,6 +813,168 @@ class ApplicationModelTest extends UnitTestCase
 	 *
 	 * @return void
 	 */
+	// -------------------------------------------------------------------------
+	// Collaboration — shared users visibility and rights update
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @covers EmundusModelApplication::canSeeSharedUsers
+	 * @return void
+	 */
+	public function testCanSeeSharedUsersWhenAcceptedWithRightThenReturnsTrue(): void
+	{
+		$collaboratorId = $this->dataset['coordinator'];
+		$requestId      = $this->createFilesRequest($collaboratorId, ['uploaded' => 1, 'show_shared_users' => 1]);
+
+		try
+		{
+			$this->assertTrue($this->model->canSeeSharedUsers($this->dataset['ccid'], $collaboratorId), 'An accepted collaborator with show_shared_users should see the other collaborators');
+		}
+		finally
+		{
+			$this->deleteFilesRequest($requestId);
+		}
+	}
+
+	/**
+	 * @covers EmundusModelApplication::canSeeSharedUsers
+	 * @return void
+	 */
+	public function testCanSeeSharedUsersWhenRightNotGrantedThenReturnsFalse(): void
+	{
+		$collaboratorId = $this->dataset['coordinator'];
+		$requestId      = $this->createFilesRequest($collaboratorId, ['uploaded' => 1, 'show_shared_users' => 0]);
+
+		try
+		{
+			$this->assertFalse($this->model->canSeeSharedUsers($this->dataset['ccid'], $collaboratorId), 'A collaborator without show_shared_users should not see the other collaborators');
+		}
+		finally
+		{
+			$this->deleteFilesRequest($requestId);
+		}
+	}
+
+	/**
+	 * @covers EmundusModelApplication::canSeeSharedUsers
+	 * @return void
+	 */
+	public function testCanSeeSharedUsersWhenInvitationNotAcceptedThenReturnsFalse(): void
+	{
+		$collaboratorId = $this->dataset['coordinator'];
+		$requestId      = $this->createFilesRequest($collaboratorId, ['uploaded' => 0, 'show_shared_users' => 1]);
+
+		try
+		{
+			$this->assertFalse($this->model->canSeeSharedUsers($this->dataset['ccid'], $collaboratorId), 'A pending invitation should not give access to the other collaborators');
+		}
+		finally
+		{
+			$this->deleteFilesRequest($requestId);
+		}
+	}
+
+	/**
+	 * @covers EmundusModelApplication::canSeeSharedUsers
+	 * @return void
+	 */
+	public function testCanSeeSharedUsersWhenRightGrantedOnAnotherFileThenReturnsFalse(): void
+	{
+		$collaboratorId = $this->dataset['coordinator'];
+		$requestId      = $this->createFilesRequest($collaboratorId, ['uploaded' => 1, 'show_shared_users' => 1]);
+
+		try
+		{
+			$this->assertFalse($this->model->canSeeSharedUsers($this->dataset['ccid'] + 1, $collaboratorId), 'The right is granted per file and must not leak onto another file');
+		}
+		finally
+		{
+			$this->deleteFilesRequest($requestId);
+		}
+	}
+
+	/**
+	 * @covers EmundusModelApplication::updateRight
+	 * @return void
+	 */
+	public function testUpdateRightWhenRightIsKnownThenUpdatesIt(): void
+	{
+		$requestId = $this->createFilesRequest($this->dataset['coordinator'], ['uploaded' => 1, 'r' => 0]);
+
+		try
+		{
+			$this->assertTrue($this->model->updateRight($requestId, $this->dataset['ccid'], 'r', 1), 'updateRight should accept a collaboration right');
+			$this->assertSame(1, (int) $this->getFilesRequestColumn($requestId, 'r'), 'updateRight should write the new value of the right');
+		}
+		finally
+		{
+			$this->deleteFilesRequest($requestId);
+		}
+	}
+
+	/**
+	 * @covers EmundusModelApplication::updateRight
+	 * @return void
+	 */
+	public function testUpdateRightWhenColumnIsNotARightThenRefusesAndKeepsTheRequest(): void
+	{
+		$requestId = $this->createFilesRequest($this->dataset['coordinator'], ['uploaded' => 1]);
+
+		try
+		{
+			$this->assertFalse($this->model->updateRight($requestId, $this->dataset['ccid'], 'ccid', 1), 'updateRight should refuse a column that is not a collaboration right');
+			$this->assertSame((int) $this->dataset['ccid'], (int) $this->getFilesRequestColumn($requestId, 'ccid'), 'The request must stay attached to its file');
+
+			$this->assertFalse($this->model->updateRight($requestId, $this->dataset['ccid'], 'uploaded', 0), 'updateRight should refuse to change the acceptance state');
+			$this->assertSame(1, (int) $this->getFilesRequestColumn($requestId, 'uploaded'), 'The acceptance state must be left untouched');
+		}
+		finally
+		{
+			$this->deleteFilesRequest($requestId);
+		}
+	}
+
+	private function createFilesRequest(int $userId, array $rights = []): int
+	{
+		$request = (object) array_merge([
+			'time_date'         => date('Y-m-d H:i:s'),
+			'fnum'              => $this->dataset['fnum'],
+			'ccid'              => $this->dataset['ccid'],
+			'keyid'             => bin2hex(random_bytes(8)),
+			'email'             => 'collaborator_unit_test@emundus.fr',
+			'user_id'           => $userId,
+			'uploaded'          => 0,
+			'r'                 => 0,
+			'u'                 => 0,
+			'show_history'      => 0,
+			'show_shared_users' => 0,
+		], $rights);
+
+		$this->db->insertObject('#__emundus_files_request', $request);
+
+		return (int) $this->db->insertid();
+	}
+
+	private function getFilesRequestColumn(int $requestId, string $column): mixed
+	{
+		$query = $this->db->getQuery(true);
+		$query->select($this->db->quoteName($column))
+			->from($this->db->quoteName('#__emundus_files_request'))
+			->where($this->db->quoteName('id') . ' = ' . $requestId);
+		$this->db->setQuery($query);
+
+		return $this->db->loadResult();
+	}
+
+	private function deleteFilesRequest(int $requestId): void
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__emundus_files_request'))
+			->where($this->db->quoteName('id') . ' = ' . $requestId);
+		$this->db->setQuery($query);
+		$this->db->execute();
+	}
+
 	private function shareFileToGroups(string $fnum, array $groupIds): void
 	{
 		$query = $this->db->getQuery(true);

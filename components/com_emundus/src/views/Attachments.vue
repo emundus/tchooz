@@ -466,6 +466,7 @@ export default {
 			attachmentStore: null,
 
 			openedModal: false,
+			previouslyFocusedElement: null,
 		};
 	},
 	created() {
@@ -525,6 +526,9 @@ export default {
 		});
 
 		this.addEvents();
+	},
+	beforeUnmount() {
+		document.removeEventListener('keydown', this.trapModalFocus, true);
 	},
 	methods: {
 		downloadAttachment() {
@@ -873,15 +877,75 @@ export default {
 		},
 		openModal(attachment) {
 			if (this.displayedUser.user_id && this.displayedFnum) {
+				// Keep the trigger so focus can be restored when the modal closes (a11y).
+				this.previouslyFocusedElement = document.activeElement;
 				this.openedModal = true;
 				this.selectedAttachment = attachment;
 				this.attachmentStore.setSelectedAttachment(attachment);
+
+				document.addEventListener('keydown', this.trapModalFocus, true);
+				this.$nextTick(() => {
+					const focusable = this.getModalFocusable();
+					if (focusable.length > 0) {
+						focusable[0].focus();
+					}
+				});
 			}
 		},
 		closeModal() {
 			this.openedModal = false;
 			this.selectedAttachment = {};
 			this.attachmentStore.setSelectedAttachment({});
+
+			document.removeEventListener('keydown', this.trapModalFocus, true);
+			if (this.previouslyFocusedElement && typeof this.previouslyFocusedElement.focus === 'function') {
+				this.previouslyFocusedElement.focus();
+				this.previouslyFocusedElement = null;
+			}
+		},
+		// Return the visible focusable elements inside the preview modal, in DOM order.
+		getModalFocusable() {
+			const container = document.getElementById('modal___edit');
+			if (!container) {
+				return [];
+			}
+
+			const selector =
+				'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+			// getClientRects() detects real visibility even inside a position:fixed modal,
+			// where offsetParent is unreliable and would wrongly drop the edit inputs.
+			return Array.from(container.querySelectorAll(selector)).filter((el) => el.getClientRects().length > 0);
+		},
+		// Loop keyboard focus inside the preview modal in both directions (a11y focus trap).
+		trapModalFocus(e) {
+			if (e.key !== 'Tab') {
+				return;
+			}
+
+			const container = document.getElementById('modal___edit');
+			if (!container) {
+				return;
+			}
+
+			const focusable = this.getModalFocusable();
+			if (focusable.length === 0) {
+				e.preventDefault();
+				return;
+			}
+
+			const first = focusable[0];
+			const last = focusable[focusable.length - 1];
+			const active = document.activeElement;
+
+			if (e.shiftKey) {
+				if (active === first || !container.contains(active)) {
+					e.preventDefault();
+					last.focus();
+				}
+			} else if (active === last || !container.contains(active)) {
+				e.preventDefault();
+				first.focus();
+			}
 		},
 		displayErrorMessage(msg) {
 			Swal.fire({
