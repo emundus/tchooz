@@ -102,7 +102,7 @@ class Release2_25_2Installer extends ReleaseInstaller
 			],
 		];
 
-		$addon         = new AddonEntity(AddonEnum::COLLABORATE->value, $activated, true, false, $params);
+		$addon         = new AddonEntity(AddonEnum::COLLABORATE->value, $activated, false, true, $params);
 		$this->tasks[] = $addonRepository->flush($addon);
 	}
 
