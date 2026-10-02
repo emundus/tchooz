@@ -35,6 +35,18 @@ class Release2_25_2Installer extends ReleaseInstaller
 
 			$this->replaceApplicantInTagsDescription();
 
+			$addonRepository = new AddonRepository();
+
+			$resourcesAddon = $addonRepository->getByName(AddonEnum::RESOURCES->value);
+			if (!empty($resourcesAddon))
+			{
+				if(!$resourcesAddon->isActivated())
+				{
+					$resourcesAddon->setDisplayed(false);
+					$addonRepository->flush($resourcesAddon);
+				}
+			}
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
