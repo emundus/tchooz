@@ -47,6 +47,8 @@ class Release2_25_2Installer extends ReleaseInstaller
 				}
 			}
 
+			$this->disableHistoryMenu();
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
@@ -56,6 +58,33 @@ class Release2_25_2Installer extends ReleaseInstaller
 		}
 
 		return $result;
+	}
+
+	private function disableHistoryMenu(): void
+	{
+		$query = $this->db->createQuery();
+
+		$query->select('extension_id, params')
+			->from($this->db->qn('#__extensions'))
+			->where($this->db->qn('element') . ' = ' . $this->db->q('com_emundus'))
+			->where($this->db->qn('type') . ' = ' . $this->db->q('component'));
+		$this->db->setQuery($query);
+		$emundusExtension = $this->db->loadObject();
+		if(!empty($emundusExtension) && !empty($emundusExtension->extension_id))
+		{
+			$params = json_decode($emundusExtension->params);
+			$params->action_history = false;
+			$emundusExtension->params = json_encode($params);
+
+			$this->tasks[] = $this->db->updateObject('#__extensions', $emundusExtension, 'extension_id');
+
+			if(!class_exists('EmundusModelSettings'))
+			{
+				require_once JPATH_SITE.'/components/com_emundus/models/settings.php';
+			}
+			$mSettings = new \EmundusModelSettings();
+			$mSettings->toggleApplicationHistoryTab('history', false);
+		}
 	}
 
 	/**
