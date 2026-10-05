@@ -33,6 +33,7 @@ use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
+use Tchooz\Services\ApplicationFile\ApplicationFileCustomFieldsService;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
 
 class EmundusModelCampaign extends ListModel
@@ -4239,6 +4240,8 @@ class EmundusModelCampaign extends ListModel
 				{
 					$applicationFileRepository = new ApplicationFileRepository();
 					$applicationFileService    = new ApplicationFileService();
+					$customFieldsService       = new ApplicationFileCustomFieldsService(userId: $user_id);
+					$applicationFileTable      = $this->_db->replacePrefix('#__emundus_campaign_candidature');
 					if (!class_exists('EmundusHelperDate'))
 					{
 						require_once(JPATH_ROOT . '/components/com_emundus/helpers/EmundusHelperDate.php');
@@ -4424,6 +4427,13 @@ class EmundusModelCampaign extends ListModel
 							if (!empty($datas))
 							{
 								$datas = $importFactory->formatDatas($datas);
+								foreach (array_keys($datas) as $table)
+								{
+									if ($this->_db->replacePrefix($table) === $applicationFileTable)
+									{
+										$datas[$table] = $customFieldsService->filterImportableValues($datas[$table]);
+									}
+								}
 								$importApplicationEntity->setData($datas);
 							}
 
