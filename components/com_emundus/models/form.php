@@ -735,8 +735,12 @@ class EmundusModelForm extends ListModel
 						->where($conditions);
 
 					$this->db->setQuery($query);
+					$deleted = $this->db->execute();
 
-					return $this->db->execute();
+					// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+					(new EmundusHelperCache())->clean();
+
+					return $deleted;
 
 				}
 				catch (Exception $e) {
@@ -799,6 +803,9 @@ class EmundusModelForm extends ListModel
 
 				$this->db->setQuery($query);
 				$response['status'] = $this->db->execute();
+
+				// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+				(new EmundusHelperCache())->clean();
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/form | Error when unpublish forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -857,8 +864,12 @@ class EmundusModelForm extends ListModel
 					->where($se_conditions);
 
 				$this->db->setQuery($query);
+				$published = $this->db->execute();
 
-				return $this->db->execute();
+				// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+				(new EmundusHelperCache())->clean();
+
+				return $published;
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/form | Error when publish forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -1324,6 +1335,9 @@ class EmundusModelForm extends ListModel
 
 			LanguageFactory::cleanCache();
 
+			// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+			(new EmundusHelperCache())->clean();
+
 			return $newprofile;
 		}
 		catch (Exception $e) {
@@ -1509,8 +1523,12 @@ class EmundusModelForm extends ListModel
 
 			try {
 				$this->db->setQuery($query_pid);
+				$updated = $this->db->execute();
 
-				return $this->db->execute();
+				// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+				(new EmundusHelperCache())->clean();
+
+				return $updated;
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/form | Cannot update the form ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query_pid . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -1568,6 +1586,9 @@ class EmundusModelForm extends ListModel
 					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($prid));
 				$this->db->setQuery($query);
 				$results[] = $this->db->execute();
+
+				// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+				(new EmundusHelperCache())->clean();
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/form | Cannot update the form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
