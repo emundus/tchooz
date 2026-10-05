@@ -2521,6 +2521,17 @@ class EmundusModelCampaign extends ListModel
 			$this->_db->setQuery($query);
 			$results->program = $this->_db->loadObject();
 
+			// 2.19.0 migration set program_id to 0 when training did not match a programme code at that time
+			if (empty($results->program) && !empty($results->campaign->training))
+			{
+				$query->clear()
+					->select('*')
+					->from($this->_db->quoteName('#__emundus_setup_programmes'))
+					->where($this->_db->quoteName('code') . ' = ' . $this->_db->quote($results->campaign->training));
+				$this->_db->setQuery($query);
+				$results->program = $this->_db->loadObject();
+			}
+
 			return $results;
 		}
 		catch (Exception $e)

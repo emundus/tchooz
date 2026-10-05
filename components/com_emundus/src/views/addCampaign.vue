@@ -79,6 +79,9 @@
 									<div v-if="errors.alias" class="tw-absolute tw-mb-1 tw-mt-1 tw-text-red-600">
 										<span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK') }}</span>
 									</div>
+									<div v-else-if="aliasAlreadyUsed" class="tw-absolute tw-mb-1 tw-mt-1 tw-text-red-600">
+										<span>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS_ALREADY_USED') }}</span>
+									</div>
 								</div>
 								<span class="material-symbols-outlined tw-cursor-pointer" @click="copyAliasToClipboard()"
 									>content_copy</span
@@ -750,6 +753,7 @@ export default {
 		old_training: '',
 		old_program_form: '',
 		aliasUpdated: false,
+		initialAlias: '',
 		campaignLanguages: [],
 		campaignUsercategories: [],
 		form: {
@@ -902,7 +906,8 @@ export default {
 						this.form.description = this.normalizeEditorTextStyles(this.form.description);
 						this.form.short_description = this.normalizeEditorTextStyles(this.form.short_description);
 						this.$emit('getInformations', this.form);
-						this.programForm = response.data.program;
+						this.programForm = response.data.program ?? this.programForm;
+						this.initialAlias = this.form.alias;
 
 						// Check label translations
 						this.form.label = response.data.label;
@@ -1109,6 +1114,11 @@ export default {
 				this.errors.alias = true;
 			}
 
+			if (this.aliasAlreadyUsed) {
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+				return 0;
+			}
+
 			if (this.form.end_date === '' || this.form.end_date === '0000-00-00 00:00:00') {
 				window.scrollTo({ top: 0, behavior: 'smooth' });
 				this.errors.end_date = true;
@@ -1205,7 +1215,7 @@ export default {
 
 			const baseFormData = {
 				...this.form,
-				training: this.programForm.code,
+				training: this.form.training,
 				start_date: this.formatDate(new Date(this.form.start_date)),
 				end_date: this.formatDate(new Date(this.form.end_date)),
 				languages: this.campaignLanguages.map((language) => language.lang_id),
@@ -1355,6 +1365,9 @@ export default {
 		baseUrl() {
 			return window.location.origin;
 		},
+		aliasAlreadyUsed() {
+			return !!this.form.alias && this.form.alias !== this.initialAlias && this.aliases.includes(this.form.alias);
+		},
 		sessionPlaceholder() {
 			let oneYearFromNow = new Date();
 			oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
@@ -1487,10 +1500,6 @@ export default {
 					.replace(/[\u0300-\u036f]/g, '')
 					.replace(/[^a-zA-Z0-9_-]+/g, '-')
 					.toLowerCase();
-				// Check if alias already exists
-				if (typeof this.aliases !== 'undefined' && this.aliases.includes(val)) {
-					this.form.alias = val + '-1';
-				}
 			}
 		},
 	},
