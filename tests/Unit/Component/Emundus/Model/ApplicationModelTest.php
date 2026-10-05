@@ -1038,4 +1038,116 @@ class ApplicationModelTest extends UnitTestCase
 
 		return (string) $this->db->loadResult();
 	}
+
+	// -------------------------------------------------------------------------
+	// checkEmptyRepeatGroups — multiple table (several rows per file)
+	// -------------------------------------------------------------------------
+
+	private const REPEAT_FNUM = '2099010100000000000000999998';
+
+	private const REPEAT_PARENT_TABLE = 'jos_emundus_unit_pdf_repeat_parent';
+
+	private const REPEAT_TABLE = 'jos_emundus_unit_pdf_repeat_parent_1_repeat';
+
+	/**
+	 * Parent row ids by name: 'filled' (step 1), 'empty' (step 2, only unanswered repetitions),
+	 * 'second_filled' (step 3, first repetition unanswered, second one filled).
+	 */
+	private array $repeatParentIds = [];
+
+	private function createRepeatFixtures(): void
+	{
+		$this->clearRepeatFixtures();
+
+		$this->db->setQuery('CREATE TABLE ' . $this->db->quoteName(self::REPEAT_PARENT_TABLE) . ' (id INT AUTO_INCREMENT PRIMARY KEY, fnum VARCHAR(28), step_id INT)')->execute();
+		$this->db->setQuery('CREATE TABLE ' . $this->db->quoteName(self::REPEAT_TABLE) . ' (id INT AUTO_INCREMENT PRIMARY KEY, parent_id INT, txt TEXT, num TEXT)')->execute();
+
+		$rows = [
+			'filled'        => [1, [["'value'", "'3'"]]],
+			'empty'         => [2, [['NULL', "'0'"], ["''", 'NULL']]],
+			'second_filled' => [3, [['NULL', 'NULL'], ["'value'", 'NULL']]],
+		];
+		foreach ($rows as $key => [$step, $repetitions]) {
+			$this->db->setQuery('INSERT INTO ' . $this->db->quoteName(self::REPEAT_PARENT_TABLE) . ' (fnum, step_id) VALUES (' . $this->db->quote(self::REPEAT_FNUM) . ', ' . $step . ')')->execute();
+			$this->repeatParentIds[$key] = (int) $this->db->insertid();
+
+			foreach ($repetitions as [$txt, $num]) {
+				$this->db->setQuery('INSERT INTO ' . $this->db->quoteName(self::REPEAT_TABLE) . ' (parent_id, txt, num) VALUES (' . $this->repeatParentIds[$key] . ', ' . $txt . ', ' . $num . ')')->execute();
+			}
+		}
+	}
+
+	private function clearRepeatFixtures(): void
+	{
+		foreach ([self::REPEAT_PARENT_TABLE, self::REPEAT_TABLE] as $table) {
+			$this->db->setQuery('DROP TABLE IF EXISTS ' . $this->db->quoteName($table))->execute();
+		}
+
+		$this->repeatParentIds = [];
+	}
+
+	private function checkRepeatFixture(int $stepId = 0, int $parentRowId = 0): bool
+	{
+		$elements = array_map(function (string $name) {
+			$element       = new stdClass();
+			$element->name = $name;
+
+			return $element;
+		}, ['txt', 'num']);
+
+		try {
+			return $this->model->checkEmptyRepeatGroups($elements, self::REPEAT_TABLE, self::REPEAT_PARENT_TABLE, self::REPEAT_FNUM, $stepId, $parentRowId);
+		}
+		finally {
+			$this->clearRepeatFixtures();
+		}
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::checkEmptyRepeatGroups
+	 * @return void
+	 */
+	public function testCheckEmptyRepeatGroupsWhenFileHasSeveralRowsThenChecksTheRequestedRow(): void
+	{
+		$this->createRepeatFixtures();
+
+		$this->assertTrue($this->checkRepeatFixture(0, $this->repeatParentIds['filled']), 'The group should be shown for an evaluation whose repetitions hold a value, even when the file has other evaluations');
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::checkEmptyRepeatGroups
+	 * @return void
+	 */
+	public function testCheckEmptyRepeatGroupsWhenRequestedRowHasOnlyEmptyRepetitionsThenReturnsFalse(): void
+	{
+		$this->createRepeatFixtures();
+
+		$this->assertFalse($this->checkRepeatFixture(0, $this->repeatParentIds['empty']), 'The values of the other evaluations of the file should not make an empty group look filled');
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::checkEmptyRepeatGroups
+	 * @return void
+	 */
+	public function testCheckEmptyRepeatGroupsWhenOnlyALaterRepetitionIsFilledThenReturnsTrue(): void
+	{
+		$this->createRepeatFixtures();
+
+		$this->assertTrue($this->checkRepeatFixture(0, $this->repeatParentIds['second_filled']), 'Every repetition should be inspected, not only the first one');
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::checkEmptyRepeatGroups
+	 * @return void
+	 */
+	public function testCheckEmptyRepeatGroupsWhenOnlyStepIsGivenThenChecksTheRowsOfThatStep(): void
+	{
+		$this->createRepeatFixtures();
+
+		$this->assertFalse($this->checkRepeatFixture(2), 'Without a row id, only the rows of the requested step should be inspected');
+	}
 }
