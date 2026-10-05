@@ -1289,23 +1289,38 @@ class EmundusHelperFabrik
 
 			$element = null;
 
-			$query->select('fe.id,fe.name,fe.params,fe.plugin, fe.label, fe.group_id')
-				->from($db->quoteName('#__fabrik_elements', 'fe'))
-				->where($db->quoteName('name') . ' = ' . $db->quote($elt_name));
+			// The element metadata only depends on (name, group_id), never on $raw_value.
+			// Cache it per-request so batch formatting (e.g. one row per campaign) does not
+			// re-query #__fabrik_elements once per value.
+			static $elementCache = [];
+			$cacheKey = $elt_name . '|' . ($groupId ?? '');
 
-			if (!empty($groupId))
+			if (array_key_exists($cacheKey, $elementCache))
 			{
-				$query->andWhere($db->quoteName('fe.group_id') . ' = ' . $db->quote($groupId));
+				$element = $elementCache[$cacheKey];
 			}
+			else
+			{
+				$query->select('fe.id,fe.name,fe.params,fe.plugin, fe.label, fe.group_id')
+					->from($db->quoteName('#__fabrik_elements', 'fe'))
+					->where($db->quoteName('name') . ' = ' . $db->quote($elt_name));
 
-			try
-			{
-				$db->setQuery($query);
-				$element = $db->loadObject();
-			}
-			catch (Exception $e)
-			{
-				Log::add('components/com_emundus/helpers/fabrik | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+				if (!empty($groupId))
+				{
+					$query->andWhere($db->quoteName('fe.group_id') . ' = ' . $db->quote($groupId));
+				}
+
+				try
+				{
+					$db->setQuery($query);
+					$element = $db->loadObject();
+				}
+				catch (Exception $e)
+				{
+					Log::add('components/com_emundus/helpers/fabrik | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+				}
+
+				$elementCache[$cacheKey] = $element;
 			}
 
 			if (!empty($element))
