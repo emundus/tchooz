@@ -313,6 +313,119 @@ class ApplicationFileRepositoryTest extends UnitTestCase
 		$this->h_dataset->deleteSampleFile($applicationFile->getFnum());
 	}
 
+	private function withCustomColumns(callable $test): void
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$existingColumns = $db->setQuery('SHOW COLUMNS FROM #__emundus_campaign_candidature')->loadColumn();
+		foreach (array_intersect(['unit_test_custom_text', 'unit_test_custom_date'], $existingColumns) as $leftoverColumn)
+		{
+			$db->setQuery('ALTER TABLE #__emundus_campaign_candidature DROP COLUMN ' . $leftoverColumn)->execute();
+		}
+		$db->setQuery('ALTER TABLE #__emundus_campaign_candidature ADD COLUMN unit_test_custom_text VARCHAR(255) NULL, ADD COLUMN unit_test_custom_date DATETIME NULL')->execute();
+
+		try
+		{
+			$test();
+		}
+		finally
+		{
+			$db->setQuery('ALTER TABLE #__emundus_campaign_candidature DROP COLUMN unit_test_custom_text, DROP COLUMN unit_test_custom_date')->execute();
+		}
+	}
+
+	private function loadCandidatureRow(string $fnum): object
+	{
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery()
+			->select('*')
+			->from($db->quoteName('#__emundus_campaign_candidature'))
+			->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+
+		return $db->setQuery($query)->loadObject();
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileRepository::getCustomColumnNames
+	 * @return void
+	 */
+	public function testGetCustomColumnNamesReturnsOnlyNonSystemColumns(): void
+	{
+		$this->withCustomColumns(function () {
+			$columns = $this->repository->getCustomColumnNames();
+
+			$this->assertContains('unit_test_custom_text', $columns, 'Une colonne ajoutée à la table doit être retournée');
+			$this->assertEmpty(array_intersect($columns, ApplicationFileRepository::SYSTEM_COLUMNS), 'Aucune colonne système ne doit être retournée');
+		});
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileRepository::flush
+	 * @return void
+	 */
+	public function testFlushWritesCustomColumnsOfApplicationFileTable(): void
+	{
+		$this->withCustomColumns(function () {
+			$applicationFile = $this->repository->getByFnum($this->dataset['fnum']);
+			$applicationFile->setData(['jos_emundus_campaign_candidature' => [
+				'unit_test_custom_text' => 'custom value',
+				'unit_test_custom_date' => '2026-03-15',
+			]]);
+
+			$flushed = $this->repository->flush($applicationFile, $this->dataset['coordinator']);
+			$this->assertTrue($flushed, 'Le flush doit réussir avec des colonnes spécifiques du dossier');
+
+			$row = $this->loadCandidatureRow($this->dataset['fnum']);
+			$this->assertSame('custom value', $row->unit_test_custom_text, 'La colonne spécifique texte doit être écrite');
+			$this->assertSame('2026-03-15 00:00:00', $row->unit_test_custom_date, 'La colonne spécifique date doit être normalisée');
+			$this->assertEquals($this->dataset['coordinator'], $row->updated_by, 'updated_by doit être renseigné');
+			$this->assertNotEmpty($row->updated, 'updated doit être renseigné');
+		});
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileRepository::flush
+	 * @return void
+	 */
+	public function testFlushIgnoresSystemColumnsPassedAsData(): void
+	{
+		$this->withCustomColumns(function () {
+			$before = $this->loadCandidatureRow($this->dataset['fnum']);
+
+			$applicationFile = $this->repository->getByFnum($this->dataset['fnum']);
+			$applicationFile->setData(['jos_emundus_campaign_candidature' => [
+				'applicant_id'          => $this->dataset['coordinator'],
+				'campaign_id'           => 0,
+				'unit_test_custom_text' => 'custom value',
+			]]);
+
+			$this->assertTrue($this->repository->flush($applicationFile, $this->dataset['coordinator']), 'Le flush doit réussir');
+
+			$after = $this->loadCandidatureRow($this->dataset['fnum']);
+			$this->assertSame($before->applicant_id, $after->applicant_id, 'applicant_id ne doit pas être modifiable via les données importées');
+			$this->assertSame($before->campaign_id, $after->campaign_id, 'campaign_id ne doit pas être modifiable via les données importées');
+			$this->assertSame('custom value', $after->unit_test_custom_text, 'La colonne spécifique doit être écrite');
+		});
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileRepository::flush
+	 * @return void
+	 */
+	public function testFlushKeepsExistingCustomValueWhenImportedCellIsEmpty(): void
+	{
+		$this->withCustomColumns(function () {
+			$applicationFile = $this->repository->getByFnum($this->dataset['fnum']);
+			$applicationFile->setData(['jos_emundus_campaign_candidature' => ['unit_test_custom_text' => 'first value']]);
+			$this->repository->flush($applicationFile, $this->dataset['coordinator']);
+
+			$applicationFile->setData(['jos_emundus_campaign_candidature' => ['unit_test_custom_text' => '']]);
+			$this->assertTrue($this->repository->flush($applicationFile, $this->dataset['coordinator']), 'Le flush doit réussir');
+
+			$row = $this->loadCandidatureRow($this->dataset['fnum']);
+			$this->assertSame('first value', $row->unit_test_custom_text, 'Une cellule vide ne doit pas écraser la valeur existante');
+		});
+	}
+
 	/**
 	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileRepository::getApplicationFilesByApplicantId
 	 * @return void

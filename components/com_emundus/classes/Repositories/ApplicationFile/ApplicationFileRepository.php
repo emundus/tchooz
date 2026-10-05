@@ -44,6 +44,32 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 	const NAME = 'application_file';
 
+	const SYSTEM_COLUMNS = [
+		'id',
+		'date_time',
+		'applicant_id',
+		'user_id',
+		'campaign_id',
+		'submitted',
+		'date_submitted',
+		'cancelled',
+		'fnum',
+		'status',
+		'published',
+		'copied',
+		'can_be_deleted',
+		'form_progress',
+		'attachment_progress',
+		'tab',
+		'name',
+		'updated',
+		'updated_by',
+		'locked_elements',
+		'short_reference',
+		'public',
+		'anonymous',
+	];
+
 	private QueryInterface $query;
 
 	private ApplicationFileFactory $factory;
@@ -384,6 +410,12 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 			{
 				foreach ($applicationFileEntity->getData() as $table => $data)
 				{
+					if ($this->db->replacePrefix($table) === $this->db->replacePrefix($this->tableName))
+					{
+						$this->updateCustomColumns($applicationFileEntity, $data, $user_id);
+						continue;
+					}
+
 					if (!$this->insertDatas($data, $table, $applicationFileEntity->getFnum(), $applicationFileEntity->getId(), $user_id))
 					{
 						throw new \Exception('Failed to insert data into ' . $table);
@@ -471,6 +503,63 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 		return $ccid;
 	}
 
+	/**
+	 * @return string[] columns of the application file table that are not part of the core schema
+	 */
+	public function getCustomColumnNames(): array
+	{
+		$this->db->setQuery('SHOW COLUMNS FROM ' . $this->db->quoteName($this->tableName));
+
+		return array_values(array_diff($this->db->loadColumn(), self::SYSTEM_COLUMNS));
+	}
+
+	private function updateCustomColumns(ApplicationFileEntity $applicationFileEntity, array $values, int $user_id): void
+	{
+		$values = array_diff_key($values, array_flip(self::SYSTEM_COLUMNS));
+		$values = array_filter($values, fn($value) => $value !== '' && $value !== null && $value !== []);
+		if (empty($values))
+		{
+			return;
+		}
+
+		$date_columns = $this->getDateColumns($this->tableName);
+		foreach ($values as $column => $value)
+		{
+			if (in_array($column, $date_columns))
+			{
+				$values[$column] = $this->formatDateValue($value);
+			}
+			elseif (is_array($value))
+			{
+				$values[$column] = json_encode(array_values($value));
+			}
+		}
+
+		$values = (new CurrencyStorageFormatter())->format($values);
+
+		$values['id']         = $applicationFileEntity->getId();
+		$values['updated']    = date('Y-m-d H:i:s');
+		$values['updated_by'] = $user_id;
+		$values               = (object) $values;
+
+		if (!$this->db->updateObject($this->tableName, $values, 'id'))
+		{
+			throw new \RuntimeException('Failed to update custom columns of application file ' . $applicationFileEntity->getFnum());
+		}
+	}
+
+	private function formatDateValue(mixed $value): ?string
+	{
+		if (empty($value))
+		{
+			return null;
+		}
+
+		$timestamp = strtotime($value);
+
+		return $timestamp !== false ? date('Y-m-d H:i:s', $timestamp) : null;
+	}
+
 	public function insertDatas(array $datas, string $table, string $fnum, int $ccid, int $user_id = 0): bool
 	{
 		$result = false;
@@ -515,21 +604,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 
 				if (in_array($key, $date_columns))
 				{
-					if (empty($value))
-					{
-						$datas[$key] = null;
-						continue;
-					}
-
-					$timestamp = strtotime($value);
-					if ($timestamp !== false)
-					{
-						$datas[$key] = date('Y-m-d H:i:s', $timestamp);
-					}
-					else
-					{
-						$datas[$key] = null;
-					}
+					$datas[$key] = $this->formatDateValue($value);
 				}
 			}
 
