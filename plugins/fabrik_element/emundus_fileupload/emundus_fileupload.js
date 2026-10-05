@@ -143,7 +143,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
                 let files = [];
                 for (var j = 0; j < res.length; j++) {
-                    if (res[j].ext && res[j].size && !res[j].nbMax) {
+                    if (res[j].ext && res[j].size && !res[j].nbMax && res[j].security) {
                         var inputHidden = document.querySelector('input#' + this.element.id);
                         if (inputHidden.value !== '') {
                             inputHidden.value += ',';
@@ -177,6 +177,24 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                             icon: 'error',
                             title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
                             text: Joomla.JText._('PLG_ELEMENT_FIELD_EXTENSION'),
+                            customClass: {
+                                title: 'em-swal-title',
+                                confirmButton: 'em-swal-confirm-button',
+                                actions: "em-swal-single-action",
+                            }
+                        });
+
+                        input.value = '';
+                        if (deleteButton) {
+                            deleteButton.style.display = 'none';
+                        }
+                    }
+
+                    if (res[j].security === false) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
+                            text: Joomla.JText._('PLG_ELEMENT_FIELD_SECURITY'),
                             customClass: {
                                 title: 'em-swal-title',
                                 confirmButton: 'em-swal-confirm-button',
