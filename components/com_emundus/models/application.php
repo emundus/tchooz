@@ -2378,14 +2378,14 @@ class EmundusModelApplication extends ListModel
 										$query->clear()
 											->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 											->from($this->_db->quoteName($table))
-											->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')')
+											->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0))
 											->orWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($aid));
 									}
 									else {
 										$query->clear()
 											->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 											->from($this->_db->quoteName($table))
-											->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')');
+											->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0));
 									}
 
 									try {
@@ -3408,7 +3408,7 @@ class EmundusModelApplication extends ListModel
 								throw $e;
 							}
 
-							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
+							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0);
 
 							if ($check_repeat_groups) {
 								if(!$page_title_inserted)
@@ -3428,14 +3428,14 @@ class EmundusModelApplication extends ListModel
 									$query->clear()
 										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 										->from($this->_db->quoteName($table))
-										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')')
+										->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0))
 										->orWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($aid));
 								}
 								else {
 									$query->clear()
 										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 										->from($this->_db->quoteName($table))
-										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')');
+										->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0));
 								}
 
 								try {
@@ -3732,7 +3732,7 @@ class EmundusModelApplication extends ListModel
 								throw $e;
 							}
 
-							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
+							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0);
 
 							if ($check_repeat_groups) {
 								if(!$page_title_inserted)
@@ -3747,14 +3747,14 @@ class EmundusModelApplication extends ListModel
 									$query->clear()
 										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 										->from($this->_db->quoteName($table))
-										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')')
+										->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0))
 										->orWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($aid));
 								}
 								else {
 									$query->clear()
 										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 										->from($this->_db->quoteName($table))
-										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')');
+										->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0));
 								}
 
 								$this->_db->setQuery($query);
@@ -6725,18 +6725,41 @@ class EmundusModelApplication extends ListModel
 	}
 
 	/**
+	 * A multiple table (evaluations) holds several rows per file: the repetitions shown must be
+	 * those of the evaluation being printed, a "= (SELECT id ...)" fails as soon as there are two.
+	 */
+	private function getRepeatParentCondition(string $column, string $parent_table, string $fnum, $step_id = 0, $parent_row_id = 0): string
+	{
+		if (!empty($parent_row_id)) {
+			return $this->_db->quoteName($column) . ' = ' . (int) $parent_row_id;
+		}
+
+		$subQuery = $this->_db->getQuery(true)
+			->select($this->_db->quoteName('id'))
+			->from($this->_db->quoteName($parent_table))
+			->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+		if (!empty($step_id)) {
+			$subQuery->where($this->_db->quoteName('step_id') . ' = ' . (int) $step_id);
+		}
+
+		return $this->_db->quoteName($column) . ' IN (' . $subQuery . ')';
+	}
+
+	/**
 	 * @param $elements
 	 * @param $table
 	 * @param $parent_table
 	 * @param $fnum
+	 * @param $step_id
+	 * @param $parent_row_id
 	 *
 	 * @return bool
 	 *
 	 */
-	public function checkEmptyRepeatGroups($elements, $table, $parent_table, $fnum)
+	public function checkEmptyRepeatGroups($elements, $table, $parent_table, $fnum, $step_id = 0, $parent_row_id = 0)
 	{
 		$query    = $this->_db->getQuery(true);
-		$subQuery = $this->_db->getQuery(true);
 
 		$eMConfig          = JComponentHelper::getParams('com_emundus');
 		$show_empty_fields = $eMConfig->get('show_empty_fields', 1);
@@ -6745,23 +6768,17 @@ class EmundusModelApplication extends ListModel
 			return 't.' . $obj->name;
 		}, $elements);
 
-		$subQuery
-			->select($this->_db->quoteName('id'))
-			->from($this->_db->quoteName($parent_table))
-			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
-
 		$query
 			->select(implode(',', $elements))
 			->from($this->_db->quoteName($table, 't'))
-			->leftJoin($this->_db->quoteName($parent_table, 'j') . ' ON ' . $this->_db->quoteName('j.id') . ' = ' . $this->_db->quoteName('t.parent_id'))
-			->where($this->_db->quoteName('t.parent_id') . " = (" . $subQuery . ")");
+			->where($this->getRepeatParentCondition('t.parent_id', $parent_table, $fnum, $step_id, $parent_row_id));
 
 		try {
 			$this->_db->setQuery($query);
-			$this->_db->execute();
+			$rows = $this->_db->loadAssocList();
 
-			if ($this->_db->getNumRows() >= 1) {
-				$res = $this->_db->loadAssoc();
+			if (!empty($rows)) {
+				$res = array_merge(...array_map('array_values', $rows));
 
 				$elements = array_map(function ($arr) {
 					if (is_numeric($arr)) {
