@@ -83,7 +83,6 @@ if (!empty($currentWorkflow))
         </div>
         <input class="fabrikinput" type="file" id="file_<?= $d->attributes['id']; ?>"
                name="file_<?= $d->attributes['name']; ?>"
-               <?php if ($d->attributes['description_input'] == 1) : ?>style="top: 80px"<?php endif; ?>
                multiple <?php foreach ($d->attributes as $key => $value)
         {
             echo $key . '="' . $value . '" ';

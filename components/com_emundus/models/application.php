@@ -8485,6 +8485,11 @@ class EmundusModelApplication extends ListModel
 			try {
 				$query = $this->_db->getQuery(true);
 
+				// Before clearing the session, delete files that were uploaded but never submitted.
+				// Submitted files are removed from the session data on form.process; the remaining
+				// entries without a "need_to_delete" flag are orphan files left on disk.
+				$this->deleteUnsubmittedSessionFiles($fid, $fnum, $user_id);
+
 				$query->clear()
 					->delete($this->_db->quoteName('#__fabrik_form_sessions'))
 					->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum))
@@ -8499,6 +8504,106 @@ class EmundusModelApplication extends ListModel
 		}
 
 		return $cleared;
+	}
+
+	/**
+	 * Delete files that were uploaded to a form session but never submitted.
+	 *
+	 * Uploaded files are physically moved to the applicant folder as soon as they are dropped,
+	 * but the corresponding jos_emundus_uploads row is only created on form submission. If the
+	 * applicant abandons the form, those files stay on disk as orphans. Submitted files are removed
+	 * from the session data on submit, so any remaining entry without a "need_to_delete" flag is an
+	 * unsubmitted orphan that must be cleaned up before the session row is deleted.
+	 *
+	 * @param $fid
+	 * @param $fnum
+	 * @param $user_id
+	 *
+	 * @return void
+	 *
+	 * @since version 1.40.0
+	 */
+	private function deleteUnsubmittedSessionFiles($fid, $fnum, $user_id): void
+	{
+		try {
+			$query = $this->_db->getQuery(true);
+			$query->select($this->_db->quoteName('data'))
+				->from($this->_db->quoteName('#__fabrik_form_sessions'))
+				->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum))
+				->where($this->_db->quoteName('form_id') . ' = ' . $this->_db->quote($fid))
+				->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user_id));
+			$this->_db->setQuery($query);
+			$sessions = $this->_db->loadColumn();
+
+			if (empty($sessions)) {
+				return;
+			}
+
+			if (!class_exists('EmundusModelFiles')) {
+				require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+			}
+			$m_files      = new EmundusModelFiles;
+			$fnumInfos    = $m_files->getFnumInfos($fnum);
+			$applicant_id = $fnumInfos['applicant_id'] ?? null;
+
+			if (empty($applicant_id)) {
+				return;
+			}
+
+			// The applicant folder must exist and resolve to a real path: deletions are confined to it.
+			$baseDir = realpath(EMUNDUS_PATH_ABS . $applicant_id);
+			if ($baseDir === false) {
+				return;
+			}
+
+			// A filename also present in the uploads table is a submitted file and must never be deleted here.
+			$query->clear()
+				->select($this->_db->quoteName('filename'))
+				->from($this->_db->quoteName('#__emundus_uploads'))
+				->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+			$this->_db->setQuery($query);
+			$submittedFiles = $this->_db->loadColumn() ?: [];
+
+			foreach ($sessions as $rawData) {
+				$data = json_decode($rawData, true);
+
+				if (empty($data) || !is_array($data)) {
+					continue;
+				}
+
+				foreach ($data as $elementFiles) {
+					if (!is_array($elementFiles)) {
+						continue;
+					}
+
+					foreach ($elementFiles as $file) {
+						if (!is_array($file) || empty($file['filename']) || isset($file['need_to_delete'])) {
+							continue;
+						}
+
+						// Strip any path component to prevent traversal, and skip submitted files.
+						$filename = basename((string) $file['filename']);
+						if ($filename === '' || in_array($filename, $submittedFiles, true)) {
+							continue;
+						}
+
+						$target = realpath($baseDir . DS . $filename);
+
+						// Only delete a real file strictly contained inside the applicant folder.
+						if ($target === false || strpos($target, $baseDir . DS) !== 0 || !is_file($target)) {
+							continue;
+						}
+
+						if (!@unlink($target)) {
+							Log::add('Failed to delete unsubmitted session file ' . $target . ' for fnum ' . $fnum, Log::WARNING, 'com_emundus.error');
+						}
+					}
+				}
+			}
+		}
+		catch (Exception $e) {
+			Log::add('Failed to delete unsubmitted session files for form ' . $fid . ' fnum ' . $fnum . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
 	}
 
     /**

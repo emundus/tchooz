@@ -956,10 +956,11 @@ requirejs(['fab/fabrik'], function () {
     let formData = new FormData();
     formData.append('form_id', form_id);
 
-    fetch('/index.php?option=com_emundus&controller=application&task=clearformsession', {
+    return fetch('/index.php?option=com_emundus&controller=application&task=clearformsession', {
       method: 'POST',
       credentials: 'same-origin',
       body: formData,
+      keepalive: true,
     }).then((response) => {
       return response.json();
     }).then((data) => {
