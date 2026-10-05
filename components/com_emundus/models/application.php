@@ -1181,6 +1181,14 @@ class EmundusModelApplication extends ListModel
 
 	public function getFormsProgressWithProfile($fnum, $profile_id)
 	{
+		$progress = $this->calculateFormsProgressWithProfile($fnum, $profile_id);
+		$this->updateFormProgressByFnum($progress, $fnum);
+
+		return $progress;
+	}
+
+	public function calculateFormsProgressWithProfile($fnum, $profile_id)
+	{
 		$forms = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
 		$nb    = 0;
 
@@ -1196,8 +1204,6 @@ class EmundusModelApplication extends ListModel
 				$nb++;
 			}
 		}
-
-		$this->updateFormProgressByFnum(@floor(100 * $nb / count($forms)), $fnum);
 
 		return @floor(100 * $nb / count($forms));
 	}
@@ -1397,6 +1403,20 @@ class EmundusModelApplication extends ListModel
 			return false;
 		}
 
+		$progress = $this->calculateAttachmentsProgressWithProfile($fnum, $profile_id);
+		$this->updateAttachmentProgressByFnum($progress, $fnum);
+
+		return $progress;
+	}
+
+	public function calculateAttachmentsProgressWithProfile($fnum, $profile_id)
+	{
+		if (empty($fnum)) {
+			return false;
+		}
+
+		$doc_result = 0;
+
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 		$m_profile         = new EmundusModelProfile;
 		$profile_by_status = $m_profile->getProfileByStatus($fnum);
@@ -1426,8 +1446,6 @@ class EmundusModelApplication extends ListModel
 
 			$this->_db->setQuery($query);
 			$doc_result = $this->_db->loadResult();
-
-			$this->updateAttachmentProgressByFnum(floor($doc_result), $fnum);
 		}
 		catch (\Exception $e)
 		{
