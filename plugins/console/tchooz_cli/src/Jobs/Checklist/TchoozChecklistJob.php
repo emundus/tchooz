@@ -174,6 +174,11 @@ class TchoozChecklistJob extends TchoozJob
 			$hasIssues = true;
 		}
 
+		foreach ($this->findFnumKeyRedirects($code) as $call) {
+			$output->writeln('<error> Code [' . $call . ']: this redirect reaches a Fabrik form through usekey=fnum, check the targeted form and its table are still the right ones after the migration.</error>');
+			$hasIssues = true;
+		}
+
 		if ($hasIssues) {
 			$helper = new QuestionHelper();
 			$question = new ConfirmationQuestion('Press enter to continue', true);
@@ -191,6 +196,18 @@ class TchoozChecklistJob extends TchoozJob
 	 *
 	 * @return array<array{0: string, 1: bool}>
 	 */
+	/**
+	 * Redirects building a Fabrik URL that reaches a form by fnum, as in usekey=fnum&rowid=<fnum>.
+	 *
+	 * @return string[]
+	 */
+	private function findFnumKeyRedirects(string $code): array
+	{
+		preg_match_all('/->redirect\s*\([^;]*usekey=fnum[^;]*/i', $code, $matches);
+
+		return $matches[0];
+	}
+
 	private function findLegacyRedirectCalls(string $code): array
 	{
 		preg_match_all('/->redirect\s*\((?:[^()]|\([^()]*\))*?,\s*(?!\d|true\b|false\b|\'3\d\d\'|"3\d\d")(\'\'|""|\S)[^;\n]*/i', $code, $matches, PREG_SET_ORDER);
