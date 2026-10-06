@@ -9,6 +9,7 @@ use Tchooz\Entities\Mapping\MappingEntity;
 use Tchooz\Entities\Mapping\MappingResolution;
 use Tchooz\Synchronizers\Mapping\AbstractMappingObject;
 use Tchooz\Synchronizers\MappingTransportInterface;
+use Tchooz\Services\Sofis\SofisLogger;
 
 /**
  * Shared behaviour for Sofis (Microsoft Dynamics 365 F&O) mapping objects: OData transport helpers
@@ -25,11 +26,27 @@ use Tchooz\Synchronizers\MappingTransportInterface;
  */
 abstract class AbstractSofisObject extends AbstractMappingObject
 {
-	protected const CHANNEL = 'com_emundus.sofis';
+	protected const CHANNEL = SofisLogger::CHANNEL;
+
+	// Bank identifiers are encrypted at rest in eMundus: never write them in clear in the logs.
+	private const MASKED_FIELDS = ['IBAN', 'QRIBAN', 'BankAccountNumber', 'ForeignBankAccountNumber'];
+
+	/**
+	 * The MARIO gateway splits Sofis into one API per business domain: the route depends on the
+	 * entity set, not on the calling object (PurchaseOrderObject also searches VendorsV2).
+	 */
+	private const API_BY_ENTITY = [
+		'VendorsV2'                => 'vendors/v1',
+		'VendorBankAccounts'       => 'vendors/v1',
+		'VATNumTables'             => 'vendors/v1',
+		'FinancialDimensionValues' => 'financialDimensions/v1',
+		'PurchaseOrderHeadersV2'   => 'purchaseOrders/v1',
+		'PurchaseOrderLinesV2'     => 'purchaseOrders/v1',
+	];
 
 	public function __construct()
 	{
-		Log::addLogger(['text_file' => 'com_emundus.sofis.php'], Log::ALL, [self::CHANNEL]);
+		SofisLogger::register();
 	}
 
 	/**
@@ -40,7 +57,9 @@ abstract class AbstractSofisObject extends AbstractMappingObject
 	 */
 	protected function search(MappingTransportInterface $transport, string $entitySet, string $filter): array
 	{
-		$url      = 'data/' . $entitySet . '?$filter=' . rawurlencode($filter) . '&cross-company=true';
+		$url = $this->entityPath($entitySet) . '?$filter=' . rawurlencode($filter) . '&cross-company=true';
+		$this->debug('GET ' . $entitySet . ' with filter ' . $filter);
+
 		$response = $transport->get($url);
 
 		if (empty($response) || !in_array($response['status'], [200, 201]))
@@ -50,7 +69,10 @@ abstract class AbstractSofisObject extends AbstractMappingObject
 			throw new \RuntimeException($this->remoteError('COM_EMUNDUS_SOFIS_SEARCH_FAILED', $entitySet, $response));
 		}
 
-		return $response['data']->value ?? [];
+		$records = $response['data']->value ?? [];
+		$this->debug('GET ' . $entitySet . ' returned ' . count($records) . ' record(s)');
+
+		return $records;
 	}
 
 	/**
@@ -60,7 +82,9 @@ abstract class AbstractSofisObject extends AbstractMappingObject
 	 */
 	protected function create(MappingTransportInterface $transport, string $entitySet, array $payload): object
 	{
-		$url      = 'data/' . $entitySet . '?cross-company=true';
+		$url = $this->entityPath($entitySet) . '?cross-company=true';
+		$this->debug('POST ' . $entitySet . ' with payload ' . json_encode($this->mask($payload)));
+
 		$response = $transport->post($url, json_encode($payload), ['Content-Type' => 'application/json', 'Accept' => 'application/json']);
 
 		if (empty($response) || !in_array($response['status'], [200, 201]) || empty($response['data']))
@@ -69,6 +93,8 @@ abstract class AbstractSofisObject extends AbstractMappingObject
 
 			throw new \RuntimeException($this->remoteError('COM_EMUNDUS_SOFIS_CREATE_FAILED', $entitySet, $response));
 		}
+
+		$this->debug('POST ' . $entitySet . ' succeeded (HTTP ' . $response['status'] . ') : ' . json_encode($this->mask((array) $response['data'])));
 
 		return $response['data'];
 	}
@@ -80,7 +106,9 @@ abstract class AbstractSofisObject extends AbstractMappingObject
 	 */
 	protected function patch(MappingTransportInterface $transport, string $entitySet, string $key, array $payload): void
 	{
-		$url      = 'data/' . $entitySet . $key . '?cross-company=true';
+		$url = $this->entityPath($entitySet) . $key . '?cross-company=true';
+		$this->debug('PATCH ' . $entitySet . $key . ' with payload ' . json_encode($this->mask($payload)));
+
 		$response = $transport->patch($url, json_encode($payload));
 
 		if (empty($response) || !in_array($response['status'], [200, 201, 204]))
@@ -89,6 +117,51 @@ abstract class AbstractSofisObject extends AbstractMappingObject
 
 			throw new \RuntimeException($this->remoteError('COM_EMUNDUS_SOFIS_UPDATE_FAILED', $entitySet, $response));
 		}
+
+		$this->debug('PATCH ' . $entitySet . $key . ' succeeded (HTTP ' . $response['status'] . ')');
+	}
+
+	/**
+	 * The SIRET is the vendor identity key in Sofis: whatever the mapping sends ("234 567 890 10876"),
+	 * search and creation must use the same digits-only form, or the vendor is not found again.
+	 */
+	protected function normalizeSiret(mixed $siret): string
+	{
+		return preg_replace('/\D/', '', (string) $siret) ?? '';
+	}
+
+	protected function debug(string $message): void
+	{
+		Log::add($message, Log::DEBUG, self::CHANNEL);
+	}
+
+	/**
+	 * Copy of a payload/record safe to log: bank identifiers keep only their last 4 characters.
+	 */
+	protected function mask(array $data): array
+	{
+		foreach (self::MASKED_FIELDS as $field)
+		{
+			if (!empty($data[$field]) && is_string($data[$field]))
+			{
+				$data[$field] = '****' . substr($data[$field], -4);
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Gateway route of an entity set, relative to the configured `base_url` (…/sofis).
+	 */
+	protected function entityPath(string $entitySet): string
+	{
+		if (!isset(self::API_BY_ENTITY[$entitySet]))
+		{
+			throw new \LogicException('No MARIO API exposes the Sofis entity set ' . $entitySet);
+		}
+
+		return self::API_BY_ENTITY[$entitySet] . '/' . $entitySet;
 	}
 
 	/**
