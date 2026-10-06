@@ -43,7 +43,7 @@ class FinancialDimensionValueObject extends AbstractSofisObject implements SelfE
 		return new SynchronizerMappingObjectDefinition(
 			$this->getName(),
 			'COM_EMUNDUS_SOFIS_FINANCIAL_DIMENSION_VALUE_OBJECT_LABEL',
-			'/data/FinancialDimensionValues',
+			'/' . $this->entityPath(self::ENTITY),
 			new ExternalReferenceEntity(0, 'dimension_value', '', '', null, self::ENTITY, 'DimensionValue'),
 			[ApiMethodEnum::GET, ApiMethodEnum::POST, ApiMethodEnum::PATCH],
 			[], // requiredFields (config params) — none
@@ -71,10 +71,14 @@ class FinancialDimensionValueObject extends AbstractSofisObject implements SelfE
 			$keyValues[$keyField] = (string) ($data[$keyField] ?? '');
 		}
 
+		$this->debug('Financial dimension value sync for file ' . $context->getFile() . ' : ' . json_encode($keyValues));
+
 		$existing = $this->findValue($transport, $keyValues);
 
 		if ($existing === null)
 		{
+			$this->debug('Financial dimension value not found, creating it');
+
 			// Required fields are a creation (POST) constraint — enforced only when creating.
 			$this->validateRequiredFields($data);
 
@@ -85,15 +89,16 @@ class FinancialDimensionValueObject extends AbstractSofisObject implements SelfE
 			// Existing value: update only the non-key attributes, and only when they actually changed
 			// (avoids overwriting on every idempotent task re-run).
 			$updates = $this->collectMappedFields($data, null, self::SEARCH_FIELDS);
+			$changed = array_keys(array_filter($updates, fn($value, $field) => (string) ($existing->$field ?? '') !== (string) $value, ARRAY_FILTER_USE_BOTH));
 
-			foreach ($updates as $field => $value)
+			if (empty($changed))
 			{
-				if ((string) ($existing->$field ?? '') !== (string) $value)
-				{
-					$this->patch($transport, self::ENTITY, $this->key($this->buildKey($keyValues, $existing)), $updates);
-
-					break;
-				}
+				$this->debug('Financial dimension value found and unchanged, nothing to do');
+			}
+			else
+			{
+				$this->debug('Financial dimension value found, changed field(s) : ' . implode(', ', $changed));
+				$this->patch($transport, self::ENTITY, $this->key($this->buildKey($keyValues, $existing)), $updates);
 			}
 		}
 
@@ -114,7 +119,11 @@ class FinancialDimensionValueObject extends AbstractSofisObject implements SelfE
 		if (!$this->externalReferenceRepository->flush($reference))
 		{
 			Log::add('Failed to persist DimensionValue reference for ' . $dimensionValue, Log::ERROR, self::CHANNEL);
+
+			return;
 		}
+
+		$this->debug('Reference DimensionValue ' . $dimensionValue . ' persisted');
 	}
 
 	/**

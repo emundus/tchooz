@@ -3,15 +3,16 @@
 namespace Tchooz\Synchronizers\Sofis;
 
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Log\Log;
 use Tchooz\api\Api;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Services\Sofis\SofisAuthenticator;
 use Tchooz\Synchronizers\MappingTransportInterface;
+use Tchooz\Services\Sofis\SofisLogger;
 
 /**
  * Sofis (Microsoft Dynamics 365 F&O) transport: authenticates through the EntraId OAuth2 token
- * proxy (via SofisAuthenticator) and carries requests (GET/POST/PATCH) to the Dynamics resource.
+ * proxy (via SofisAuthenticator) and carries requests (GET/POST/PATCH) to the Sofis APIs exposed
+ * by the MARIO API gateway.
  *
  * Like every mapping transport it is ignorant of business objects and routes; the Sofis mapping
  * objects (to be added once the functional Dynamics mapping is provided) will carry that knowledge.
@@ -22,7 +23,7 @@ class SofisSynchronizer extends Api implements MappingTransportInterface
 	{
 		parent::__construct();
 
-		Log::addLogger(['text_file' => 'com_emundus.sofis.php'], Log::ALL, ['com_emundus.sofis']);
+		SofisLogger::register();
 
 		$syncEntity = (new SynchronizerRepository())->getByType('sofis');
 
@@ -33,7 +34,8 @@ class SofisSynchronizer extends Api implements MappingTransportInterface
 
 		$authConfig = $syncEntity->getConfig()['authentication'] ?? [];
 
-		$baseUrl = !empty($authConfig['base_url']) ? $authConfig['base_url'] : ($authConfig['resource'] ?? '');
+		// No fallback on `resource`: it is the token audience, calling it directly would bypass the MARIO gateway.
+		$baseUrl = rtrim($authConfig['base_url'] ?? '', '/');
 
 		if (empty($baseUrl))
 		{
