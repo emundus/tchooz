@@ -9,8 +9,11 @@
 		}"
 	>
 		<div v-if="canUpdate" class="tw-mb-2 tw-flex tw-w-full tw-items-start tw-justify-between">
-			<div class="tw-w-11/12" @click="triggerElementProperties">
-				<label class="fabrikLabel control-label tw-mb-0 tw-flex tw-w-full tw-cursor-pointer tw-items-center">
+			<div class="tw-overflow-hidden" @click="triggerElementProperties">
+				<label
+					class="fabrikLabel control-label tw-mb-0 tw-flex tw-w-full tw-cursor-pointer tw-items-center"
+					:class="element.FRequire ? 'tw-gap-2' : ''"
+				>
 					<span
 						v-if="element.FRequire"
 						class="material-symbols-outlined tw-mr-0 !tw-text-xs tw-text-red-600"
@@ -21,7 +24,7 @@
 						v-if="element.label_tag"
 						:ref="'element-label-' + element.id"
 						:id="'element-label-' + element.id"
-						class="element-title tw-ml-2"
+						class="element-title"
 						:class="element.label === '' ? 'tw-italic tw-text-neutral-500' : ''"
 						>{{
 							element.label !== ''
@@ -37,7 +40,7 @@
 				>
 			</div>
 
-			<div id="element-action-icons" class="tw-mt-2 tw-flex tw-items-end">
+			<div id="element-action-icons" class="tw-flex tw-items-end">
 				<span class="material-symbols-outlined handle tw-cursor-grab">drag_indicator</span>
 				<span
 					id="delete-element"
@@ -162,6 +165,18 @@
 
 			<form-builder-element-field v-else type="field" :element="element" />
 		</div>
+
+		<div v-if="hasRules" class="tw-mt-2 tw-flex tw-items-center tw-gap-2">
+			<span class="tw-text-xs tw-text-neutral-600">{{
+				translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_HAS_CONDITIONS')
+			}}</span>
+			<Button
+				emphasis="ghost"
+				icon="account_tree"
+				:label="translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_SEE_CONDITIONS')"
+				@click.stop="openElementRules"
+			/>
+		</div>
 	</div>
 </template>
 
@@ -176,6 +191,8 @@ import FormBuilderElementCurrency from '@/components/FormBuilder/FormBuilderSect
 import FormBuilderElementGeolocation from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementGeolocation.vue';
 
 import { useGlobalStore } from '@/stores/global.js';
+import { useFormBuilderStore } from '@/stores/formbuilder.js';
+import { Button } from '@emundus/ui';
 import FormBuilderElementBooking from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementBooking.vue';
 import FormBuilderElementApplicationChoices from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementApplicationChoices.vue';
 import FormBuilderElementField from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementField.vue';
@@ -194,6 +211,7 @@ import FormBuilderElementOrderlist from '@/components/FormBuilder/FormBuilderSec
 
 export default {
 	components: {
+		Button,
 		FormBuilderElementOrderlist,
 		FormBuilderElementFileUpload,
 		FormBuilderElementAction,
@@ -235,6 +253,7 @@ export default {
 	setup() {
 		return {
 			globalStore: useGlobalStore(),
+			formBuilderStore: useFormBuilderStore(),
 		};
 	},
 	methods: {
@@ -289,6 +308,9 @@ export default {
 
 			this.$emit('open-element-properties');
 		},
+		openElementRules() {
+			this.$emit('open-element-rules', this.element);
+		},
 		cancelDelete(event) {
 			let elementsPending = this.$parent.$parent.$parent.$parent.$data.elementsDeletedPending;
 			let index = elementsPending.indexOf(this.element.id);
@@ -311,6 +333,9 @@ export default {
 	computed: {
 		sysadmin: function () {
 			return parseInt(this.globalStore.hasSysadminAccess);
+		},
+		hasRules: function () {
+			return !!this.element.name && this.formBuilderStore.getRuledElementNames.has(this.element.name);
 		},
 	},
 };
