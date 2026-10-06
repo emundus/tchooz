@@ -47,7 +47,7 @@ class FieldTransformer
 
 					if ($count > 0)
 					{
-						$field->setResearch(new FieldResearch('condition', 'getConditionFieldValues'));
+						$field->setResearch(new FieldResearch('condition', 'getConditionFieldValues', 'search_query', ['properties' => $fieldId]));
 					}
 					break;
 				case 'dropdown':
