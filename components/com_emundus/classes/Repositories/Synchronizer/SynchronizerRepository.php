@@ -9,7 +9,7 @@ use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Factories\Synchronizer\SynchronizerFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
-use Tchooz\Services\Mapping\ApiMapDataInterface;
+use Tchooz\Factories\Mapping\MappingObjectFactory;
 
 #[TableAttribute(
 	table: '#__emundus_setup_sync',
@@ -233,15 +233,12 @@ class SynchronizerRepository extends EmundusRepository implements RepositoryInte
 	 */
 	public function getMappingObjectsDefinitions(SynchronizerEntity $entity): array
 	{
-		$objectDefinitions = [];
-		$synchronizer = $this->factory->getApiInstance($entity);
+		$mappingObjectFactory = new MappingObjectFactory();
 
-		if (!empty($synchronizer) && $synchronizer instanceof ApiMapDataInterface)
-		{
-			$objectDefinitions = $synchronizer->getMappingObjectsDefinitions();
-		}
-
-		return $objectDefinitions;
+		return array_map(
+			static fn($object) => $object->getDefinition(),
+			$mappingObjectFactory->getAvailableObjects($entity->getType())
+		);
 	}
 
 	public function getFactory(): SynchronizerFactory

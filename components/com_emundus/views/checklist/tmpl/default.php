@@ -5,6 +5,7 @@ use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 
@@ -128,13 +129,13 @@ if (!empty($this->custom_title)) :?>
 <?php if (count($this->attachments) > 0) : ?>
 
     <div class="tw-text-link-regular tw-cursor-pointer tw-font-semibold tw-flex tw-items-center tw-group tw-mb-4 tw-mt-2" onclick="window.history.go(-1)">
-        <span class="material-symbols-outlined tw-mr-1 tw-text-link-regular">navigate_before</span>
+        <?php echo LayoutHelper::render('emundus.icon', ['name' => 'navigate_before', 'class' => 'tw-mr-1 tw-text-link-regular']); ?>
         <span class="group-hover:tw-underline" name="Goback"><?php echo Text::_('GO_BACK') ?></span>
     </div>
     <div id="attachment_list" class="em-attachmentList em-repeat-card tw-p-6">
         <h2 class="after-em-border after:tw-bg-red-800 tw-mb-4"><?php echo Text::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
         <div class="alert alert-info tw-flex tw-items-center tw-gap-1 tw-mt-1">
-            <span class="material-symbols-outlined">info</span>
+            <?php echo LayoutHelper::render('emundus.icon', ['name' => 'info']); ?>
             <div>
                 <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . $upload_maxsize  . Text::_('COM_EMUNDUS_ATTACHMENTS_MEGABYTES_SHORT'); ?> </p>
             </div>
@@ -142,15 +143,15 @@ if (!empty($this->custom_title)) :?>
 		<?php if ($this->show_info_legend) : ?>
             <div id="legend" class="em-mt-4">
                 <div class="em-flex-row em-mb-4">
-                    <span class="material-symbols-outlined em-red-600-color em-mr-4">highlight_off</span>
+                    <?php echo LayoutHelper::render('emundus.icon', ['name' => 'highlight_off', 'class' => 'em-red-600-color em-mr-4']); ?>
                     <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC'); ?></p>
                 </div>
                 <div class="em-flex-row em-mb-4">
-                    <span class="material-symbols-outlined em-green-500-color em-mr-4">check_circle</span>
+                    <?php echo LayoutHelper::render('emundus.icon', ['name' => 'check_circle', 'class' => 'em-green-500-color em-mr-4']); ?>
                     <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_SENT_DOC'); ?></p>
                 </div>
                 <div class="em-flex-row em-mb-4">
-                    <span class="material-symbols-outlined em-yellow-600-color em-mr-4">error_outline</span>
+                    <?php echo LayoutHelper::render('emundus.icon', ['name' => 'error_outline', 'class' => 'em-yellow-600-color em-mr-4']); ?>
                     <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC_FAC'); ?></p>
                 </div>
             </div>
@@ -172,11 +173,11 @@ if (!empty($this->custom_title)) :?>
                 <div id="l' . $attachment->id . '" class="tw-flex tw-items-center em-ml-8 em-mt-8">';
 			if ($attachment->nb == 0) {
 				if ($this->show_info_legend) {
-					$div .= $attachment->mandatory ? '<span class="material-symbols-outlined em-red-600-color em-mr-4">highlight_off</span>' : '<span class="material-symbols-outlined em-yellow-600-color em-mr-4">error_outline</span>';
+					$div .= $attachment->mandatory ? LayoutHelper::render('emundus.icon', ['name' => 'highlight_off', 'class' => 'em-red-600-color em-mr-4', 'ariaLabel' => Text::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC')]) : LayoutHelper::render('emundus.icon', ['name' => 'error_outline', 'class' => 'em-yellow-600-color em-mr-4', 'ariaLabel' => Text::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC_FAC')]);
 				}
 			}
 			else {
-				$div .= '<span class="material-symbols-outlined em-green-500-color em-mr-4">check_circle</span>';
+				$div .= LayoutHelper::render('emundus.icon', ['name' => 'check_circle', 'class' => 'em-green-500-color em-mr-4', 'ariaLabel' => Text::_('COM_EMUNDUS_ATTACHMENTS_SENT_DOC')]);
 			}
 			$div .= '<h4 class="em-mt-0-important">' . $attachment->value . '</h4>';
 
@@ -190,11 +191,11 @@ if (!empty($this->custom_title)) :?>
 
 			if ($attachment->has_sample && !empty($attachment->sample_filepath)) {
 				$div .= '<div class="tw-ml-2 tw-mb-2 tw-flex tw-items-center tw-gap-1 attachment_model">
-                            <span>'.Text::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="tw-flex tw-items-center" href="'.Uri::root() . $attachment->sample_filepath.'" target="_blank"> <span class="em-text-underline"> ' . Text::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-symbols-outlined tw-ml-2 tw-text-neutral-900">cloud_download</span></a>
+                            <span>'.Text::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="tw-flex tw-items-center" href="'.Uri::root() . $attachment->sample_filepath.'" target="_blank"> <span class="em-text-underline"> ' . Text::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span>'.LayoutHelper::render('emundus.icon', ['name' => 'cloud_download', 'class' => 'tw-ml-2 tw-text-neutral-900']).'</a>
                          </div>';
 			}
 
-			$div .= '<table id="' . $attachment->id . '" class="table em-fieldset-attachment-table">';
+			$div .= '<table role="presentation" id="' . $attachment->id . '" class="table em-fieldset-attachment-table">';
 			if ($attachment->nb > 0) {
 				foreach ($attachment->liste as $key => $item) {
 					$nb  = $key + 1;
@@ -214,14 +215,14 @@ if (!empty($this->custom_title)) :?>
 					$div .= '<tr class="em-added-files">
                     <td class="em-flex-row">';
 					if ($item->can_be_viewed == 1) {
-						$div .= '<a class="em-flex-row em-mr-16 tw-btn-tertiary" href="' . $chemin . $this->_user->id . '/' . $item->filename . '" target="_blank"><span class="material-symbols-outlined em-mr-4">visibility</span>' . Text::_('COM_EMUNDUS_ATTACHMENTS_VIEW') . '</a>';
+						$div .= '<a class="em-flex-row em-mr-16 tw-btn-info" href="' . $chemin . $this->_user->id . '/' . $item->filename . '" target="_blank"><span class="material-symbols-outlined em-mr-4" aria-hidden="true">visibility</span>' . Text::_('COM_EMUNDUS_ATTACHMENTS_VIEW') . '</a>';
 					}
 					else {
 						$div .= Text::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW') . '</br>';
 					}
 					if (($item->can_be_deleted == 1 || $item->is_validated == "0") && !$block_upload) {
-						$div .= '<a onclick="deletedoc(this)" class="em-flex-row em-error-button tw-cursor-pointer" data-url="' . JRoute::_('index.php?option=com_emundus&task=delete&uid=' . $item->id . '&aid=' . $item->attachment_id . '&duplicate=' . $attachment->duplicate . '&nb=' . $attachment->nb . '&Itemid=' . $itemid . '#a' . $attachment->id) . '">
-						<span class="material-symbols-outlined em-mr-4">delete_outline</span> ' . Text::_('COM_EMUNDUS_ACTIONS_DELETE') . '</a>';
+						$div .= '<a onclick="deletedoc(this)" role="button" tabindex="0" aria-label="'. Text::_('COM_EMUNDUS_ACTIONS_DELETE').'" class="em-flex-row tw-btn-red tw-cursor-pointer" data-url="' . JRoute::_('index.php?option=com_emundus&task=delete&uid=' . $item->id . '&aid=' . $item->attachment_id . '&duplicate=' . $attachment->duplicate . '&nb=' . $attachment->nb . '&Itemid=' . $itemid . '#a' . $attachment->id) . '">
+						<span class="material-symbols-outlined em-mr-4" aria-hidden="true">delete_outline</span> ' . Text::_('COM_EMUNDUS_ACTIONS_DELETE') . '</a>';
 					}
 					else {
 						$div .= Text::_('COM_EMUNDUS_ATTACHMENTS_CANT_DELETE') . '</br>';

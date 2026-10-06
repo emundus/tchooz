@@ -9,6 +9,7 @@ use Joomla\CMS\Session\Session;
 use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\Programs\ProgramRepository;
 
 // INCLUDES
 require_once(dirname(__FILE__) . DS . 'helper.php');
@@ -67,12 +68,30 @@ if ($user->guest || in_array($e_user->profile, $app_prof) || $tmpl === 'tchooz_s
 	$mod_em_campaign_custom_link           = $params->get('mod_em_campaign_custom_link', '');
 	$mod_em_campaign_display_program_label = $params->get('mod_em_campaign_display_program_label', 0);
 	$mod_em_campaign_click_to_details      = $params->get('mod_em_campaign_click_to_details', 1);
-	$mod_em_campaign_intro                 = $params->get('mod_em_campaign_intro', null);
-	$mod_em_campaign_article_logged                 = $params->get('mod_em_campaign_article_logged', 0);
-	if (empty($mod_em_campaign_intro) && $params->get('mod_em_campaign_layout') == 'default_tchooz')
+	$programId    = $app->input->getInt('rowid', 0);
+	$programmeIntro = null;
+	if(!empty($programId))
 	{
-		$articleId = !empty($mod_em_campaign_article_logged) ? $mod_em_campaign_article_logged : 52;
-		$mod_em_campaign_intro = $m_settings->getArticle($lang_tag, $articleId)->introtext;
+		$programRepository = new ProgramRepository();
+		$programEntity = $programRepository->getById($programId);
+		if(!empty($programEntity) && !empty($programEntity->getLongDescription()))
+		{
+			$programmeIntro = $programEntity->getLongDescription();
+		}
+    }
+
+	if(empty($programmeIntro))
+	{
+		$mod_em_campaign_intro          = $params->get('mod_em_campaign_intro', null);
+		$mod_em_campaign_article_logged = $params->get('mod_em_campaign_article_logged', 0);
+		if (empty($mod_em_campaign_intro) && $params->get('mod_em_campaign_layout') == 'default_tchooz')
+		{
+			$articleId             = !empty($mod_em_campaign_article_logged) ? $mod_em_campaign_article_logged : 52;
+		    $mod_em_campaign_intro = $m_settings->getArticle($lang_tag, $articleId)->introtext;
+		}
+	}
+	else {
+		$mod_em_campaign_intro = $programmeIntro;
 	}
 
 	if (!empty($mod_em_campaign_intro))

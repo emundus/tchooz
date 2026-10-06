@@ -1099,18 +1099,18 @@ class Files
 		$comment = new \stdClass();
 
 		try {
-			$query->select('applicant_id')
+			$query->select($db->quoteName(['id', 'applicant_id']))
 				->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
 			$db->setQuery($query);
-			$aid = $db->loadResult();
-
+			$file = $db->loadObject();
 
 			$query->clear()
 				->insert($db->quoteName('#__emundus_comments'))
-				->set($db->quoteName('applicant_id') . ' = ' . $db->quote($aid))
+				->set($db->quoteName('applicant_id') . ' = ' . $db->quote($file?->applicant_id))
 				->set($db->quoteName('user_id') . ' = ' . $db->quote($this->current_user->id))
 				->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+				->set($db->quoteName('ccid') . ' = ' . (int) $file?->id)
 				->set($db->quoteName('reason') . ' = ' . $db->quote($reason))
 				->set($db->quoteName('date') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
 				->set($db->quoteName('comment_body') . ' = ' . $db->quote($comment_body));

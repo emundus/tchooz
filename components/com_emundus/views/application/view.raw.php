@@ -88,6 +88,8 @@ class EmundusViewApplication extends HtmlView
 	protected ?string $html_form;
 	protected mixed $_user;
 	protected ?array $collaborators;
+	protected bool $isCollaborationOwner = false;
+	protected bool $collaboratorsReadOnly = false;
 	protected bool $is_applicant;
 
 	protected ?ApplicationFileEntity $applicationFile = null;
@@ -317,8 +319,12 @@ class EmundusViewApplication extends HtmlView
 						$this->columns             = ['check', 'name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync', 'sign'];
 						if ($this->_user->applicant)
 						{
-							//TODO: Add menu parameters
-							$this->columns = ['name', 'date', 'desc', 'status', 'modified', 'sign'];
+							$this->columns = ['name', 'date', 'desc', 'modified', 'sign'];
+
+							if ($params->get('applicant_show_document_status', 1))
+							{
+								array_splice($this->columns, 3, 0, 'status');
+							}
 						}
 					}
 					else
@@ -534,8 +540,7 @@ class EmundusViewApplication extends HtmlView
 						foreach ($this->fileLogs as $log)
 						{
 							$log->timestamp                  = EmundusHelperDate::displayDate($log->timestamp);
-							$log->details                    = $m_logs->setActionDetails($log->action_id, $log->verb, $log->params);
-							$log->details['action_name']     = Text::_($log->message);
+							$log->details                    = $m_logs->setActionDetails($log->action_id, $log->verb, $log->params, $log->message);
 							$log->details['action_category'] = Text::_($log->details['action_category']);
 						}
 					}
@@ -806,69 +811,6 @@ class EmundusViewApplication extends HtmlView
 					}
 					break;
 
-				case 'admission':
-					if (EmundusHelperAccess::asAccessAction(32, 'r', $this->user->id, $fnum))
-					{
-
-						if (!class_exists('EmundusModelAdmission'))
-						{
-							require_once(JPATH_BASE . '/components/com_emundus/models/admission.php');
-						}
-						$m_admission = new EmundusModelAdmission();
-						if (!class_exists('EmundusModelFiles'))
-						{
-							require_once(JPATH_BASE . '/components/com_emundus/models/files.php');
-						}
-						$m_files = new EmundusModelFiles();
-
-						$myAdmission_form_id = $m_files->getAdmissionFormidByFnum($fnum);
-						$admission_form      = $m_admission->getAdmissionFormByProgramme($this->applicationFile->getCampaign()->getProgram()->getCode());
-
-						if (!empty($admission_form))
-						{
-							$admission_row_id = $m_admission->getAdmissionId($admission_form->db_table_name, $fnum);
-						}
-
-						if (empty($myAdmission_form_id))
-						{
-							$this->html_form = '<p>' . Text::_('COM_EMUNDUS_NO_USER_ADMISSION_FORM') . '</p>';
-						}
-						else
-						{
-							$this->html_form = $m_application->getFormByFabrikFormID($myAdmission_form_id, $this->student->id, $fnum);
-						}
-
-						$this->url_form = '';
-						if (!empty($admission_form->form_id))
-						{
-							if (EmundusHelperAccess::asAccessAction(32, 'u', $this->user->id, $fnum))
-							{
-								$this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $admission_form->form_id . '&rowid=' . $admission_row_id . '&' . $admission_form->db_table_name . '___student_id[value]=' . $this->student->id . '&' . $admission_form->db_table_name . '___campaign_id[value]=' . $this->campaign_id . '&' . $admission_form->db_table_name . '___fnum[value]=' . $fnum . '&student_id=' . $this->student->id . '&tmpl=component&iframe=1';
-							}
-							elseif (EmundusHelperAccess::asAccessAction(32, 'r', $this->user->id, $fnum))
-							{
-								$this->url_form = 'index.php?option=com_fabrik&c=form&view=details&formid=' . $admission_form->form_id . '&rowid=' . $admission_row_id . '&' . $admission_form->db_table_name . '___student_id[value]=' . $this->student->id . '&' . $admission_form->db_table_name . '___campaign_id[value]=' . $this->campaign_id . '&' . $admission_form->db_table_name . '___fnum[value]=' . $fnum . '&student_id=' . $this->student->id . '&tmpl=component&iframe=1';
-							}
-							elseif (EmundusHelperAccess::asAccessAction(32, 'c', $this->user->id, $fnum))
-							{
-								$this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $admission_form->form_id . '&rowid=&' . $admission_form->db_table_name . '___student_id[value]=' . $this->student->id . '&' . $admission_form->db_table_name . '___campaign_id[value]=' . $this->campaign_id . '&' . $admission_form->db_table_name . '___fnum[value]=' . $fnum . '&student_id=' . $this->student->id . '&tmpl=component&iframe=1';
-							}
-						}
-
-						$this->form_id = $admission_form->form_id;
-
-						// TRACK THE LOGS
-						EmundusModelLogs::log($this->user->id, $this->sid, $fnum, 32, 'r', 'COM_EMUNDUS_ADMISSION_READ');
-
-					}
-					else
-					{
-						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
-						exit();
-					}
-
-					break;
-
 				case 'interview':
 					if (EmundusHelperAccess::asAccessAction(34, 'r', $this->user->id, $fnum))
 					{
@@ -941,7 +883,26 @@ class EmundusViewApplication extends HtmlView
 
 					break;
 				case 'collaborate':
-					$this->collaborators = $m_application->getSharedFileUsers($ccid, $fnum);
+					$this->isCollaborationOwner = (int) $this->applicationFile->getUser()->id === (int) $this->user->id;
+					$this->collaboratorsReadOnly = !$this->isCollaborationOwner && !EmundusHelperAccess::asPartnerAccessLevel($this->user->id);
+
+					if ($this->collaboratorsReadOnly && !$m_application->canSeeSharedUsers($this->ccid, $this->user->id))
+					{
+						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+						return;
+					}
+
+					$this->collaborators = $m_application->getSharedFileUsers($this->ccid) ?: [];
+					if ($this->collaboratorsReadOnly)
+					{
+						$this->collaborators = array_values(array_filter($this->collaborators, fn($collaborator) => $collaborator->uploaded == 1 && (int) $collaborator->user_id !== (int) $this->user->id));
+
+						$owner = $m_application->getSharedFileOwner($this->ccid);
+						if (!empty($owner))
+						{
+							array_unshift($this->collaborators, $owner);
+						}
+					}
 			}
 
 			parent::display($tpl);

@@ -18,15 +18,17 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Uri\Uri;
 use Tchooz\Entities\Upload\UploadEntity;
+use Tchooz\Enums\Upload\UploadValidationStatusEnum;
 use Tchooz\Repositories\Attachments\AttachmentTypeRepository;
+use Tchooz\Services\FileSecurityService;
 use Tchooz\Repositories\Upload\UploadRepository;
 use Joomla\Filesystem\File;
 
-if(!class_exists('FabrikFEModelForm'))
+if (!class_exists('FabrikFEModelForm'))
 {
 	require_once JPATH_SITE . '/components/com_fabrik/models/form.php';
 }
-if(!class_exists('FabrikFEModelList'))
+if (!class_exists('FabrikFEModelList'))
 {
 	require_once JPATH_SITE . '/components/com_fabrik/models/list.php';
 }
@@ -41,36 +43,45 @@ if(!class_exists('FabrikFEModelList'))
 class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 {
 	private UploadRepository $uploadRepository;
-	
+
 	private AttachmentTypeRepository $attachmentTypeRepository;
 
-	private object $currentUser;
+	private FileSecurityService $fileSecurityService;
+
+	private ?object $currentUser = null;
 
 	public function __construct(&$subject, $config = array())
 	{
 		parent::__construct($subject, $config);
 
-		if (!class_exists('EmundusModelFiles')) {
+		if (!class_exists('EmundusModelFiles'))
+		{
 			require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
 		}
 		if (!class_exists('EmundusModelLogs'))
 		{
 			require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
 		}
-		$this->uploadRepository = new UploadRepository();
+		$this->uploadRepository         = new UploadRepository();
 		$this->attachmentTypeRepository = new AttachmentTypeRepository();
+		$this->fileSecurityService     = new FileSecurityService();
 
-		$this->currentUser = $this->app->getSession()->get('emundusUser');
+		$emundusUser = $this->app->getSession()->get('emundusUser');
+		if (is_object($emundusUser))
+		{
+			$this->currentUser = $emundusUser;
+		}
 	}
 
 	public function onAjax_upload(): bool
 	{
-		$m_files   = new EmundusModelFiles();
+		$m_files = new EmundusModelFiles();
 
-		$db     = Factory::getContainer()->get('DatabaseDriver');
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
-		$user         = (int) $this->currentUser->id;
-		if ($this->app->getIdentity()->guest) {
+		$user = (int) $this->currentUser->id;
+		if ($this->app->getIdentity()->guest)
+		{
 			echo json_encode(['status' => 'false']);
 
 			return false;
@@ -86,7 +97,20 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 		$formId   = $this->getFormModel()->id;
 		$fullName = $this->getFullName(true, false);
 
-		if (!empty($attachId)) {
+		$isApplicant = EmundusHelperAccess::isApplicant($this->currentUser->id) && in_array($fnum, array_keys((array) $this->currentUser->fnums));
+		$isManager   = !$isApplicant && EmundusHelperAccess::asAccessAction(4, 'c', $this->currentUser->id, $fnum);
+
+		$isApplicationForm = $this->isApplicationForm((int) $formId);
+
+		if (!$isApplicant && !$isManager)
+		{
+			echo json_encode(['status' => 'false']);
+
+			return false;
+		}
+
+		if (!empty($attachId))
+		{
 			$eMConfig             = ComponentHelper::getParams('com_emundus');
 			$can_submit_encrypted = ($this->app->input->post->get('encrypt') == 2) ? $eMConfig->get('can_submit_encrypted', 1) : $this->app->input->post->get('encrypt');
 
@@ -102,21 +126,27 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 			$acceptedExt = [];
 
 			$fnumInfos = $m_files->getFnumInfos($fnum);
-			if ($this->checkPath($fnumInfos['applicant_id'])) {
+			if ($this->checkPath($fnumInfos['applicant_id']))
+			{
 				$session = $this->getFormSession($fnum, $formId);
 				$data    = !empty($session->data) ? $session->data : [];
-				if (!empty($data) && !empty($data[$fullName])) {
-					foreach ($data[$fullName] as $value) {
-						if (isset($value['need_to_delete'])) {
+				if (!empty($data) && !empty($data[$fullName]))
+				{
+					foreach ($data[$fullName] as $value)
+					{
+						if (isset($value['need_to_delete']))
+						{
 							$nbAttachment--;
 						}
-						else {
+						else
+						{
 							$nbAttachment++;
 						}
 					}
 				}
 
-				foreach ($files as $key => $file) {
+				foreach ($files as $key => $file)
+				{
 					$fileName = $this->getFileName($attachmentResult->lbl, $file['name'], $fnum);
 
 					$tmp_name = $file['tmp_name'];
@@ -129,12 +159,36 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 					$typeExtension       = $extension[1];
 
 					$acceptedExt[] = stristr($extensionAttachment, $typeExtension);
-					if (!in_array(false, $acceptedExt)) {
+					if (!in_array(false, $acceptedExt))
+					{
+						// Reject files carrying active content (JS, macros, scripts) before they touch disk.
+						if ($this->fileSecurityService->containsDangerousContent($tmp_name, $typeExtension))
+						{
+							$result[$key] = array(
+								'size'           => true,
+								'ext'            => true,
+								'security'       => false,
+								'filename'       => $fileName,
+								'local_filename' => $file['name'],
+								'target'         => EMUNDUS_PATH_REL . $fnumInfos['applicant_id'] . '/' . $fileName,
+								'nbAttachment'   => $nbAttachment,
+								'encrypt'        => true,
+								'attachment_id'  => $attachId,
+								'file_size'      => $fileSize,
+								'repeatCounter'  => $repeatCounter
+							);
+							echo json_encode($result);
+
+							return true;
+						}
+
 						$size = true;
 
 						$encrypt = true;
-						if ($can_submit_encrypted == 0 && $typeExtension == 'pdf') {
-							if (self::isEncrypted($tmp_name) == 1) {
+						if ($can_submit_encrypted == 0 && $typeExtension == 'pdf')
+						{
+							if (self::isEncrypted($tmp_name) == 1)
+							{
 								$encrypt = false;
 							}
 						}
@@ -146,14 +200,18 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 
 						$fileLimitObtained = false;
 
-						if (($lengthFile + $nbAttachment) > $nbMaxFile) {
+						if (($lengthFile + $nbAttachment) > $nbMaxFile)
+						{
 							$fileLimitObtained = true;
 						}
-						else {
-							if ($fileSize < $sizeMax) {
+						else
+						{
+							if ($fileSize < $sizeMax)
+							{
 								move_uploaded_file($tmp_name, $target);
 							}
-							else {
+							else
+							{
 								$size = false;
 							}
 						}
@@ -164,6 +222,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 						$response                   = array(
 							'size'           => $size,
 							'ext'            => true,
+							'security'       => true,
 							'nbMax'          => $fileLimitObtained,
 							'filename'       => $fileName,
 							'local_filename' => $file['name'],
@@ -180,56 +239,90 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 						$data[$fullName][$fileName] = $response;
 						$result[$key]               = $response;
 
-						if ($size === false || $fileLimitObtained === true) {
+						if ($size === false || $fileLimitObtained === true)
+						{
 							echo json_encode($result);
 
 							return true;
 						}
 
-						// Store in temporary table (fabrik_form_sessions)
-						$query = $db->getQuery(true);
+						if ($isApplicant)
+						{
+							// Store in temporary table (fabrik_form_sessions)
+							$query = $db->getQuery(true);
 
-						if (empty($session->id)) {
-							$columns = [
-								'hash',
-								'user_id',
-								'form_id',
-								'row_id',
-								'data',
-								'time_date',
-								'fnum'
-							];
+							if (empty($session->id))
+							{
+								$columns = [
+									'hash',
+									'user_id',
+									'form_id',
+									'row_id',
+									'data',
+									'time_date',
+									'fnum'
+								];
 
-							$values = [
-								$db->quote(md5($fileName)),
-								$db->quote($user),
-								$db->quote($formId),
-								0,
-								$db->quote(json_encode($data)),
-								$db->quote(date('Y-m-d H:i:s')),
-								$db->quote($fnum)
-							];
+								$values = [
+									$db->quote(md5($fileName)),
+									$db->quote($user),
+									$db->quote($formId),
+									0,
+									$db->quote(json_encode($data)),
+									$db->quote(date('Y-m-d H:i:s')),
+									$db->quote($fnum)
+								];
 
-							$query->clear()
-								->insert($db->quoteName('#__fabrik_form_sessions'))
-								->columns($db->quoteName($columns))
-								->values(implode(',', $values));
-							$db->setQuery($query);
-							$db->execute();
+								$query->clear()
+									->insert($db->quoteName('#__fabrik_form_sessions'))
+									->columns($db->quoteName($columns))
+									->values(implode(',', $values));
+								$db->setQuery($query);
+								$db->execute();
+							}
+							else
+							{
+								$query->clear()
+									->update($db->quoteName('#__fabrik_form_sessions'))
+									->set('data = ' . $db->quote(json_encode($data)))
+									->where('id = ' . $db->quote($session->id));
+								$db->setQuery($query);
+								$db->execute();
+							}
 						}
-						else {
-							$query->clear()
-								->update($db->quoteName('#__fabrik_form_sessions'))
-								->set('data = ' . $db->quote(json_encode($data)))
-								->where('id = ' . $db->quote($session->id));
-							$db->setQuery($query);
-							$db->execute();
+						else
+						{
+							// Manager has no form session: persist directly to the uploads table
+							$uploadEntity = new UploadEntity(
+								0,
+								$user,
+								$fnum,
+								(int) $attachId,
+								$fileName,
+								$description,
+								$file['name'],
+								$this->getCampaignId($fnum),
+								$fileSize,
+								UploadValidationStatusEnum::TO_BE_VALIDATED,
+								false,
+								null,
+								$isApplicationForm,
+								$isApplicationForm
+							);
+							$this->uploadRepository->flush($uploadEntity);
+
+							if (!empty($uploadEntity->getId()))
+							{
+								$result[$key]['id'] = $uploadEntity->getId();
+							}
 						}
 					}
-					else {
+					else
+					{
 						$result[$key] = array(
 							'size'           => true,
 							'ext'            => false,
+							'security'       => true,
 							'filename'       => $fileName,
 							'local_filename' => $file['name'],
 							'target'         => EMUNDUS_PATH_REL . $fnumInfos['applicant_id'] . '/' . $fileName,
@@ -249,14 +342,18 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 				EmundusModelLogs::log($this->currentUser->id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE');
 
 				echo json_encode($result);
+
 				return true;
 			}
-			else {
+			else
+			{
 				echo json_encode(['status' => 'false']);
+
 				return false;
 			}
 		}
-		else {
+		else
+		{
 			$result = array('status' => false);
 			echo json_encode($result);
 
@@ -272,76 +369,89 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 		$element_id    = $this->app->input->post->get('element_id');
 		$attachment_id = $this->app->input->post->get('attachment_id');
 		$this->setId($element_id);
-		
-		if (EmundusHelperAccess::asAccessAction(4, 'r', $this->currentUser->id, $fnum) || (EmundusHelperAccess::isApplicant($this->currentUser->id) && in_array($fnum, array_keys((array) $this->currentUser->fnums)))) {
-			$m_files = new EmundusModelFiles();
+
+		if (EmundusHelperAccess::asAccessAction(4, 'r', $this->currentUser->id, $fnum) || (EmundusHelperAccess::isApplicant($this->currentUser->id) && in_array($fnum, array_keys((array) $this->currentUser->fnums))))
+		{
+			$m_files   = new EmundusModelFiles();
 			$fnumInfos = $m_files->getFnumInfos($fnum);
 
 			$uploads       = $this->app->input->post->getString('uploads', '');
 			$repeatCounter = $this->app->input->post->getInt('repeatCounter', 0);
-			$uploads = !empty($uploads) ? explode(',', $uploads) : [];
+			$uploads       = !empty($uploads) ? explode(',', $uploads) : [];
 
 			$uploadResult = $this->uploadRepository->getItemsByFields(['fnum' => $fnum, 'id' => $uploads]);
 
 			$session = $this->getFormSession($fnum, $this->getFormModel()->id);
 			$data    = !empty($session->data) ? $session->data : [];
-			if (!empty($data[$this->getFullName(true, false)])) {
-				foreach ($data[$this->getFullName(true, false)] as $value) {
+			if (!empty($data[$this->getFullName(true, false)]))
+			{
+				foreach ($data[$this->getFullName(true, false)] as $value)
+				{
 					$value = (object) $value;
 
-					if (isset($value->repeatCounter) && $value->repeatCounter != $repeatCounter) {
+					if (isset($value->repeatCounter) && $value->repeatCounter != $repeatCounter)
+					{
 						continue;
 					}
 
-					if($value->need_to_delete)
+					if ($value->need_to_delete)
 					{
 						// Remove from form session
 						unset($data[$this->getFullName(true, false)][$value->filename]);
 					}
 
-					if (!empty($value->filename) && !isset($value->need_to_delete)) {
+					if (!empty($value->filename) && !isset($value->need_to_delete))
+					{
 						$uploadResult[] = $value;
 					}
 				}
 
-				if(empty($data[$this->getFullName(true, false)]))
+				if (empty($data[$this->getFullName(true, false)]))
 				{
 					$data = null;
 				}
 
 				$this->updateFormSession($session->id, $data);
 			}
-			
-			if(empty($uploadResult) && !$this->getGroupModel()->canRepeat()) {
+
+			if (empty($uploadResult) && !$this->getGroupModel()->canRepeat())
+			{
 				// Check if attachment was previously uploaded and saved to database
 				$uploadResult = $this->uploadRepository->getItemsByFields(['attachment_id' => $attachment_id, 'fnum' => $fnum]);
 			}
 
 			$attachmentResult = $this->attachmentTypeRepository->getItemByField('id', $attachment_id);
-			$result           = array('status' => true,'files' => [],'limitObtained' => (int) $attachmentResult->nbmax <= sizeof($uploadResult));
+			$result           = array('status' => true, 'files' => [], 'limitObtained' => (int) $attachmentResult->nbmax <= sizeof($uploadResult));
 
-			foreach ($uploadResult as $upload) {
-				if (is_array($upload)) {
+			foreach ($uploadResult as $upload)
+			{
+				if (is_array($upload))
+				{
 					$upload = (object) $upload;
 				}
 				$fileName       = '';
 				$local_fileName = '';
-				if (!empty($upload->filename)) {
+				if (!empty($upload->filename))
+				{
 					$fileName       = $upload->filename;
 					$local_fileName = $upload->filename;
-					if (!empty($upload->local_filename)) {
+					if (!empty($upload->local_filename))
+					{
 						$local_fileName = $upload->local_filename;
 					}
 					$upload->description = $upload->description ?? '';
 
-					if (empty($upload->can_be_deleted)) {
+					if (empty($upload->can_be_deleted))
+					{
 						$upload->can_be_deleted = 1;
 					}
-					if (empty($upload->can_be_viewed)) {
+					if (empty($upload->can_be_viewed))
+					{
 						$upload->can_be_viewed = 1;
 					}
 
-					if (!isset($upload->repeatCounter)) {
+					if (!isset($upload->repeatCounter))
+					{
 						$upload->repeatCounter = null;
 					}
 				}
@@ -353,6 +463,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 		}
 
 		echo json_encode($result);
+
 		return true;
 	}
 
@@ -367,43 +478,81 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 
 		$result = array('status' => false, 'upload_id' => 0);
 
-		if ((EmundusHelperAccess::isApplicant($this->currentUser->id) && in_array($fnum, array_keys((array) $this->currentUser->fnums))) || EmundusHelperAccess::asAccessAction(4, 'd', $this->currentUser->id, $fnum)) {
+		$isApplicant = EmundusHelperAccess::isApplicant($this->currentUser->id) && in_array($fnum, array_keys((array) $this->currentUser->fnums));
+
+		if ($isApplicant)
+		{
 			$cid = $this->getCampaignId($fnum);
-			
+
 			$session = $this->getFormSession($fnum, $this->getFormModel()->id);
 			$data    = !empty($session->data) ? $session->data : [];
 
 			$fileInfos = $this->uploadRepository->getItemsByFields([
-				'filename' => $fileName,
-				'fnum' => $fnum,
-				'campaign_id' => $cid,
+				'filename'      => $fileName,
+				'fnum'          => $fnum,
+				'campaign_id'   => $cid,
 				'attachment_id' => $attachId
 			]);
 
-			if(empty($data[$this->getFullName(true, false)]))
+			if (empty($data[$this->getFullName(true, false)]))
 			{
 				$data[$this->getFullName(true, false)] = [];
 			}
 
-			if(isset($data[$this->getFullName(true, false)][$fileName]) && !isset($data[$this->getFullName(true, false)][$fileName]['id']))
+			if (isset($data[$this->getFullName(true, false)][$fileName]) && !isset($data[$this->getFullName(true, false)][$fileName]['id']))
 			{
 				unset($data[$this->getFullName(true, false)][$fileName]);
 			}
-			elseif(!empty($fileInfos))
+			elseif (!empty($fileInfos))
 			{
 				// Add it in the session to be deleted at submission
 				$data[$this->getFullName(true, false)][$fileName] = [
 					'id'             => $fileInfos[0]->id,
-					'filename' => $fileInfos[0]->filename,
+					'filename'       => $fileInfos[0]->filename,
 					'need_to_delete' => true
 				];
-				$result['upload_id'] = $fileInfos[0]->id;
+				$result['upload_id']                              = $fileInfos[0]->id;
 			}
 
 			$result['status'] = $this->updateFormSession($session->id, $data);
 		}
+		elseif (EmundusHelperAccess::asAccessAction(4, 'd', $this->currentUser->id, $fnum))
+		{
+			// Manager has no form session: delete the file and its upload row immediately
+			$cid       = $this->getCampaignId($fnum);
+			$fileInfos = $this->uploadRepository->getItemsByFields([
+				'filename'      => $fileName,
+				'fnum'          => $fnum,
+				'campaign_id'   => $cid,
+				'attachment_id' => $attachId
+			]);
+
+			if (!empty($fileInfos))
+			{
+				$m_files   = new EmundusModelFiles();
+				$fnumInfos = $m_files->getFnumInfos($fnum);
+				$target    = self::getPath($fnumInfos['applicant_id'], $fileInfos[0]->filename);
+
+				if (file_exists($target))
+				{
+					unlink($target);
+				}
+
+				if ($this->uploadRepository->delete($fileInfos[0]->id))
+				{
+					$result['upload_id'] = $fileInfos[0]->id;
+					$result['status']    = true;
+
+					if (!empty($fnumInfos['applicant_id']))
+					{
+						EmundusModelLogs::log($this->currentUser->id, $fnumInfos['applicant_id'], $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE');
+					}
+				}
+			}
+		}
 
 		echo json_encode($result);
+
 		return true;
 	}
 
@@ -420,17 +569,54 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 		return $db->loadResult();
 	}
 
+	/**
+	 * A form is an applicant form when it is referenced in the applicant forms list.
+	 * Uploads attached to such a form must stay visible and deletable by the applicant.
+	 */
+	public function isApplicationForm(int $formId): bool
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		$query = $db->getQuery(true);
+		$query->select('COUNT(' . $db->quoteName('id') . ')')
+			->from($db->quoteName('#__emundus_setup_formlist'))
+			->where($db->quoteName('form_id') . ' = ' . $formId)
+			->where($db->quoteName('profile_id') . ' IS NOT NULL');
+		$db->setQuery($query);
+
+		$found = (int) $db->loadResult() > 0;
+
+		if(!$found)
+		{
+			// We check if a menu published is linked
+			$menuLink = 'index.php?option=com_fabrik&view=form&formid='.$formId;
+			$query->clear()
+				->select('COUNT(' . $db->quoteName('id') . ')')
+				->from($db->quoteName('#__menu'))
+				->where($db->quoteName('link') . ' = ' . $db->quote($menuLink))
+				->where($db->quoteName('published') . ' = 1');
+			$db->setQuery($query);
+
+			$found = (int) $db->loadResult() > 0;
+		}
+
+		return $found;
+	}
+
 	public function checkPath($applicant_id): bool
 	{
 		$checked = true;
 
-		if (!file_exists(EMUNDUS_PATH_ABS . $applicant_id)) {
+		if (!file_exists(EMUNDUS_PATH_ABS . $applicant_id))
+		{
 			// An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
-			if (!file_exists(EMUNDUS_PATH_ABS . 'index.html')) {
+			if (!file_exists(EMUNDUS_PATH_ABS . 'index.html'))
+			{
 				$checked = touch(EMUNDUS_PATH_ABS . 'index.html');
 			}
 
-			if (!mkdir(EMUNDUS_PATH_ABS . $applicant_id) || !copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $applicant_id . DS . 'index.html')) {
+			if (!mkdir(EMUNDUS_PATH_ABS . $applicant_id) || !copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $applicant_id . DS . 'index.html'))
+			{
 				$error = Uri::getInstance() . ' :: USER ID : ' . $applicant_id . ' -> Unable to create user file';
 				Log::add($error, Log::ERROR, 'com_emundus');
 
@@ -473,29 +659,48 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 		$element = $this->getElement();
 		$bits    = $this->inputProperties($repeatCounter);
 
-		if (is_array($this->getFormModel()->data)) {
+		if (is_array($this->getFormModel()->data))
+		{
 			$data = $this->getFormModel()->data;
 		}
 
 		$value = $this->getValue($data, $repeatCounter);
-		if (!$this->getFormModel()->failedValidation()) {
+		if (!$this->getFormModel()->failedValidation())
+		{
 			$value = $this->numberFormat($value);
 		}
 
-		if(empty($value) && !empty($this->getFormModel()->data['fnum']) && !empty($params->get('attachmentId'))
+		$fnum = $this->getFormModel()->data['fnum'] ?? null;
+		if (empty($fnum))
+		{
+			$dbTableName = $this->getListModel()->getTable()->db_table_name;
+			$ccid        = $data[$dbTableName . '___ccid'] ?? null;
+			if (!empty($ccid))
+			{
+				if (!class_exists('EmundusHelperFiles'))
+				{
+					require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
+				}
+				$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+			}
+		}
+
+		if (empty($value) && !empty($fnum) && !empty($params->get('attachmentId'))
 			&& !$this->getGroupModel()->canRepeat())
 		{
 			// Check if attachments are already uploaded in application file but not via the element
-			$uploads = $this->uploadRepository->getItemsByFields(['fnum' => $this->getFormModel()->data['fnum'], 'attachment_id' => $params->get('attachmentId')]);
+			$uploads = $this->uploadRepository->getItemsByFields(['fnum' => $fnum, 'attachment_id' => $params->get('attachmentId')]);
 
 			$value = [];
-			foreach($uploads as $upload) {
+			foreach ($uploads as $upload)
+			{
 				$value[] = $upload->id;
 			}
 			$value = !empty($value) ? implode(',', $value) : '';
 		}
 
-		if (!$this->isEditable()) {
+		if (!$this->isEditable())
+		{
 
 			$value = $this->getReadOnlyOutput($value, $value);
 
@@ -503,7 +708,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 
 		}
 
-		if(is_array($value)) {
+		if (is_array($value))
+		{
 			$value = $value['filename'];
 		}
 		$bits['value'] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8', false);
@@ -539,7 +745,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 	{
 		$value = parent::getValue($data, $repeatCounter, $opts);
 
-		if (is_array($value)) {
+		if (is_array($value))
+		{
 			return array_pop($value);
 		}
 
@@ -557,7 +764,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 	{
 		$params   = $this->getParams();
 		$eMConfig = ComponentHelper::getParams('com_emundus');
-		if (is_array($this->getFormModel()->data)) {
+		if (is_array($this->getFormModel()->data))
+		{
 			$data = $this->getFormModel()->data;
 		}
 
@@ -572,9 +780,24 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 			return strpos($key, '___fnum_raw') !== false;
 		}, ARRAY_FILTER_USE_KEY);
 		$fnum    = reset($fnumElt);
-		if (empty($fnum)) {
+		if (empty($fnum))
+		{
 			$fnum = !empty($data['fnum']) ? $data['fnum'] : $data['rowid'];
 		}
+		if (empty($fnum))
+		{
+			$dbTableName = $this->getListModel()->getTable()->db_table_name;
+			$ccid        = $data[$dbTableName . '___ccid'];
+			if (!empty($ccid))
+			{
+				if (!class_exists('EmundusHelperFiles'))
+				{
+					require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
+				}
+				$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+			}
+		}
+
 		$opts->fnum          = $fnum;
 		$opts->elid          = $this->getElement()->id;
 		$opts->repeatCounter = $repeatCounter;
@@ -582,6 +805,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 
 		Text::script('PLG_ELEMENT_FIELD_SUCCESS');
 		Text::script('PLG_ELEMENT_FIELD_EXTENSION');
+		Text::script('PLG_ELEMENT_FIELD_SECURITY');
 		Text::script('PLG_ELEMENT_FIELD_ENCRYPT');
 		Text::script('PLG_ELEMENT_FIELD_ERROR');
 		Text::script('PLG_ELEMENT_FIELD_ERROR_TEXT');
@@ -616,7 +840,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 		$value_to_store = [];
 
 		$task = $this->app->input->get('task', '');
-		if($task === 'form.process' || $task == 'process')
+		if ($task === 'form.process' || $task == 'process')
 		{
 			$fnumElt = array_filter($this->app->input->getArray(), function ($key) {
 				return strpos($key, '___fnum_raw') !== false;
@@ -628,7 +852,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 			{
 				$session      = $this->getFormSession($fnum, $this->getFormModel()->id);
 				$session_data = !empty($session->data) ? $session->data : [];
-				$files_data   = $session_data[str_replace('[]', '', $this->getFullName())];
+				$files_data   = $session_data[str_replace('[]', '', $this->getFullName())] ?? [];
 
 				$m_files   = new EmundusModelFiles();
 				$fnumInfos = $m_files->getFnumInfos($fnum);
@@ -641,7 +865,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 				$val = array_filter($val, function ($file) {
 					return !empty($file);
 				});
-				
+
 				if (!empty($val))
 				{
 					$cid = $this->getCampaignId($fnum);
@@ -690,10 +914,10 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 						}
 						else
 						{
-							$upload = $this->uploadRepository->getItemsByFields([
-								'filename' => $file,
-								'fnum' => $fnum,
-								'campaign_id' => $cid,
+							$upload    = $this->uploadRepository->getItemsByFields([
+								'filename'      => $file,
+								'fnum'          => $fnum,
+								'campaign_id'   => $cid,
 								'attachment_id' => $params->get('attachmentId')
 							]);
 							$upload_id = !empty($upload) ? $upload[0]->id : null;
@@ -711,21 +935,23 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 				}
 
 				// Check if some files are marked for deletion
-				$m_files        = new EmundusModelFiles();
+				$m_files = new EmundusModelFiles();
 				foreach ($files_data as $fileData)
 				{
-					if($fileData['need_to_delete'] && !empty($fileData['id']))
+					if ($fileData['need_to_delete'] && !empty($fileData['id']))
 					{
 						$target = self::getPath($fnumInfos['applicant_id'], $fileData['filename']);
 
-						if (file_exists($target)) {
+						if (file_exists($target))
+						{
 							unlink($target);
 						}
 
-						if($this->uploadRepository->delete($fileData['id']))
+						if ($this->uploadRepository->delete($fileData['id']))
 						{
 							$applicant_id = ($m_files->getFnumInfos($fnum))['applicant_id'];
-							if (!empty($applicant_id)) {
+							if (!empty($applicant_id))
+							{
 								EmundusModelLogs::log($this->currentUser->id, $applicant_id, $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE');
 							}
 						}
@@ -748,7 +974,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 		$this->_db->setQuery($query);
 		$session = $this->_db->loadObject();
 
-		if (!empty($session->id)) {
+		if (!empty($session->id))
+		{
 			$session->data = json_decode($session->data, true);
 		}
 
@@ -760,7 +987,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 		$query = $this->_db->getQuery(true);
 
 		$query->update($this->_db->quoteName('#__fabrik_form_sessions'));
-		if(is_array($data))
+		if (is_array($data))
 		{
 			$query->set($this->_db->quoteName('data') . ' = ' . $this->_db->quote(json_encode($data)));
 		}
@@ -778,17 +1005,20 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 	{
 		static $max_size = -1;
 
-		if ($max_size < 0) {
+		if ($max_size < 0)
+		{
 			// Start with post_max_size.
 			$post_max_size = $this->parse_size(ini_get('post_max_size'));
-			if ($post_max_size > 0) {
+			if ($post_max_size > 0)
+			{
 				$max_size = $post_max_size;
 			}
 
 			// If upload_max_size is less, then reduce. Except if upload_max_size is
 			// zero, which indicates no limit.
 			$upload_max = $this->parse_size(ini_get('upload_max_filesize'));
-			if ($upload_max > 0 && $upload_max < $max_size) {
+			if ($upload_max > 0 && $upload_max < $max_size)
+			{
 				$max_size = $upload_max;
 			}
 		}
@@ -800,11 +1030,13 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 	{
 		$unit = preg_replace('/[^bkmgtpezy]/i', '', $size); // Remove the non-unit characters from the size.
 		$size = preg_replace('/[^0-9\.]/', '', $size); // Remove the non-numeric characters from the size.
-		if ($unit) {
+		if ($unit)
+		{
 			// Find the position of the unit in the ordered string which is the power of magnitude to multiply a kilobyte by.
 			return round($size * pow(1024, stripos('bkmgtpezy', $unit[0])));
 		}
-		else {
+		else
+		{
 			return round($size);
 		}
 	}
@@ -824,11 +1056,12 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 	{
 		return EMUNDUS_PATH_ABS . $uid . DS . $fileName;
 	}
-	
+
 	public static function isEncrypted($file): bool|int
 	{
 		$f = fopen($file, 'rb');
-		if (!$f) {
+		if (!$f)
+		{
 			return false;
 		}
 

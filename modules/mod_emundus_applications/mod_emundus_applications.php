@@ -191,6 +191,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 		$comments_page_alias = modemundusApplicationsHelper::getCommentsPageBaseUrl();
 	}
 	$show_application_choices = $params->get('show_application_choices', 0);
+	$show_application_choices_state = $params->get('show_application_choices_state', 0);
 
 	$visible_status = $params->get('visible_status', '');
 	if ($visible_status != "")
@@ -239,10 +240,13 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	}
 	else
 	{
-		$collaborate = in_array('collaborate', $actions);
+		$collaborate = (new AddonRepository())->isActivated(AddonEnum::COLLABORATE->value);
 		// We send the layout as a param because Hesam needs different information.
 		$applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params, $collaborate);
-		modemundusApplicationsHelper::getCollaborators($applications);
+		if ($collaborate)
+		{
+			modemundusApplicationsHelper::getCollaborators($applications);
+		}
 		$tabs = $m_application->getTabs($user->id);
 	}
 

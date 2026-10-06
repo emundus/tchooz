@@ -85,6 +85,14 @@ export default {
 	},
 
 	methods: {
+		// A system template is shared by a sysadmin: marking it explains why it cannot be edited nor deleted.
+		templateLabel(template) {
+			if (!parseInt(template.is_system)) {
+				return template.name;
+			}
+
+			return this.translate('COM_EMUNDUS_EXPORT_TEMPLATE_SYSTEM_MARKER', { name: template.name });
+		},
 		selectView(value) {
 			this.selectedView = value;
 			this.$emit('update:view', value);
@@ -131,7 +139,7 @@ export default {
 				<option value="">{{ this.translate('COM_EMUNDUS_EXPORT_SELECT_TEMPLATE_PLEASE_SELECT') }}</option>
 				<optgroup v-for="group in templatesByFormat" :key="group.format" :label="group.label">
 					<option v-for="template in group.templates" :key="template.id" :value="template.id">
-						{{ template.name }}
+						{{ templateLabel(template) }}
 					</option>
 				</optgroup>
 			</select>

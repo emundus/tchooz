@@ -6,6 +6,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Database\ParameterType;
 use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Entities\Automation\ActionTargetEntity;
@@ -111,7 +112,7 @@ class ActionRedirect extends ActionEntity
 		}
 		elseif (!empty($customUrl))
 		{
-			$url = str_starts_with($customUrl, 'http://') ? str_replace('http://', 'https://', $customUrl) : $customUrl;
+			$url = $this->normalizeCustomUrl($customUrl);
 		}
 		elseif (!empty($internUrl))
 		{
@@ -119,6 +120,28 @@ class ActionRedirect extends ActionEntity
 		}
 
 		return $url;
+	}
+
+	/**
+	 * A custom URL is an external destination: it must be absolute so $app->redirect() hands it over
+	 * untouched. Without a scheme, redirect() treats it as relative and prepends the platform base
+	 * URL — which duplicates the base when the admin pasted the platform's own URL, yielding a 404.
+	 * Force https and add the scheme when it is missing.
+	 */
+	private function normalizeCustomUrl(string $customUrl): string
+	{
+		if (str_starts_with($customUrl, 'https://'))
+		{
+			return $customUrl;
+		}
+
+		if (str_starts_with($customUrl, 'http://'))
+		{
+			return 'https://' . substr($customUrl, 7);
+		}
+
+		// Scheme-less ("myplatform.com/path" or "//myplatform.com/path"): make it absolute.
+		return 'https://' . ltrim($customUrl, '/');
 	}
 
 	private function getKnownUrl(string $knownUrl, ActionTargetEntity|array $context): string
@@ -162,7 +185,34 @@ class ActionRedirect extends ActionEntity
 	 */
 	private function route(string $internalUrl): string
 	{
-		return Route::_($internalUrl, false);
+		return $this->toRootAbsolute(Route::_($internalUrl, false));
+	}
+
+	/**
+	 * Route::_() built while an OAuth2 directory fires onUserLogin can return a path with the base
+	 * prefix duplicated (/subfolder/subfolder/...): Uri::base() is polluted before the router state
+	 * settles, so $app->redirect() serves a 404. Rebuild the URL against a clean Uri::root() — keep
+	 * only the path below the base and prepend the canonical root once. A fully qualified result also
+	 * stops $app->redirect() from ever re-prepending the base.
+	 */
+	private function toRootAbsolute(string $url): string
+	{
+		// Already absolute (url-type menu item or qualified link): leave it untouched.
+		if (preg_match('#^[a-z][a-z0-9+.-]*://#i', $url))
+		{
+			return $url;
+		}
+
+		$basePath = trim(Uri::root(true), '/'); // "subfolder", or "" when installed at the domain root
+		$path     = ltrim($url, '/');
+
+		// Drop every leading repetition of the base path, so a doubled prefix collapses to none.
+		while ($basePath !== '' && (str_starts_with($path, $basePath . '/') || $path === $basePath))
+		{
+			$path = ltrim(substr($path, strlen($basePath)), '/');
+		}
+
+		return Uri::root() . $path;
 	}
 
 	private function routeMenuItem(int $menuId): string

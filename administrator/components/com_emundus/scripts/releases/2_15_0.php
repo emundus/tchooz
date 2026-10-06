@@ -308,9 +308,10 @@ class Release2_15_0Installer extends ReleaseInstaller
 		$query = $this->db->createQuery();
 
 		// ACL -> Groups
-		$query->select('*')
-			->from($this->db->quoteName('#__emundus_acl'))
-			->where($this->db->quoteName('action_id') . ' = ' . $accessFileAction->getId());
+		$query->select($this->db->quoteName('a') . '.*')
+			->from($this->db->quoteName('#__emundus_acl', 'a'))
+			->innerJoin($this->db->quoteName('#__emundus_setup_groups', 'g') . ' ON ' . $this->db->quoteName('g.id') . ' = ' . $this->db->quoteName('a.group_id'))
+			->where($this->db->quoteName('a.action_id') . ' = ' . $accessFileAction->getId());
 
 		$this->db->setQuery($query);
 		$accessFileActions = $this->db->loadObjectList();
@@ -337,10 +338,14 @@ class Release2_15_0Installer extends ReleaseInstaller
 		//
 
 		// ACL -> Users
+		// The joins drop the rows whose file or user no longer exists: copying them would be refused by the
+		// foreign keys of the table. Such rows predate the migration and are left untouched.
 		$query->clear()
-			->select('*')
-			->from($this->db->quoteName('#__emundus_users_assoc'))
-			->where($this->db->quoteName('action_id') . ' = ' . $accessFileAction->getId());
+			->select($this->db->quoteName('ua') . '.*')
+			->from($this->db->quoteName('#__emundus_users_assoc', 'ua'))
+			->innerJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->db->quoteName('cc.fnum') . ' = ' . $this->db->quoteName('ua.fnum'))
+			->innerJoin($this->db->quoteName('#__emundus_users', 'u') . ' ON ' . $this->db->quoteName('u.user_id') . ' = ' . $this->db->quoteName('ua.user_id'))
+			->where($this->db->quoteName('ua.action_id') . ' = ' . $accessFileAction->getId());
 
 		$this->db->setQuery($query);
 		$accessFileActions = $this->db->loadObjectList();

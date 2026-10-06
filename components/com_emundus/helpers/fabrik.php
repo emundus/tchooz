@@ -30,6 +30,7 @@ use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\WorkflowEntity;
 use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
+use Tchooz\Enums\Fabrik\ElementDatabaseJoinDisplayTypeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\Language\LanguageFactory;
@@ -67,6 +68,11 @@ class EmundusHelperFabrik
 	 * jos_emundus_campaign_candidature.
 	 */
 	public const CAMPAIGN_KEY_COLUMN = 'campaign_id';
+
+	/**
+	 * The only table whose rows belong to a campaign and not to a file.
+	 */
+	public const CAMPAIGN_KEYED_TABLE = 'jos_emundus_setup_campaigns_more';
 
 	private static array $dataTableTimestamps = [];
 
@@ -1283,23 +1289,38 @@ class EmundusHelperFabrik
 
 			$element = null;
 
-			$query->select('fe.id,fe.name,fe.params,fe.plugin, fe.label, fe.group_id')
-				->from($db->quoteName('#__fabrik_elements', 'fe'))
-				->where($db->quoteName('name') . ' = ' . $db->quote($elt_name));
+			// The element metadata only depends on (name, group_id), never on $raw_value.
+			// Cache it per-request so batch formatting (e.g. one row per campaign) does not
+			// re-query #__fabrik_elements once per value.
+			static $elementCache = [];
+			$cacheKey = $elt_name . '|' . ($groupId ?? '');
 
-			if (!empty($groupId))
+			if (array_key_exists($cacheKey, $elementCache))
 			{
-				$query->andWhere($db->quoteName('fe.group_id') . ' = ' . $db->quote($groupId));
+				$element = $elementCache[$cacheKey];
 			}
+			else
+			{
+				$query->select('fe.id,fe.name,fe.params,fe.plugin, fe.label, fe.group_id')
+					->from($db->quoteName('#__fabrik_elements', 'fe'))
+					->where($db->quoteName('name') . ' = ' . $db->quote($elt_name));
 
-			try
-			{
-				$db->setQuery($query);
-				$element = $db->loadObject();
-			}
-			catch (Exception $e)
-			{
-				Log::add('components/com_emundus/helpers/fabrik | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+				if (!empty($groupId))
+				{
+					$query->andWhere($db->quoteName('fe.group_id') . ' = ' . $db->quote($groupId));
+				}
+
+				try
+				{
+					$db->setQuery($query);
+					$element = $db->loadObject();
+				}
+				catch (Exception $e)
+				{
+					Log::add('components/com_emundus/helpers/fabrik | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+				}
+
+				$elementCache[$cacheKey] = $element;
 			}
 
 			if (!empty($element))
@@ -1738,7 +1759,7 @@ class EmundusHelperFabrik
 
 		if (!empty($elt) && !empty($param))
 		{
-			$params = json_decode($elt->params, true);
+			$params = !is_array($elt->params) ? json_decode($elt->params, true) : $elt->params;
 			if ($elt->plugin == 'jdate' && isset($params['j' . $param]))
 			{
 				$result = $params['j' . $param];
@@ -3439,12 +3460,18 @@ class EmundusHelperFabrik
 		$fabrikRepository = self::$sharedFabrikRepository;
 
 		$date_format = null;
+		$date_offset = 1;
 		if ($plugin->isDateField())
 		{
 			$date_format_parameter = $plugin->getDateFormatParameter();
+			$date_store_parameter = $plugin->getDateStoreParameter();
 			if (!empty($date_format_parameter))
 			{
 				$date_format = !empty($params->$date_format_parameter) ? $params->$date_format_parameter : 'Y-m-d H:i:s';
+			}
+			if (!empty($date_store_parameter))
+			{
+				$date_offset = !empty($params->$date_store_parameter) ? (int)$params->$date_store_parameter : 1;
 			}
 		}
 
@@ -3456,13 +3483,25 @@ class EmundusHelperFabrik
 
 		$isRepeatGroup = !empty($groupParams) && isset($groupParams->repeat_group_button) && $groupParams->repeat_group_button == 1;
 
+		$displayType   = match ($plugin) {
+			ElementPluginEnum::DATABASEJOIN => $params->database_join_display_type ?? '',
+			ElementPluginEnum::CASCADINGDROPDOWN => $params->cdd_display_type ?? '',
+			default => '',
+		};
+		$isMultiSelect = in_array(ElementDatabaseJoinDisplayTypeEnum::tryFrom($displayType), ElementDatabaseJoinDisplayTypeEnum::multiselectTypes(), true);
+
+		if ($separator === null)
+		{
+			$separator = $exportMode === ExportModeEnum::LEFT_JOIN ? self::VALUE_SEPARATOR_MARKER : self::VALUE_SEPARATOR;
+		}
+
 		if (in_array($plugin, [ElementPluginEnum::DATABASEJOIN, ElementPluginEnum::CASCADINGDROPDOWN]) || $isRepeatGroup)
 		{
-			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id, $exportMode, $separator);
+			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id, $exportMode, $separator, $date_offset);
 		}
 		else
 		{
-			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValue($fnums, $fabrik_element['db_table_name'], $fabrik_element['name'], $date_format, $row_id, $return, $user_id);
+			$fabrikElementValues[$fabrik_element['id']] = $this->getFabrikValue($fnums, $fabrik_element['db_table_name'], $fabrik_element['name'], $date_format, $row_id, $return, $user_id, $date_offset);
 		}
 
 		// Transform value if needed
@@ -3505,14 +3544,19 @@ class EmundusHelperFabrik
 					$values = [$fabrikElementValues[$fabrik_element['id']][$fnumKey]['val']];
 
 					if ($isRepeatGroup) {
-						$values = explode(',', $fabrikElementValues[$fabrik_element['id']][$fnumKey]['val']);
+						$values = explode($separator, (string) $fabrikElementValues[$fabrik_element['id']][$fnumKey]['val']);
 					}
 				} else {
 					$values = $fabrikElementValues[$fabrik_element['id']][$fnumKey]['val'];
 				}
 				foreach ($values as $_value)
 				{
-					if ($plugin === ElementPluginEnum::CURRENCY)
+					// An unanswered repetition keeps its empty slot, the pivot pairs repetitions by position.
+					if ($isRepeatGroup && ($_value === null || $_value === ''))
+					{
+						$formatted_values[] = '';
+					}
+					elseif ($plugin === ElementPluginEnum::CURRENCY)
 					{
 						$formatted_values[] = self::extractNumericValue($_value);
 					}
@@ -3526,10 +3570,14 @@ class EmundusHelperFabrik
 				if ($isRepeatGroup)
 				{
 					if ($exportMode !== ExportModeEnum::LEFT_JOIN) {
-						$fabrikElementValues[$fabrik_element['id']][$fnumKey]['val'] = implode(', ', $formatted_values);
+						$fabrikElementValues[$fabrik_element['id']][$fnumKey]['val'] = implode($separator, $formatted_values);
 					} else {
 						$fabrikElementValues[$fabrik_element['id']][$fnumKey]['val'] = $formatted_values;
 					}
+				}
+				elseif ($isMultiSelect && is_array($fabrikElementValues[$fabrik_element['id']][$fnumKey]['val']))
+				{
+					$fabrikElementValues[$fabrik_element['id']][$fnumKey]['val'] = $formatted_values;
 				}
 				else
 				{
@@ -3571,7 +3619,8 @@ class EmundusHelperFabrik
 		?string           $date_format = null,
 		int               $user_id = 0,
 		ExportModeEnum    $exportMode = ExportModeEnum::GROUP_CONCAT,
-		?string           $separator = null
+		?string           $separator = null,
+		?int              $date_offset = 1,
 	)
 	{
 		if (!is_array($fnums) && $fnums !== null)
@@ -3643,15 +3692,15 @@ class EmundusHelperFabrik
 
 			if ($return === ValueFormatEnum::BOTH)
 			{
-				$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . ')  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val;
+				$select = 'GROUP_CONCAT(IFNULL(t_repeat.' . $name . ', \'\') ORDER BY t_repeat.id SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(IFNULL(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . '), \'\') ORDER BY t_repeat.id SEPARATOR "' . $separator . '") as val, ' . $select_origin_val;
 			}
 			elseif ($return === ValueFormatEnum::RAW)
 			{
-				$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val;
+				$select = 'GROUP_CONCAT(IFNULL(t_repeat.' . $name . ', \'\') ORDER BY t_repeat.id SEPARATOR "' . $separator . '") as val, ' . $select_origin_val;
 			}
 			else
 			{
-				$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . ')  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val;
+				$select = 'GROUP_CONCAT(IFNULL(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . '), \'\') ORDER BY t_repeat.id SEPARATOR "' . $separator . '") as val, ' . $select_origin_val;
 			}
 		}
 		else
@@ -3688,17 +3737,61 @@ class EmundusHelperFabrik
 				{
 					$select_origin_val = !empty($fnums) ? $fnumSelector : 't_table.'.$userColumn.' as user_val';
 
-					if ($return === ValueFormatEnum::BOTH)
+					$joinDbName = $params->join_db_name;
+					if ($plugin === ElementPluginEnum::CASCADINGDROPDOWN)
 					{
-						$select = 'GROUP_CONCAT(t_origin.' . $join_key_column . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(' . $join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+						$joinDbName = explode('___', $params->cascadingdropdown_id)[0];
 					}
-					elseif ($return === ValueFormatEnum::RAW)
+
+					$repeatTable = $tableJoin;
+					if ($isMulti)
 					{
-						$select = 'GROUP_CONCAT(t_origin.' . $join_key_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+						// The element carries two joins (its group's repetitions, its own choices): table_join may be either.
+						$multiTable = $tableJoin . '_repeat_' . $name;
+						$queryJoins = $db->getQuery(true)
+							->select($db->quoteName(['join_from_table', 'table_join']))
+							->from($db->quoteName('#__fabrik_joins'))
+							->where($db->quoteName('element_id') . ' = ' . (int) $elt['id'])
+							->where($db->quoteName('table_key') . ' = ' . $db->quote($name));
+						$db->setQuery($queryJoins);
+						$elementJoin = $db->loadAssoc();
+						if (!empty($elementJoin['join_from_table']) && !empty($elementJoin['table_join']))
+						{
+							$repeatTable = $elementJoin['join_from_table'];
+							$multiTable  = $elementJoin['table_join'];
+						}
+
+						// The choices of one repetition are aggregated apart, so each repetition stays a single slot.
+						$multiValue = function (string $column) use ($db, $multiTable, $name, $joinDbName, $join_key_column) {
+							return '(SELECT GROUP_CONCAT(' . $column . ' ORDER BY t_repeat.id SEPARATOR "' . self::VALUE_SEPARATOR . '")'
+								. ' FROM ' . $db->quoteName($multiTable, 't_repeat')
+								. ' INNER JOIN ' . $db->quoteName($joinDbName, 't_origin') . ' ON t_origin.' . $join_key_column . ' = t_repeat.' . $name
+								. ' WHERE t_repeat.parent_id = t_elt.id)';
+						};
+						$rawValue = $multiValue('t_origin.' . $join_key_column);
+						$valValue = $multiValue($join_val_column);
 					}
 					else
 					{
-						$select = 'GROUP_CONCAT(' . $join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+						$rawValue = 't_origin.' . $join_key_column;
+						$valValue = $join_val_column;
+					}
+
+					// Every repetition keeps its slot, even unanswered, and its position: the pivot pairs them by index.
+					$rawSelect = 'GROUP_CONCAT(IFNULL(' . $rawValue . ', \'\') ORDER BY t_elt.id SEPARATOR "' . $separator . '")';
+					$valSelect = 'GROUP_CONCAT(IFNULL(' . $valValue . ', \'\') ORDER BY t_elt.id SEPARATOR "' . $separator . '")';
+
+					if ($return === ValueFormatEnum::BOTH)
+					{
+						$select = $rawSelect . ' as raw, ' . $valSelect . ' as val, ' . $select_origin_val . ' ';
+					}
+					elseif ($return === ValueFormatEnum::RAW)
+					{
+						$select = $rawSelect . ' as val, ' . $select_origin_val . ' ';
+					}
+					else
+					{
+						$select = $valSelect . ' as val, ' . $select_origin_val . ' ';
 					}
 				}
 				else
@@ -3744,15 +3837,15 @@ class EmundusHelperFabrik
 
 				if ($return === ValueFormatEnum::BOTH)
 				{
-					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+					$select = 'GROUP_CONCAT(IFNULL(t_repeat.' . $name . ', \'\') ORDER BY t_repeat.id SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(IFNULL(t_repeat.' . $name . ', \'\') ORDER BY t_repeat.id SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 				}
 				elseif ($return === ValueFormatEnum::RAW)
 				{
-					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+					$select = 'GROUP_CONCAT(IFNULL(t_repeat.' . $name . ', \'\') ORDER BY t_repeat.id SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 				}
 				else
 				{
-					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+					$select = 'GROUP_CONCAT(IFNULL(t_repeat.' . $name . ', \'\') ORDER BY t_repeat.id SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 				}
 			}
 		}
@@ -3761,28 +3854,13 @@ class EmundusHelperFabrik
 		{
 			if ($groupRepeat)
 			{
-				$tableName2 = $tableJoin;
-				if ($isMulti)
+				// Driven by the repetitions, not by the referenced table, so that an empty one is not dropped.
+				$from = $db->quoteName($repeatTable, 't_elt');
+				if (!$isMulti)
 				{
-					$joinDbName = $params->join_db_name;
-					if($plugin === ElementPluginEnum::CASCADINGDROPDOWN)
-					{
-						$cascadingdropdown_join_db_name    = explode('___', $params->cascadingdropdown_id);
-						$joinDbName = $cascadingdropdown_join_db_name[0];
-					}
-
-					$from       = $db->quoteName($joinDbName, 't_origin');
-
-					$leftJoin[] = $db->quoteName($tableName2 . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $join_key_column;
-					$leftJoin[] = $db->quoteName($tableName2, 't_elt') . ' ON t_elt.id = t_repeat.parent_id';
-					$leftJoin[] = $db->quoteName($tableName, 't_table') . ' ON t_table.id = t_elt.parent_id';
+					$leftJoin[] = $db->quoteName($joinDbName, 't_origin') . ' ON t_origin.' . $join_key_column . ' = t_elt.' . $name;
 				}
-				else
-				{
-					$from       = $db->quoteName($params->join_db_name, 't_origin');
-					$leftJoin[] = $db->quoteName($tableName2, 't_elt') . ' ON t_elt.' . $name . " = t_origin." . $join_key_column;
-					$leftJoin[] = $db->quoteName($tableName, 't_table') . ' ON t_table.id = t_elt.parent_id';
-				}
+				$leftJoin[] = $db->quoteName($tableName, 't_table') . ' ON t_table.id = t_elt.parent_id';
 			}
 			else
 			{
@@ -3946,7 +4024,8 @@ class EmundusHelperFabrik
 		?string           $dateFormat = null,
 		int               $row_id = 0,
 		ValueFormatEnum   $return = ValueFormatEnum::FORMATTED,
-		int               $user_id = 0
+		int               $user_id = 0,
+		?int              $date_offset = 1,
 	): array
 	{
 		$values = [];
@@ -3979,7 +4058,7 @@ class EmundusHelperFabrik
 		$dateTransformer = null;
 		if (!empty($dateFormat))
 		{
-			$dateTransformer = TransformerFactory::make(ElementPluginEnum::DATE->value, ['date_format' => $dateFormat]);
+			$dateTransformer = TransformerFactory::make(ElementPluginEnum::DATE->value, ['date_format' => $dateFormat, 'date_offset' => $date_offset]);
 		}
 
 		if ($fnum_column_existing && !empty($fnums))
@@ -4198,7 +4277,10 @@ class EmundusHelperFabrik
 
 	/**
 	 * A table is campaign keyed when its rows belong to a campaign and not to a file: there is no
-	 * fnum to match, the link to a file goes through jos_emundus_campaign_candidature.
+	 * fnum to match, the link to a file goes through jos_emundus_campaign_candidature. The table is
+	 * named and not guessed from its columns: jos_emundus_users also carries a campaign_id without
+	 * a fnum, yet its rows belong to one applicant and reaching them through the campaign returns
+	 * another applicant's data.
 	 *
 	 * @param   string  $tableName
 	 *
@@ -4206,7 +4288,7 @@ class EmundusHelperFabrik
 	 */
 	private function isCampaignKeyedTable(string $tableName): bool
 	{
-		return !$this->tableHasColumn($tableName, 'fnum') && $this->tableHasColumn($tableName, self::CAMPAIGN_KEY_COLUMN);
+		return $tableName === self::CAMPAIGN_KEYED_TABLE;
 	}
 
 	/**
@@ -4259,7 +4341,7 @@ class EmundusHelperFabrik
 		return $values;
 	}
 
-	private function tableHasColumn(string $tableName, string $columnName): bool
+	public function tableHasColumn(string $tableName, string $columnName): bool
 	{
 		$cacheKey = $tableName . '.' . $columnName;
 

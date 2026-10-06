@@ -25,6 +25,7 @@ use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\User\User;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
+use Tchooz\Enums\Fabrik\ApplicationFileElementsEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Enums\User\AuthenticationModeEnum;
@@ -100,11 +101,20 @@ class EmundusModelForm extends ListModel
 		$filterId      = $this->db->quoteName('sp.published') . ' = 1';
 		$fullRecherche = empty($recherche) ? 1 : $this->db->quoteName('sp.label') . ' LIKE ' . $this->db->quote('%' . $recherche . '%');
 
-		$m_user           = new EmundusModelUsers();
-		$allowed_profiles = $this->getAllFormsPublished($user_id, 'form_label', SORT_ASC, [0,1]);
-		$allowed_profile_ids = array_map(function ($profile) {
-			return $profile->id;
-		}, $allowed_profiles);
+		$filterAllowedProfiles = true;
+		if (EmundusHelperAccess::canManageAllPrograms($user_id))
+		{
+			$filterAllowedProfiles = false;
+		}
+
+		if ($filterAllowedProfiles)
+		{
+			$m_user           = new EmundusModelUsers();
+			$allowed_profiles = $this->getAllFormsPublished($user_id, 'form_label', SORT_ASC, [0,1]);
+			$allowed_profile_ids = array_map(function ($profile) {
+				return $profile->id;
+			}, $allowed_profiles);
+		}
 
 		// Now we need to put the query together and get the profiles
 		$query->clear()
@@ -114,9 +124,14 @@ class EmundusModelForm extends ListModel
 			->where($filterDate)
 			->andWhere($fullRecherche)
 			->andWhere($filterId)
-			->andWhere($this->db->quoteName('sp.id') . ' IN (' . implode(',', $this->db->quote($allowed_profile_ids)) . ')')
-			->andWhere($this->db->quoteName('sp.label') . ' != ' . $this->db->quote('noprofile'))
-			->group($this->db->quoteName('sp.id'));
+			->andWhere($this->db->quoteName('sp.label') . ' != ' . $this->db->quote('noprofile'));
+
+		if ($filterAllowedProfiles)
+		{
+			$query->andWhere($this->db->quoteName('sp.id') . ' IN (' . implode(',', $this->db->quote($allowed_profile_ids)) . ')');
+		}
+
+		$query->group($this->db->quoteName('sp.id'));
 
 		$valid_columns = ['id', 'label'];
 		if(!empty($order_by) && in_array($order_by, $valid_columns))
@@ -721,8 +736,12 @@ class EmundusModelForm extends ListModel
 						->where($conditions);
 
 					$this->db->setQuery($query);
+					$deleted = $this->db->execute();
 
-					return $this->db->execute();
+					// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+					(new EmundusHelperCache())->clean();
+
+					return $deleted;
 
 				}
 				catch (Exception $e) {
@@ -785,6 +804,9 @@ class EmundusModelForm extends ListModel
 
 				$this->db->setQuery($query);
 				$response['status'] = $this->db->execute();
+
+				// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+				(new EmundusHelperCache())->clean();
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/form | Error when unpublish forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -843,8 +865,12 @@ class EmundusModelForm extends ListModel
 					->where($se_conditions);
 
 				$this->db->setQuery($query);
+				$published = $this->db->execute();
 
-				return $this->db->execute();
+				// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+				(new EmundusHelperCache())->clean();
+
+				return $published;
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/form | Error when publish forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -910,6 +936,10 @@ class EmundusModelForm extends ListModel
 			{
 				require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
 			}
+			if(!class_exists('EmundusHelperUpdate'))
+			{
+				require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+			}
 			$profileRepository  = new ProfileRepository();
 			$fabrikRepository  = new FabrikRepository(true, $user);
 
@@ -955,7 +985,6 @@ class EmundusModelForm extends ListModel
 						Log::add('Could not find heading menu when copying profile ' . $profileid, Log::INFO, 'com_emundus.form');
 
 						$default_heading_menu                    = new stdClass();
-						$default_heading_menu->id                = 1;
 						$default_heading_menu->menutype          = '';
 						$default_heading_menu->title             = "PROFILE $profileid - Copy";
 						$default_heading_menu->alias             = '';
@@ -978,31 +1007,24 @@ class EmundusModelForm extends ListModel
 						$headingToDuplicate                    = $default_heading_menu;
 					}
 
-					if(empty($headingToDuplicate->id)) {
-						Log::add('Failed to duplicate form, no heading menu found', Log::WARNING, 'com_emundus.error');
-						continue;
-					}
-
-					$insert = [];
-					foreach ($headingToDuplicate as $key => $val) {
-						if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path' && $key != 'checked_out' && $key != 'checked_out_time') {
-							$insert[$key] = $val;
-						}
-						elseif ($key == 'menutype') {
-							$insert[$key] = $newmenutype;
-						}
-						elseif ($key == 'path') {
-							$insert[$key] = $newmenutype;
-						}
-						elseif ($key == 'alias') {
-							$insert[$key] = str_replace(EmundusHelperMenu::getSpecialCharacters(), '-', strtolower($new_title)) . '-' . $profile->getId();
-						}
-					}
-					$insert = (object)$insert;
-					$inserted_heading = $this->db->insertObject('#__menu', $insert);
-					if(!$inserted_heading)
+					$headingParams = [
+						'menutype'          => $newmenutype,
+						'title'             => $headingToDuplicate->title,
+						'alias'             => str_replace(EmundusHelperMenu::getSpecialCharacters(), '-', strtolower($new_title)) . '-' . $profile->getId(),
+						'path'              => $newmenutype,
+						'note'              => $headingToDuplicate->note,
+						'link'              => $headingToDuplicate->link,
+						'type'              => $headingToDuplicate->type,
+						'access'            => $headingToDuplicate->access,
+						'component_id'      => $headingToDuplicate->component_id,
+						'template_style_id' => $headingToDuplicate->template_style_id,
+						'client_id'         => $headingToDuplicate->client_id,
+						'params'            => $headingToDuplicate->params,
+					];
+					$inserted_heading = EmundusHelperUpdate::addJoomlaMenu($headingParams, 1, $headingToDuplicate->published);
+					if ($inserted_heading['status'] !== true)
 					{
-						Log::add('Failed to duplicate form, heading has not been created properly', Log::WARNING, 'com_emundus.error');
+						Log::add('Failed to duplicate form, heading has not been created properly : ' . $inserted_heading['message'], Log::WARNING, 'com_emundus.error');
 						continue;
 					}
 
@@ -1203,14 +1225,8 @@ class EmundusModelForm extends ListModel
 		$query = $this->db->getQuery(true);
 
 		// Create profile
-		$query->clear()
-			->select('id')
-			->from($this->db->quoteName('#__emundus_setup_profiles'))
-			->order('id DESC');
-		$this->db->setQuery($query);
-		$lastprofile = $this->db->loadObjectList()[0];
-
 		$columns = array(
+			'id',
 			'label',
 			'description',
 			'published',
@@ -1223,6 +1239,7 @@ class EmundusModelForm extends ListModel
 			'class');
 
 		$values = array(
+			(new ProfileRepository(false))->getNextFreeId(),
 			'Nouveau formulaire',
 			'',
 			1,
@@ -1235,10 +1252,6 @@ class EmundusModelForm extends ListModel
 			null
 		);
 
-		if ($lastprofile->id == '999' || $lastprofile->id == '1000') {
-			array_unshift($columns, 'id');
-			array_unshift($values, 1001);
-		}
 		$query->clear()
 			->insert($this->db->quoteName('#__emundus_setup_profiles'))
 			->columns($this->db->quoteName($columns))
@@ -1322,6 +1335,9 @@ class EmundusModelForm extends ListModel
 			//
 
 			LanguageFactory::cleanCache();
+
+			// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+			(new EmundusHelperCache())->clean();
 
 			return $newprofile;
 		}
@@ -1508,8 +1524,12 @@ class EmundusModelForm extends ListModel
 
 			try {
 				$this->db->setQuery($query_pid);
+				$updated = $this->db->execute();
 
-				return $this->db->execute();
+				// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+				(new EmundusHelperCache())->clean();
+
+				return $updated;
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/form | Cannot update the form ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query_pid . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -1567,6 +1587,9 @@ class EmundusModelForm extends ListModel
 					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($prid));
 				$this->db->setQuery($query);
 				$results[] = $this->db->execute();
+
+				// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+				(new EmundusHelperCache())->clean();
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/form | Cannot update the form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -3016,6 +3039,12 @@ class EmundusModelForm extends ListModel
 							$elt->plugin = ElementPluginEnum::RADIO->value;
 							$elt->params = (object) FabrikOptionsFactory::makeOptionsFromEnum(AuthenticationModeEnum::cases());
 						}
+						elseif ($condition->type === 'file')
+						{
+							$applicationFileElement = ApplicationFileElementsEnum::tryFrom($condition->field);
+							$elt                    = $applicationFileElement ? $this->buildFileConditionElement($applicationFileElement) : null;
+							$elt->params = (object)$elt->params;
+						}
 						else
 						{
 							$query->clear()
@@ -3034,6 +3063,12 @@ class EmundusModelForm extends ListModel
 							$this->db->setQuery($query);
 							$elt = $this->db->loadObject();
 						}
+
+						if(empty($elt))
+						{
+							continue;
+						}
+
 						$condition->elt_label = Text::_($elt->label);
 						$params = is_string($elt->params) ? json_decode($elt->params) : $elt->params;
 
@@ -3059,7 +3094,15 @@ class EmundusModelForm extends ListModel
 							}
 						}
 						else {
-							$options = $this->getConditionOptionsFromElement($elt->plugin, $params);
+							if($condition->type == 'file')
+							{
+								$options = $params->sub_options;
+							}
+							else
+							{
+								$options = $this->getConditionOptionsFromElement($elt->plugin, $params);
+							}
+
 							if ($options !== null) {
 								$condition->options = $options;
 							}
@@ -3534,6 +3577,23 @@ class EmundusModelForm extends ListModel
 	{
 		$elements = [];
 
+		// Profile elements change rarely: cache per language and per output shape.
+		if (!class_exists('EmundusHelperCache'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+		}
+		$h_cache   = new EmundusHelperCache('com_emundus.profile');
+		$cache_key = 'user_profile_elements_' . ($only_names ? 'names' : 'full') . '_' . $this->app->getLanguage()->getTag();
+
+		if ($h_cache->isEnabled())
+		{
+			$cached = $h_cache->get($cache_key, false);
+			if ($cached !== false)
+			{
+				return $cached;
+			}
+		}
+
 		try
 		{
 			// Get profile form id
@@ -3589,6 +3649,11 @@ class EmundusModelForm extends ListModel
 			else {
 				$elements = $this->db->loadColumn();
 			}
+
+			if ($h_cache->isEnabled())
+			{
+				$h_cache->set($cache_key, $elements);
+			}
 		}
 		catch (Exception $e)
 		{
@@ -3596,5 +3661,50 @@ class EmundusModelForm extends ListModel
 		}
 
 		return $elements;
+	}
+
+	public function getFileElements(): array
+	{
+		$elements = [];
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		try
+		{
+			$applicationFileElements = ApplicationFileElementsEnum::cases();
+			foreach ($applicationFileElements as $applicationFileElement)
+			{
+				$elements[] = $this->buildFileConditionElement($applicationFileElement);
+			}
+		} catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at getFileElements : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $elements;
+	}
+
+	/**
+	 * Build a condition element (dropdown of table rows) for an application-file element.
+	 * Shared by getFileElements() and getJSConditionsByForm() (type === 'file').
+	 */
+	private function buildFileConditionElement(ApplicationFileElementsEnum $applicationFileElement): stdClass
+	{
+		$query = $this->db->createQuery();
+		$query->select('id as value, label')
+			->from($this->db->qn($applicationFileElement->getTableName()));
+		$this->db->setQuery($query);
+		$options = $this->db->loadObjectList();
+
+		$element         = new stdClass();
+		$element->id     = $applicationFileElement->value;
+		$element->name   = $applicationFileElement->value;
+		$element->label  = $applicationFileElement->getLabel();
+		$element->plugin = ElementPluginEnum::DROPDOWN->value;
+		$element->hidden = 0;
+		$element->params = FabrikOptionsFactory::makeOptionsFromEnum($options);
+
+		return $element;
 	}
 }

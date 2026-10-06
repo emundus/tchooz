@@ -79,6 +79,9 @@
 									<div v-if="errors.alias" class="tw-absolute tw-mb-1 tw-mt-1 tw-text-red-600">
 										<span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK') }}</span>
 									</div>
+									<div v-else-if="aliasAlreadyUsed" class="tw-absolute tw-mb-1 tw-mt-1 tw-text-red-600">
+										<span>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS_ALREADY_USED') }}</span>
+									</div>
 								</div>
 								<span class="material-symbols-outlined tw-cursor-pointer" @click="copyAliasToClipboard()"
 									>content_copy</span
@@ -195,7 +198,9 @@
 							<strong class="b em-toggle-switch"></strong>
 							<strong class="b em-toggle-track"></strong>
 						</div>
-						<span for="published" class="tw-ml-2">{{ translate('COM_EMUNDUS_ONBOARD_CAMPAIGN_PUBLISH') }}</span>
+						<label for="published" class="tw-mb-0 tw-ml-2 tw-cursor-pointer">{{
+							translate('COM_EMUNDUS_ONBOARD_CAMPAIGN_PUBLISH')
+						}}</label>
 					</div>
 
 					<div class="tw-flex tw-items-center">
@@ -212,7 +217,9 @@
 							<strong class="b em-toggle-switch"></strong>
 							<strong class="b em-toggle-track"></strong>
 						</div>
-						<span for="limit" class="tw-ml-2">{{ translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT') }}</span>
+						<label for="limit" class="tw-mb-0 tw-ml-2 tw-cursor-pointer">{{
+							translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT')
+						}}</label>
 					</div>
 
 					<transition name="'slide-down'">
@@ -242,6 +249,27 @@
 									</div>
 								</div>
 							</div>
+
+							<div>
+								<label for="limitStatus">{{ translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS') }}</label>
+								<p class="tw-text-base tw-text-neutral-600">
+									{{ translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS_HELPTEXT') }}
+								</p>
+								<multiselect
+									id="limitStatus"
+									class="tw-mt-1"
+									v-model="limitStatusSelection"
+									label="label"
+									track-by="value"
+									:options="statusOptions"
+									:multiple="true"
+									:taggable="false"
+									:placeholder="translate('COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS_PLACEHOLDER')"
+									select-label=""
+									selected-label=""
+									deselect-label=""
+								></multiselect>
+							</div>
 						</div>
 					</transition>
 
@@ -260,9 +288,9 @@
 							<strong class="b em-toggle-switch"></strong>
 							<strong class="b em-toggle-track"></strong>
 						</div>
-						<span for="visible" class="tw-ml-2 tw-flex tw-items-center">
+						<label for="visible" class="tw-ml-2 tw-flex tw-cursor-pointer tw-items-center">
 							{{ translate('COM_EMUNDUS_CAMPAIGNS_VISIBLE') }}
-						</span>
+						</label>
 					</div>
 
 					<div class="tw-flex tw-items-center">
@@ -280,16 +308,16 @@
 							<strong class="b em-toggle-switch"></strong>
 							<strong class="b em-toggle-track"></strong>
 						</div>
-						<span for="pinned" class="tw-ml-2 tw-flex tw-items-center"
+						<label for="pinned" class="tw-ml-2 tw-flex tw-cursor-pointer tw-items-center"
 							>{{ translate('COM_EMUNDUS_CAMPAIGNS_PIN') }}
 							<span
 								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
-								@click="
+								@click.stop.prevent="
 									displayTip('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP', 'COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP_TEXT')
 								"
 								>help_outline</span
 							>
-						</span>
+						</label>
 					</div>
 
 					<div v-if="publicAddonActivated" class="tw-flex tw-items-center">
@@ -307,16 +335,16 @@
 							<strong class="b em-toggle-switch"></strong>
 							<strong class="b em-toggle-track"></strong>
 						</div>
-						<span for="public" class="tw-ml-2 tw-flex tw-items-center"
+						<label for="public" class="tw-ml-2 tw-flex tw-cursor-pointer tw-items-center"
 							>{{ translate('COM_EMUNDUS_CAMPAIGNS_PUBLIC') }}
 							<span
 								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
-								@click="
+								@click.stop.prevent="
 									displayTip('COM_EMUNDUS_ONBOARD_PUBLIC_CAMPAIGN_TIP', 'COM_EMUNDUS_ONBOARD_PUBLIC_CAMPAIGN_TIP_TEXT')
 								"
 								>help_outline</span
 							>
-						</span>
+						</label>
 					</div>
 
 					<div class="tw-flex tw-flex-col tw-gap-2" v-if="anonymizationPolicies.length > 0">
@@ -703,6 +731,7 @@ export default {
 		languages: [],
 		aliases: [],
 		userCategories: [],
+		statuses: [],
 		otherCampaigns: [],
 		editorPlugins: [
 			'history',
@@ -724,6 +753,7 @@ export default {
 		old_training: '',
 		old_program_form: '',
 		aliasUpdated: false,
+		initialAlias: '',
 		campaignLanguages: [],
 		campaignUsercategories: [],
 		form: {
@@ -823,6 +853,12 @@ export default {
 			});
 		});
 
+		settingsService.getStatus().then((response) => {
+			if (response.status) {
+				this.statuses = response.data || [];
+			}
+		});
+
 		campaignService.getAllItemsAlias(this.campaignId).then((response) => {
 			this.aliases = response.data;
 		});
@@ -870,7 +906,8 @@ export default {
 						this.form.description = this.normalizeEditorTextStyles(this.form.description);
 						this.form.short_description = this.normalizeEditorTextStyles(this.form.short_description);
 						this.$emit('getInformations', this.form);
-						this.programForm = response.data.program;
+						this.programForm = response.data.program ?? this.programForm;
+						this.initialAlias = this.form.alias;
 
 						// Check label translations
 						this.form.label = response.data.label;
@@ -880,6 +917,8 @@ export default {
 							}
 						});
 						//
+
+						this.form.limit_status = response.data.campaign.limit_status || [];
 
 						// Convert date
 						this.form.start_date = new Date(this.form.start_date);
@@ -1075,6 +1114,11 @@ export default {
 				this.errors.alias = true;
 			}
 
+			if (this.aliasAlreadyUsed) {
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+				return 0;
+			}
+
 			if (this.form.end_date === '' || this.form.end_date === '0000-00-00 00:00:00') {
 				window.scrollTo({ top: 0, behavior: 'smooth' });
 				this.errors.end_date = true;
@@ -1171,7 +1215,7 @@ export default {
 
 			const baseFormData = {
 				...this.form,
-				training: this.programForm.code,
+				training: this.form.training,
 				start_date: this.formatDate(new Date(this.form.start_date)),
 				end_date: this.formatDate(new Date(this.form.end_date)),
 				languages: this.campaignLanguages.map((language) => language.lang_id),
@@ -1321,6 +1365,9 @@ export default {
 		baseUrl() {
 			return window.location.origin;
 		},
+		aliasAlreadyUsed() {
+			return !!this.form.alias && this.form.alias !== this.initialAlias && this.aliases.includes(this.form.alias);
+		},
 		sessionPlaceholder() {
 			let oneYearFromNow = new Date();
 			oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
@@ -1345,6 +1392,23 @@ export default {
 					value: category.id,
 				};
 			});
+		},
+		statusOptions() {
+			return this.statuses.map((status) => {
+				return {
+					label: status.label?.[this.actualLanguage] || status.value,
+					value: String(status.step),
+				};
+			});
+		},
+		limitStatusSelection: {
+			get() {
+				const selected = (this.form.limit_status || []).map(String);
+				return this.statusOptions.filter((option) => selected.includes(option.value));
+			},
+			set(options) {
+				this.form.limit_status = options.map((option) => option.value);
+			},
 		},
 		campaignsOptions() {
 			return this.otherCampaigns.map((campaign) => {
@@ -1436,10 +1500,6 @@ export default {
 					.replace(/[\u0300-\u036f]/g, '')
 					.replace(/[^a-zA-Z0-9_-]+/g, '-')
 					.toLowerCase();
-				// Check if alias already exists
-				if (typeof this.aliases !== 'undefined' && this.aliases.includes(val)) {
-					this.form.alias = val + '-1';
-				}
 			}
 		},
 	},

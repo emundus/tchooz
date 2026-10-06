@@ -197,7 +197,7 @@ class EmundusControllerUsers extends EmundusController
 		$usertype       = $m_users->found_usertype($acl_aro_groups[0]);
 		$user->usertype = $usertype;
 
-		$uid = $m_users->adduser($user, $other_param, $testing_account);
+		$uid = $m_users->adduser($user, $other_param, $testing_account, $this->user->id);
 
 		if (is_array($uid))
 		{
@@ -652,7 +652,7 @@ class EmundusControllerUsers extends EmundusController
 			$users = (array) json_decode(stripslashes($users));
 		}
 
-		$res = $m_users->changeActivation($users, $state);
+		$res = $m_users->changeActivation($users, $state, $user->id);
 
 		if ($res !== false)
 		{
@@ -792,7 +792,7 @@ class EmundusControllerUsers extends EmundusController
 			$user_groups = explode(',', $newuser['em_groups']);
 			$user_groups = array_values(array_filter($user_groups));
 
-			$edited = $m_users->editUserProfiles((int) $newuser['id'], (int) $newuser['profile'], $other_profiles, $user_groups);
+			$edited = $m_users->editUserProfiles((int) $newuser['id'], (int) $newuser['profile'], $other_profiles, $user_groups, $current_user->id);
 
 			if ($edited === false)
 			{

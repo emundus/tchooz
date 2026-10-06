@@ -86,13 +86,11 @@ export default {
 									multiple: true,
 									method: 'delete',
 									confirm: 'COM_EMUNDUS_ONBOARD_CAMPDELETE',
-									showon: [
-										{
-											key: 'can_edit',
-											operator: '=',
-											value: true,
-										},
-									],
+									showon: {
+										key: 'can_delete',
+										operator: '=',
+										value: true,
+									},
 								},
 								{
 									action: 'unpublishcampaign',

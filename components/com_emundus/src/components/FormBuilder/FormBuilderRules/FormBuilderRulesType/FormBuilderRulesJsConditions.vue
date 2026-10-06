@@ -32,6 +32,7 @@
 				<form-builder-rules-js-condition
 					:elements="availableElements"
 					:user-profile-elements="userProfileElements"
+					:file-elements="fileElements"
 					:index="condition_key"
 					:condition="condition"
 					@remove-condition="removeCondition"
@@ -83,6 +84,10 @@ export default {
 			default: () => [],
 		},
 		userProfileElements: {
+			type: Array,
+			default: () => [],
+		},
+		fileElements: {
 			type: Array,
 			default: () => [],
 		},

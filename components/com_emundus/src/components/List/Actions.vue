@@ -59,35 +59,49 @@ export default {
 			let items = this.checkedItems;
 
 			let show = [];
+			let showActions = [];
+
+			if (showon.length > 1) {
+				showActions = Object.values(showon);
+			} else {
+				showActions = [showon];
+			}
 
 			items.forEach((item) => {
 				// If item is an id, we get the item from the list
 				if (typeof item === 'number') {
 					item = this.items[this.tabKey].find((i) => i.id === item);
 				}
-				switch (showon.operator) {
-					case '==':
-					case '=':
-						show.push(item[showon.key] == showon.value);
-						break;
-					case '!=':
-						show.push(item[showon.key] != showon.value);
-						break;
-					case '>':
-						show.push(item[showon.key] > showon.value);
-						break;
-					case '<':
-						show.push(item[showon.key] < showon.value);
-						break;
-					case '>=':
-						show.push(item[showon.key] >= showon.value);
-						break;
-					case '<=':
-						show.push(item[showon.key] <= showon.value);
-						break;
-					default:
-						show.push(true);
+
+				let itemShow = [];
+
+				for (const showon of showActions) {
+					switch (showon.operator) {
+						case '==':
+						case '=':
+							itemShow.push(item[showon.key] == showon.value);
+							break;
+						case '!=':
+							itemShow.push(item[showon.key] != showon.value);
+							break;
+						case '>':
+							itemShow.push(item[showon.key] > showon.value);
+							break;
+						case '<':
+							itemShow.push(item[showon.key] < showon.value);
+							break;
+						case '>=':
+							itemShow.push(item[showon.key] >= showon.value);
+							break;
+						case '<=':
+							itemShow.push(item[showon.key] <= showon.value);
+							break;
+						default:
+							itemShow.push(true);
+					}
 				}
+
+				show.push(itemShow.every((s) => s === true));
 			});
 
 			// Return true if all items match the condition
@@ -180,7 +194,7 @@ export default {
 							@click="onClickAction(action)"
 							class="tw-flex tw-items-center tw-gap-1 tw-px-2 tw-py-1.5"
 							:class="{
-								'tw-pointer-events-none tw-cursor-not-allowed tw-text-neutral-500':
+								'tw-pointer-events-none tw-cursor-not-allowed !tw-text-neutral-500':
 									checkedItems.length === 0 || !(typeof action.showon === 'undefined' || evaluateShowOn(action.showon)),
 								'tw-cursor-pointer tw-text-base hover:tw-rounded-coordinator-form hover:tw-bg-neutral-300':
 									checkedItems.length > 0 &&

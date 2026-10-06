@@ -85,7 +85,7 @@ class EmundusModelComments extends BaseDatabaseModel
             $user = Factory::getApplication()->getIdentity()->id;
         }
 
-	    $comment = $this->sanitizer->sanitizeFor('textarea', $comment);
+	    $comment = $this->sanitizer->sanitizeNoHtml($comment);
         if (!empty($file_id) && !empty($comment)) {
             $allowed_targets = ['forms', 'groups', 'elements'];
 

@@ -12,7 +12,9 @@ namespace Tchooz\Services\Export\Pdf;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\Filesystem\Folder;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\User;
@@ -29,6 +31,7 @@ use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Export\ExportRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Services\Export\Export;
+use Tchooz\Services\Emails\EmailService;
 use Tchooz\Services\Export\ExportInterface;
 use Tchooz\Services\Export\ExportResult;
 use Tchooz\Services\Export\FilenameRenderer;
@@ -38,6 +41,8 @@ use Tchooz\Traits\TraitAutomatedTask;
 class PdfService extends Export implements ExportInterface
 {
 	use TraitAutomatedTask;
+
+	private const LOGO_FETCH_TIMEOUT = 5;
 
 	/**
 	 * Max number of fnums rendered per export() invocation when running asynchronously.
@@ -71,6 +76,29 @@ class PdfService extends Export implements ExportInterface
 
 	private ExportRepository $exportRepository;
 
+	private bool $bootstrapped = false;
+
+	private ?bool $anonymizeData = null;
+
+	private array|bool|null $allowedAttachments = null;
+
+	private ?array $publishedStepTypes = null;
+
+	/**
+	 * @var array<string, string> base64 logo keyed by program code
+	 */
+	private array $logos = [];
+
+	/**
+	 * Directory the per-fnum render is written to instead of the applicant folder, null for the latter.
+	 */
+	private ?string $renderDir = null;
+
+	/**
+	 * @var string[] attachments converted to PDF under tmp/ by the last renderFnumFiles() call
+	 */
+	private array $convertedAttachments = [];
+
 	public function __construct(array $fnums = [], User $user = null, array|object $options = null, ExportEntity $exportEntity = null)
 	{
 		$this->fnums = $fnums;
@@ -96,10 +124,7 @@ class PdfService extends Export implements ExportInterface
 
 	public function export(string $exportPath, ?TaskEntity $task, ?string $langCode = 'fr-FR'): ExportResult
 	{
-		// Need to initialize parent only here because of langCode
-		parent::__construct($langCode);
-
-		$this->registerClasses();
+		$this->bootstrap($langCode);
 
 		$result = new ExportResult(false);
 		if (empty($this->fnums) || empty($this->user))
@@ -115,10 +140,15 @@ class PdfService extends Export implements ExportInterface
 		$state = $this->loadOrInitState($exportPath);
 		$fnums = $state !== null ? $state['fnums'] : $this->filterAccessibleFnums($this->fnums);
 		$files = $state !== null ? $state['files'] : [];
+		// Conversions only feed the merge: they are dropped once the export file is assembled
+		$tmpFiles = $state['tmp_files'] ?? [];
 
-		$anonymizeData      = \EmundusHelperAccess::isDataAnonymized($this->user->id);
-		$allowedAttachments = \EmundusHelperAccess::getUserAllowedAttachmentIDs($this->user->id);
-		$stepTypes          = $this->loadPublishedStepTypes();
+		$this->anonymizeData      ??= \EmundusHelperAccess::isDataAnonymized($this->user->id);
+		$this->allowedAttachments ??= \EmundusHelperAccess::getUserAllowedAttachmentIDs($this->user->id);
+
+		$anonymizeData      = $this->anonymizeData;
+		$allowedAttachments = $this->allowedAttachments;
+		$stepTypes          = $this->options->getStepTypes() ?? $this->loadPublishedStepTypes();
 
 		$pending      = $state !== null ? array_slice($fnums, $state['processed']) : $fnums;
 		$processStart = microtime(true);
@@ -143,19 +173,22 @@ class PdfService extends Export implements ExportInterface
 				return $result;
 			}
 
-			$files = array_merge($files, $this->renderFnumFiles($fnum, $stepTypes, $allowedAttachments, $anonymizeData));
+			$files    = array_merge($files, $this->renderFnumFiles($fnum, $stepTypes, $allowedAttachments, $anonymizeData));
+			$tmpFiles = array_merge($tmpFiles, $this->convertedAttachments);
 			$processedNow++;
 
 			if ($state !== null)
 			{
 				$state['processed']++;
-				$state['files'] = $files;
+				$state['files']     = $files;
+				$state['tmp_files'] = $tmpFiles;
 				$this->persistState($state);
 				$result->setProgress($this->computeProgress($state));
 			}
 		}
 
 		$this->assemble($files, $fnums, $exportPath, $result);
+		$this->deleteTmpFiles($tmpFiles);
 
 		if ($state !== null)
 		{
@@ -168,6 +201,70 @@ class PdfService extends Export implements ExportInterface
 	}
 
 	/**
+	 * Export one fnum with its own options while keeping the dependencies and per-user lookups of
+	 * previous calls, for callers rendering many files one by one (ZipService).
+	 */
+	public function exportFnum(string $fnum, PdfOptions $options, string $exportPath, ?string $langCode = 'fr-FR'): ExportResult
+	{
+		$this->fnums   = [$fnum];
+		$this->options = $options;
+		// Rendering in the applicant folder would leave a copy behind, and overwrite a printed
+		// application PDF sharing the same filename template.
+		$this->renderDir = rtrim($exportPath, '/') . '/render/';
+
+		try
+		{
+			return $this->export($exportPath, null, $langCode);
+		}
+		finally
+		{
+			// A cleanup failure must not replace the export's own exception, if any
+			try
+			{
+				if (is_dir($this->renderDir))
+				{
+					Folder::delete($this->renderDir);
+				}
+			}
+			catch (\Throwable $e)
+			{
+				Log::add('Could not remove render directory ' . $this->renderDir . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine(), Log::WARNING, 'com_emundus.export.pdf');
+			}
+			$this->renderDir = null;
+		}
+	}
+
+	/**
+	 * Only files under tmp/ are removed: the list may hold nothing else, but an original upload must
+	 * never be deleted by mistake.
+	 */
+	private function deleteTmpFiles(array $tmpFiles): void
+	{
+		$tmpDir = JPATH_SITE . '/tmp/';
+
+		foreach ($tmpFiles as $tmpFile)
+		{
+			if (str_starts_with($tmpFile, $tmpDir) && is_file($tmpFile))
+			{
+				unlink($tmpFile);
+			}
+		}
+	}
+
+	private function bootstrap(?string $langCode): void
+	{
+		if ($this->bootstrapped)
+		{
+			return;
+		}
+
+		// Need to initialize parent only here because of langCode
+		parent::__construct($langCode);
+		$this->registerClasses();
+		$this->bootstrapped = true;
+	}
+
+	/**
 	 * Render the application PDF of a single fnum plus, when requested, the PDF version of its
 	 * attachments.
 	 *
@@ -177,6 +274,7 @@ class PdfService extends Export implements ExportInterface
 	 */
 	private function renderFnumFiles(string $fnum, array $stepTypes, array|bool $allowedAttachments, bool $anonymizeData): array
 	{
+		$this->convertedAttachments = [];
 		$files = [];
 
 		$applicationFile = $this->applicationFileRepository->getByFnum($fnum);
@@ -220,11 +318,10 @@ class PdfService extends Export implements ExportInterface
 		}
 
 		$attachments = $this->options->getAttachments();
-		if (!empty($attachments))
+		if (!empty($attachments) || $this->options->isAllAttachments())
 		{
-			$tmpArray = [];
-			$uploads  = $this->m_application->getAttachmentsByFnum($fnum, null, $attachments);
-			\EmundusHelperExport::getAttachmentPDF($files, $tmpArray, $uploads, $applicationFile->getUser()->id);
+			$uploads = $this->m_application->getAttachmentsByFnum($fnum, null, $attachments, null, $this->user->id);
+			\EmundusHelperExport::getAttachmentPDF($files, $this->convertedAttachments, $uploads, $applicationFile->getUser()->id);
 		}
 
 		return $files;
@@ -280,14 +377,20 @@ class PdfService extends Export implements ExportInterface
 
 	private function loadPublishedStepTypes(): array
 	{
+		if ($this->publishedStepTypes !== null)
+		{
+			return $this->publishedStepTypes;
+		}
+
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 		$query->select('id')
 			->from('#__emundus_setup_step_types')
 			->where('published = 1 OR published IS NULL');
 		$db->setQuery($query);
+		$this->publishedStepTypes = $db->loadColumn() ?: [];
 
-		return $db->loadColumn() ?: [];
+		return $this->publishedStepTypes;
 	}
 
 	/**
@@ -296,6 +399,13 @@ class PdfService extends Export implements ExportInterface
 	private function filterAccessibleFnums(array $fnums): array
 	{
 		$valid = [];
+
+		// The caller already granted the export when it was configured, so it runs whatever rights
+		// the exporting user holds on the files.
+		if ($this->options->isSkipAccessCheck())
+		{
+			return array_values($fnums);
+		}
 
 		foreach ($fnums as $fnum)
 		{
@@ -444,20 +554,52 @@ class PdfService extends Export implements ExportInterface
 		return $name . '-applications';
 	}
 
+	/**
+	 * Base64 of the program logo, empty when it cannot be read. getLogo() answers a local path when it
+	 * can resolve one and an URL otherwise (CLI runs): an unreachable logo must never fail the export.
+	 */
 	private function buildLogo(ApplicationFileEntity $applicationFile): string
 	{
-		$logo_base64 = '';
+		$code = $applicationFile->getCampaign()->getProgram()->getCode();
 
-		$logo = \EmundusHelperEmails::getLogo(false, $applicationFile->getCampaign()->getProgram()->getCode());
+		return $this->logos[$code] ??= $this->loadLogo($code);
+	}
 
-		$type = pathinfo($logo, PATHINFO_EXTENSION);
-		$data = file_get_contents($logo);
-		if ($data)
+	private function loadLogo(string $code): string
+	{
+		$logo = EmailService::getLogo(false, $code, true);
+
+		if (is_file($logo))
 		{
-			$logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+			$data = file_get_contents($logo);
+		}
+		else
+		{
+			$data = $this->fetchRemoteLogo(EmailService::getLogo(false, $code));
 		}
 
-		return $logo_base64;
+		if (empty($data))
+		{
+			return '';
+		}
+
+		return 'data:image/' . pathinfo($logo, PATHINFO_EXTENSION) . ';base64,' . base64_encode($data);
+	}
+
+	private function fetchRemoteLogo(string $url): string
+	{
+		try
+		{
+			$response = HttpFactory::getHttp()->get($url, [], self::LOGO_FETCH_TIMEOUT);
+
+			return $response->getStatusCode() === 200 ? (string) $response->getBody() : '';
+		}
+		catch (\Throwable $e)
+		{
+			Log::add('Could not read the logo ' . $url . ' : ' . $e->getMessage(), Log::WARNING, 'com_emundus.export.pdf');
+
+			return '';
+		}
 	}
 
 	private function buildHeader(
@@ -471,8 +613,11 @@ class PdfService extends Export implements ExportInterface
 
 		$logo_base64 = $this->buildLogo($applicationFile);
 
-		$columns   = [];
-		$columns[] = $this->parser->createImg($logo_base64, 'auto', 60);
+		$columns = [];
+		if ($logo_base64 !== '')
+		{
+			$columns[] = $this->parser->createImg($logo_base64, 'auto', 60);
+		}
 
 		// Fixed header
 		$sub_column          = [];
@@ -561,8 +706,9 @@ class PdfService extends Export implements ExportInterface
 
 		try
 		{
-			$displayEvaluatorName = (bool) $this->options->getSetting(PdfOptionsSchema::DISPLAY_EVALUATOR_NAME, true);
-			$forms = $this->m_application->getFormsPDF($applicationFile->getUser()->id, $applicationFile->getFnum(), null, 0, null, $elementIds, true, $stepTypes, $this->user->id, $displayEvaluatorName);
+			$displayEvaluatorName   = (bool) $this->options->getSetting(PdfOptionsSchema::DISPLAY_EVALUATOR_NAME, true);
+			$displayAttachmentsList = (bool) $this->options->getSetting(PdfOptionsSchema::DISPLAY_ATTACHMENTS_LIST, false);
+			$forms = $this->m_application->getFormsPDF($applicationFile->getUser()->id, $applicationFile->getFnum(), null, 0, null, $elementIds, $displayAttachmentsList, $stepTypes, $this->user->id, $displayEvaluatorName);
 		}
 		catch (\Exception $e)
 		{
@@ -577,10 +723,6 @@ class PdfService extends Export implements ExportInterface
 		if (!class_exists('EmundusHelperAccess'))
 		{
 			require_once JPATH_SITE . '/components/com_emundus/helpers/access.php';
-		}
-		if (!class_exists('EmundusHelperEmails'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/helpers/emails.php';
 		}
 		if (!class_exists('EmundusHelperDate'))
 		{
@@ -646,7 +788,7 @@ class PdfService extends Export implements ExportInterface
 	 */
 	private function buildOutputFilename(ApplicationFileEntity $applicationFile): string
 	{
-		$basePath = EMUNDUS_PATH_ABS . $applicationFile->getUser()->id . '/';
+		$basePath = $this->renderDir ?? (EMUNDUS_PATH_ABS . $applicationFile->getUser()->id . '/');
 		$fallback = $basePath . $applicationFile->getFnum() . '_' . $this->generatePdfName() . '.pdf';
 
 		$template = $this->options->getFilename();

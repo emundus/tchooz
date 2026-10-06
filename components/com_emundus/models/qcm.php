@@ -1,8 +1,12 @@
 <?php
 
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 
+/**
+ * @deprecated
+ */
 class EmundusModelQcm extends JModelList
 {
 
@@ -74,7 +78,7 @@ class EmundusModelQcm extends JModelList
 
 	public function initQcmApplicant($fnum, $idqcm)
 	{
-		$db    = $this->getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
@@ -152,18 +156,24 @@ class EmundusModelQcm extends JModelList
 		}
 	}
 
-	public function getQuestions($question_ids, $with_answers = false)
+	/**
+	 * @param array<int> $question_ids
+	 * @param bool $with_answers
+	 *
+	 * @return array|mixed
+	 */
+	public function getQuestions(array $question_ids, bool $with_answers = false)
 	{
 		$questions = [];
 
 		if (!empty($question_ids)) {
-			$db    = $this->getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->select('qq.*, GROUP_CONCAT(qqr.id) as proposals_id,GROUP_CONCAT(qqr.proposals SEPARATOR "|") as proposals_text')
 				->from($db->quoteName('#__emundus_qcm_questions', 'qq'))
 				->leftJoin($db->quoteName('jos_emundus_qcm_questions_765_repeat', 'qqr') . ' ON ' . $db->quoteName('qq.id') . ' = ' . $db->quoteName('qqr.parent_id'))
-				->where($db->quoteName('qq.id') . ' IN (' . $question_ids . ')')
+				->where($db->quoteName('qq.id') . ' IN (' . implode(",", $db->quote($question_ids)) . ')')
 				->group('qq.id');
 
 			try {
@@ -177,7 +187,7 @@ class EmundusModelQcm extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/qcm | Error when try to get questions : ' . $questions . ' with query ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				JLog::add('component/com_emundus/models/qcm | Error when try to get questions with query ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
 			}
 		}
 
@@ -186,7 +196,7 @@ class EmundusModelQcm extends JModelList
 
 	public function saveAnswer($question, $answers, $current_user, $formid, $module)
 	{
-		$db    = $this->getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$fnum = $current_user->fnum;
@@ -353,7 +363,7 @@ class EmundusModelQcm extends JModelList
 
 	public function checkPoints($answers, $module, $good_answers)
 	{
-		$db    = $this->getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$points = 0;
@@ -412,7 +422,7 @@ class EmundusModelQcm extends JModelList
 
 	public function updatePending($pending, $current_user, $formid)
 	{
-		$db    = $this->getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$fnum = $current_user->fnum;
@@ -438,7 +448,7 @@ class EmundusModelQcm extends JModelList
 
 	public function getIntro($module)
 	{
-		$db    = $this->getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		try {

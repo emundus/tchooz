@@ -33,6 +33,7 @@ use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
+use Tchooz\Services\ApplicationFile\ApplicationFileCustomFieldsService;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
 
 class EmundusModelCampaign extends ListModel
@@ -187,6 +188,7 @@ class EmundusModelCampaign extends ListModel
 		{
 			$uid = $this->_user->id;
 		}
+		$uid = (int) $uid;
 
 		$query = $this->_buildQuery();
 
@@ -253,18 +255,7 @@ class EmundusModelCampaign extends ListModel
 			$allowed_campaigns = [];
 		}
 
-		if (!empty($allowed_campaigns))
-		{
-			foreach ($allowed_campaigns as $cid => $campaign)
-			{
-				if ($this->isLimitObtained($cid))
-				{
-					unset($allowed_campaigns[$cid]);
-				}
-			}
-		}
-
-		return $allowed_campaigns;
+		return array_values(array_filter($allowed_campaigns, fn($campaign_id) => !$this->isLimitObtained($campaign_id)));
 	}
 
 	/**
@@ -914,8 +905,7 @@ class EmundusModelCampaign extends ListModel
 	 * Check if campaign's limit is obtained
 	 *
 	 * @param   int  $campaign_id
-	 * @param   string fnum, if not empty, check if fnum is in the list of candidature defined in the limit steps
-	 *               if it is, return true
+	 * @param   string  $fnum  if not empty and the file is already counted in the limit, the limit does not apply to it
 	 *
 	 * @return bool
 	 *
@@ -932,19 +922,16 @@ class EmundusModelCampaign extends ListModel
 
 			if (!empty($limit->is_limited) && !empty($limit->limit))
 			{
-				$query = $this->_db->getQuery(true);
+				$counted_conditions = [
+					!empty($limit->steps) ? $this->_db->quoteName('status') . ' IN (' . $limit->steps . ')' : $this->_db->quoteName('status') . ' <> 0',
+					$this->_db->quoteName('campaign_id') . ' = ' . (int) $campaign_id,
+					$this->_db->quoteName('published') . ' = 1',
+				];
 
+				$query = $this->_db->getQuery(true);
 				$query->select('COUNT(id)')
-					->from($this->_db->quoteName('#__emundus_campaign_candidature'));
-					if(!empty($limit->steps))
-					{
-						$query->where($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')');
-					}
-					else {
-						$query->where($this->_db->quoteName('status') . ' <> 0');
-					}
-					$query->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $campaign_id)
-					->andWhere($this->_db->quoteName('published') . ' = 1');
+					->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+					->where($counted_conditions);
 
 				try
 				{
@@ -956,17 +943,13 @@ class EmundusModelCampaign extends ListModel
 					Log::add('Error checking obtained limit at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
 				}
 
-				if (!empty($fnum))
+				if (!empty($fnum) && $is_limit_obtained)
 				{
-					// is fnum in the list of candidature defined in the limit steps ?
-					$query = $this->_db->getQuery(true);
 					$query->clear()
 						->select('id')
 						->from($this->_db->quoteName('#__emundus_campaign_candidature'))
 						->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum))
-						->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $campaign_id)
-						->andWhere($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')')
-						->andWhere($this->_db->quoteName('published') . ' = 1');
+						->where($counted_conditions);
 
 					try
 					{
@@ -1935,14 +1918,14 @@ class EmundusModelCampaign extends ListModel
 						{
 							if ($data['is_limited'] == 1)
 							{
-								foreach ($limit_status as $key => $limit_statu)
+								foreach ($limit_status as $limit_statu)
 								{
-									if ($limit_statu == 'true')
+									if (is_numeric($limit_statu))
 									{
 										$query->clear()
 											->insert($this->_db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'));
 										$query->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($campaign_id))
-											->set($this->_db->quoteName('limit_status') . ' = ' . $this->_db->quote($key));
+											->set($this->_db->quoteName('limit_status') . ' = ' . (int) $limit_statu);
 										$this->_db->setQuery($query);
 										$this->_db->execute();
 									}
@@ -2312,12 +2295,12 @@ class EmundusModelCampaign extends ListModel
 					{
 						foreach ($limit_status as $limit_statu)
 						{
-							if ($limit_statu)
+							if (is_numeric($limit_statu))
 							{
 								$query->clear()
 									->insert($this->_db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'))
 									->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($cid))
-									->set($this->_db->quoteName('limit_status') . ' = ' . $this->_db->quote($limit_statu));
+									->set($this->_db->quoteName('limit_status') . ' = ' . (int) $limit_statu);
 
 								$this->_db->setQuery($query);
 								$this->_db->execute();
@@ -2538,6 +2521,17 @@ class EmundusModelCampaign extends ListModel
 				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($results->campaign->program_id));
 			$this->_db->setQuery($query);
 			$results->program = $this->_db->loadObject();
+
+			// 2.19.0 migration set program_id to 0 when training did not match a programme code at that time
+			if (empty($results->program) && !empty($results->campaign->training))
+			{
+				$query->clear()
+					->select('*')
+					->from($this->_db->quoteName('#__emundus_setup_programmes'))
+					->where($this->_db->quoteName('code') . ' = ' . $this->_db->quote($results->campaign->training));
+				$this->_db->setQuery($query);
+				$results->program = $this->_db->loadObject();
+			}
 
 			return $results;
 		}
@@ -4246,6 +4240,8 @@ class EmundusModelCampaign extends ListModel
 				{
 					$applicationFileRepository = new ApplicationFileRepository();
 					$applicationFileService    = new ApplicationFileService();
+					$customFieldsService       = new ApplicationFileCustomFieldsService(userId: $user_id);
+					$applicationFileTable      = $this->_db->replacePrefix('#__emundus_campaign_candidature');
 					if (!class_exists('EmundusHelperDate'))
 					{
 						require_once(JPATH_ROOT . '/components/com_emundus/helpers/EmundusHelperDate.php');
@@ -4431,6 +4427,13 @@ class EmundusModelCampaign extends ListModel
 							if (!empty($datas))
 							{
 								$datas = $importFactory->formatDatas($datas);
+								foreach (array_keys($datas) as $table)
+								{
+									if ($this->_db->replacePrefix($table) === $applicationFileTable)
+									{
+										$datas[$table] = $customFieldsService->filterImportableValues($datas[$table]);
+									}
+								}
 								$importApplicationEntity->setData($datas);
 							}
 

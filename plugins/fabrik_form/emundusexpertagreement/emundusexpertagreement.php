@@ -166,7 +166,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 		Log::addLogger(['text_file' => 'com_emundus.expertAcceptation.error.php'], Log::ERROR, 'com_emundus');
 		$current_user = Factory::getApplication()->getIdentity();
 
-		if(!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+		if(EmundusHelperAccess::isExpert($current_user->id) || $current_user->guest == 1)
 		{
 			try
 			{
@@ -180,8 +180,8 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 
 				$jinput              = $app->input;
 				$key_id              = $jinput->get->get('keyid') ?: $formModel->formData['keyid_raw'];
-				$firstname           = ucfirst($jinput->get($this->getParam('firstname_input', 'jos_emundus_files_request___firstname')) ?: $formModel->formData['firstname_raw']);
-				$lastname            = strtoupper($jinput->get($this->getParam('lastname_input', 'jos_emundus_files_request___lastname')) ?: $formModel->formData['lastname_raw']);
+				$firstname           = ucfirst($jinput->getString($this->getParam('firstname_input', 'jos_emundus_files_request___firstname')) ?: $formModel->formData['firstname_raw']);
+				$lastname            = mb_strtoupper($jinput->getString($this->getParam('lastname_input', 'jos_emundus_files_request___lastname')) ?: $formModel->formData['lastname_raw']);
 				$attachments_fields  = $this->getParam('attachments_input');
 				$attachments_ids     = $this->getParam('attachments_id');
 				$fnum_field          = $this->getParam('fnum_input', 'fnum_expertise');

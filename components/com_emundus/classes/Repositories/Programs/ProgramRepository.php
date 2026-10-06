@@ -167,6 +167,43 @@ class ProgramRepository extends EmundusRepository
 		return $program_entity;
 	}
 
+	/**
+	 * Batch-load programs by their codes in a single query.
+	 * Avoids the N+1 of calling getByCode() once per code.
+	 *
+	 * @param string[] $codes
+	 * @return array<string, ProgramEntity> Map keyed by program code
+	 */
+	public function getByCodes(array $codes): array
+	{
+		$codes = array_values(array_unique(array_filter($codes, static fn($code) => $code !== '' && $code !== null)));
+
+		if (empty($codes))
+		{
+			return [];
+		}
+
+		$query = $this->db->getQuery(true);
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->where($this->db->quoteName('code') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $codes)) . ')');
+		$this->db->setQuery($query);
+		$programs = $this->db->loadAssocList();
+
+		if (empty($programs))
+		{
+			return [];
+		}
+
+		$entities = [];
+		foreach ($this->factory->fromDbObjects($programs) as $entity)
+		{
+			$entities[$entity->getCode()] = $entity;
+		}
+
+		return $entities;
+	}
+
 	public function codeExists(string $code, array $excludedIds = []): bool
 	{
 		$query = $this->db->getQuery(true);

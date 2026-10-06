@@ -160,7 +160,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 				// Apply filters if needed
 				if (!empty($search))
 				{
-					$conditions = $this->buildSearchConditions(['label', 'description', 'short_description'], $search);
+					$conditions = $this->buildSearchConditions(['label', 'description', 'short_description', 'esp.label'], $search);
 
 					if (!empty($conditions))
 					{
@@ -251,7 +251,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 					$query->where($this->db->quoteName($this->alias . '.training') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $codes)) . ')');
 				}
 
-				if ($order_by === 'esp.label')
+				if ($order_by === 'esp.label' || !empty($search))
 				{
 					$query->leftJoin(
 						$this->db->quoteName('#__emundus_setup_programmes', 'esp') .
@@ -266,15 +266,27 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 				$query->group($this->alias . '.id')
 					->order($order_by . ' ' . $sort);
 
-				$this->db->setQuery($query);
-				$campaigns_count = sizeof($this->db->loadObjectList());
+				// COUNT(DISTINCT) instead of loading every row just to count them (query is grouped by esc.id).
+				$countQuery = clone $query;
+				$countQuery->clear('select')
+					->clear('group')
+					->clear('order')
+					->select('COUNT(DISTINCT ' . $this->db->quoteName($this->alias . '.id') . ')');
+				$this->db->setQuery($countQuery);
+				$campaigns_count = (int) $this->db->loadResult();
 
 				$this->db->setQuery($query, $offset, $limit);
 				$campaigns = $this->db->loadObjectList();
 
+				// Batch the more_data lookup for every campaign at once (avoids an N+1 of getMoreData per row).
+				$more_data_by_campaign = $this->getMoreDataForCampaigns(
+					array_map(static fn($campaign) => (int) $campaign->id, $campaigns),
+					$elements
+				);
+
 				foreach ($campaigns as $key => $campaign)
 				{
-					$campaign->more_data = $this->getMoreData((int) $campaign->id, $elements);
+					$campaign->more_data = $more_data_by_campaign[(int) $campaign->id] ?? [];
 					if (!empty($filters))
 					{
 						foreach ($filters as $filter_key => $filter)
@@ -470,6 +482,123 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		}
 
 		return !empty($more_data) ? $more_data : [];
+	}
+
+	/**
+	 * Batched equivalent of getMoreData for a whole set of campaigns.
+	 *
+	 * Builds the same per-campaign more_data structure as getMoreData, but with a fixed number of queries
+	 * (one for the more rows, one per databasejoin element) instead of one call per campaign. Returns a map
+	 * keyed by campaign id; campaigns with no more row are simply absent (callers default to []).
+	 */
+	public function getMoreDataForCampaigns(array $campaignIds, array $elements = []): array
+	{
+		$more_data_by_campaign = [];
+
+		if (empty($campaignIds))
+		{
+			return $more_data_by_campaign;
+		}
+
+		try
+		{
+			if (empty($elements))
+			{
+				$elements = $this->getCampaignMoreElements();
+			}
+
+			if (empty($elements))
+			{
+				return $more_data_by_campaign;
+			}
+
+			$ids = array_map('intval', $campaignIds);
+
+			// 1. Every more row in a single query.
+			$query = $this->db->getQuery(true);
+			$query->select('*')
+				->from($this->db->quoteName('#__emundus_setup_campaigns_more', 't'))
+				->where($this->db->quoteName('t.campaign_id') . ' IN (' . implode(',', $ids) . ')');
+			$this->db->setQuery($query);
+			$more_rows = $this->db->loadAssocList();
+
+			$more_id_to_campaign = [];
+			foreach ($more_rows as $row)
+			{
+				$campaign_id                         = (int) $row['campaign_id'];
+				$more_data_by_campaign[$campaign_id] = $row;
+				if (isset($row['id']))
+				{
+					$more_id_to_campaign[(int) $row['id']] = $campaign_id;
+				}
+			}
+
+			// 2. Join table map (cached, shared with getMoreData).
+			$join_tables = [];
+			$cache_key   = 'joins_jos_emundus_setup_campaigns_more';
+			if ($this->cache->contains($cache_key))
+			{
+				$join_tables = $this->cache->get($cache_key);
+			}
+
+			if (empty($join_tables))
+			{
+				$query->clear()
+					->select('element_id, table_join, table_key')
+					->from($this->db->quoteName('#__fabrik_joins'))
+					->where($this->db->quoteName('join_from_table') . ' = ' . $this->db->quote('jos_emundus_setup_campaigns_more'));
+				$this->db->setQuery($query);
+				$join_tables = $this->db->loadAssocList('element_id');
+
+				$this->cache->store($join_tables, $cache_key);
+			}
+
+			// 3. One query per databasejoin element for every parent id at once.
+			$parent_ids = array_keys($more_id_to_campaign);
+			if (!empty($parent_ids))
+			{
+				foreach ($elements as $element)
+				{
+					if (!in_array($element['id'], array_keys($join_tables)))
+					{
+						continue;
+					}
+
+					$join = $join_tables[$element['id']];
+
+					$query->clear()
+						->select($this->db->quoteName('parent_id') . ', ' . $this->db->quoteName($join['table_key']))
+						->from($this->db->quoteName($join['table_join']))
+						->where($this->db->quoteName('parent_id') . ' IN (' . implode(',', array_map('intval', $parent_ids)) . ')');
+					$this->db->setQuery($query);
+					$rows = $this->db->loadObjectList();
+
+					// Match getMoreData: the element key exists (empty array) on every campaign that has a more row.
+					foreach ($more_id_to_campaign as $campaign_id)
+					{
+						$more_data_by_campaign[$campaign_id][$element['name']] = [];
+					}
+
+					foreach ($rows as $value_row)
+					{
+						$more_id = (int) $value_row->parent_id;
+						if (!isset($more_id_to_campaign[$more_id]))
+						{
+							continue;
+						}
+
+						$campaign_id                                            = $more_id_to_campaign[$more_id];
+						$more_data_by_campaign[$campaign_id][$element['name']][] = $value_row->{$join['table_key']};
+					}
+				}
+			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error on getMoreDataForCampaigns : ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.campaign');
+		}
+
+		return $more_data_by_campaign;
 	}
 
 	/**

@@ -21,6 +21,7 @@ use Tchooz\Enums\Automation\ConditionOperatorEnum;
 use Tchooz\Enums\Automation\ConditionsAndorEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\List\ListColumnTypesEnum;
 use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Factories\Automation\AutomationFactory;
@@ -622,17 +623,31 @@ class EmundusControllerAutomation extends BaseController
 			$user = $this->app->getIdentity();
 			
 			$type = $this->input->getString('type', '');
+			$fnum = $this->input->getString('fnum', '');
 			$options = $this->input->getString('options');
 			$options = json_decode($options, true) ?? [];
 
 			$eSession = $this->app->getSession()->get('emundusUser');
 
-			if($user->guest || empty($eSession) || empty($eSession->fnum) || !in_array($type, $typesAllowed, true))
+			if($user->guest || !in_array($type, $typesAllowed, true))
 			{
 				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
-			$fnum = $eSession->fnum;
+			if(!empty($eSession))
+			{
+				$fnum = $eSession->fnum;
+			}
+
+			if(empty($fnum))
+			{
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
+			}
+
+			if (empty($eSession) && !EmundusHelperAccess::asAccessAction(1, CrudEnum::READ->value, $user->id, $fnum))
+			{
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
+			}
 
 			$actionRegistry = new ActionRegistry();
 			$actionInstance = $actionRegistry->getActionInstance($type, $options);

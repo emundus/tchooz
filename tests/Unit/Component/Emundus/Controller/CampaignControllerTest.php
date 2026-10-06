@@ -302,13 +302,17 @@ class CampaignControllerTest extends TestCase
 	public function testGetCampaignByIdReturnsOk(): void
 	{
 		$this->mockInput->method('getInt')->with('id', 0)->willReturn(123);
-		$this->mockCampaignModel->method('getCampaignDetailsById')->with(123)->willReturn(['id' => 123]);
+		$campaignMock = new \stdClass();
+		$campaignMock->campaign = new \stdClass();
+		$campaignMock->campaign->id = 123;
+
+		$this->mockCampaignModel->method('getCampaignDetailsById')->with(123)->willReturn($campaignMock);
 
 		$response = $this->controller->getcampaignbyid();
 
 		$this->assertInstanceOf(EmundusResponse::class, $response);
 		$this->assertEquals(EmundusResponse::HTTP_OK, $response->getCode());
-		$this->assertEquals(['id' => 123], $response->getData());
+		$this->assertEquals($campaignMock, $response->getData());
 	}
 
 	/**

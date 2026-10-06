@@ -20,10 +20,10 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
-use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Plugin\System\EmundusPublicAccess\Extension\EmundusPublicAccess;
 use Joomla\Utilities\ArrayHelper;
 use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Controller\EmundusController;
 use Tchooz\EmundusResponse;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\ApplicationFile\Actions\ApplicationFileActionRedirectTo;
@@ -35,7 +35,7 @@ use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnTag;
 use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Enums\Actions\ActionEnum;
-use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\List\ListColumnTypesEnum;
@@ -43,21 +43,23 @@ use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
-use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Label\LabelRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
+use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
-use Tchooz\Controller\EmundusController;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
+use Tchooz\Services\Addons\Configurations\ChoicesAddonConfiguration;
+use Tchooz\Services\Addons\Configurations\CollaborateAddonConfiguration;
 use Tchooz\Services\ApplicationFile\ApplicationChoicesService;
+use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
 use Tchooz\Services\Automation\RedirectIntentRegistry;
 use Tchooz\Traits\TraitDispatcher;
-use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 
 class EmundusControllerApplication extends EmundusController
 {
@@ -1486,7 +1488,7 @@ class EmundusControllerApplication extends EmundusController
 			$fnum   = $this->input->getString('fnum', '');
 			$e_user = $this->app->getSession()->get('emundusUser');
 
-			if (!empty($fnum) && (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || in_array($fnum, array_keys($e_user->fnums))))
+			if ($this->canManageCollaboration($fnum, $this->input->getInt('ccid', 0)))
 			{
 				$response['code']  = 500;
 				$m_application     = $this->getModel('Application');
@@ -1570,7 +1572,7 @@ class EmundusControllerApplication extends EmundusController
 		$fnum   = $this->input->getString('fnum', '');
 		$e_user = $this->app->getSession()->get('emundusUser');
 
-		if (!empty($fnum) && (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || in_array($fnum, array_keys($e_user->fnums))))
+		if ($this->canManageCollaboration($fnum, $this->input->getInt('ccid', 0)))
 		{
 			$ccid       = $this->input->getInt('ccid', 0);
 			$request_id = $this->input->getInt('request_id', 0);
@@ -1611,7 +1613,7 @@ class EmundusControllerApplication extends EmundusController
 		$fnum   = $this->input->getString('fnum', '');
 		$e_user = $this->app->getSession()->get('emundusUser');
 
-		if (!empty($fnum) && (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || in_array($fnum, array_keys($e_user->fnums))))
+		if ($this->canManageCollaboration($fnum, $this->input->getInt('ccid', 0)))
 		{
 			$ccid       = $this->input->getInt('ccid', 0);
 			$request_id = $this->input->getInt('request_id', 0);
@@ -1655,6 +1657,25 @@ class EmundusControllerApplication extends EmundusController
 	}
 
 	/**
+	 * Session fnums also hold the files shared with the current user: collaborators must not manage the collaboration.
+	 */
+	private function canManageCollaboration(string $fnum, int $ccid): bool
+	{
+		if (empty($fnum) || empty($ccid))
+		{
+			return false;
+		}
+
+		$applicationFile = (new ApplicationFileRepository())->getByFnum($fnum);
+		if (empty($applicationFile) || $applicationFile->getId() !== $ccid)
+		{
+			return false;
+		}
+
+		return EmundusHelperAccess::asPartnerAccessLevel($this->user->id) || (int) $applicationFile->getUser()->id === (int) $this->user->id;
+	}
+
+	/**
 	 * Update right of a user on a shared application file
 	 *
 	 * @throws Exception
@@ -1667,7 +1688,7 @@ class EmundusControllerApplication extends EmundusController
 		$fnum   = $this->input->getString('fnum', '');
 		$e_user = $this->app->getSession()->get('emundusUser');
 
-		if (!empty($fnum) && (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || in_array($fnum, array_keys($e_user->fnums))))
+		if ($this->canManageCollaboration($fnum, $this->input->getInt('ccid', 0)))
 		{
 			$ccid       = $this->input->getInt('ccid', 0);
 			$request_id = $this->input->getInt('request_id', 0);
@@ -1675,7 +1696,7 @@ class EmundusControllerApplication extends EmundusController
 			$value      = $this->input->getString('value', 0);
 			$value      = $value == 'true' ? 1 : 0;
 
-			if (!empty($request_id) && !empty($ccid) && !empty($right))
+			if (!empty($request_id) && !empty($ccid) && in_array($right, CollaborateAddonConfiguration::RIGHTS, true))
 			{
 				$m_application      = $this->getModel('Application');
 				$response['status'] = $m_application->updateRight($request_id, $ccid, $right, $value);
@@ -1963,12 +1984,14 @@ class EmundusControllerApplication extends EmundusController
 		}
 
 		$choicesConfiguration = $m_workflow->getChoicesConfigurationFromFnum($current_fnum);
+		$choicesAddon = (new AddonRepository())->getByName(AddonEnum::CHOICES->value);
+		$canSeeComments = $as_manager || ($choicesAddon?->getParam(ChoicesAddonConfiguration::APPLICANT_CAN_SEE_REASON, ChoicesAddonConfiguration::CONFIGURATION_GROUP) ?? false);
 
 		$applicationChoicesRepository = new ApplicationChoicesRepository();
 		$applicationChoicesEntities   = $applicationChoicesRepository->getChoicesByFnum($current_fnum, $programs, null, $choicesConfiguration['form_id'] ?? 0);
 
 		// Fetched for every choice in one query rather than per choice
-		$commentsByChoice = $as_manager ? $this->applicationChoicesService->getStateCommentsByChoice($applicationChoicesEntities) : [];
+		$commentsByChoice = $canSeeComments ? $this->applicationChoicesService->getStateCommentsByChoice($applicationChoicesEntities) : [];
 
 		$choices = [];
 		foreach ($applicationChoicesEntities as $entity)
@@ -1978,7 +2001,7 @@ class EmundusControllerApplication extends EmundusController
 			// Program scope only, the CRUD rights are carried by the choices configuration.
 			$entityObject['can_be_managed'] = !$as_manager || EmundusHelperAccess::canManageProgram($this->_user->id, $entity->getCampaign()?->getProgram()?->getCode());
 			// Managers only: the message justifying a state change is never restituted to the applicant
-			$entityObject['state_comment'] = $this->serializeChoiceStateComment($commentsByChoice[$entity->getId()][0] ?? null);
+			$entityObject['state_comment'] = $this->serializeChoiceStateComment($commentsByChoice[$entity->getId()][0] ?? null, $as_manager);
 			$choices[]                     = $entityObject;
 		}
 
@@ -2601,7 +2624,8 @@ class EmundusControllerApplication extends EmundusController
 		$repository = new ApplicationChoicesRepository();
 		$choice     = $repository->getById($id);
 
-		if (empty($choice))
+		// The choice is picked by id: it must belong to the file the access was checked on
+		if (empty($choice) || $choice->getFnum() !== $current_fnum)
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -2620,10 +2644,6 @@ class EmundusControllerApplication extends EmundusController
 			return;
 		}
 
-		if (!class_exists('EmundusHelperFiles'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
-		}
 		if (!class_exists('EmundusModelWorkflow'))
 		{
 			require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
@@ -2632,18 +2652,20 @@ class EmundusControllerApplication extends EmundusController
 
 		$choicesStep = $m_workflow->getChoicesStepFromFnum($current_fnum);
 
-		$choice->setState(ChoicesStateEnum::CONFIRMED);
-		$repository->flush($choice, false, (!empty($choicesStep) && !empty($choicesStep->output_status)) ? $choicesStep->output_status : null);
+		$outputStatus = !empty($choicesStep->output_status) ? (int) $choicesStep->output_status : null;
 
-		// Set other choices to rejected
-		$other_choices = $repository->getChoicesByFnum($current_fnum);
-		foreach ($other_choices as $other_choice)
+		try
 		{
-			if ($other_choice->getId() != $choice->getId() && $other_choice->getState() != ChoicesStateEnum::REJECTED)
-			{
-				$other_choice->setState(ChoicesStateEnum::REJECTED);
-				$repository->flush($other_choice, false);
-			}
+			$this->applicationChoicesService->confirmChoice($choice, $this->_user->id, $outputStatus);
+		}
+		catch (\Throwable $e)
+		{
+			Log::add('EmundusControllerApplication::confirmchoice | ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
+			$response['code']    = 500;
+			$response['status']  = false;
+			$response['message'] = Text::_('COM_EMUNDUS_APPLICATION_CHOICES_CONFIRM_CHOICE_ERROR');
+			$this->sendJsonResponse($response);
 		}
 
 		$choiceObject               = $choice->__serialize();
@@ -2704,7 +2726,8 @@ class EmundusControllerApplication extends EmundusController
 		$repository = new ApplicationChoicesRepository();
 		$choice     = $repository->getById($id);
 
-		if (empty($choice))
+		// The choice is picked by id: it must belong to the file the access was checked on
+		if (empty($choice) || $choice->getFnum() !== $current_fnum)
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -2721,6 +2744,8 @@ class EmundusControllerApplication extends EmundusController
 
 		$choice->setState(ChoicesStateEnum::REJECTED);
 		$repository->flush($choice, false);
+
+
 
 		$choiceObject               = $choice->__serialize();
 		$choiceObject['state_html'] = $choice->getState()->getHtmlBadge();
@@ -3011,7 +3036,7 @@ class EmundusControllerApplication extends EmundusController
 	 *
 	 * @return array{raw: string, content: string, signature: string}|null  null when the choice has no message
 	 */
-	private function serializeChoiceStateComment(?CommentEntity $comment): ?array
+	private function serializeChoiceStateComment(?CommentEntity $comment, bool $asManager = true): ?array
 	{
 		if (empty($comment))
 		{
@@ -3035,7 +3060,7 @@ class EmundusControllerApplication extends EmundusController
 			'content'   => HtmlSanitizerSingleton::getInstance()->sanitize(nl2br($comment->getContent())),
 			'signature' => Text::sprintf(
 				'COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_COMMENT_SIGNATURE',
-				$comment->getAuthorName() ?? '',
+				$asManager && !empty($comment->getAuthorName()) ? $comment->getAuthorName() . ', ' : '',
 				EmundusHelperDate::displayDate($comment->getCreatedAt()->format('Y-m-d H:i:s'), 'COM_EMUNDUS_DATE_FORMAT', 0)
 			)
 		];
@@ -3709,48 +3734,56 @@ class EmundusControllerApplication extends EmundusController
     #[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
     public function updatelotstatus(): void
     {
-        $response = array('status' => false, 'message' => '');
+	    $response = array('status' => false, 'message' => '');
 
-        $datas  = $this->input->getArray();
-        $ids    = $datas['lots_ids'];
-        $status = $datas['status'];
-        $user = $this->app->getIdentity()->id;
+	    $datas  = $this->input->getArray();
+	    $ids    = $datas['lots_ids'];
+	    $status = $datas['status'];
+	    $user   = $this->app->getIdentity()->id;
 
-        if (!empty($ids) && !empty($status))
-        {
-            if (!class_exists('EmundusModelApplication'))
-            {
-                require_once JPATH_SITE . '/components/com_emundus/models/application.php';
-            }
-            $m_application = new EmundusModelApplication();
+	    if (!empty($ids) && !empty($status))
+	    {
+		    if (!class_exists('EmundusModelApplication'))
+		    {
+			    require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+		    }
+		    $m_application = new EmundusModelApplication();
 
-            $fnums = $m_application->getFilesLot($ids[0]);
+		    $fnums = $m_application->getFilesLot($ids[0]);
 
-            if ($status == 2)
-            {
-                $files_to_send = $m_application->exportLotPdf($ids[0]);
-                foreach ($files_to_send as $file)
-                {
-                    PluginHelper::importPlugin('emundus', 'eparapheur');
-                    $this->app->triggerEvent('onSyncEparapheur', [
-                        [
-                            'fnums'         => $fnums,
-                            'signer_email'  => 'jean-pierre.test@sorbonne-universite.fr',
-                            'attachment_id' => 71,
-                            'file'          => basename($file['filename']),
-                            'filepath'      => $file['filename'],
-                            'name'          => $file['name'],
-                            'nature'        => 'BA759DA06F21237DC9AF16E0CFBD6203'
-                        ]
-                    ]);
-                }
-            }
+		    if ($status == 2)
+		    {
+			    $synchronizerRepository  = new SynchronizerRepository();
+			    $ixparapheurSynchronizer = $synchronizerRepository->getByType('ixparapheur');
 
-            $response['status'] = $m_application->updateLotStatus($ids[0], $status, $user);
-        }
+			    $ixparapheurConfiguration = $ixparapheurSynchronizer->getConfig();
+			    $defaultSignerEmail       = $ixparapheurConfiguration['configuration']['default_signer_email'] ?? '';
+			    $defaultAttachmentId      = $ixparapheurConfiguration['configuration']['default_attachment_id'] ?? 0;
+			    $nature                   = $ixparapheurConfiguration['configuration']['nature'] ?? '';
 
-        echo json_encode($response);
-        exit;
+			    $files_to_send = $m_application->exportLotPdf($ids[0]);
+			    foreach ($files_to_send as $file)
+			    {
+				    PluginHelper::importPlugin('emundus', 'eparapheur');
+				    $this->app->triggerEvent('onSyncEparapheur', [
+					    [
+						    'fnums'         => $fnums,
+						    'signer_email'  => $defaultSignerEmail,
+						    'attachment_id' => $defaultAttachmentId,
+						    'file'          => basename($file['filename']),
+						    'filepath'      => $file['filename'],
+						    'name'          => $file['name'],
+						    'nature'        => $nature
+					    ]
+				    ]);
+			    }
+		    }
+
+		    $response['status'] = $m_application->updateLotStatus($ids[0], $status, $user);
+	    }
+
+	    echo json_encode($response);
+	    exit;
     }
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]

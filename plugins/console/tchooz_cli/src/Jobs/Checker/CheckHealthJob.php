@@ -494,7 +494,10 @@ include(\'index.php\');
 				if (file_put_contents($payboxFile, $payboxFileContent))
 				{
 					$checked[] = $payboxPayment;
-					break;
+				}
+				else
+				{
+					Log::add('Could not write ' . $payboxFile, Log::ERROR, self::getJobName());
 				}
 			}
 		}

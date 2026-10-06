@@ -45,7 +45,6 @@ class EmundusViewExport_select_columns extends JViewLegacy
 	{
 		$m_program = new EmundusModelProgramme();
 
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'admission.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 
 		$jinput     = Factory::getApplication()->input;

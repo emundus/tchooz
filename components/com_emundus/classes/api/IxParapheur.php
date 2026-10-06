@@ -15,6 +15,7 @@ use JComponentHelper;
 use JFactory;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
+use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 
 defined('_JEXEC') or die('Restricted access');
 class IxParapheur extends Api
@@ -45,12 +46,21 @@ class IxParapheur extends Api
 	{
 		parent::__construct();
 
+		// Backward compatibility
 		$config = ComponentHelper::getParams('com_emundus');
-		$baseUrl = $config->get('ixparapheur_api_base_url', '');
+
+		$synchronizerRepository = new SynchronizerRepository();
+		$ixparapheurSynchronizer = $synchronizerRepository->getByType('ixparapheur');
+
+		$ixparapheurConfiguration = $ixparapheurSynchronizer->getConfig() ?? [];
+
+		$baseUrl = $ixparapheurConfiguration['authentication']['base_url'] ?? $config->get('ixparapheur_api_base_url', '');
 		$this->setBaseUrl($baseUrl);
 
 		$this->setClient();
-		$this->setAuth($config->get('ixparapheur_api_app_token', ''));
+
+		$token = !empty($ixparapheurConfiguration['authentication']['token']) ? \EmundusHelperFabrik::decryptDatas($ixparapheurConfiguration['authentication']['token']) : $config->get('ixparapheur_api_app_token', '');
+		$this->setAuth($token);
 
 		$auth = $this->getAuth();
 		$headers = array(

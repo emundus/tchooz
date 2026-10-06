@@ -30,6 +30,7 @@ use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Comments\CommentRepository;
 use Tchooz\Repositories\Favorite\FavoriteFileRepository;
 use Tchooz\Services\Reference\InternalReferenceService;
 
@@ -203,21 +204,12 @@ class EmundusViewFiles extends JViewLegacy
 					$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 				}
 
+				$fnums = array_values(array_filter(
+					array_map(fn($fnum) => $fnum->fnum, $fnums),
+					fn($fnum) => !empty($fnum) && $fnum !== 'em-check-all'
+				));
 
-				foreach ($fnums as $key => $fnum)
-				{
-
-					if ($fnum->fnum === 'em-check-all')
-					{
-						unset($fnums[$key]);
-						continue;
-					}
-
-					if (EmundusHelperAccess::asAccessAction($exportAction->getId(), CrudEnum::CREATE->value, $this->user->id, $fnum->fnum))
-					{
-						$fnum_array[] = $fnum->fnum;
-					}
-				}
+				$fnum_array = EmundusHelperAccess::asAccessActionOnFnums($exportAction->getId(), CrudEnum::CREATE->value, $this->user->id, $fnums);
 
 				// Store the fnums in the session
 				$this->app->setUserState('com_emundus.files.export.fnums', $fnum_array);
@@ -624,6 +616,7 @@ class EmundusViewFiles extends JViewLegacy
 					}
 
 					$unread_messages = array();
+					$messengerAuthorizedFnums = EmundusHelperAccess::asAccessActionOnFnums(36, CrudEnum::CREATE->value, Factory::getApplication()->getIdentity()->id, array_column($users, 'fnum'));
 					if (!class_exists(JPATH_SITE . '/components/com_emundus/models/messenger.php'))
 					{
 						require_once JPATH_SITE . '/components/com_emundus/models/messenger.php';
@@ -632,9 +625,24 @@ class EmundusViewFiles extends JViewLegacy
 					if ($m_messenger->checkMessengerState())
 					{
 						$unread_messages[] = $m_files->getUnreadMessages($this->user->id);
-						$unread_messages   = $h_files->createUnreadMessageList($unread_messages[0]);
+						$unread_messages   = $h_files->createUnreadMessageList($unread_messages[0], $messengerAuthorizedFnums);
 						$keys              = array_keys($unread_messages);
 						natsort($keys);
+					}
+
+					// Preload every photo in one query instead of calling getPhotos() per row.
+					$photos = array();
+					if ($displayPhoto)
+					{
+						$photos = $h_files->getPhotosList(array_column($users, 'fnum'));
+					}
+
+					// Load every applicant account in a single query instead of loadUserById() per row.
+					$applicantIds = array_values(array_unique(array_filter(array_map(static fn($u) => (int) $u['applicant_id'], $users))));
+					$usersById    = [];
+					foreach ($m_user->getUsersByIds($applicantIds) as $loadedUser)
+					{
+						$usersById[(int) $loadedUser->id] = $loadedUser;
 					}
 
 					foreach ($users as $user)
@@ -666,9 +674,11 @@ class EmundusViewFiles extends JViewLegacy
 								$userObj->type  = 'fnum';
 								if ($displayPhoto)
 								{
-									$userObj->photo = $h_files->getPhotos($value);
+									$userObj->photo = $photos[$value] ?? '';
 								}
-								$userObj->user            = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $user['applicant_id']);
+								$applicantId              = (int) $user['applicant_id'];
+								// Clone the shared preloaded account so per-row mutations below stay isolated.
+								$userObj->user            = isset($usersById[$applicantId]) ? clone $usersById[$applicantId] : Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $user['applicant_id']);
 								$userObj->user->name      = $user['name'];
 								$userObj->unread_messages = !empty($unread_messages) ? $unread_messages[$value] : '';
 
@@ -788,23 +798,32 @@ class EmundusViewFiles extends JViewLegacy
 
 					if (isset($colsSup['commentaire']))
 					{
+						// Count comments for every fnum in a single query instead of one query per row.
+						$comments_count = (new CommentRepository())->countByFnums($fnumArray);
+
 						foreach ($fnumArray as $fnum)
 						{
-							$notifications_comments        = sizeof($m_files->getCommentsByFnum([$fnum]));
+							$notifications_comments        = $comments_count[$fnum] ?? 0;
 							$colsSup['commentaire'][$fnum] = '<p class="messenger__notifications_counter">' . $notifications_comments . '</p> ';
 						}
 					}
 
 					if (isset($colsSup['application_choices']))
 					{
+						// Load choices for every fnum in one query (relations preloaded across the batch),
+						// instead of one query set + per-choice joins per fnum. The list only needs the campaign,
+						// so the heavy "more data" is not resolved here.
+						$choicesByFnum = $this->applicationChoicesRepository->getChoicesByFnums($fnumArray);
 						foreach ($fnumArray as $fnum)
 						{
-							$applicationChoices = $this->applicationChoicesRepository->getChoicesByFnum($fnum);
+							$applicationChoices = $choicesByFnum[$fnum] ?? [];
 
 							$choicesHtml = '<ul>';
 							foreach ($applicationChoices as $key => $choice)
 							{
-								$choicesHtml .= '<li>' . Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', ($key + 1)) . ' : ' . htmlspecialchars($choice->getCampaign()->getLabel()) . '</li>';
+								$campaign     = $choice->getCampaign();
+								$label        = $campaign ? htmlspecialchars($campaign->getLabel()) : '';
+								$choicesHtml .= '<li>' . Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', ($key + 1)) . ' : ' . $label . '</li>';
 							}
 							$choicesHtml .= '</ul>';
 

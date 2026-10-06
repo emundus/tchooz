@@ -11,11 +11,17 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
+use Tchooz\Entities\Comments\CommentEntity;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
+use Tchooz\Services\Addons\Configurations\ChoicesAddonConfiguration;
+use Tchooz\Services\ApplicationFile\ApplicationChoicesService;
 
 jimport('joomla.application.component.model');
 
@@ -78,12 +84,14 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 		}
 		else
 		{
-			$layout = $this->getLayout('form');
+			$displayLayout = $params->get('application_choices_layout', 'dropdown');
+			$layout        = $displayLayout === 'list' ? $this->getLayout('list') : $this->getLayout('form');
 
-			$displayData->id           = $id;
-			$displayData->name         = $name;
-			$displayData->confirmation = $params->get('confirmation_application_choices', 0);
-			$displayData->status       = $params->get('application_choices_status', '');
+			$displayData->id             = $id;
+			$displayData->name           = $name;
+			$displayData->display_layout = $displayLayout;
+			$displayData->confirmation   = $params->get('confirmation_application_choices', 0);
+			$displayData->status         = $params->get('application_choices_status', '');
 			$displayData->fnum         = !empty($data[$db_table_name . '___fnum']) ? $data[$db_table_name . '___fnum'] : '';
 			$displayData->step_id      = !empty($data[$db_table_name . '___step_id']) ? $data[$db_table_name . '___step_id'] : 0;
 			$displayData->value        = $this->getValue($data, $repeatCounter);
@@ -115,7 +123,8 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 			}
 
 			// Get choices
-			$displayData->choices            = $this->getChoices($displayData->fnum, $displayData->step_id, $displayData->status);
+			$applicationChoices           = $this->getChoices($displayData->fnum, $displayData->step_id, $displayData->status);
+			$displayData->choices            = $this->serializeChoices($applicationChoices);
 			$available_statuses              = ChoicesStateEnum::cases();
 			$displayData->available_statuses = [];
 			foreach ($available_statuses as $status)
@@ -152,8 +161,9 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 		$id   = $this->getHTMLId($repeatCounter);
 		$opts = $this->getElementJSOptions($repeatCounter);
 
-		$opts->confirmation = $this->getParams()->get('confirmation_application_choices', 0);
-		$opts->layout       = $this->isEditable() ? 'form' : 'details';
+		$opts->confirmation   = $this->getParams()->get('confirmation_application_choices', 0);
+		$opts->display_layout = $this->getParams()->get('application_choices_layout', 'dropdown');
+		$opts->layout         = $this->isEditable() ? 'form' : 'details';
 
 		return array('FbApplicationChoices', $id, $opts);
 	}
@@ -260,16 +270,60 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 		{
 			$applicationChoicesEntities = $repository->getChoicesByFnum($fnum, $user_programs, $status);
 		}
-
+		
+		return $applicationChoicesEntities;
+	}
+	
+	private function serializeChoices(array $applicationChoicesEntities): array
+	{
 		$choices = [];
+
+		$choicesAddon = (new AddonRepository())->getByName(AddonEnum::CHOICES->value);
+		$canSeeComments = $choicesAddon?->getParam(ChoicesAddonConfiguration::APPLICANT_CAN_SEE_REASON, ChoicesAddonConfiguration::CONFIGURATION_GROUP) ?? false;
+
+		// Fetched for every choice in one query rather than per choice
+		$applicationChoicesServices = new ApplicationChoicesService();
+		$commentsByChoice = $canSeeComments ? $applicationChoicesServices->getStateCommentsByChoice($applicationChoicesEntities) : [];
+
 		foreach ($applicationChoicesEntities as $entity)
 		{
 			$entityObject               = $entity->__serialize();
 			$entityObject['state_html'] = $entity->getState()->getHtmlBadge();
+			$entityObject['state_comment'] = $this->serializeChoiceStateComment($commentsByChoice[$entity->getId()][0] ?? null);
 			$choices[]                  = $entityObject;
 		}
 
 		return $choices;
+	}
+
+	private function serializeChoiceStateComment(?CommentEntity $comment): ?array
+	{
+		if (empty($comment))
+		{
+			return null;
+		}
+
+		// The table is shared with the legacy comment write path, so the content is sanitized on read too
+		if (!class_exists('Component\\Emundus\\Helpers\\HtmlSanitizerSingleton'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/helpers/html.php';
+		}
+
+		if (!class_exists('EmundusHelperDate'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/helpers/date.php';
+		}
+
+		return [
+			// Plain text, to prefill the edition field: the sanitized content carries <br> tags
+			'raw'       => $comment->getContent(),
+			'content'   => HtmlSanitizerSingleton::getInstance()->sanitize(nl2br($comment->getContent())),
+			'signature' => Text::sprintf(
+				'COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_COMMENT_SIGNATURE',
+				'',
+				EmundusHelperDate::displayDate($comment->getCreatedAt()->format('Y-m-d H:i:s'), 'COM_EMUNDUS_DATE_FORMAT', 0)
+			)
+		];
 	}
 
 	/**

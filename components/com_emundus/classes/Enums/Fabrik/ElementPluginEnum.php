@@ -53,6 +53,7 @@ enum ElementPluginEnum: string
 	case ACTION = 'action';
 	case APPLICATION_CHOICES = 'applicationchoices';
 	case GEOLOCATION = 'emundus_geolocalisation';
+	case BUTTON = 'button';
 
 	case EMUNDUS_CALCULATION = 'emundus_calculation';
 
@@ -132,6 +133,16 @@ enum ElementPluginEnum: string
 			self::DATE => 'date_form_format',
 			self::JDATE => 'jdate_form_format',
 			self::BIRTHDAY => 'list_date_format',
+			default => '',
+		};
+	}
+
+	public function getDateStoreParameter(): string
+	{
+		return match ($this)
+		{
+			self::DATE => 'date_store_as_local',
+			self::JDATE => 'jdate_store_as_local',
 			default => '',
 		};
 	}

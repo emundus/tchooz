@@ -31,42 +31,42 @@
 					</select>
 				</div>
 				<div class="actions tw-flex tw-items-center">
-					<div
+					<Button
 						v-if="canExport"
-						class="btn-icon-text"
+						variant="primary"
+						emphasis="lite"
+						icon="file_upload"
 						@click="exportAttachments"
-						:class="{ disabled: checkedAttachments.length < 1 }"
+						:disabled="checkedAttachments.length < 1"
 					>
-						<span class="material-symbols-outlined export tw-mr-2">file_upload</span>
-						<span>{{ translate('COM_EMUNDUS_EXPORTS_EXPORT') }}</span>
-					</div>
-					<div
+						{{ translate('COM_EMUNDUS_EXPORTS_EXPORT') }}
+					</Button>
+					<Button
 						v-if="sync && canSync"
-						class="btn-icon-text"
+						variant="primary"
+						emphasis="lite"
+						icon="cloud_sync"
 						@click="synchronizeAttachments(checkedAttachments)"
-						:class="{ disabled: checkedAttachments.length < 1 }"
+						:disabled="checkedAttachments.length < 1"
 					>
-						<span class="material-symbols-outlined cloud_sync" :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE')">
-							cloud_sync
-						</span>
-						<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE') }}</span>
-					</div>
-					<span
-						class="material-symbols-outlined refresh tw-cursor-pointer"
+						{{ translate('COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE') }}
+					</Button>
+					<Button
+						variant="primary"
+						emphasis="ghost"
+						icon="autorenew"
 						@click="refreshAttachments(true)"
 						:title="translate('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE')"
-					>
-						autorenew
-					</span>
-					<span
+					/>
+					<Button
 						v-if="canDelete"
-						class="material-symbols-outlined delete"
-						:class="{ disabled: checkedAttachments.length < 1 }"
+						variant="error"
+						emphasis="ghost"
+						icon="delete"
 						@click="confirmDeleteAttachments"
+						:disabled="checkedAttachments.length < 1"
 						:title="translate('COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE')"
-					>
-						delete
-					</span>
+					/>
 				</div>
 			</section>
 			<div v-if="exportLink" class="tw-mb-4 tw-mt-4">
@@ -271,19 +271,26 @@
 							<span class="material-symbols-outlined">open_in_new</span>
 							<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_OPEN_IN_GED') }}</span>
 						</a>
-						<a download v-if="canDownload" :href="attachmentPath" class="download btn-icon-text tw-btn-primary tw-mr-6">
-							<span class="material-symbols-outlined"> file_download </span>
-							<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD') }}</span>
-						</a>
+						<Button
+							v-if="canDownload"
+							@click="downloadAttachment"
+							class="tw-mr-6"
+							variant="primary"
+							icon="file_download"
+						>
+							{{ translate('COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD') }}
+						</Button>
 						<ul class="pagination pagination-sm !tw-m-0 tw-flex tw-items-center tw-gap-1">
 							<li class="tw-flex">
-								<a
-									class="tw-flex tw-cursor-pointer tw-items-center"
-									:class="{ active: selectedAttachmentPosition > 0 }"
+								<Button
+									variant="primary"
+									emphasis="ghost"
+									icon="navigate_before"
+									:disabled="selectedAttachmentPosition <= 0"
+									:aria-label="translate('COM_EMUNDUS_RESOURCES_PREVIEW_PREVIOUS')"
+									:title="translate('COM_EMUNDUS_RESOURCES_PREVIEW_PREVIOUS')"
 									@click="changeAttachment(selectedAttachmentPosition - 1, true)"
-								>
-									<span class="material-symbols-outlined">navigate_before</span>
-								</a>
+								/>
 							</li>
 							<li class="active">
 								<span class="!tw-w-auto !tw-rounded-coordinator !tw-border-none !tw-bg-profile-full !tw-text-white"
@@ -291,20 +298,25 @@
 								>
 							</li>
 							<li class="tw-flex">
-								<a
-									class="tw-flex tw-cursor-pointer tw-items-center"
-									:class="{
-										active: selectedAttachmentPosition < displayedAttachments.length - 1,
-									}"
+								<Button
+									variant="primary"
+									emphasis="ghost"
+									icon="navigate_next"
+									:disabled="selectedAttachmentPosition >= displayedAttachments.length - 1"
+									:aria-label="translate('COM_EMUNDUS_RESOURCES_PREVIEW_NEXT')"
+									:title="translate('COM_EMUNDUS_RESOURCES_PREVIEW_NEXT')"
 									@click="changeAttachment(selectedAttachmentPosition + 1)"
-								>
-									<span class="material-symbols-outlined"> navigate_next </span>
-								</a>
+								/>
 							</li>
 						</ul>
-						<span class="material-symbols-outlined tw-ml-6 tw-cursor-pointer tw-text-neutral-900" @click="closeModal"
-							>close</span
-						>
+						<Button
+							variant="neutral"
+							emphasis="ghost"
+							icon="close"
+							:aria-label="translate('COM_EMUNDUS_CLOSE')"
+							:title="translate('COM_EMUNDUS_CLOSE')"
+							@click="closeModal"
+						/>
 					</div>
 				</div>
 				<transition :name="slideTransition" @before-leave="beforeLeaveSlide">
@@ -359,6 +371,8 @@ import { useAttachmentStore } from '@/stores/attachment.js';
 import { useGlobalStore } from '@/stores/global.js';
 import { useUserStore } from '@/stores/user.js';
 
+import { Button } from '@emundus/ui';
+
 export default {
 	name: 'Attachments',
 	components: {
@@ -366,6 +380,7 @@ export default {
 		AttachmentEdit,
 		AttachmentRow,
 		Modal,
+		Button,
 	},
 	props: {
 		user: {
@@ -451,6 +466,7 @@ export default {
 			attachmentStore: null,
 
 			openedModal: false,
+			previouslyFocusedElement: null,
 		};
 	},
 	created() {
@@ -511,7 +527,19 @@ export default {
 
 		this.addEvents();
 	},
+	beforeUnmount() {
+		document.removeEventListener('keydown', this.trapModalFocus, true);
+	},
 	methods: {
+		downloadAttachment() {
+			const link = document.createElement('a');
+			link.href = this.attachmentPath;
+			link.download = '';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		},
+
 		// Getters and setters
 		async setDisplayedUser() {
 			const response = await fileService.getFnumInfos(this.displayedFnum);
@@ -849,15 +877,75 @@ export default {
 		},
 		openModal(attachment) {
 			if (this.displayedUser.user_id && this.displayedFnum) {
+				// Keep the trigger so focus can be restored when the modal closes (a11y).
+				this.previouslyFocusedElement = document.activeElement;
 				this.openedModal = true;
 				this.selectedAttachment = attachment;
 				this.attachmentStore.setSelectedAttachment(attachment);
+
+				document.addEventListener('keydown', this.trapModalFocus, true);
+				this.$nextTick(() => {
+					const focusable = this.getModalFocusable();
+					if (focusable.length > 0) {
+						focusable[0].focus();
+					}
+				});
 			}
 		},
 		closeModal() {
 			this.openedModal = false;
 			this.selectedAttachment = {};
 			this.attachmentStore.setSelectedAttachment({});
+
+			document.removeEventListener('keydown', this.trapModalFocus, true);
+			if (this.previouslyFocusedElement && typeof this.previouslyFocusedElement.focus === 'function') {
+				this.previouslyFocusedElement.focus();
+				this.previouslyFocusedElement = null;
+			}
+		},
+		// Return the visible focusable elements inside the preview modal, in DOM order.
+		getModalFocusable() {
+			const container = document.getElementById('modal___edit');
+			if (!container) {
+				return [];
+			}
+
+			const selector =
+				'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+			// getClientRects() detects real visibility even inside a position:fixed modal,
+			// where offsetParent is unreliable and would wrongly drop the edit inputs.
+			return Array.from(container.querySelectorAll(selector)).filter((el) => el.getClientRects().length > 0);
+		},
+		// Loop keyboard focus inside the preview modal in both directions (a11y focus trap).
+		trapModalFocus(e) {
+			if (e.key !== 'Tab') {
+				return;
+			}
+
+			const container = document.getElementById('modal___edit');
+			if (!container) {
+				return;
+			}
+
+			const focusable = this.getModalFocusable();
+			if (focusable.length === 0) {
+				e.preventDefault();
+				return;
+			}
+
+			const first = focusable[0];
+			const last = focusable[focusable.length - 1];
+			const active = document.activeElement;
+
+			if (e.shiftKey) {
+				if (active === first || !container.contains(active)) {
+					e.preventDefault();
+					last.focus();
+				}
+			} else if (active === last || !container.contains(active)) {
+				e.preventDefault();
+				first.focus();
+			}
 		},
 		displayErrorMessage(msg) {
 			Swal.fire({

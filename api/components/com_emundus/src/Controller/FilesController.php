@@ -12,6 +12,7 @@ namespace Joomla\Component\Emundus\Api\Controller;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filter\InputFilter;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\ApiController;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
@@ -97,6 +98,8 @@ class FilesController extends ApiController
 
 	public function submit($fnum = null): static
 	{
+		Log::addLogger(['text_file' => 'com_emundus.api.php'], Log::ALL, ['com_emundus.api']);
+
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
@@ -300,9 +303,14 @@ class FilesController extends ApiController
 
 				foreach ($elements as $element)
 				{
+					// Each element resolves the raw value on its own: elements sharing an alias may join different tables
+					$element_value = $value;
+
 					if ($element->plugin === 'databasejoin')
 					{
 						$params = json_decode($element->params);
+
+						$joined_value = null;
 
 						// Search value in db table via join_key_column first
 						$query->clear()
@@ -325,7 +333,7 @@ class FilesController extends ApiController
 
 						if (!empty($joined_value))
 						{
-							$value = $joined_value;
+							$element_value = $joined_value;
 						}
 					}
 					elseif ($element->plugin === 'emundus_phonenumber')
@@ -333,11 +341,11 @@ class FilesController extends ApiController
 						$phoneUtil = PhoneNumberUtil::getInstance();
 
 						// If we have a prefix search country code
-						if (str_starts_with($value, '+'))
+						if (str_starts_with($element_value, '+'))
 						{
 							try
 							{
-								$phone_number = $phoneUtil->parse($value, null);
+								$phone_number = $phoneUtil->parse($element_value, null);
 								$regionCode   = $phoneUtil->getRegionCodeForNumber($phone_number);
 							}
 							catch (\Exception $e)
@@ -347,7 +355,7 @@ class FilesController extends ApiController
 
 							if (!empty($regionCode))
 							{
-								$value = $regionCode . $value;
+								$element_value = $regionCode . $element_value;
 							}
 						}
 						else
@@ -362,9 +370,9 @@ class FilesController extends ApiController
 
 							try
 							{
-								$phone_number = $phoneUtil->parse($value, $params->default_country);
-								$value        = $phoneUtil->format($phone_number, \libphonenumber\PhoneNumberFormat::E164);
-								$value        = $defaultRegionCode . $value;
+								$phone_number = $phoneUtil->parse($element_value, $params->default_country);
+								$element_value = $phoneUtil->format($phone_number, \libphonenumber\PhoneNumberFormat::E164);
+								$element_value = $defaultRegionCode . $element_value;
 							}
 							catch (\Exception $e)
 							{
@@ -373,7 +381,7 @@ class FilesController extends ApiController
 						}
 					}
 
-					$datas_to_process[$element->db_table_name][$element->name] = $value;
+					$datas_to_process[$element->db_table_name][$element->name] = $element_value;
 				}
 			}
 		}

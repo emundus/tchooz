@@ -18,6 +18,7 @@ jimport('joomla.application.component.model');
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Database\ParameterType;
 
 class EmundusModelChecklist extends JModelList
 {
@@ -326,6 +327,8 @@ class EmundusModelChecklist extends JModelList
 		if (!empty($profile)) {
 			$query = $this->_db->getQuery(true);
 
+			$fabrikComponentId = ComponentHelper::getComponent('com_fabrik')->id;
+
 			$query->select('CONCAT(m.link,"&Itemid=", m.id) as link')
 				->from($this->_db->quoteName('#__emundus_setup_profiles', 'esp'))
 				->leftJoin($this->_db->quoteName('#__menu', 'm') . ' ON ' . $this->_db->quoteName('m.menutype') . ' = ' . $this->_db->quoteName('esp.menutype'))
@@ -333,6 +336,13 @@ class EmundusModelChecklist extends JModelList
 				->andWhere('m.published > 0')
 				->andWhere('m.level = 1')
 				->order('m.lft DESC');
+
+			// Be sure to take the fabrik page as submission
+			if(!empty($fabrikComponentId))
+			{
+				$query->andWhere($this->_db->qn('component_id') . ' = :fabrikComponentId')
+					->bind(':fabrikComponentId', $fabrikComponentId, ParameterType::INTEGER);
+			}
 
 			try {
 				$this->_db->setQuery($query);

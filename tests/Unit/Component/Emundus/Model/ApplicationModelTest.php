@@ -11,6 +11,7 @@
 namespace Unit\Component\Emundus\Model;
 
 use EmundusModelApplication;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\Tests\Unit\UnitTestCase;
 use stdClass;
@@ -143,6 +144,64 @@ class ApplicationModelTest extends UnitTestCase
 
 		// Clear datasets
 		$this->h_dataset->deleteSampleUpload($upload);
+	}
+
+	/**
+	 * Visibility of the generated application file follows its own setting, not export_application_pdf
+	 * which only decides whether it is produced on submission.
+	 *
+	 * @group application
+	 * @covers EmundusModelApplication::getUserAttachmentsByFnum
+	 *
+	 * @return void
+	 */
+	public function testGetUserAttachmentsByFnumApplicationFormVisibilityHasItsOwnParameter()
+	{
+		if (!defined('EMUNDUS_PATH_ABS'))
+		{
+			define('EMUNDUS_PATH_ABS', JPATH_ROOT);
+		}
+
+		$config = ComponentHelper::getParams('com_emundus');
+		// Generation is off: it must not have a say in what the documents list shows.
+		$config->set('export_application_pdf', 0);
+
+		$fnum     = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$uploadId = $this->h_dataset->createSampleUpload($fnum, $this->dataset['campaign'], (int) $this->dataset['applicant'], 26);
+		$this->assertGreaterThan(0, $uploadId, 'The generated application form should be saved');
+
+		try
+		{
+			$config->set('display_application_form_document', 1);
+			$this->assertContains(
+				'_application_form',
+				$this->getAttachmentLabels($fnum),
+				'The generated application file should be listed when its own parameter is on'
+			);
+
+			$config->set('display_application_form_document', 0);
+			$this->assertNotContains(
+				'_application_form',
+				$this->getAttachmentLabels($fnum),
+				'The generated application file should be hidden when its own parameter is off'
+			);
+		}
+		finally
+		{
+			$config->set('display_application_form_document', 1);
+			// Other tests assert this applicant has no attachment at all: never leave one behind.
+			$this->h_dataset->deleteSampleUpload($uploadId);
+		}
+	}
+
+	/**
+	 * @return string[]
+	 */
+	private function getAttachmentLabels(string $fnum): array
+	{
+		$attachments = $this->model->getUserAttachmentsByFnum($fnum, '', null, false, $this->dataset['coordinator']);
+
+		return array_map(static fn ($attachment) => $attachment->lbl, $attachments);
 	}
 
 	/**
@@ -650,6 +709,305 @@ class ApplicationModelTest extends UnitTestCase
 	}
 
 	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::deleteGroupsAccess
+	 */
+	public function testDeleteGroupsAccessWhenNoGroupGivenThenReturnsFalseAndKeepsAccess()
+	{
+		$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$this->shareFileToGroups($fnum, [2, 3]);
+
+		$deleted = $this->model->deleteGroupsAccess($fnum, [], $this->dataset['coordinator']);
+
+		$this->assertFalse($deleted, 'deleteGroupsAccess should return false when no group is given');
+		$this->assertSame([2, 3], $this->getFileGroups($fnum), 'deleteGroupsAccess should not remove any access when no group is given');
+
+		$this->h_dataset->deleteSampleFile($fnum);
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::deleteGroupsAccess
+	 */
+	public function testDeleteGroupsAccessWhenNoFnumGivenThenReturnsFalse()
+	{
+		$this->assertFalse($this->model->deleteGroupsAccess('', [2], $this->dataset['coordinator']), 'deleteGroupsAccess should return false when no fnum is given');
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::deleteGroupsAccess
+	 */
+	public function testDeleteGroupsAccessWhenSeveralGroupsGivenThenAllOfThemLoseAccess()
+	{
+		$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$this->shareFileToGroups($fnum, [2, 3]);
+
+		$deleted = $this->model->deleteGroupsAccess($fnum, [2, 3], $this->dataset['coordinator']);
+
+		$this->assertTrue($deleted, 'deleteGroupsAccess should return true when the access is removed');
+		$this->assertSame([], $this->getFileGroups($fnum), 'deleteGroupsAccess should remove the access of every given group');
+
+		$this->h_dataset->deleteSampleFile($fnum);
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::deleteGroupsAccess
+	 */
+	public function testDeleteGroupsAccessWhenSomeGroupsGivenThenOtherGroupsKeepAccess()
+	{
+		$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$this->shareFileToGroups($fnum, [2, 3]);
+
+		$this->model->deleteGroupsAccess($fnum, [2], $this->dataset['coordinator']);
+
+		$this->assertSame([3], $this->getFileGroups($fnum), 'deleteGroupsAccess should only remove the access of the given groups');
+
+		$this->h_dataset->deleteSampleFile($fnum);
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::deleteGroupsAccess
+	 */
+	public function testDeleteGroupsAccessWhenGroupsRemovedThenOneLogIsWrittenPerGroup()
+	{
+		$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$this->shareFileToGroups($fnum, [2, 3]);
+
+		$this->model->deleteGroupsAccess($fnum, [2, 3], $this->dataset['coordinator']);
+
+		$query = $this->db->getQuery(true);
+		$query->select('COUNT(*)')
+			->from($this->db->quoteName('#__emundus_logs'))
+			->where($this->db->quoteName('fnum_to') . ' = ' . $this->db->quote($fnum))
+			->where($this->db->quoteName('message') . ' = ' . $this->db->quote('COM_EMUNDUS_ACCESS_ACCESS_FILE_DELETE'));
+		$this->db->setQuery($query);
+
+		$this->assertSame(2, (int) $this->db->loadResult(), 'deleteGroupsAccess should write one log per removed group');
+
+		$this->h_dataset->deleteSampleFile($fnum);
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::deleteGroupAccess
+	 */
+	public function testDeleteGroupAccessWhenGroupGivenThenOnlyThisGroupLosesAccess()
+	{
+		$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$this->shareFileToGroups($fnum, [2, 3]);
+
+		$deleted = $this->model->deleteGroupAccess($fnum, 3, $this->dataset['coordinator']);
+
+		$this->assertTrue($deleted, 'deleteGroupAccess should return true when the access is removed');
+		$this->assertSame([2], $this->getFileGroups($fnum), 'deleteGroupAccess should only remove the access of the given group');
+
+		$this->h_dataset->deleteSampleFile($fnum);
+	}
+
+	/**
+	 * @param   string  $fnum
+	 * @param   int[]   $groupIds
+	 *
+	 * @return void
+	 */
+	// -------------------------------------------------------------------------
+	// Collaboration — shared users visibility and rights update
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @covers EmundusModelApplication::canSeeSharedUsers
+	 * @return void
+	 */
+	public function testCanSeeSharedUsersWhenAcceptedWithRightThenReturnsTrue(): void
+	{
+		$collaboratorId = $this->dataset['coordinator'];
+		$requestId      = $this->createFilesRequest($collaboratorId, ['uploaded' => 1, 'show_shared_users' => 1]);
+
+		try
+		{
+			$this->assertTrue($this->model->canSeeSharedUsers($this->dataset['ccid'], $collaboratorId), 'An accepted collaborator with show_shared_users should see the other collaborators');
+		}
+		finally
+		{
+			$this->deleteFilesRequest($requestId);
+		}
+	}
+
+	/**
+	 * @covers EmundusModelApplication::canSeeSharedUsers
+	 * @return void
+	 */
+	public function testCanSeeSharedUsersWhenRightNotGrantedThenReturnsFalse(): void
+	{
+		$collaboratorId = $this->dataset['coordinator'];
+		$requestId      = $this->createFilesRequest($collaboratorId, ['uploaded' => 1, 'show_shared_users' => 0]);
+
+		try
+		{
+			$this->assertFalse($this->model->canSeeSharedUsers($this->dataset['ccid'], $collaboratorId), 'A collaborator without show_shared_users should not see the other collaborators');
+		}
+		finally
+		{
+			$this->deleteFilesRequest($requestId);
+		}
+	}
+
+	/**
+	 * @covers EmundusModelApplication::canSeeSharedUsers
+	 * @return void
+	 */
+	public function testCanSeeSharedUsersWhenInvitationNotAcceptedThenReturnsFalse(): void
+	{
+		$collaboratorId = $this->dataset['coordinator'];
+		$requestId      = $this->createFilesRequest($collaboratorId, ['uploaded' => 0, 'show_shared_users' => 1]);
+
+		try
+		{
+			$this->assertFalse($this->model->canSeeSharedUsers($this->dataset['ccid'], $collaboratorId), 'A pending invitation should not give access to the other collaborators');
+		}
+		finally
+		{
+			$this->deleteFilesRequest($requestId);
+		}
+	}
+
+	/**
+	 * @covers EmundusModelApplication::canSeeSharedUsers
+	 * @return void
+	 */
+	public function testCanSeeSharedUsersWhenRightGrantedOnAnotherFileThenReturnsFalse(): void
+	{
+		$collaboratorId = $this->dataset['coordinator'];
+		$requestId      = $this->createFilesRequest($collaboratorId, ['uploaded' => 1, 'show_shared_users' => 1]);
+
+		try
+		{
+			$this->assertFalse($this->model->canSeeSharedUsers($this->dataset['ccid'] + 1, $collaboratorId), 'The right is granted per file and must not leak onto another file');
+		}
+		finally
+		{
+			$this->deleteFilesRequest($requestId);
+		}
+	}
+
+	/**
+	 * @covers EmundusModelApplication::updateRight
+	 * @return void
+	 */
+	public function testUpdateRightWhenRightIsKnownThenUpdatesIt(): void
+	{
+		$requestId = $this->createFilesRequest($this->dataset['coordinator'], ['uploaded' => 1, 'r' => 0]);
+
+		try
+		{
+			$this->assertTrue($this->model->updateRight($requestId, $this->dataset['ccid'], 'r', 1), 'updateRight should accept a collaboration right');
+			$this->assertSame(1, (int) $this->getFilesRequestColumn($requestId, 'r'), 'updateRight should write the new value of the right');
+		}
+		finally
+		{
+			$this->deleteFilesRequest($requestId);
+		}
+	}
+
+	/**
+	 * @covers EmundusModelApplication::updateRight
+	 * @return void
+	 */
+	public function testUpdateRightWhenColumnIsNotARightThenRefusesAndKeepsTheRequest(): void
+	{
+		$requestId = $this->createFilesRequest($this->dataset['coordinator'], ['uploaded' => 1]);
+
+		try
+		{
+			$this->assertFalse($this->model->updateRight($requestId, $this->dataset['ccid'], 'ccid', 1), 'updateRight should refuse a column that is not a collaboration right');
+			$this->assertSame((int) $this->dataset['ccid'], (int) $this->getFilesRequestColumn($requestId, 'ccid'), 'The request must stay attached to its file');
+
+			$this->assertFalse($this->model->updateRight($requestId, $this->dataset['ccid'], 'uploaded', 0), 'updateRight should refuse to change the acceptance state');
+			$this->assertSame(1, (int) $this->getFilesRequestColumn($requestId, 'uploaded'), 'The acceptance state must be left untouched');
+		}
+		finally
+		{
+			$this->deleteFilesRequest($requestId);
+		}
+	}
+
+	private function createFilesRequest(int $userId, array $rights = []): int
+	{
+		$request = (object) array_merge([
+			'time_date'         => date('Y-m-d H:i:s'),
+			'fnum'              => $this->dataset['fnum'],
+			'ccid'              => $this->dataset['ccid'],
+			'keyid'             => bin2hex(random_bytes(8)),
+			'email'             => 'collaborator_unit_test@emundus.fr',
+			'user_id'           => $userId,
+			'uploaded'          => 0,
+			'r'                 => 0,
+			'u'                 => 0,
+			'show_history'      => 0,
+			'show_shared_users' => 0,
+		], $rights);
+
+		$this->db->insertObject('#__emundus_files_request', $request);
+
+		return (int) $this->db->insertid();
+	}
+
+	private function getFilesRequestColumn(int $requestId, string $column): mixed
+	{
+		$query = $this->db->getQuery(true);
+		$query->select($this->db->quoteName($column))
+			->from($this->db->quoteName('#__emundus_files_request'))
+			->where($this->db->quoteName('id') . ' = ' . $requestId);
+		$this->db->setQuery($query);
+
+		return $this->db->loadResult();
+	}
+
+	private function deleteFilesRequest(int $requestId): void
+	{
+		$query = $this->db->getQuery(true);
+		$query->delete($this->db->quoteName('#__emundus_files_request'))
+			->where($this->db->quoteName('id') . ' = ' . $requestId);
+		$this->db->setQuery($query);
+		$this->db->execute();
+	}
+
+	private function shareFileToGroups(string $fnum, array $groupIds): void
+	{
+		$query = $this->db->getQuery(true);
+		$query->insert($this->db->quoteName('#__emundus_group_assoc'))
+			->columns($this->db->quoteName(['group_id', 'action_id', 'fnum', 'c', 'r', 'u', 'd']));
+
+		foreach ($groupIds as $groupId)
+		{
+			$query->values((int) $groupId . ', 1, ' . $this->db->quote($fnum) . ', 0, 1, 0, 0');
+		}
+
+		$this->db->setQuery($query);
+		$this->db->execute();
+	}
+
+	/**
+	 * @param   string  $fnum
+	 *
+	 * @return int[]
+	 */
+	private function getFileGroups(string $fnum): array
+	{
+		$query = $this->db->getQuery(true);
+		$query->select('DISTINCT ' . $this->db->quoteName('group_id'))
+			->from($this->db->quoteName('#__emundus_group_assoc'))
+			->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum))
+			->order($this->db->quoteName('group_id'));
+		$this->db->setQuery($query);
+
+		return array_map('intval', $this->db->loadColumn());
+	}
+
+	/**
 	 * @param   int  $uploadId
 	 *
 	 * @return string
@@ -679,5 +1037,117 @@ class ApplicationModelTest extends UnitTestCase
 		$this->db->setQuery($query);
 
 		return (string) $this->db->loadResult();
+	}
+
+	// -------------------------------------------------------------------------
+	// checkEmptyRepeatGroups — multiple table (several rows per file)
+	// -------------------------------------------------------------------------
+
+	private const REPEAT_FNUM = '2099010100000000000000999998';
+
+	private const REPEAT_PARENT_TABLE = 'jos_emundus_unit_pdf_repeat_parent';
+
+	private const REPEAT_TABLE = 'jos_emundus_unit_pdf_repeat_parent_1_repeat';
+
+	/**
+	 * Parent row ids by name: 'filled' (step 1), 'empty' (step 2, only unanswered repetitions),
+	 * 'second_filled' (step 3, first repetition unanswered, second one filled).
+	 */
+	private array $repeatParentIds = [];
+
+	private function createRepeatFixtures(): void
+	{
+		$this->clearRepeatFixtures();
+
+		$this->db->setQuery('CREATE TABLE ' . $this->db->quoteName(self::REPEAT_PARENT_TABLE) . ' (id INT AUTO_INCREMENT PRIMARY KEY, fnum VARCHAR(28), step_id INT)')->execute();
+		$this->db->setQuery('CREATE TABLE ' . $this->db->quoteName(self::REPEAT_TABLE) . ' (id INT AUTO_INCREMENT PRIMARY KEY, parent_id INT, txt TEXT, num TEXT)')->execute();
+
+		$rows = [
+			'filled'        => [1, [["'value'", "'3'"]]],
+			'empty'         => [2, [['NULL', "'0'"], ["''", 'NULL']]],
+			'second_filled' => [3, [['NULL', 'NULL'], ["'value'", 'NULL']]],
+		];
+		foreach ($rows as $key => [$step, $repetitions]) {
+			$this->db->setQuery('INSERT INTO ' . $this->db->quoteName(self::REPEAT_PARENT_TABLE) . ' (fnum, step_id) VALUES (' . $this->db->quote(self::REPEAT_FNUM) . ', ' . $step . ')')->execute();
+			$this->repeatParentIds[$key] = (int) $this->db->insertid();
+
+			foreach ($repetitions as [$txt, $num]) {
+				$this->db->setQuery('INSERT INTO ' . $this->db->quoteName(self::REPEAT_TABLE) . ' (parent_id, txt, num) VALUES (' . $this->repeatParentIds[$key] . ', ' . $txt . ', ' . $num . ')')->execute();
+			}
+		}
+	}
+
+	private function clearRepeatFixtures(): void
+	{
+		foreach ([self::REPEAT_PARENT_TABLE, self::REPEAT_TABLE] as $table) {
+			$this->db->setQuery('DROP TABLE IF EXISTS ' . $this->db->quoteName($table))->execute();
+		}
+
+		$this->repeatParentIds = [];
+	}
+
+	private function checkRepeatFixture(int $stepId = 0, int $parentRowId = 0): bool
+	{
+		$elements = array_map(function (string $name) {
+			$element       = new stdClass();
+			$element->name = $name;
+
+			return $element;
+		}, ['txt', 'num']);
+
+		try {
+			return $this->model->checkEmptyRepeatGroups($elements, self::REPEAT_TABLE, self::REPEAT_PARENT_TABLE, self::REPEAT_FNUM, $stepId, $parentRowId);
+		}
+		finally {
+			$this->clearRepeatFixtures();
+		}
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::checkEmptyRepeatGroups
+	 * @return void
+	 */
+	public function testCheckEmptyRepeatGroupsWhenFileHasSeveralRowsThenChecksTheRequestedRow(): void
+	{
+		$this->createRepeatFixtures();
+
+		$this->assertTrue($this->checkRepeatFixture(0, $this->repeatParentIds['filled']), 'The group should be shown for an evaluation whose repetitions hold a value, even when the file has other evaluations');
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::checkEmptyRepeatGroups
+	 * @return void
+	 */
+	public function testCheckEmptyRepeatGroupsWhenRequestedRowHasOnlyEmptyRepetitionsThenReturnsFalse(): void
+	{
+		$this->createRepeatFixtures();
+
+		$this->assertFalse($this->checkRepeatFixture(0, $this->repeatParentIds['empty']), 'The values of the other evaluations of the file should not make an empty group look filled');
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::checkEmptyRepeatGroups
+	 * @return void
+	 */
+	public function testCheckEmptyRepeatGroupsWhenOnlyALaterRepetitionIsFilledThenReturnsTrue(): void
+	{
+		$this->createRepeatFixtures();
+
+		$this->assertTrue($this->checkRepeatFixture(0, $this->repeatParentIds['second_filled']), 'Every repetition should be inspected, not only the first one');
+	}
+
+	/**
+	 * @group  application
+	 * @covers EmundusModelApplication::checkEmptyRepeatGroups
+	 * @return void
+	 */
+	public function testCheckEmptyRepeatGroupsWhenOnlyStepIsGivenThenChecksTheRowsOfThatStep(): void
+	{
+		$this->createRepeatFixtures();
+
+		$this->assertFalse($this->checkRepeatFixture(2), 'Without a row id, only the rows of the requested step should be inspected');
 	}
 }

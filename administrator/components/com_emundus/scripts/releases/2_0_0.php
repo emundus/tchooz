@@ -1478,7 +1478,7 @@ if(value == 1) {
 
 			EmundusHelperUpdate::addColumn('jos_emundus_setup_action_tag', 'ordering', 'INT', null, 1, 0);
 
-			EmundusHelperUpdate::addColumn('jos_emundus_chatroom', 'status', 'INT');
+			EmundusHelperUpdate::addColumn('jos_emundus_chatroom', 'status', 'INT', null, 0, 1);
 
 			// Sharing files feature
 			require_once JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/src/SharingFilesInstall.php';

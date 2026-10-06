@@ -118,7 +118,7 @@ class ActionUpdateUserGroups extends ActionEntity
 					}, $context);
 					$userIds = array_filter($userIds);
 
-					if (!$usersModel->removeFromGroups($userIds, $this->getParameterValue(self::PARAMETER_USER_GROUPS)))
+					if (!$usersModel->removeFromGroups($userIds, $this->getParameterValue(self::PARAMETER_USER_GROUPS), $context[0]->getTriggeredBy()))
 					{
 						$updated = false;
 					}

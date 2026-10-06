@@ -15,6 +15,7 @@ use Tchooz\Entities\Fabrik\FabrikElementEntity;
 use Tchooz\Enums\Export\PivotScopeEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
+use Tchooz\Services\Export\Export;
 
 /**
  * Expand each row into N rows based on a pivot target, then group rows from the
@@ -23,9 +24,8 @@ use Tchooz\Repositories\Fabrik\FabrikRepository;
  * The pivot is picked in two steps by the user: a scope (element / group /
  * evaluation — the latter shown as "Formulaire") and a target id resolved within
  * that scope. Element and group share the same "explode a Fabrik repeat/multi-value
- * column into rows" mechanics — only the entry point differs. Evaluation is
- * fundamentally different: it queries the evaluation table for that fnum and
- * duplicates the row per submission.
+ * column into rows" mechanics — only the entry point differs. Evaluation splits
+ * the columns of the evaluation form into one row per submission.
  */
 class ExcelPivotProcessor
 {
@@ -38,6 +38,8 @@ class ExcelPivotProcessor
 	 * so "600,00 € (EUR)" split on ',' yielded a phantom row holding "00 € (EUR)", read as 0 €.
 	 */
 	private string $valueSeparator;
+
+	private string $multipleSeparator;
 
 	/**
 	 * The service reuses a single FabrikRepository across the whole export lifecycle;
@@ -57,45 +59,48 @@ class ExcelPivotProcessor
 	}
 
 	/**
-	 * @param   array           $files    JSON `files` map, keyed by fnum
-	 * @param   array           $headers  JSON `headers` map (used to filter which siblings to expand for repeat groups)
-	 * @param   PivotScopeEnum  $scope    Pivot semantic picked by the user
-	 * @param   int             $targetId Id of the target within that scope (form id / group id / element id / evaluation form id)
-	 * @param   string          $valueSeparator Separator the caller aggregated the repeated values with
+	 * @param   array           $files               JSON `files` map, keyed by fnum
+	 * @param   array           $headers             JSON `headers` map (used to filter which siblings to expand for repeat groups)
+	 * @param   PivotScopeEnum  $scope               Pivot semantic picked by the user
+	 * @param   int             $targetId            Id of the target within that scope (form id / group id / element id / evaluation form id)
+	 * @param   string          $valueSeparator      Separator the caller aggregated the repeated values with
+	 * @param   string          $multipleSeparator   Separator the caller aggregated the rows of a multiple table with
 	 */
-	public function process(array $files, array $headers, PivotScopeEnum $scope, int $targetId, string $valueSeparator): array
+	public function process(array $files, array $headers, PivotScopeEnum $scope, int $targetId, string $valueSeparator, string $multipleSeparator): array
 	{
-		$this->valueSeparator = $valueSeparator;
+		$this->valueSeparator      = $valueSeparator;
+		$this->multipleSeparator = $multipleSeparator;
 
 		if (empty($files) || $targetId <= 0) {
 			return $files;
 		}
 
-		// Capture the incoming dossier order *before* expansion. Expansion appends
-		// extra rows (`fnum_1`, `fnum_2`, …) at the tail of the array, so the raw
-		// key order no longer reflects the original order — we restore it from here.
-		$baseFnumOrder = array_keys($files);
+		$rowsByFnum = array_map(fn(array $file) => [$file], $files);
 
-		$expanded = match ($scope) {
-			PivotScopeEnum::GROUP      => $this->expandByGroup($files, $headers, $targetId),
-			PivotScopeEnum::ELEMENT    => $this->expandByElement($files, $headers, $targetId),
-			PivotScopeEnum::EVALUATION => $this->expandByEvaluation($files, $headers, $targetId),
+		$rowsByFnum = match ($scope) {
+			PivotScopeEnum::GROUP      => $this->expandByGroup($rowsByFnum, $headers, $targetId),
+			PivotScopeEnum::ELEMENT    => $this->expandByElement($rowsByFnum, $headers, $targetId),
+			PivotScopeEnum::EVALUATION => $this->expandByEvaluation($rowsByFnum, $headers, $targetId),
 		};
 
-		return $this->groupByFnum($expanded, $baseFnumOrder);
+		return $this->flatten($rowsByFnum);
 	}
 
 	/**
 	 * Group scope: split every repeat-group iteration into its own row. All
 	 * sibling elements of the group that are present in `$headers` are exploded
 	 * together, so the resulting rows stay coherent.
+	 *
+	 * @param   array<string, list<array>>  $rowsByFnum
+	 *
+	 * @return array<string, list<array>>
 	 */
-	private function expandByGroup(array $files, array $headers, int $groupId): array
+	private function expandByGroup(array $rowsByFnum, array $headers, int $groupId): array
 	{
 		$this->fabrikRepository->setElementFilters([]);
 		$groupElements = $this->fabrikRepository->getElementsByGroupId($groupId);
 		if (empty($groupElements)) {
-			return $files;
+			return $rowsByFnum;
 		}
 
 		$columnsToExpand = [];
@@ -107,28 +112,26 @@ class ExcelPivotProcessor
 		}
 
 		if (empty($columnsToExpand)) {
-			return $files;
+			return $rowsByFnum;
 		}
 
-		foreach ($files as $fnum => $file) {
-			foreach ($columnsToExpand as $columnId) {
-				$this->splitColumn($files, $fnum, $file, $columnId);
-			}
-		}
-
-		return $files;
+		return $this->expandRepetitions($rowsByFnum, $headers, $columnsToExpand, $groupElements[0]->getDbTableName());
 	}
 
 	/**
 	 * Element scope: keeps the historical behavior — explode the picked element's
-	 * comma-separated value AND every sibling of its group that we're exporting.
+	 * aggregated value AND every sibling of its group that we're exporting.
+	 *
+	 * @param   array<string, list<array>>  $rowsByFnum
+	 *
+	 * @return array<string, list<array>>
 	 */
-	private function expandByElement(array $files, array $headers, int $elementId): array
+	private function expandByElement(array $rowsByFnum, array $headers, int $elementId): array
 	{
 		$this->fabrikRepository->setElementFilters([]);
 		$elementEntity = $this->fabrikRepository->getElementById($elementId);
 		if (empty($elementEntity)) {
-			return $files;
+			return $rowsByFnum;
 		}
 		assert($elementEntity instanceof FabrikElementEntity);
 
@@ -151,28 +154,41 @@ class ExcelPivotProcessor
 			}
 		}
 
-		foreach ($files as $fnum => $file) {
-			foreach ($columnsToExpand as $columnId) {
-				$this->splitColumn($files, $fnum, $file, $columnId);
-			}
+		return $this->expandRepetitions($rowsByFnum, $headers, $columnsToExpand, $elementEntity->getDbTableName());
+	}
+
+	/**
+	 * The repetitions of a multiple table (several rows per file, e.g. evaluations) belong to one of
+	 * its rows each: the file is split per table row first, so that every repetition keeps the
+	 * values of its own row (its evaluator, the other answers) instead of the list of all of them.
+	 *
+	 * @param   array<string, list<array>>  $rowsByFnum
+	 * @param   array<int>                  $columnIds
+	 *
+	 * @return array<string, list<array>>
+	 */
+	private function expandRepetitions(array $rowsByFnum, array $headers, array $columnIds, string $tableName): array
+	{
+		if (Export::isMultipleTable($tableName)) {
+			$rowsByFnum = $this->splitRows($rowsByFnum, $this->collectMultipleColumns($tableName, $headers), $this->multipleSeparator);
 		}
 
-		return $files;
+		return $this->splitRows($rowsByFnum, $columnIds, $this->valueSeparator);
 	}
 
 	/**
 	 * Evaluation scope: one row per submission of the picked evaluation form.
-	 * Reads the form's underlying evaluation table to count submissions per fnum
-	 * and duplicates the base row accordingly.
 	 *
-	 * Evaluation columns are merged upstream in Export::getData() as
-	 * comma-separated lists ordered by `evaluator ASC` (evaluation elements use
-	 * ',' as separator, the synthetic `evaluator_<table>` column uses ', '). A
-	 * naive duplication would repeat the whole "eval1, eval2" list on every
-	 * pivot row. We therefore de-aggregate: pivot row i receives ONLY the i-th
-	 * item of each evaluation column, while identity columns stay repeated.
+	 * Evaluation columns are merged upstream (Export::getData() and the synthetic
+	 * `evaluator_<table>` column of ExcelService) with the multiple separator,
+	 * ordered by `evaluator ASC`. Pivot row i receives ONLY the i-th item of each
+	 * evaluation column, while identity columns stay repeated.
+	 *
+	 * @param   array<string, list<array>>  $rowsByFnum
+	 *
+	 * @return array<string, list<array>>
 	 */
-	private function expandByEvaluation(array $files, array $headers, int $formId): array
+	private function expandByEvaluation(array $rowsByFnum, array $headers, int $formId): array
 	{
 		$tableName = $this->resolveEvaluationTable($formId);
 		if (empty($tableName)) {
@@ -182,57 +198,27 @@ class ExcelPivotProcessor
 				'com_emundus.service.export'
 			);
 
-			return $files;
+			return $rowsByFnum;
 		}
 
-		$evaluationColumns = $this->collectEvaluationColumns($tableName, $headers);
-
-		$db = Factory::getContainer()->get('DatabaseDriver');
-
-		foreach ($files as $fnum => $file) {
-			$query = $db->getQuery(true)
-				->select('COUNT(*)')
-				->from($db->quoteName($tableName))
-				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
-
-			$db->setQuery($query);
-			$count = (int) $db->loadResult();
-
-			if ($count < 2) {
-				continue;
-			}
-
-			// Duplicate the base row into $count rows, then de-aggregate the
-			// evaluation columns so each row carries a single evaluation's value.
-			for ($i = 1; $i < $count; $i++) {
-				$files[$fnum . '_' . $i] = $file;
-			}
-
-			for ($i = 0; $i < $count; $i++) {
-				$rowKey        = $i === 0 ? $fnum : ($fnum . '_' . $i);
-				$files[$rowKey] = $this->deAggregateEvaluationRow($files[$rowKey], $evaluationColumns, $i);
-			}
-		}
-
-		return $files;
+		return $this->splitRows($rowsByFnum, $this->collectMultipleColumns($tableName, $headers), $this->multipleSeparator);
 	}
 
 	/**
-	 * Identify, among the exported columns, those that hold per-evaluation values
-	 * for the picked evaluation table. Two kinds exist:
-	 *  - the synthetic evaluator column, keyed `evaluator_<tableName>`;
+	 * Identify, among the exported columns, those that hold one value per row of
+	 * the multiple table `$tableName`. Two kinds exist:
+	 *  - the synthetic evaluator column of evaluation tables, keyed `evaluator_<tableName>`;
 	 *  - numeric element ids whose Fabrik element is backed by `$tableName`.
 	 *
-	 * @return array<int|string, string>  Map column key => concatenation separator
+	 * @return array<int|string>  Column keys
 	 */
-	private function collectEvaluationColumns(string $tableName, array $headers): array
+	private function collectMultipleColumns(string $tableName, array $headers): array
 	{
 		$columns = [];
 
 		$evaluatorKey = 'evaluator_' . $tableName;
 		if (array_key_exists($evaluatorKey, $headers)) {
-			// Evaluator names are joined with ', ' upstream (ExcelService).
-			$columns[$evaluatorKey] = ', ';
+			$columns[] = $evaluatorKey;
 		}
 
 		foreach (array_keys($headers) as $headerKey) {
@@ -248,8 +234,7 @@ class ExcelPivotProcessor
 			assert($element instanceof FabrikElementEntity);
 
 			if ($element->getDbTableName() === $tableName) {
-				// Evaluation element values are joined with ',' upstream (Export::getData).
-				$columns[(int) $headerKey] = ',';
+				$columns[] = (int) $headerKey;
 			}
 		}
 
@@ -257,52 +242,45 @@ class ExcelPivotProcessor
 	}
 
 	/**
-	 * Return a copy of the row keeping only the $index-th value of each
-	 * evaluation column. Identity (non-evaluation) columns are left untouched so
-	 * they stay repeated across the dossier's pivot rows. Out-of-range indexes
-	 * yield an empty cell rather than an error.
+	 * Split every row into as many rows as its longest aggregate among `$columnKeys` has parts:
+	 * row i keeps the i-th part of each of these columns (empty when a column has fewer parts),
+	 * and every other column stays repeated.
 	 *
-	 * @param   array                        $row               Row to de-aggregate
-	 * @param   array<int|string, string>    $evaluationColumns Column key => separator
-	 * @param   int                          $index             Zero-based evaluation index for this row
+	 * @param   array<string, list<array>>  $rowsByFnum
+	 * @param   array<int|string>           $columnKeys
+	 *
+	 * @return array<string, list<array>>
 	 */
-	private function deAggregateEvaluationRow(array $row, array $evaluationColumns, int $index): array
+	private function splitRows(array $rowsByFnum, array $columnKeys, string $separator): array
 	{
-		$deAggregated = $row;
+		foreach ($rowsByFnum as $fnum => $rows) {
+			$splitRows = [];
 
-		foreach ($evaluationColumns as $columnKey => $separator) {
-			if (!array_key_exists($columnKey, $deAggregated) || $deAggregated[$columnKey] === '') {
-				continue;
+			foreach ($rows as $row) {
+				$parts = [];
+				$count = 1;
+				foreach ($columnKeys as $columnKey) {
+					if (!isset($row[$columnKey]) || $row[$columnKey] === '') {
+						continue;
+					}
+
+					$parts[$columnKey] = explode($separator, (string) $row[$columnKey]);
+					$count             = max($count, count($parts[$columnKey]));
+				}
+
+				for ($i = 0; $i < $count; $i++) {
+					$splitRow = $row;
+					foreach ($parts as $columnKey => $columnParts) {
+						$splitRow[$columnKey] = trim($columnParts[$i] ?? '');
+					}
+					$splitRows[] = $splitRow;
+				}
 			}
 
-			$parts                     = explode($separator, (string) $deAggregated[$columnKey]);
-			$deAggregated[$columnKey]  = array_key_exists($index, $parts) ? trim($parts[$index]) : '';
+			$rowsByFnum[$fnum] = $splitRows;
 		}
 
-		return $deAggregated;
-	}
-
-	/**
-	 * Split a single column's aggregated value across successive rows.
-	 * Existing base row keeps index 0; extra values get suffixed keys.
-	 */
-	private function splitColumn(array &$files, string $fnum, array $file, int $columnId): void
-	{
-		if (empty($file[$columnId])) {
-			return;
-		}
-
-		$parts = explode($this->valueSeparator, $file[$columnId]);
-
-		foreach ($parts as $key => $value) {
-			$index = $key === 0 ? $fnum : ($fnum . '_' . $key);
-
-			if (empty($files[$index])) {
-				$files[$index] = $files[$fnum];
-			}
-
-			$files[$index][$columnId] = trim($value);
-		}
+		return $rowsByFnum;
 	}
 
 	/**
@@ -323,57 +301,21 @@ class ExcelPivotProcessor
 	}
 
 	/**
-	 * Re-order the expanded map so every dossier's rows (base row + its
-	 * `fnum_1`, `fnum_2`, … pivot rows) are contiguous, while preserving the
-	 * original dossier order captured before expansion.
+	 * Key the rows back the way the JSON `files` map expects them: the first row of a file keeps
+	 * the fnum, the next ones get `fnum_1`, `fnum_2`, …, each file's rows staying contiguous.
 	 *
-	 * Expansion appends extra rows at the tail of the array, so the raw key order
-	 * interleaves dossiers (`A, B, A_1, B_1`). We rebuild the array dossier by
-	 * dossier: the base row first, then each of its suffixed rows in pivot-index
-	 * order. Base fnums are matched exactly (never parsed from keys) because
-	 * eMundus fnums themselves contain underscores.
-	 *
-	 * @param   array          $files          Expanded rows keyed by fnum / fnum_N
-	 * @param   array<string>  $baseFnumOrder  Base fnums in their original order
+	 * @param   array<string, list<array>>  $rowsByFnum
 	 */
-	private function groupByFnum(array $files, array $baseFnumOrder): array
+	private function flatten(array $rowsByFnum): array
 	{
-		$grouped = [];
+		$files = [];
 
-		foreach ($baseFnumOrder as $baseFnum) {
-			// Base row first (index 0 keeps the raw fnum as its key).
-			if (array_key_exists($baseFnum, $files)) {
-				$grouped[$baseFnum] = $files[$baseFnum];
-			}
-
-			// Then the pivot rows for this dossier, in ascending index order.
-			$prefix = $baseFnum . '_';
-			$pivotRows = [];
-			foreach ($files as $key => $file) {
-				if (!str_starts_with((string) $key, $prefix)) {
-					continue;
-				}
-
-				$suffix = substr((string) $key, strlen($prefix));
-				if (ctype_digit($suffix)) {
-					$pivotRows[(int) $suffix] = [$key, $file];
-				}
-			}
-
-			ksort($pivotRows);
-			foreach ($pivotRows as [$key, $file]) {
-				$grouped[$key] = $file;
+		foreach ($rowsByFnum as $fnum => $rows) {
+			foreach (array_values($rows) as $index => $row) {
+				$files[$index === 0 ? $fnum : ($fnum . '_' . $index)] = $row;
 			}
 		}
 
-		// Safety net: append any row that didn't match a known base fnum so the
-		// row count can never shrink (keeps the "correct number of lines" guarantee).
-		foreach ($files as $key => $file) {
-			if (!array_key_exists($key, $grouped)) {
-				$grouped[$key] = $file;
-			}
-		}
-
-		return $grouped;
+		return $files;
 	}
 }

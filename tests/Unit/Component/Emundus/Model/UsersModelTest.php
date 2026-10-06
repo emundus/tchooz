@@ -9,6 +9,8 @@
 
 namespace Unit\Component\Emundus\Model;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 
 /**
@@ -65,7 +67,11 @@ class UsersModelTest extends UnitTestCase
 		$this->assertEmpty($this->model->affectToGroups([['user_id' => 999999]], []), 'Passing an incorrect array of group ids should return false');
 
 		$nonApplicantIds = $this->model->getNonApplicantId($this->dataset['coordinator']);
-		$this->assertTrue($this->model->affectToGroups($nonApplicantIds, [1]), 'Affect user to group, using getNonApplicantId result should return true');
+		$this->assertTrue($this->model->affectToGroups(
+			$nonApplicantIds,
+			[1],
+			Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator'])
+		), 'Affect user to group, using getNonApplicantId result should return true');
 	}
 
 	/**

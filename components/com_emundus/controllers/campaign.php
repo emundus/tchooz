@@ -701,6 +701,11 @@ class EmundusControllerCampaign extends EmundusController
 			throw new \RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_CAMPAIGN'), EmundusResponse::HTTP_NOT_FOUND);
 		}
 
+		if(isset($campaign->campaign) && (!isset($campaign->campaign->description) || is_null($campaign->campaign->description)))
+		{
+			$campaign->campaign->description ??= '';
+		}
+
 		return EmundusResponse::ok($campaign, Text::_('CAMPAIGN_RETRIEVED'));
 	}
 
@@ -1266,6 +1271,7 @@ class EmundusControllerCampaign extends EmundusController
 
 		// TODO: refactor this with a Filter object
 		$built_filters      = [];
+		$more_elements_to_hidden = [];
 		$more_elements      = $this->campaignRepository->getCampaignMoreElements();
 		if (!class_exists('EmundusModelForm'))
 		{
@@ -1276,6 +1282,7 @@ class EmundusControllerCampaign extends EmundusController
 		{
 			if ($element['hidden'] || $element['show_in_list_summary'] == 0)
 			{
+				$more_elements_to_hidden[] = $element['name'];
 				continue;
 			}
 
@@ -1377,7 +1384,15 @@ class EmundusControllerCampaign extends EmundusController
 				/**
 				 * @var CampaignEntity $choice
 				 */
-				$choices[] = $choice->__serialize();
+				$choiceSerialized = $choice->__serialize();
+				// Remove some more properties from choices
+				foreach ($more_elements_to_hidden as $element)
+				{
+					if($element === 'id') continue;
+					unset($choiceSerialized['moreProperties'][$element]);
+				}
+
+				$choices[] = $choiceSerialized;
 			}
 		}
 

@@ -15,12 +15,12 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Router\Route;
-use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Favorite\FavoriteFileRepository;
 
 if(!class_exists('EmundusHelperCache'))
@@ -1039,6 +1039,46 @@ class EmundusHelperFiles
 		{
 			return false;
 		}
+	}
+
+	/**
+	 * Build the photo thumbnail markup for many fnums in a single query, keyed by fnum.
+	 * Use this instead of calling getPhotos($fnum) per row (one query each).
+	 *
+	 * @param   array  $fnums
+	 *
+	 * @return array<string, string>
+	 */
+	public function getPhotosList($fnums = array())
+	{
+		$pictures = array();
+
+		if (empty($fnums))
+		{
+			return $pictures;
+		}
+
+		$m_files = new EmundusModelFiles;
+
+		try
+		{
+			$photos = $m_files->getPhotos($fnums);
+			foreach ($photos as $photo)
+			{
+				$folder                   = JURI::base() . EMUNDUS_PATH_REL . $photo['user_id'];
+				$pictures[$photo['fnum']] = file_exists($folder . '/tn_' . $photo['filename'])
+					? '<img class="img-responsive" alt="photo" src="' . $folder . '/tn_' . $photo['filename'] . '" width="60" /></img>'
+					: '<img class="img-responsive" alt="photo" src="' . $folder . DS . $photo['filename'] . '" width="60" /></img>';
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('EmundusHelperFiles::getPhotosList | ' . $e->getMessage(), Log::ERROR, 'com_emundus.helper.files');
+
+			return $pictures;
+		}
+
+		return $pictures;
 	}
 
 
@@ -2600,22 +2640,36 @@ class EmundusHelperFiles
 		}
 
 		$tagsList = array();
+
+		if (empty($tags))
+		{
+			return $tagsList;
+		}
+
+		// Batch access checks once per fnum instead of calling asAccessAction (multiple queries) per tag.
+		$fnums          = array_values(array_unique(array_column($tags, 'fnum')));
+		$readable_fnums = EmundusHelperAccess::asAccessActionOnFnums(14, CrudEnum::READ->value, $user_id, $fnums);
+
+		// The create-right branch only matters for tags the current user owns.
+		$has_own_tags    = !empty(array_filter($tags, static fn($tag) => $tag['user_id'] === $user_id));
+		$creatable_fnums = $has_own_tags ? EmundusHelperAccess::asAccessActionOnFnums(14, 'c', $user_id, $fnums) : array();
+
 		foreach ($tags as $tag)
 		{
 			$fnum = $tag['fnum'];
 
-			if (EmundusHelperAccess::asAccessAction(14, 'r', $user_id, $fnum) || (EmundusHelperAccess::asAccessAction(14, 'c', $user_id, $fnum) && $tag['user_id'] === $user_id))
+			$allowed = in_array($fnum, $readable_fnums)
+				|| (in_array($fnum, $creatable_fnums) && $tag['user_id'] === $user_id);
+
+			if (!$allowed)
 			{
-				$class = str_replace('label-', '', $tag['class']);
-				if (!isset($tagsList[$fnum]))
-				{
-					$tagsList[$fnum] = '<div class="tw-flex tw-items-center tw-gap-2 sticker label-' . $class . '"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-w-[150px] tw-text-sm">' . $tag['label'] . '</span></div>';
-				}
-				else
-				{
-					$tagsList[$fnum] .= '<div class="tw-flex tw-items-center tw-gap-2 sticker label-' . $class . '"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-w-[150px] tw-text-sm">' . $tag['label'] . '</span></div>';
-				}
+				continue;
 			}
+
+			$class   = str_replace('label-', '', $tag['class']);
+			$sticker = '<div class="tw-flex tw-items-center tw-gap-2 sticker label-' . $class . '"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-w-[150px] tw-text-sm">' . $tag['label'] . '</span></div>';
+
+			$tagsList[$fnum] = isset($tagsList[$fnum]) ? $tagsList[$fnum] . $sticker : $sticker;
 		}
 
 		return $tagsList;
@@ -2727,12 +2781,16 @@ class EmundusHelperFiles
 	}
 
 
-	public function createUnreadMessageList($unread_messages)
+	public function createUnreadMessageList($unread_messages, $authorizedFnums = [])
 	{
 		$unreadmessagesList = array();
 
 		foreach ($unread_messages as $unread_message)
 		{
+			if(!in_array($unread_message['fnum'], $authorizedFnums))
+			{
+				continue;
+			}
 
 			$fnum = $unread_message['fnum'];
 
@@ -3274,182 +3332,6 @@ class EmundusHelperFiles
 				$data[$eval['fnum']][$eval['jos_emundus_final_grade___user']] = $str;
 			}
 		}
-
-		return $data;
-	}
-
-	// Get Admission
-	function getAdmission($format = 'html', $fnums = [], $name = null)
-	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'admission.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-
-		$m_admission = new EmundusModelAdmission();
-		$m_files     = new EmundusModelFiles;
-		$h_files     = new EmundusHelperFiles;
-
-		$user = JFactory::getUser();
-		if (!is_array($fnums))
-		{
-			$fnumInfo = $m_files->getFnumInfos($fnums);
-			$fnums    = array($fnums);
-		}
-		else
-		{
-			$fnumInfo = $m_files->getFnumInfos($fnums[1]);
-		}
-
-		// Get information from the applicant form filled out by the coordinator
-		if (EmundusHelperAccess::asAccessAction(8, 'c', $user->id, $fnumInfo['fnum']))
-		{
-
-			$element_id = $m_admission->getAllAdmissionElements(1, $fnumInfo['training']);
-
-			if (!empty($element_id))
-			{
-				$elements = $h_files->getElementsName(implode(',', $element_id));
-
-				$admissions = $m_files->getFnumArray($fnums, $elements);
-
-				$data = array();
-
-				foreach ($admissions as $adm)
-				{
-					$str = '<br><hr>';
-					$str .= '<h1>' . Text::_('INSTITUTIONAL_ADMISSION') . '</h1>';
-					foreach ($elements as $element)
-					{
-
-						if ($element->element_name == 'time_date')
-						{
-							$str .= '<em>' . JHtml::_('date', $adm[$element->tab_name . '___' . $element->element_name], Text::_('DATE_FORMAT_LC')) . '</em>';
-						}
-
-						if ($element->element_name == 'user')
-						{
-							$str .= '<h2>' . JFactory::getUser($adm[$element->tab_name . '___' . $element->element_name])->name . '</h2>';
-						}
-					}
-
-					$str .= '<br><hr>';
-					$str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
-
-					foreach ($elements as $element)
-					{
-						$k = $element->tab_name . '___' . $element->element_name;
-
-						if ($element->element_name != 'id' &&
-							$element->element_name != 'time_date' &&
-							$element->element_name != 'date_time' &&
-							$element->element_name != 'campaign_id' &&
-							$element->element_name != 'student_id' &&
-							$element->element_name != 'user' &&
-							$element->element_name != 'fnum' &&
-							$element->element_name != 'email' &&
-							$element->element_name != 'label' &&
-							$element->element_name != 'code' &&
-							array_key_exists($k, $adm))
-						{
-							$str .= '<tr>';
-							if (strpos($element->element_plugin, 'textarea') !== false)
-							{
-								$str .= '<td colspan="2"><b>' . $element->element_label . '</b> <br>' . Text::_($adm[$k]) . '</td>';
-							}
-							else
-							{
-								$str .= '<td width="70%"><b>' . $element->element_label . '</b> </td><td width="30%">' . Text::_($adm[$k]) . '</td>';
-							}
-							$str .= '</tr>';
-						}
-					}
-
-					$str .= '</table>';
-					$str .= '<p></p><hr>';
-
-					if ($format != 'html')
-					{
-						$str = str_replace('<br>', chr(10), $str);
-						$str = str_replace('<br />', chr(10), $str);
-						$str = str_replace('<h1>', '* ', $str);
-						$str = str_replace('</h1>', ' : ', $str);
-						$str = str_replace('<b>', chr(10), $str);
-						$str = str_replace('</b>', ' : ', $str);
-						$str = str_replace('&nbsp;', ' ', $str);
-						$str = strip_tags($str, '<h1>');
-					}
-
-					$data[$adm['fnum']][0] = $str;
-				}
-			}
-		}
-
-		// Get information from application form filled out by the student
-		$element_id = $m_admission->getAllApplicantAdmissionElements(1, $fnumInfo['training']);
-		if (!empty($element_id))
-		{
-			$elements   = $h_files->getElementsName(implode(',', $element_id));
-			$admissions = $m_files->getFnumArray($fnums, $elements);
-
-			foreach ($admissions as $adm)
-			{
-
-				$str = '<br><hr>';
-				$str .= '<h1>' . Text::_('STUDENT_ADMISSION') . '</h1>';
-				if (isset($name))
-				{
-					$str .= '<h2>' . $name . '</h2>';
-				}
-
-				$str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
-
-				foreach ($elements as $element)
-				{
-					$k = $element->tab_name . '___' . $element->element_name;
-
-					if ($element->element_name != 'id' &&
-						$element->element_name != 'time_date' &&
-						$element->element_name != 'date_time' &&
-						$element->element_name != 'campaign_id' &&
-						$element->element_name != 'student_id' &&
-						$element->element_name != 'user' &&
-						$element->element_name != 'fnum' &&
-						$element->element_name != 'email' &&
-						$element->element_name != 'label' &&
-						$element->element_name != 'code' &&
-						array_key_exists($k, $adm))
-					{
-						$str .= '<tr>';
-						if (strpos($element->element_plugin, 'textarea') !== false)
-						{
-							$str .= '<td colspan="2"><b>' . Text::_($element->element_label) . '</b> <br>' . Text::_($adm[$k]) . '</td>';
-						}
-						else
-						{
-							$str .= '<td width="70%"><b>' . Text::_($element->element_label) . '</b> </td><td width="30%">' . Text::_($adm[$k]) . '</td>';
-						}
-						$str .= '</tr>';
-					}
-				}
-
-				$str .= '</table>';
-				$str .= '<p></p><hr>';
-
-				if ($format != 'html')
-				{
-					$str = str_replace('<br>', chr(10), $str);
-					$str = str_replace('<br />', chr(10), $str);
-					$str = str_replace('<h1>', '* ', $str);
-					$str = str_replace('</h1>', ' : ', $str);
-					$str = str_replace('<b>', chr(10), $str);
-					$str = str_replace('</b>', ' : ', $str);
-					$str = str_replace('&nbsp;', ' ', $str);
-					$str = strip_tags($str, '<h1>');
-				}
-
-				$data[$adm['fnum']][1] = $str;
-			}
-		}
-
 
 		return $data;
 	}

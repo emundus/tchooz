@@ -57,7 +57,7 @@ enum ApplicationFileActionsEnum: string
 			self::COPY => 'file_copy',
 			self::DOCUMENTS => 'description',
 			self::HISTORY => 'history',
-			self::COLLABORATE => 'collaborate',
+			self::COLLABORATE => 'group',
 			self::ANONYMOUS => 'domino_mask',
 			self::DELETE => 'delete',
 			self::CUSTOM => 'rule_settings',
@@ -176,6 +176,9 @@ enum ApplicationFileActionsEnum: string
 				{
 					$available = false;
 				}
+				break;
+			case self::COLLABORATE:
+				$available = (new AddonRepository())->isActivated(AddonEnum::COLLABORATE->value);
 				break;
 			default:
 				$available = true;

@@ -11,6 +11,8 @@ namespace Unit\Component\Emundus\Helper;
 
 use EmundusHelperFabrik;
 use Joomla\CMS\Factory;
+use Tchooz\Enums\Export\ExportModeEnum;
+use Tchooz\Enums\ValueFormatEnum;
 use Joomla\Tests\Unit\UnitTestCase;
 
 require_once JPATH_SITE . '/components/com_emundus/helpers/fabrik.php';
@@ -263,6 +265,81 @@ class FabrikHelperTest extends UnitTestCase
 		$this->assertEmpty($values, 'No value should be returned for a file belonging to no campaign');
 	}
 
+	/**
+	 * jos_emundus_users carries a campaign_id and no fnum, yet its rows belong to one applicant:
+	 * reaching them through the campaign returns the data of another applicant of that campaign.
+	 *
+	 * @covers EmundusHelperFabrik::getFabrikValue
+	 *
+	 * @since version 2.0.0
+	 */
+	public function testGetFabrikValueOnUserTableSharingACampaign()
+	{
+		$table_name = 'jos_emundus_users';
+
+		$applicant_firstname   = 'ApplicantOfTheFile';
+		$coordinator_firstname = 'OtherUserOfTheCampaign';
+
+		$backup = $this->readUsersRows([$this->dataset['applicant'], $this->dataset['coordinator']]);
+
+		// Both users are put on the campaign of the file so that a campaign wide lookup would have
+		// two rows to choose from.
+		$this->writeUsersRow($this->dataset['applicant'], $applicant_firstname, (int) $this->dataset['campaign']);
+		$this->writeUsersRow($this->dataset['coordinator'], $coordinator_firstname, (int) $this->dataset['campaign']);
+
+		try {
+			$values = $this->helper->getFabrikValue([$this->dataset['fnum']], $table_name, 'firstname');
+
+			$this->assertArrayHasKey($this->dataset['fnum'], $values, 'A value should be returned for the file');
+			$this->assertEquals($applicant_firstname, $values[$this->dataset['fnum']]['val'], 'The value obtained should belong to the applicant of the file and not to another user of its campaign');
+		}
+		finally {
+			foreach ($backup as $user_id => $row) {
+				$this->writeUsersRow($user_id, $row['firstname'], $row['campaign_id']);
+			}
+		}
+	}
+
+	/**
+	 * @param   int[]  $userIds
+	 *
+	 * @return  array<int, array{firstname: string, campaign_id: int|null}>
+	 */
+	private function readUsersRows(array $userIds): array
+	{
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		$query->select('user_id, firstname, campaign_id')
+			->from($db->quoteName('#__emundus_users'))
+			->where($db->quoteName('user_id') . ' IN (' . implode(',', array_map('intval', $userIds)) . ')');
+		$db->setQuery($query);
+
+		$rows = [];
+		foreach ($db->loadAssocList('user_id') as $user_id => $row) {
+			$rows[(int) $user_id] = [
+				'firstname'   => $row['firstname'],
+				'campaign_id' => $row['campaign_id'] === null ? null : (int) $row['campaign_id'],
+			];
+		}
+
+		return $rows;
+	}
+
+	private function writeUsersRow(int $userId, string $firstname, ?int $campaignId): void
+	{
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		$query->update($db->quoteName('#__emundus_users'))
+			->set($db->quoteName('firstname') . ' = ' . $db->quote($firstname))
+			->set($db->quoteName('campaign_id') . ' = ' . ($campaignId === null ? 'NULL' : (int) $campaignId))
+			->where($db->quoteName('user_id') . ' = ' . (int) $userId);
+
+		$db->setQuery($query);
+		$db->execute();
+	}
+
 	// -------------------------------------------------------------------------
 	// sortElementIdsByDataFreshness
 	// -------------------------------------------------------------------------
@@ -311,6 +388,8 @@ class FabrikHelperTest extends UnitTestCase
 
 			$this->insertedDataRows = [];
 		}
+
+		$this->clearRepeatFixtures();
 
 		if (!empty($this->createdLogIds)) {
 			$db    = Factory::getContainer()->get('DatabaseDriver');
@@ -477,5 +556,230 @@ class FabrikHelperTest extends UnitTestCase
 			$sorted,
 			'A real element resolves its freshness from the data table and outranks an unknown id'
 		);
+	}
+
+	// -------------------------------------------------------------------------
+	// Repeat groups (getFabrikElementValues)
+	// -------------------------------------------------------------------------
+
+	private const REPEAT_FNUM = '2099010100000000000000999999';
+
+	private const REPEAT_PARENT_TABLE = 'jos_emundus_unit_repeat_parent';
+
+	private const REPEAT_TABLE = 'jos_emundus_unit_repeat_parent_1_repeat';
+
+	private const REPEAT_REF_TABLE = 'jos_emundus_unit_repeat_ref';
+
+	private const REPEAT_MULTI_TABLE = 'jos_emundus_unit_repeat_parent_1_repeat_repeat_multi';
+
+	private const REPEAT_MULTI_ELEMENT_ID = 999201;
+
+	/**
+	 * Parent row id of each evaluation inserted by createRepeatFixtures(), in insertion order.
+	 */
+	private array $repeatParentIds = [];
+
+	/**
+	 * Two rows of the same file in the parent table (like two evaluations), the first one holding
+	 * one repetition, the second one three: a filled one, an unanswered one, a filled one.
+	 */
+	private function createRepeatFixtures(): void
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$this->clearRepeatFixtures();
+
+		$db->setQuery('CREATE TABLE ' . $db->quoteName(self::REPEAT_PARENT_TABLE) . ' (id INT AUTO_INCREMENT PRIMARY KEY, fnum VARCHAR(28), step_id INT)')->execute();
+		$db->setQuery('CREATE TABLE ' . $db->quoteName(self::REPEAT_TABLE) . ' (id INT AUTO_INCREMENT PRIMARY KEY, parent_id INT, txt TEXT, yn TEXT, radio TEXT, cur TEXT, country TEXT, multi INT)')->execute();
+		$db->setQuery('CREATE TABLE ' . $db->quoteName(self::REPEAT_REF_TABLE) . ' (id INT PRIMARY KEY, label VARCHAR(255))')->execute();
+		$db->setQuery('CREATE TABLE ' . $db->quoteName(self::REPEAT_MULTI_TABLE) . ' (id INT AUTO_INCREMENT PRIMARY KEY, parent_id INT, multi INT)')->execute();
+
+		$db->setQuery('INSERT INTO ' . $db->quoteName(self::REPEAT_REF_TABLE) . " VALUES (1, 'Belgique'), (2, 'France')")->execute();
+
+		foreach ([1, 2] as $step) {
+			$db->setQuery('INSERT INTO ' . $db->quoteName(self::REPEAT_PARENT_TABLE) . ' (fnum, step_id) VALUES (' . $db->quote(self::REPEAT_FNUM) . ', ' . $step . ')')->execute();
+			$this->repeatParentIds[] = (int) $db->insertid();
+		}
+
+		$repetitions = [
+			[$this->repeatParentIds[0], "'seul'", "'1'", "'1'", "'100,00 € (EUR)'", "'2'", [2]],
+			[$this->repeatParentIds[1], "'a'", "'1'", "'1'", "'400,00 € (EUR)'", "'1'", [1, 2]],
+			[$this->repeatParentIds[1], 'NULL', 'NULL', "''", "''", "'0'", []],
+			[$this->repeatParentIds[1], "'c'", "'0'", "'2'", "'750,00 € (EUR)'", "'2'", [2]],
+		];
+		foreach ($repetitions as [$parentId, $txt, $yn, $radio, $cur, $country, $multi]) {
+			$db->setQuery('INSERT INTO ' . $db->quoteName(self::REPEAT_TABLE) . ' (parent_id, txt, yn, radio, cur, country) VALUES (' . implode(', ', [$parentId, $txt, $yn, $radio, $cur, $country]) . ')')->execute();
+			$repetitionId = (int) $db->insertid();
+
+			foreach ($multi as $choice) {
+				$db->setQuery('INSERT INTO ' . $db->quoteName(self::REPEAT_MULTI_TABLE) . ' (parent_id, multi) VALUES (' . $repetitionId . ', ' . $choice . ')')->execute();
+			}
+		}
+
+		$query = $db->createQuery()
+			->insert($db->quoteName('#__fabrik_joins'))
+			->columns($db->quoteName(['list_id', 'element_id', 'join_from_table', 'table_join', 'table_key', 'table_join_key', 'join_type', 'group_id', 'params']))
+			->values(implode(', ', [0, self::REPEAT_MULTI_ELEMENT_ID, $db->quote(self::REPEAT_TABLE), $db->quote(self::REPEAT_MULTI_TABLE), $db->quote('multi'), $db->quote('parent_id'), $db->quote('left'), 0, $db->quote('{"type":"repeatElement"}')]));
+		$db->setQuery($query)->execute();
+	}
+
+	private function clearRepeatFixtures(): void
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		foreach ([self::REPEAT_PARENT_TABLE, self::REPEAT_TABLE, self::REPEAT_REF_TABLE, self::REPEAT_MULTI_TABLE] as $table) {
+			$db->setQuery('DROP TABLE IF EXISTS ' . $db->quoteName($table))->execute();
+		}
+
+		$query = $db->createQuery()
+			->delete($db->quoteName('#__fabrik_joins'))
+			->where($db->quoteName('element_id') . ' = ' . self::REPEAT_MULTI_ELEMENT_ID);
+		$db->setQuery($query)->execute();
+
+		$this->repeatParentIds = [];
+	}
+
+	/**
+	 * The element array getFabrikElementValues() expects, for a column of the repeat fixture table.
+	 */
+	private function buildRepeatElement(string $name, string $plugin, array $params = [], string $tableJoin = self::REPEAT_TABLE, int $id = 999200): array
+	{
+		return [
+			'id'            => $id,
+			'name'          => $name,
+			'plugin'        => $plugin,
+			'params'        => json_encode((object) $params),
+			'group_params'  => json_encode(['repeat_group_button' => 1]),
+			'db_table_name' => self::REPEAT_PARENT_TABLE,
+			'table_join'    => $tableJoin,
+		];
+	}
+
+	/**
+	 * Value of the second parent row (three repetitions), formatted, joined with $separator.
+	 */
+	private function getRepeatValue(array $element, ?string $separator = null, array $translations = []): mixed
+	{
+		$values = $this->helper->getFabrikElementValue($element, self::REPEAT_FNUM, $this->repeatParentIds[1], ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $translations, $separator);
+
+		return $values[$element['id']][self::REPEAT_FNUM]['val'] ?? null;
+	}
+
+	/**
+	 * @covers EmundusHelperFabrik::getFabrikElementValues
+	 * @return void
+	 */
+	public function testGetFabrikElementValuesOnRepeatGroupKeepsAnEmptySlotForAnUnansweredRepetition(): void
+	{
+		$this->createRepeatFixtures();
+
+		$this->assertSame('a, , c', $this->getRepeatValue($this->buildRepeatElement('txt', 'field')), 'A NULL repetition should keep its slot instead of being dropped by GROUP_CONCAT');
+	}
+
+	/**
+	 * @covers EmundusHelperFabrik::getFabrikElementValues
+	 * @return void
+	 */
+	public function testGetFabrikElementValuesOnRepeatYesNoTransformsEachRepetitionWithTheMarkerSeparator(): void
+	{
+		$this->createRepeatFixtures();
+
+		$value = $this->getRepeatValue($this->buildRepeatElement('yn', 'yesno'), EmundusHelperFabrik::VALUE_SEPARATOR_MARKER, ['JYES' => 'Oui', 'JNO' => 'Non']);
+
+		$this->assertSame('Oui[SEPARATOR][SEPARATOR]Non', $value, 'Each repetition should be transformed on its own, and an unanswered one should not read as "Non"');
+	}
+
+	/**
+	 * @covers EmundusHelperFabrik::getFabrikElementValues
+	 * @return void
+	 */
+	public function testGetFabrikElementValuesOnRepeatRadioResolvesTheLabelOfEachRepetition(): void
+	{
+		$this->createRepeatFixtures();
+
+		$element = $this->buildRepeatElement('radio', 'radiobutton', ['sub_options' => ['sub_values' => ['1', '2'], 'sub_labels' => ['Forfait', 'Réel']]]);
+		$value   = $this->getRepeatValue($element, EmundusHelperFabrik::VALUE_SEPARATOR_MARKER);
+
+		$this->assertSame('Forfait[SEPARATOR][SEPARATOR]Réel', $value, 'Each repetition should get its own label, not the first label of the list');
+	}
+
+	/**
+	 * @covers EmundusHelperFabrik::getFabrikElementValues
+	 * @return void
+	 */
+	public function testGetFabrikElementValuesOnRepeatCurrencyDoesNotSplitInsideTheDecimalComma(): void
+	{
+		$this->createRepeatFixtures();
+
+		$value = $this->getRepeatValue($this->buildRepeatElement('cur', 'currency'));
+
+		$this->assertSame('400, , 750', $value, 'Each formatted amount should stay whole, "400,00 € (EUR)" must not be cut on its decimal comma');
+	}
+
+	/**
+	 * @covers EmundusHelperFabrik::getFabrikElementValues
+	 * @return void
+	 */
+	public function testGetFabrikElementValuesOnRepeatCurrencyReturnsEveryAmountWithTheMarkerSeparator(): void
+	{
+		$this->createRepeatFixtures();
+
+		$value = $this->getRepeatValue($this->buildRepeatElement('cur', 'currency'), EmundusHelperFabrik::VALUE_SEPARATOR_MARKER);
+
+		$this->assertSame('400[SEPARATOR][SEPARATOR]750', $value, 'Every amount should be returned, not only the first one');
+	}
+
+	/**
+	 * @covers EmundusHelperFabrik::getFabrikValueRepeat
+	 * @return void
+	 */
+	public function testGetFabrikElementValuesOnRepeatDatabaseJoinKeepsARepetitionWithoutMatch(): void
+	{
+		$this->createRepeatFixtures();
+
+		$element = $this->buildRepeatElement('country', 'databasejoin', [
+			'join_db_name'               => self::REPEAT_REF_TABLE,
+			'join_key_column'            => 'id',
+			'join_val_column'            => 'label',
+			'database_join_display_type' => 'dropdown',
+		]);
+
+		$this->assertSame('Belgique, , France', $this->getRepeatValue($element), 'A repetition whose value matches nothing in the joined table should keep its slot');
+	}
+
+	/**
+	 * The element is loaded with the join of its own choices as table_join (FabrikRepository picks
+	 * one of its two joins), the repeat table has to come from #__fabrik_joins.
+	 *
+	 * @covers EmundusHelperFabrik::getFabrikValueRepeat
+	 * @return void
+	 */
+	public function testGetFabrikElementValuesOnRepeatMultiDatabaseJoinGroupsTheChoicesOfEachRepetition(): void
+	{
+		$this->createRepeatFixtures();
+
+		$element = $this->buildRepeatElement('multi', 'databasejoin', [
+			'join_db_name'               => self::REPEAT_REF_TABLE,
+			'join_key_column'            => 'id',
+			'join_val_column'            => 'label',
+			'database_join_display_type' => 'multilist',
+		], self::REPEAT_MULTI_TABLE, self::REPEAT_MULTI_ELEMENT_ID);
+
+		$value = $this->getRepeatValue($element, EmundusHelperFabrik::VALUE_SEPARATOR_MARKER);
+
+		$this->assertSame('Belgique, France[SEPARATOR][SEPARATOR]France', $value, 'The choices of a repetition should stay together, and a repetition without choice should keep its slot');
+	}
+
+	/**
+	 * @covers EmundusHelperFabrik::getFabrikValueRepeat
+	 * @return void
+	 */
+	public function testGetFabrikElementValuesOnRepeatGroupOnlyReturnsTheRepetitionsOfTheRequestedParentRow(): void
+	{
+		$this->createRepeatFixtures();
+
+		$element = $this->buildRepeatElement('txt', 'field');
+		$values  = $this->helper->getFabrikElementValue($element, self::REPEAT_FNUM, $this->repeatParentIds[0]);
+
+		$this->assertSame('seul', $values[$element['id']][self::REPEAT_FNUM]['val'], 'Only the repetitions of the requested row (evaluation) should be returned, not those of the other rows of the file');
 	}
 }

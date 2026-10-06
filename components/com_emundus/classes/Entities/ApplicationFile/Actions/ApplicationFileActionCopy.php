@@ -19,6 +19,14 @@ class ApplicationFileActionCopy extends ApplicationFileAction
 	}
 
 	/**
+	 * Only the applicant who owns the file can copy it, not collaborators.
+	 */
+	public function isAvailableForFile(ApplicationFileEntity $applicationFileEntity, ?User $currentUser = null): bool
+	{
+		return $this->isFileOwner($applicationFileEntity, $currentUser);
+	}
+
+	/**
 	 * @param   ApplicationFileEntity  $applicationFileEntity
 	 * @param   array                  $parameters
 	 * @param   User|null              $currentUser

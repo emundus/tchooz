@@ -19,6 +19,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Entities\Language\LanguageEntity;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\Language\LanguageRepository;
 use Tchooz\Services\Language\DbLanguage;
@@ -243,6 +244,8 @@ class EmundusControllerTranslations extends BaseController
 
 			foreach ($results as $result)
 			{
+				assert($result instanceof LanguageEntity);
+
 				if (!empty($translations[$result->getReferenceId()]) && in_array($result->getTag(), array_keys($translations[$result->getReferenceId()])))
 				{
 					if ($result->getLangCode() == $default_lang)
@@ -296,7 +299,7 @@ class EmundusControllerTranslations extends BaseController
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
 		}
 		$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
-		$override      = $htmlSanitizer->sanitize($override);
+		$override      = $htmlSanitizer->sanitizeAuto($override);
 
 		$result = LanguageFactory::translate($tag, [$lang_to => $override], $reference_table, $reference_id);
 
@@ -326,7 +329,7 @@ class EmundusControllerTranslations extends BaseController
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
 		}
 		$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
-		$override      = $htmlSanitizer->sanitize($override);
+		$override      = $htmlSanitizer->sanitizeAuto($override);
 
 		$result = LanguageFactory::translate($tag, [$lang_to => $override], $reference_table, $reference_id, $reference_field);
 

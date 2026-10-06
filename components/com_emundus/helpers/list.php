@@ -19,6 +19,7 @@ jimport('joomla.application.component.helper');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
+use Tchooz\Traits\TraitAutomatedTask;
 
 /**
  * Content Component Query Helper
@@ -30,6 +31,8 @@ use Joomla\CMS\Language\Text;
  */
 class EmundusHelperList
 {
+	use TraitAutomatedTask;
+
 
 	function aggregation($array1, $array2, $array3 = array(), $array4 = array())
 	{
@@ -311,7 +314,7 @@ class EmundusHelperList
 			}
 		}
 
-		if (!empty($infos['campaign_id']) && EmundusHelperAccess::asPartnerAccessLevel($current_user_id) && in_array(2, $step_types)) {
+		if (!empty($infos['campaign_id']) && in_array(2, $step_types)) {
 			require_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
 			$m_campaign = new EmundusModelCampaign();
 			$evaluation_steps = $m_campaign->getAllCampaignWorkflows($infos['campaign_id'], [2]);
@@ -346,8 +349,10 @@ class EmundusHelperList
 							->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
 							->andWhere($db->quoteName('step_id') . ' = ' . $evaluation_step->id);
 
-						if (!EmundusHelperAccess::asAccessAction($evaluation_step->action_id, 'r', $current_user_id, $fnum)) {
-							if(!empty($evaluator_column)) {
+						// TODO: pass more parameters to remove access control here, it should be higher.
+						// For now, authorize automated task to bypass this
+						if (!EmundusHelperAccess::asAccessAction($evaluation_step->action_id, 'r', $current_user_id, $fnum) && $current_user_id != $this->getAutomatedTaskUserId()) {
+							if (!empty($evaluator_column)) {
 								$query->andWhere($db->quoteName('evaluator') . ' = ' . $current_user_id);
 							}
 							else

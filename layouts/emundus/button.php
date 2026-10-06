@@ -55,6 +55,7 @@ $extraAttr = is_array($data['attributes'] ?? null) ? $data['attributes'] : [];
 $href   = isset($data['href']) ? (string) $data['href'] : '';
 $target = isset($data['target']) ? (string) $data['target'] : '';
 $rel    = isset($data['rel']) ? (string) $data['rel'] : '';
+$role   = isset($data['role']) ? (string) $data['role'] : '';
 $isLink = $href !== '';
 
 if ($isLink && $target === '_blank' && $rel === '')
@@ -72,12 +73,15 @@ $classes = trim(
 $tag = $isLink ? 'a' : 'button';
 ?>
 <<?php echo $tag; ?>
+    <?php if (!empty($role)): ?>
+        role="<?php echo $role; ?>"
+    <?php endif; ?>
 	class="<?php echo htmlspecialchars($classes, ENT_QUOTES, 'UTF-8'); ?>"
 	<?php if ($isLink): ?>
 		<?php if (!$disabled): ?>href="<?php echo htmlspecialchars($href, ENT_QUOTES, 'UTF-8'); ?>"<?php endif; ?>
 		<?php if ($target !== ''): ?>target="<?php echo htmlspecialchars($target, ENT_QUOTES, 'UTF-8'); ?>"<?php endif; ?>
 		<?php if ($rel !== ''): ?>rel="<?php echo htmlspecialchars($rel, ENT_QUOTES, 'UTF-8'); ?>"<?php endif; ?>
-		<?php if ($disabled): ?>aria-disabled="true" tabindex="-1" role="link"<?php endif; ?>
+		<?php if ($disabled): ?>aria-disabled="true" tabindex="-1"<?php endif; ?>
 	<?php else: ?>
 		type="<?php echo $type->value; ?>"
 		<?php if ($disabled): ?>disabled<?php endif; ?>

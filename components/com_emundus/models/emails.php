@@ -1202,9 +1202,9 @@ class EmundusModelEmails extends JModelList
 				else {
 					if ($isDate) {
 						if($elt['plugin'] == 'jdate') {
-							$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->jdate_form_format);
+							$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->jdate_form_format, 0, false, $params->jdate_store_as_local);
 						} else {
-							$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+							$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format, 0, false, $params->date_store_as_local);
 						}
 					}
 					else {
@@ -1831,6 +1831,7 @@ class EmundusModelEmails extends JModelList
 				];
 				$tags      = $this->setTags($example_user_id, $post, $example_fnum);
 				$mail_body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
+				$mail_subject = preg_replace($tags['patterns'], $tags['replacements'], $mail_subject);
 
 				// Tags from Fabrik ID
 				$element_ids = $this->getFabrikElementIDs($mail_body);
@@ -3580,14 +3581,14 @@ class EmundusModelEmails extends JModelList
 	 * @param   int|string   $email
 	 * @param   array|null   $post
 	 * @param   int|null     $user_id
-	 * @param   array        $attachments
+	 * @param   array|null   $attachments
 	 * @param   string|null  $fnum
 	 * @param   int|bool     $log_email
-	 * @param   array        $emails_cc
+	 * @param   array|null   $emails_cc
 	 * @param   int|null     $user_id_from
 	 *
 	 * @return bool
-	 * @throws Exception
+	 * @throws \PHPMailer\PHPMailer\Exception
 	 */
 	public function sendEmailNoFnum(string $email_address, int|string $email, ?array $post = null, ?int $user_id = null, ?array $attachments = [], ?string $fnum = null, int|bool $log_email = true, ?array $emails_cc = [], ?int $user_id_from = null)
 	{
@@ -3650,8 +3651,34 @@ class EmundusModelEmails extends JModelList
 					'LOGO' => EmundusHelperEmails::getLogo(),
 					'BUTTON_TEXT' => $button_text,
 				];
-				if(!empty($fnum)) {
+
+				if (!empty($fnum)) {
 					$default_post['FNUM'] = $fnum;
+
+					if (!empty($template->candidate_attachments)) {
+						if (!class_exists('EmundusHelperFiles'))
+						{
+							require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+						}
+
+						$applicant_id = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
+						if (!is_array($template->candidate_attachments))
+						{
+							$template->candidate_attachments = explode(',', $template->candidate_attachments);
+						}
+
+						foreach ($template->candidate_attachments as $candidate_file) {
+							$filename = $m_messages->get_upload($fnum, $candidate_file);
+
+							if ($filename) {
+								// Build the path to the file we are searching for on the disk.
+								$path = EMUNDUS_PATH_ABS.$applicant_id.DS.$filename;
+								if (file_exists($path)) {
+									$toAttach[] = $path;
+								}
+							}
+						}
+					}
 				}
 
 				if (!empty($post)) {
@@ -3792,7 +3819,7 @@ class EmundusModelEmails extends JModelList
 			}
 
 			if (empty($user)) {
-				$user   = JFactory::getUser();
+				$user   = Factory::getApplication()->getIdentity();
 			}
 
 			require_once (JPATH_ROOT.'/components/com_emundus/helpers/emails.php');

@@ -18,7 +18,11 @@ use Tchooz\Services\ApplicationFile\ApplicationFileActionsRegistry;
 
 defined('_JEXEC') or die;
 
-Text::script('COM_EMUNDUS_APPLICATION_SHARE_CONFIRM_DELETE');
+// The collaborators badge opens the modal even when the actions menu is not rendered
+if (!empty($collaborate))
+{
+	LayoutHelper::render('emundus.application.collaborate');
+}
 
 $lang = Factory::$language;
 $lang->load('com_emundus', JPATH_SITE . '/components/com_emundus');
@@ -249,7 +253,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
             </span>
 		<?php endif; ?>
 		<?php if (!empty(Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'))) : ?>
-            <p>
+            <div>
 				<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'); ?>
 				<?php
 
@@ -273,11 +277,11 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 							echo ', ' . $actionLabel;
 						}
 					}
-					echo ').'; ?>
+					echo ').</p>'; ?>
 				<?php else : ?>
-					<?php echo '. '; ?>
+					<?php echo '.</p>'; ?>
 				<?php endif; ?>
-            </p>
+            </div>
 		<?php endif; ?>
 
 		<?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
@@ -291,12 +295,18 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 
 <?php if ($show_tabs == 1 && sizeof($applications) > 0) : ?>
     <div class="em-mt-12 em-flex-row em-border-bottom-neutral-400 tw-gap-2"
-         style="height: 50px; overflow:hidden; overflow-x: auto;">
+         style="height: 50px; overflow:hidden; overflow-x: auto;"
+         role="tablist" aria-label="<?php echo Text::_('MOD_EM_APPLICATION_TABS_LABEL') ?>">
 		<?php foreach ($tabs as $tab) :
             $tab['name'] = $sanitizer->sanitize($tab['name']);
+            $is_selected = ($current_tab == $tab['id']);
             ?>
             <div id="tab_link_<?php echo $tab['id'] ?>" onclick="updateTab(<?php echo $tab['id'] ?>)"
-                 class="em-flex-row em-light-tabs em-pointer <?php if ($current_tab == $tab['id']) : ?>em-light-selected-tab<?php endif; ?>">
+                 onkeydown="onTabKeydown(event, <?php echo $tab['id'] ?>)"
+                 role="tab" tabindex="<?php echo $is_selected ? '0' : '-1' ?>"
+                 aria-selected="<?php echo $is_selected ? 'true' : 'false' ?>"
+                 aria-controls="group_application_tab_<?php echo $tab['id'] ?>"
+                 class="em-flex-row em-light-tabs em-pointer <?php if ($is_selected) : ?>em-light-selected-tab<?php endif; ?>">
                 <p class="em-font-size-14"
                    style="white-space: nowrap"><?php echo Text::_($tab['name']) ?></p>
 				<?php if ($tab['id'] != 0) : ?>
@@ -304,13 +314,15 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 				<?php endif; ?>
             </div>
 		<?php endforeach; ?>
-        <div id="tab_adding_link" onclick="createTab()"
+        <div id="tab_adding_link" onclick="createTab()" onkeydown="onActionKeydown(event, createTab)"
+             role="button" tabindex="0"
              class="em-light-tabs em-flex-row em-pointer <?php if (count($tabs) > 1) : ?>em-display-none<?php endif; ?>">
             <a class="em-flex-row em-no-hover-underline em-font-size-14 em-pointer" style="white-space: nowrap"><span
-                    class="material-symbols-outlined em-font-size-14 em-mr-4">add</span><?php echo Text::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>
+                    class="material-symbols-outlined em-font-size-14 em-mr-4" aria-hidden="true">add</span><?php echo Text::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>
             </a>
         </div>
-        <div id="tab_manage_links" onclick="manageTabs()"
+        <div id="tab_manage_links" onclick="manageTabs()" onkeydown="onActionKeydown(event, manageTabs)"
+             role="button" tabindex="0"
              class="em-light-tabs em-flex-row em-pointer <?php if (count($tabs) == 1) : ?>em-display-none<?php endif; ?>">
             <a class="em-flex-row em-no-hover-underline em-font-size-14 em-pointer"
                style="white-space: nowrap"><?php echo Text::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS') ?></a>
@@ -373,19 +385,24 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                 </div>
 			<?php endif; ?>
 			<?php if (sizeof($available_views) > 1) : ?>
-                <div class="em-flex-row" style="gap: 8px">
+                <div class="em-flex-row" style="gap: 8px" role="group"
+                     aria-label="<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEWS_AVAILABLE') ?>">
 					<?php if (in_array('grid', $available_views)) : ?>
                         <div id="button_switch_card"
                              class="em-pointer mod_emundus_application___buttons_switch_view mod_emundus_application___buttons_enable"
-                             onclick="updateView('card')">
-                            <span
+                             onclick="updateView('card')" onkeydown="onActionKeydown(event, () => updateView('card'))"
+                             role="button" tabindex="0" aria-pressed="true"
+                             aria-label="<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEWS_GRID') ?>">
+                            <span aria-hidden="true"
                                 class="material-symbols-outlined mod_emundus_application___buttons_switch_view_enable">grid_view</span>
                         </div>
 					<?php endif; ?>
 					<?php if (in_array('list', $available_views)) : ?>
                         <div id="button_switch_list" class="em-pointer mod_emundus_application___buttons_switch_view"
-                             onclick="updateView('list')">
-                            <span
+                             onclick="updateView('list')" onkeydown="onActionKeydown(event, () => updateView('list'))"
+                             role="button" tabindex="0" aria-pressed="false"
+                             aria-label="<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEWS_LIST') ?>">
+                            <span aria-hidden="true"
                                 class="material-symbols-outlined mod_emundus_application___buttons_switch_view_disabled">menu</span>
                         </div>
 					<?php endif; ?>
@@ -478,6 +495,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 			<?php foreach ($group as $g_key => $sub_group) : ?>
 				<?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
+                         role="tabpanel" aria-labelledby="tab_link_<?php echo $key ?>" tabindex="0"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
 						<?php if (isset($sub_group['label'])) : ?>
                             <h3 class="em-ml-8"><?php echo $sub_group['label'] ?></h3>
@@ -512,6 +530,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 									<?php
 									if ($application->display_app)
 									{
+										$show_collaborators_badge = !empty($collaborate) && !empty($application->collaborators) && ($application->applicant_id === $user->id || !empty($application->show_shared_users));
 										if ($application->published == '1' || $show_remove_files == 1 && $application->published == '-1' || $show_archive_files == 1 && $application->published == '0') : ?>
                                             <div class="hover-and-tile-container"
                                                  id="application_content<?php echo $application->fnum ?>">
@@ -579,7 +598,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                                                         id="application_status_<?php echo $application->fnum ?>">
                                                                         <span
                                                                             class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
-																		<?php if ($application->applicant_id !== $user->id) : ?>
+																		<?php if ($application->applicant_id !== $user->id && !$show_collaborators_badge) : ?>
                                                                             <span
                                                                                 class="material-symbols-outlined tw-ml-3">people</span>
 																		<?php endif; ?>
@@ -590,7 +609,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                                                         id="application_status_<?php echo $application->fnum ?>">
                                                                         <span
                                                                             class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
-																		<?php if ($application->applicant_id !== $user->id) : ?>
+																		<?php if ($application->applicant_id !== $user->id && !$show_collaborators_badge) : ?>
                                                                             <span
                                                                                 class="material-symbols-outlined tw-ml-3">people</span>
 																		<?php endif; ?>
@@ -634,10 +653,10 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 																	}
 																} ?>
 
-																<?php if ($application->show_shared_users && $application->applicant_id === $user->id): ?>
+																<?php if ($show_collaborators_badge): ?>
                                                                     <div id="actions_button_collaborate"
                                                                          class="tw-flex tw-flex-row collaborators-icon-wrapper tw-bg-main-500"
-                                                                         onclick="shareApplication('<?php echo $application->fnum ?>','<?php echo $application->application_id ?>')">
+                                                                         onclick="event.stopPropagation(); shareApplication('<?php echo $application->fnum ?>','<?php echo $application->application_id ?>')">
                                                                         <span id="actions_button_collaborate_icon"
                                                                               class="material-symbols-outlined tw-text-neutral-300">group</span>
                                                                         <span id="actions_button_collaborate_nb"
@@ -647,7 +666,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                                             </div>
 															<?php if ($mod_emundus_applications_show_programme != 1) : ?>
                                                                 <div class="mod_emundus_applications__container"
-                                                                     id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>">
+                                                                     id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>" tabindex="0" role="button">
                                                                     <?php
                                                                     $data = [
                                                                         'fnum' => $application->fnum,
@@ -703,10 +722,14 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                                             {
                                                                 foreach ($choices as $index => $choice)
                                                                 {
+                                                                    $text = Text::sprintf('APPLICATION_CHOICE_NO', ($index + 1)) . ' : ' . $choice->getCampaign()->getLabel();
+                                                                    if($show_application_choices_state == 1) {
+                                                                        $text .= ' - ' . $choice->getState()->getLabel();
+                                                                    }
                                                                     ?>
                                                                     <div class="em-mb-4">
                                                                         <span
-                                                                            class="em-applicant-default-font tw-text-neutral-800"><?php echo Text::sprintf('APPLICATION_CHOICE_NO',($index+1)) . ' : ' . $choice->getCampaign()->getLabel(); ?></span>
+                                                                            class="em-applicant-default-font tw-text-neutral-800"><?php echo $text; ?></span>
                                                                     </div>
                                                                     <?php
                                                                 }
@@ -891,6 +914,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 			<?php foreach ($group as $g_key => $sub_group) : ?>
 				<?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
+                         role="tabpanel" aria-labelledby="tab_link_<?php echo $key ?>" tabindex="0"
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
 
 						<?php if (isset($sub_group['label'])) : ?>
@@ -942,6 +966,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 									<?php
 									if ($application->display_app)
 									{
+										$show_collaborators_badge = !empty($collaborate) && !empty($application->collaborators) && ($application->applicant_id === $user->id || !empty($application->show_shared_users));
 										if ($application->published == '1' || $show_remove_files == 1 && $application->published == '-1' || $show_archive_files == 1 && $application->published == '0') : ?>
                                             <tr class="em-pointer"
                                                 id="application_content<?php echo $application->fnum ?>"
@@ -1317,11 +1342,13 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
             document.querySelector('#applications_list_view').style.display = 'block'
             if (document.querySelector('#button_switch_card')) {
                 document.querySelector('#button_switch_card').classList.remove('mod_emundus_application___buttons_enable')
+                document.querySelector('#button_switch_card').setAttribute('aria-pressed', 'false')
                 document.querySelector('#button_switch_card span').classList.remove('mod_emundus_application___buttons_switch_view_enable')
                 document.querySelector('#button_switch_card span').classList.add('mod_emundus_application___buttons_switch_view_disabled')
             }
             if (document.querySelector('#button_switch_list')) {
                 document.querySelector('#button_switch_list').classList.add('mod_emundus_application___buttons_enable')
+                document.querySelector('#button_switch_list').setAttribute('aria-pressed', 'true')
                 document.querySelector('#button_switch_list span').classList.remove('mod_emundus_application___buttons_switch_view_disabled')
                 document.querySelector('#button_switch_list span').classList.add('mod_emundus_application___buttons_switch_view_enable')
             }
@@ -1330,11 +1357,13 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
             document.querySelector('#applications_card_view').style.display = 'block'
             if (document.querySelector('#button_switch_list')) {
                 document.querySelector('#button_switch_list').classList.remove('mod_emundus_application___buttons_enable')
+                document.querySelector('#button_switch_list').setAttribute('aria-pressed', 'false')
                 document.querySelector('#button_switch_list span').classList.remove('mod_emundus_application___buttons_switch_view_enable')
                 document.querySelector('#button_switch_list span').classList.add('mod_emundus_application___buttons_switch_view_disabled')
             }
             if (document.querySelector('#button_switch_card')) {
                 document.querySelector('#button_switch_card').classList.add('mod_emundus_application___buttons_enable')
+                document.querySelector('#button_switch_card').setAttribute('aria-pressed', 'true')
                 document.querySelector('#button_switch_card span').classList.remove('mod_emundus_application___buttons_switch_view_disabled')
                 document.querySelector('#button_switch_card span').classList.add('mod_emundus_application___buttons_switch_view_enable')
             }
@@ -1351,11 +1380,10 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 
         sessionStorage.setItem('mod_emundus_applications___selected_tab', tab)
         document.querySelectorAll('div[id*="tab_link_"]').forEach((elt) => {
-            if (elt.id !== 'tab_link_' + tab) {
-                elt.classList.remove('em-light-selected-tab')
-            } else {
-                elt.classList.add('em-light-selected-tab')
-            }
+            const selected = elt.id === 'tab_link_' + tab
+            elt.classList.toggle('em-light-selected-tab', selected)
+            elt.setAttribute('aria-selected', selected ? 'true' : 'false')
+            elt.setAttribute('tabindex', selected ? '0' : '-1')
         })
 
         document.querySelectorAll('div[id*="group_application_tab_"]').forEach((elt) => {
@@ -1372,6 +1400,38 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
             })
 
             document.getElementById('applications_header_filter_sort').style.display = 'none'
+        }
+    }
+
+    // Keyboard support for the tablist (WAI-ARIA / RGAA): Enter/Space activates, arrows move focus.
+    function onTabKeydown(event, tab) {
+        if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+            event.preventDefault()
+            updateTab(tab)
+            return
+        }
+
+        if (['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) {
+            event.preventDefault()
+            const tabsList = Array.from(document.querySelectorAll('div[id^="tab_link_"][role="tab"]'))
+            const current = document.getElementById('tab_link_' + tab)
+            const currentIndex = tabsList.indexOf(current)
+            let nextIndex = currentIndex
+
+            if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabsList.length
+            else if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabsList.length) % tabsList.length
+            else if (event.key === 'Home') nextIndex = 0
+            else if (event.key === 'End') nextIndex = tabsList.length - 1
+
+            tabsList[nextIndex].focus()
+        }
+    }
+
+    // Keyboard support for action buttons (add / manage tabs) exposed as role="button".
+    function onActionKeydown(event, callback) {
+        if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+            event.preventDefault()
+            callback()
         }
     }
 
@@ -1653,178 +1713,6 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
     }
 
     /** END **/
-
-    async function shareApplication(fnum, ccid) {
-        document.querySelector('.em-page-loader').style.display = 'block'
-
-        fetch('index.php?option=com_emundus&view=application&layout=collaborate&format=raw&fnum=' + fnum + '&ccid=' + ccid, {
-            method: 'get'
-        }).then((response) => {
-            if (response.ok) {
-                return response.text()
-            }
-        }).then((res) => {
-            document.querySelector('.em-page-loader').style.display = 'none'
-
-            let actions = document.querySelectorAll('div[id^=\'actions_block_\']')
-
-            if (typeof actions !== 'undefined') {
-                actions.forEach((action) => {
-                    if (action.style.display === 'flex') {
-                        action.style.display = 'none'
-                    }
-                })
-            }
-
-            Swal.fire({
-                title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_TITLE'); ?>",
-                html: res,
-                showCancelButton: true,
-                reverseButtons: true,
-                confirmButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_SEND');?>",
-                cancelButtonText: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_BACK');?>",
-                customClass: {
-                    title: 'em-swal-title',
-                    cancelButton: 'em-swal-cancel-button',
-                    confirmButton: 'em-swal-confirm-button',
-                    popup: '!w-3/6',
-                    validationMessage: 'em-swal-validation-message'
-                },
-                didOpen: (toast) => {
-                    var tag = document.createElement('script')
-                    tag.src = 'media/com_emundus/js/collaborate.js'
-                    document.getElementsByTagName('head')[0].appendChild(tag)
-
-                    jQuery('#collab_emails').selectize({
-                        plugins: ['remove_button'],
-                        delimiter: ',',
-                        persist: false,
-                        createOnBlur: true,
-                        create: true,
-                        preload: true,
-                        maxItems: null,
-                        placeholder: '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ADD_EMAILPLACEHOLDER'); ?>',
-                        render: {
-                            create: function(input) {
-                                return {
-                                    value: input,
-                                    text: input
-                                }
-                            },
-                            item: function(data, escape) {
-                                const val = data.value
-                                return '<div>' +
-                                    '<span class="title">' +
-                                    '<span class="name">' + escape(val.substring(val.indexOf(':') + 1)) + '</span>' +
-                                    '</span>' +
-                                    '</div>'
-                            },
-                            option_create: function(data, escape) {
-                                const addString = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ADD_EMAIL'); ?>'
-                                return '<div class="create">' + addString + ' <strong>' + escape(data.input) + '</strong>&hellip;</div>'
-                            }
-                        },
-                        onItemAdd: function(value, $item) {
-                            if (document.querySelector('#collab_error')) {
-                                document.querySelector('#collab_error').remove()
-                            }
-
-                            var email = value.substring(value.indexOf(':') + 1)
-                            email = email.trim()
-
-                            const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/
-                            if (!regex.test(email) || '<?php echo $user->email?>' === email) {
-                                this.removeItem(value)
-                                let p = document.createElement('p')
-                                p.classList.add('tw-text-red-500')
-                                p.id = 'collab_error'
-                                if ('<?php echo $user->email?>' === email) {
-                                    p.innerText = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_NOT_YOUR_OWN'); ?>'
-                                }
-                                if (!regex.test(email)) {
-                                    p.innerText = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_INVALID_EMAIL'); ?>'
-                                }
-                                document.querySelector('#collab_emails_block').append(p)
-                            }
-                        }
-                    })
-                },
-                preConfirm: () => {
-                    if (document.querySelector('#collab_emails').value === '') {
-                        Swal.showValidationMessage('<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_FILL_EMAILS'); ?>')
-                    }
-                }
-            }).then((result) => {
-                if (result.value) {
-                    let formData = new FormData()
-
-                    formData.append('fnum', fnum)
-                    formData.append('ccid', ccid)
-                    formData.append('emails', document.querySelector('#collab_emails').value)
-
-                    Swal.fire({
-                        title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_SUCCESS'); ?>",
-                        text: res.msg,
-                        iconHtml: '<img class="em-sending-email-img tw-w-1/3 tw-max-w-none" src="/media/com_emundus/images/tchoozy/complex-illustrations/sending-message.svg"/>',
-                        showCancelButton: false,
-                        showConfirmButton: false,
-                        customClass: {
-                            title: 'em-swal-title !tw-text-center',
-                            cancelButton: 'em-swal-cancel-button',
-                            confirmButton: 'em-swal-confirm-button',
-                            icon: 'em-swal-icon'
-                        },
-                        timer: 3000
-                    })
-
-                    fetch('index.php?option=com_emundus&controller=application&task=sharefilewith', {
-                        body: formData,
-                        method: 'post'
-                    }).then((response) => {
-                        if (response.ok) {
-                            return response.json()
-                        } else {
-                            return response.text().then((text) => {
-                                throw new Error(text)
-                            })
-                        }
-                    }).then((res) => {
-                        if (res.status != true) {
-                            throw new Error(res.msg)
-                        } else {
-                            if (res.data.failed_emails.length > 0) {
-                                let failed_emails = res.data.failed_emails.join(', ')
-                                throw new Error("<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_EMAILS'); ?> " + failed_emails)
-                            } else {
-                                Swal.fire({
-                                    title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_FINISH_SUCCESS'); ?>",
-                                    text: res.msg,
-                                    iconHtml: '<img class="em-sending-email-img tw-w-1/3 tw-max-w-none" src="/media/com_emundus/images/tchoozy/complex-illustrations/message-sent.svg"/>',
-                                    showCancelButton: false,
-                                    showConfirmButton: false,
-                                    customClass: {
-                                        title: 'em-swal-title !tw-text-center',
-                                        cancelButton: 'em-swal-cancel-button',
-                                        confirmButton: 'em-swal-confirm-button',
-                                        icon: 'em-swal-icon'
-                                    },
-                                    timer: 3000
-                                })
-                            }
-                        }
-                    }).catch((error) => {
-                        Swal.fire({
-                            title: 'Une erreur est survenue',
-                            text: error,
-                            type: 'error',
-                            reverseButtons: true,
-                            confirmButtonText: "<?php echo Text::_('JYES');?>"
-                        })
-                    })
-                }
-            })
-        })
-    }
 
     function displaySort() {
         let sort = document.getElementById('sort_block')

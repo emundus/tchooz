@@ -150,6 +150,14 @@ export default {
 			this.openCampaignModal = true;
 		},
 
+		closeCampaignList() {
+			this.openCampaignModal = false;
+			this.search = '';
+			this.filters = [];
+
+			this.getAvailableChoices(this.fnum || '');
+		},
+
 		removeChoice(id) {
 			this.alertConfirm(
 				'COM_EMUNDUS_APPLICATION_CHOICES_REMOVE_CHOICE_CONFIRM_TITLE',
@@ -215,6 +223,12 @@ export default {
 			).then((result) => {
 				if (result.isConfirmed) {
 					applicationService.sendChoicesStep().then((response) => {
+						if (!response.status) {
+							this.loading = false;
+							this.alertError('COM_EMUNDUS_FORM_BUILDER_ERROR', response.error || response.message);
+							return;
+						}
+
 						this.alertSuccess(
 							'COM_EMUNDUS_APPLICATION_CHOICES_SEND_SUCCESS_TITLE',
 							'COM_EMUNDUS_APPLICATION_CHOICES_SEND_SUCCESS_TEXT',
@@ -241,6 +255,12 @@ export default {
 				if (result.isConfirmed) {
 					this.loading = true;
 					applicationService.confirmChoice(choice.id, fnum).then((response) => {
+						if (!response.status) {
+							this.loading = false;
+							this.alertError('COM_EMUNDUS_FORM_BUILDER_ERROR', response.error || response.message);
+							return;
+						}
+
 						this.alertSuccess(
 							'COM_EMUNDUS_APPLICATION_CHOICES_CONFIRM_CHOICE_SUCCESS_TITLE',
 							'COM_EMUNDUS_APPLICATION_CHOICES_CONFIRM_CHOICE_SUCCESS_TEXT',
@@ -505,7 +525,7 @@ export default {
 					<h2>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_SELECT_CAMPAIGN') }}</h2>
 					<p>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_SELECT_CAMPAIGN_DESC') }}</p>
 				</div>
-				<button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="openCampaignModal = false">
+				<button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="closeCampaignList">
 					<span class="material-symbols-outlined">close</span>
 				</button>
 			</div>
@@ -781,7 +801,7 @@ export default {
 						<Button
 							variant="cancel"
 							width="fit"
-							v-if="canBeConfirm && choice.state.value === 1 && !$props.fnum"
+							v-if="choice.state.value === 1 && !$props.fnum"
 							@click="refuseChoice(choice)"
 						>
 							{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_REFUSE') }}

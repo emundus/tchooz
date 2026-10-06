@@ -1190,7 +1190,7 @@ class FabrikRepository
 		// Update translation files
 		$labelKey = 'ELEMENT_' . $element->group_id . '_' . $element->id;
 		$plugin   = ElementPluginEnum::tryFrom($element->plugin);
-		if ($plugin->isChoicesField() && $params->sub_options)
+		if ($plugin?->isChoicesField() && $params->sub_options)
 		{
 			$sub_labels = [];
 			foreach ($params->sub_options->sub_labels as $index => $sub_label)

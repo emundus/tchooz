@@ -208,7 +208,8 @@ class TaskEntity
 
 	public function execute(): void
 	{
-		$this->setAttempts($this->getAttempts() + 1);
+		$previousAttempts = $this->getAttempts();
+		$this->setAttempts($previousAttempts + 1);
 
 		try
 		{
@@ -280,6 +281,8 @@ class TaskEntity
 			}
 			elseif ($actionResult === ActionExecutionStatusEnum::PENDING)
 			{
+				// A resumable action yielding between iterations is not a failed attempt
+				$this->setAttempts($previousAttempts);
 				$this->setStatus(TaskStatusEnum::PENDING);
 			}
 			else

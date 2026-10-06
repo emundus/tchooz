@@ -14,10 +14,46 @@ class ActionRepository
 
 	private TargetRepository $targetRepository;
 
+	private static array $automationSummaries = [];
+
 	public function __construct(?DatabaseDriver $db = null)
 	{
 		$this->db = $db ?? Factory::getContainer()->get('DatabaseDriver');
 		$this->targetRepository = new TargetRepository($this->db);
+	}
+
+	/**
+	 * The automation an action row belongs to, as id and name only.
+	 *
+	 * Used to stamp history entries with their origin without hydrating the whole automation
+	 * (which would load every action, target and condition just to read a name).
+	 *
+	 * @return array{id: int, name: string}|array{}
+	 */
+	public function getAutomationSummary(int $actionId): array
+	{
+		if (empty($actionId) || $actionId <= 0)
+		{
+			return [];
+		}
+
+		if (array_key_exists($actionId, self::$automationSummaries))
+		{
+			return self::$automationSummaries[$actionId];
+		}
+
+		$query = $this->db->getQuery(true)
+			->select([$this->db->quoteName('au.id'), $this->db->quoteName('au.name')])
+			->from($this->db->quoteName('#__emundus_action', 'a'))
+			->leftJoin($this->db->quoteName('#__emundus_automation', 'au') . ' ON ' . $this->db->quoteName('au.id') . ' = ' . $this->db->quoteName('a.automation_id'))
+			->where($this->db->quoteName('a.id') . ' = ' . $actionId);
+
+		$this->db->setQuery($query);
+		$result = $this->db->loadObject();
+
+		self::$automationSummaries[$actionId] = !empty($result->id) ? ['id' => (int) $result->id, 'name' => $result->name ?? ''] : [];
+
+		return self::$automationSummaries[$actionId];
 	}
 
 	/**
@@ -56,6 +92,48 @@ class ActionRepository
 		}
 
 		return $action;
+	}
+
+	/**
+	 * Automations that would silently change behaviour if the referenced item disappeared: the choices of
+	 * a parameter are rebuilt on load, and ActionEntity nulls a value that is no longer among them.
+	 *
+	 * The rows are filtered in PHP because params is a JSON column holding the value either as a string
+	 * or as a number depending on where the action was saved from.
+	 *
+	 * @return string[] Names of the automations whose $actionName action carries $value in $parameter.
+	 */
+	public function getAutomationNamesByActionParameter(string $actionName, string $parameter, string|int $value): array
+	{
+		$query = $this->db->getQuery(true);
+		$query->select([$this->db->quoteName('a.params'), $this->db->quoteName('au.name')])
+			->from($this->db->quoteName('#__emundus_action', 'a'))
+			->innerJoin(
+				$this->db->quoteName('#__emundus_automation', 'au')
+				. ' ON ' . $this->db->quoteName('au.id') . ' = ' . $this->db->quoteName('a.automation_id')
+			)
+			->where($this->db->quoteName('a.name') . ' = :name')
+			->bind(':name', $actionName);
+
+		$this->db->setQuery($query);
+		$rows = $this->db->loadObjectList() ?: [];
+
+		$names = [];
+		foreach ($rows as $row)
+		{
+			$params = json_decode($row->params, true);
+			if (!is_array($params) || !isset($params[$parameter]))
+			{
+				continue;
+			}
+
+			if ((string) $params[$parameter] === (string) $value)
+			{
+				$names[$row->name] = $row->name;
+			}
+		}
+
+		return array_values($names);
 	}
 
 	/**

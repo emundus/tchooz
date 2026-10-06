@@ -6,8 +6,8 @@ blueprints/gantry/theme/details.yaml	213686f69f0d464413ff28e5fd4d8a13
 blueprints/menu/menu.yaml	97bfc9e993a9459303397d6be3a99cda
 blueprints/menu/menuitem.yaml	ed87e1e9e82216285ce528e5f7a79640
 config.xml	c0955cc0cfc79ea0a37512592f186d8d
-css-compiled/g-admin.css	5bb38cca2f1a19a1ef3acd9b095f7d4f
-css-compiled/joomla-g-admin.css	5b3fc9de46eda731dc7aec9c5d40920c
+css-compiled/g-admin.css	f1fb8d00415a3ec8fb2fca33efa6b4d7
+css-compiled/joomla-g-admin.css	e208715bec151db3b223ee34f34b91b9
 fonts/roboto_bold_macroman/Roboto-Bold-webfont.eot	ecdd509cadbf1ea78b8d2e31ec52328c
 fonts/roboto_bold_macroman/Roboto-Bold-webfont.svg	375c4f3bd35840adee24a1535bbb2018
 fonts/roboto_bold_macroman/Roboto-Bold-webfont.ttf	3dcc0e0f2287e2e955cd8ce8cb08dae0
@@ -45,10 +45,11 @@ install/templates/style.php	bdd5fb9ae6c2a0a05a8db969a32ddcc5
 install/templates/update.php	9114c14f17e5380aa10ccab60a1e5f20
 js/dark-mode.js	a0992f3ccd6cfea0f5425ff526eb54ff
 js/google-fonts.json	a7119c14db137a6ad79b5504679c0b9f
-js/main.js	ebbfe92fee53ec71ba37142029ae3f3b
+js/main.js	5871862f50d1aee4c913844f9d1ffa80
 js/tooltips.js	2462fb34ec347c0391c56569c1c5b419
 language/en-GB/en-GB.com_gantry5.ini	a34026ff711b421cf0af59b7cb7fc67d
 language/en-GB/en-GB.com_gantry5.sys.ini	1b323ed9c4a083e2652935665e50b4dd
+package-lock.json	36a13ff1bcd0cd67d388878ce49d230c
 scss/admin.scss	aeb5ec154e50e5d12f8ae83a2c229ca7
 scss/admin/_assignments.scss	8a3dfe78014be23d04161a23194c7fae
 scss/admin/_buttons.scss	76e35d7ac5fc0886a785a884c86a1057
@@ -105,7 +106,7 @@ scss/joomla-admin/_typography.scss	9c52adcdfa9193ee5a0d3538dc7eec09
 templates/ajax/changelog.html.twig	3c899acc49d030261ea73f211667c4a8
 templates/ajax/confirm-deletion.html.twig	ecbace9b902c20e89d6f5b25683d43d6
 templates/ajax/filepicker.html.twig	fb06307efd7e61b4ae22d3eb81b472b1
-templates/ajax/filepicker/files.html.twig	5386da1c9f0ffa7a94e98576c0041483
+templates/ajax/filepicker/files.html.twig	ceaf9bc2c90c3529a5a29ef095b5ea4d
 templates/ajax/filepicker/subfolders.html.twig	d3d1e02e6c48c20300f95747aae09f1b
 templates/ajax/fontpicker.html.twig	5020958fa623c8317f9ef6288a347637
 templates/ajax/icons.html.twig	3105516351685e3099264b73bab324e2
@@ -186,7 +187,7 @@ templates/forms/override.html.twig	7b430815f614b48deb5e96beed774a20
 templates/layouts/css-warnings.html.twig	d45a3783788fd5a3af4d671b00570f5d
 templates/layouts/outline.html.twig	f0829764cded3f947c73b82cbcab289c
 templates/layouts/picker.html.twig	fc58fa1fd58262c24145ece873c3ebcf
-templates/layouts/position.html.twig	428ca4ca7fd3dde376d527c0f969e4f7
+templates/layouts/position.html.twig	b6d14545e54bc89718fec97b915c5c76
 templates/layouts/switcher.html.twig	420b2d51f6d0f95c276c7e9dbb8e4863
 templates/menu/base.html.twig	419eb571f037dcbe48f0c34c30e5392c
 templates/menu/columns.html.twig	0eff002a7a9f4a5da819fe70b2f3ce55
@@ -239,11 +240,11 @@ templates/partials/js-translations.html.twig	1d032909554f4faab390acdef7e83670
 templates/partials/layout.html.twig	dc3dccda0aa79a485561aaa34005b8e1
 templates/partials/navigation.html.twig	5ff44f8aceef5b22c81cf808c9a15c7c
 templates/partials/outlines-list.html.twig	8cc4286d4d6c78adff4e40d4435d74a8
-templates/partials/page.html.twig	3b4876d978020f6732b3aebc00748ef0
+templates/partials/page.html.twig	845fb810d102408b3fa983254a2c523d
 templates/partials/php_unsupported.html.twig	fc9f221c528c36f9357f416eba41733a
 templates/partials/updates.html.twig	e199020e3d3aa73c4dccd17b1e9ad914
 translations/en/nucleus.yaml	46bf5ea881fbbc75071e757dc0abdd6a
 translations/en/platform.yaml	da1d826d76835f0ae8276992330810ff
 translations/es/nucleus.yaml	8d63b5c582ffa252f9e93a3e61688b6f
 translations/es/platform.yaml	e26e64fdfe0960a3911868978514a104
-yarn.lock	e553df651817f9ec84c3673f67653a2a
+yarn.lock	a61b903cdfe694b776be2272a062d269

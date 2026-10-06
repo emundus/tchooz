@@ -10,8 +10,10 @@ use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
+use Tchooz\Enums\Actions\ActionEnum;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Import\ImportConflictModeEnum;
 use Tchooz\Services\Automation\Condition\FormDataConditionResolver;
 use Tchooz\Services\Import\Entity\ContactImporter;
@@ -121,8 +123,23 @@ class ActionGenerateContact extends ActionEntity
 
 				$importContext = new ImportContext('automation', 0, false, $target->getTriggeredBy()->id);
 
-				$this->applyImport($importer, $row, $importContext, $mode);
+				$outcome = $this->applyImport($importer, $row, $importContext, $mode);
 				$generationStates[] = true;
+
+				if ($outcome !== null)
+				{
+					$this->log(
+						ActionEnum::CONTACT,
+						$outcome,
+						'COM_EMUNDUS_LOGS_AUTOMATION_GENERATE_CONTACT',
+						[$outcome === CrudEnum::CREATE ? 'created' : 'updated' => [[
+							'details' => implode(' ', array_filter(array_map(fn($field) => $row[$field] ?? '', $columnMap->requiredFields())))
+						]]],
+						$target->getFile(),
+						$target->getTriggeredBy()->id,
+						$target->getUserId()
+					);
+				}
 			}
 			catch (\Throwable $e)
 			{

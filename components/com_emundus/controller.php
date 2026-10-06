@@ -38,6 +38,7 @@ use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Export\ExportRepository;
+use Tchooz\Services\FileStreamService;
 use Tchooz\Repositories\Resource\ResourceRepository;
 use Tchooz\Services\FileSecurityService;
 use Tchooz\Services\Import\ImportModelGenerator;
@@ -924,7 +925,7 @@ class EmundusController extends JControllerLegacy
 		$session->set('emundusUser', $aid);
 
 		if (!empty($redirect)) {
-			$this->app->redirect($redirect);
+			$this->app->redirect(Uri::base() . $redirect);
 		}
 
 		echo json_encode((object) (array('status' => true)));
@@ -1992,7 +1993,7 @@ class EmundusController extends JControllerLegacy
 
 			// Check access to export file
 			$exportRepository = new ExportRepository();
-			$export = $exportRepository->getByFilenameAndUser($url, $user->id);
+			$export = $exportRepository->getByFileAndUser($url, $user->id);
 			if(empty($export) || $export->getCreatedBy()->id != $user->id || !EmundusHelperAccess::asPartnerAccessLevel($user->id))
 			{
 				die (Text::_('ACCESS_DENIED'));
@@ -2104,10 +2105,16 @@ class EmundusController extends JControllerLegacy
 			}
 			else
 			{
-				// Check if the user is an applicant and it is his file.
-				if (!EmundusHelperAccess::isFnumMine($current_user->id, $fnum) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+				// Check if the user is an applicant and it is his file (use the file's fnum, scoped to the applicant's own fnums by the query above).
+				$fnum_to_check = !empty($fileInfo->fnum) ? $fileInfo->fnum : $fnum;
+
+				if(!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
 				{
-					if (!empty($fileInfo) && $fileInfo->can_be_viewed != 1)
+					if (!EmundusHelperAccess::isFnumMine($current_user->id, $fnum_to_check))
+					{
+						die (Text::_('ACCESS_DENIED'));
+					}
+					elseif (empty($fileInfo) || $fileInfo->can_be_viewed != 1)
 					{
 						die (Text::_('ACCESS_DENIED'));
 					}
@@ -2138,20 +2145,11 @@ class EmundusController extends JControllerLegacy
                 }
             }
 
-			//TODO If data ara anonimized remove metadata
-			header('Content-type: ' . $mime_type);
-			header('Content-Disposition: inline; filename=' . basename($fileName));
-			header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-			header('Cache-Control: no-store, no-cache, must-revalidate');
-			header('Cache-Control: pre-check=0, post-check=0, max-age=0');
-			header('Pragma: anytextexeptno-cache', true);
-			header('Cache-control: private');
-			header('Expires: 0');
+			// A download of several GB must not hold the session lock for its whole duration
+			$this->app->getSession()->close();
 
-			ob_clean();
-			ob_end_flush();
-			readfile($file);
-			exit;
+			//TODO If data ara anonimized remove metadata
+			(new FileStreamService())->stream($file, $fileName, $mime_type, str_starts_with($url, 'images/emundus/exports'));
 		}
 		else {
 			JError::raiseWarning(500, Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND') . ' ' . $url);
@@ -2470,8 +2468,6 @@ class EmundusController extends JControllerLegacy
 					$files_list[] = EmundusHelperExport::getEvalPDF($fnum, $options);
 				if ($decision == 1)
 					$files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
-				if ($admission == 1)
-					$files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
 
 				if (array_keys($pdf_elements)[0] == "" and $attachments[0] == "" and ($assessment != 1) and ($decision != 1) and ($admission != 1) and ($options[0] != "0")) {
 					$files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);

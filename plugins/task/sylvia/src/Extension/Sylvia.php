@@ -172,7 +172,7 @@ class Sylvia extends CMSPlugin implements SubscriberInterface
 
 			if (!empty($tagDoublon))
 			{
-				$mFiles->tagFile([$student->fnum], [$tagDoublon]);
+				$mFiles->tagFile([$student->fnum], [$tagDoublon], $this->getAutomatedTaskUserId());
 			}
 
 			return;
@@ -183,7 +183,7 @@ class Sylvia extends CMSPlugin implements SubscriberInterface
 
 		if (!empty($tagNotFound))
 		{
-			$mFiles->tagFile([$student->fnum], [$tagNotFound]);
+			$mFiles->tagFile([$student->fnum], [$tagNotFound], $this->getAutomatedTaskUserId());
 		}
 
 		$this->fillElementByAlias($student->fnum, 'transmissible_expert', 0);

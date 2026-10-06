@@ -93,9 +93,13 @@ class RedirectIntentTransport
 		return !empty($active) && $url === $this->normalize(Route::_('index.php?Itemid=' . $active->id, false));
 	}
 
+	/**
+	 * Compare on path + query only: an intent URL is now fully qualified (scheme + host), while the
+	 * current request and the menu route are relative, so both sides must be reduced to the same shape.
+	 */
 	private function normalize(string $url): string
 	{
-		return rtrim(urldecode($url), '/');
+		return rtrim(urldecode(Uri::getInstance($url)->toString(['path', 'query'])), '/');
 	}
 
 	private function log(string $message): void

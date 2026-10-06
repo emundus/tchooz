@@ -18,6 +18,19 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Tchooz\Factories\LayoutFactory;
 
+if(!class_exists('EmundusHelperFabrik'))
+{
+    require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+}
+if(!class_exists('EmundusModelUsers'))
+{
+    require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+}
+$m_users      = new EmundusModelUsers();
+$hFabrik = new EmundusHelperFabrik();
+
+$db = Factory::getContainer()->get('DatabaseDriver');
+
 $form      = $this->form;
 $model     = $this->getModel();
 $groupTmpl = $model->editable ? 'group' : 'group_details';
@@ -56,8 +69,6 @@ if (!empty($fnum))
     }
 }
 
-require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
-$m_users      = new EmundusModelUsers();
 $profile_form = $m_users->getProfileForm();
 
 $this->display_comments = false;
@@ -74,13 +85,9 @@ $this->is_applicant = $is_applicant;
 
 if (($allow_to_comment || $is_applicant === 0) && !$is_preview)
 {
-    // check if form is an applicant form, there should be a column fnum in the table
-    $db    = Factory::getContainer()->get('DatabaseDriver');
-    $query = 'SHOW COLUMNS FROM `' . $form->db_table_name . '` LIKE "fnum"';
-    $db->setQuery($query);
-    $result = $db->loadObject();
+    $fnumColumnExist = $hFabrik->tableHasColumn($form->db_table_name, 'fnum');
 
-    if (!empty($result) && Factory::getApplication()->input->get('fnum', '') == $fnum)
+    if (!empty($fnumColumnExist) && $app->input->get('fnum', '') == $fnum)
     {
         $applicant_profiles_menus = array_map(function ($profile) {
             return $profile->menutype;
@@ -121,6 +128,7 @@ Text::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_TEXT');
 Text::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CONFIRM');
 Text::script('COM_EMUNDUS_FABRIK_WANT_EXIT_FORM_CANCEL');
 Text::script('PLEASE_CHECK_THIS_FIELD');
+Text::script('PLG_ELEMENT_JDATE_ARIA_LABEL_DATE');
 
 Text::script('COM_EMUNDUS_FABRIK_NEW_FILE');
 Text::script('COM_EMUNDUS_FABRIK_NEW_FILE_DESC');
@@ -141,6 +149,8 @@ Text::script('COM_EMUNDUS_ACTIONS_DELETE');
 
 Text::script('COM_FABRIK_NO_REPEAT_GROUP_DATA');
 Text::script('YOUR_FILE_HAS_BEEN_SENT');
+Text::script('JSHOWPASSWORD');
+Text::script('JHIDEPASSWORD');
 
 if ($pageClass !== '') :
     echo '<div class="' . $pageClass . '">';
@@ -170,7 +180,7 @@ endif;
 
     if ($form->gobackButton)
     {
-        echo '<div class="back-button-link tw-text-link-regular tw-cursor-pointer tw-font-semibold tw-flex tw-items-center tw-mb-4 tw-mt-2"><span class="material-symbols-outlined tw-text-link-regular tw-mr-1">navigate_before</span>';
+        echo '<div class="back-button-link tw-text-link-regular tw-cursor-pointer tw-font-semibold tw-flex tw-items-center tw-mb-4 tw-mt-2"><span class="material-symbols-outlined tw-text-link-regular tw-mr-1" aria-hidden="true">navigate_before</span>';
         echo $form->gobackButton;
         echo '</div>';
     }
@@ -210,7 +220,11 @@ endif;
                             <p class="tw-mb-5 tw-text-neutral-600"><?= Text::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
                         <?php endif; ?>
                         <div class="page-header">
+                            <?php if($is_applicant) : ?>
+                            <h2 class="after-em-border after:tw-bg-red-800"><?= Text::_($form->label) ?></h2>
+                            <?php else: ?>
                             <h1 class="after-em-border after:tw-bg-red-800"><?= Text::_($form->label) ?></h1>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -281,7 +295,11 @@ endif;
                         <div>
                             <?php
                             if ($group->showLegend) :?>
+                                <?php if($is_applicant) : ?>
+                                <h3 class="after-em-border after:tw-bg-neutral-500"><?php echo $group->title; ?></h3>
+                                <?php else : ?>
                                 <h2 class="after-em-border after:tw-bg-neutral-500"><?php echo $group->title; ?></h2>
+                                <?php endif; ?>
                             <?php
                             endif;
 
@@ -335,14 +353,6 @@ endif;
 </div>
 
 <?php
-$app  = Factory::getApplication();
-$user = $app->getIdentity();
-$fnum = $app->input->getString('fnum', '');
-if (empty($fnum))
-{
-    $fnum = $app->getSession()->get('emundusUser')->fnum;
-}
-
 if ($this->display_comments && !empty($fnum))
 {
     Text::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT');
@@ -454,8 +464,8 @@ if ($this->display_comments && !empty($fnum))
         // Load skeleton
         let header = document.querySelector('.page-header')
         if (header) {
-            if (header.querySelector('h1')) {
-                document.querySelector('.page-header h1').style.opacity = 0
+            if (header.querySelector('h1') || header.querySelector('h2')) {
+                document.querySelector('.page-header h1, .page-header h2').style.opacity = 0
             }
             header.classList.add('skeleton')
         }

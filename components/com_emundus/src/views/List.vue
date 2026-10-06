@@ -1500,7 +1500,21 @@ export default {
 
 				if (response) {
 					if (response.status === true || response.status === 1) {
-						if (response.download_file || (response.data && response.data.download_file)) {
+						const downloadFiles = response.data?.download_files ?? [];
+						if (downloadFiles.length > 1) {
+							Swal.fire({
+								position: 'center',
+								icon: 'success',
+								title: this.translate('COM_EMUNDUS_REGISTRANTS_FILE_READY'),
+								html: this.buildDownloadLinks(downloadFiles),
+								showConfirmButton: false,
+								showCloseButton: true,
+								allowOutsideClick: false,
+								customClass: {
+									title: 'w-full justify-center',
+								},
+							});
+						} else if (response.download_file || (response.data && response.data.download_file)) {
 							Swal.fire({
 								position: 'center',
 								icon: 'success',
@@ -1554,6 +1568,26 @@ export default {
 			}
 
 			this.loading.items = false;
+		},
+
+		buildDownloadLinks(downloadFiles) {
+			const container = document.createElement('div');
+			container.className = 'tw-flex tw-flex-col tw-gap-2 tw-text-left';
+
+			const intro = document.createElement('p');
+			intro.textContent = this.translate('COM_EMUNDUS_EXPORTS_SPLIT_IN_VOLUMES');
+			container.appendChild(intro);
+
+			downloadFiles.forEach((downloadUrl) => {
+				const link = document.createElement('a');
+				link.href = downloadUrl;
+				link.download = '';
+				link.className = 'tw-underline';
+				link.textContent = decodeURIComponent(downloadUrl.split('/').pop());
+				container.appendChild(link);
+			});
+
+			return container;
 		},
 
 		async onClickPreview(item) {

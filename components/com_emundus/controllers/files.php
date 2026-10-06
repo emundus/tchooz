@@ -67,7 +67,6 @@ class EmundusControllerFiles extends EmundusController
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'admission.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
@@ -108,33 +107,6 @@ class EmundusControllerFiles extends EmundusController
 		file_exists($fn) or file_put_contents($fn, $bin);
 
 		return "$img$fn$end";  // new <img> tag
-	}
-
-////// EMAIL APPLICANT WITH CUSTOM MESSAGE///////////////////
-
-	/**
-	 *
-	 */
-	public function applicantemail()
-	{
-		if (EmundusHelperAccess::asAccessAction(9, 'c')) {
-			require_once(JPATH_SITE . '/components/com_emundus/helpers/emails.php');
-			$h_emails = new EmundusHelperEmails;
-			$h_emails->sendApplicantEmail();
-		}
-	}
-
-	/**
-	 *
-	 */
-	public function groupmail()
-	{
-		if (EmundusHelperAccess::asAccessAction(16, 'c'))
-		{
-			require_once(JPATH_SITE . '/components/com_emundus/helpers/emails.php');
-			$h_emails = new EmundusHelperEmails;
-			$h_emails->sendGroupEmail();
-		}
 	}
 
 	/**
@@ -2969,9 +2941,6 @@ class EmundusControllerFiles extends EmundusController
 				if ($decision)
 					$files_list[] = EmundusHelperExport::getDecisionPDF($fnum, $options);
 
-				if ($admission)
-					$files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
-
 				if (($forms != 1) && $formids[0] == "" && ($attachment != 1) && ($attachids[0] == "") && ($assessment != 1) && ($decision != 1) && ($admission != 1) && ($options[0] != "0"))
 					$files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
 
@@ -4460,7 +4429,7 @@ class EmundusControllerFiles extends EmundusController
 			}
 			else {
 				foreach ($res as $log) {
-					$details[] = $m_logs->setActionDetails($log->action_id, $log->verb, $log->params);
+					$details[] = $m_logs->setActionDetails($log->action_id, $log->verb, $log->params, $log->message);
 				}
 			}
 		}

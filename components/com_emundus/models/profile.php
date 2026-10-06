@@ -73,20 +73,26 @@ class EmundusModelProfile extends ListModel
 		return $profile;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function getApplicantsProfiles()
+	public function getApplicantsProfiles(): array
 	{
-		$query = $this->_db->getQuery(true);
+		$key = 'applicant_profiles';
+		$applicantProfiles = $this->h_cache->get($key, []);
 
-		$query->select('*')
-			->from($this->_db->quoteName('#__emundus_setup_profiles'))
-			->where($this->_db->quoteName('published') . ' = 1')
-			->order($this->_db->quoteName('label'));
-		$this->_db->setQuery($query);
+		if(empty($applicantProfiles))
+		{
+			$query = $this->_db->getQuery(true);
 
-		return $this->_db->loadObjectList();
+			$query->select('*')
+				->from($this->_db->quoteName('#__emundus_setup_profiles'))
+				->where($this->_db->quoteName('published') . ' = 1')
+				->order($this->_db->quoteName('label'));
+			$this->_db->setQuery($query);
+
+			$applicantProfiles = $this->_db->loadObjectList();
+			$this->h_cache->set($key, $applicantProfiles);
+		}
+
+		return $applicantProfiles;
 	}
 
 	/**
@@ -113,6 +119,11 @@ class EmundusModelProfile extends ListModel
 	function getUserProfiles($uid): array
 	{
 		$profiles = [];
+
+		if(empty($uid))
+		{
+			return $profiles;
+		}
 
 		$query = $this->_db->getQuery(true);
 		$query->select('esp.id, esp.label, esp.published, esp.status')
@@ -1439,7 +1450,6 @@ class EmundusModelProfile extends ListModel
 	{
 		include_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 		include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
-		include_once(JPATH_SITE . '/components/com_emundus/models/admission.php');
 		include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
 
 		$m_application = new EmundusModelApplication;
@@ -1577,11 +1587,6 @@ class EmundusModelProfile extends ListModel
 		}
 
 		$session->set('emundusUser', $emundusSession);
-
-		if (isset($admissionInfo))
-		{
-			$app->redirect("index.php?option=com_fabrik&view=form&formid=" . $admissionInfo->form_id . "&Itemid='.$admissionInfo->item_id.'&usekey=fnum&rowid=" . $campaign['fnum']);
-		}
 	}
 
 

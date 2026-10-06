@@ -3,6 +3,8 @@
  * Layoutfile for Icon rendering
  */
 
+use Joomla\CMS\Language\Text;
+
 defined('JPATH_BASE') or die;
 
 $d     = $displayData;
@@ -46,9 +48,13 @@ if (!in_array($iconParts[0],['icon-question-sign','icon-sort', 'icon-spinner', '
 		$icon[1] = 'check';
 	}
 	?>
-    <span class="<?php echo $material_icon_class ?> <?php echo $class ?>" <?php echo $style ?>>
+    <span class="<?php echo $material_icon_class ?> <?php echo $class ?>" aria-hidden="true" <?php echo $style ?>>
 	    <?php echo trim($icon[1]) ?>
     </span>
+    <?php if ($icon[1] == 'emergency') : ?>
+        <span class="visually-hidden"><?php echo Text::_('PLG_VALIDATIONRULE_NOTEMPTY_LABEL'); ?></span>
+    <?php endif; ?>
+
 	<?php
 }
 else

@@ -6,6 +6,7 @@ use EmundusHelperFiles;
 use EmundusModelEmails;
 use EmundusModelLogs;
 use Exception;
+use GuzzleHttp\Exception\ConnectException;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
@@ -44,7 +45,13 @@ class DocaposteSynchronizer extends Api
 
 	protected $client;
 	private array $config = [];
-	private const BASE_URL = 'https://test.contralia.fr:443/Contralia/api/v2';
+
+	private const HOSTS = [
+		'TEST'       => 'https://test.contralia.fr:443',
+		'PRODUCTION' => 'https://www.contralia.fr',
+	];
+	private const CORE_API_PATH = '/Contralia/api/v2';
+	private const EDOC_API_PATH = '/eDoc/api';
 
 	/**
 	 * DocuSignSynchronizer constructor.
@@ -64,7 +71,7 @@ class DocaposteSynchronizer extends Api
 			$this->auth   = $infos['auth'];
 			$this->config = $infos['conf'];
 
-			$this->setBaseUrl(self::BASE_URL);
+			$this->setBaseUrl($this->getHost() . self::CORE_API_PATH);
 			$headers = array(
 				'Authorization' => 'Basic ' . base64_encode($this->auth['identifier'] . ':' . $this->auth['password']),
 			);
@@ -117,6 +124,11 @@ class DocaposteSynchronizer extends Api
 		$infos['conf'] = $conf;
 
 		return $infos;
+	}
+
+	private function getHost(): string
+	{
+		return self::HOSTS[$this->config['mode'] ?? ''] ?? self::HOSTS['TEST'];
 	}
 
 	/**
@@ -422,6 +434,26 @@ class DocaposteSynchronizer extends Api
 				// Dispatch the event
 				$dispatcher->dispatch('onCallEventHandler', $onAfterSignRequestCreatedEventHandler);
 			}
+		}
+		catch (ConnectException $e)
+		{
+			$context = $e->getHandlerContext();
+
+			Log::add(
+				'Network error during Docaposte init transaction : ' . $e->getMessage() . ' | ' . json_encode([
+					'errno'            => $context['errno'] ?? null,
+					'primary_ip'       => $context['primary_ip'] ?? null,
+					'primary_port'     => $context['primary_port'] ?? null,
+					'local_ip'         => $context['local_ip'] ?? null,
+					'connect_time'     => $context['connect_time'] ?? null,
+					'appconnect_time'  => $context['appconnect_time'] ?? null,
+					'pretransfer_time' => $context['pretransfer_time'] ?? null,
+					'size_upload'      => $context['size_upload'] ?? null,
+					'total_time'       => $context['total_time'] ?? null,
+				]),
+				Log::ERROR,
+				'com_emundus.docaposte'
+			);
 		}
 		catch (Exception $e)
 		{
@@ -1164,7 +1196,7 @@ class DocaposteSynchronizer extends Api
 		$signUrl = '';
 		try
 		{
-			$this->setBaseUrl('https://test.contralia.fr:443/eDoc/api');
+			$this->setBaseUrl($this->getHost() . self::EDOC_API_PATH);
 
 			$body = [
 				'transactionId' => $request->getExternalReference(),
@@ -1208,8 +1240,6 @@ class DocaposteSynchronizer extends Api
 			}
 
 			$signUrl = $response['data']->{'0'} ?? '';
-
-			$this->setBaseUrl(self::BASE_URL);
 		}
 		catch (Exception $e)
 		{
@@ -1218,6 +1248,10 @@ class DocaposteSynchronizer extends Api
 				Log::ERROR,
 				'com_emundus.docaposte'
 			);
+		}
+		finally
+		{
+			$this->setBaseUrl($this->getHost() . self::CORE_API_PATH);
 		}
 
 		return $signUrl;

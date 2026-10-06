@@ -1281,9 +1281,10 @@ class CartRepository
 			$cart->setPriceAlterations([]);
 			$cart->setPayAdvance(0);
 			$cart->setTotal(0);
+			// sepa installment rules are checked against the total, the method must be cleared first
+			$cart->setSelectedPaymentMethod(null);
 			$cart->setNumberInstallmentDebit(1);
 			$cart->setUpdatedBy($user_id);
-			$cart->setSelectedPaymentMethod(null);
 			$cart->setInstallmentMonthday(1);
 
 			$reset = $this->saveCart($cart, $user_id, $executionContext);

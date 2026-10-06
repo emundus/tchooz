@@ -74,6 +74,7 @@ class ChoiceCommentTagProvider implements TagProviderInterface
 
 		$commentsByChoice = $this->getApplicationChoicesService()->getStateCommentsByChoice($choices);
 
+		$html = '<ul>';
 		$lines = [];
 		foreach ($choices as $choice)
 		{
@@ -87,10 +88,12 @@ class ChoiceCommentTagProvider implements TagProviderInterface
 				$line .= '<br />' . $lastComment->getContent();
 			}
 
-			$lines[] = $line;
+			$lines[] = '<li>'.$line.'</li>';
 		}
+		$html .= implode('', $lines);
+		$html .= '</ul>';
 
-		return [self::TAG => implode('<br />', $lines)];
+		return [self::TAG => $html];
 	}
 
 	/**
@@ -114,7 +117,15 @@ class ChoiceCommentTagProvider implements TagProviderInterface
 		if (!empty($indexParams[0]))
 		{
 			$choices = array_values($choices);
-			$index   = (int) $indexParams[0];
+
+			if (is_string($indexParams[0]) && strtoupper(trim($indexParams[0])) === 'LAST')
+			{
+				$index = count($choices);
+			}
+			else
+			{
+				$index = (int) $indexParams[0];
+			}
 
 			$choices = isset($choices[$index - 1]) ? [$choices[$index - 1]] : [];
 		}

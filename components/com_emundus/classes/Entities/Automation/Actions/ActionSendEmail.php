@@ -18,6 +18,8 @@ use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\Task\TaskPriorityEnum;
+use Tchooz\Factories\Language\LanguageFactory;
+use Tchooz\Services\Language\DbLanguage;
 
 class ActionSendEmail extends ActionEntity
 {
@@ -67,6 +69,16 @@ class ActionSendEmail extends ActionEntity
 			require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
 		}
 		$m_emails = new \EmundusModelEmails();
+
+		$lang = Factory::$language;
+		$langCode = LanguageFactory::getDefaultLanguageCode();
+		$lang->setDefault($langCode);
+		$lang->load('com_emundus', JPATH_SITE . '/components/com_emundus', $langCode, true);
+		$lang->load('', JPATH_SITE, $langCode);
+		if($lang instanceof DbLanguage)
+		{
+			$lang->reloadOverrides($langCode);
+		}
 
 		$sent = false;
 		if (!empty($context->getFile())) {

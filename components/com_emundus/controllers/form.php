@@ -54,8 +54,15 @@ class EmundusControllerForm extends EmundusController
 	{
 		$actionRepository = new ActionRepository();
 		$campaignAction = $actionRepository->getByName('campaign');
-		$campaignAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::READ->value, $this->user->id);
-		$campaignEditAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::UPDATE->value, $this->user->id);
+
+		if (EmundusHelperAccess::canManageAllPrograms($this->user->id))
+		{
+			$campaignAccess = true;
+			$campaignEditAccess = true;
+		} else {
+			$campaignAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::READ->value, $this->user->id);
+			$campaignEditAccess = EmundusHelperAccess::asAccessAction($campaignAction->getId(), CrudEnum::UPDATE->value, $this->user->id);
+		}
 
 		$page      = $this->input->getInt('page', 0);
 		$lim       = $this->input->getInt('lim', 0);
@@ -891,6 +898,19 @@ class EmundusControllerForm extends EmundusController
 	public function getuserprofileelements(): EmundusResponse
 	{
 		$elements = $this->m_form->getUserProfileElements();
+		if (empty($elements))
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_ELEMENTS'));
+		}
+
+		return EmundusResponse::ok($elements, Text::_('ELEMENTS_RETRIEVED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getfileelements(): EmundusResponse
+	{
+		$elements = $this->m_form->getFileElements();
 		if (empty($elements))
 		{
 			throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_ELEMENTS'));

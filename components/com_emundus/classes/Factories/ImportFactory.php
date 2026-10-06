@@ -20,6 +20,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Tchooz\Factories\Language\LanguageFactory;
+use Tchooz\Services\ApplicationFile\ApplicationFileCustomFieldsService;
 
 class ImportFactory
 {
@@ -386,59 +387,31 @@ class ImportFactory
 			$dataSheet->setCellValue($cell . '1', Text::_('COM_EMUNDUS_IMPORT_LASTNAME') . ' [lastname]');
 			$cell++;
 
+			foreach ((new ApplicationFileCustomFieldsService())->getImportableElements() as $customElement)
+			{
+				$this->writeElementColumn(
+					$spreadsheet,
+					$cell,
+					$customElement->getLabel(),
+					$this->db->replacePrefix('#__emundus_campaign_candidature') . '___' . $customElement->getName(),
+					$customElement->getPlugin()->value,
+					json_decode($customElement->getParamsRaw(), true) ?? [],
+					$model_options['validators']
+				);
+				$cell++;
+			}
+
 			foreach ($elements as $element)
 			{
-				$spreadsheet->setActiveSheetIndex(0);
-				$dataSheet = $spreadsheet->getActiveSheet();
-
-				if (!empty($element->table_join))
-				{
-					$dataSheet->setCellValue($cell . '1', $this->normalizeApostrophes($this->removeInvisibleCharacters($element->element_label)) . ' [' . $element->table_join . '___' . $element->element_name . ']');
-				}
-				else
-				{
-					$dataSheet->setCellValue($cell . '1', $this->normalizeApostrophes($this->removeInvisibleCharacters($element->element_label)) . ' [' . $element->fabrik_element . ']');
-				}
-
-				// If element plugin is radiobutton, dropdown, checkboxes or databasejoin
-				switch ($element->element_plugin)
-				{
-					case 'radiobutton':
-					case 'dropdown':
-					case 'checkbox':
-						$params = !empty($element->element_attribs) ? json_decode($element->element_attribs, true) : [];
-
-						if (!empty($params['sub_options']))
-						{
-							$options = [];
-							foreach ($params['sub_options']['sub_values'] as $key => $value)
-							{
-								$option        = new \stdClass();
-								$option->value = $value;
-								$option->label = Text::_($params['sub_options']['sub_labels'][$key]);
-
-								$options[] = $option;
-							}
-
-							$this->createDataSheet($spreadsheet, $element->element_label, $options, $cell, $model_options['validators']);
-						}
-						break;
-					case 'databasejoin':
-						$params = !empty($element->element_attribs) ? json_decode($element->element_attribs, true) : [];
-
-						$query->clear()
-							->select([$this->db->quoteName($params['join_key_column'], 'value'), $this->db->quoteName($params['join_val_column'], 'label')])
-							->from($this->db->quoteName($params['join_db_name']));
-						$this->db->setQuery($query);
-						$options = $this->db->loadObjectList();
-
-						if (!empty($options))
-						{
-							$this->createDataSheet($spreadsheet, $element->element_label, $options, $cell, $model_options['validators']);
-						}
-						break;
-				}
-
+				$this->writeElementColumn(
+					$spreadsheet,
+					$cell,
+					$element->element_label,
+					!empty($element->table_join) ? $element->table_join . '___' . $element->element_name : $element->fabrik_element,
+					$element->element_plugin,
+					!empty($element->element_attribs) ? json_decode($element->element_attribs, true) : [],
+					$model_options['validators']
+				);
 				$cell++;
 			}
 
@@ -454,6 +427,44 @@ class ImportFactory
 		}
 
 		return $xlsx_file;
+	}
+
+	private function writeElementColumn(Spreadsheet $spreadsheet, string $cell, string $label, string $columnKey, string $plugin, array $params, bool $validators): void
+	{
+		$spreadsheet->setActiveSheetIndex(0);
+		$spreadsheet->getActiveSheet()->setCellValue($cell . '1', $this->normalizeApostrophes($this->removeInvisibleCharacters(Text::_($label))) . ' [' . $columnKey . ']');
+
+		$options = [];
+		switch ($plugin)
+		{
+			case 'radiobutton':
+			case 'dropdown':
+			case 'checkbox':
+				if (!empty($params['sub_options']))
+				{
+					foreach ($params['sub_options']['sub_values'] as $key => $value)
+					{
+						$option        = new \stdClass();
+						$option->value = $value;
+						$option->label = Text::_($params['sub_options']['sub_labels'][$key]);
+
+						$options[] = $option;
+					}
+				}
+				break;
+			case 'databasejoin':
+				$query = $this->db->createQuery()
+					->select([$this->db->quoteName($params['join_key_column'], 'value'), $this->db->quoteName($params['join_val_column'], 'label')])
+					->from($this->db->quoteName($params['join_db_name']));
+				$this->db->setQuery($query);
+				$options = $this->db->loadObjectList();
+				break;
+		}
+
+		if (!empty($options))
+		{
+			$this->createDataSheet($spreadsheet, Text::_($label), $options, $cell, $validators);
+		}
 	}
 
 	private function sanitizeSheetTitle(string $title): string

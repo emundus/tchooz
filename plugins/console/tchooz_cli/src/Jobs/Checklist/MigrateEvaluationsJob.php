@@ -527,11 +527,18 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 			if (!empty($elements)) {
 				Log::add('Found ' . count($elements) . ' elements in old evaluation form ' . $old_evaluation_form_id, Log::INFO, self::getJobName());
 
+				$old_columns = $db->setQuery('SHOW COLUMNS FROM ' . $db->quoteName($old_fabrik_table))->loadColumn();
+
 				$elements_names = [];
 				foreach ($elements as $element)
 				{
 					$groupParams = json_decode($element['group_params'], true);
 					if ($groupParams['repeat_group_button'] == 1) {
+						continue;
+					}
+
+					if (!in_array($element['name'], $old_columns, true)) {
+						Log::add('Element ' . $element['name'] . ' skipped, no such column in ' . $old_fabrik_table, Log::WARNING, self::getJobName());
 						continue;
 					}
 

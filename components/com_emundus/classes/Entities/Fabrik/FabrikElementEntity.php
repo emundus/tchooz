@@ -97,7 +97,8 @@ class FabrikElementEntity
 		string            $default = '',
 		int               $eval = 0,
 		bool $published = true,
-		int $hidden = 0
+		int $hidden = 0,
+		int $showInListSummary = 0
 	)
 	{
 		$this->id             = $id;
@@ -116,6 +117,7 @@ class FabrikElementEntity
 		$this->eval           = $eval;
 		$this->published      = $published;
 		$this->hidden         = $hidden;
+		$this->showInListSummary = $showInListSummary;
 	}
 
 	public function getId(): int

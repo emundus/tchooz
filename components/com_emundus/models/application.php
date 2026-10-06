@@ -18,7 +18,6 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
@@ -26,6 +25,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Database\ParameterType;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagRemoveDefinition;
@@ -34,7 +34,9 @@ use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Services\Addons\Configurations\CollaborateAddonConfiguration;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Providers\DateProvider;
@@ -266,7 +268,7 @@ class EmundusModelApplication extends ListModel
 
 			$eMConfig           = ComponentHelper::getParams('com_emundus');
 			$expert_document_id = $eMConfig->get('expert_document_id', '36');
-			$export_pdf         = $eMConfig->get('export_application_pdf', 0);
+			$display_application_pdf = $eMConfig->get('display_application_form_document', 0);
 
 			$query = $this->_db->getQuery(true);
 
@@ -309,7 +311,10 @@ class EmundusModelApplication extends ListModel
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('eu.campaign_id'))
 				->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quoteName('eu.fnum'))
 				->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum));
-			if ($export_pdf != 1)
+			// Visibility of the generated application file has its own setting: export_application_pdf only
+			// decides whether it is produced on submission, and it is not the sole producer anymore since
+			// an automation can be configured to print it.
+			if ($display_application_pdf != 1)
 			{
 				$query->andWhere('esa.lbl NOT LIKE ' . $this->_db->quote('_application_form'));
 			}
@@ -366,6 +371,11 @@ class EmundusModelApplication extends ListModel
 						}
 					}
 
+					if ($applicant)
+					{
+						$attachment->user_name          = '';
+						$attachment->modified_user_name = '';
+					}
 
 					if (!file_exists(EMUNDUS_PATH_ABS . $attachment->applicant_id . '/' . $attachment->filename)) {
 						$attachment->existsOnServer = false;
@@ -605,53 +615,41 @@ class EmundusModelApplication extends ListModel
 			$this->_db->execute();
 
 			// Logging requires the fnum, we have to get this from the comment ID being edited.
-			// Only get the fnum if logging is on and comments are in the list of actions to be logged.
-			$eMConfig    = JComponentHelper::getParams('com_emundus');
-			$log_actions = $eMConfig->get('log_action', null);
-			if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array(10, explode(',', $log_actions)))) {
+			$query = $this->_db->getQuery(true);
+			$query->select($this->_db->quoteName('fnum'))
+				->from($this->_db->quoteName('#__emundus_comments'))
+				->where($this->_db->quoteName('id') . '=' . $id);
 
-				$query = $this->_db->getQuery(true);
-				$query->select($this->_db->quoteName('fnum'))
-					->from($this->_db->quoteName('#__emundus_comments'))
-					->where($this->_db->quoteName('id') . '=' . $id);
+			$this->_db->setQuery($query);
+			$fnum = $this->_db->loadResult();
 
-				$this->_db->setQuery($query);
-				$fnum = $this->_db->loadResult();
+			// Log the comment in the eMundus logging system.
+			$logsParams = array('updated' => []);
 
-				// Log the comment in the eMundus logging system.
-				$logsParams = array('updated' => []);
+			if (empty(trim($old_comment->reason))) {
+				$old_comment->reason = Text::_('COM_EMUNDUS_COMMENT_NO_TITLE');
+			}
 
-				if (empty(trim($old_comment->reason))) {
-					$old_comment->reason = Text::_('COM_EMUNDUS_COMMENT_NO_TITLE');
-				}
+			if (empty(trim($title))) {
+				$title = Text::_('COM_EMUNDUS_COMMENT_NO_TITLE');
+			}
 
-				if (empty(trim($title))) {
-					$title = Text::_('COM_EMUNDUS_COMMENT_NO_TITLE');
-				}
+			if ($old_comment->reason !== $title) {
+				array_push($logsParams['updated'], ['description' => '<b>' . '[' . $old_comment->reason . ']' . '</b>', 'element' => '<span>' . Text::_('COM_EMUNDUS_EDIT_COMMENT_TITLE') . '</span>',
+				                                    'old'         => $old_comment->reason,
+				                                    'new'         => $title]);
+			}
 
-				if ($old_comment->reason !== $title) {
-					array_push($logsParams['updated'], ['description' => '<b>' . '[' . $old_comment->reason . ']' . '</b>', 'element' => '<span>' . Text::_('COM_EMUNDUS_EDIT_COMMENT_TITLE') . '</span>',
-					                                    'old'         => $old_comment->reason,
-					                                    'new'         => $title]);
-				}
+			/////////////
+			if ($old_comment->comment_body !== $text) {
+				array_push($logsParams['updated'], ['description' => '<b>' . '[' . $old_comment->reason . ']' . '</b>', 'element' => '<span>' . Text::_('COM_EMUNDUS_EDIT_COMMENT_BODY') . '</span>',
+				                                    'old'         => $old_comment->comment_body,
+				                                    'new'         => $text]);
+			}
 
-				/////////////
-				if ($old_comment->comment_body !== $text) {
-					array_push($logsParams['updated'], ['description' => '<b>' . '[' . $old_comment->reason . ']' . '</b>', 'element' => '<span>' . Text::_('COM_EMUNDUS_EDIT_COMMENT_BODY') . '</span>',
-					                                    'old'         => $old_comment->comment_body,
-					                                    'new'         => $text]);
-				}
-
-				if (!empty($logsParams['updated'])) {
-                    if (!class_exists('EmundusModelFiles')) {
-                        require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
-                    }
-                    $m_files = new EmundusModelFiles;
-                    $fnumInfos = $m_files->getFnumInfos($fnum);
-
-					$logsParams['updated'] = array_values($logsParams['updated']);
-					EmundusModelLogs::log(JFactory::getUser()->id, (int)$fnumInfos['applicant_id'], $fnum, 10, 'u', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-				}
+			if (!empty($logsParams['updated'])) {
+				$logsParams['updated'] = array_values($logsParams['updated']);
+				EmundusModelLogs::log(JFactory::getUser()->id, null, $fnum, 10, 'u', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 			}
 
 			return true;
@@ -1183,6 +1181,14 @@ class EmundusModelApplication extends ListModel
 
 	public function getFormsProgressWithProfile($fnum, $profile_id)
 	{
+		$progress = $this->calculateFormsProgressWithProfile($fnum, $profile_id);
+		$this->updateFormProgressByFnum($progress, $fnum);
+
+		return $progress;
+	}
+
+	public function calculateFormsProgressWithProfile($fnum, $profile_id)
+	{
 		$forms = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
 		$nb    = 0;
 
@@ -1198,8 +1204,6 @@ class EmundusModelApplication extends ListModel
 				$nb++;
 			}
 		}
-
-		$this->updateFormProgressByFnum(@floor(100 * $nb / count($forms)), $fnum);
 
 		return @floor(100 * $nb / count($forms));
 	}
@@ -1399,6 +1403,20 @@ class EmundusModelApplication extends ListModel
 			return false;
 		}
 
+		$progress = $this->calculateAttachmentsProgressWithProfile($fnum, $profile_id);
+		$this->updateAttachmentProgressByFnum($progress, $fnum);
+
+		return $progress;
+	}
+
+	public function calculateAttachmentsProgressWithProfile($fnum, $profile_id)
+	{
+		if (empty($fnum)) {
+			return false;
+		}
+
+		$doc_result = 0;
+
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 		$m_profile         = new EmundusModelProfile;
 		$profile_by_status = $m_profile->getProfileByStatus($fnum);
@@ -1428,8 +1446,6 @@ class EmundusModelApplication extends ListModel
 
 			$this->_db->setQuery($query);
 			$doc_result = $this->_db->loadResult();
-
-			$this->updateAttachmentProgressByFnum(floor($doc_result), $fnum);
 		}
 		catch (\Exception $e)
 		{
@@ -1706,7 +1722,10 @@ class EmundusModelApplication extends ListModel
 
 								if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
 									if (!empty($element->content) && ($element->content != '0000-00-00 00:00:00' && $element->content != '0000-00-00')) {
-										$elt = date(EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), strtotime($element->content));
+										// dateOffset can be 0 (UTC) or 1 (local)
+										$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($element, 'date_store_as_local');
+
+										$elt = EmundusHelperDate::displayDate($element->content, EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), $dateOffset);
 									}
 									else {
 										$elt = '';
@@ -1796,6 +1815,7 @@ class EmundusModelApplication extends ListModel
 					elseif ((int) $g_params->repeated === 1 || (int) $g_params->repeat_group_button === 1) {
 
 						$form .= '<table class="table table-bordered table-striped">
+                            <caption class="tw-sr-only">' . Text::_($itemg->label) . '</caption>
                             <thead>
                             <tr> ';
 
@@ -1849,7 +1869,10 @@ class EmundusModelApplication extends ListModel
 
 										if (in_array($elements[$j]->plugin,['date','jdate'])) {
 											if (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00')) {
-												$elt = date(EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), strtotime($r_elt));
+												// dateOffset can be 0 (UTC) or 1 (local)
+												$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_store_as_local');
+
+												$elt = EmundusHelperDate::displayDate($r_elt, EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), $dateOffset);
 											}
 											else {
 												$elt = '';
@@ -1953,6 +1976,7 @@ class EmundusModelApplication extends ListModel
 					}
 					else {
 						$form   .= '<table class="em-personalDetail-table-inline">';
+						$form   .= '<caption class="tw-sr-only">' . Text::_($itemg->label) . '</caption>';
 						$modulo = 0;
 						foreach ($elements as &$element) {
 
@@ -1976,7 +2000,10 @@ class EmundusModelApplication extends ListModel
 								}
 								if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
 									if (!empty($element->content) && ($element->content != '0000-00-00 00:00:00' && $element->content != '0000-00-00')) {
-										$elt = date(EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), strtotime($element->content));
+										// dateOffset can be 0 (UTC) or 1 (local)
+										$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($element, 'date_store_as_local');
+
+										$elt = EmundusHelperDate::displayDate($element->content, EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), $dateOffset);
 									}
 									else {
 										$elt = '';
@@ -2171,6 +2198,10 @@ class EmundusModelApplication extends ListModel
 
 		$eMConfig          = ComponentHelper::getParams('com_emundus');
 		$show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+		$defaultPleaseSelectValue       = [
+			'Veuillez sélectionner',
+			'Please select'
+		];
 
 		$forms = '';
 
@@ -2284,13 +2315,14 @@ class EmundusModelApplication extends ListModel
 							$forms .= '<fieldset class="em-personalDetail">
 											<h3 style="font-size: var(--em-coordinator-h3); font-weight: inherit; padding-left: 0;">' . Text::_($itemg->label) . '</h3>
 											<table class="em-restricted-group">
+												<caption class="tw-sr-only">' . Text::_($itemg->label) . '</caption>
 												<thead><tr><td>' . Text::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</td></tr></thead>
 											</table>
 										</fieldset>';
 							continue;
 						}
 
-						$excludedElements = ['id', 'parent_id'];
+						$excludedElements = ['id', 'parent_id', 'time_date', 'fnum', 'user'];
 						$query = $this->_db->getQuery(true);
 						$query->select('fe.id,fe.name,fe.label,fe.plugin,fe.params,fe.default,fe.eval,fe.hidden')
 							->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
@@ -2356,7 +2388,7 @@ class EmundusModelApplication extends ListModel
 
 									$forms .= '</div>';
 
-									$forms .= '<table class="em-mt-8 em-mb-16 table table-bordered table-striped em-personalDetail-table-multiplleLine tw-p-6 tw-shadow-card !tw-rounded-coordinator-cards tw-border-separate !tw-border tw-border-neutral-400 tw-bg-neutral-0"><thead><tr class="!tw-border-0"> ';
+									$forms .= '<table class="em-mt-8 em-mb-16 table table-bordered table-striped em-personalDetail-table-multiplleLine tw-p-6 tw-shadow-card !tw-rounded-coordinator-cards tw-border-separate !tw-border tw-border-neutral-400 tw-bg-neutral-0"><caption class="tw-sr-only">' . Text::_($itemg->label) . '</caption><thead><tr class="!tw-border-0"> ';
 
 									$repeated_elements = [];
 
@@ -2364,14 +2396,14 @@ class EmundusModelApplication extends ListModel
 										$query->clear()
 											->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 											->from($this->_db->quoteName($table))
-											->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')')
+											->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0))
 											->orWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($aid));
 									}
 									else {
 										$query->clear()
 											->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 											->from($this->_db->quoteName($table))
-											->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')');
+											->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0));
 									}
 
 									try {
@@ -2386,7 +2418,7 @@ class EmundusModelApplication extends ListModel
 
 									foreach ($elements as $element)
 									{
-										if (in_array($element->plugin, ['id', 'panel'])) continue;
+										if (in_array($element->plugin, ['id', 'parent_id', 'panel'])) continue;
 
 										if ($show_empty_fields == 1)
 										{
@@ -2399,6 +2431,19 @@ class EmundusModelApplication extends ListModel
 											{
 												if (isset($row->{$element->name}) && $row->{$element->name} !== '' && $row->{$element->name} !== null)
 												{
+													if($element->plugin == 'dropdown')
+													{
+														$params = json_decode($element->params);
+														$index = array_search($row->{$element->name}, $params->sub_options->sub_values);
+														if (strlen($index) > 0) {
+															$valueLabel = Text::_($params->sub_options->sub_labels[$index]);
+															if(in_array($valueLabel, $defaultPleaseSelectValue))
+															{
+																continue;
+															}
+														}
+													}
+
 													$hasValue = true;
 													break;
 												}
@@ -2474,7 +2519,10 @@ class EmundusModelApplication extends ListModel
 
 													if (in_array($elements[$j]->plugin,['date','jdate'])) {
 														if (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00')) {
-															$elt = date(EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), strtotime($r_elt));
+															// dateOffset can be 0 (UTC) or 1 (local)
+															$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_store_as_local');
+
+															$elt = EmundusHelperDate::displayDate($r_elt, EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), $dateOffset);
 														}
 														else {
 															$elt = '';
@@ -2649,7 +2697,14 @@ class EmundusModelApplication extends ListModel
 													elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
 														$index = array_search($r_elt, $params->sub_options->sub_values);
 														if (strlen($index) > 0) {
-															$elt = Text::_($params->sub_options->sub_labels[$index]);
+															$valueLabel = Text::_($params->sub_options->sub_labels[$index]);
+															if(!in_array($valueLabel, $defaultPleaseSelectValue))
+															{
+																$elt = $valueLabel;
+															}
+															else {
+																$elt = '';
+															}
 														}
 														elseif (!empty($params->dropdown_populate)) {
 															$elt = $r_elt;
@@ -2771,6 +2826,7 @@ class EmundusModelApplication extends ListModel
 
 								if($check_not_empty_group && !GroupVisibilityEnum::fromParams($g_params->repeat_group_show_first ?? null)->isHidden()) {
 									$forms .= '<table class="em-mt-8 em-mb-16 em-personalDetail-table-inline tw-p-6 tw-border-separate tw-rounded-coordinator-cards tw-shadow-card tw-bg-neutral-0">';
+								$forms .= '<caption class="tw-sr-only">' . Text::_($itemg->label) . '</caption>';
 
 									$forms .= '<div class="tw-flex tw-flex-row tw-justify-between form-group-title">';
 									$forms .= '<h3 style="font-size: var(--em-coordinator-h3); font-weight: inherit; padding-left: 0;">' . Text::_($itemg->label) . '</h3>';
@@ -2789,9 +2845,7 @@ class EmundusModelApplication extends ListModel
 									$modulo = 0;
 									foreach ($elements as &$element) {
 
-										if($element->plugin === 'panel') {
-											continue;
-										}
+										if (in_array($element->plugin, ['id', 'parent_id', 'panel'])) continue;
 
 										if (!empty(trim($element->label)) || $element->plugin === ElementPluginEnum::EMUNDUS_FILEUPLOAD->value) {
 											// TODO : If databasejoin checkbox or multilist get value from children table. Add a query to get join table from jos_fabrik_joins where element_id = $element->id
@@ -2846,7 +2900,10 @@ class EmundusModelApplication extends ListModel
 
 											if (in_array($element->plugin,['date','jdate']) && !empty($element->content)) {
 												if ($element->content != '0000-00-00 00:00:00' && $element->content != '0000-00-00') {
-													$elt = date(EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), strtotime($element->content));
+													// dateOffset can be 0 (UTC) or 1 (local)
+													$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($element, 'date_store_as_local');
+
+													$elt = EmundusHelperDate::displayDate($element->content, EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), $dateOffset);
 												}
 												else {
 													$elt = '';
@@ -2975,13 +3032,24 @@ class EmundusModelApplication extends ListModel
 												$index  = array_search($element->content, $params->sub_options->sub_values);
 
 												if (strlen($index) > 0) {
-													$elt = Text::_($params->sub_options->sub_labels[$index]);
+													$valueLabel = Text::_($params->sub_options->sub_labels[$index]);
+													if(in_array($valueLabel, $defaultPleaseSelectValue))
+													{
+														if($show_empty_fields == 0) {
+															continue;
+														}
+														else {
+															$valueLabel = '';
+														}
+													}
+
+													$elt = $valueLabel;
 												}
 												elseif (!empty($params->dropdown_populate)) {
 													$elt = $element->content;
 												}
-												elseif ($params->multiple == 1) {
-													$elt = $elt = "<ul><li>" . implode("</li><li>", json_decode(@$element->content)) . "</li></ul>";
+												elseif ($params->multiple == 1 && !empty($element->content)) {
+													$elt = "<ul><li>" . implode("</li><li>", json_decode(@$element->content)) . "</li></ul>";
 												}
 												else {
 													$elt = "";
@@ -3033,7 +3101,7 @@ class EmundusModelApplication extends ListModel
 													$elt = '******';
 												}
 												elseif ($params->password == 3) {
-													$elt = '<a href="mailto:' . $element->content . '" title="' . Text::_($element->label) . '">' . $element->content . '</a>';
+													$elt = '<a href="mailto:' . $element->content . '" title="' . $element->content . '">' . $element->content . '</a>';
 												}
 												elseif ($params->password == 5) {
 													$elt = '<a href="' . $element->content . '" target="_blank" title="' . Text::_($element->label) . '">' . $element->content . '</a>';
@@ -3122,7 +3190,7 @@ class EmundusModelApplication extends ListModel
 												$class = "table-strip-2 !tw-bg-neutral-0";
 											}
 
-											$tds = !empty(Text::_($element->label)) ? '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"><b>' . Text::_($element->label) . ($element->hidden ? ' (' . Text::_('COM_EMUNDUS_FORM_BUILDER_HIDDEN') . ')' : '') . '</b></td>' : '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"></td>';
+											$tds = !empty(Text::_($element->label)) ? '<td role="rowheader" style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"><b>' . Text::_($element->label) . ($element->hidden ? ' (' . Text::_('COM_EMUNDUS_FORM_BUILDER_HIDDEN') . ')' : '') . '</b></td>' : '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"></td>';
 											$tds .= '<td class="tw-w-full" style="width:100%; border-bottom: 1px solid var(--neutral-400); vertical-align: middle;"><div class="tw-flex tw-flex-row tw-justify-between tw-items-center tw-h-full"><span>' . ((!in_array($element->plugin,['field','textarea','calc'])) ? Text::_($elt) : $elt) . '</span>';
 
 											if ($can_comment) {
@@ -3172,6 +3240,11 @@ class EmundusModelApplication extends ListModel
 		/* COULEURS*/
 		$eMConfig          = JComponentHelper::getParams('com_emundus');
 		$show_empty_fields = $eMConfig->get('show_empty_fields', 1);
+		$defaultPleaseSelectValue       = [
+			'Veuillez sélectionner',
+			'Please select'
+		];
+
 		$em_breaker        = $eMConfig->get('export_application_pdf_breaker', '0');
 
 		require_once(JPATH_SITE . '/components/com_emundus/helpers/list.php');
@@ -3353,7 +3426,7 @@ class EmundusModelApplication extends ListModel
 								throw $e;
 							}
 
-							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
+							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0);
 
 							if ($check_repeat_groups) {
 								if(!$page_title_inserted)
@@ -3373,14 +3446,14 @@ class EmundusModelApplication extends ListModel
 									$query->clear()
 										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 										->from($this->_db->quoteName($table))
-										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')')
+										->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0))
 										->orWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($aid));
 								}
 								else {
 									$query->clear()
 										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 										->from($this->_db->quoteName($table))
-										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')');
+										->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0));
 								}
 
 								try {
@@ -3677,7 +3750,7 @@ class EmundusModelApplication extends ListModel
 								throw $e;
 							}
 
-							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
+							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0);
 
 							if ($check_repeat_groups) {
 								if(!$page_title_inserted)
@@ -3692,30 +3765,91 @@ class EmundusModelApplication extends ListModel
 									$query->clear()
 										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 										->from($this->_db->quoteName($table))
-										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')')
+										->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0))
 										->orWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($aid));
 								}
 								else {
 									$query->clear()
 										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 										->from($this->_db->quoteName($table))
-										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')');
+										->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0));
 								}
 
 								$this->_db->setQuery($query);
 								$repeated_elements = $this->_db->loadObjectList();
 								unset($t_elt);
 
+								$visible_elements = [];
+
+								foreach ($elements as $element)
+								{
+									if (in_array($element->plugin, ['id', 'parent_id', 'panel'])) continue;
+
+									if ($show_empty_fields == 1)
+									{
+										$visible_elements[] = $element;
+									}
+									else
+									{
+										$hasValue = false;
+										foreach ($repeated_elements as $row)
+										{
+											if (isset($row->{$element->name}) && $row->{$element->name} !== '' && $row->{$element->name} !== null)
+											{
+												if($element->plugin == 'dropdown')
+												{
+													$params = json_decode($element->params);
+													$index = array_search($row->{$element->name}, $params->sub_options->sub_values);
+													if (strlen($index) > 0) {
+														$valueLabel = Text::_($params->sub_options->sub_labels[$index]);
+														if(in_array($valueLabel, $defaultPleaseSelectValue))
+														{
+															continue;
+														}
+													}
+												}
+
+												$hasValue = true;
+												break;
+											}
+										}
+
+										if ($hasValue)
+										{
+											$visible_elements[] = $element;
+										}
+									}
+								}
+
 								// -- Ligne du tableau --
 								if (count($repeated_elements) > 0) {
 									$i = 1;
+
+									$visible_names = array_map(function($el) { return $el->name; }, $visible_elements);
 
 									foreach ($repeated_elements as $r_element) {
 										$j     = 0;
 										$forms .= '<p class="pdf-repeat-count">---- ' . $i . ' ----</p>';
 										$forms .= '<table class="pdf-forms">';
 										foreach ($r_element as $key => $r_elt) {
-											$params = json_decode($elements[$j]->params);
+											if (!in_array($key, $visible_names)) {
+												$j++;
+												continue;
+											}
+
+											$element = null;
+											foreach ($visible_elements as $el) {
+												if ($el->name === $key) {
+													$element = $el;
+													break;
+												}
+											}
+
+											if ($element) {
+												$params = json_decode($element->params);
+											} else {
+												$params = null;
+											}
 
 											// Do not display elements with no value inside them.
 											if (($show_empty_fields == 0 && trim($r_elt) == '') || empty($params->store_in_db)) {
@@ -3891,7 +4025,14 @@ class EmundusModelApplication extends ListModel
 													$index  = array_search($r_elt, $params->sub_options->sub_values);
 
 													if ($index !== false) {
-														$elt = Text::_($params->sub_options->sub_labels[$index]);
+														$valueLabel = Text::_($params->sub_options->sub_labels[$index]);
+														if(!in_array($valueLabel, $defaultPleaseSelectValue))
+														{
+															$elt = $valueLabel;
+														}
+														else {
+															$elt = '';
+														}
 													}
 													elseif (!empty($params->dropdown_populate)) {
 														$elt = $r_elt;
@@ -4191,9 +4332,20 @@ class EmundusModelApplication extends ListModel
 											elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
 												$index = array_search($element->content, $params->sub_options->sub_values);
 												if (strlen($index) > 0) {
-													$elt = Text::_($params->sub_options->sub_labels[$index]);
+													$valueLabel = Text::_($params->sub_options->sub_labels[$index]);
+													if(in_array($valueLabel, $defaultPleaseSelectValue))
+													{
+														if($show_empty_fields == 0) {
+															continue;
+														}
+														else {
+															$valueLabel = '';
+														}
+													}
+
+													$elt = $valueLabel;
 												}
-												elseif ($params->multiple == 1) {
+												elseif ($params->multiple == 1 && !empty($element->content)) {
 													$elt = implode(", ", json_decode(@$element->content));
 												}
 												elseif (!empty($params->dropdown_populate)) {
@@ -4242,10 +4394,10 @@ class EmundusModelApplication extends ListModel
 													$elt = '******';
 												}
 												elseif ($params->password == 3) {
-													$elt = '<a href="mailto:' . $element->content . '" title="' . Text::_($element->label) . '">' . $element->content . '</a>';
+													$elt = '<a href="mailto:' . $element->content . '" title="' . $element->content . '">' . $element->content . '</a>';
 												}
 												elseif ($params->password == 5) {
-													$elt = '<a href="' . $element->content . '" target="_blank" title="' . Text::_($element->label) . '">' . $element->content . '</a>';
+													$elt = '<a href="' . $element->content . '" target="_blank" title="' . $element->content . '">' . $element->content . '</a>';
 												}
 												else {
 													$elt = $element->content;
@@ -4336,6 +4488,29 @@ class EmundusModelApplication extends ListModel
 										if($element->plugin === 'databasejoin')
 										{
 											$element->content = '';
+										}
+
+										if($element->plugin === 'dropdown')
+										{
+											$params = json_decode($element->params);
+											$index  = array_search($element->content, $params->sub_options->sub_values);
+
+											$element->content = '';
+											if ($index !== false)
+											{
+												$valueLabel = Text::_($params->sub_options->sub_labels[$index]);
+												$element->content = $valueLabel;
+												if (in_array($valueLabel, $defaultPleaseSelectValue))
+												{
+													if($show_empty_fields == 1)
+													{
+														$element->content = '';
+													}
+													else {
+														continue;
+													}
+												}
+											}
 										}
 
 										if (!empty($element->label) && $element->label != ' ') {
@@ -4443,7 +4618,10 @@ class EmundusModelApplication extends ListModel
 							foreach ($elements as $element) {
 								if (!empty($element->label) && $element->label != ' ') {
 									if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
-										$elt = date(EmundusHelperFabrik::getFabrikDateParam($element,'date_form_format'), strtotime($element->content));
+										// dateOffset can be 0 (UTC) or 1 (local)
+										$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($element, 'date_store_as_local');
+
+										$elt = EmundusHelperDate::displayDate($element->content, EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), $dateOffset);
 									}
 									else {
 										$elt = $element->content;
@@ -4492,7 +4670,10 @@ class EmundusModelApplication extends ListModel
 
 										if (in_array($elements[$j]->plugin,['date','jdate'])) {
 											if (!empty($elements[$j]->content) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00')) {
-												$elt = date(EmundusHelperFabrik::getFabrikDateParam($elements[$j],'date_form_format'), strtotime($r_elt));
+												// dateOffset can be 0 (UTC) or 1 (local)
+												$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_store_as_local');
+
+												$elt = EmundusHelperDate::displayDate($r_elt, EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), $dateOffset);
 											}
 											else {
 												$elt = '';
@@ -4593,7 +4774,10 @@ class EmundusModelApplication extends ListModel
 
 									if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
 										if (!empty($element->content) && ($element->content != '0000-00-00 00:00:00' && $element->content != '0000-00-00')) {
-											$elt = date(EmundusHelperFabrik::getFabrikDateParam($element,'date_form_format'), strtotime($element->content));
+											// dateOffset can be 0 (UTC) or 1 (local)
+											$dateOffset = (int) EmundusHelperFabrik::getFabrikDateParam($element, 'date_store_as_local');
+
+											$elt = EmundusHelperDate::displayDate($element->content, EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), $dateOffset);
 										}
 										else {
 											$elt = '';
@@ -4677,7 +4861,7 @@ class EmundusModelApplication extends ListModel
 									}
 									elseif ($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') {
 										$params = json_decode($element->params);
-										$index  = array_search($element->content, $params->sub_options->sub_values);
+										$index  = (trim((string) $element->content) === '') ? false : array_search($element->content, $params->sub_options->sub_values);
 										if (strlen($index) > 0) {
 											$elt = Text::_($params->sub_options->sub_labels[$index]);
 										}
@@ -5256,9 +5440,23 @@ class EmundusModelApplication extends ListModel
 	 */
 	public function deleteGroupAccess(string $fnum, int $gid, ?int $current_user = null): bool
 	{
+		return $this->deleteGroupsAccess($fnum, [$gid], $current_user);
+	}
+
+	/**
+	 * @param   string    $fnum
+	 * @param   int[]     $gids
+	 * @param   int|null  $current_user  If null, the current user will be used
+	 *
+	 * @return bool
+	 */
+	public function deleteGroupsAccess(string $fnum, array $gids, ?int $current_user = null): bool
+	{
 		$deleted = false;
 
-		if (!empty($fnum) && !empty($gid)) {
+		$gids = array_values(array_filter(array_map('intval', $gids)));
+
+		if (!empty($fnum) && !empty($gids)) {
 			if (empty($current_user)) {
 				$current_user = Factory::getApplication()->getIdentity()->id;
 			}
@@ -5266,7 +5464,7 @@ class EmundusModelApplication extends ListModel
 			$query = $this->_db->getQuery(true);
 
 			$query->delete('#__emundus_group_assoc')
-				->where($this->_db->quoteName('group_id') . ' = ' . $gid)
+				->where($this->_db->quoteName('group_id') . ' IN (' . implode(',', $gids) . ')')
 				->andWhere($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
 
 			try {
@@ -5280,10 +5478,10 @@ class EmundusModelApplication extends ListModel
 				$query->clear()
 					->select('label')
 					->from('#__emundus_setup_groups')
-					->where('id = ' . $gid);
+					->where('id IN (' . implode(',', $gids) . ')');
 
 				$this->_db->setQuery($query);
-				$label = $this->_db->loadResult();
+				$labels = $this->_db->loadColumn();
 
                 if (!class_exists('EmundusModelFiles')) {
                     require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
@@ -5291,15 +5489,15 @@ class EmundusModelApplication extends ListModel
                 $m_files = new EmundusModelFiles;
                 $fnumInfos = $m_files->getFnumInfos($fnum);
 
-				$logsParams = ['deleted' => ['details' => $label]];
-				EmundusModelLogs::log($current_user, $fnumInfos['applicant_id'], $fnum, ActionEnum::ACCESS_FILE->value, CrudEnum::DELETE->value, 'COM_EMUNDUS_ACCESS_ACCESS_FILE_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+				foreach ($labels as $label) {
+					$logsParams = ['deleted' => ['details' => $label]];
+					EmundusModelLogs::log($current_user, $fnumInfos['applicant_id'], $fnum, ActionEnum::ACCESS_FILE->value, CrudEnum::DELETE->value, 'COM_EMUNDUS_ACCESS_ACCESS_FILE_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+				}
 			}
 		}
 
 		return $deleted;
 	}
-
-	//TODO: Add the deleteGroupsAccess function here (multiple groups, if no id provided all groups of fnum
 
 	/**
 	 * @param $fnum string
@@ -6472,6 +6670,8 @@ class EmundusModelApplication extends ListModel
 
 		$query = $this->_db->getQuery(true);
 
+		$fabrikComponentId = ComponentHelper::getComponent('com_fabrik')->id;
+
 		if (!empty($fnums)) {
 			$query->select(['CONCAT(m.link,"&Itemid=", m.id) as link', $this->_db->quoteName('cc.fnum')])
 				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
@@ -6480,6 +6680,12 @@ class EmundusModelApplication extends ListModel
 				->leftJoin($this->_db->quoteName('#__menu', 'm') . ' ON ' . $this->_db->quoteName('m.menutype') . ' = ' . $this->_db->quoteName('esp.menutype') . ' AND ' . $this->_db->quoteName('m.published') . '>=0 AND ' . $this->_db->quoteName('m.level') . '=1 AND ' . $this->_db->quoteName('m.link') . ' <> "" AND ' . $this->_db->quoteName('m.link') . ' <> "#"')
 				->where($this->_db->quoteName('cc.fnum') . ' IN(' . implode(',', $fnums) . ')')
 				->order($this->_db->quoteName('m.lft') . ' ASC');
+			
+			if(!empty($fabrikComponentId))
+			{
+				$query->andWhere($this->_db->qn('component_id') . ' = :fabrikComponentId')
+					->bind(':fabrikComponentId', $fabrikComponentId, ParameterType::INTEGER);
+			}
 
 			$this->_db->setQuery($query);
 			try {
@@ -6496,6 +6702,13 @@ class EmundusModelApplication extends ListModel
 					->from($this->_db->quoteName('#__menu'))
 					->where($this->_db->quoteName('published') . '=1 AND ' . $this->_db->quoteName('menutype') . ' LIKE ' . $this->_db->quote($user->menutype) . ' AND ' . $this->_db->quoteName('link') . ' <> "" AND ' . $this->_db->quoteName('link') . ' <> "#"')
 					->order($this->_db->quoteName('lft') . ' DESC');
+
+				if(!empty($fabrikComponentId))
+				{
+					$query->andWhere($this->_db->qn('component_id') . ' = :fabrikComponentId')
+						->bind(':fabrikComponentId', $fabrikComponentId, ParameterType::INTEGER);
+				}
+
 				try {
 					$this->_db->setQuery($query);
 					$res = $this->_db->loadObject();
@@ -6530,18 +6743,41 @@ class EmundusModelApplication extends ListModel
 	}
 
 	/**
+	 * A multiple table (evaluations) holds several rows per file: the repetitions shown must be
+	 * those of the evaluation being printed, a "= (SELECT id ...)" fails as soon as there are two.
+	 */
+	private function getRepeatParentCondition(string $column, string $parent_table, string $fnum, $step_id = 0, $parent_row_id = 0): string
+	{
+		if (!empty($parent_row_id)) {
+			return $this->_db->quoteName($column) . ' = ' . (int) $parent_row_id;
+		}
+
+		$subQuery = $this->_db->getQuery(true)
+			->select($this->_db->quoteName('id'))
+			->from($this->_db->quoteName($parent_table))
+			->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+		if (!empty($step_id)) {
+			$subQuery->where($this->_db->quoteName('step_id') . ' = ' . (int) $step_id);
+		}
+
+		return $this->_db->quoteName($column) . ' IN (' . $subQuery . ')';
+	}
+
+	/**
 	 * @param $elements
 	 * @param $table
 	 * @param $parent_table
 	 * @param $fnum
+	 * @param $step_id
+	 * @param $parent_row_id
 	 *
 	 * @return bool
 	 *
 	 */
-	public function checkEmptyRepeatGroups($elements, $table, $parent_table, $fnum)
+	public function checkEmptyRepeatGroups($elements, $table, $parent_table, $fnum, $step_id = 0, $parent_row_id = 0)
 	{
 		$query    = $this->_db->getQuery(true);
-		$subQuery = $this->_db->getQuery(true);
 
 		$eMConfig          = JComponentHelper::getParams('com_emundus');
 		$show_empty_fields = $eMConfig->get('show_empty_fields', 1);
@@ -6550,23 +6786,17 @@ class EmundusModelApplication extends ListModel
 			return 't.' . $obj->name;
 		}, $elements);
 
-		$subQuery
-			->select($this->_db->quoteName('id'))
-			->from($this->_db->quoteName($parent_table))
-			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
-
 		$query
 			->select(implode(',', $elements))
 			->from($this->_db->quoteName($table, 't'))
-			->leftJoin($this->_db->quoteName($parent_table, 'j') . ' ON ' . $this->_db->quoteName('j.id') . ' = ' . $this->_db->quoteName('t.parent_id'))
-			->where($this->_db->quoteName('t.parent_id') . " = (" . $subQuery . ")");
+			->where($this->getRepeatParentCondition('t.parent_id', $parent_table, $fnum, $step_id, $parent_row_id));
 
 		try {
 			$this->_db->setQuery($query);
-			$this->_db->execute();
+			$rows = $this->_db->loadAssocList();
 
-			if ($this->_db->getNumRows() >= 1) {
-				$res = $this->_db->loadAssoc();
+			if (!empty($rows)) {
+				$res = array_merge(...array_map('array_values', $rows));
 
 				$elements = array_map(function ($arr) {
 					if (is_numeric($arr)) {
@@ -6741,7 +6971,9 @@ class EmundusModelApplication extends ListModel
 				$path_href = JURI::base() . EMUNDUS_PATH_REL . $user_id . '/' . $upload->filename;
 				$html      .= '<li><b>' . $upload->value . '</b>';
 				$html      .= '<ul>';
-				$html      .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . strftime("%d/%m/%Y %H:%M", strtotime($upload->timedate)) . ')<br/><b>' . Text::_('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
+				// $upload->timedate is already a localized display string (formatted in getUserAttachmentsByFnum via displayDate),
+				// so re-parsing it with strtotime() failed and produced the epoch "01/01/1970 00:00". Print it as-is.
+				$html      .= '<li><a href="' . $path_href . '" dir="ltr" target="_blank">' . $upload->filename . '</a> (' . $upload->timedate . ')<br/><b>' . Text::_('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION') . '</b> : ' . $upload->description . '</li>';
 				$html      .= '</ul>';
 				$html      .= '</li>';
 			}
@@ -7602,6 +7834,62 @@ class EmundusModelApplication extends ListModel
 	}
 
 	/**
+	 * Same shape as a getSharedFileUsers() row, so the owner can be listed alongside the collaborators.
+	 */
+	public function getSharedFileOwner(int $ccid): ?object
+	{
+		$query = $this->_db->getQuery(true);
+
+		$query->select('ecc.applicant_id as user_id, u.email, eu.firstname as user_firstname, eu.lastname as user_lastname, eu.profile_picture')
+			->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+			->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('ecc.applicant_id'))
+			->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('ecc.applicant_id'))
+			->where($this->_db->quoteName('ecc.id') . ' = ' . $ccid);
+
+		try {
+			$this->_db->setQuery($query);
+			$owner = $this->_db->loadObject();
+		}
+		catch (Exception $e) {
+			Log::add('Failed to get owner of shared file ' . $ccid . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			$owner = null;
+		}
+
+		if (!empty($owner)) {
+			$owner->id       = 'owner';
+			$owner->is_owner = true;
+		}
+
+		return $owner ?: null;
+	}
+
+	/**
+	 * Read from the database, not from the session: the owner can change this right at any time.
+	 */
+	public function canSeeSharedUsers(int $ccid, int $user_id): bool
+	{
+		$query = $this->_db->getQuery(true);
+
+		$query->select('1')
+			->from($this->_db->quoteName('#__emundus_files_request'))
+			->where($this->_db->quoteName('ccid') . ' = ' . $ccid)
+			->where($this->_db->quoteName('user_id') . ' = ' . $user_id)
+			->where($this->_db->quoteName('uploaded') . ' = 1')
+			->where($this->_db->quoteName('show_shared_users') . ' = 1');
+
+		try {
+			$this->_db->setQuery($query);
+
+			return !empty($this->_db->loadResult());
+		}
+		catch (Exception $e) {
+			Log::add('Failed to check shared users visibility on file ' . $ccid . ' for user ' . $user_id . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
+			return false;
+		}
+	}
+
+	/**
 	 * Share a file with users
 	 *
 	 * @param $emails
@@ -7616,19 +7904,10 @@ class EmundusModelApplication extends ListModel
 	 */
 	public function shareFileWith($emails, $ccid, $user_id = null, $auto_accept = 0)
 	{
-		$default_rights = [
-			'r',
-			'u',
-			'show_history',
-			'show_shared_users',
-		];
-		$application_module = ModuleHelper::getModule('mod_emundus_applications');
-		if (!empty($application_module->id)) {
-			$params = json_decode($application_module->params);
-
-			if (!empty($params->mod_emundus_applications_collaborate_default_rights)) {
-				$default_rights = $params->mod_emundus_applications_collaborate_default_rights;
-			}
+		$collaborate_addon = (new AddonRepository())->getByName(AddonEnum::COLLABORATE->value);
+		$default_rights = $collaborate_addon?->getParam(CollaborateAddonConfiguration::DEFAULT_RIGHTS, CollaborateAddonConfiguration::CONFIGURATION_GROUP);
+		if (empty($default_rights)) {
+			$default_rights = CollaborateAddonConfiguration::DEFAULT_RIGHTS_VALUE;
 		}
 
 		$results = ['status' => true, 'emails' => [], 'failed_emails' => []];
@@ -7756,8 +8035,8 @@ class EmundusModelApplication extends ListModel
 	{
 		$collaboration_url = '';
 
-		$emundus_config = ComponentHelper::getParams('com_emundus');
-		$collaboration_id = $emundus_config->get('collaborate_link', 0);
+		$collaborate_addon = (new AddonRepository())->getByName(AddonEnum::COLLABORATE->value);
+		$collaboration_id = (int) $collaborate_addon?->getParam(CollaborateAddonConfiguration::ACCEPTANCE_MENU, CollaborateAddonConfiguration::CONFIGURATION_GROUP);
 
 		if (!empty($collaboration_id)) {
 			$menu_item = Factory::getApplication()->getMenu()->getItems('id', $collaboration_id, true);
@@ -7820,10 +8099,14 @@ class EmundusModelApplication extends ListModel
 				}
 				$fnum = EmundusHelperFiles::getFnumFromId($ccid);
 
-				if (!empty($sharedUser['id'])) {
+				$this->h_cache->set('shared_file_users_' . $ccid, null);
+
+				if (!empty($sharedUser['user_id'])) {
+					$this->clearMyFilesRequestsCache((int) $sharedUser['user_id']);
+
 					$query->clear()
 						->delete($this->_db->quoteName('#__emundus_users_assoc'))
-						->where($this->_db->quoteName('user_id') . ' = ' . $sharedUser['id'])
+						->where($this->_db->quoteName('user_id') . ' = ' . $sharedUser['user_id'])
 						->andWhere($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
 
 					$this->_db->setQuery($query);
@@ -7916,7 +8199,8 @@ class EmundusModelApplication extends ListModel
 	{
 		$updated = false;
 
-		if (!empty($request_id) && !empty($ccid) && !empty($right)) {
+		// $right is a column name: anything else than a right would let the caller rewrite ccid, user_id, uploaded...
+		if (!empty($request_id) && !empty($ccid) && in_array($right, CollaborateAddonConfiguration::RIGHTS, true)) {
 			try {
 				$query = $this->_db->getQuery(true);
 
@@ -7933,6 +8217,17 @@ class EmundusModelApplication extends ListModel
 
 			if ($updated) {
 				$this->h_cache->set('shared_file_users_' . $ccid, null);
+
+				$query->clear()
+					->select($this->_db->quoteName('user_id'))
+					->from($this->_db->quoteName('#__emundus_files_request'))
+					->where($this->_db->quoteName('id') . ' = ' . $request_id);
+				$this->_db->setQuery($query);
+				$collaborator_id = (int) $this->_db->loadResult();
+
+				if (!empty($collaborator_id)) {
+					$this->clearMyFilesRequestsCache($collaborator_id);
+				}
 			}
 		}
 
@@ -7954,7 +8249,7 @@ class EmundusModelApplication extends ListModel
 			$user_id = $this->_user->id;
 		}
 
-		$cache_key      = 'my_shared_files_' . $user_id;
+		$cache_key      = $this->getMyFilesRequestsCacheKey((int) $user_id);
 		$files = $this->h_cache->get($cache_key);
 
 		if (empty($files)) {
@@ -7981,6 +8276,21 @@ class EmundusModelApplication extends ListModel
 		}
 
 		return $files;
+	}
+
+	private function getMyFilesRequestsCacheKey(int $user_id): string
+	{
+		return 'my_shared_files_' . $user_id;
+	}
+
+	/**
+	 * The collaborator's rights are copied from this cache into their session: clear it whenever a request changes.
+	 */
+	public function clearMyFilesRequestsCache(int $user_id): void
+	{
+		if (!empty($user_id)) {
+			$this->h_cache->set($this->getMyFilesRequestsCacheKey($user_id), null);
+		}
 	}
 
 	/**
@@ -8175,6 +8485,11 @@ class EmundusModelApplication extends ListModel
 			try {
 				$query = $this->_db->getQuery(true);
 
+				// Before clearing the session, delete files that were uploaded but never submitted.
+				// Submitted files are removed from the session data on form.process; the remaining
+				// entries without a "need_to_delete" flag are orphan files left on disk.
+				$this->deleteUnsubmittedSessionFiles($fid, $fnum, $user_id);
+
 				$query->clear()
 					->delete($this->_db->quoteName('#__fabrik_form_sessions'))
 					->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum))
@@ -8189,6 +8504,106 @@ class EmundusModelApplication extends ListModel
 		}
 
 		return $cleared;
+	}
+
+	/**
+	 * Delete files that were uploaded to a form session but never submitted.
+	 *
+	 * Uploaded files are physically moved to the applicant folder as soon as they are dropped,
+	 * but the corresponding jos_emundus_uploads row is only created on form submission. If the
+	 * applicant abandons the form, those files stay on disk as orphans. Submitted files are removed
+	 * from the session data on submit, so any remaining entry without a "need_to_delete" flag is an
+	 * unsubmitted orphan that must be cleaned up before the session row is deleted.
+	 *
+	 * @param $fid
+	 * @param $fnum
+	 * @param $user_id
+	 *
+	 * @return void
+	 *
+	 * @since version 1.40.0
+	 */
+	private function deleteUnsubmittedSessionFiles($fid, $fnum, $user_id): void
+	{
+		try {
+			$query = $this->_db->getQuery(true);
+			$query->select($this->_db->quoteName('data'))
+				->from($this->_db->quoteName('#__fabrik_form_sessions'))
+				->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum))
+				->where($this->_db->quoteName('form_id') . ' = ' . $this->_db->quote($fid))
+				->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user_id));
+			$this->_db->setQuery($query);
+			$sessions = $this->_db->loadColumn();
+
+			if (empty($sessions)) {
+				return;
+			}
+
+			if (!class_exists('EmundusModelFiles')) {
+				require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+			}
+			$m_files      = new EmundusModelFiles;
+			$fnumInfos    = $m_files->getFnumInfos($fnum);
+			$applicant_id = $fnumInfos['applicant_id'] ?? null;
+
+			if (empty($applicant_id)) {
+				return;
+			}
+
+			// The applicant folder must exist and resolve to a real path: deletions are confined to it.
+			$baseDir = realpath(EMUNDUS_PATH_ABS . $applicant_id);
+			if ($baseDir === false) {
+				return;
+			}
+
+			// A filename also present in the uploads table is a submitted file and must never be deleted here.
+			$query->clear()
+				->select($this->_db->quoteName('filename'))
+				->from($this->_db->quoteName('#__emundus_uploads'))
+				->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+			$this->_db->setQuery($query);
+			$submittedFiles = $this->_db->loadColumn() ?: [];
+
+			foreach ($sessions as $rawData) {
+				$data = json_decode($rawData, true);
+
+				if (empty($data) || !is_array($data)) {
+					continue;
+				}
+
+				foreach ($data as $elementFiles) {
+					if (!is_array($elementFiles)) {
+						continue;
+					}
+
+					foreach ($elementFiles as $file) {
+						if (!is_array($file) || empty($file['filename']) || isset($file['need_to_delete'])) {
+							continue;
+						}
+
+						// Strip any path component to prevent traversal, and skip submitted files.
+						$filename = basename((string) $file['filename']);
+						if ($filename === '' || in_array($filename, $submittedFiles, true)) {
+							continue;
+						}
+
+						$target = realpath($baseDir . DS . $filename);
+
+						// Only delete a real file strictly contained inside the applicant folder.
+						if ($target === false || strpos($target, $baseDir . DS) !== 0 || !is_file($target)) {
+							continue;
+						}
+
+						if (!@unlink($target)) {
+							Log::add('Failed to delete unsubmitted session file ' . $target . ' for fnum ' . $fnum, Log::WARNING, 'com_emundus.error');
+						}
+					}
+				}
+			}
+		}
+		catch (Exception $e) {
+			Log::add('Failed to delete unsubmitted session files for form ' . $fid . ' fnum ' . $fnum . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
 	}
 
     /**

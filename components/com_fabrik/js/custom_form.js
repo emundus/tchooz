@@ -7,6 +7,7 @@ requirejs(['fab/fabrik'], function () {
   var elt_to_not_clear = ['panel', 'calc'];
 
   var userDetails = Joomla.getOptions('plg_system_emundus.user_details', {});
+  var applicationFileDetails = Joomla.getOptions('plg_system_emundus.application_file_details', {});
 
   var operators = {
     '=': function (a, b, plugin) {
@@ -117,6 +118,15 @@ requirejs(['fab/fabrik'], function () {
     // ...
   };
 
+  Fabrik.addEvent('fabrik.date.select', function (element) {
+    if(element.options.calendarSetup && element.options.calendarSetup.inputField) {
+      var dateInput = document.querySelector('input[name="' + element.options.calendarSetup.inputField + '"');
+      if(dateInput && element.subElements[0]) {
+        dateInput.value = element.subElements[0].getAttribute('data-alt-value');
+      }
+    }
+  });
+
   Fabrik.addEvent('fabrik.form.loaded', function (form) {
     manageRepeatGroup(form);
 
@@ -206,6 +216,25 @@ requirejs(['fab/fabrik'], function () {
         }
       }
     }
+
+    // Set columnheader role to all td with class day-name
+    let calendarDayNames = document.querySelectorAll('td.day-name');
+    calendarDayNames.forEach((dayName) => {
+      dayName.setAttribute('role', 'columnheader');
+    })
+
+    // Add a caption to every calendar table for accessibility (RGAA)
+    let calendarTables = document.querySelectorAll('.calendar-container table');
+    calendarTables.forEach((calendarTable) => {
+      if (calendarTable.querySelector(':scope > caption')) {
+        return;
+      }
+      let caption = document.createElement('caption');
+      caption.className = 'visually-hidden';
+      caption.textContent = Joomla.Text._('PLG_ELEMENT_JDATE_ARIA_LABEL_DATE');
+      calendarTable.insertBefore(caption, calendarTable.firstChild);
+    })
+
   });
 
   Fabrik.addEvent('fabrik.form.group.duplicate.end', function (form, event) {
@@ -232,6 +261,14 @@ requirejs(['fab/fabrik'], function () {
   });
 
   Fabrik.addEvent('fabrik.calc.update', function (event, value) {
+    event.form.elements.forEach(function (element) {
+      if(element.baseElementId === event.baseElementId) {
+        manageRules(event.form, element);
+      }
+    });
+  });
+
+  Fabrik.addEvent('fabrik.emundus_calculation.update', function (event, value) {
     event.form.elements.forEach(function (element) {
       if(element.baseElementId === event.baseElementId) {
         manageRules(event.form, element);
@@ -308,8 +345,8 @@ requirejs(['fab/fabrik'], function () {
   function removeFabrikFormSkeleton() {
     let header = document.querySelector('.page-header');
     if (header) {
-      if (header.querySelector('h1')) {
-        document.querySelector('.page-header h1').style.opacity = 1;
+      if (header.querySelector('h1') || header.querySelector('h2')) {
+        document.querySelector('.page-header h1, .page-header h2').style.opacity = 1;
       }
       header.classList.remove('skeleton');
     }
@@ -434,6 +471,13 @@ requirejs(['fab/fabrik'], function () {
         if (allConditionsAreUser) {
           elt_rules.push(js_rule);
         }
+
+        const allConditionsAreFile = js_rule.conditions.every((condition) => {
+          return condition.type === 'file' && applicationFileDetails && Object.keys(applicationFileDetails).includes(condition.field);
+        });
+        if (allConditionsAreFile) {
+          elt_rules.push(js_rule);
+        }
       });
     }
 
@@ -453,6 +497,21 @@ requirejs(['fab/fabrik'], function () {
 
           if(condition.type === 'user' && userDetails && Object.keys(userDetails).includes(condition.field)) {
             if (operators[condition.state](userDetails[condition.field], condition.values)) {
+              if (condition.group) {
+                condition_state[condition.group].states.push(true);
+              } else {
+                condition_state.push(true);
+              }
+            } else {
+              if (condition.group) {
+                condition_state[condition.group].states.push(false);
+              } else {
+                condition_state.push(false);
+              }
+            }
+          }
+          else if(condition.type === 'file' && applicationFileDetails && Object.keys(applicationFileDetails).includes(condition.field)) {
+            if (operators[condition.state](applicationFileDetails[condition.field], condition.values)) {
               if (condition.group) {
                 condition_state[condition.group].states.push(true);
               } else {
@@ -920,10 +979,11 @@ requirejs(['fab/fabrik'], function () {
     let formData = new FormData();
     formData.append('form_id', form_id);
 
-    fetch('/index.php?option=com_emundus&controller=application&task=clearformsession', {
+    return fetch('/index.php?option=com_emundus&controller=application&task=clearformsession', {
       method: 'POST',
       credentials: 'same-origin',
       body: formData,
+      keepalive: true,
     }).then((response) => {
       return response.json();
     }).then((data) => {

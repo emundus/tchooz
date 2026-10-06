@@ -224,9 +224,10 @@ class EmundusControllermapping extends BaseController
 				foreach ($objectDefinitions as $objectDefinition)
 				{
 					$options[] = [
-						'value'          => $objectDefinition->getName(),
-						'label'          => $objectDefinition->getLabel(),
-						'requiredFields' => array_map(fn($field) => $field->toSchema(), $objectDefinition->getRequiredFields()),
+						'value'           => $objectDefinition->getName(),
+						'label'           => $objectDefinition->getLabel(),
+						'requiredFields'  => array_map(fn($field) => $field->toSchema(), $objectDefinition->getRequiredFields()),
+						'availableFields' => array_map(fn($field) => $field->toSchema(), $objectDefinition->getAvailableFields()),
 					];
 				}
 

@@ -9,25 +9,35 @@ class DateTransformer implements FabrikTransformerInterface
 	// todo use an enum to validate date formats in the future
 	protected string $detailsDateFormat;
 
-	public function __construct(string $detailsDateFormat)
+	protected int $dateOffset;
+
+	public function __construct(string $detailsDateFormat, int $dateOffset = 1)
 	{
 		$this->detailsDateFormat = $detailsDateFormat;
+		$this->dateOffset        = $dateOffset;
 	}
 
 	public function transform(mixed $value, array $options = []): string
 	{
+		if (!class_exists('EmundusHelperDate'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/date.php';
+		}
+
 		$transformedValue = '';
-		$dates = is_string($value) ? explode(',', $value) : $value;
+		$dates            = is_string($value) ? explode(',', $value) : $value;
 
 		if (!empty($dates))
 		{
 			$transformedValues = [];
-			foreach ($dates as $index =>  $date)
+			foreach ($dates as $index => $date)
 			{
 				if (!empty($date) && $this->isValidDate($date))
 				{
-					$transformedValues[$index] = date($this->detailsDateFormat, strtotime($date));
-				} else {
+					$transformedValues[$index] = \EmundusHelperDate::displayDate($date, $this->detailsDateFormat, $this->dateOffset);
+				}
+				else
+				{
 					$transformedValues[$index] = '';
 				}
 			}
