@@ -308,32 +308,39 @@ class FilesController extends ApiController
 
 					if ($element->plugin === 'databasejoin')
 					{
-						$params = json_decode($element->params);
-
-						$joined_value = null;
-
-						// Search value in db table via join_key_column first
-						$query->clear()
-							->select($db->quoteName($params->join_key_column))
-							->from($db->quoteName($params->join_db_name))
-							->where($db->quoteName($params->join_key_column) . ' = ' . $db->quote($value));
-						$db->setQuery($query);
-						$joined_value = $db->loadResult();
-
-						if (empty($joined_value))
+						if (empty($value))
 						{
-							// Seach via join_val_column
+							$element_value = null;
+						}
+						else
+						{
+							$params = json_decode($element->params);
+
+							$joined_value = null;
+
+							// Search value in db table via join_key_column first
 							$query->clear()
 								->select($db->quoteName($params->join_key_column))
 								->from($db->quoteName($params->join_db_name))
-								->where($db->quoteName($params->join_val_column) . ' = ' . $db->quote($value));
+								->where($db->quoteName($params->join_key_column) . ' = ' . $db->quote($value));
 							$db->setQuery($query);
 							$joined_value = $db->loadResult();
-						}
 
-						if (!empty($joined_value))
-						{
-							$element_value = $joined_value;
+							if (empty($joined_value))
+							{
+								// Seach via join_val_column
+								$query->clear()
+									->select($db->quoteName($params->join_key_column))
+									->from($db->quoteName($params->join_db_name))
+									->where($db->quoteName($params->join_val_column) . ' = ' . $db->quote($value));
+								$db->setQuery($query);
+								$joined_value = $db->loadResult();
+							}
+
+							if (!empty($joined_value))
+							{
+								$element_value = $joined_value;
+							}
 						}
 					}
 					elseif ($element->plugin === 'emundus_phonenumber')
