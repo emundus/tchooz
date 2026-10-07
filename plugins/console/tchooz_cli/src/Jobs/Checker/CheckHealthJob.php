@@ -1026,7 +1026,7 @@ include(\'index.php\');
 		return $this->databaseService->getDatabase()->execute();
 	}
 
-	#[CheckAttribute(description: "Set a default value for status field in form 102 if not set")]
+	#[CheckAttribute(description: "Set a default value for status field and jdate plugin (not defaulting to today) for date_submitted field in form 102")]
 	private function checkStatusFieldNewApplication(): bool
 	{
 		$query = $this->databaseService->getDatabase()->createQuery();
@@ -1034,12 +1034,22 @@ include(\'index.php\');
 		$query->update($this->databaseService->getDatabase()->quoteName('#__fabrik_elements', 'fe'))
 			->set($this->databaseService->getDatabase()->quoteName('fe.default') . ' = 0')
 			->leftJoin($this->databaseService->getDatabase()->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->databaseService->getDatabase()->quoteName('ffg.group_id') . ' = ' . $this->databaseService->getDatabase()->quoteName('fe.group_id'))
-			->leftJoin($this->databaseService->getDatabase()->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $this->databaseService->getDatabase()->quoteName('ff.id') . ' = ' . $this->databaseService->getDatabase()->quoteName('ffg.form_id'))
 			->where($this->databaseService->getDatabase()->quoteName('fe.name') . ' = ' . $this->databaseService->getDatabase()->quote('status'))
-			->where($this->databaseService->getDatabase()->quoteName('ff.label') . ' = ' . $this->databaseService->getDatabase()->quote('SETUP_FILL_A_NEW_APPLICATION_FORM'));
+			->where($this->databaseService->getDatabase()->quoteName('ffg.form_id') . ' = 102');
 		$this->databaseService->getDatabase()->setQuery($query);
+		$statusUpdated = $this->databaseService->getDatabase()->execute();
 
-		return $this->databaseService->getDatabase()->execute();
+		$query->clear()
+			->update($this->databaseService->getDatabase()->quoteName('#__fabrik_elements', 'fe'))
+			->set($this->databaseService->getDatabase()->quoteName('fe.plugin') . ' = ' . $this->databaseService->getDatabase()->quote('jdate'))
+			->set($this->databaseService->getDatabase()->quoteName('fe.params') . ' = JSON_SET(' . $this->databaseService->getDatabase()->quoteName('fe.params') . ', ' . $this->databaseService->getDatabase()->quote('$.jdate_defaulttotoday') . ', ' . $this->databaseService->getDatabase()->quote('0') . ')')
+			->leftJoin($this->databaseService->getDatabase()->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->databaseService->getDatabase()->quoteName('ffg.group_id') . ' = ' . $this->databaseService->getDatabase()->quoteName('fe.group_id'))
+			->where($this->databaseService->getDatabase()->quoteName('fe.name') . ' = ' . $this->databaseService->getDatabase()->quote('date_submitted'))
+			->where($this->databaseService->getDatabase()->quoteName('ffg.form_id') . ' = 102');
+		$this->databaseService->getDatabase()->setQuery($query);
+		$dateSubmittedUpdated = $this->databaseService->getDatabase()->execute();
+
+		return $statusUpdated && $dateSubmittedUpdated;
 	}
 
 	#[CheckAttribute(description: "Replace old Swal version by new one in G5 template")]
