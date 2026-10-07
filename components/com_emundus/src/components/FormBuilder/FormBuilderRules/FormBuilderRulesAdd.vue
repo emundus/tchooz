@@ -16,6 +16,7 @@
 					:page="fabrikPage"
 					:elements="elements"
 					:user-profile-elements="userProfileElements"
+					:file-elements="fileElements"
 					:rule="rule"
 					@close-rule-add-js="$emit('close-rule-add')"
 				/>
@@ -60,6 +61,7 @@ export default {
 			fabrikPage: {},
 			elements: [],
 			userProfileElements: [],
+			fileElements: [],
 
 			loading: false,
 		};
@@ -86,6 +88,18 @@ export default {
 						Object.entries(response.data).forEach(([key, element]) => {
 							if (!element.hidden) {
 								this.userProfileElements.push(element);
+							}
+						});
+					} else {
+						this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
+					}
+				});
+
+				formService.getFileElements().then((response) => {
+					if (response.status) {
+						Object.entries(response.data).forEach(([key, element]) => {
+							if (!element.hidden) {
+								this.fileElements.push(element);
 							}
 						});
 					} else {

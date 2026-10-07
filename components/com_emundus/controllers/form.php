@@ -906,6 +906,19 @@ class EmundusControllerForm extends EmundusController
 		return EmundusResponse::ok($elements, Text::_('ELEMENTS_RETRIEVED'));
 	}
 
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'form', 'mode' => CrudEnum::READ]])]
+	public function getfileelements(): EmundusResponse
+	{
+		$elements = $this->m_form->getFileElements();
+		if (empty($elements))
+		{
+			throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_ELEMENTS'));
+		}
+
+		return EmundusResponse::ok($elements, Text::_('ELEMENTS_RETRIEVED'));
+	}
+
 	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
 	public function getFabrikElementOptions(): void
 	{

@@ -13,6 +13,7 @@
 					@add-condition="addCondition"
 					:elements="elements"
 					:user-profile-elements="userProfileElements"
+					:file-elements="fileElements"
 					:index="index"
 					:conditions="grouped_condition"
 					@remove-condition="removeCondition"
@@ -96,6 +97,10 @@ export default {
 			default: [],
 		},
 		userProfileElements: {
+			type: Array,
+			default: [],
+		},
+		fileElements: {
 			type: Array,
 			default: [],
 		},

@@ -1181,6 +1181,14 @@ class EmundusModelApplication extends ListModel
 
 	public function getFormsProgressWithProfile($fnum, $profile_id)
 	{
+		$progress = $this->calculateFormsProgressWithProfile($fnum, $profile_id);
+		$this->updateFormProgressByFnum($progress, $fnum);
+
+		return $progress;
+	}
+
+	public function calculateFormsProgressWithProfile($fnum, $profile_id)
+	{
 		$forms = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
 		$nb    = 0;
 
@@ -1196,8 +1204,6 @@ class EmundusModelApplication extends ListModel
 				$nb++;
 			}
 		}
-
-		$this->updateFormProgressByFnum(@floor(100 * $nb / count($forms)), $fnum);
 
 		return @floor(100 * $nb / count($forms));
 	}
@@ -1397,6 +1403,20 @@ class EmundusModelApplication extends ListModel
 			return false;
 		}
 
+		$progress = $this->calculateAttachmentsProgressWithProfile($fnum, $profile_id);
+		$this->updateAttachmentProgressByFnum($progress, $fnum);
+
+		return $progress;
+	}
+
+	public function calculateAttachmentsProgressWithProfile($fnum, $profile_id)
+	{
+		if (empty($fnum)) {
+			return false;
+		}
+
+		$doc_result = 0;
+
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 		$m_profile         = new EmundusModelProfile;
 		$profile_by_status = $m_profile->getProfileByStatus($fnum);
@@ -1426,8 +1446,6 @@ class EmundusModelApplication extends ListModel
 
 			$this->_db->setQuery($query);
 			$doc_result = $this->_db->loadResult();
-
-			$this->updateAttachmentProgressByFnum(floor($doc_result), $fnum);
 		}
 		catch (\Exception $e)
 		{
@@ -2378,14 +2396,14 @@ class EmundusModelApplication extends ListModel
 										$query->clear()
 											->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 											->from($this->_db->quoteName($table))
-											->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')')
+											->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0))
 											->orWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($aid));
 									}
 									else {
 										$query->clear()
 											->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 											->from($this->_db->quoteName($table))
-											->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')');
+											->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0));
 									}
 
 									try {
@@ -3408,7 +3426,7 @@ class EmundusModelApplication extends ListModel
 								throw $e;
 							}
 
-							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
+							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0);
 
 							if ($check_repeat_groups) {
 								if(!$page_title_inserted)
@@ -3428,14 +3446,14 @@ class EmundusModelApplication extends ListModel
 									$query->clear()
 										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 										->from($this->_db->quoteName($table))
-										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')')
+										->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0))
 										->orWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($aid));
 								}
 								else {
 									$query->clear()
 										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 										->from($this->_db->quoteName($table))
-										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')');
+										->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0));
 								}
 
 								try {
@@ -3732,7 +3750,7 @@ class EmundusModelApplication extends ListModel
 								throw $e;
 							}
 
-							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
+							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0);
 
 							if ($check_repeat_groups) {
 								if(!$page_title_inserted)
@@ -3747,14 +3765,14 @@ class EmundusModelApplication extends ListModel
 									$query->clear()
 										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 										->from($this->_db->quoteName($table))
-										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')')
+										->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0))
 										->orWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($aid));
 								}
 								else {
 									$query->clear()
 										->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 										->from($this->_db->quoteName($table))
-										->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')');
+										->where($this->getRepeatParentCondition('parent_id', $itemt->db_table_name, $fnum, $itemt->step_id ?? 0, $itemt->evaluation_row_id ?? 0));
 								}
 
 								$this->_db->setQuery($query);
@@ -6725,18 +6743,41 @@ class EmundusModelApplication extends ListModel
 	}
 
 	/**
+	 * A multiple table (evaluations) holds several rows per file: the repetitions shown must be
+	 * those of the evaluation being printed, a "= (SELECT id ...)" fails as soon as there are two.
+	 */
+	private function getRepeatParentCondition(string $column, string $parent_table, string $fnum, $step_id = 0, $parent_row_id = 0): string
+	{
+		if (!empty($parent_row_id)) {
+			return $this->_db->quoteName($column) . ' = ' . (int) $parent_row_id;
+		}
+
+		$subQuery = $this->_db->getQuery(true)
+			->select($this->_db->quoteName('id'))
+			->from($this->_db->quoteName($parent_table))
+			->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+		if (!empty($step_id)) {
+			$subQuery->where($this->_db->quoteName('step_id') . ' = ' . (int) $step_id);
+		}
+
+		return $this->_db->quoteName($column) . ' IN (' . $subQuery . ')';
+	}
+
+	/**
 	 * @param $elements
 	 * @param $table
 	 * @param $parent_table
 	 * @param $fnum
+	 * @param $step_id
+	 * @param $parent_row_id
 	 *
 	 * @return bool
 	 *
 	 */
-	public function checkEmptyRepeatGroups($elements, $table, $parent_table, $fnum)
+	public function checkEmptyRepeatGroups($elements, $table, $parent_table, $fnum, $step_id = 0, $parent_row_id = 0)
 	{
 		$query    = $this->_db->getQuery(true);
-		$subQuery = $this->_db->getQuery(true);
 
 		$eMConfig          = JComponentHelper::getParams('com_emundus');
 		$show_empty_fields = $eMConfig->get('show_empty_fields', 1);
@@ -6745,23 +6786,17 @@ class EmundusModelApplication extends ListModel
 			return 't.' . $obj->name;
 		}, $elements);
 
-		$subQuery
-			->select($this->_db->quoteName('id'))
-			->from($this->_db->quoteName($parent_table))
-			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
-
 		$query
 			->select(implode(',', $elements))
 			->from($this->_db->quoteName($table, 't'))
-			->leftJoin($this->_db->quoteName($parent_table, 'j') . ' ON ' . $this->_db->quoteName('j.id') . ' = ' . $this->_db->quoteName('t.parent_id'))
-			->where($this->_db->quoteName('t.parent_id') . " = (" . $subQuery . ")");
+			->where($this->getRepeatParentCondition('t.parent_id', $parent_table, $fnum, $step_id, $parent_row_id));
 
 		try {
 			$this->_db->setQuery($query);
-			$this->_db->execute();
+			$rows = $this->_db->loadAssocList();
 
-			if ($this->_db->getNumRows() >= 1) {
-				$res = $this->_db->loadAssoc();
+			if (!empty($rows)) {
+				$res = array_merge(...array_map('array_values', $rows));
 
 				$elements = array_map(function ($arr) {
 					if (is_numeric($arr)) {
@@ -8450,6 +8485,11 @@ class EmundusModelApplication extends ListModel
 			try {
 				$query = $this->_db->getQuery(true);
 
+				// Before clearing the session, delete files that were uploaded but never submitted.
+				// Submitted files are removed from the session data on form.process; the remaining
+				// entries without a "need_to_delete" flag are orphan files left on disk.
+				$this->deleteUnsubmittedSessionFiles($fid, $fnum, $user_id);
+
 				$query->clear()
 					->delete($this->_db->quoteName('#__fabrik_form_sessions'))
 					->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum))
@@ -8464,6 +8504,106 @@ class EmundusModelApplication extends ListModel
 		}
 
 		return $cleared;
+	}
+
+	/**
+	 * Delete files that were uploaded to a form session but never submitted.
+	 *
+	 * Uploaded files are physically moved to the applicant folder as soon as they are dropped,
+	 * but the corresponding jos_emundus_uploads row is only created on form submission. If the
+	 * applicant abandons the form, those files stay on disk as orphans. Submitted files are removed
+	 * from the session data on submit, so any remaining entry without a "need_to_delete" flag is an
+	 * unsubmitted orphan that must be cleaned up before the session row is deleted.
+	 *
+	 * @param $fid
+	 * @param $fnum
+	 * @param $user_id
+	 *
+	 * @return void
+	 *
+	 * @since version 1.40.0
+	 */
+	private function deleteUnsubmittedSessionFiles($fid, $fnum, $user_id): void
+	{
+		try {
+			$query = $this->_db->getQuery(true);
+			$query->select($this->_db->quoteName('data'))
+				->from($this->_db->quoteName('#__fabrik_form_sessions'))
+				->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum))
+				->where($this->_db->quoteName('form_id') . ' = ' . $this->_db->quote($fid))
+				->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user_id));
+			$this->_db->setQuery($query);
+			$sessions = $this->_db->loadColumn();
+
+			if (empty($sessions)) {
+				return;
+			}
+
+			if (!class_exists('EmundusModelFiles')) {
+				require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+			}
+			$m_files      = new EmundusModelFiles;
+			$fnumInfos    = $m_files->getFnumInfos($fnum);
+			$applicant_id = $fnumInfos['applicant_id'] ?? null;
+
+			if (empty($applicant_id)) {
+				return;
+			}
+
+			// The applicant folder must exist and resolve to a real path: deletions are confined to it.
+			$baseDir = realpath(EMUNDUS_PATH_ABS . $applicant_id);
+			if ($baseDir === false) {
+				return;
+			}
+
+			// A filename also present in the uploads table is a submitted file and must never be deleted here.
+			$query->clear()
+				->select($this->_db->quoteName('filename'))
+				->from($this->_db->quoteName('#__emundus_uploads'))
+				->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+			$this->_db->setQuery($query);
+			$submittedFiles = $this->_db->loadColumn() ?: [];
+
+			foreach ($sessions as $rawData) {
+				$data = json_decode($rawData, true);
+
+				if (empty($data) || !is_array($data)) {
+					continue;
+				}
+
+				foreach ($data as $elementFiles) {
+					if (!is_array($elementFiles)) {
+						continue;
+					}
+
+					foreach ($elementFiles as $file) {
+						if (!is_array($file) || empty($file['filename']) || isset($file['need_to_delete'])) {
+							continue;
+						}
+
+						// Strip any path component to prevent traversal, and skip submitted files.
+						$filename = basename((string) $file['filename']);
+						if ($filename === '' || in_array($filename, $submittedFiles, true)) {
+							continue;
+						}
+
+						$target = realpath($baseDir . DS . $filename);
+
+						// Only delete a real file strictly contained inside the applicant folder.
+						if ($target === false || strpos($target, $baseDir . DS) !== 0 || !is_file($target)) {
+							continue;
+						}
+
+						if (!@unlink($target)) {
+							Log::add('Failed to delete unsubmitted session file ' . $target . ' for fnum ' . $fnum, Log::WARNING, 'com_emundus.error');
+						}
+					}
+				}
+			}
+		}
+		catch (Exception $e) {
+			Log::add('Failed to delete unsubmitted session files for form ' . $fid . ' fnum ' . $fnum . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
 	}
 
     /**

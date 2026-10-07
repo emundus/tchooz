@@ -25,6 +25,7 @@ use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\User\User;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
+use Tchooz\Enums\Fabrik\ApplicationFileElementsEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\Fabrik\GroupVisibilityEnum;
 use Tchooz\Enums\User\AuthenticationModeEnum;
@@ -735,8 +736,12 @@ class EmundusModelForm extends ListModel
 						->where($conditions);
 
 					$this->db->setQuery($query);
+					$deleted = $this->db->execute();
 
-					return $this->db->execute();
+					// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+					(new EmundusHelperCache())->clean();
+
+					return $deleted;
 
 				}
 				catch (Exception $e) {
@@ -799,6 +804,9 @@ class EmundusModelForm extends ListModel
 
 				$this->db->setQuery($query);
 				$response['status'] = $this->db->execute();
+
+				// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+				(new EmundusHelperCache())->clean();
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/form | Error when unpublish forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -857,8 +865,12 @@ class EmundusModelForm extends ListModel
 					->where($se_conditions);
 
 				$this->db->setQuery($query);
+				$published = $this->db->execute();
 
-				return $this->db->execute();
+				// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+				(new EmundusHelperCache())->clean();
+
+				return $published;
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/form | Error when publish forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -1324,6 +1336,9 @@ class EmundusModelForm extends ListModel
 
 			LanguageFactory::cleanCache();
 
+			// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+			(new EmundusHelperCache())->clean();
+
 			return $newprofile;
 		}
 		catch (Exception $e) {
@@ -1509,8 +1524,12 @@ class EmundusModelForm extends ListModel
 
 			try {
 				$this->db->setQuery($query_pid);
+				$updated = $this->db->execute();
 
-				return $this->db->execute();
+				// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+				(new EmundusHelperCache())->clean();
+
+				return $updated;
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/form | Cannot update the form ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query_pid . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -1568,6 +1587,9 @@ class EmundusModelForm extends ListModel
 					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($prid));
 				$this->db->setQuery($query);
 				$results[] = $this->db->execute();
+
+				// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+				(new EmundusHelperCache())->clean();
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/form | Cannot update the form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -3017,6 +3039,12 @@ class EmundusModelForm extends ListModel
 							$elt->plugin = ElementPluginEnum::RADIO->value;
 							$elt->params = (object) FabrikOptionsFactory::makeOptionsFromEnum(AuthenticationModeEnum::cases());
 						}
+						elseif ($condition->type === 'file')
+						{
+							$applicationFileElement = ApplicationFileElementsEnum::tryFrom($condition->field);
+							$elt                    = $applicationFileElement ? $this->buildFileConditionElement($applicationFileElement) : null;
+							$elt->params = (object)$elt->params;
+						}
 						else
 						{
 							$query->clear()
@@ -3066,7 +3094,15 @@ class EmundusModelForm extends ListModel
 							}
 						}
 						else {
-							$options = $this->getConditionOptionsFromElement($elt->plugin, $params);
+							if($condition->type == 'file')
+							{
+								$options = $params->sub_options;
+							}
+							else
+							{
+								$options = $this->getConditionOptionsFromElement($elt->plugin, $params);
+							}
+
 							if ($options !== null) {
 								$condition->options = $options;
 							}
@@ -3541,6 +3577,23 @@ class EmundusModelForm extends ListModel
 	{
 		$elements = [];
 
+		// Profile elements change rarely: cache per language and per output shape.
+		if (!class_exists('EmundusHelperCache'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+		}
+		$h_cache   = new EmundusHelperCache('com_emundus.profile');
+		$cache_key = 'user_profile_elements_' . ($only_names ? 'names' : 'full') . '_' . $this->app->getLanguage()->getTag();
+
+		if ($h_cache->isEnabled())
+		{
+			$cached = $h_cache->get($cache_key, false);
+			if ($cached !== false)
+			{
+				return $cached;
+			}
+		}
+
 		try
 		{
 			// Get profile form id
@@ -3596,6 +3649,11 @@ class EmundusModelForm extends ListModel
 			else {
 				$elements = $this->db->loadColumn();
 			}
+
+			if ($h_cache->isEnabled())
+			{
+				$h_cache->set($cache_key, $elements);
+			}
 		}
 		catch (Exception $e)
 		{
@@ -3603,5 +3661,50 @@ class EmundusModelForm extends ListModel
 		}
 
 		return $elements;
+	}
+
+	public function getFileElements(): array
+	{
+		$elements = [];
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		try
+		{
+			$applicationFileElements = ApplicationFileElementsEnum::cases();
+			foreach ($applicationFileElements as $applicationFileElement)
+			{
+				$elements[] = $this->buildFileConditionElement($applicationFileElement);
+			}
+		} catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at getFileElements : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $elements;
+	}
+
+	/**
+	 * Build a condition element (dropdown of table rows) for an application-file element.
+	 * Shared by getFileElements() and getJSConditionsByForm() (type === 'file').
+	 */
+	private function buildFileConditionElement(ApplicationFileElementsEnum $applicationFileElement): stdClass
+	{
+		$query = $this->db->createQuery();
+		$query->select('id as value, label')
+			->from($this->db->qn($applicationFileElement->getTableName()));
+		$this->db->setQuery($query);
+		$options = $this->db->loadObjectList();
+
+		$element         = new stdClass();
+		$element->id     = $applicationFileElement->value;
+		$element->name   = $applicationFileElement->value;
+		$element->label  = $applicationFileElement->getLabel();
+		$element->plugin = ElementPluginEnum::DROPDOWN->value;
+		$element->hidden = 0;
+		$element->params = FabrikOptionsFactory::makeOptionsFromEnum($options);
+
+		return $element;
 	}
 }

@@ -221,11 +221,23 @@ class Com_EmundusInstallerScript
 		}
 
 		$cachingMethod = Factory::getApplication()->get('caching');
-		if ($cachingMethod === 1)
+		$sitenamePagetitles = Factory::getApplication()->get('sitename_pagetitles');
+		if ($cachingMethod === 1 || $sitenamePagetitles === 0)
 		{
-			// Update to 2
-			$options['caching'] = 2;
-			EmundusHelperUpdate::updateConfigurationFile($options);
+			if($cachingMethod === 1)
+			{
+				// Update to 2
+				$options['caching'] = 2;
+			}
+			if($sitenamePagetitles === 0)
+			{
+				$options['sitename_pagetitles'] = 2;
+			}
+
+			if(!empty($options))
+			{
+				EmundusHelperUpdate::updateConfigurationFile($options);
+			}
 		}
 
 		$dbLanguage = new DbLanguage();

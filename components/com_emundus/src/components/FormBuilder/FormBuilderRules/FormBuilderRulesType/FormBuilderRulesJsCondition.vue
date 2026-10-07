@@ -144,6 +144,10 @@ export default {
 			type: Array,
 			default: () => [],
 		},
+		fileElements: {
+			type: Array,
+			default: () => [],
+		},
 		multiple: {
 			type: Boolean,
 			default: false,
@@ -198,7 +202,7 @@ export default {
 			],
 			options: [],
 			options_plugins: ['dropdown', 'databasejoin', 'radiobutton', 'checkbox'],
-			fieldType: ['form', 'user'],
+			fieldType: ['form', 'user', 'file'],
 			conditionData: null,
 
 			sourceField: null,
@@ -212,15 +216,11 @@ export default {
 			this.elementsOptions = this.elements;
 		} else if (this.conditionData.type === 'user') {
 			this.elementsOptions = this.userProfileElements;
+		} else if (this.conditionData.type === 'file') {
+			this.elementsOptions = this.fileElements;
 		}
 
-		if (this.page.id) {
-			this.conditionData.field = this.elementsOptions.find((element) => element.name === this.conditionData.field);
-			if (this.conditionData.field) {
-				this.defineOptions(this.conditionData.field);
-			}
-		}
-
+		// Register the field watcher first so field resolution flows through it (defineOptions).
 		watch(
 			() => this.conditionData.field,
 			(val, oldVal) => {
@@ -235,8 +235,30 @@ export default {
 				}
 			},
 		);
+
+		if (this.page.id) {
+			// file/user options load asynchronously in the parent; resolve now if ready,
+			// and re-resolve once elementsOptions is populated.
+			this.resolveSelectedField();
+			watch(
+				() => this.elementsOptions.length,
+				() => this.resolveSelectedField(),
+			);
+		}
 	},
 	methods: {
+		resolveSelectedField() {
+			// Only resolve while field is still the saved string identifier; skip once it's an element object.
+			if (typeof this.conditionData.field !== 'string') {
+				return;
+			}
+
+			const match = this.elementsOptions.find((element) => element.name == this.conditionData.field);
+			if (match) {
+				// Assigning the object triggers the field watcher, which runs defineOptions.
+				this.conditionData.field = match;
+			}
+		},
 		labelTranslate({ label }) {
 			let labelTranslated = label ? label : '';
 
@@ -359,6 +381,8 @@ export default {
 					this.elementsOptions = this.elements;
 				} else if (newType === 'user') {
 					this.elementsOptions = this.userProfileElements;
+				} else if (newType === 'file') {
+					this.elementsOptions = this.fileElements;
 				}
 			}
 		},
