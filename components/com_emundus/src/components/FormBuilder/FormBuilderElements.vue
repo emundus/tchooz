@@ -1,6 +1,6 @@
 <template>
 	<div id="form-builder-elements" style="min-width: 260px">
-		<div class="tw-flex tw-items-center tw-justify-around">
+		<div class="tw-mt-2 tw-flex tw-items-center tw-justify-around">
 			<div
 				v-for="menu in menus"
 				:key="menu.id"

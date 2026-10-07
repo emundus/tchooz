@@ -83,7 +83,7 @@ class PurchaseOrderObject extends AbstractSofisObject implements SelfExecutingMa
 		return new SynchronizerMappingObjectDefinition(
 			$this->getName(),
 			'COM_EMUNDUS_SOFIS_PURCHASE_ORDER_OBJECT_LABEL',
-			'/data/PurchaseOrderHeadersV2',
+			'/' . $this->entityPath(self::HEADER_ENTITY),
 			new ExternalReferenceEntity(0, 'fnum', '', '', null, self::HEADER_ENTITY, 'PurchaseOrderNumber'),
 			[ApiMethodEnum::GET, ApiMethodEnum::POST],
 			[], // requiredFields (config params) — none
@@ -130,6 +130,7 @@ class PurchaseOrderObject extends AbstractSofisObject implements SelfExecutingMa
 	{
 		$fnum = (string) $context->getFile();
 		$data = MappingService::getJsonFromMapping($mapping, $context);
+		$data['SiretNumber'] = $this->normalizeSiret($data['SiretNumber'] ?? '');
 
 		// A purchase order is a financial document: never create a second header for the same file.
 		// The line may still be missing though (a previous run failing between the two POSTs), so we
@@ -138,10 +139,13 @@ class PurchaseOrderObject extends AbstractSofisObject implements SelfExecutingMa
 
 		if ($storedOrderNumber !== null)
 		{
+			$this->debug('Purchase order ' . $storedOrderNumber . ' already stored for file ' . $fnum . ', checking its line');
 			$this->ensureLine($transport, $data, $storedOrderNumber);
 
 			return true;
 		}
+
+		$this->debug('No purchase order stored for file ' . $fnum . ', creating it');
 
 		$this->validateRequiredFields($data, self::GROUP_HEADER);
 		$this->validateRequiredFields($data, self::GROUP_DIMENSION);
@@ -153,6 +157,8 @@ class PurchaseOrderObject extends AbstractSofisObject implements SelfExecutingMa
 		{
 			throw new \DomainException(Text::sprintf('COM_EMUNDUS_SOFIS_PO_VENDOR_NOT_FOUND', (string) $data['SiretNumber']));
 		}
+
+		$this->debug('Vendor ' . ($vendor->VendorAccountNumber ?? '(none)') . ' found for SIRET ' . $data['SiretNumber']);
 
 		$headerPayload = $this->buildHeaderPayload($data, $vendor);
 		$created       = $this->create($transport, self::HEADER_ENTITY, $headerPayload);
@@ -166,9 +172,11 @@ class PurchaseOrderObject extends AbstractSofisObject implements SelfExecutingMa
 
 		// Persist before creating the line: the reference is what prevents a duplicate header, and a
 		// failing line is recoverable on the next run (see ensureLine).
+		$this->debug('Purchase order header ' . $orderNumber . ' created for file ' . $fnum);
 		$this->persistReference($fnum, $orderNumber, $mapping->getSynchronizerId());
 
 		$this->create($transport, self::LINE_ENTITY, $this->buildLinePayload($data, $orderNumber));
+		$this->debug('Purchase order ' . $orderNumber . ' line created');
 
 		return true;
 	}

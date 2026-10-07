@@ -34,6 +34,7 @@ use Joomla\Registry\Registry;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterRenderDefinition;
 use Tchooz\Entities\Emails\TagModifierRegistry;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\User\AuthenticationModeEnum;
 use Tchooz\Providers\DbLanguageProvider;
 use Tchooz\Providers\EmundusSubscriberProvider;
@@ -180,13 +181,16 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$wa   = $this->getApplication()->getDocument()->getWebAssetManager();
 
 		$profile_data = [];
+		$applicationFileData = [];
 		$query        = $this->getDatabase()->createQuery();
 		if (!$this->getApplication()->getIdentity()->guest)
 		{
+			$currentUser = $this->getApplication()->getIdentity();
+
 			$query->clear()
 				->select('authProvider')
 				->from($this->getDatabase()->quoteName('#__users'))
-				->where($this->getDatabase()->quoteName('id') . ' = ' . (int) $this->getApplication()->getIdentity()->id);
+				->where($this->getDatabase()->quoteName('id') . ' = ' . (int) $currentUser->id);
 
 			$this->getDatabase()->setQuery($query);
 			$profile_data['authentication_mode'] = $this->getDatabase()->loadResult() ?? AuthenticationModeEnum::DEFAULT->value;
@@ -229,7 +233,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 				$wa->addInlineStyle($style);
 			}
 
-			//TODO: Improve this line with cache maybe
+
 			if (!class_exists('EmundusModelForm'))
 			{
 				require_once JPATH_ROOT . '/components/com_emundus/models/form.php';
@@ -242,11 +246,27 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 				$query->clear()
 					->select($profile_elements)
 					->from($this->getDatabase()->quoteName('#__emundus_users'))
-					->where($this->getDatabase()->quoteName('user_id') . ' = ' . (int) $this->getApplication()->getIdentity()->id);
+					->where($this->getDatabase()->quoteName('user_id') . ' = ' . (int) $currentUser->id);
 				$this->getDatabase()->setQuery($query);
 				$profile_elements_data = $this->getDatabase()->loadAssoc();
 
 				$profile_data = array_merge($profile_elements_data, $profile_data);
+			}
+
+			$fnum = $this->getApplication()->getInput()->getString('fnum', '');
+			if(!empty($fnum))
+			{
+				if(\EmundusHelperAccess::isFnumMine($currentUser->id, $fnum) || \EmundusHelperAccess::asAccessAction(1, CrudEnum::READ->value, $currentUser->id, $fnum))
+				{
+					$query->clear()
+						->select('esc.id as campaign, esp.id as program')
+						->from($this->getDatabase()->qn('#__emundus_campaign_candidature', 'ecc'))
+						->leftJoin($this->getDatabase()->qn('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->getDatabase()->qn('ecc.campaign_id') . ' = ' . $this->getDatabase()->qn('esc.id'))
+						->leftJoin($this->getDatabase()->qn('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->getDatabase()->qn('esc.program_id') . ' = ' . $this->getDatabase()->qn('esp.id'))
+						->where($this->getDatabase()->qn('ecc.fnum') . ' = ' . $this->getDatabase()->q($fnum));
+					$this->getDatabase()->setQuery($query);
+					$applicationFileData = $this->getDatabase()->loadAssoc();
+				}
 			}
 		}
 
@@ -274,6 +294,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		];
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.language', $options);
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.user_details', $profile_data);
+		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.application_file_details', $applicationFileData);
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.async_export', $allowAsync);
 
 		// Load and injection directive

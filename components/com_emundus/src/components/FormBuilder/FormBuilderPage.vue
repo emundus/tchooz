@@ -73,6 +73,7 @@
 				:ref="'section-' + section.group_id"
 				:can-update="canUpdate"
 				@open-element-properties="$emit('open-element-properties', $event)"
+				@open-element-rules="$emit('open-element-rules', $event)"
 				@move-element="updateElementsOrder"
 				@delete-section="deleteSection"
 				@update-element="getSections"
@@ -196,6 +197,15 @@ export default {
 					});
 
 					useFormBuilderStore().updatePageElements(allSectionsElements);
+
+					// Load the page rules so each element can show a shortcut when a rule is branched on it.
+					formService.getConditions(this.page.id).then((conditionsResponse) => {
+						const rules =
+							conditionsResponse.status && conditionsResponse.data && conditionsResponse.data.conditions
+								? conditionsResponse.data.conditions
+								: [];
+						useFormBuilderStore().updatePageRules(rules);
+					});
 				} else {
 					this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
 				}
@@ -311,8 +321,8 @@ export default {
 
 <style lang="scss">
 #form-builder-page {
-	width: calc(100% - 80px);
-	margin: 40px 40px;
+	width: calc(100% - 40px);
+	margin: 20px;
 
 	#add-section {
 		width: fit-content;

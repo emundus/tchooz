@@ -390,6 +390,17 @@ export default {
 		}
 	},
 
+	async getFileElements() {
+		try {
+			return await fetchClient.get('getfileelements');
+		} catch (error) {
+			return {
+				status: false,
+				error: error,
+			};
+		}
+	},
+
 	async getElementDefinition(elementId) {
 		try {
 			return await fetchClient.get('getelementdefinition', {
