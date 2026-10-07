@@ -19,7 +19,7 @@ class EmundusControllerCondition extends BaseController
 			$search = $this->input->getString('search_query', '');
 			$field = $this->input->getString('properties', '');
 
-			if (!empty($field) && !empty($search))
+			if (!empty($field))
 			{
 				// todo: make a support system in condition registry to handle big loads of field options for other cases than form fields ?
 				// each resolver would declare if it supports or not the field given, if it does, then we search options through this resolver

@@ -7,6 +7,7 @@ requirejs(['fab/fabrik'], function () {
   var elt_to_not_clear = ['panel', 'calc'];
 
   var userDetails = Joomla.getOptions('plg_system_emundus.user_details', {});
+  var applicationFileDetails = Joomla.getOptions('plg_system_emundus.application_file_details', {});
 
   var operators = {
     '=': function (a, b, plugin) {
@@ -470,6 +471,13 @@ requirejs(['fab/fabrik'], function () {
         if (allConditionsAreUser) {
           elt_rules.push(js_rule);
         }
+
+        const allConditionsAreFile = js_rule.conditions.every((condition) => {
+          return condition.type === 'file' && applicationFileDetails && Object.keys(applicationFileDetails).includes(condition.field);
+        });
+        if (allConditionsAreFile) {
+          elt_rules.push(js_rule);
+        }
       });
     }
 
@@ -489,6 +497,21 @@ requirejs(['fab/fabrik'], function () {
 
           if(condition.type === 'user' && userDetails && Object.keys(userDetails).includes(condition.field)) {
             if (operators[condition.state](userDetails[condition.field], condition.values)) {
+              if (condition.group) {
+                condition_state[condition.group].states.push(true);
+              } else {
+                condition_state.push(true);
+              }
+            } else {
+              if (condition.group) {
+                condition_state[condition.group].states.push(false);
+              } else {
+                condition_state.push(false);
+              }
+            }
+          }
+          else if(condition.type === 'file' && applicationFileDetails && Object.keys(applicationFileDetails).includes(condition.field)) {
+            if (operators[condition.state](applicationFileDetails[condition.field], condition.values)) {
               if (condition.group) {
                 condition_state[condition.group].states.push(true);
               } else {
@@ -956,10 +979,11 @@ requirejs(['fab/fabrik'], function () {
     let formData = new FormData();
     formData.append('form_id', form_id);
 
-    fetch('/index.php?option=com_emundus&controller=application&task=clearformsession', {
+    return fetch('/index.php?option=com_emundus&controller=application&task=clearformsession', {
       method: 'POST',
       credentials: 'same-origin',
       body: formData,
+      keepalive: true,
     }).then((response) => {
       return response.json();
     }).then((data) => {

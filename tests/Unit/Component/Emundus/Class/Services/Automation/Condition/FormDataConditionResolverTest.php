@@ -345,7 +345,8 @@ class FormDataConditionResolverTest extends UnitTestCase
 
 		$search = '';
 		$options = $this->resolver->searchFieldValues($fieldName, $search);
-		$this->assertEmpty($options, 'Search term is Required');
+		$this->assertNotEmpty($options, 'When the user remove search max. 100 options need to be returned');
+		$this->assertLessThanOrEqual(100, count($options));
 
 		// search through nationality, fra should exist
 		$search = 'Fra';

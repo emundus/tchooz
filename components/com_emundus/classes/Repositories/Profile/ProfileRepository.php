@@ -16,6 +16,8 @@ use Tchooz\Factories\Groups\GroupFactory;
 use Tchooz\Factories\Profile\ProfileFactory;
 use Tchooz\Repositories\EmundusRepository;
 
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+
 #[TableAttribute(table: 'jos_emundus_setup_profiles', alias: 'esp', columns: [
 	'id',
 	'label',
@@ -74,6 +76,9 @@ class ProfileRepository extends EmundusRepository
 				throw new \RuntimeException('Error while updating profile: ' . $this->db->getErrorMsg());
 			}
 		}
+
+		// Setup profiles changed: invalidate com_emundus cache (getApplicantsProfiles)
+		(new \EmundusHelperCache())->clean();
 
 		return true;
 	}

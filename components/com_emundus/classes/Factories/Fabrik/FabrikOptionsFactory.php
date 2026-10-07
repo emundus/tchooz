@@ -21,6 +21,10 @@ class FabrikOptionsFactory
 			{
 				$label = $case->getLabel();
 			}
+			else if(property_exists($case, 'label'))
+			{
+				$label = $case->label;
+			}
 			else
 			{
 				$label = $case->value;

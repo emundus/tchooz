@@ -84,6 +84,7 @@
 									:element="element"
 									:can-update="canUpdate"
 									@open-element-properties="$emit('open-element-properties', element)"
+									@open-element-rules="$emit('open-element-rules', element)"
 									@delete-element="deleteElement"
 									@cancel-delete-element="cancelDeleteElement"
 									@update-element="$emit('update-element')"

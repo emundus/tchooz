@@ -126,11 +126,16 @@ class CampaignFactory extends AbstractFactory
 			$trainingCodes = array_unique(array_filter(array_map(fn($obj) => $obj->training ?? null, $dbObjects)));
 			$cacheNs       = self::RELATION_PROGRAM;
 
-			foreach ($trainingCodes as $code)
+			// Only hit the DB for codes not already cached, then batch them in a single query.
+			$missingCodes = array_filter($trainingCodes, fn($code) => !RelationCache::has($cacheNs, $code));
+
+			if (!empty($missingCodes))
 			{
-				if (!RelationCache::has($cacheNs, $code))
+				$programsByCode = $this->getProgramRepository()->getByCodes($missingCodes);
+
+				foreach ($missingCodes as $code)
 				{
-					RelationCache::set($cacheNs, $code, $this->getProgramRepository()->getByCode($code));
+					RelationCache::set($cacheNs, $code, $programsByCode[$code] ?? null);
 				}
 			}
 		}

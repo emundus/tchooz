@@ -70,7 +70,7 @@ class VendorObject extends AbstractSofisObject implements SelfExecutingMappingOb
 		return new SynchronizerMappingObjectDefinition(
 			'vendor',
 			'COM_EMUNDUS_SOFIS_VENDOR_OBJECT_LABEL',
-			'/data/VendorsV2',
+			'/' . $this->entityPath(self::ENTITY),
 			new ExternalReferenceEntity(0, 'siret', '', '', null, self::ENTITY, 'VendorAccountNumber'),
 			[ApiMethodEnum::GET, ApiMethodEnum::POST, ApiMethodEnum::PATCH],
 			[], // requiredFields (config params) — none
@@ -105,17 +105,27 @@ class VendorObject extends AbstractSofisObject implements SelfExecutingMappingOb
 
 	public function execute(MappingEntity $mapping, ActionTargetEntity $context, MappingTransportInterface $transport): bool
 	{
-		$data = MappingService::getJsonFromMapping($mapping, $context);
+		$data                = MappingService::getJsonFromMapping($mapping, $context);
+		$data['SiretNumber'] = $this->normalizeSiret($data['SiretNumber'] ?? '');
 
-		$siret         = trim((string) ($data['SiretNumber'] ?? ''));
+		$siret         = $data['SiretNumber'];
 		$iban          = trim((string) ($data['IBAN'] ?? ''));
 		$bankAccountId = substr($iban, -10);
+
+		$this->debug('Vendor sync for file ' . $context->getFile() . ' : SIRET ' . $siret . ', bank account id ' . $bankAccountId);
+
+		// Checked before the search: an empty SIRET would match any vendor without one and receive this file's bank account.
+		if ($siret === '')
+		{
+			throw new \DomainException(Text::sprintf('COM_EMUNDUS_SOFIS_FIELD_REQUIRED', Text::_('COM_EMUNDUS_SOFIS_VENDOR_FIELD_SIRET')));
+		}
 
 		$existing = $this->findVendor($transport, $siret, $data);
 
 		if ($existing !== null)
 		{
 			$vendorAccountNumber = (string) $existing->VendorAccountNumber;
+			$this->debug('Vendor ' . $vendorAccountNumber . ' found for SIRET ' . $siret . ', default bank account ' . ($existing->BankAccountId ?? '(none)'));
 
 			// Keep the SIRET → VendorAccountNumber correspondence even when the vendor already exists.
 			$this->persistReference($siret, $vendorAccountNumber, $mapping->getSynchronizerId());
@@ -123,8 +133,12 @@ class VendorObject extends AbstractSofisObject implements SelfExecutingMappingOb
 			// Default bank account already matches the file IBAN → nothing else to do.
 			if ((string) ($existing->BankAccountId ?? '') === $bankAccountId)
 			{
+				$this->debug('Vendor ' . $vendorAccountNumber . ' bank account unchanged, nothing to do');
+
 				return true;
 			}
+
+			$this->debug('Vendor ' . $vendorAccountNumber . ' bank account changed, creating bank account ' . $bankAccountId);
 
 			$this->createBankAccount($transport, $vendorAccountNumber, $data, $bankAccountId);
 
@@ -133,7 +147,10 @@ class VendorObject extends AbstractSofisObject implements SelfExecutingMappingOb
 
 		// New vendor: create it (ERP generates the account number), keep the correspondence, add the
 		// bank account — which becomes the default for a brand-new vendor.
+		$this->debug('No vendor found for SIRET ' . $siret . ', creating it');
+
 		$vendorAccountNumber = $this->createVendor($transport, $data);
+		$this->debug('Vendor ' . $vendorAccountNumber . ' created for SIRET ' . $siret);
 		$this->persistReference($siret, $vendorAccountNumber, $mapping->getSynchronizerId());
 		$this->createBankAccount($transport, $vendorAccountNumber, $data, $bankAccountId);
 
@@ -210,6 +227,10 @@ class VendorObject extends AbstractSofisObject implements SelfExecutingMappingOb
 		if (!$this->externalReferenceRepository->flush($reference))
 		{
 			Log::add('Failed to persist SIRET -> VendorAccountNumber reference for SIRET ' . $siret, Log::ERROR, self::CHANNEL);
+
+			return;
 		}
+
+		$this->debug('Reference SIRET ' . $siret . ' -> ' . $vendorAccountNumber . ' persisted');
 	}
 }

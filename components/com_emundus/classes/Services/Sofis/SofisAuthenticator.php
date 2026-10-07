@@ -12,9 +12,9 @@ use Tchooz\Entities\Synchronizer\SynchronizerEntity;
  *
  *  1. Obtain an IDAMA access token from the authorization server using client_credentials with
  *     HTTP Basic authentication (base64(client_id:secret)).
- *  2. Exchange that IDAMA token for an Azure AD access token on the EntraId token endpoint, sending
- *     it as the client_assertion (jwt-bearer) together with the Entra client id, scope and the
- *     target Dynamics resource.
+ *  2. Exchange that IDAMA token for an Azure AD access token on the EntraId token endpoint exposed
+ *     by the MARIO API gateway, sending it as the client_assertion (jwt-bearer) together with the
+ *     Entra client id, scope and the target Dynamics resource (token audience).
  *
  * The resulting Azure AD token is cached until it expires so repeated calls within one lifecycle
  * reuse it. The authenticator receives an already-decrypted configuration (the synchronizer
@@ -58,7 +58,7 @@ class SofisAuthenticator
 		$this->resource          = $config['resource'] ?? '';
 		$this->transport         = $transport ?? new Api();
 
-		Log::addLogger(['text_file' => 'com_emundus.sofis.php'], Log::ALL, ['com_emundus.sofis']);
+		SofisLogger::register();
 	}
 
 	/**
@@ -116,7 +116,7 @@ class SofisAuthenticator
 
 		if (empty($response) || $response['status'] !== 200 || empty($response['data']->access_token))
 		{
-			Log::add('Sofis token exchange failed : ' . json_encode($response), Log::ERROR, 'com_emundus.sofis');
+			Log::add('Sofis token exchange failed : ' . json_encode($response), Log::ERROR, SofisLogger::CHANNEL);
 
 			throw new \RuntimeException(Text::_('COM_EMUNDUS_SOFIS_TOKEN_EXCHANGE_FAILED'));
 		}
@@ -155,7 +155,7 @@ class SofisAuthenticator
 
 		if (empty($response) || $response['status'] !== 200 || empty($response['data']->access_token))
 		{
-			Log::add('Sofis IDAMA token request failed : ' . json_encode($response), Log::ERROR, 'com_emundus.sofis');
+			Log::add('Sofis IDAMA token request failed : ' . json_encode($response), Log::ERROR, SofisLogger::CHANNEL);
 
 			throw new \RuntimeException(Text::_('COM_EMUNDUS_SOFIS_IDAMA_TOKEN_FAILED'));
 		}

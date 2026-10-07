@@ -170,6 +170,7 @@
 							:profile_id="parseInt(profile_id)"
 							:can-update="canUpdate"
 							@open-element-properties="onOpenElementProperties"
+							@open-element-rules="onOpenElementRules"
 							@open-section-properties="onOpenSectionProperties"
 							@open-page-properties="onOpenPageProperties"
 							@open-create-model="onOpenCreateModel"
@@ -695,6 +696,11 @@ export default {
 		onOpenElementProperties(event) {
 			this.selectedElement = event;
 			this.showInRightPanel = 'element-properties';
+		},
+		onOpenElementRules(element) {
+			// Pre-filter the rules view on the clicked element so the user lands on the related conditions.
+			this.formBuilderStore.updateRulesKeywords(element && element.label ? element.label : '');
+			this.setSectionShown('rules');
 		},
 		onUpdateDocument() {
 			this.$refs.formBuilderDocumentList.getDocuments();

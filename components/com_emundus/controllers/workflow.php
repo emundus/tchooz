@@ -398,8 +398,8 @@ class EmundusControllerWorkflow extends EmundusController
 						require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
 					}
 					$m_application                           = new EmundusModelApplication();
-					$serialized_step['forms_progress']       = $m_application->getFormsProgressWithProfile($fnum, $step->getProfileId());
-					$serialized_step['attachments_progress'] = $m_application->getAttachmentsProgressWithProfile($fnum, $step->getProfileId());
+					$serialized_step['forms_progress']       = $m_application->calculateFormsProgressWithProfile($fnum, $step->getProfileId());
+					$serialized_step['attachments_progress'] = $m_application->calculateAttachmentsProgressWithProfile($fnum, $step->getProfileId());
 					$serialized_step['completed']            = $serialized_step['forms_progress'] >= 100 && $serialized_step['attachments_progress'] >= 100;
 
 					if ($isApplicant && $serialized_step['completed'] === false && (!in_array($files_infos['status'], $step->getEntryStatus()) || (in_array($files_infos['status'], $step->getEntryStatus()) && $serialized_step['dates']['start_date_raw'] > date('Y-m-d H:i:s'))))

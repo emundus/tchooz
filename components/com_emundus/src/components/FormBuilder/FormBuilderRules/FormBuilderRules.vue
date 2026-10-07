@@ -228,6 +228,7 @@ export default {
 			rules: [],
 			elements: [],
 			userProfileElements: [],
+			fileElements: [],
 			keywords: '',
 
 			loading: false,
@@ -277,6 +278,18 @@ export default {
 						this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
 					}
 				});
+
+				formService.getFileElements().then((response) => {
+					if (response.status) {
+						Object.entries(response.data).forEach(([key, element]) => {
+							if (!element.hidden) {
+								this.fileElements.push(element);
+							}
+						});
+					} else {
+						this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
+					}
+				});
 			});
 		}
 	},
@@ -286,6 +299,8 @@ export default {
 			formService.getConditions(this.page.id).then((response) => {
 				if (response.status) {
 					this.rules = response.data && response.data.conditions ? response.data.conditions : [];
+					// Keep the store in sync so element shortcuts reflect rule add/edit/delete.
+					this.formBuilderStore.updatePageRules(this.rules);
 				} else {
 					this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
 				}
