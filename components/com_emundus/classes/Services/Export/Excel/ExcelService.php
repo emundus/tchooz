@@ -739,7 +739,24 @@ class ExcelService extends Export implements ExportInterface
 
 			$objPHPExcel->getActiveSheet()->freezePane('A2');
 
-			$objReader->loadIntoExisting($csvPath, $objPHPExcel);
+			// Applicant free-text can start with '=' (e.g. "=> see annex"). The default value binder
+			// reads such cells as formulas, and the writer then throws on operators like '>'
+			// ("Formula Error: Unexpected operator '>'"). StringValueBinder forces those values to
+			// stay text; setNumericConversion(false) keeps real numbers numeric so the '(%)'
+			// conditional formatting below still matches on 0/50/100.
+			$previousBinder = \PhpOffice\PhpSpreadsheet\Cell\Cell::getValueBinder();
+			$stringBinder   = new \PhpOffice\PhpSpreadsheet\Cell\StringValueBinder();
+			$stringBinder->setNumericConversion(false);
+			\PhpOffice\PhpSpreadsheet\Cell\Cell::setValueBinder($stringBinder);
+
+			try
+			{
+				$objReader->loadIntoExisting($csvPath, $objPHPExcel);
+			}
+			finally
+			{
+				\PhpOffice\PhpSpreadsheet\Cell\Cell::setValueBinder($previousBinder);
+			}
 
 			$objConditional1 = new Conditional();
 			$objConditional1->setConditionType(Conditional::CONDITION_CELLIS)

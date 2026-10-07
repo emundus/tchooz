@@ -194,7 +194,7 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 	{
 		$values = [];
 
-		if (!empty($fieldName) && !empty($search))
+		if (!empty($fieldName))
 		{
 			list($formId, $elementId) = explode('.', $fieldName);
 
