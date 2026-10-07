@@ -137,22 +137,22 @@ class CampaignEntity
 		$this->label = $label;
 	}
 
-	public function getDescription(): string
+	public function getDescription(): ?string
 	{
 		return $this->description;
 	}
 
-	public function setDescription(string $description): void
+	public function setDescription(?string $description): void
 	{
 		$this->description = $description;
 	}
 
-	public function getShortDescription(): string
+	public function getShortDescription(): ?string
 	{
 		return $this->short_description;
 	}
 
-	public function setShortDescription(string $short_description): void
+	public function setShortDescription(?string $short_description): void
 	{
 		$this->short_description = $short_description;
 	}

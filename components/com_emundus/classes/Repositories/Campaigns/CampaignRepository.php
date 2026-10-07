@@ -13,6 +13,7 @@ use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Filter\OutputFilter;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
@@ -1027,8 +1028,8 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 			$data = (object) [
 				'label'                => $campaignEntity->getLabel(),
-				'short_description'    => $campaignEntity->getShortDescription(),
-				'description'          => $campaignEntity->getDescription(),
+				'short_description'    => $campaignEntity->getShortDescription() ?? '',
+				'description'          => $campaignEntity->getDescription() ?? '',
 				'start_date'           => $campaignEntity->getStartDate()->format('Y-m-d H:i:s'),
 				'end_date'             => $campaignEntity->getEndDate()->format('Y-m-d H:i:s'),
 				'profile_id'           => !empty($campaignEntity->getProfileId()) ? $campaignEntity->getProfileId() : null,
@@ -1291,10 +1292,10 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 		// Strip combining diacritical marks (equivalent to /[̀-ͯ]/g)
 		$alias = preg_replace('/\p{Mn}/u', '', $alias);
-		// Replace any run of non-alphanumeric/underscore/hyphen chars with a single hyphen
-		$alias = preg_replace('/[^a-zA-Z0-9_-]+/', '-', $alias);
 
-		return strtolower(trim($alias, '-'));
+		$alias = OutputFilter::stringURLSafe($alias);
+
+		return trim(preg_replace('/-+/', '-', $alias), '-');
 	}
 
 	public function createCampaignAlias(CampaignEntity $campaignEntity, ?string $alias = null): bool
