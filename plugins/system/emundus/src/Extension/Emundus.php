@@ -221,7 +221,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 				$profile_font_title = $profile_details->published !== 1 ? '--em-coordinator-font-title' : '--em-applicant-font-title';
 
 				$style = ':root {';
-				if (!empty($profile_details->class))
+				if (!empty($profile_details->class) && !$e_session->applicant)
 				{
 					$style .= '--em-profile-color: var(' . $profile_details->class . ');';
 				}
