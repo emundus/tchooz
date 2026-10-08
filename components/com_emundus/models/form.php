@@ -278,7 +278,6 @@ class EmundusModelForm extends ListModel
 						$label[$language->sef] = LanguageFactory::getTranslation($evaluation_form->label, $language->lang_code) ?: $evaluation_form->label;
 					}
 					$evaluation_form->label = $label;
-					$evaluation_form->programs_count = count($this->getProgramsByForm($evaluation_form->id));
 				}
 
 				if($order_by == 'label')
@@ -301,8 +300,20 @@ class EmundusModelForm extends ListModel
 				}
 			}
 
-			$data['datas'] = $evaluation_forms;
 			$data['count'] = sizeof($evaluation_forms);
+
+			if (!empty($lim))
+			{
+				$offset           = empty($page) ? 0 : ($page - 1) * $lim;
+				$evaluation_forms = array_slice($evaluation_forms, $offset, $lim);
+			}
+
+			foreach ($evaluation_forms as $evaluation_form)
+			{
+				$evaluation_form->programs_count = count($this->getProgramsByForm($evaluation_form->id));
+			}
+
+			$data['datas'] = $evaluation_forms;
 		}
 		catch (Exception $e) {
 			Log::add('component/com_emundus/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
