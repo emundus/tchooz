@@ -686,7 +686,7 @@ class EmundusControllersettings extends EmundusController
 
 		$hideTchoozy = $preset['hideTchoozy'] == 1 ? 'none' : 'default';
 
-		foreach($yaml['tchoozy'] as $key => $value)
+		foreach ($yaml['tchoozy'] as $key => $value)
 		{
 			$newValue              = $hideTchoozy == 'none' ? 'none' : ($tchoozyConfig['form']['fields'][$key]['default'] ?? 'block');
 			$yaml['tchoozy'][$key] = $newValue;
@@ -894,33 +894,36 @@ class EmundusControllersettings extends EmundusController
 
 		$response = array('status' => true, 'msg' => 'SUCCESS', 'data' => $current_link);
 
-		$attributes = [
+		$attributes       = [
 			'link'
 		];
 		$attributesValues = [
 			$link
 		];
-		$emundusSession = Factory::getApplication()->getSession()->get('emundusUser');
+		$emundusSession   = Factory::getApplication()->getSession()->get('emundusUser');
 
-		$menu = null;
+		$menu  = null;
 		$menus = Factory::getApplication()->getMenu()->getItems($attributes, $attributesValues);
-		if(sizeof($menus) === 1)
+		if (sizeof($menus) === 1)
 		{
 			$menu = $menus[0];
 		}
-		else if(sizeof($menus) > 1)
+		else
 		{
-			// By default we take the first menu link to our current menutype
-			$menu = $menus[0];
-			if(!empty($emundusSession) && !empty($emundusSession->menutype))
+			if (sizeof($menus) > 1)
 			{
-				// But we check if we have a menu link to our current menutype
-				foreach ($menus as $otherMenu)
+				// By default we take the first menu link to our current menutype
+				$menu = $menus[0];
+				if (!empty($emundusSession) && !empty($emundusSession->menutype))
 				{
-					if($otherMenu->menutype === $emundusSession->menutype)
+					// But we check if we have a menu link to our current menutype
+					foreach ($menus as $otherMenu)
 					{
-						$menu = $otherMenu;
-						break;
+						if ($otherMenu->menutype === $emundusSession->menutype)
+						{
+							$menu = $otherMenu;
+							break;
+						}
 					}
 				}
 			}
@@ -928,7 +931,7 @@ class EmundusControllersettings extends EmundusController
 
 		if (!empty($menu))
 		{
-			$sef = EmundusHelperMenu::getLanguageSefPrefix($language);
+			$sef              = EmundusHelperMenu::getLanguageSefPrefix($language);
 			$response['data'] = !empty($sef) ? $sef . '/' . $menu->route : $menu->route;
 
 			if (!empty($options_to_set))
@@ -1188,7 +1191,8 @@ class EmundusControllersettings extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function getemailparameters(): EmundusResponse
 	{
-		$parameters         = $this->m_settings->getEmailParameters();
+		$parameters = $this->m_settings->getEmailParameters();
+
 		return EmundusResponse::ok($parameters);
 	}
 
@@ -2105,21 +2109,22 @@ class EmundusControllersettings extends EmundusController
 		$this->checkToken('get');
 
 		$synchronizerRepository = new SynchronizerRepository();
-		if(EmundusHelperAccess::asAdministratorAccessLevel($this->user->id))
+		if (EmundusHelperAccess::asAdministratorAccessLevel($this->user->id))
 		{
 			$apps = $synchronizerRepository->getList();
 			$apps = $apps->getItems();
 		}
-		else {
+		else
+		{
 			$apps = $synchronizerRepository->getItemsByField('published', 1, true);
 		}
 
-		$appsSerialized = [];
+		$appsSerialized     = [];
 		$integrationService = new IntegrationService();
-		foreach($apps as $app)
+		foreach ($apps as $app)
 		{
 			assert($app instanceof SynchronizerEntity);
-			$appSerialized = $app->serialize();
+			$appSerialized               = $app->serialize();
 			$appSerialized['parameters'] = [];
 
 			try
@@ -2153,15 +2158,16 @@ class EmundusControllersettings extends EmundusController
 		}
 
 		$synchronizerRepository = new SynchronizerRepository();
-		if(!empty($app_id))
+		if (!empty($app_id))
 		{
 			$app = $synchronizerRepository->getById($app_id);
 		}
-		else {
+		else
+		{
 			$app = $synchronizerRepository->getItemByField('type', $app_type);
 		}
 
-		if(empty($app))
+		if (empty($app))
 		{
 			throw new RuntimeException('App not found');
 		}
@@ -2200,8 +2206,8 @@ class EmundusControllersettings extends EmundusController
 		}
 
 		$synchronizerRepository = new SynchronizerRepository();
-		$synchronizer = $synchronizerRepository->getById($app_id);
-		if(empty($synchronizer))
+		$synchronizer           = $synchronizerRepository->getById($app_id);
+		if (empty($synchronizer))
 		{
 			throw new RuntimeException('App ID not found');
 		}
@@ -2211,7 +2217,8 @@ class EmundusControllersettings extends EmundusController
 		{
 			$result = $integrationService->activate($app_id);
 		}
-		else {
+		else
+		{
 			$result = $integrationService->deactivate($app_id);
 		}
 
@@ -2226,7 +2233,7 @@ class EmundusControllersettings extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function toggleappdisplay(): EmundusResponse
 	{
-		$app_id  = $this->input->getInt('app_id', 0);
+		$app_id    = $this->input->getInt('app_id', 0);
 		$published = $this->input->getInt('published', 1);
 		if (empty($app_id))
 		{
@@ -2234,14 +2241,14 @@ class EmundusControllersettings extends EmundusController
 		}
 
 		$synchronizerRepository = new SynchronizerRepository();
-		$synchronizer = $synchronizerRepository->getById($app_id);
-		if(empty($synchronizer))
+		$synchronizer           = $synchronizerRepository->getById($app_id);
+		if (empty($synchronizer))
 		{
 			throw new RuntimeException('App ID not found');
 		}
 
 		$synchronizer->setPublished($published);
-		if(!$synchronizerRepository->flush($synchronizer))
+		if (!$synchronizerRepository->flush($synchronizer))
 		{
 			throw new RuntimeException('Failed to flush');
 		}
@@ -2273,11 +2280,12 @@ class EmundusControllersettings extends EmundusController
 
 		$addonService = new AddonService();
 
-		if(EmundusHelperAccess::asAdministratorAccessLevel($this->user->id))
+		if (EmundusHelperAccess::asAdministratorAccessLevel($this->user->id))
 		{
 			$addons = $addonService->getAddons();
 		}
-		else {
+		else
+		{
 			$addons = $addonService->getVisibleAddons();
 		}
 
@@ -2286,22 +2294,22 @@ class EmundusControllersettings extends EmundusController
 		{
 			assert($addon instanceof AddonEntity);
 
-			if(empty($addon->getAddon()))
+			if (empty($addon->getAddon()))
 			{
 				continue;
 			}
 
 			$addonSerialized = $addon->__serialize();
-			$parameters = $addonService->getParameters($addon);
+			$parameters      = $addonService->getParameters($addon);
 			foreach ($parameters as $parameter)
 			{
 				assert($parameter instanceof Field);
 				$addonSerialized['parameters'][] = $parameter->toSchema();
-				if(empty($addonSerialized['params'][$parameter->getGroup()->getName()]))
+				if (empty($addonSerialized['params'][$parameter->getGroup()->getName()]))
 				{
 					$addonSerialized['params'][$parameter->getGroup()->getName()] = [];
 				}
-				if(empty($addonSerialized['params'][$parameter->getGroup()->getName()][$parameter->getName()]))
+				if (empty($addonSerialized['params'][$parameter->getGroup()->getName()][$parameter->getName()]))
 				{
 					$addonSerialized['params'][$parameter->getGroup()->getName()][$parameter->getName()] = '';
 				}
@@ -2322,9 +2330,9 @@ class EmundusControllersettings extends EmundusController
 		}
 
 		$addonService = new AddonService();
-		$addon = $addonService->getAddon($addon_type);
+		$addon        = $addonService->getAddon($addon_type);
 
-		if(empty($addon))
+		if (empty($addon))
 		{
 			throw new RuntimeException(Text::_('COM_EMUNDUS_SETTINGS_ADDON_NOT_FOUND'));
 		}
@@ -2337,7 +2345,7 @@ class EmundusControllersettings extends EmundusController
 	public function setupaddon(): EmundusResponse
 	{
 		$addon_type = $this->input->getString('addon_type', '');
-		$setup  = $this->input->getRaw('setup', []);
+		$setup      = $this->input->getRaw('setup', []);
 
 		if (empty($addon_type) || empty($setup))
 		{
@@ -2357,8 +2365,8 @@ class EmundusControllersettings extends EmundusController
 	{
 		$this->checkToken();
 
-		$addon            = $this->input->getRaw('addon', '{}');
-		$addon            = json_decode($addon, true);
+		$addon = $this->input->getRaw('addon', '{}');
+		$addon = json_decode($addon, true);
 
 		if (empty($addon) || !is_array($addon) || !isset($addon['namekey']))
 		{
@@ -2391,15 +2399,15 @@ class EmundusControllersettings extends EmundusController
 		$this->checkToken();
 
 		$displayed = $this->input->getInt('displayed', 0);
-		$namekey = $this->input->getString('addon_type', '');
-		if(empty($namekey))
+		$namekey   = $this->input->getString('addon_type', '');
+		if (empty($namekey))
 		{
 			throw new InvalidArgumentException('Addon type is required');
 		}
 
 		$addonService = new AddonService();
-		$result = $displayed === 1 ? $addonService->show($namekey) : $addonService->hide($namekey);
-		if(!$result)
+		$result       = $displayed === 1 ? $addonService->show($namekey) : $addonService->hide($namekey);
+		if (!$result)
 		{
 			throw new RuntimeException('Failed to update addon display status');
 		}
@@ -2413,15 +2421,15 @@ class EmundusControllersettings extends EmundusController
 		$this->checkToken();
 
 		$suggested = $this->input->getInt('suggested', 0);
-		$namekey = $this->input->getString('addon_type', '');
-		if(empty($namekey))
+		$namekey   = $this->input->getString('addon_type', '');
+		if (empty($namekey))
 		{
 			throw new InvalidArgumentException('Addon type is required');
 		}
 
 		$addonService = new AddonService();
-		$result = $suggested === 1 ? $addonService->suggest($namekey) : $addonService->removeSuggest($namekey);
-		if(!$result)
+		$result       = $suggested === 1 ? $addonService->suggest($namekey) : $addonService->removeSuggest($namekey);
+		if (!$result)
 		{
 			throw new RuntimeException('Failed to update addon suggest status');
 		}
@@ -2434,16 +2442,16 @@ class EmundusControllersettings extends EmundusController
 	{
 		$this->checkToken();
 
-		$enabled    = $this->input->getInt('enabled', 0);
+		$enabled = $this->input->getInt('enabled', 0);
 		$namekey = $this->input->getString('addon_type', '');
-		if(empty($namekey))
+		if (empty($namekey))
 		{
 			throw new InvalidArgumentException('Addon type is required');
 		}
 
 		$addonService = new AddonService();
-		$result = $enabled === 1 ? $addonService->activate($namekey) : $addonService->deactivate($namekey);
-		if(!$result)
+		$result       = $enabled === 1 ? $addonService->activate($namekey) : $addonService->deactivate($namekey);
+		if (!$result)
 		{
 			throw new RuntimeException('Failed to update addon status');
 		}
@@ -2465,21 +2473,21 @@ class EmundusControllersettings extends EmundusController
 	public function sendcommercialinterest(): EmundusResponse
 	{
 		$namekey = $this->input->getString('addon_type', '');
-		if(empty($namekey))
+		if (empty($namekey))
 		{
 			throw new InvalidArgumentException('Addon type is required');
 		}
 
 		$addonService = new AddonService();
-		$addon = $addonService->getAddon($namekey);
-		if(empty($addon))
+		$addon        = $addonService->getAddon($namekey);
+		if (empty($addon))
 		{
 			throw new NotFoundException('Addon not found');
 		}
 
 		$emundusUserRepository = new EmundusUserRepository();
-		$user = Factory::getApplication()->getIdentity();
-		$emundusUser = $emundusUserRepository->getByUserId($user->id);
+		$user                  = Factory::getApplication()->getIdentity();
+		$emundusUser           = $emundusUserRepository->getByUserId($user->id);
 
 		$emailService = new EmailService();
 		$emailService->sendEmailWithoutTemplate(
@@ -2507,7 +2515,7 @@ class EmundusControllersettings extends EmundusController
 		$this->checkToken('post');
 
 		$setup = $this->input->getRaw('setup', '{}');
-		if(empty($setup))
+		if (empty($setup))
 		{
 			throw new InvalidArgumentException('Setup is required');
 		}
@@ -3588,67 +3596,67 @@ class EmundusControllersettings extends EmundusController
 		exit;
 	}
 
-	public function checkanalyticsenabled()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function checkanalyticsenabled(): void
 	{
 		$this->checkToken('get');
 
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		try
 		{
-			try
-			{
-				$analyticsAddonHandler = new EmundusAnalyticsAddonHandler();
-				$enabled               = $analyticsAddonHandler->checkEnabled();
+			$analyticsAddonHandler = new EmundusAnalyticsAddonHandler(null, null);
+			$enabled               = $analyticsAddonHandler->checkEnabled();
 
-				$response['status']  = true;
-				$response['code']    = 200;
-				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_STATUS_FETCHED');
-				$response['data']    = ['enabled' => $enabled];
-			}
-			catch (Exception $e)
-			{
-				$response['code']    = 500;
-				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_STATUS_FETCH_FAILED') . ': ' . $e->getMessage();
-			}
+			$response['status']  = true;
+			$response['code']    = 200;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_STATUS_FETCHED');
+			$response['data']    = ['enabled' => $enabled];
+		}
+		catch (Exception $e)
+		{
+			$response['code']    = 500;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_STATUS_FETCH_FAILED') . ': ' . $e->getMessage();
 		}
 
 		echo json_encode((object) $response);
 		exit;
 	}
 
-	public function toggleanalytics()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function toggleanalytics(): void
 	{
 		$this->checkToken();
 
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		try
 		{
-			try
-			{
-				$enabled = $this->input->getInt('enabled', 0);
-				$enabled = filter_var($enabled, FILTER_VALIDATE_BOOLEAN);
+			$enabled = $this->input->getInt('enabled', 0);
+			$enabled = filter_var($enabled, FILTER_VALIDATE_BOOLEAN);
 
-				$analyticsAddonHandler = new EmundusAnalyticsAddonHandler();
-				$enabled               = $analyticsAddonHandler->toggle($enabled);
-				if ($enabled)
-				{
-					$response['status']  = true;
-					$response['code']    = 200;
-					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_SWITCH_SUCCESS');
-				}
-				else
-				{
-					$response['code']    = 500;
-					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_SWITCH_FAILED');
-				}
+			$analyticsAddonHandler = new EmundusAnalyticsAddonHandler(null, null);
+			if ($enabled)
+			{
+				$result = $analyticsAddonHandler->onActivate();
 			}
-			catch (Exception $e)
+			else
+			{
+				$result = $analyticsAddonHandler->onDeactivate();
+			}
+
+			if ($result)
+			{
+				$response['status']  = true;
+				$response['code']    = 200;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_SWITCH_SUCCESS');
+			}
+			else
 			{
 				$response['code']    = 500;
-				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_SWITCH_FAILED') . ': ' . $e->getMessage();
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_SWITCH_FAILED');
 			}
+		}
+		catch (Exception $e)
+		{
+			$response['code']    = 500;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_SWITCH_FAILED') . ': ' . $e->getMessage();
 		}
 
 		echo json_encode((object) $response);
@@ -3728,26 +3736,26 @@ class EmundusControllersettings extends EmundusController
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
 		{
-			$limit = $this->input->getInt('limit', 30);
+			$limit       = $this->input->getInt('limit', 30);
 			$searchQuery = $this->input->getString('search_query', '');
 
 			$emundusUserRepository = new EmundusUserRepository();
-			$applicants = $emundusUserRepository->getAllApplicants($limit, $searchQuery);
+			$applicants            = $emundusUserRepository->getAllApplicants($limit, $searchQuery);
 
 			$data = [];
 			foreach ($applicants as $applicant)
 			{
 				$data[] = [
 					'value' => $applicant->getUser()->id,
-					'name' => strtoupper($applicant->getLastname()) . ' ' . $applicant->getFirstname() . ' (' . $applicant->getUser()->email . ')'
+					'name'  => strtoupper($applicant->getLastname()) . ' ' . $applicant->getFirstname() . ' (' . $applicant->getUser()->email . ')'
 				];
 			}
 
 			$response = [
-				'status' => true,
+				'status'  => true,
 				'message' => Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_AVAILABLE_APPLICANTS_FETCHED'),
-				'code' => 200,
-				'data' => $data
+				'code'    => 200,
+				'data'    => $data
 			];
 		}
 
@@ -3757,7 +3765,7 @@ class EmundusControllersettings extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function getcustomreferenceformat(): EmundusResponse
 	{
-		$internalReferenceService = new InternalReferenceService(
+		$internalReferenceService    = new InternalReferenceService(
 			new DateProvider(),
 			new ApplicationFileRepository()
 		);
@@ -3784,17 +3792,17 @@ class EmundusControllersettings extends EmundusController
 		$dataResolvers = array_values($dataResolvers);
 		foreach ($dataResolvers as &$resolver)
 		{
-			if($resolver['targetType'] == 'campaign_data')
+			if ($resolver['targetType'] == 'campaign_data')
 			{
-				$resolver['fields'] = array_filter($resolver['fields'], function($field) {
+				$resolver['fields'] = array_filter($resolver['fields'], function ($field) {
 					return !in_array($field['name'], ['description', 'label', 'short_description', 'published']);
 				});
 				$resolver['fields'] = array_values($resolver['fields']);
 			}
 
-			if($resolver['targetType'] == 'program_data')
+			if ($resolver['targetType'] == 'program_data')
 			{
-				$resolver['fields'] = array_filter($resolver['fields'], function($field) {
+				$resolver['fields'] = array_filter($resolver['fields'], function ($field) {
 					return !in_array($field['name'], ['label']);
 				});
 				$resolver['fields'] = array_values($resolver['fields']);
@@ -3802,7 +3810,7 @@ class EmundusControllersettings extends EmundusController
 		}
 
 		$transformers = $mappingTransformationsRegistry->getTransformersSchemas();
-		$transformers = array_filter($transformers, function($transformer) {
+		$transformers = array_filter($transformers, function ($transformer) {
 			return $transformer['type'] !== 'sequential' && $transformer['type'] !== 'boolean';
 		});
 		$transformers = array_values($transformers);
@@ -3821,56 +3829,57 @@ class EmundusControllersettings extends EmundusController
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function savecustomreference(): EmundusResponse
 	{
-		$show_to_applicant  = $this->input->getInt('show_to_applicant', 0);
-		$show_in_files = $this->input->getInt('show_in_files', 0);
-		$json            = $this->app->input->getString('mapping');
+		$show_to_applicant = $this->input->getInt('show_to_applicant', 0);
+		$show_in_files     = $this->input->getInt('show_in_files', 0);
+		$json              = $this->app->input->getString('mapping');
 		if (empty($json))
 		{
 			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_SAVE_NO_DATA'), EmundusResponse::HTTP_BAD_REQUEST);
 		}
 
-		$triggering_status  = $this->input->getString('triggering_status');
+		$triggering_status = $this->input->getString('triggering_status');
 		$triggering_status = filter_var($triggering_status, FILTER_VALIDATE_INT);
-		if($triggering_status !== false)
+		if ($triggering_status !== false)
 		{
-			$statusRepository = new StatusRepository();
-			$triggering_status           = $statusRepository->getByStep($triggering_status);
+			$statusRepository  = new StatusRepository();
+			$triggering_status = $statusRepository->getByStep($triggering_status);
 			if (empty($triggering_status))
 			{
 				throw new InvalidArgumentException(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_SAVE_INVALID_STATUS'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 		}
-		else {
+		else
+		{
 			$triggering_status = null;
 		}
 
-		$separator       = $this->input->getString('separator', '-');
+		$separator = $this->input->getString('separator', '-');
 		$separator = SeparatorEnum::tryFrom($separator);
-		if(empty($separator))
+		if (empty($separator))
 		{
 			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_SAVE_INVALID_SEPARATOR'), EmundusResponse::HTTP_BAD_REQUEST);
 		}
 
 		$sequenceFormat = null;
-		$sequence = $this->input->getInt('sequence', 0);
-		if($sequence === 1)
+		$sequence       = $this->input->getInt('sequence', 0);
+		if ($sequence === 1)
 		{
 			$sequencePosition = $this->input->getString('sequence_position', 'end');
 			$sequencePosition = PositionEnum::tryFrom($sequencePosition);
-			if(empty($sequencePosition))
+			if (empty($sequencePosition))
 			{
 				throw new InvalidArgumentException(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_SAVE_INVALID_SEQUENCE_POSITION'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 
 			$sequenceResetType = $this->input->getString('sequence_reset_type', 'never');
 			$sequenceResetType = ResetTypeEnum::tryFrom($sequenceResetType);
-			if(empty($sequenceResetType))
+			if (empty($sequenceResetType))
 			{
 				throw new InvalidArgumentException(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CUSTOM_REFERENCE_FORMAT_SAVE_INVALID_SEQUENCE_RESET_TYPE'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 
 			$sequenceLength = $this->input->getInt('sequence_length', 0);
-			if($sequenceLength < 0)
+			if ($sequenceLength < 0)
 			{
 				$sequenceLength = 4;
 			}
@@ -3892,8 +3901,8 @@ class EmundusControllersettings extends EmundusController
 			$format->addBlock($block);
 		}
 
-		$addonRepository = new AddonRepository();
-		$customFormatReference   = $addonRepository->getByName('custom_reference_format');
+		$addonRepository       = new AddonRepository();
+		$customFormatReference = $addonRepository->getByName('custom_reference_format');
 		$customFormatReference->setParams($format->__serialize());
 
 		$addonRepository->flush($customFormatReference);
@@ -3904,10 +3913,10 @@ class EmundusControllersettings extends EmundusController
 	#[AccessAttribute(AccessLevelEnum::COORDINATOR)]
 	public function getApplicationFileCustomActions(): EmundusResponse
 	{
-		$config = ComponentHelper::getParams('com_emundus');
-		$actions = [];
+		$config         = ComponentHelper::getParams('com_emundus');
+		$actions        = [];
 		$actionRegistry = new ActionRegistry();
-		$index = 1;
+		$index          = 1;
 		foreach ($config->get('custom_actions', []) as $action)
 		{
 			if (!empty($action->label) && is_string($action->label))
@@ -3928,17 +3937,20 @@ class EmundusControllersettings extends EmundusController
 				$action->conditions = (new ConditionGroupEntity($index))->serialize();
 			}
 
-			if (!empty($action->action)) {
+			if (!empty($action->action))
+			{
 				$action->action = json_decode($action->action, true);
 				$actionInstance = $actionRegistry->getActionInstance($action->action['type']);
 				$actionInstance->setParametersValuesFromArray($action->action['parameter_values']);
 				$action->action = $actionInstance->serialize();
-			} else {
+			}
+			else
+			{
 				$action->action = null;
 			}
 
 			$action->id = $index;
-			$actions[] = $action;
+			$actions[]  = $action;
 			$index++;
 		}
 
@@ -3976,7 +3988,7 @@ class EmundusControllersettings extends EmundusController
 		}
 
 		$conditionRegistry = new ConditionRegistry();
-		$conditionsList = $conditionRegistry->getAvailableConditionSchemas([
+		$conditionsList    = $conditionRegistry->getAvailableConditionSchemas([
 			'target_types' => [
 				TargetTypeEnum::FILE->value,
 				TargetTypeEnum::USER->value,
@@ -3991,11 +4003,11 @@ class EmundusControllersettings extends EmundusController
 	public function saveApplicationFileCustomActions(): EmundusResponse
 	{
 		$response = EmundusResponse::fail(Text::_('ERROR'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
-		$json = $this->app->getInput()->getString('actions', '[]');
-		$actions = json_decode($json, true);
+		$json     = $this->app->getInput()->getString('actions', '[]');
+		$actions  = json_decode($json, true);
 
 		$configCustomActions = [];
-		$sanitizer = HtmlSanitizerSingleton::getInstance();
+		$sanitizer           = HtmlSanitizerSingleton::getInstance();
 		foreach ($actions as $index => $action)
 		{
 			foreach ($action['conditions']['conditions'] as $key => $condition)
@@ -4046,17 +4058,17 @@ class EmundusControllersettings extends EmundusController
 				$label = $sanitizer->sanitizeNoHtml($label);
 			}
 
-			$configCustomActions['custom_actions' . $index] = (object)[
-				'label' => $label,
-				'icon' => $sanitizer->sanitizeNoHtml($action['icon']),
+			$configCustomActions['custom_actions' . $index] = (object) [
+				'label'      => $label,
+				'icon'       => $sanitizer->sanitizeNoHtml($action['icon']),
 				'conditions' => json_encode($action['conditions']),
-				'action' => json_encode([
-					'type' => $action['action']['type'],
+				'action'     => json_encode([
+					'type'             => $action['action']['type'],
 					'parameter_values' => $action['action']['parameter_values'],
 				])
 			];
 		}
-		$configCustomActions = (object)$configCustomActions;
+		$configCustomActions = (object) $configCustomActions;
 
 		if ($this->m_settings->updateEmundusParam('emundus', 'custom_actions', $configCustomActions, $this->app->getIdentity()->id))
 		{
@@ -4076,17 +4088,19 @@ class EmundusControllersettings extends EmundusController
 		{
 			try
 			{
-				$addonRepository = new AddonRepository();
+				$addonRepository    = new AddonRepository();
 				$publicSessionAddon = $addonRepository->getByName($type);
-				$resolver = new AddonHandlerResolver();
-				$handler = $resolver->resolve($type, $publicSessionAddon);
+				$resolver           = new AddonHandlerResolver();
+				$handler            = $resolver->resolve($type, $publicSessionAddon);
 
 				$data = array_map(function ($param) {
 					return $param->toSchema();
 				}, $handler->getParameters());
 
 				$response = EmundusResponse::ok($data, Text::_('COM_EMUNDUS_ADDON_PARAMETERS_FETCHED'));
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				return EmundusResponse::fail(Text::_('COM_EMUNDUS_ADDON_HANDLER_NOT_FOUND'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 			}
 		}
@@ -4094,7 +4108,7 @@ class EmundusControllersettings extends EmundusController
 		return $response;
 	}
 
-	#[AccessAttribute(accessLevel : AccessLevelEnum::PARTNER)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
 	public function savefilterfiles(): EmundusResponse
 	{
 		$fnums = $this->input->getString('fnums', '');
@@ -4102,7 +4116,8 @@ class EmundusControllersettings extends EmundusController
 		$fnums = explode(',', $fnums);
 
 		$filters = [];
-		foreach ($fnums as $fnum) {
+		foreach ($fnums as $fnum)
+		{
 			$filters[] = [
 				'value' => $fnum,
 				'scope' => 'jecc.fnum'
@@ -4112,11 +4127,12 @@ class EmundusControllersettings extends EmundusController
 		$session = Factory::getApplication()->getSession();
 		$session->set('em-quick-search-filters', $filters);
 
-		$menu = Factory::getApplication()->getMenu();
-		$emundusUser      = $this->app->getSession()->get('emundusUser');
-		$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
+		$menu        = Factory::getApplication()->getMenu();
+		$emundusUser = $this->app->getSession()->get('emundusUser');
+		$files_menu  = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
 
-		if(empty($files_menu)) {
+		if (empty($files_menu))
+		{
 			$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=evaluation', $emundusUser->menutype], 'true');
 		}
 
