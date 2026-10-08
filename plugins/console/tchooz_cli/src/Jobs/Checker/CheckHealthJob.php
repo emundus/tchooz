@@ -945,6 +945,74 @@ include(\'index.php\');
 		return count($columns) === count($updated);
 	}
 
+	#[CheckAttribute(description: "Check fabrik lists auto_inc (1 except on views) and db_primary_key on id column")]
+	private function checkFabrikListsPrimaryKey(): bool
+	{
+		$db = $this->databaseService->getDatabase();
+
+		// Views can't hold an auto increment, so their auto_inc must stay at 0.
+		$views = $this->databaseService->getViews();
+
+		$query = $db->createQuery();
+		$query->select('id, db_table_name, auto_inc, db_primary_key')
+			->from($db->quoteName('#__fabrik_lists'))
+			->where($db->quoteName('db_table_name') . ' != ' . $db->quote(''));
+		$db->setQuery($query);
+		$lists = $db->loadObjectList();
+
+		$updated = [];
+		foreach ($lists as $list)
+		{
+			$isView          = in_array($list->db_table_name, $views, true);
+			$expectedAutoInc = $isView ? 0 : 1;
+			$hasIdColumn     = $this->tableHasIdColumn($list->db_table_name);
+
+			$changed = false;
+
+			if ((int) $list->auto_inc !== $expectedAutoInc)
+			{
+				$list->auto_inc = $expectedAutoInc;
+				$changed        = true;
+			}
+
+			// db_primary_key must point to the id column, e.g. jos_emundus_uploads.id
+			$expectedPrimaryKey = $list->db_table_name . '.id';
+			if ($hasIdColumn && $list->db_primary_key !== $expectedPrimaryKey)
+			{
+				$list->db_primary_key = $expectedPrimaryKey;
+				$changed              = true;
+			}
+
+			if (!$changed)
+			{
+				$updated[] = $list;
+				continue;
+			}
+
+			if ($db->updateObject('#__fabrik_lists', $list, 'id'))
+			{
+				$updated[] = $list;
+			}
+		}
+
+		return count($lists) === count($updated);
+	}
+
+	private function tableHasIdColumn(string $table): bool
+	{
+		$db = $this->databaseService->getDatabase();
+
+		$query = $db->createQuery();
+		$query->select('COLUMN_NAME')
+			->from('information_schema.COLUMNS')
+			->where('TABLE_SCHEMA = ' . $db->quote($this->databaseService->getDbName()))
+			->where('TABLE_NAME = ' . $db->quote($table))
+			->where('COLUMN_NAME = ' . $db->quote('id'));
+		$db->setQuery($query);
+
+		return !empty($db->loadResult());
+	}
+
 	#[CheckAttribute(description: "Replace emundus_fileupload_new by emundus_fileupload")]
 	private function checkEmundusFileuploadNew(): bool
 	{
@@ -958,7 +1026,7 @@ include(\'index.php\');
 		return $this->databaseService->getDatabase()->execute();
 	}
 
-	#[CheckAttribute(description: "Set a default value for status field in form 102 if not set")]
+	#[CheckAttribute(description: "Set a default value for status field and jdate plugin (not defaulting to today) for date_submitted field in form 102")]
 	private function checkStatusFieldNewApplication(): bool
 	{
 		$query = $this->databaseService->getDatabase()->createQuery();
@@ -966,12 +1034,22 @@ include(\'index.php\');
 		$query->update($this->databaseService->getDatabase()->quoteName('#__fabrik_elements', 'fe'))
 			->set($this->databaseService->getDatabase()->quoteName('fe.default') . ' = 0')
 			->leftJoin($this->databaseService->getDatabase()->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->databaseService->getDatabase()->quoteName('ffg.group_id') . ' = ' . $this->databaseService->getDatabase()->quoteName('fe.group_id'))
-			->leftJoin($this->databaseService->getDatabase()->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $this->databaseService->getDatabase()->quoteName('ff.id') . ' = ' . $this->databaseService->getDatabase()->quoteName('ffg.form_id'))
 			->where($this->databaseService->getDatabase()->quoteName('fe.name') . ' = ' . $this->databaseService->getDatabase()->quote('status'))
-			->where($this->databaseService->getDatabase()->quoteName('ff.label') . ' = ' . $this->databaseService->getDatabase()->quote('SETUP_FILL_A_NEW_APPLICATION_FORM'));
+			->where($this->databaseService->getDatabase()->quoteName('ffg.form_id') . ' = 102');
 		$this->databaseService->getDatabase()->setQuery($query);
+		$statusUpdated = $this->databaseService->getDatabase()->execute();
 
-		return $this->databaseService->getDatabase()->execute();
+		$query->clear()
+			->update($this->databaseService->getDatabase()->quoteName('#__fabrik_elements', 'fe'))
+			->set($this->databaseService->getDatabase()->quoteName('fe.plugin') . ' = ' . $this->databaseService->getDatabase()->quote('jdate'))
+			->set($this->databaseService->getDatabase()->quoteName('fe.params') . ' = JSON_SET(' . $this->databaseService->getDatabase()->quoteName('fe.params') . ', ' . $this->databaseService->getDatabase()->quote('$.jdate_defaulttotoday') . ', ' . $this->databaseService->getDatabase()->quote('0') . ')')
+			->leftJoin($this->databaseService->getDatabase()->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->databaseService->getDatabase()->quoteName('ffg.group_id') . ' = ' . $this->databaseService->getDatabase()->quoteName('fe.group_id'))
+			->where($this->databaseService->getDatabase()->quoteName('fe.name') . ' = ' . $this->databaseService->getDatabase()->quote('date_submitted'))
+			->where($this->databaseService->getDatabase()->quoteName('ffg.form_id') . ' = 102');
+		$this->databaseService->getDatabase()->setQuery($query);
+		$dateSubmittedUpdated = $this->databaseService->getDatabase()->execute();
+
+		return $statusUpdated && $dateSubmittedUpdated;
 	}
 
 	#[CheckAttribute(description: "Replace old Swal version by new one in G5 template")]
