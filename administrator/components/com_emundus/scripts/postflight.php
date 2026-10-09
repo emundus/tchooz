@@ -865,48 +865,104 @@ class Com_EmundusPostflightTasks
 		$checked = false;
 
 		// Session GC need to be 6 hours
+		$intervalHours = 6;
+
 		$query = $this->db->getQuery(true);
 
-		$query->select('id,execution_rules,cron_rules,params,next_execution')
+		$query->select('id,state,locked,last_execution,execution_rules,cron_rules,params,next_execution')
 			->from($this->db->quoteName('#__scheduler_tasks'))
 			->where($this->db->quoteName('type') . ' LIKE ' . $this->db->quote('session.gc'));
 		$this->db->setQuery($query);
 		$sessionGc = $this->db->loadAssoc();
 
-		if (!empty($sessionGc))
+		if (empty($sessionGc))
 		{
-			$params                   = json_decode($sessionGc['params'], true);
-			$params['individual_log'] = false;
-			$params['log_file']       = '';
-			$params['notifications']  = [
-				'success_mail'       => 0,
-				'failure_mail'       => 0,
-				'fatal_failure_mail' => 1,
-				'orphan_mail'        => 1
-			];
-			$sessionGc['params']      = json_encode($params);
+			Log::add('Session GC scheduler task not found, jos_session metadata will never be purged', Log::WARNING, 'com_emundus.error');
 
-			$cronRules               = json_decode($sessionGc['cron_rules'], true);
-			$cronRules['type']       = 'interval';
-			$cronRules['exp']        = 'PT6H';
-			$sessionGc['cron_rules'] = json_encode($cronRules);
-
-			$executionRules                   = json_decode($sessionGc['execution_rules'], true);
-			$executionRules['rule-type']      = 'interval-hours';
-			$executionRules['interval-hours'] = 6;
-			$executionRules['exec-time']      = '12:00';
-			$executionRules['exec-day']       = '02';
-			$sessionGc['execution_rules']     = json_encode($executionRules);
-
-			$next_execution = new DateTime();
-			$next_execution->add(new DateInterval('PT6H'));
-			$sessionGc['next_execution'] = $next_execution->format('Y-m-d H:i:s');
-
-			$update  = (object) $sessionGc;
-			$checked = $this->db->updateObject('#__scheduler_tasks', $update, 'id');
+			return false;
 		}
 
+		// Scheduler dates are stored in UTC
+		$utc = new DateTimeZone('UTC');
+		$now = new DateTime('now', $utc);
+
+		$unhealthyReasons = $this->getSessionGCUnhealthyReasons($sessionGc, $now, $intervalHours);
+
+		// Only written back on repair, to not overwrite a lock taken by a run in progress
+		unset($sessionGc['state'], $sessionGc['locked'], $sessionGc['last_execution']);
+
+		$params                   = json_decode($sessionGc['params'], true);
+		$params['individual_log'] = false;
+		$params['log_file']       = '';
+		$params['notifications']  = [
+			'success_mail'       => 0,
+			'failure_mail'       => 0,
+			'fatal_failure_mail' => 1,
+			'orphan_mail'        => 1
+		];
+		$sessionGc['params']      = json_encode($params);
+
+		$cronRules               = json_decode($sessionGc['cron_rules'], true);
+		$cronRules['type']       = 'interval';
+		$cronRules['exp']        = 'PT' . $intervalHours . 'H';
+		$sessionGc['cron_rules'] = json_encode($cronRules);
+
+		$executionRules                   = json_decode($sessionGc['execution_rules'], true);
+		$executionRules['rule-type']      = 'interval-hours';
+		$executionRules['interval-hours'] = $intervalHours;
+		$executionRules['exec-time']      = '12:00';
+		$executionRules['exec-day']       = '02';
+		$sessionGc['execution_rules']     = json_encode($executionRules);
+
+		$next_execution = clone $now;
+		if (empty($unhealthyReasons))
+		{
+			$next_execution->add(new DateInterval('PT' . $intervalHours . 'H'));
+		}
+		else
+		{
+			Log::add('Session GC scheduler task #' . $sessionGc['id'] . ' is unhealthy (' . implode(', ', $unhealthyReasons) . '), forcing its next execution', Log::WARNING, 'com_emundus.error');
+
+			$sessionGc['state']  = 1;
+			$sessionGc['locked'] = null;
+		}
+		$sessionGc['next_execution'] = $next_execution->format('Y-m-d H:i:s');
+
+		$update  = (object) $sessionGc;
+		$checked = $this->db->updateObject('#__scheduler_tasks', $update, 'id', true);
+
 		return $checked;
+	}
+
+	private function getSessionGCUnhealthyReasons(array $sessionGc, DateTime $now, int $intervalHours): array
+	{
+		$reasons = [];
+		$utc     = new DateTimeZone('UTC');
+
+		// A task missing two runs in a row is considered stuck
+		$staleBefore = (clone $now)->sub(new DateInterval('PT' . ($intervalHours * 2) . 'H'));
+
+		if ((int) $sessionGc['state'] !== 1)
+		{
+			$reasons[] = 'state ' . $sessionGc['state'];
+		}
+
+		if (!empty($sessionGc['locked']) && new DateTime($sessionGc['locked'], $utc) < $staleBefore)
+		{
+			$reasons[] = 'locked since ' . $sessionGc['locked'];
+		}
+
+		if (empty($sessionGc['next_execution']) || new DateTime($sessionGc['next_execution'], $utc) < $now)
+		{
+			$reasons[] = 'next execution in the past (' . ($sessionGc['next_execution'] ?? 'never') . ')';
+		}
+
+		if (empty($sessionGc['last_execution']) || new DateTime($sessionGc['last_execution'], $utc) < $staleBefore)
+		{
+			$reasons[] = 'last execution too old (' . ($sessionGc['last_execution'] ?? 'never') . ')';
+		}
+
+		return $reasons;
 	}
 
 	#[PostflightAttribute(name: "Disable Dropfiles editor plugin")]
