@@ -283,14 +283,21 @@ class FileModel extends AdminModel
 			}
 
 			// A management step can be filled once per evaluator, each answer lives in its own row.
-			$row_ids = $this->getStepRowIds($management_step, $item->fnum);
-			$forms   = [];
+			$rows  = $this->getStepRows($management_step, $item->fnum);
+			$forms = [];
 
-			foreach ($row_ids as $row_id)
+			foreach ($rows as $row)
 			{
-				$form_data           = $this->getFormData($form, $item->fnum, (int) $row_id);
-				$form_data['row_id'] = (int) $row_id;
-				$forms[]             = $form_data;
+				$form_data                    = $this->getFormData($form, $item->fnum, (int) $row->id);
+				$form_data['row_id']          = (int) $row->id;
+				$form_data['evaluator']       = !empty($row->evaluator) ? [
+					'id'        => (int) $row->evaluator,
+					'firstname' => $row->evaluator_firstname ?? '',
+					'lastname'  => $row->evaluator_lastname ?? '',
+					'email'     => $row->evaluator_email ?? '',
+				] : null;
+				$form_data['evaluation_date'] = $row->time_date ?? null;
+				$forms[]                      = $form_data;
 			}
 
 			$steps[] = [
@@ -361,9 +368,9 @@ class FileModel extends AdminModel
 	 * @param   StepEntity  $step
 	 * @param   string      $fnum
 	 *
-	 * @return array
+	 * @return array<object> Rows with id, time_date and the evaluator identity.
 	 */
-	private function getStepRowIds(StepEntity $step, string $fnum): array
+	private function getStepRows(StepEntity $step, string $fnum): array
 	{
 		if (empty($step->getTable()))
 		{
@@ -373,21 +380,30 @@ class FileModel extends AdminModel
 		$db    = $this->getDatabase();
 		$query = $db->createQuery();
 
-		$query->select($db->quoteName('id'))
-			->from($db->quoteName($step->getTable()))
-			->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
-			->where($db->quoteName('step_id') . ' = ' . $db->quote($step->getId()))
-			->order($db->quoteName('id') . ' ASC');
+		$query->select([
+				$db->quoteName('et.id'),
+				$db->quoteName('et.time_date'),
+				$db->quoteName('et.evaluator'),
+				$db->quoteName('eu.firstname', 'evaluator_firstname'),
+				$db->quoteName('eu.lastname', 'evaluator_lastname'),
+				$db->quoteName('u.email', 'evaluator_email'),
+			])
+			->from($db->quoteName($step->getTable(), 'et'))
+			->leftJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('et.evaluator'))
+			->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('et.evaluator'))
+			->where($db->quoteName('et.fnum') . ' = ' . $db->quote($fnum))
+			->where($db->quoteName('et.step_id') . ' = ' . $db->quote($step->getId()))
+			->order($db->quoteName('et.id') . ' ASC');
 
 		try
 		{
 			$db->setQuery($query);
 
-			return $db->loadColumn();
+			return $db->loadObjectList();
 		}
 		catch (\Exception $e)
 		{
-			Log::add('FileModel::getStepRowIds() - ' . $e->getMessage(), Log::ERROR, 'com_emundus.api');
+			Log::add('FileModel::getStepRows() - ' . $e->getMessage(), Log::ERROR, 'com_emundus.api');
 
 			return [];
 		}
