@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ============================================================
+     TEMPLATE — Guide d'utilisation client (eMundus / Tchooz)
+     ------------------------------------------------------------
+     Réutilisable pour documenter N'IMPORTE QUELLE fonctionnalité.
+     Remplacer :
+       {{FEATURE_NAME}}        -> nom de la fonctionnalité (ex. "Ressources")
+       {{FEATURE_TAGLINE}}     -> sous-titre / une phrase
+       {{FEATURE_INTRO}}       -> paragraphe d'intro (lede)
+     Puis :
+       - éditer le <nav class="toc"> et les <section> selon la feature
+       - garder la numérotation des <span class="num"> synchro avec le TOC
+       - images : images/capture-N.png, avec fallback pointillé si absente
+     Packaging : dossier doc-{feature}/ { {feature}-guide.html, LISEZ-MOI.txt, images/ } -> zip
+     Deux variantes possibles :
+       (A) FICHIER/ZIP  -> <figure> avec <img src onerror> (ci-dessous)
+       (B) ARTIFACT     -> <figure> avec seulement <div class="ph"> (CSP bloque l'externe)
+     ============================================================ -->
+<title>{{FEATURE_NAME}} — Guide d'utilisation · eMundus</title>
+<style>
+  :root {
+    --bg: #f8f7f4; --surface: #ffffff; --surface-2: #f2f0ea;
+    --ink: #1b1a17; --muted: #6b665f; --faint: #928c83;
+    --border: #e6e2da; --border-strong: #d6d0c6;
+    --green: #15603a; --green-soft: #e4efe8; --green-ink: #0f4b2d;
+    --terracotta: #c2410c; --terracotta-soft: #f9e8dd;
+    --danger: #c0392b; --danger-soft: #f8e4e1;
+    --shadow: 0 1px 2px rgba(27,26,23,.04), 0 8px 24px rgba(27,26,23,.06);
+    --radius: 14px; --radius-sm: 9px; --maxw: 820px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16181a; --surface: #1e2124; --surface-2: #24282b;
+      --ink: #ecebe7; --muted: #a7a29a; --faint: #7d786f;
+      --border: #2e3236; --border-strong: #3a3f43;
+      --green: #4bb37c; --green-soft: #16362a; --green-ink: #7fd0a3;
+      --terracotta: #e8814a; --terracotta-soft: #3a2419;
+      --danger: #e06a5c; --danger-soft: #3a201d;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f8f7f4; --surface: #ffffff; --surface-2: #f2f0ea;
+    --ink: #1b1a17; --muted: #6b665f; --faint: #928c83;
+    --border: #e6e2da; --border-strong: #d6d0c6;
+    --green: #15603a; --green-soft: #e4efe8; --green-ink: #0f4b2d;
+    --terracotta: #c2410c; --terracotta-soft: #f9e8dd;
+    --danger: #c0392b; --danger-soft: #f8e4e1;
+    --shadow: 0 1px 2px rgba(27,26,23,.04), 0 8px 24px rgba(27,26,23,.06);
+  }
+  :root[data-theme="dark"] {
+    --bg: #16181a; --surface: #1e2124; --surface-2: #24282b;
+    --ink: #ecebe7; --muted: #a7a29a; --faint: #7d786f;
+    --border: #2e3236; --border-strong: #3a3f43;
+    --green: #4bb37c; --green-soft: #16362a; --green-ink: #7fd0a3;
+    --terracotta: #e8814a; --terracotta-soft: #3a2419;
+    --danger: #e06a5c; --danger-soft: #3a201d;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+
+  .wrap { display: grid; grid-template-columns: 1fr; max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  @media (min-width: 1000px) { .wrap { grid-template-columns: 240px minmax(0, var(--maxw)); gap: 56px; justify-content: center; } }
+
+  header.masthead { max-width: 1180px; margin: 0 auto; padding: 56px 24px 28px; }
+  .eyebrow { font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; color: var(--terracotta); margin: 0 0 14px; }
+  h1 { font-size: clamp(2.1rem, 5vw, 3.1rem); line-height: 1.05; letter-spacing: -.02em; font-weight: 800; margin: 0 0 16px; text-wrap: balance; }
+  .lede { font-size: 1.18rem; color: var(--muted); max-width: 60ch; margin: 0; }
+  .masthead .rule { height: 3px; width: 64px; background: var(--green); border-radius: 3px; margin: 26px 0 0; }
+
+  nav.toc { display: none; }
+  @media (min-width: 1000px) {
+    nav.toc { display: block; position: sticky; top: 32px; align-self: start; font-size: 14.5px; }
+    nav.toc .toc-title { font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: var(--faint); margin: 0 0 14px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: toc; }
+    nav.toc li { counter-increment: toc; margin: 0 0 3px; }
+    nav.toc a { display: flex; gap: 10px; align-items: baseline; color: var(--muted); text-decoration: none; padding: 6px 10px; border-radius: 8px; transition: background .15s, color .15s; }
+    nav.toc a::before { content: counter(toc, decimal-leading-zero); font-family: ui-monospace, monospace; font-size: 11px; color: var(--faint); }
+    nav.toc a:hover { background: var(--surface-2); color: var(--ink); }
+  }
+
+  main { padding-bottom: 80px; min-width: 0; }
+  section { scroll-margin-top: 24px; padding-top: 40px; }
+  section > h2 { font-size: 1.62rem; letter-spacing: -.015em; font-weight: 750; margin: 0 0 6px; display: flex; align-items: baseline; gap: 12px; text-wrap: balance; }
+  section > h2 .num { font-family: ui-monospace, monospace; font-size: .92rem; color: var(--terracotta); font-weight: 700; flex: none; }
+  .section-intro { color: var(--muted); margin: 0 0 24px; max-width: 62ch; }
+  h3 { font-size: 1.16rem; font-weight: 700; margin: 30px 0 8px; letter-spacing: -.01em; }
+  p { margin: 0 0 14px; }
+  a { color: var(--green); }
+  main ul { margin: 14px 0; padding-left: 4px; list-style: none; }
+  main ul li { position: relative; padding-left: 22px; margin: 0 0 8px; }
+  main ul li::before { content: ""; position: absolute; left: 4px; top: 11px; width: 6px; height: 6px; border-radius: 50%; background: var(--terracotta); }
+
+  .note { display: flex; gap: 13px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--green); border-radius: var(--radius-sm); padding: 15px 18px; margin: 20px 0; font-size: .96rem; box-shadow: var(--shadow); }
+  .note.warn { border-left-color: var(--terracotta); }
+  .note.danger { border-left-color: var(--danger); }
+  .note .ic { flex: none; font-size: 1.1rem; line-height: 1.5; }
+  .note strong { font-weight: 700; }
+  .note code { font-family: ui-monospace, monospace; font-size: .85em; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+
+  /* Puces de statut / niveau réutilisables (ex. permissions). Adapter labels/couleurs. */
+  .perm { display: inline-flex; align-items: center; gap: 6px; font-family: ui-monospace, monospace; font-size: .82em; font-weight: 600; padding: 2px 9px; border-radius: 999px; border: 1px solid transparent; white-space: nowrap; }
+  .perm.view { background: var(--green-soft); color: var(--green-ink); border-color: color-mix(in srgb, var(--green) 25%, transparent); }
+  .perm.edit { background: var(--terracotta-soft); color: var(--terracotta); border-color: color-mix(in srgb, var(--terracotta) 30%, transparent); }
+  .perm.manage { background: var(--surface-2); color: var(--ink); border-color: var(--border-strong); }
+
+  .table-scroll { overflow-x: auto; margin: 22px 0; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; font-size: .95rem; background: var(--surface); min-width: 540px; }
+  thead th { text-align: left; font-weight: 700; font-size: .82rem; letter-spacing: .02em; color: var(--muted); padding: 14px 16px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
+  thead th:not(:first-child) { text-align: center; }
+  tbody td { padding: 13px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody td:not(:first-child) { text-align: center; }
+  tbody td:first-child { font-weight: 600; }
+  .yes { color: var(--green); font-weight: 700; }
+  .no { color: var(--faint); }
+
+  /* Étapes numérotées (procédures pas-à-pas). */
+  .steps { list-style: none; counter-reset: step; margin: 20px 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .steps li { counter-increment: step; position: relative; padding: 4px 0 18px 46px; }
+  .steps li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%; background: var(--green); color: #fff; font-family: ui-monospace, monospace; font-size: .9rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .steps li:not(:last-child)::after { content: ""; position: absolute; left: 14.5px; top: 34px; bottom: 2px; width: 1.5px; background: var(--border-strong); }
+  .steps li strong { font-weight: 700; }
+
+  .cards { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 22px 0; }
+  @media (min-width: 560px) { .cards { grid-template-columns: 1fr 1fr; } }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 18px 16px; box-shadow: var(--shadow); }
+  .card .ct { display: flex; align-items: center; gap: 10px; font-weight: 700; margin: 0 0 6px; }
+  .card .ct .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--terracotta); flex: none; }
+  .card p { font-size: .93rem; color: var(--muted); margin: 0; }
+  .card .who { margin-top: 10px; font-size: .82rem; color: var(--faint); }
+
+  /* Emplacement image : <img> réel + fallback pointillé si fichier absent. */
+  figure { margin: 24px 0; padding: 0; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); overflow: hidden; box-shadow: var(--shadow); }
+  figure img { display: block; width: 100%; height: auto; }
+  figure .ph { display: none; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 42px 20px; text-align: center; background: repeating-linear-gradient(45deg, var(--surface), var(--surface) 12px, var(--surface-2) 12px, var(--surface-2) 24px); }
+  figure .ph .tag { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #fff; background: var(--terracotta); padding: 3px 10px; border-radius: 999px; }
+  figure .ph .glyph { font-size: 1.8rem; opacity: .55; }
+  figure .ph .desc { font-size: .92rem; color: var(--muted); max-width: 44ch; }
+  figure figcaption { padding: 12px 18px; font-size: .86rem; color: var(--muted); border-top: 1px solid var(--border); background: var(--surface); }
+  figure figcaption b { color: var(--ink); font-weight: 650; }
+
+  .formats { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 4px; }
+  .fmt { font-family: ui-monospace, monospace; font-size: .8rem; font-weight: 600; padding: 4px 11px; border-radius: 7px; background: var(--surface-2); border: 1px solid var(--border); color: var(--ink); }
+
+  footer { max-width: 1180px; margin: 0 auto; padding: 30px 24px 60px; color: var(--faint); font-size: .85rem; border-top: 1px solid var(--border); }
+  footer .brand { font-weight: 700; color: var(--muted); }
+
+  .ui { font-weight: 650; color: var(--ink); background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; font-size: .92em; white-space: nowrap; }
+
+  a:focus-visible, nav.toc a:focus-visible { outline: 2px solid var(--terracotta); outline-offset: 2px; border-radius: 6px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <p class="eyebrow">Guide d'utilisation · Plateforme eMundus</p>
+  <h1>{{FEATURE_NAME}} : {{FEATURE_TAGLINE}}</h1>
+  <p class="lede">{{FEATURE_INTRO}}</p>
+  <div class="rule"></div>
+</header>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Sommaire">
+    <p class="toc-title">Sommaire</p>
+    <ol>
+      <li><a href="#section-1">Titre section 1</a></li>
+      <li><a href="#section-2">Titre section 2</a></li>
+      <!-- ... une <li> par <section>, dans l'ordre ... -->
+    </ol>
+  </nav>
+
+  <main>
+
+    <!-- ===== BLOC SECTION (dupliquer autant que nécessaire) ===== -->
+    <section id="section-1">
+      <h2><span class="num">01</span> Titre de la section</h2>
+      <p class="section-intro">Phrase d'introduction de la section.</p>
+
+      <!-- Procédure pas-à-pas -->
+      <ol class="steps">
+        <li>Première étape. Utiliser <span class="ui">Libellé bouton</span> pour les libellés d'interface.</li>
+        <li>Deuxième étape.</li>
+      </ol>
+
+      <!-- Emplacement image (garder src ; le fallback pointillé s'affiche si le fichier manque) -->
+      <figure>
+        <img src="images/capture-1.png" alt="Description" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="ph"><span class="tag">Capture 1</span><span class="glyph">🖼️</span><span class="desc">Déposez ici « capture-1.png » : description de la capture.</span></div>
+        <figcaption><b>Légende.</b> Texte explicatif de la capture.</figcaption>
+      </figure>
+
+      <!-- Encadré d'information (variantes : .note.warn / .note.danger) -->
+      <div class="note"><span class="ic">ℹ️</span><span>Note d'information contextuelle.</span></div>
+    </section>
+
+    <!-- ===== EXEMPLES DE COMPOSANTS RÉUTILISABLES ===== -->
+
+    <!-- Tableau comparatif (ex. niveaux d'accès) -->
+    <!--
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Colonne</th><th>A</th><th>B</th></tr></thead>
+        <tbody>
+          <tr><td>Ligne</td><td class="yes">✓</td><td class="no">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    -->
+
+    <!-- Grille de cartes (ex. sous-actions) -->
+    <!--
+    <div class="cards">
+      <div class="card">
+        <p class="ct"><span class="dot"></span>Titre carte</p>
+        <p>Description.</p>
+        <p class="who">Info secondaire</p>
+      </div>
+    </div>
+    -->
+
+    <!-- Puces de statut/niveau -->
+    <!-- <span class="perm view">Consulter</span> <span class="perm edit">Modifier</span> <span class="perm manage">Gérer</span> -->
+
+    <!-- Liste à puces -->
+    <!-- <ul><li>Élément</li></ul> -->
+
+    <!-- Badges de formats -->
+    <!-- <div class="formats"><span class="fmt">PDF</span></div> -->
+
+  </main>
+</div>
+
+<footer>
+  <p><span class="brand">eMundus</span> — Guide d'utilisation de la fonctionnalité {{FEATURE_NAME}}. Document destiné aux utilisateurs de la plateforme.</p>
+</footer>
+
+</body>
+</html>
