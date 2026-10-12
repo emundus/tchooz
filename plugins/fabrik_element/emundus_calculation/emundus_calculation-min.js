@@ -17,6 +17,10 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
         },
 
         attachedToForm: function (cloning = false) {
+            if (!this.form.options.editable) {
+                return;
+            }
+
             if (this.elementsToObserve && this.elementsToObserve.length > 0) {
                 this.elementsToObserve.each(function (element) {
                     this.addObserveEvent(element);
