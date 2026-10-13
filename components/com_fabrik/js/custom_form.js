@@ -100,7 +100,12 @@ requirejs(['fab/fabrik'], function () {
     'empty': function (a, b, plugin) {
       // check if a is empty
         if (!Array.isArray(a)) {
-          return (a === null || a === undefined || a === '' || a === 0 || a === false || a === '0');
+          if(plugin !== 'numeric') {
+            return (a === null || a === undefined || a === '' || a === 0 || a === false || a === '0');
+          }
+          else {
+            return (a === null || a === undefined || a === '' || a === false);
+          }
         }
         else {
           return a.length === 0;
@@ -109,7 +114,12 @@ requirejs(['fab/fabrik'], function () {
     '!empty': function (a, b, plugin) {
         // check if a is not empty
         if (!Array.isArray(a)) {
+          if(plugin !== 'numeric') {
             return (a !== null && a !== undefined && a !== '' && a !== 0 && a !== false && a !== '0');
+          }
+          else {
+            return (a !== null && a !== undefined && a !== '' && a !== false);
+          }
         }
         else {
             return a.length > 0;
