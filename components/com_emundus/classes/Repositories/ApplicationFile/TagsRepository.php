@@ -168,6 +168,8 @@ class TagsRepository extends EmundusRepository implements RepositoryInterface
 
 			$this->db->setQuery($query);
 			$deleted = (bool) $this->db->execute();
+
+			// TODO: If we have an automation based on an action tag should we delete anything?
 		}
 		catch (\Exception $e)
 		{
