@@ -755,6 +755,56 @@
 			"sysadmin_only": false,
 			"default": 20
 		},
+		{
+			"label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_DECIMALS",
+			"name": "decimals",
+			"type": "dropdown",
+			"helptext": "",
+			"placeholder": "",
+			"published": true,
+			"sysadmin_only": false,
+			"default": 2,
+			"options": [
+				{
+					"value": 0,
+					"label": "0"
+				},
+				{
+					"value": 1,
+					"label": "1"
+				},
+				{
+					"value": 2,
+					"label": "2"
+				}
+			],
+			"multiple": false
+		},
+		{
+			"label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ROUNDING",
+			"name": "rounding",
+			"type": "dropdown",
+			"helptext": "",
+			"placeholder": "",
+			"published": true,
+			"sysadmin_only": false,
+			"default": "round",
+			"options": [
+				{
+					"value": "round",
+					"label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ROUNDING_ROUND"
+				},
+				{
+					"value": "ceil",
+					"label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ROUNDING_CEIL"
+				},
+				{
+					"value": "floor",
+					"label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ROUNDING_FLOOR"
+				}
+			],
+			"multiple": false
+		},
     {
       "label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ELEMENTS",
       "name": "average_multiple_elements",
