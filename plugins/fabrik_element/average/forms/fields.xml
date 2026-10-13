@@ -47,6 +47,26 @@
                     description="PLG_ELEMENT_AVERAGE_AVERAGE_OVER"
                     default="100"
             />
+            <field
+                    type="list"
+                    name="decimals"
+                    label="PLG_ELEMENT_AVERAGE_DECIMALS"
+                    default="2"
+            >
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </field>
+            <field
+                    type="list"
+                    name="rounding"
+                    label="PLG_ELEMENT_AVERAGE_ROUNDING"
+                    default="round"
+            >
+                <option value="round">PLG_ELEMENT_AVERAGE_ROUNDING_ROUND</option>
+                <option value="ceil">PLG_ELEMENT_AVERAGE_ROUNDING_CEIL</option>
+                <option value="floor">PLG_ELEMENT_AVERAGE_ROUNDING_FLOOR</option>
+            </field>
         </fieldset>
     </fields>
 </form>
