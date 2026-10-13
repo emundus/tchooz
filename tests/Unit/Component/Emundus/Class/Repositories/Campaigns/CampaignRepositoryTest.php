@@ -9,6 +9,8 @@
 
 namespace Unit\Component\Emundus\Class\Repositories\Campaigns;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Campaigns\CampaignEntity;
 use Tchooz\Entities\Workflow\StepEntity;
@@ -25,10 +27,39 @@ class CampaignRepositoryTest extends UnitTestCase
 {
 	private CampaignRepository $repository;
 
+	private array $createdMenuIds = [];
+
+	private array $createdCampaignIds = [];
+
 	public function __construct(?string $name = null, array $data = [], $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
 		$this->repository = new CampaignRepository();
+	}
+
+	protected function tearDown(): void
+	{
+		if (!empty($this->createdMenuIds))
+		{
+			$query = $this->db->getQuery(true)
+				->delete($this->db->quoteName('#__modules_menu'))
+				->where($this->db->quoteName('menuid') . ' IN (' . implode(',', $this->createdMenuIds) . ')');
+			$this->db->setQuery($query)->execute();
+
+			$query = $this->db->getQuery(true)
+				->delete($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('id') . ' IN (' . implode(',', $this->createdMenuIds) . ')');
+			$this->db->setQuery($query)->execute();
+			$this->createdMenuIds = [];
+		}
+
+		foreach ($this->createdCampaignIds as $campaignId)
+		{
+			$this->h_dataset->deleteSampleCampaign($campaignId);
+		}
+		$this->createdCampaignIds = [];
+
+		parent::tearDown();
 	}
 
 	/**
@@ -778,5 +809,123 @@ class CampaignRepositoryTest extends UnitTestCase
 			$this->assertInstanceOf(CampaignEntity::class, $campaign);
 			$this->assertEmpty($campaign->getProgram());
 		}
+	}
+
+	// -------------------------------------------------------------------------
+	// createCampaignAlias
+	// -------------------------------------------------------------------------
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::createCampaignAlias
+	 * @return void
+	 */
+	public function testCreateCampaignAliasWithExplicitAliasCreatesMenuAndPersistsAlias(): void
+	{
+		$campaign = $this->createCampaignForAlias('Campaign alias explicit');
+		$alias    = 'campaign-alias-explicit-' . uniqid();
+
+		$created = $this->repository->createCampaignAlias($campaign, $alias);
+
+		$this->assertTrue($created, 'createCampaignAlias should return true when the menu is created');
+		$this->assertSame($alias, $campaign->getAlias(), 'The entity alias should be set to the given alias');
+
+		$menu = $this->getCampaignMenuByAlias($alias);
+		$this->assertNotEmpty($menu, 'A menu item should exist in the campaigns menu with the given alias');
+		$this->assertSame($campaign->getLabel(), $menu->title, 'The menu title should be the campaign label');
+		$this->assertSame($alias, $menu->path, 'The menu path should be the alias');
+		$this->assertSame('index.php?option=com_emundus&view=programme', $menu->link, 'The menu should link to the programme view');
+		$this->assertEquals($campaign->getId(), json_decode($menu->params)->com_emundus_programme_campaign_id, 'The menu params should reference the campaign id');
+
+		$reloaded = $this->repository->getById($campaign->getId());
+		$this->assertSame($alias, $reloaded->getAlias(), 'The alias should be persisted in database');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::createCampaignAlias
+	 * @return void
+	 */
+	public function testCreateCampaignAliasWithoutAliasGeneratesItFromLabel(): void
+	{
+		$suffix   = uniqid();
+		$campaign = $this->createCampaignForAlias('Été  Campagne Über ' . $suffix);
+
+		$created = $this->repository->createCampaignAlias($campaign);
+
+		$this->assertTrue($created, 'createCampaignAlias should return true when the alias is generated from the label');
+		$this->assertSame('ete-campagne-uber-' . $suffix, $campaign->getAlias(), 'The generated alias should be lowercased, without diacritics and with single hyphens');
+		$this->assertNotEmpty($this->getCampaignMenuByAlias('ete-campagne-uber-' . $suffix), 'A menu item should exist with the generated alias');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::createCampaignAlias
+	 * @return void
+	 */
+	public function testCreateCampaignAliasWhenAliasAlreadyExistsSuffixesItWithCampaignId(): void
+	{
+		$alias         = 'campaign-alias-duplicate-' . uniqid();
+		$firstCampaign = $this->createCampaignForAlias('Campaign alias duplicate 1');
+		$this->assertTrue($this->repository->createCampaignAlias($firstCampaign, $alias), 'The first alias should be created');
+		$this->assertNotEmpty($this->getCampaignMenuByAlias($alias), 'A menu item should exist for the first campaign');
+
+		$secondCampaign = $this->createCampaignForAlias('Campaign alias duplicate 2');
+		$created        = $this->repository->createCampaignAlias($secondCampaign, $alias);
+
+		$expectedAlias = $alias . '-' . $secondCampaign->getId();
+		$this->assertTrue($created, 'createCampaignAlias should return true even if the alias is already used');
+		$this->assertSame($expectedAlias, $secondCampaign->getAlias(), 'The alias should be suffixed with the campaign id when already used');
+		$this->assertNotEmpty($this->getCampaignMenuByAlias($expectedAlias), 'A menu item should exist with the suffixed alias');
+		$this->assertSame($alias, $firstCampaign->getAlias(), 'The first campaign alias should stay untouched');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Campaigns\CampaignRepository::createCampaignAlias
+	 * @return void
+	 */
+	public function testCreateCampaignAliasWhenMenuCannotBeCreatedReturnsFalseAndKeepsAlias(): void
+	{
+		$campaign = $this->createCampaignForAlias('Campaign alias failure');
+		$alias    = 'campaign-alias-failure-' . uniqid();
+
+		// An empty title makes addJoomlaMenu refuse to create the menu
+		$campaign->setLabel('');
+		$created = $this->repository->createCampaignAlias($campaign, $alias);
+
+		$this->assertFalse($created, 'createCampaignAlias should return false when the menu cannot be created');
+		$this->assertEmpty($campaign->getAlias(), 'The entity alias should not be set when the menu is not created');
+		$this->assertEmpty($this->getCampaignMenuByAlias($alias), 'No menu item should be created');
+	}
+
+	private function createCampaignForAlias(string $label): CampaignEntity
+	{
+		// Menu table save triggers onAfterCheckin (plg_actionlog_joomla), which reads the application identity
+		$coord = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
+		Factory::getApplication()->loadIdentity($coord);
+
+		$programRepository = new ProgramRepository();
+		$program           = $programRepository->getById($this->dataset['program']['programme_id']);
+		$campaign          = new CampaignEntity($label, new \DateTime(), new \DateTime('+1 year'), $program, '2050');
+
+		$this->assertTrue($this->repository->flush($campaign), 'The campaign used for alias tests should be saved');
+		$this->createdCampaignIds[] = $campaign->getId();
+
+		return $campaign;
+	}
+
+	private function getCampaignMenuByAlias(string $alias): ?object
+	{
+		$query = $this->db->getQuery(true)
+			->select('id, title, alias, path, link, params')
+			->from($this->db->quoteName('#__menu'))
+			->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote('campaigns'))
+			->where($this->db->quoteName('alias') . ' = ' . $this->db->quote($alias));
+		$this->db->setQuery($query);
+		$menu = $this->db->loadObject();
+
+		if (!empty($menu))
+		{
+			$this->createdMenuIds[] = (int) $menu->id;
+		}
+
+		return $menu ?: null;
 	}
 }

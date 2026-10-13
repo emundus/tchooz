@@ -1081,7 +1081,7 @@ export default {
 			}
 		},
 		goBack() {
-			window.history.back();
+			settingsService.redirectJRoute('index.php?option=com_emundus&view=workflows', useGlobalStore().getCurrentLang);
 		},
 		isApplicantStep(step) {
 			let isApplicantStep = step.type == 1;

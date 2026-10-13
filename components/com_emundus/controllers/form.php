@@ -792,7 +792,7 @@ class EmundusControllerForm extends EmundusController
 	public function addRule(): EmundusResponse
 	{
 		$form_id    = $this->input->getInt('form_id');
-		$conditions = $this->input->getString('conditions');
+		$conditions = $this->input->getRaw('conditions');
 		$actions    = $this->input->getString('actions');
 		$group      = $this->input->getString('group');
 		$label      = $this->input->getString('label');

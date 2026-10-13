@@ -79,6 +79,11 @@ class PlgFabrik_ElementEmundus_calculation extends PlgFabrik_Element
 		$displayData->id            = $this->getHTMLId($repeatCounter);
 		$displayData->name          = $this->getHTMLName($repeatCounter);
 		$displayData->value         = $this->getValue($data, $repeatCounter);
+		// DECIMAL(10,3) storage pads with zeros, align with the AJAX output (12.500 -> 12.5)
+		if (is_numeric($displayData->value))
+		{
+			$displayData->value = (string) (float) $displayData->value;
+		}
 		$displayData->repeatCounter = $repeatCounter;
 		$displayData->type          = $this->getParams()->get('type');
 		$displayData->suffix = '';

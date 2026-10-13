@@ -106,14 +106,27 @@ abstract class AbstractSofisObject extends AbstractMappingObject
 	 */
 	protected function patch(MappingTransportInterface $transport, string $entitySet, string $key, array $payload): void
 	{
-		$url = $this->entityPath($entitySet) . $key . '?cross-company=true';
-		$this->debug('PATCH ' . $entitySet . $key . ' with payload ' . json_encode($this->mask($payload)));
+		$url     = $this->entityPath($entitySet) . $key . '?cross-company=true';
+		$fullUrl = rtrim($transport->getBaseUrl(), '/') . '/' . $url;
+		$body    = json_encode($this->mask($payload), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+		$this->debug('PATCH ' . $fullUrl . ' with payload ' . $body);
 
 		$response = $transport->patch($url, json_encode($payload));
 
 		if (empty($response) || !in_array($response['status'], [200, 201, 204]))
 		{
-			Log::add('Sofis update on ' . $entitySet . ' failed : ' . json_encode($response), Log::ERROR, self::CHANNEL);
+			$responseBody = $response['error_details'] ?? $response['error'] ?? json_encode($response['data'] ?? null);
+
+			Log::add('Sofis update on ' . $url . ' failed : HTTP ' . ($response['status'] ?? 'n/a') . ' ' . $responseBody, Log::ERROR, self::CHANNEL);
+			$this->debug(
+				'Sofis update failed' . PHP_EOL
+				. '  PATCH ' . $fullUrl . PHP_EOL
+				. '  sent URI : ' . ($response['request_uri'] ?? 'n/a') . PHP_EOL
+				. '  payload : ' . $body . PHP_EOL
+				. '  HTTP ' . ($response['status'] ?? 'n/a') . ' ' . ($response['message'] ?? '') . PHP_EOL
+				. '  response body : ' . $responseBody . PHP_EOL
+				. '  response headers : ' . json_encode($response['headers'] ?? [], JSON_UNESCAPED_SLASHES)
+			);
 
 			throw new \RuntimeException($this->remoteError('COM_EMUNDUS_SOFIS_UPDATE_FAILED', $entitySet, $response));
 		}
@@ -122,12 +135,13 @@ abstract class AbstractSofisObject extends AbstractMappingObject
 	}
 
 	/**
-	 * The SIRET is the vendor identity key in Sofis: whatever the mapping sends ("234 567 890 10876"),
-	 * search and creation must use the same digits-only form, or the vendor is not found again.
+	 * The vendor identity key sent as SiretNumber may be a SIRET, a SIREN or an RNA (W + 9 digits).
+	 * Search and creation must use one canonical form, or the vendor is not found again: separators
+	 * are removed and letters upper-cased, but letters are kept (stripping them would corrupt an RNA).
 	 */
-	protected function normalizeSiret(mixed $siret): string
+	protected function normalizeIdentifier(mixed $identifier): string
 	{
-		return preg_replace('/\D/', '', (string) $siret) ?? '';
+		return strtoupper(preg_replace('/[\s.\-]+/u', '', (string) $identifier) ?? '');
 	}
 
 	protected function debug(string $message): void

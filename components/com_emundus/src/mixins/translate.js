@@ -25,7 +25,19 @@ export default {
 
 			const translation = Joomla.Text._(key) ? Joomla.Text._(key) : key;
 
+			if (args.length === 1 && args[0] !== null && typeof args[0] === 'object') {
+				return this.replaceTokens(translation, args[0]);
+			}
+
 			return args.length > 0 ? this.sprintf(translation, args) : translation;
+		},
+		// Named {token} placeholders, e.g. translate('KEY', { name: 'foo' }) on "{name} (system template)".
+		replaceTokens(str, replacements) {
+			return Object.entries(replacements).reduce((acc, [token, value]) => {
+				const safeToken = String(token).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+				return acc.replace(new RegExp(`\\{${safeToken}\\}`, 'g'), () => value ?? '');
+			}, str);
 		},
 		// Minimal sprintf: sequential %s / %d and positional %1$s (matching Joomla .ini conventions).
 		sprintf(str, args) {

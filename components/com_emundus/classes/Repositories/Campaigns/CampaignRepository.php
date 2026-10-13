@@ -13,6 +13,7 @@ use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Filter\OutputFilter;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
@@ -1025,53 +1026,37 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 				throw new \Exception(Text::_('COM_EMUNDUS_ERROR_LABEL_REQUIRED'));
 			}
 
+			$data = (object) [
+				'label'                => $campaignEntity->getLabel(),
+				'short_description'    => $campaignEntity->getShortDescription() ?? '',
+				'description'          => $campaignEntity->getDescription() ?? '',
+				'start_date'           => $campaignEntity->getStartDate()->format('Y-m-d H:i:s'),
+				'end_date'             => $campaignEntity->getEndDate()->format('Y-m-d H:i:s'),
+				'profile_id'           => !empty($campaignEntity->getProfileId()) ? $campaignEntity->getProfileId() : null,
+				'training'             => $campaignEntity->getProgram()->getCode(),
+				'year'                 => $campaignEntity->getYear(),
+				'published'            => $campaignEntity->isPublished() ? 1 : 0,
+				'pinned'               => $campaignEntity->isPinned() ? 1 : 0,
+				'alias'                => $campaignEntity->getAlias(),
+				'visible'              => $campaignEntity->isVisible() ? 1 : 0,
+				'parent_id'            => !empty($campaignEntity->getParent()) ? $campaignEntity->getParent()->getId() : null,
+				'program_id'           => $campaignEntity->getProgram()->getId(),
+				'public'               => $campaignEntity->isPublic() ? 1 : 0,
+				'anonymization_policy' => !empty($campaignEntity->getAnonymizationPolicy()) ? $campaignEntity->getAnonymizationPolicy()->value : null,
+			];
+
 			if (empty($campaignEntity->getId()))
 			{
-				$insert = (object) [
-					'label'                => $campaignEntity->getLabel(),
-					'short_description'    => $campaignEntity->getShortDescription(),
-					'description'          => $campaignEntity->getDescription(),
-					'start_date'           => $campaignEntity->getStartDate()->format('Y-m-d H:i:s'),
-					'end_date'             => $campaignEntity->getEndDate()->format('Y-m-d H:i:s'),
-					'profile_id'           => !empty($campaignEntity->getProfileId()) ? $campaignEntity->getProfileId() : null,
-					'training'             => $campaignEntity->getProgram()->getCode(),
-					'year'                 => $campaignEntity->getYear(),
-					'published'            => $campaignEntity->isPublished() ? 1 : 0,
-					'pinned'               => $campaignEntity->isPinned() ? 1 : 0,
-					'alias'                => $campaignEntity->getAlias(),
-					'visible'              => $campaignEntity->isVisible() ? 1 : 0,
-					'parent_id'            => !empty($campaignEntity->getParent()) ? $campaignEntity->getParent()->getId() : null,
-					'public'               => $campaignEntity->isPublic() ? 1 : 0,
-					'anonymization_policy' => !empty($campaignEntity->getAnonymizationPolicy()) ? $campaignEntity->getAnonymizationPolicy()->value : null,
-				];
-
-				if ($flushed = $this->db->insertObject('#__emundus_setup_campaigns', $insert))
+				if ($flushed = $this->db->insertObject('#__emundus_setup_campaigns', $data))
 				{
 					$campaignEntity->setId((int) $this->db->insertid());
 				}
 			}
 			else
 			{
-				$update = (object) [
-					'id'                   => $campaignEntity->getId(),
-					'label'                => $campaignEntity->getLabel(),
-					'short_description'    => $campaignEntity->getShortDescription(),
-					'description'          => $campaignEntity->getDescription(),
-					'start_date'           => $campaignEntity->getStartDate()->format('Y-m-d H:i:s'),
-					'end_date'             => $campaignEntity->getEndDate()->format('Y-m-d H:i:s'),
-					'profile_id'           => !empty($campaignEntity->getProfileId()) ? $campaignEntity->getProfileId() : null,
-					'training'             => $campaignEntity->getProgram()->getCode(),
-					'year'                 => $campaignEntity->getYear(),
-					'published'            => $campaignEntity->isPublished() ? 1 : 0,
-					'pinned'               => $campaignEntity->isPinned() ? 1 : 0,
-					'alias'                => $campaignEntity->getAlias(),
-					'visible'              => $campaignEntity->isVisible() ? 1 : 0,
-					'parent_id'            => !empty($campaignEntity->getParent()) ? $campaignEntity->getParent()->getId() : null,
-					'public'               => $campaignEntity->isPublic() ? 1 : 0,
-					'anonymization_policy' => !empty($campaignEntity->getAnonymizationPolicy()) ? $campaignEntity->getAnonymizationPolicy()->value : null,
-				];
+				$data->id = $campaignEntity->getId();
 
-				$flushed = $this->db->updateObject('#__emundus_setup_campaigns', $update, 'id');
+				$flushed = $this->db->updateObject('#__emundus_setup_campaigns', $data, 'id');
 			}
 
 			$this->cleanCache();
@@ -1289,5 +1274,102 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		}
 
 		return $campaigns;
+	}
+
+	/**
+	 * Generates a URL-safe alias from a campaign label.
+	 * Mirrors the front-end logic: NFD normalization, diacritic stripping,
+	 * non-alphanumeric characters replaced by hyphens, lowercased.
+	 */
+	private function generateAliasFromLabel(string $label): string
+	{
+		$alias = $label;
+
+		if (class_exists('\Normalizer'))
+		{
+			$alias = \Normalizer::normalize($alias, \Normalizer::FORM_D);
+		}
+
+		// Strip combining diacritical marks (equivalent to /[̀-ͯ]/g)
+		$alias = preg_replace('/\p{Mn}/u', '', $alias);
+
+		$alias = OutputFilter::stringURLSafe($alias);
+
+		return trim(preg_replace('/-+/', '-', $alias), '-');
+	}
+
+	public function createCampaignAlias(CampaignEntity $campaignEntity, ?string $alias = null): bool
+	{
+		$alias_created = false;
+
+		try
+		{
+			if (empty($alias))
+			{
+				$alias = $this->generateAliasFromLabel($campaignEntity->getLabel());
+			}
+
+
+			$query = $this->db->getQuery(true);
+			require_once(JPATH_SITE . DS . 'administrator/components/com_emundus/helpers/update.php');
+
+			$modules_id = [];
+
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__modules'))
+				->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundus_campaign'));
+			$this->db->setQuery($query);
+			$modules = $this->db->loadObjectList();
+			foreach ($modules as $module)
+			{
+				$params = json_decode($module->params);
+				if (!empty($params->mod_em_campaign_layout) && $params->mod_em_campaign_layout == 'tchooz_single_campaign')
+				{
+					$modules_id[] = $module->id;
+				}
+			}
+
+			// Check again if alias already exists
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('alias') . ' LIKE ' . $this->db->quote($alias));
+			$this->db->setQuery($query);
+			$menu_id = $this->db->loadResult();
+
+			if (!empty($menu_id))
+			{
+				$alias = $alias . '-' . $campaignEntity->getId();
+			}
+
+			$params = [
+				'menutype'     => 'campaigns',
+				'title'        => $campaignEntity->getLabel(),
+				'alias'        => $alias,
+				'path'         => $alias,
+				'type'         => 'component',
+				'link'         => 'index.php?option=com_emundus&view=programme',
+				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'params'       => [
+					'com_emundus_programme_campaign_id'    => $campaignEntity->getId(),
+					'com_emundus_programme_candidate_link' => 'index.php?option=com_fabrik&view=form&formid=307&Itemid=2700'
+				]
+			];
+
+			$alias_created = \EmundusHelperUpdate::addJoomlaMenu($params, 1, 1, 'last-child', $modules_id)['status'];
+
+			if($alias_created)
+			{
+				$campaignEntity->setAlias($alias);
+				$this->flush($campaignEntity);
+			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $alias_created;
 	}
 }
