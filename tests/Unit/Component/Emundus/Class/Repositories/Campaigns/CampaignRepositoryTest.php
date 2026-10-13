@@ -9,6 +9,8 @@
 
 namespace Unit\Component\Emundus\Class\Repositories\Campaigns;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Campaigns\CampaignEntity;
 use Tchooz\Entities\Workflow\StepEntity;
@@ -895,6 +897,10 @@ class CampaignRepositoryTest extends UnitTestCase
 
 	private function createCampaignForAlias(string $label): CampaignEntity
 	{
+		// Menu table save triggers onAfterCheckin (plg_actionlog_joomla), which reads the application identity
+		$coord = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
+		Factory::getApplication()->loadIdentity($coord);
+
 		$programRepository = new ProgramRepository();
 		$program           = $programRepository->getById($this->dataset['program']['programme_id']);
 		$campaign          = new CampaignEntity($label, new \DateTime(), new \DateTime('+1 year'), $program, '2050');
