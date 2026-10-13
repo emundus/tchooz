@@ -28,8 +28,9 @@ use Tchooz\Synchronizers\MappingTransportInterface;
  * to target another organization), so the client stays autonomous with no hardcoded value.
  *
  * Choreography:
- *   - existing + default bank account (BankAccountId) already matches the file IBAN → nothing to do;
- *   - existing + IBAN changed → create the new bank account, then update the vendor's default;
+ *   - existing → eMundus is the source of truth (SACEM): PATCH the mapped vendor fields that differ
+ *     from Sofis; then, if the default bank account (BankAccountId) does not match the file IBAN,
+ *     create the new bank account flagged as default;
  *   - not existing → create the vendor (ERP generates VendorAccountNumber), persist the
  *     SIRET → VendorAccountNumber correspondence, then create the bank account (which becomes the
  *     default — no explicit vendor update needed for a brand-new vendor).
@@ -44,6 +45,10 @@ class VendorObject extends AbstractSofisObject implements SelfExecutingMappingOb
 	// FieldGroup names used to route each mapped field to its Dynamics entity (dynamic payloads).
 	private const GROUP_VENDOR = 'vendor';
 	private const GROUP_BANK   = 'bank';
+
+	// Never sent on update: search keys (changing them would lose the vendor on the next run) and the
+	// party type, which F&O does not allow to change once the vendor exists.
+	private const NON_UPDATABLE_FIELDS = ['SiretNumber', 'dataAreaId', 'VendorGroupId', 'VendorPartyType'];
 
 	private ExternalReferenceRepository $externalReferenceRepository;
 
@@ -106,7 +111,7 @@ class VendorObject extends AbstractSofisObject implements SelfExecutingMappingOb
 	public function execute(MappingEntity $mapping, ActionTargetEntity $context, MappingTransportInterface $transport): bool
 	{
 		$data                = MappingService::getJsonFromMapping($mapping, $context);
-		$data['SiretNumber'] = $this->normalizeSiret($data['SiretNumber'] ?? '');
+		$data['SiretNumber'] = $this->normalizeIdentifier($data['SiretNumber'] ?? '');
 
 		$siret         = $data['SiretNumber'];
 		$iban          = trim((string) ($data['IBAN'] ?? ''));
@@ -129,6 +134,8 @@ class VendorObject extends AbstractSofisObject implements SelfExecutingMappingOb
 
 			// Keep the SIRET → VendorAccountNumber correspondence even when the vendor already exists.
 			$this->persistReference($siret, $vendorAccountNumber, $mapping->getSynchronizerId());
+
+			$this->updateVendor($transport, $existing, $data);
 
 			// Default bank account already matches the file IBAN → nothing else to do.
 			if ((string) ($existing->BankAccountId ?? '') === $bankAccountId)
@@ -155,6 +162,45 @@ class VendorObject extends AbstractSofisObject implements SelfExecutingMappingOb
 		$this->createBankAccount($transport, $vendorAccountNumber, $data, $bankAccountId);
 
 		return true;
+	}
+
+	/**
+	 * @throws \Exception
+	 */
+	private function updateVendor(MappingTransportInterface $transport, object $existing, array $data): void
+	{
+		$vendorAccountNumber = (string) $existing->VendorAccountNumber;
+		$updates             = $this->vendorUpdates($existing, $data);
+
+		if (empty($updates))
+		{
+			$this->debug('Vendor ' . $vendorAccountNumber . ' up to date, no update');
+
+			return;
+		}
+
+		$this->debug('Vendor ' . $vendorAccountNumber . ' changed field(s) : ' . implode(', ', array_keys($updates)));
+
+		// The MARIO gateway only routes the key in this order (VendorAccountNumber first)
+		$key = $this->key(['VendorAccountNumber' => $vendorAccountNumber, 'dataAreaId' => (string) ($existing->dataAreaId ?? '')]);
+		$this->patch($transport, self::ENTITY, $key, $updates);
+	}
+
+	/**
+	 * Mapped vendor fields whose value differs from Sofis. Empty mapped values are skipped: an unanswered
+	 * form field must not erase data in the ERP.
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected function vendorUpdates(object $existing, array $data): array
+	{
+		$updates = $this->collectMappedFields($data, self::GROUP_VENDOR, self::NON_UPDATABLE_FIELDS);
+
+		return array_filter(
+			$updates,
+			fn($value, $field) => trim((string) $value) !== '' && (string) ($existing->$field ?? '') !== (string) $value,
+			ARRAY_FILTER_USE_BOTH
+		);
 	}
 
 	private function findVendor(MappingTransportInterface $transport, string $siret, array $data): ?object

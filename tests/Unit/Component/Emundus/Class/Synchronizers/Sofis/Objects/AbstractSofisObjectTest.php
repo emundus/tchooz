@@ -72,29 +72,40 @@ class AbstractSofisObjectTest extends UnitTestCase
 	}
 
 	// -------------------------------------------------------------------------
-	// normalizeSiret()
+	// normalizeIdentifier()
 	// -------------------------------------------------------------------------
 
 	/**
-	 * @covers \Tchooz\Synchronizers\Sofis\Objects\AbstractSofisObject::normalizeSiret
+	 * @covers \Tchooz\Synchronizers\Sofis\Objects\AbstractSofisObject::normalizeIdentifier
 	 * @return void
 	 */
-	public function testNormalizeSiretKeepsDigitsOnly(): void
+	public function testNormalizeIdentifierRemovesSeparatorsFromSiretAndSiren(): void
 	{
-		$this->assertSame('23456789010876', $this->object->exposeNormalizeSiret('234 567 890 10876'));
-		$this->assertSame('23456789010876', $this->object->exposeNormalizeSiret(' 234.567-890 10876 '));
-		$this->assertSame('23456789010876', $this->object->exposeNormalizeSiret(23456789010876));
+		$this->assertSame('23456789010876', $this->object->exposeNormalizeIdentifier('234 567 890 10876'));
+		$this->assertSame('23456789010876', $this->object->exposeNormalizeIdentifier(' 234.567-890 10876 '));
+		$this->assertSame('23456789010876', $this->object->exposeNormalizeIdentifier(23456789010876));
+		$this->assertSame('123456789', $this->object->exposeNormalizeIdentifier("123\u{00A0}456\u{202F}789"), 'Non-breaking spaces from formatted inputs are separators too.');
 	}
 
 	/**
-	 * @covers \Tchooz\Synchronizers\Sofis\Objects\AbstractSofisObject::normalizeSiret
+	 * @covers \Tchooz\Synchronizers\Sofis\Objects\AbstractSofisObject::normalizeIdentifier
 	 * @return void
 	 */
-	public function testNormalizeSiretWhenEmptyReturnsEmptyString(): void
+	public function testNormalizeIdentifierKeepsTheLetterOfAnRna(): void
 	{
-		$this->assertSame('', $this->object->exposeNormalizeSiret(''));
-		$this->assertSame('', $this->object->exposeNormalizeSiret(null));
-		$this->assertSame('', $this->object->exposeNormalizeSiret('   '));
+		$this->assertSame('W751234567', $this->object->exposeNormalizeIdentifier('W751234567'));
+		$this->assertSame('W751234567', $this->object->exposeNormalizeIdentifier('w751 234 567'));
+	}
+
+	/**
+	 * @covers \Tchooz\Synchronizers\Sofis\Objects\AbstractSofisObject::normalizeIdentifier
+	 * @return void
+	 */
+	public function testNormalizeIdentifierWhenEmptyReturnsEmptyString(): void
+	{
+		$this->assertSame('', $this->object->exposeNormalizeIdentifier(''));
+		$this->assertSame('', $this->object->exposeNormalizeIdentifier(null));
+		$this->assertSame('', $this->object->exposeNormalizeIdentifier('   '));
 	}
 
 	// -------------------------------------------------------------------------
@@ -134,9 +145,9 @@ class ExposedSofisObject extends VendorObject
 		return $this->search($transport, $entitySet, $filter);
 	}
 
-	public function exposeNormalizeSiret(mixed $siret): string
+	public function exposeNormalizeIdentifier(mixed $identifier): string
 	{
-		return $this->normalizeSiret($siret);
+		return $this->normalizeIdentifier($identifier);
 	}
 
 	public function exposeMask(array $data): array
