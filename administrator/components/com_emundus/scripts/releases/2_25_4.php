@@ -29,6 +29,8 @@ class Release2_25_4Installer extends ReleaseInstaller
 		{
 			$this->tasks[] = EmundusHelperUpdate::disableEmundusPlugins('emunduswaitingroom', 'system');
 
+			$this->deleteTagAssociationNoLongerAvailable();
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
@@ -38,5 +40,25 @@ class Release2_25_4Installer extends ReleaseInstaller
 		}
 
 		return $result;
+	}
+
+	private function deleteTagAssociationNoLongerAvailable(): void
+	{
+		$query = $this->db->createQuery();
+
+		$query->select('id')
+			->from($this->db->qn('#__emundus_setup_action_tag'));
+		$this->db->setQuery($query);
+		$actionTags = array_map('intval', (array) $this->db->loadColumn());
+
+		if (empty($actionTags)) {
+			return;
+		}
+
+		$query->clear()
+			->delete($this->db->qn('#__emundus_tag_assoc'))
+			->where($this->db->qn('id_tag') . ' NOT IN (' . implode(',', $actionTags) . ')');
+		$this->db->setQuery($query);
+		$this->tasks[] = $this->db->execute();
 	}
 }

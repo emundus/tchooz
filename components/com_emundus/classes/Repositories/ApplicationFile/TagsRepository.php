@@ -147,7 +147,7 @@ class TagsRepository extends EmundusRepository implements RepositoryInterface
 
 		if (empty($id))
 		{
-			return $deleted;
+			return false;
 		}
 
 		try
@@ -156,6 +156,15 @@ class TagsRepository extends EmundusRepository implements RepositoryInterface
 				->delete($this->db->quoteName($this->tableName))
 				->where($this->db->quoteName('id') . ' = :id')
 				->bind(':id', $id, ParameterType::INTEGER);
+
+			$this->db->setQuery($query);
+			$deleted = (bool) $this->db->execute();
+
+			// Delete all associations
+			$query = $this->db->getQuery(true)
+				->delete($this->db->quoteName('#__emundus_tag_assoc'))
+				->where($this->db->quoteName('id_tag') . ' = :id_tag')
+				->bind(':id_tag', $id, ParameterType::INTEGER);
 
 			$this->db->setQuery($query);
 			$deleted = (bool) $this->db->execute();

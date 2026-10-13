@@ -52,6 +52,7 @@ use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Analytics\PageAnalyticsRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
+use Tchooz\Repositories\ApplicationFile\TagsRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
 use Tchooz\Repositories\CountryRepository;
@@ -157,7 +158,7 @@ class EmundusControllersettings extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
-	public function deletetag(): void
+	public function deletetag(): EmundusResponse
 	{
 		$id = $this->input->getInt('id');
 		if (empty($id))
@@ -165,7 +166,10 @@ class EmundusControllersettings extends EmundusController
 			throw new InvalidArgumentException('Tag ID is required');
 		}
 
-		$this->sendJsonResponse($this->m_settings->deleteTag($id));
+		$tagsRepository = new TagsRepository();
+
+		$deleted = $tagsRepository->delete($id);
+		return EmundusResponse::ok($deleted);
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
