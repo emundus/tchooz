@@ -3105,7 +3105,7 @@ class EmundusModelForm extends ListModel
 							}
 						}
 						else {
-							if($condition->type == 'file')
+							if($condition->type == 'file' || $condition->field === 'authentication_mode')
 							{
 								$options = $params->sub_options;
 							}
