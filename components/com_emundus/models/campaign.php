@@ -3847,60 +3847,27 @@ class EmundusModelCampaign extends ListModel
 		return $items;
 	}
 
+	/**
+	 * @param   int     $cid
+	 * @param   string  $alias
+	 * @param   string  $label  Unused, the menu title is the campaign label stored in database
+	 *
+	 * @return bool
+	 * @deprecated Use CampaignRepository::createCampaignAlias instead
+	 */
 	public function createCampaignAlias($cid, $alias, $label)
 	{
 		$alias_created = false;
 
 		try
 		{
-			$query = $this->_db->getQuery(true);
-			require_once(JPATH_SITE . DS . 'administrator/components/com_emundus/helpers/update.php');
+			$campaignRepository = new CampaignRepository();
+			$campaign           = $campaignRepository->getById((int) $cid);
 
-			$modules_id = [];
-
-			$query->clear()
-				->select('id,params')
-				->from($this->_db->quoteName('#__modules'))
-				->where($this->_db->quoteName('module') . ' LIKE ' . $this->_db->quote('mod_emundus_campaign'));
-			$this->_db->setQuery($query);
-			$modules = $this->_db->loadObjectList();
-			foreach ($modules as $module)
+			if (!empty($campaign))
 			{
-				$params = json_decode($module->params);
-				if (!empty($params->mod_em_campaign_layout) && $params->mod_em_campaign_layout == 'tchooz_single_campaign')
-				{
-					$modules_id[] = $module->id;
-				}
+				$alias_created = $campaignRepository->createCampaignAlias($campaign, $alias);
 			}
-
-			// Check again if alias already exists
-			$query->clear()
-				->select('id')
-				->from($this->_db->quoteName('#__menu'))
-				->where($this->_db->quoteName('alias') . ' LIKE ' . $this->_db->quote($alias));
-			$this->_db->setQuery($query);
-			$menu_id = $this->_db->loadResult();
-
-			if (!empty($menu_id))
-			{
-				$alias = $alias . '-' . $cid;
-			}
-
-			$params = [
-				'menutype'     => 'campaigns',
-				'title'        => $label,
-				'alias'        => $alias,
-				'path'         => $alias,
-				'type'         => 'component',
-				'link'         => 'index.php?option=com_emundus&view=programme',
-				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
-				'params'       => [
-					'com_emundus_programme_campaign_id'    => $cid,
-					'com_emundus_programme_candidate_link' => 'index.php?option=com_fabrik&view=form&formid=307&Itemid=2700'
-				]
-			];
-
-			$alias_created = EmundusHelperUpdate::addJoomlaMenu($params, 1, 1, 'last-child', $modules_id)['status'];
 		}
 		catch (Exception $e)
 		{

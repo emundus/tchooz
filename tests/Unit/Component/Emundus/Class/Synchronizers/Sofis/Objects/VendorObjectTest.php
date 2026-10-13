@@ -49,4 +49,58 @@ class VendorObjectTest extends UnitTestCase
 
 		(new VendorObject($referenceRepository))->execute(new MappingEntity(1, 'Vendor', 7, 'vendor'), $context, $transport);
 	}
+
+	/**
+	 * @covers \Tchooz\Synchronizers\Sofis\Objects\VendorObject::vendorUpdates
+	 * @return void
+	 */
+	public function testVendorUpdatesKeepsOnlyChangedNonEmptyUpdatableFields(): void
+	{
+		$existing = (object) [
+			'VendorOrganizationName' => 'Ancien nom',
+			'AddressCity'            => 'Paris',
+			'AddressStreet'          => 'Rue A',
+			'CurrencyCode'           => 'EUR',
+			'VendorGroupId'          => 'FRN_P_FR',
+		];
+
+		$updates = (new ExposedVendorObject($this->createMock(ExternalReferenceRepository::class)))->exposeVendorUpdates($existing, [
+			'VendorOrganizationName' => 'Nouveau nom',
+			'AddressCity'            => 'Paris',
+			'AddressStreet'          => '',
+			'CurrencyCode'           => 'EUR',
+			'VendorGroupId'          => 'AUTRE_GROUPE',
+			'SiretNumber'            => '23456789010876',
+			'IBAN'                   => 'FR7630006000011234567890189',
+		]);
+
+		$this->assertSame(['VendorOrganizationName' => 'Nouveau nom'], $updates, 'Only changed vendor fields are patched: unchanged, empty, search-key and bank fields are left out.');
+	}
+
+	/**
+	 * @covers \Tchooz\Synchronizers\Sofis\Objects\VendorObject::vendorUpdates
+	 * @return void
+	 */
+	public function testVendorUpdatesWhenSofisIsUpToDateReturnsNothing(): void
+	{
+		$existing = (object) ['VendorOrganizationName' => 'Nom', 'AddressCity' => 'Paris'];
+
+		$updates = (new ExposedVendorObject($this->createMock(ExternalReferenceRepository::class)))->exposeVendorUpdates($existing, [
+			'VendorOrganizationName' => 'Nom',
+			'AddressCity'            => 'Paris',
+		]);
+
+		$this->assertSame([], $updates);
+	}
+}
+
+/**
+ * Exposes VendorObject's update decision.
+ */
+class ExposedVendorObject extends VendorObject
+{
+	public function exposeVendorUpdates(object $existing, array $data): array
+	{
+		return $this->vendorUpdates($existing, $data);
+	}
 }

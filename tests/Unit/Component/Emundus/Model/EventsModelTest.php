@@ -731,20 +731,25 @@ class EventsModelTest extends UnitTestCase
 		$this->assertObjectHasProperty('capacity',$availabilities[0], 'The availability object should have a capacity property');
 		$this->assertObjectHasProperty('slot',$availabilities[0], 'The availability object should have a slot property');
 
-		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00');
+		$timezone = Factory::getApplication()->get('offset', 'Europe/Paris');
+		$rangeStart = Factory::getDate($this->nextYear . '-01-01 00:00:00', $timezone)->toSql();
+		$rangeEnd = Factory::getDate($this->nextYear . '-01-01 06:00:00', $timezone)->toSql();
+		$firstSlotEnd = Factory::getDate($this->nextYear . '-01-01 00:30:00', $timezone)->toSql();
+
+		$availabilities = $this->model->getEventsAvailabilities($rangeStart, $rangeEnd);
 		$this->assertIsArray($availabilities, 'The method getEventsAvailabilities should return an array');
 		$this->assertNotEmpty($availabilities, 'The method getEventsAvailabilities should return a non empty array');
-		
-		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [$event_id]);
+
+		$availabilities = $this->model->getEventsAvailabilities($rangeStart, $rangeEnd, [$event_id], [], false);
 		$this->assertIsArray($availabilities, 'The method getEventsAvailabilities should return an array');
 		$this->assertNotEmpty($availabilities, 'The method getEventsAvailabilities should return a non empty array');
-		$this->assertSame($this->nextYear . '-01-01 00:00', $availabilities[0]->start, 'The availability start should be "2026-01-01 00:00"');
+		$this->assertSame($rangeStart, $availabilities[0]->start, 'The first availability should start at the beginning of the slot (UTC)');
 		$availability_id = $availabilities[0]->id;
 
-		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [], $availability_id);
+		$availabilities = $this->model->getEventsAvailabilities($rangeStart, $rangeEnd, [], $availability_id);
 		$this->assertSame(1, count($availabilities), 'The method getEventsAvailabilities should return an array with one element');
 
-		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 00:30:00', [$event_id]);
+		$availabilities = $this->model->getEventsAvailabilities($rangeStart, $firstSlotEnd, [$event_id]);
 		$this->assertSame(1, count($availabilities), 'The method getEventsAvailabilities should return an array with one element');
 
 		$availabilities = $this->model->getEventsAvailabilities('2025-01-01 00:00:00', '2025-01-01 06:00:00', [$event_id]);

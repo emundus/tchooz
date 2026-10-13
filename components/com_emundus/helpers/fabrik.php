@@ -785,6 +785,8 @@ class EmundusHelperFabrik
 				'average_multiple_max' => ['20'],
 			]);
 			$params['used_as_total']             = 0;
+			$params['decimals']                  = 2;
+			$params['rounding']                  = 'round';
 		}
 
 		if ($plugin === ElementPluginEnum::NUMERIC->value)

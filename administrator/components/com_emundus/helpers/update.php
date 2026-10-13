@@ -23,8 +23,8 @@ use Joomla\Component\Scheduler\Administrator\Table\TaskTable;
 use Joomla\Registry\Registry;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\Actions\CrudEntity;
-use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Services\ExtensionService;
 
 require_once(__DIR__ . '/EmundusTableColumn.php');
@@ -4338,10 +4338,8 @@ class EmundusHelperUpdate
 	{
 		try
 		{
-			require_once JPATH_ROOT . '/components/com_emundus/models/formbuilder.php';
-			$m_formbuilder = new EmundusModelFormbuilder();
-			$db            = Factory::getContainer()->get('DatabaseDriver');
-			$query         = $db->getQuery(true);
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
 
 			$query->clear()
 				->select('id')
@@ -4368,19 +4366,23 @@ class EmundusHelperUpdate
 			$db->setQuery($query);
 			$campaigns = $db->loadObjectList();
 
+			$campaignRepository = new CampaignRepository();
+
 			foreach ($campaigns as $campaign)
 			{
 				if (empty($campaign->alias))
 				{
-					$alias = LanguageFactory::replaceAccents($campaign->label);
-					$alias = preg_replace('/[^A-Za-z0-9]/', '-', $alias);
-					$alias = str_replace(' ', '-', $alias);
-					$alias = strtolower($alias);
+					$campaignEntity = $campaignRepository->getById((int) $campaign->id);
+
+					if (!empty($campaignEntity))
+					{
+						$campaignRepository->createCampaignAlias($campaignEntity);
+					}
+
+					continue;
 				}
-				else
-				{
-					$alias = $campaign->alias;
-				}
+
+				$alias = $campaign->alias;
 
 				$query->clear()
 					->select('id,menutype,params')

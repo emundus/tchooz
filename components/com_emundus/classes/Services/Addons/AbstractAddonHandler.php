@@ -17,12 +17,12 @@ use Tchooz\Services\Handlers\HandlerInterface;
 
 abstract class AbstractAddonHandler implements HandlerInterface
 {
-	protected AddonEntity $addon;
+	protected ?AddonEntity $addon;
 
 	protected ?EmundusAddonConfiguration $configuration;
 
 	public function __construct(
-		AddonEntity $addon,
+		?AddonEntity $addon,
 		?EmundusAddonConfiguration $configuration)
 	{
 		$this->addon = $addon;
@@ -31,7 +31,7 @@ abstract class AbstractAddonHandler implements HandlerInterface
 
 	public function onSetup(object $setup, ?AddonRepository $repository = null): bool
 	{
-		if (empty($this->configuration))
+		if (empty($this->configuration) || empty($this->addon))
 		{
 			return false;
 		}

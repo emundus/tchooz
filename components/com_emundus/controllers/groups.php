@@ -712,6 +712,13 @@ class EmundusControllerGroups extends EmundusController
 
 		// Duplicate ACL
 		$groupAccessList = $this->groupAccessRepository->getItemsByField('group_id', $id, true);
+		$existingGroupAccessList = $this->groupAccessRepository->getItemsByField('group_id', $group->getId(), true);
+		$existingAccessIdByAction = [];
+		foreach ($existingGroupAccessList as $existingGroupAccess)
+		{
+			$existingAccessIdByAction[$existingGroupAccess->getAction()->getId()] = $existingGroupAccess->getId();
+		}
+
 		foreach($groupAccessList as $groupAccess)
 		{
 			if(empty($groupAccess->getAction()))
@@ -719,7 +726,7 @@ class EmundusControllerGroups extends EmundusController
 				continue;
 			}
 
-			$groupAccess->setId(0);
+			$groupAccess->setId($existingAccessIdByAction[$groupAccess->getAction()->getId()] ?? 0);
 			$groupAccess->setGroup($group);
 			if (!$this->groupAccessRepository->flush($groupAccess))
 			{

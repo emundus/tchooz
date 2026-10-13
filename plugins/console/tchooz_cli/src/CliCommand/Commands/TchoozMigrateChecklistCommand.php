@@ -8,6 +8,7 @@ use Emundus\Plugin\Console\Tchooz\CliCommand\TchoozCommand;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckCustomApplicationActionsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckCustomEventsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckEmundusTagsJob;
+use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\CheckRegistrationFormJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\RegroupWorkflowsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Definition\JobDefinition;
 use Emundus\Plugin\Console\Tchooz\Jobs\Checklist\MigrateEvaluationsJob;
@@ -108,6 +109,11 @@ class TchoozMigrateChecklistCommand extends TchoozCommand
 
 			CheckLegacyEvaluationStructuresJob::getJobName() => (new JobDefinition(
 				CheckLegacyEvaluationStructuresJob::class,
+				[$this->databaseServiceSource, $this->databaseService]
+			)),
+
+			CheckRegistrationFormJob::getJobName() => (new JobDefinition(
+				CheckRegistrationFormJob::class,
 				[$this->databaseServiceSource, $this->databaseService]
 			)),
 		];
