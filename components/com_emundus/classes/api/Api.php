@@ -337,6 +337,9 @@ class Api
 			$response['status']  = $e->getResponse()->getStatusCode();
 			$response['message'] = $e->getResponse()->getReasonPhrase();
 			$response['headers'] = $e->getResponse()->getHeaders();
+			$response['error_details'] = $e->getResponse()->getBody()->getContents();
+			// URI as actually sent by Guzzle (after base_uri resolution and encoding)
+			$response['request_uri'] = (string) $e->getRequest()->getUri();
 		}
 
 		return $response;
