@@ -1004,29 +1004,33 @@ class EmundusFiltersFiles extends EmundusFilters
 			$m_workflow = new EmundusModelWorkflow();
 			$steps = $m_workflow->getEvaluatorSteps($this->user->id);
 
-			$at_least_one = false;
+			$step_ids_by_table = [];
 			foreach($steps as $step)
 			{
 				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asAccessAction($step->action_id, 'u', $this->user->id))
 				{
-					$at_least_one = true;
+					$step_ids_by_table[$step->table][] = (int) $step->id;
+				}
+			}
+			$at_least_one = !empty($step_ids_by_table);
 
-					$query->clear()
-						->select('ju.id as value, CONCAT(ju.name, " ", ju.email ) as label')
-						->from('#__users as ju')
-						->leftJoin($step->table . ' AS eval_table ON eval_table.evaluator = ju.id')
-						->where('eval_table.step_id = ' . $step->id)
-						->group('ju.id');
+			foreach ($step_ids_by_table as $table => $step_ids)
+			{
+				$query->clear()
+					->select('ju.id as value, CONCAT(ju.name, " ", ju.email ) as label')
+					->from('#__users as ju')
+					->leftJoin($table . ' AS eval_table ON eval_table.evaluator = ju.id')
+					->where('eval_table.step_id IN (' . implode(',', $step_ids) . ')')
+					->group('ju.id');
 
-					try
-					{
-						$db->setQuery($query);
-						$evaluators = array_merge($evaluators, $db->loadAssocList());
-					}
-					catch (Exception $e)
-					{
-						Log::add('Failed to get evaluators associated to profiles that current' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
-					}
+				try
+				{
+					$db->setQuery($query);
+					$evaluators = array_merge($evaluators, $db->loadAssocList());
+				}
+				catch (Exception $e)
+				{
+					Log::add('Failed to get evaluators associated to profiles that current' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
 				}
 			}
 			
