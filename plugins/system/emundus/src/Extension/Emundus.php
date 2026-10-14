@@ -36,9 +36,15 @@ use Tchooz\Entities\Automation\EventsDefinitions\onAfterRenderDefinition;
 use Tchooz\Entities\Emails\TagModifierRegistry;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\User\AuthenticationModeEnum;
+use Tchooz\Monitor\BuggregatorLoggerFactory;
+use Tchooz\Monitor\BuggregatorQueryMonitor;
+use Tchooz\Monitor\ClockworkQueryMonitor;
+use Tchooz\Monitor\HttpRequestContext;
 use Tchooz\Providers\DbLanguageProvider;
 use Tchooz\Providers\EmundusSubscriberProvider;
 use Tchooz\Services\Automation\RedirectIntentTransport;
+use Clockwork\Support\Vanilla\Clockwork;
+use Joomla\Database\Monitor\ChainedMonitor;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -73,12 +79,16 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		'default'     => '--neutral-600',
 	];
 
+	private $clockwork;
+	private $processed = false;
+
 	public static function getSubscribedEvents(): array
 	{
 		$app = Factory::getApplication();
 
 		$mapping = [];
 
+		$mapping['onBeforeRespond'] = 'onBeforeRespond';
 		$mapping['onAfterInitialise'] = 'onAfterInitialise';
 		if ($app->isClient('site') || $app->isClient('administrator'))
 		{
@@ -144,6 +154,10 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			require_once JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
 		}
 
+		// Dev query monitors (Clockwork). No-op unless this is a
+		// development environment AND the matching plugin param is enabled.
+		$this->initQueryMonitors();
+
 		$container = Factory::getContainer();
 
 		if ($this->getApplication()->isClient('site') || $this->getApplication()->isClient('administrator'))
@@ -159,6 +173,115 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		// Register subscribers
 		$emundusSubscriberProvider = new EmundusSubscriberProvider();
 		$emundusSubscriberProvider->register($container);
+	}
+
+	public function onBeforeRespond()
+	{
+		$this->finalize();
+	}
+
+	public function finalize()
+	{
+		if ($this->processed) {
+			return;
+		}
+		$this->processed = true;
+
+		if ($this->clockwork) {
+			$this->clockwork->requestProcessed();
+		}
+	}
+
+	/**
+	 * Attach the enabled dev query monitor(s) to the database driver. Joomla only
+	 * accepts a single monitor, so when both tools are on they are wrapped in a
+	 * ChainedMonitor. Entirely inert outside a development environment.
+	 */
+	private function initQueryMonitors(): void
+	{
+		if (!$this->isDevEnvironment())
+		{
+			return;
+		}
+
+		$autoload = JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
+		if (!file_exists($autoload))
+		{
+			return;
+		}
+		require_once $autoload;
+
+		$clockworkEnabled   = (bool) $this->params->get('clockwork_debug', 0);
+
+		$monitors = [];
+
+		if ($clockworkEnabled)
+		{
+			$monitors[] = $this->initClockworkMonitor();
+		}
+
+		$monitors = array_values(array_filter($monitors));
+
+		if ($monitors === [])
+		{
+			return;
+		}
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		if (count($monitors) === 1)
+		{
+			$db->setMonitor($monitors[0]);
+
+			return;
+		}
+
+		$chain = new ChainedMonitor();
+		foreach ($monitors as $monitor)
+		{
+			$chain->addMonitor($monitor);
+		}
+		$db->setMonitor($chain);
+	}
+
+	/**
+	 * Boot Clockwork, serve its browser-extension metadata endpoint (?clockwork=),
+	 * and arrange the request to be flushed even on exit / jexit / $app->close().
+	 */
+	private function initClockworkMonitor(): ClockworkQueryMonitor
+	{
+		$this->clockwork = Clockwork::init([
+			'storage_files_path' => JPATH_ROOT . '/tmp/clockwork',
+			'api'                => '/index.php?clockwork=',
+			// Durcissement : collecte restreinte au localhost, pas de web UI ni toolbar exposés
+			'enable'             => null,
+			'toolbar'            => false,
+			'web'                => ['enable' => false, 'path' => false],
+		]);
+
+		// Endpoint métadonnées : traite les requêtes de l'extension navigateur Clockwork dans l'app
+		$clockworkRequest = $this->getApplication()->getInput()->getString('clockwork', '');
+		if ($clockworkRequest !== '')
+		{
+			$this->clockwork->handleMetadata($clockworkRequest);
+			$this->getApplication()->close();
+		}
+
+		// Retient la sortie pour pouvoir encore envoyer des en-têtes à la fin,
+		// et flushe Clockwork même en cas de exit / jexit / $app->close().
+		ob_start();
+		register_shutdown_function([$this, 'finalize']);
+
+		return new ClockworkQueryMonitor($this->clockwork);
+	}
+
+	/**
+	 * Dev-only gate. Both monitors stay inert unless Joomla debug is on or the
+	 * EMUNDUS_DEVTOOLS environment flag is explicitly set to "1".
+	 */
+	private function isDevEnvironment(): bool
+	{
+		return getenv('EMUNDUS_DEVTOOLS') === '1';
 	}
 
 	public function injectLazyJS(EventInterface $event): void
