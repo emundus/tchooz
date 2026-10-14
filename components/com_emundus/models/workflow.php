@@ -614,6 +614,8 @@ class EmundusModelWorkflow extends JModelList
 
 		if (!empty($programs) && !in_array('all', $programs))
 		{
+			$programs = array_unique(array_map('intval', $programs));
+
 			if($displayNoAssociated)
 			{
 				$query->where('(' . $this->db->quoteName('eswp.program_id') . ' IN (' . implode(',', $programs) . ') OR ' . $this->db->quoteName('eswp.program_id') . ' IS NULL)');

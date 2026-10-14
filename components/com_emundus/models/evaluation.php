@@ -544,33 +544,39 @@ class EmundusModelEvaluation extends JModelList
 						require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
 						$m_workflow = new EmundusModelWorkflow();
 
+						// Steps often share an evaluation form: its elements are loaded once.
+						$form_ids = [];
 						foreach($step_ids as $step_id) {
 							$step_data = $m_workflow->getStepData($step_id);
 
 							if (!empty($step_data->form_id))
 							{
-								$query = $this->db->createQuery();
-								$query->clear()
-									->select('group_id')
-									->from($this->db->quoteName('#__fabrik_formgroup', 'ffg'))
-									->leftJoin($this->db->quoteName('#__fabrik_groups', 'fg') . ' ON ffg.group_id = fg.id')
-									->where('form_id = ' . $step_data->form_id);
+								$form_ids[] = (int) $step_data->form_id;
+							}
+						}
 
-								$this->db->setQuery($query);
-								$groups = $this->db->loadColumn();
+						foreach(array_unique($form_ids) as $form_id) {
+							$query = $this->db->createQuery();
+							$query->clear()
+								->select('group_id')
+								->from($this->db->quoteName('#__fabrik_formgroup', 'ffg'))
+								->leftJoin($this->db->quoteName('#__fabrik_groups', 'fg') . ' ON ffg.group_id = fg.id')
+								->where('form_id = ' . $form_id);
 
-								if (!empty($groups))
+							$this->db->setQuery($query);
+							$groups = $this->db->loadColumn();
+
+							if (!empty($groups))
+							{
+								$groups = implode(',', $groups);
+								$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
+								if (is_array($eval_elt_list) && count($eval_elt_list) > 0)
 								{
-									$groups = implode(',', $groups);
-									$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-									if (is_array($eval_elt_list) && count($eval_elt_list) > 0)
+									foreach ($eval_elt_list as $eel)
 									{
-										foreach ($eval_elt_list as $eel)
+										if (!empty($eel->element_id))
 										{
-											if (!empty($eel->element_id))
-											{
-												$elements_id[] = $eel->element_id;
-											}
+											$elements_id[] = $eel->element_id;
 										}
 									}
 								}
@@ -850,12 +856,19 @@ class EmundusModelEvaluation extends JModelList
 
 	public function _buildContentOrderBy()
 	{
-        $order = ' ORDER BY jecc.date_submitted DESC, jecc.date_time DESC';
+		return ' ORDER BY ' . implode(', ', array_map(fn($order) => $order[0] . ' ' . $order[1], $this->getContentOrder()));
+	}
+
+	/**
+	 * @return array<array{0: string, 1: string}>  Sorted expressions, with their direction.
+	 */
+	private function getContentOrder(): array
+	{
 		$filter_order     = Factory::getApplication()->getSession()->get('filter_order');
-		$filter_order_Dir = Factory::getApplication()->getSession()->get('filter_order_Dir');
+		$filter_order_Dir = strtoupper((string) Factory::getApplication()->getSession()->get('filter_order_Dir'));
 
 		$can_be_ordering = array();
-		if (count($this->_elements) > 0)
+		if (!empty($this->_elements))
 		{
 			foreach ($this->_elements as $element)
 			{
@@ -885,11 +898,11 @@ class EmundusModelEvaluation extends JModelList
 			$filter_order = 'name';
 		}
 
-        if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
-            $order = ' ORDER BY ' . $filter_order . ' ' . $filter_order_Dir;
-        }
+		if (!empty($filter_order) && in_array($filter_order_Dir, ['ASC', 'DESC'], true) && in_array($filter_order, $can_be_ordering)) {
+			return [[$filter_order, $filter_order_Dir]];
+		}
 
-        return $order;
+		return [['jecc.date_submitted', 'DESC'], ['jecc.date_time', 'DESC']];
 	}
 
 	public function multi_array_sort($multi_array, $sort_key, $sort = SORT_ASC)
@@ -1198,7 +1211,13 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 
-	private function _buildWhere($already_joined_tables = array(), $step_id = 0)
+	/**
+	 * @param   array  $already_joined_tables
+	 * @param   int[]  $listed_step_ids  Steps listed through buildListedStepsJoins(), if any.
+	 *
+	 * @return array
+	 */
+	private function _buildWhere($already_joined_tables = array(), array $listed_step_ids = [])
 	{
 		$h_files = new EmundusHelperFiles();
 
@@ -1208,12 +1227,17 @@ class EmundusModelEvaluation extends JModelList
 			'eval'       => true,
 		);
 
-		if (!empty($step_id))
+		$filters_to_exclude = [];
+		if (!empty($listed_step_ids))
 		{
-			$caller_params['step_id'] = $step_id;
+			$caller_params['listed_step_ids'] = $listed_step_ids;
+
+			// The listed steps are already the ones picked in workflow_steps, each restricted to its programs;
+			// the filter would also join the other steps' tables, multiplying the rows.
+			$filters_to_exclude[] = 'workflow_steps';
 		}
 
-		return $h_files->_moduleBuildWhere($already_joined_tables, 'files', $caller_params);
+		return $h_files->_moduleBuildWhere($already_joined_tables, 'files', $caller_params, $filters_to_exclude);
 	}
 
 	public function getUsers($current_fnum = null, $user_id = null, $all = false)
@@ -1235,11 +1259,89 @@ class EmundusModelEvaluation extends JModelList
 		$session = $this->app->getSession();
 		$applied_filters = $session->get('em-applied-filters', []);
 
+		$step_ids            = self::getEvaluationStepIds($applied_filters, (int) $this->app->getIdentity()->id);
+		$selected_evaluators = self::getSelectedEvaluators($applied_filters);
+
+		$this->_applicants = [];
+		$this->_total      = null;
+		$order_by_average  = $session->get('filter_order') === 'overall';
+		$limit             = $all ? 0 : (int) $session->get('limit', 0);
+		$limitstart        = (int) $session->get('limitstart', 0);
+
+		if (!empty($step_ids))  {
+			if (!class_exists('EmundusModelWorkflow')) {
+				require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
+			}
+			$m_workflow     = new EmundusModelWorkflow();
+			$steps_by_table = [];
+			foreach ($step_ids as $step_id) {
+				$step_data = $m_workflow->getStepData($step_id);
+
+				if (empty($step_data->table)) {
+					throw new Exception(sprintf(Text::_('COM_EMUNDUS_BUILD_WHERE_STEP_CONFIGURATION_ERROR'), $step_data->label));
+				}
+
+				$steps_by_table[$step_data->table][] = $step_data;
+			}
+
+			// The average is sorted in PHP: every row is needed before the page is cut.
+			$page = ($limit > 0 && !$order_by_average) ? [$limitstart, $limit] : null;
+			$list = $this->getStepsEvaluationsList($steps_by_table, (int) $this->app->getIdentity()->id, $selected_evaluators, $page);
+
+			if ($order_by_average) {
+				$list = $this->sortByEvaluationAverage($list, $user_id);
+
+				if ($limit > 0) {
+					$list = array_slice($list, $limitstart, $limit);
+				}
+			}
+		} else {
+			$list = $this->getEvaluationsList();
+
+			if ($order_by_average) {
+				$list = $this->sortByEvaluationAverage($list, $user_id);
+			}
+		}
+
+		return $list;
+	}
+
+	private function sortByEvaluationAverage(array $list, $user_id): array
+	{
+		$averageByFnums   = $this->getEvaluationAverageByFnum(array_column($list, 'fnum'), $user_id);
+		$filter_order_Dir = $this->app->getSession()->get('filter_order_Dir');
+
+		usort($list, function ($a, $b) use ($averageByFnums, $filter_order_Dir) {
+			$avgA = $averageByFnums[$a['fnum']] ?? 0;
+			$avgB = $averageByFnums[$b['fnum']] ?? 0;
+
+			if ($filter_order_Dir === 'asc') {
+				return $avgA <=> $avgB;
+			} else {
+				return $avgB <=> $avgA;
+			}
+		});
+
+		return $list;
+	}
+
+	/**
+	 * Evaluation steps listed by the evaluation view: the ones picked in the workflow_steps filter,
+	 * or else every evaluation step of the user's programs they can create or read.
+	 *
+	 * @param   array  $applied_filters  Session filters (em-applied-filters).
+	 * @param   int    $user_id          User whose access rights apply.
+	 *
+	 * @return int[]
+	 */
+	public static function getEvaluationStepIds(array $applied_filters, int $user_id): array
+	{
 		$step_ids = [];
 		foreach ($applied_filters as $filter) {
-			if ($filter['uid'] == 'workflow_steps') {
-				if (!empty($filter['value']) && !in_array('all', $filter['value'])) {
-					$step_ids = !is_array($filter['value']) ? [$filter['value']] : $filter['value'];
+			if (($filter['uid'] ?? '') == 'workflow_steps') {
+				$values = array_filter((array) ($filter['value'] ?? []));
+				if (!empty($values) && !in_array('all', $values)) {
+					$step_ids = $values;
 				}
 			}
 		}
@@ -1251,7 +1353,6 @@ class EmundusModelEvaluation extends JModelList
 			}
 			$c_filter_files = new EmundusFiltersFiles([], true);
 			$user_programs = $c_filter_files->getUserProgrammes();
-			$user_groups = $c_filter_files->getUserGroups();
 
 			if (!empty($user_programs)) {
 				if (!class_exists('EmundusModelWorkflow')) {
@@ -1266,7 +1367,7 @@ class EmundusModelEvaluation extends JModelList
 						foreach($workflow_data['steps'] as $step) {
 							$action_id = $m_workflow->getStepAssocActionId($step->id);
 							if ($m_workflow->isEvaluationStep($step->type) &&
-								(EmundusHelperAccess::asAccessAction($action_id, 'r', $this->app->getIdentity()->id) || EmundusHelperAccess::asAccessAction($action_id, 'c', $this->app->getIdentity()->id))) {
+								(EmundusHelperAccess::asAccessAction($action_id, 'r', $user_id) || EmundusHelperAccess::asAccessAction($action_id, 'c', $user_id))) {
 								$step_ids[] = $step->id;
 							}
 						}
@@ -1275,106 +1376,222 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
+		return array_map('intval', $step_ids);
+	}
+
+	/**
+	 * Evaluators picked in the evaluators filter with the IN operator.
+	 *
+	 * @param   array  $applied_filters  Session filters (em-applied-filters).
+	 *
+	 * @return int[]
+	 */
+	public static function getSelectedEvaluators(array $applied_filters): array
+	{
 		$selected_evaluators = [];
 		foreach ($applied_filters as $filter) {
-			if($filter['uid'] == 'evaluators' && !empty($filter['value']) && !in_array('all', $filter['value']) && $filter['operator'] === 'IN') {
-				$selected_evaluators = !is_array($filter['value']) ? [$filter['value']] : $filter['value'];
+			$values = array_filter((array) ($filter['value'] ?? []));
+			if (($filter['uid'] ?? '') == 'evaluators' && !empty($values) && !in_array('all', $values) && ($filter['operator'] ?? '') === 'IN') {
+				$selected_evaluators = $values;
 			}
 		}
 
-		$this->_applicants = [];
-		if (!empty($step_ids))  {
-			foreach ($step_ids as $step_id) {
-				$list = array_merge($list, $this->getEvaluationsList($step_id, count($step_ids), selected_evaluators: $selected_evaluators));
-			}
-			$grouped_list = [];
-			foreach($list as $item) {
-				if (!isset($grouped_list[$item['fnum']])) {
-					$grouped_list[$item['fnum']] = [];
-				}
-				$grouped_list[$item['fnum']][] = $item;
-			}
+		return array_map('intval', $selected_evaluators);
+	}
 
-			$list = [];
-			foreach($grouped_list as $fnum => $items) {
-				foreach ($items as $item) {
-					if(!empty($selected_evaluators) && in_array('evaluator_id', array_keys($item)) && !in_array($item['evaluator_id'], $selected_evaluators)) {
-						continue;
-					}
+	/**
+	 * Joins listing the steps' evaluations on the files, as the evaluation view lists them: one row
+	 * per step and evaluation, or per step and file when the file has none in the step. The steps
+	 * share one evaluation table, which keeps its name as alias; the step of a row is
+	 * listed_step.step_id.
+	 *
+	 * Each step applies its programs (program_id NULL when it has none, so any program), and the
+	 * user's own evaluations only when they cannot read the others'.
+	 *
+	 * @param   object[]  $steps  Steps from EmundusModelWorkflow::getStepData(), sharing one table.
+	 * @param   int       $user_id
+	 *
+	 * @return string
+	 */
+	public static function buildListedStepsJoins(array $steps, int $user_id): string
+	{
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$table = $steps[0]->table;
 
-					$list[] = $item;
-				}
-			}
+		$rows = [];
+		foreach ($steps as $step_data)
+		{
+			$can_read    = EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id) ? 1 : 0;
+			$program_ids = array_filter(array_map('intval', $step_data->programs ?? [])) ?: ['NULL'];
 
-			$filter_order     = Factory::getApplication()->getSession()->get('filter_order');
-			if ($filter_order === 'overall')
+			foreach ($program_ids as $program_id)
 			{
-				$fnums = array_column($list, 'fnum');
-				$filter_order_Dir = Factory::getApplication()->getSession()->get('filter_order_Dir');
-				$averageByFnums = $this->getEvaluationAverageByFnum($fnums, $user_id);
-
-				// sort $evaluations_list by average
-				usort($list, function ($a, $b) use ($averageByFnums, $filter_order_Dir) {
-					$avgA = $averageByFnums[$a['fnum']] ?? 0;
-					$avgB = $averageByFnums[$b['fnum']] ?? 0;
-
-					if ($filter_order_Dir === 'asc') {
-						return $avgA <=> $avgB;
-					} else {
-						return $avgB <=> $avgA;
-					}
-				});
+				$rows[] = 'SELECT ' . (int) $step_data->id . ' AS step_id, ' . $db->quote($step_data->label ?? '') . ' AS step_label, ' . $program_id . ' AS program_id, ' . $can_read . ' AS can_read';
 			}
+		}
 
-			if (!$all) {
-				$session = $this->app->getSession();
-				$limit = $session->get('limit', 0);
-				$limitstart = $session->get('limitstart', 0);
+		$joins = ' INNER JOIN (' . implode(' UNION ALL ', $rows) . ') AS listed_step ON (listed_step.program_id IS NULL OR listed_step.program_id = sp.id)';
+		$joins .= ' LEFT JOIN ' . $table . ' ON ' . $table . '.ccid = jecc.id AND ' . $table . '.step_id = listed_step.step_id AND (listed_step.can_read = 1 OR ' . $table . '.evaluator = ' . $user_id . ') ';
 
-				if (!empty($limit)) {
-					$list = array_slice($list, $limitstart, $limit);
-				}
-			}
-		} else {
-			$list = $this->getEvaluationsList();
+		return $joins;
+	}
 
-			$filter_order     = Factory::getApplication()->getSession()->get('filter_order');
-			if ($filter_order === 'overall')
+	/**
+	 * Restriction of a step's evaluations to the evaluators picked in the filter, joined with
+	 * buildListedStepsJoins(). Empty when no evaluator is picked.
+	 *
+	 * @param   object  $step_data            Step from EmundusModelWorkflow::getStepData().
+	 * @param   int[]   $selected_evaluators  From getSelectedEvaluators().
+	 *
+	 * @return string
+	 */
+	public static function buildSelectedEvaluatorsCondition(object $step_data, array $selected_evaluators): string
+	{
+		if (empty($selected_evaluators)) {
+			return '';
+		}
+
+		return ' AND ' . $step_data->table . '.evaluator IN (' . implode(',', array_map('intval', $selected_evaluators)) . ') ';
+	}
+
+	/**
+	 * Evaluation list without step: one row per file. The full result is loaded for the total
+	 * (getTotal()), the page is sliced from it.
+	 *
+	 * @return array
+	 */
+	function getEvaluationsList()
+	{
+		$evaluations_list = [];
+
+		$session = $this->app->getSession();
+
+		$list_query = $this->buildEvaluationsListQuery();
+		$query      = 'SELECT ' . $list_query['select'] . $list_query['body'] . $this->_buildContentOrderBy();
+
+		try
+		{
+			$this->db->setQuery($query);
+			$res               = $this->db->loadAssocList();
+			$this->_applicants = array_merge($this->_applicants, $res);
+			$evaluations_list  = $res;
+
+			$limit = (int) $session->get('limit');
+			if ($limit > 0)
 			{
-				$fnums = array_column($list, 'fnum');
-				$filter_order_Dir = Factory::getApplication()->getSession()->get('filter_order_Dir');
-				$averageByFnums = $this->getEvaluationAverageByFnum($fnums, $user_id);
-
-				// sort $evaluations_list by average
-				usort($list, function ($a, $b) use ($averageByFnums, $filter_order_Dir) {
-					$avgA = $averageByFnums[$a['fnum']] ?? 0;
-					$avgB = $averageByFnums[$b['fnum']] ?? 0;
-
-					if ($filter_order_Dir === 'asc') {
-						return $avgA <=> $avgB;
-					} else {
-						return $avgB <=> $avgA;
-					}
-				});
+				$evaluations_list = array_slice($res, (int) $session->get('limitstart'), $limit);
 			}
+		}
+		catch (Exception $e)
+		{
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . str_replace('#_', 'jos', $query) . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+
+			// An empty list would read as "no file": the failure must reach the user.
+			// todo: we should throw an error, but we have to ensure every front endpoints will handle it correctly
+			// throw new Exception(Text::_('COM_EMUNDUS_ERROR_OCCURED'), 500, $e);
+		}
+
+		return $evaluations_list;
+	}
+
+	/**
+	 * Evaluation list of the steps: their evaluations, or the file itself in a step where it has
+	 * none. The steps sharing an evaluation table are listed by one query, the tables' queries are
+	 * merged by UNION ALL, so the order and the page apply in SQL. Sets the total.
+	 *
+	 * @param   array<string, object[]>  $steps_by_table       Steps from EmundusModelWorkflow::getStepData(), by evaluation table.
+	 * @param   int                      $user_id
+	 * @param   int[]                    $selected_evaluators  From getSelectedEvaluators().
+	 * @param   array|null               $page                 [limitstart, limit], null for every row.
+	 *
+	 * @return array
+	 */
+	private function getStepsEvaluationsList(array $steps_by_table, int $user_id, array $selected_evaluators, ?array $page): array
+	{
+		$list = [];
+
+		// A union is only sorted by its output columns: the sorted expressions are selected as such.
+		$order_columns = [];
+		$order_by      = [];
+		foreach ($this->getContentOrder() as $i => [$expression, $direction])
+		{
+			if (str_contains($expression, '.'))
+			{
+				$order_columns['__order_' . $i] = $expression . ' AS __order_' . $i;
+				$order_by[]                     = '__order_' . $i . ' ' . $direction;
+			}
+			else
+			{
+				$order_by[] = $expression . ' ' . $direction;
+			}
+		}
+		// Keeps the rows of a file together and the pages stable.
+		$order_by[] = 'fnum ASC';
+		$order_by[] = 'evaluations_step_id ASC';
+		$order_by[] = 'evaluation_id ASC';
+
+		$branches       = [];
+		$count_branches = [];
+		foreach ($steps_by_table as $steps)
+		{
+			$list_query       = $this->buildEvaluationsListQuery($steps, $user_id, $selected_evaluators);
+			$branches[]       = 'SELECT ' . $list_query['select'] . (!empty($order_columns) ? ', ' . implode(', ', $order_columns) : '') . $list_query['body'];
+			$count_branches[] = 'SELECT 1' . $list_query['body'];
+		}
+
+		$query = count($branches) > 1 ? '(' . implode(') UNION ALL (', $branches) . ')' : $branches[0];
+		$query .= ' ORDER BY ' . implode(', ', $order_by);
+		if (!empty($page))
+		{
+			$query .= ' LIMIT ' . (int) $page[0] . ', ' . (int) $page[1];
+		}
+
+		try
+		{
+			$this->db->setQuery($query);
+			$list = $this->db->loadAssocList();
+
+			foreach ($list as &$row)
+			{
+				$row = array_diff_key($row, $order_columns);
+			}
+			unset($row);
+
+			if (empty($page))
+			{
+				$this->_total = count($list);
+			}
+			else
+			{
+				$this->db->setQuery('SELECT COUNT(*) FROM ((' . implode(') UNION ALL (', $count_branches) . ')) AS evaluations');
+				$this->_total = (int) $this->db->loadResult();
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . str_replace('#_', 'jos', $query) . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+
+			// An empty list would read as "no file": the failure must reach the user.
+			throw new Exception(Text::_('COM_EMUNDUS_ERROR_OCCURED'), 500, $e);
 		}
 
 		return $list;
 	}
 
-	function getEvaluationsList($step_id = 0, $nb_steps = 1, $user_id = null, $selected_evaluators = [])
+	/**
+	 * Select and body (from, joins, where, group) of the evaluation list query.
+	 *
+	 * @param   object[]  $steps                Steps sharing an evaluation table: one row per step and evaluation.
+	 *                                          None: one row per file.
+	 * @param   int       $user_id
+	 * @param   int[]     $selected_evaluators  From getSelectedEvaluators().
+	 *
+	 * @return array{select: string, body: string}
+	 */
+	private function buildEvaluationsListQuery(array $steps = [], int $user_id = 0, array $selected_evaluators = []): array
 	{
-		$evaluations_list = [];
-
-		$session                       = $this->app->getSession();
-		$evaluators_can_see_other_eval = false;
-
-		if (empty($user_id)) {
-			$user_id = $this->app->getIdentity()->id;
-		}
-
-		$query = 'select jecc.fnum, jecc.applicant_id, jecc.short_reference, ss.step, ss.value as status, CASE WHEN eu.is_anonym = 1 OR jecc.anonymous = 1 THEN "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" ELSE concat(upper(trim(eu.lastname))," ",eu.firstname) END as name, ss.class as status_class, sp.code, eu.is_anonym, jecc.anonymous,  eir.reference';
-		$group_by = 'GROUP BY jecc.fnum ';
+		$select   = 'jecc.fnum, jecc.applicant_id, jecc.short_reference, ss.step, ss.value as status, CASE WHEN eu.is_anonym = 1 OR jecc.anonymous = 1 THEN "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" ELSE concat(upper(trim(eu.lastname))," ",eu.firstname) END as name, ss.class as status_class, sp.code, eu.is_anonym, jecc.anonymous,  eir.reference';
+		$group_by = ' GROUP BY jecc.fnum ';
 
 		$already_joined_tables = [
 			'jecc' => 'jos_emundus_campaign_candidature',
@@ -1388,27 +1605,21 @@ class EmundusModelEvaluation extends JModelList
 			'eir'  => 'jos_emundus_internal_reference',
 		];
 
-		if (!empty($step_id))
+		$table = '';
+		if (!empty($steps))
 		{
-			$m_worfklow = new EmundusModelWorkflow();
-			$step_data  = $m_worfklow->getStepData($step_id);
+			$table = $steps[0]->table;
+			$already_joined_tables[$table] = $table;
 
-			if (empty($step_data->table)) {
-				throw new Exception(sprintf(Text::_('COM_EMUNDUS_BUILD_WHERE_STEP_CONFIGURATION_ERROR'), $step_data->label));
-			}
-
-			if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id)) {
-				$evaluators_can_see_other_eval = true;
-			}
-
-			$already_joined_tables[$step_data->table] = $step_data->table;
-
-			$query .= ', ' . $step_data->table . '.id as evaluation_id,  CONCAT(eue.lastname," ",eue.firstname) AS evaluator, ' . $step_data->table . '.evaluator as evaluator_id ';
-			$query .= ', ' . $this->db->quote($step_data->label) . ' AS evaluations_step_label, ' . $step_data->id . ' AS evaluations_step_id ';
-			$group_by = 'GROUP BY IF(evaluation_id IS NULL, jecc.fnum, evaluation_id)';
-		} else {
-			$query .= ', 0 as evaluation_id, " " as evaluator, 0 as evaluator_id ';
-			$query .= ', "" AS evaluations_step_label, 0 AS evaluations_step_id ';
+			$select .= ', ' . $table . '.id as evaluation_id,  CONCAT(eue.lastname," ",eue.firstname) AS evaluator, ' . $table . '.evaluator as evaluator_id ';
+			$select .= ', listed_step.step_label AS evaluations_step_label, listed_step.step_id AS evaluations_step_id ';
+			// A file without evaluation is listed once per step.
+			$group_by = ' GROUP BY IF(' . $table . '.id IS NULL, CONCAT(listed_step.step_id, ":", jecc.fnum), ' . $table . '.id)';
+		}
+		else
+		{
+			$select .= ', 0 as evaluation_id, " " as evaluator, 0 as evaluator_id ';
+			$select .= ', "" AS evaluations_step_label, 0 AS evaluations_step_id ';
 		}
 
 		$leftJoin = '';
@@ -1427,9 +1638,9 @@ class EmundusModelEvaluation extends JModelList
 					{
 						$leftJoin .= ' LEFT JOIN ' . $table_to_join . ' ON ' . $table_to_join . '.fnum = jecc.fnum ';
 
-						if (!empty($step_id) && str_starts_with($table_to_join, 'jos_emundus_evaluations_'))
+						if (!empty($steps) && str_starts_with($table_to_join, 'jos_emundus_evaluations_'))
 						{
-							$leftJoin .= ' AND ' . $table_to_join . '.step_id = ' . $step_id;
+							$leftJoin .= ' AND ' . $table_to_join . '.step_id = listed_step.step_id';
 						}
 
 						$already_joined_tables[] = $table_to_join;
@@ -1477,9 +1688,10 @@ class EmundusModelEvaluation extends JModelList
 
 		if (!empty($this->_elements_default))
 		{
-			$query .= ', ' . implode(',', $this->_elements_default);
+			$select .= ', ' . implode(',', $this->_elements_default);
 		}
-		$query .= ' FROM #__emundus_campaign_candidature as jecc
+
+		$body = ' FROM #__emundus_campaign_candidature as jecc
 					LEFT JOIN #__emundus_campaign_candidature_choices as eccc on eccc.fnum = jecc.fnum
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
 					LEFT JOIN #__emundus_setup_campaigns as esc on (esc.id = jecc.campaign_id OR esc.id = eccc.campaign_id)
@@ -1490,17 +1702,10 @@ class EmundusModelEvaluation extends JModelList
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum
                     LEFT JOIN #__emundus_internal_reference as eir on eir.ccid=jecc.id and eir.active = 1';
 
-		if (!empty($step_id))
+		if (!empty($steps))
 		{
-			$query .= ' LEFT JOIN ' . $step_data->table . ' ON ' . $step_data->table . '.fnum = jecc.fnum AND ' . $step_data->table . '.step_id = ' . $step_id . ' ';
-
-			if (!$evaluators_can_see_other_eval) {
-				$query .= ' AND ' . $step_data->table . '.evaluator = ' . $user_id . ' ';
-			}
-
-			$query .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = ' . $step_data->table . '.evaluator ';
-
-			$already_joined_tables[$step_data->table] = $step_data->table;
+			$body .= self::buildListedStepsJoins($steps, $user_id);
+			$body .= ' LEFT JOIN #__emundus_users as eue on eue.user_id = ' . $table . '.evaluator ';
 		}
 
 		if (!empty($this->_elements_default))
@@ -1512,7 +1717,7 @@ class EmundusModelEvaluation extends JModelList
 						$evaluation_table = 'jos_emundus_evaluations_' . $evaluation_id;
 
 						if (!in_array($evaluation_table, $already_joined_tables)) {
-							$query .= ' LEFT JOIN ' . $evaluation_table . ' ON ' . $evaluation_table . '.fnum = jecc.fnum ';
+							$body .= ' LEFT JOIN ' . $evaluation_table . ' ON ' . $evaluation_table . '.fnum = jecc.fnum ';
 							$already_joined_tables[] = $evaluation_table;
 						}
 					}
@@ -1520,65 +1725,21 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
-		$q = $this->_buildWhere($already_joined_tables, $step_id);
+		$q = $this->_buildWhere($already_joined_tables, array_map(fn($step) => (int) $step->id, $steps));
 
-		if (!empty($leftJoin))
+		$body .= $leftJoin;
+		$body .= $q['join'];
+		$body .= ' WHERE jecc.status > 0 AND esc.published = 1';
+
+		if (!empty($steps))
 		{
-			$query .= $leftJoin;
-		}
-		$query .= $q['join'];
-
-		if (empty($current_fnum))
-		{
-			$query .= ' WHERE jecc.status > 0 ';
-		}
-		else
-		{
-			$query .= ' WHERE jecc.fnum like ' . $this->db->quote($current_fnum) . ' ';
+			$body .= self::buildSelectedEvaluatorsCondition($steps[0], $selected_evaluators);
 		}
 
-		$query .= ' AND esc.published = 1';
+		$body .= $q['q'];
+		$body .= $group_by;
 
-		if(!empty($selected_evaluators) && !empty($step_id)) {
-			$query .= ' AND ' . $step_data->table . '.evaluator IN (' . implode(',', $selected_evaluators) . ') ';
-		}
-
-		$query .= $q['q'];
-		$query .= ' ' . $group_by;
-
-		$query .= $this->_buildContentOrderBy();
-		try
-		{
-			$this->db->setQuery($query);
-			$res               = $this->db->loadAssocList();
-			$this->_applicants = array_merge($this->_applicants, $res);
-			if (empty($current_fnum))
-			{
-				/**
-				 * when step_ids are provided, we are doing multiple queries to get evaluations for each step, so we can not
-				 * limit the results on each query, we will limit the results after merging all the results
-				 * TODO: find a way to limit the results on each query
-				 */
-				if (empty($step_id)) {
-					$limit = $session->get('limit');
-
-					$limitStart = $session->get('limitstart');
-					if ($limit > 0)
-					{
-						$query .= " limit $limitStart, $limit ";
-					}
-				}
-			}
-
-			$this->db->setQuery($query);
-			$evaluations_list = $this->db->loadAssocList();
-		}
-		catch (Exception $e)
-		{
-			Log::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . str_replace('#_', 'jos', $query), Log::ERROR, 'com_emundus');
-		}
-
-		return $evaluations_list;
+		return ['select' => $select, 'body' => $body];
 	}
 
 	// get elements by groups

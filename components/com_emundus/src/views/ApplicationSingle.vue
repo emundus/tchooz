@@ -248,10 +248,10 @@ export default {
 		if (typeof this.selectedFile !== 'undefined' && this.selectedFile !== null) {
 			this.render();
 		} else {
-			// Check if we find a hash in the URL
-			const hash = window.location.hash;
-			if (hash) {
-				this.selectedFile = hash.replace('#', '');
+			// The hash also carries anchors unrelated to a file (#em-data from the pagination, #close)
+			const hashFnum = window.location.hash.match(/^#(\d{28})/);
+			if (hashFnum) {
+				this.selectedFile = hashFnum[1];
 				this.render();
 			} else {
 				this.showModal = false;

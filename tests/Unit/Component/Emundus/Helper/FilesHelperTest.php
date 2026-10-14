@@ -11,7 +11,10 @@ namespace Unit\Component\Emundus\Helper;
 
 use EmundusHelperFiles;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Menu\MenuItem;
 use Joomla\CMS\Menu\SiteMenu;
+use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 
 require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
@@ -30,11 +33,28 @@ class FilesHelperTest extends UnitTestCase
 	 */
 	private $helper;
 
+	private ?User $previousIdentity = null;
+
+	private bool $identityOverridden = false;
+
 	public function __construct(?string $name = null, array $data = [], $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
 
 		$this->helper = new EmundusHelperFiles();
+	}
+
+	protected function tearDown(): void
+	{
+		if ($this->identityOverridden)
+		{
+			// loadIdentity(null) loads a guest user instead of clearing the identity, which would leak a timezone to the next tests
+			$identity = new \ReflectionProperty(Factory::getApplication(), 'identity');
+			$identity->setValue(Factory::getApplication(), $this->previousIdentity);
+			$this->identityOverridden = false;
+		}
+
+		parent::tearDown();
 	}
 
 	/**
@@ -261,5 +281,252 @@ class FilesHelperTest extends UnitTestCase
 
 		$can_create_new = $this->helper::checkLimitationFilesRules($applicant_id, $this->dataset['campaign']);
 		$this->assertTrue($can_create_new, 'Check limitation files rules with correct applicant id and campaign id returns true');
+	}
+
+	// -------------------------------------------------------------------------
+	// Filter values count
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Evaluation step on the dataset program, three submitted files and their evaluations:
+	 * file 1 by the coordinator (updated_by A) and by the applicant (updated_by B), file 2 by the
+	 * applicant (updated_by B), file 3 not evaluated. updated_by stands for a criterion of the form.
+	 *
+	 * @return array{step_id: int, element_id: int, files: string[], updated_by_a: int, updated_by_b: int}
+	 */
+	private function createEvaluationFixtures(): array
+	{
+		require_once JPATH_ROOT . '/components/com_emundus/models/workflow.php';
+		require_once JPATH_ROOT . '/components/com_emundus/models/form.php';
+
+		$coordinator = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
+		$m_workflow  = new \EmundusModelWorkflow();
+		$form_id     = (new \EmundusModelForm())->createFormEval($coordinator);
+		$workflow_id = $m_workflow->add();
+
+		$m_workflow->updateWorkflow(
+			['id' => $workflow_id, 'label' => 'Test count workflow', 'published' => 1],
+			[['id' => 0, 'entry_status' => [['id' => 1]], 'type' => 2, 'form_id' => $form_id, 'label' => 'Test count step', 'output_status' => 0]],
+			[['id' => $this->dataset['program']['programme_id']]]
+		);
+		$step = $m_workflow->getWorkflow($workflow_id)['steps'][0];
+		$step = $m_workflow->getStepData($step->id);
+
+		$files = [];
+		for ($i = 0; $i < 3; $i++)
+		{
+			$files[] = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		}
+		$this->db->setQuery('UPDATE #__emundus_campaign_candidature SET status = 1, published = 1 WHERE fnum IN (' . implode(',', $this->db->quote($files)) . ')')->execute();
+
+		$updated_by_a = 900001;
+		$updated_by_b = 900002;
+		$evaluations  = [
+			[$files[0], $this->dataset['coordinator'], $updated_by_a],
+			[$files[0], $this->dataset['applicant'], $updated_by_b],
+			[$files[1], $this->dataset['applicant'], $updated_by_b],
+		];
+		foreach ($evaluations as [$fnum, $evaluator, $updated_by])
+		{
+			$row = (object) ['ccid' => EmundusHelperFiles::getIdFromFnum($fnum), 'fnum' => $fnum, 'step_id' => $step->id, 'evaluator' => $evaluator, 'updated_by' => $updated_by];
+			$this->db->insertObject($step->table, $row);
+		}
+
+		$query = $this->db->getQuery(true)
+			->select('fe.id')
+			->from($this->db->quoteName('#__fabrik_elements', 'fe'))
+			->join('INNER', $this->db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ffg.group_id = fe.group_id')
+			->where('ffg.form_id = ' . (int) $form_id)
+			->where('fe.name = ' . $this->db->quote('updated_by'));
+		$element_id = (int) $this->db->setQuery($query)->loadResult();
+
+		$this->previousIdentity = Factory::getApplication()->getIdentity();
+		$this->identityOverridden = true;
+		Factory::getApplication()->loadIdentity($coordinator);
+
+		return ['step_id' => (int) $step->id, 'element_id' => $element_id, 'files' => $files, 'updated_by_a' => $updated_by_a, 'updated_by_b' => $updated_by_b];
+	}
+
+	private function clearEvaluationFixtures(array $fixtures): void
+	{
+		foreach ($fixtures['files'] as $fnum)
+		{
+			$this->h_dataset->deleteSampleFile($fnum);
+		}
+
+		$session = Factory::getApplication()->getSession();
+		$session->clear('em-applied-filters');
+	}
+
+	/**
+	 * @param   string  $view       files or evaluation
+	 * @param   array   $filters    Session filters (em-applied-filters).
+	 * @param   array   $counted    Filter whose values are counted.
+	 *
+	 * @return array<int|string, int|null>  value => count
+	 */
+	private function countValues(string $view, array $filters, array $counted): array
+	{
+		Factory::getApplication()->getSession()->set('em-applied-filters', $filters);
+
+		$menu_item = new MenuItem(['id' => 0, 'query' => ['view' => $view], 'params' => '{}']);
+		$result    = $this->helper->setFiltersValuesAvailability([$counted], $this->dataset['coordinator'], $menu_item);
+
+		return array_column(array_map(fn($value) => ['value' => $value['value'], 'count' => $value['count'] ?? null], $result[0]['values']), 'count', 'value');
+	}
+
+	private function evaluatorsFilter(int $evaluator_id, string $operator): array
+	{
+		return ['uid' => 'evaluators', 'id' => 'evaluators', 'type' => 'select', 'value' => [$evaluator_id], 'operator' => $operator, 'andorOperator' => 'OR'];
+	}
+
+	/**
+	 * @covers EmundusHelperFiles::setFiltersValuesAvailability
+	 * @return void
+	 */
+	public function testSetFiltersValuesAvailabilityWhenEvaluatorsNotInThenCountsAreTheComplementOfIn(): void
+	{
+		$fixtures = $this->createEvaluationFixtures();
+		$status   = ['uid' => 'status', 'id' => 'status', 'type' => 'select', 'plugin' => 'dropdown', 'values' => [['value' => 1, 'label' => 'Sent']]];
+
+		$all    = $this->countValues('files', [], $status)[1];
+		$in     = $this->countValues('files', [$this->evaluatorsFilter($this->dataset['coordinator'], 'IN')], $status)[1];
+		$not_in = $this->countValues('files', [$this->evaluatorsFilter($this->dataset['coordinator'], 'NOT IN')], $status)[1];
+
+		$this->clearEvaluationFixtures($fixtures);
+
+		$this->assertGreaterThan(0, $in, 'Files evaluated by the evaluator are counted');
+		$this->assertSame($all, $in + $not_in, 'Files evaluated by the evaluator and files not evaluated by them add up to all files');
+	}
+
+	/**
+	 * @covers EmundusHelperFiles::setFiltersValuesAvailability
+	 * @return void
+	 */
+	public function testSetFiltersValuesAvailabilityInEvaluationViewCountsCriterionOnTheSelectedEvaluatorsEvaluations(): void
+	{
+		$fixtures  = $this->createEvaluationFixtures();
+		$filters   = [
+			$this->evaluatorsFilter($this->dataset['coordinator'], 'IN'),
+			['uid' => 'workflow_steps', 'id' => 'workflow_steps', 'type' => 'select', 'value' => [$fixtures['step_id']], 'operator' => 'IN', 'andorOperator' => 'OR'],
+		];
+		$criterion = [
+			'uid' => 'filter-' . $fixtures['element_id'], 'id' => $fixtures['element_id'], 'type' => 'select', 'plugin' => 'user',
+			'values' => [['value' => $fixtures['updated_by_a'], 'label' => 'A'], ['value' => $fixtures['updated_by_b'], 'label' => 'B']],
+		];
+
+		$evaluation_view = $this->countValues('evaluation', $filters, $criterion);
+		$files_view      = $this->countValues('files', $filters, $criterion);
+
+		$this->clearEvaluationFixtures($fixtures);
+
+		$this->assertSame(1, $evaluation_view[$fixtures['updated_by_a']], 'Evaluation view counts the selected evaluator\'s evaluation');
+		$this->assertSame(0, $evaluation_view[$fixtures['updated_by_b']], 'Evaluation view does not count another evaluator\'s evaluation of the same file');
+		$this->assertSame(1, $files_view[$fixtures['updated_by_b']], 'Files view counts a file evaluated by the evaluator having the value in any of its evaluations');
+	}
+
+	/**
+	 * @covers EmundusHelperFiles::_moduleBuildWhere
+	 * @return void
+	 */
+	public function testEvaluatedFilterEvaluatedAndToEvaluateSplitTheFiles(): void
+	{
+		$fixtures = $this->createEvaluationFixtures();
+		$steps    = ['uid' => 'workflow_steps', 'id' => 'workflow_steps', 'type' => 'select', 'value' => [$fixtures['step_id']], 'operator' => 'IN', 'andorOperator' => 'OR'];
+		$status   = ['uid' => 'status', 'id' => 'status', 'type' => 'select', 'plugin' => 'dropdown', 'values' => [['value' => 1, 'label' => 'Sent']]];
+
+		$all         = $this->countValues('evaluation', [$steps], $status)[1];
+		$evaluated   = $this->countValues('evaluation', [$steps, $this->evaluatedFilter([1])], $status)[1];
+		$to_evaluate = $this->countValues('evaluation', [$steps, $this->evaluatedFilter([0])], $status)[1];
+
+		$this->clearEvaluationFixtures($fixtures);
+
+		$this->assertGreaterThan(0, $evaluated, 'Evaluated files are counted');
+		$this->assertSame($all, $evaluated + $to_evaluate, 'Evaluated and to evaluate split the files');
+	}
+
+	private function evaluatedFilter(array $value): array
+	{
+		return ['uid' => 'evaluated', 'id' => 'evaluated', 'type' => 'select', 'value' => $value, 'operator' => 'IN', 'andorOperator' => 'OR'];
+	}
+
+	/**
+	 * @covers EmundusHelperFiles::countFilesByValue
+	 * @return void
+	 */
+	public function testCountFilesByValueWhenQueryFailsReturnsNull(): void
+	{
+		$user      = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
+		$menu_item = new MenuItem(['id' => 0, 'query' => ['view' => 'files'], 'params' => '{}']);
+		$filter    = ['uid' => 'status', 'id' => 'status', 'type' => 'select', 'plugin' => 'dropdown'];
+
+		$counts = self::callPrivateMethod($this->helper, 'countFilesByValue', [$filter, 'unknown_table.unknown_column', [], '', ['eval' => false], $menu_item, $user]);
+
+		$this->assertNull($counts, 'A failed count is told apart from a count with no result, so values are not hidden at 0');
+	}
+
+	/**
+	 * @covers EmundusHelperFiles::sumCountsByValue
+	 * @return void
+	 */
+	public function testSumCountsByValueAddsCountsOfTheSameValue(): void
+	{
+		$counts = self::callPrivateMethod($this->helper, 'sumCountsByValue', [[['count_value' => '1', 'count' => '2'], ['count_value' => null, 'count' => '4']], ['1' => ['count' => 3]]]);
+
+		$this->assertSame([1 => ['count' => 5]], $counts, 'Counts of a value add up, and rows without value are ignored');
+	}
+
+	/**
+	 * @covers EmundusHelperFiles::addCheckboxItems
+	 * @covers EmundusHelperFiles::countItemsByOption
+	 * @return void
+	 */
+	public function testAddCheckboxItemsCountsAnItemOnceWhenSeveralOfItsRowsHoldTheOption(): void
+	{
+		$rows = [
+			['item' => '1', 'count_value' => '["a","b"]'],
+			['item' => '1', 'count_value' => '["b"]'],
+			['item' => '2', 'count_value' => '["b"]'],
+			['item' => '3', 'count_value' => null],
+		];
+
+		$counts = self::callPrivateMethod($this->helper, 'countItemsByOption', [self::callPrivateMethod($this->helper, 'addCheckboxItems', [$rows])]);
+
+		$this->assertSame(['a' => ['count' => 1], 'b' => ['count' => 2]], $counts, 'Each option counts the distinct items holding it');
+	}
+
+	/**
+	 * @covers EmundusHelperFiles::addCheckboxItems
+	 * @return void
+	 */
+	public function testAddCheckboxItemsKeepsTheSameItemOfTwoStepsApart(): void
+	{
+		$rows  = [['item' => 'fnum-1', 'count_value' => '["a"]']];
+		$items = self::callPrivateMethod($this->helper, 'addCheckboxItems', [$rows, [], '1:']);
+		$items = self::callPrivateMethod($this->helper, 'addCheckboxItems', [$rows, $items, '2:']);
+
+		$this->assertSame(['a' => ['1:fnum-1' => true, '2:fnum-1' => true]], $items, 'A file listed in two steps counts once per step');
+	}
+
+	/**
+	 * @covers EmundusHelperFiles::isFilterActive
+	 * @return void
+	 */
+	public function testIsFilterActiveOnlyForAValueOtherThanAll(): void
+	{
+		$this->assertTrue(self::callPrivateMethod($this->helper, 'isFilterActive', [['value' => ['0']]]), 'A 0 value is active');
+		$this->assertTrue(self::callPrivateMethod($this->helper, 'isFilterActive', [['value' => [5]]]), 'A value is active');
+		$this->assertFalse(self::callPrivateMethod($this->helper, 'isFilterActive', [['value' => ['all']]]), 'All is not active');
+		$this->assertFalse(self::callPrivateMethod($this->helper, 'isFilterActive', [['value' => []]]), 'No value is not active');
+		$this->assertFalse(self::callPrivateMethod($this->helper, 'isFilterActive', [[]]), 'A filter without value is not active');
+	}
+
+	/**
+	 * @covers EmundusHelperFiles::evaluatedByCondition
+	 * @return void
+	 */
+	public function testEvaluatedByConditionWithoutEvaluationStepMatchesNothing(): void
+	{
+		$this->assertSame('FALSE', self::callPrivateMethod($this->helper, 'evaluatedByCondition', [[], [1]]), 'Without step, no file is evaluated by anyone');
 	}
 }
