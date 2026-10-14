@@ -3,7 +3,7 @@
         'name' => 'emundus/tchooz',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '33141660c0e6a299519d8ffeeba10cec59ad0a39',
+        'reference' => 'b4689f12c05deeecb515d62e423573bec8907f85',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -96,7 +96,7 @@
         'emundus/tchooz' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '33141660c0e6a299519d8ffeeba10cec59ad0a39',
+            'reference' => 'b4689f12c05deeecb515d62e423573bec8907f85',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -170,6 +170,15 @@
             'install_path' => __DIR__ . '/../guzzlehttp/psr7',
             'aliases' => array(),
             'dev_requirement' => false,
+        ),
+        'itsgoingd/clockwork' => array(
+            'pretty_version' => 'v5.3.5',
+            'version' => '5.3.5.0',
+            'reference' => 'd928483e231f042dbff9258795cb17aadaebc7d0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../itsgoingd/clockwork',
+            'aliases' => array(),
+            'dev_requirement' => true,
         ),
         'joomla/application' => array(
             'pretty_version' => '3.0.4',
@@ -473,8 +482,8 @@
         'psr/http-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'psr/http-factory' => array(
@@ -489,8 +498,8 @@
         'psr/http-factory-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'psr/http-message' => array(
@@ -505,8 +514,8 @@
         'psr/http-message-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0',
-                1 => '*',
+                0 => '*',
+                1 => '1.0',
             ),
         ),
         'psr/log' => array(

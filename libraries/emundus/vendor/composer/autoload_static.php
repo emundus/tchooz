@@ -131,28 +131,28 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
     );
 
     public static $prefixLengthsPsr4 = array (
-        's' => 
+        's' =>
         array (
             'setasign\\Fpdi\\' => 14,
             'setasign\\FpdiPdfParser\\' => 23,
         ),
-        'l' => 
+        'l' =>
         array (
             'libphonenumber\\' => 15,
         ),
-        'Z' => 
+        'Z' =>
         array (
             'ZipStream\\' => 10,
         ),
-        'W' => 
+        'W' =>
         array (
             'Worldline\\Connect\\Sdk\\' => 22,
         ),
-        'T' => 
+        'T' =>
         array (
             'Tchooz\\' => 7,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
@@ -168,11 +168,11 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
             'Stripe\\' => 7,
             'Sabberworm\\CSS\\' => 15,
         ),
-        'R' => 
+        'R' =>
         array (
             'Robtimus\\Multipart\\' => 19,
         ),
-        'P' => 
+        'P' =>
         array (
             'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
@@ -184,26 +184,26 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
             'PhpOffice\\PhpSpreadsheet\\' => 25,
             'PhpOffice\\Math\\' => 15,
         ),
-        'O' => 
+        'O' =>
         array (
             'Ovh\\' => 4,
         ),
-        'N' => 
+        'N' =>
         array (
             'NumberToWords\\' => 14,
         ),
-        'M' => 
+        'M' =>
         array (
             'Matrix\\' => 7,
             'Masterminds\\' => 12,
         ),
-        'L' => 
+        'L' =>
         array (
             'League\\Uri\\' => 11,
             'League\\OAuth2\\Client\\' => 21,
             'Laminas\\Diactoros\\' => 18,
         ),
-        'J' => 
+        'J' =>
         array (
             'Joomla\\Utilities\\' => 17,
             'Joomla\\Uri\\' => 11,
@@ -216,14 +216,14 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
             'Joomla\\Event\\' => 13,
             'Joomla\\Application\\' => 19,
         ),
-        'H' => 
+        'H' =>
         array (
             'Http\\Promise\\' => 13,
             'Http\\Discovery\\' => 15,
             'Http\\Client\\' => 12,
             'Http\\Adapter\\Guzzle7\\' => 21,
         ),
-        'G' => 
+        'G' =>
         array (
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
@@ -231,304 +231,309 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
             'Gotenberg\\' => 10,
             'Giggsey\\Locale\\' => 15,
         ),
-        'F' => 
+        'F' =>
         array (
             'FontLib\\' => 8,
             'Firebase\\JWT\\' => 13,
         ),
-        'E' => 
+        'E' =>
         array (
             'Emundus\\OAuth2\\' => 15,
             'Egulias\\EmailValidator\\' => 23,
         ),
-        'D' => 
+        'D' =>
         array (
             'Dompdf\\' => 7,
             'DocuSign\\eSign\\' => 15,
             'Doctrine\\Common\\Lexer\\' => 22,
         ),
-        'C' => 
+        'C' =>
         array (
             'Composer\\Pcre\\' => 14,
             'Composer\\CaBundle\\' => 18,
             'Complex\\' => 8,
+            'Clockwork\\' => 10,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'setasign\\Fpdi\\' => 
+        'setasign\\Fpdi\\' =>
         array (
             0 => __DIR__ . '/..' . '/setasign/fpdi/src',
         ),
-        'setasign\\FpdiPdfParser\\' => 
+        'setasign\\FpdiPdfParser\\' =>
         array (
             0 => __DIR__ . '/..' . '/setasign/fpdi_pdf-parser/src',
         ),
-        'libphonenumber\\' => 
+        'libphonenumber\\' =>
         array (
             0 => __DIR__ . '/..' . '/giggsey/libphonenumber-for-php/src',
         ),
-        'ZipStream\\' => 
+        'ZipStream\\' =>
         array (
             0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
         ),
-        'Worldline\\Connect\\Sdk\\' => 
+        'Worldline\\Connect\\Sdk\\' =>
         array (
             0 => __DIR__ . '/..' . '/worldline-global-collect/connect-sdk-php/src/Worldline/Connect/Sdk',
             1 => __DIR__ . '/..' . '/worldline-global-collect/connect-sdk-php/lib/Worldline/Connect/Sdk',
         ),
-        'Tchooz\\' => 
+        'Tchooz\\' =>
         array (
             0 => __DIR__ . '/../..' . '/../../components/com_emundus/classes',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
+        'Symfony\\Polyfill\\Intl\\Normalizer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
         ),
-        'Symfony\\Polyfill\\Intl\\Idn\\' => 
+        'Symfony\\Polyfill\\Intl\\Idn\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-idn',
         ),
-        'Symfony\\Contracts\\Service\\' => 
+        'Symfony\\Contracts\\Service\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/service-contracts',
         ),
-        'Symfony\\Contracts\\Cache\\' => 
+        'Symfony\\Contracts\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/cache-contracts',
         ),
-        'Symfony\\Component\\VarExporter\\' => 
+        'Symfony\\Component\\VarExporter\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/var-exporter',
         ),
-        'Symfony\\Component\\VarDumper\\' => 
+        'Symfony\\Component\\VarDumper\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/var-dumper',
         ),
-        'Symfony\\Component\\HtmlSanitizer\\' => 
+        'Symfony\\Component\\HtmlSanitizer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/html-sanitizer',
         ),
-        'Symfony\\Component\\ExpressionLanguage\\' => 
+        'Symfony\\Component\\ExpressionLanguage\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/expression-language',
         ),
-        'Symfony\\Component\\Cache\\' => 
+        'Symfony\\Component\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/cache',
         ),
-        'Svg\\' => 
+        'Svg\\' =>
         array (
             0 => __DIR__ . '/..' . '/dompdf/php-svg-lib/src/Svg',
         ),
-        'Stripe\\' => 
+        'Stripe\\' =>
         array (
             0 => __DIR__ . '/..' . '/stripe/stripe-php/lib',
         ),
-        'Sabberworm\\CSS\\' => 
+        'Sabberworm\\CSS\\' =>
         array (
             0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/src',
         ),
-        'Robtimus\\Multipart\\' => 
+        'Robtimus\\Multipart\\' =>
         array (
             0 => __DIR__ . '/..' . '/robtimus/multipart/src/Robtimus/Multipart',
         ),
-        'Psr\\SimpleCache\\' => 
+        'Psr\\SimpleCache\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
         ),
-        'Psr\\Log\\' => 
+        'Psr\\Log\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
-        'Psr\\Http\\Message\\' => 
+        'Psr\\Http\\Message\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-factory/src',
             1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
-        'Psr\\Http\\Client\\' => 
+        'Psr\\Http\\Client\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
-        'Psr\\Container\\' => 
+        'Psr\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'Psr\\Cache\\' => 
+        'Psr\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
         ),
-        'PhpOffice\\PhpWord\\' => 
+        'PhpOffice\\PhpWord\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpoffice/phpword/src/PhpWord',
         ),
-        'PhpOffice\\PhpSpreadsheet\\' => 
+        'PhpOffice\\PhpSpreadsheet\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
         ),
-        'PhpOffice\\Math\\' => 
+        'PhpOffice\\Math\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpoffice/math/src/Math',
         ),
-        'Ovh\\' => 
+        'Ovh\\' =>
         array (
             0 => __DIR__ . '/..' . '/ovh/ovh/src',
         ),
-        'NumberToWords\\' => 
+        'NumberToWords\\' =>
         array (
             0 => __DIR__ . '/..' . '/kwn/number-to-words/src',
         ),
-        'Matrix\\' => 
+        'Matrix\\' =>
         array (
             0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
         ),
-        'Masterminds\\' => 
+        'Masterminds\\' =>
         array (
             0 => __DIR__ . '/..' . '/masterminds/html5/src',
         ),
-        'League\\Uri\\' => 
+        'League\\Uri\\' =>
         array (
-            0 => __DIR__ . '/..' . '/league/uri-interfaces',
-            1 => __DIR__ . '/..' . '/league/uri',
+            0 => __DIR__ . '/..' . '/league/uri',
+            1 => __DIR__ . '/..' . '/league/uri-interfaces',
         ),
-        'League\\OAuth2\\Client\\' => 
+        'League\\OAuth2\\Client\\' =>
         array (
             0 => __DIR__ . '/..' . '/league/oauth2-client/src',
         ),
-        'Laminas\\Diactoros\\' => 
+        'Laminas\\Diactoros\\' =>
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-diactoros/src',
         ),
-        'Joomla\\Utilities\\' => 
+        'Joomla\\Utilities\\' =>
         array (
             0 => __DIR__ . '/..' . '/joomla/utilities/src',
         ),
-        'Joomla\\Uri\\' => 
+        'Joomla\\Uri\\' =>
         array (
             0 => __DIR__ . '/..' . '/joomla/uri/src',
         ),
-        'Joomla\\String\\' => 
+        'Joomla\\String\\' =>
         array (
             0 => __DIR__ . '/..' . '/joomla/string/src',
         ),
-        'Joomla\\Session\\' => 
+        'Joomla\\Session\\' =>
         array (
             0 => __DIR__ . '/..' . '/joomla/session/src',
         ),
-        'Joomla\\Registry\\' => 
+        'Joomla\\Registry\\' =>
         array (
             0 => __DIR__ . '/..' . '/joomla/registry/src',
         ),
-        'Joomla\\Input\\' => 
+        'Joomla\\Input\\' =>
         array (
             0 => __DIR__ . '/..' . '/joomla/input/src',
         ),
-        'Joomla\\Http\\' => 
+        'Joomla\\Http\\' =>
         array (
             0 => __DIR__ . '/..' . '/joomla/http/src',
         ),
-        'Joomla\\Filter\\' => 
+        'Joomla\\Filter\\' =>
         array (
             0 => __DIR__ . '/..' . '/joomla/filter/src',
         ),
-        'Joomla\\Event\\' => 
+        'Joomla\\Event\\' =>
         array (
             0 => __DIR__ . '/..' . '/joomla/event/src',
         ),
-        'Joomla\\Application\\' => 
+        'Joomla\\Application\\' =>
         array (
             0 => __DIR__ . '/..' . '/joomla/application/src',
         ),
-        'Http\\Promise\\' => 
+        'Http\\Promise\\' =>
         array (
             0 => __DIR__ . '/..' . '/php-http/promise/src',
         ),
-        'Http\\Discovery\\' => 
+        'Http\\Discovery\\' =>
         array (
             0 => __DIR__ . '/..' . '/php-http/discovery/src',
         ),
-        'Http\\Client\\' => 
+        'Http\\Client\\' =>
         array (
             0 => __DIR__ . '/..' . '/php-http/httplug/src',
         ),
-        'Http\\Adapter\\Guzzle7\\' => 
+        'Http\\Adapter\\Guzzle7\\' =>
         array (
             0 => __DIR__ . '/..' . '/php-http/guzzle7-adapter/src',
         ),
-        'GuzzleHttp\\Psr7\\' => 
+        'GuzzleHttp\\Psr7\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
         ),
-        'GuzzleHttp\\Promise\\' => 
+        'GuzzleHttp\\Promise\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
         ),
-        'GuzzleHttp\\' => 
+        'GuzzleHttp\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
-        'Gotenberg\\' => 
+        'Gotenberg\\' =>
         array (
             0 => __DIR__ . '/..' . '/gotenberg/gotenberg-php/src',
         ),
-        'Giggsey\\Locale\\' => 
+        'Giggsey\\Locale\\' =>
         array (
             0 => __DIR__ . '/..' . '/giggsey/locale/src',
         ),
-        'FontLib\\' => 
+        'FontLib\\' =>
         array (
             0 => __DIR__ . '/..' . '/dompdf/php-font-lib/src/FontLib',
         ),
-        'Firebase\\JWT\\' => 
+        'Firebase\\JWT\\' =>
         array (
             0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
-        'Emundus\\OAuth2\\' => 
+        'Emundus\\OAuth2\\' =>
         array (
             0 => __DIR__ . '/..' . '/emundus/oauth2/src',
         ),
-        'Egulias\\EmailValidator\\' => 
+        'Egulias\\EmailValidator\\' =>
         array (
             0 => __DIR__ . '/..' . '/egulias/email-validator/src',
         ),
-        'Dompdf\\' => 
+        'Dompdf\\' =>
         array (
             0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
         ),
-        'DocuSign\\eSign\\' => 
+        'DocuSign\\eSign\\' =>
         array (
             0 => __DIR__ . '/..' . '/docusign/esign-client/src',
         ),
-        'Doctrine\\Common\\Lexer\\' => 
+        'Doctrine\\Common\\Lexer\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/lexer/src',
         ),
-        'Composer\\Pcre\\' => 
+        'Composer\\Pcre\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/pcre/src',
         ),
-        'Composer\\CaBundle\\' => 
+        'Composer\\CaBundle\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/ca-bundle/src',
         ),
-        'Complex\\' => 
+        'Complex\\' =>
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
+        ),
+        'Clockwork\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/itsgoingd/clockwork/Clockwork',
         ),
     );
 
     public static $prefixesPsr0 = array (
-        'S' => 
+        'S' =>
         array (
-            'Svrnm\\ExcelDataTables' => 
+            'Svrnm\\ExcelDataTables' =>
             array (
                 0 => __DIR__ . '/..' . '/svrnm/exceldatatables/src',
             ),
-            'Smalot\\PdfParser\\' => 
+            'Smalot\\PdfParser\\' =>
             array (
                 0 => __DIR__ . '/..' . '/smalot/pdfparser/src',
             ),
@@ -635,7 +640,7 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'TCPDF_FONT_DATA' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/tcpdf_font_data.php',
         'TCPDF_IMAGES' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/tcpdf_images.php',
         'TCPDF_STATIC' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/tcpdf_static.php',
-        '©' => __DIR__ . '/..' . '/symfony/cache/Traits/ValueWrapper.php',
+        'ï¿½' => __DIR__ . '/..' . '/symfony/cache/Traits/ValueWrapper.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
