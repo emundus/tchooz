@@ -5439,6 +5439,13 @@ class EmundusHelperFiles
 									}
 									break;
 								case 'application_choices':
+									// The lists only join the choices when the choices addon is enabled.
+									if (!in_array('jos_emundus_campaign_candidature_choices', $already_joined))
+									{
+										$jecc_alias             = array_search('jos_emundus_campaign_candidature', $already_joined);
+										$already_joined['eccc'] = 'jos_emundus_campaign_candidature_choices';
+										$where['join']          .= ' LEFT JOIN #__emundus_campaign_candidature_choices as eccc on eccc.fnum = ' . $jecc_alias . '.fnum ';
+									}
 									$where['q'] .= ' AND ' . $this->writeQueryWithOperator('eccc.campaign_id', $filter['value'], $filter['operator']);
 									break;
 								case 'access_expiration_date':
