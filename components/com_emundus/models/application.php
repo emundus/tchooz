@@ -5475,6 +5475,11 @@ class EmundusModelApplication extends ListModel
 			}
 
 			if ($deleted) {
+				if (!class_exists('EmundusHelperAccess')) {
+					require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+				}
+				\EmundusHelperAccess::clearFnumAccessCache();
+
 				$query->clear()
 					->select('label')
 					->from('#__emundus_setup_groups')
@@ -5528,6 +5533,11 @@ class EmundusModelApplication extends ListModel
 			}
 
 			if ($deleted) {
+				if (!class_exists('EmundusHelperAccess')) {
+					require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+				}
+				\EmundusHelperAccess::clearFnumAccessCache();
+
 				$query->clear()
 					->select('name')
 					->from('#__users')

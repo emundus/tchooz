@@ -1648,19 +1648,9 @@ class EmundusModelEvaluation extends JModelList
 					else
 					{
 						$joined          = false;
-						$query_find_join = $this->db->getQuery(true);
 						foreach ($already_joined_tables as $already_join_alias => $already_joined_table_name)
 						{
-							$query_find_join->clear()
-								->select('*')
-								->from('#__fabrik_joins')
-								->where('table_join = ' . $this->db->quote($already_joined_table_name))
-								->andWhere('join_from_table = ' . $this->db->quote($table_to_join))
-								->andWhere('table_key = ' . $this->db->quote('id'))
-								->andWhere('list_id = ' . $this->db->quote($elt->table_list_id));
-
-							$this->db->setQuery($query_find_join);
-							$join_informations = $this->db->loadAssoc();
+							$join_informations = $h_files->getFabrikJoinLookup($already_joined_table_name, $table_to_join, $elt->table_list_id);
 
 							if (!empty($join_informations))
 							{
