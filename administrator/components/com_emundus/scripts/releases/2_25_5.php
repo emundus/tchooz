@@ -14,6 +14,9 @@ use EmundusHelperUpdate;
 use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Services\Addons\Configurations\ChoicesAddonConfiguration;
+use Joomla\Database\ParameterType;
+use Joomla\Database\QueryInterface;
+use Tchooz\Enums\AccessLevelEnum;
 
 class Release2_25_5Installer extends ReleaseInstaller
 {
@@ -34,6 +37,7 @@ class Release2_25_5Installer extends ReleaseInstaller
 
 			$this->indexEvaluationTables();
 			$this->updateChoicesConfiguration();
+			$this->campaignsLoggedArticle();
 
 			$result['status'] = !in_array(false, $this->tasks);
 		}
@@ -102,5 +106,148 @@ class Release2_25_5Installer extends ReleaseInstaller
 				}
 			}
 		}
+	}
+
+	private function campaignsLoggedArticle(): void
+	{
+		$query = $this->db->createQuery();
+		$registeredAccessLevel      = AccessLevelEnum::REGISTERED->value;
+		$deprecatedFormsAccessLevel = AccessLevelEnum::FORMS->value;
+		$query->clear()
+			->select('id, params, access')
+			->from($this->db->quoteName('#__modules'))
+			->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundus_campaign'))
+			->where('JSON_EXTRACT('.$this->db->quoteName('params').', '.$this->db->quote('$.mod_em_campaign_layout') . ') = ' . $this->db->quote('default_tchooz'))
+			->where($this->db->quoteName('access') . ' IN (:registeredAccessLevel, :deprecatedFormsAccessLevel)')
+			->bind(':registeredAccessLevel', $registeredAccessLevel, ParameterType::INTEGER)
+			->bind(':deprecatedFormsAccessLevel', $deprecatedFormsAccessLevel, ParameterType::INTEGER);
+		$this->db->setQuery($query);
+		$campaignLoggedModule = $this->db->loadObject();
+
+		if(!empty($campaignLoggedModule) && !empty($campaignLoggedModule->id))
+		{
+			// The module could still carry the deprecated FORMS access level: force it back to REGISTERED.
+			if((int) $campaignLoggedModule->access !== $registeredAccessLevel)
+			{
+				$update = (object) [
+					'id'     => (int) $campaignLoggedModule->id,
+					'access' => $registeredAccessLevel,
+				];
+				$this->tasks[] = $this->db->updateObject('#__modules', $update, 'id');
+			}
+
+			$params = json_decode($campaignLoggedModule->params);
+			if(empty($params->mod_em_campaign_article_logged))
+			{
+				$articleId = $this->createEmptyArticle('campaigns-logged', 'Campaigns logged', $params->mod_em_campaign_intro, $query);
+
+				if(!empty($articleId))
+				{
+					$query->clear()
+						->select('item_id')
+						->from($this->db->quoteName('#__workflow_associations'))
+						->where($this->db->quoteName('item_id') . ' = :itemId')
+						->where($this->db->quoteName('extension') . ' = ' . $this->db->quote('com_content.article'))
+						->bind(':itemId', $articleId, ParameterType::INTEGER);
+					$this->db->setQuery($query);
+					$associationExist = $this->db->loadResult();
+					if(empty($associationExist))
+					{
+						$association = (object) [
+							'item_id' => $articleId,
+							'stage_id' => 1,
+							'extension' => 'com_content.article'
+						];
+						$this->tasks[] = $this->db->insertObject('#__workflow_associations', $association);
+					}
+
+					$query->clear()
+						->select('id, value')
+						->from($this->db->quoteName('#__falang_content'))
+						->where($this->db->quoteName('reference_table') . ' = ' . $this->db->quote('modules'))
+						->where($this->db->quoteName('reference_id') . ' = :referenceId')
+						->where($this->db->quoteName('reference_field') . ' = ' . $this->db->quote('params'))
+						->bind(':referenceId', $campaignLoggedModule->id, ParameterType::INTEGER);
+					$this->db->setQuery($query);
+					$falangTranslation = $this->db->loadObject();
+					if(!empty($falangTranslation) && !empty($falangTranslation->id))
+					{
+						$falangParams = json_decode($falangTranslation->value);
+						$falangParams->mod_em_campaign_article_logged = $articleId;
+
+						$update = (object) [
+							'id' => $falangTranslation->id,
+							'value' => json_encode($falangParams),
+						];
+						$this->tasks[] = $this->db->updateObject('#__falang_content', $update, 'id');
+					}
+
+					$params->mod_em_campaign_article_logged = $articleId;
+					$update = (object) [
+						'id'     => (int) $campaignLoggedModule->id,
+						'params' => json_encode($params),
+					];
+					$this->tasks[] = $this->db->updateObject('#__modules', $update, 'id');
+				}
+			}
+		}
+	}
+
+	/**
+	 * Create an empty com_content article using Joomla's ArticleModel so the
+	 * asset_id is built through the standard asset system. Idempotent by alias.
+	 */
+	private function createEmptyArticle(string $alias, string $title, string $content = '', QueryInterface $query): int
+	{
+		// Reuse existing article if it already exists (script may re-run)
+		$query->clear()
+			->select($this->db->quoteName('id'))
+			->from($this->db->quoteName('#__content'))
+			->where($this->db->quoteName('alias') . ' = ' . $this->db->quote($alias));
+		$this->db->setQuery($query);
+		$existingId = (int) $this->db->loadResult();
+
+		if(!empty($existingId))
+		{
+			return $existingId;
+		}
+
+		// A category is mandatory for content; pick the first com_content category
+		$query->clear()
+			->select($this->db->quoteName('id'))
+			->from($this->db->quoteName('#__categories'))
+			->where($this->db->quoteName('extension') . ' = ' . $this->db->quote('com_content'))
+			->where($this->db->quoteName('level') . ' > 0')
+			->order($this->db->quoteName('lft') . ' ASC');
+		$this->db->setQuery($query, 0, 1);
+		$catid = (int) $this->db->loadResult();
+
+		// Use the Table (not the admin Model) so this works from CLI: the Model
+		// depends on the CMS application (session, input, user identity) which is
+		// absent under the CLI application and causes a fatal error.
+		// Table::store() still builds the asset_id through the asset system.
+		$articleTable = $this->app->bootComponent('com_content')->getMVCFactory()
+			->createTable('Article', 'Administrator');
+
+		$data = [
+			'id'        => 0,
+			'title'     => $title,
+			'alias'     => $alias,
+			'introtext' => $content,
+			'fulltext'  => '',
+			'catid'     => $catid,
+			'state'     => 1,
+			'access'    => 1,
+			'language'  => '*',
+		];
+
+		if(!$articleTable->bind($data) || !$articleTable->check() || !$articleTable->store())
+		{
+			$this->tasks[] = false;
+
+			return 0;
+		}
+
+		return (int) $articleTable->id;
 	}
 }
