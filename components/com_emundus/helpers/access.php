@@ -35,6 +35,44 @@ if(!class_exists('EmundusHelperCache'))
 
 class EmundusHelperAccess
 {
+	/**
+	 * Request-scoped memo for the fnum-scoped branch of asAccessAction(). Keyed by
+	 * action_id|crud|user_id|fnum. Lives only for the current PHP request, so it never
+	 * serves rights that were granted or revoked between requests — unlike the persistent
+	 * EmundusHelperCache used by the fnum-less branch.
+	 *
+	 * @var array<string, bool>
+	 */
+	private static array $accessActionFnumCache = [];
+
+	/**
+	 * Request-scoped memo for getUserEvaluationStepAccess(), keyed ccid|step id|user id|verify flag.
+	 *
+	 * @var array<string, array>
+	 */
+	private static array $evaluationStepAccessCache = [];
+
+	/**
+	 * Request-scoped memo for isUserAllowedToAccessFnum(), keyed user_id|fnum. This file-read gate is
+	 * re-checked at the top of every asAccessAction() fnum call.
+	 *
+	 * @var array<string, bool>
+	 */
+	private static array $userAllowedFnumCache = [];
+
+	/**
+	 * Invalidate the request-scoped fnum access memos. Must be called whenever file access is
+	 * granted or revoked (share/unshare) so later asAccessAction() checks reflect the new state.
+	 *
+	 * @return void
+	 */
+	static function clearFnumAccessCache(): void
+	{
+		self::$accessActionFnumCache     = [];
+		self::$evaluationStepAccessCache = [];
+		self::$userAllowedFnumCache      = [];
+	}
+
 	static function isAllowed($usertype, $allowed): bool
 	{
 		return in_array($usertype, $allowed);
@@ -218,9 +256,15 @@ class EmundusHelperAccess
 		{
 			if (!empty($fnum))
 			{
+				$cache_key = $action_id . '_' . $crud . '_' . (!empty($user_id) ? $user_id : 'current') . '_' . $fnum;
+				if (array_key_exists($cache_key, self::$accessActionFnumCache))
+				{
+					return self::$accessActionFnumCache[$cache_key];
+				}
+
 				if (!empty($user_id) && !self::isUserAllowedToAccessFnum($user_id, $fnum))
 				{
-					return false;
+					return self::$accessActionFnumCache[$cache_key] = false;
 				}
 
 				$canAccess = $m_users->getUserActionByFnum($action_id, $fnum, $user_id, $crud);
@@ -244,6 +288,8 @@ class EmundusHelperAccess
 						$has_access = EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
 					}
 				}
+
+				self::$accessActionFnumCache[$cache_key] = $has_access;
 			}
 			else
 			{
@@ -546,6 +592,12 @@ class EmundusHelperAccess
 			$user_id = Factory::getApplication()->getIdentity()->id;
 		}
 
+		$cache_key = $user_id . '_' . $fnum;
+		if (!empty($user_id) && !empty($fnum) && array_key_exists($cache_key, self::$userAllowedFnumCache))
+		{
+			return self::$userAllowedFnumCache[$cache_key];
+		}
+
 		if (!empty($user_id) && !empty($fnum))
 		{
 			$db    = Factory::getContainer()->get('DatabaseDriver');
@@ -622,6 +674,8 @@ class EmundusHelperAccess
 					}
 				}
 			}
+
+			self::$userAllowedFnumCache[$cache_key] = $allowed;
 		}
 
 		return $allowed;
@@ -856,6 +910,12 @@ class EmundusHelperAccess
 				$user_id = $app->getIdentity()->id;
 			}
 
+			$cache_key = $ccid . '_' . $step_data->id . '_' . (int) $user_id . '_' . (int) $verify_campaign_infos;
+			if (array_key_exists($cache_key, self::$evaluationStepAccessCache))
+			{
+				return self::$evaluationStepAccessCache[$cache_key];
+			}
+
 			// Verify if this step and this ccid are linked together by workflow
 			$query->clear()
 				->select('esp.id, esc.id as campaign_id')
@@ -957,11 +1017,18 @@ class EmundusHelperAccess
 			}
 		}
 
-		return [
+		$result = [
 			'can_see'            => $can_see,
 			'can_edit'           => $can_edit,
 			'reason_cannot_edit' => $reason_cannot_edit
 		];
+
+		if (isset($cache_key))
+		{
+			self::$evaluationStepAccessCache[$cache_key] = $result;
+		}
+
+		return $result;
 	}
 
 	public static function addAccessToGroup(int $action_id, int $group_id, $crud = ['c' => 0, 'r' => 0, 'u' => 0, 'd' => 0]): bool

@@ -15,11 +15,14 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Language\Transliterate;
 use Joomla\CMS\Log\Log;
 use Joomla\Component\Cache\Administrator\Model\CacheModel;
 use Joomla\Component\Scheduler\Administrator\Helper\ExecRuleHelper;
 use Joomla\Component\Scheduler\Administrator\Table\TaskTable;
+use Joomla\Filesystem\File;
+use Joomla\Filesystem\Path;
 use Joomla\Registry\Registry;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\Actions\CrudEntity;
@@ -660,12 +663,35 @@ class EmundusHelperUpdate
 
 		$combinedOptions = array_merge($initialOptions, $options);
 
-		$app   = Factory::getApplication();
-		$model = $app->bootComponent('com_config')->getMVCFactory($app)->createModel('Application', 'Administrator');
+		// Reprise du principe de ApplicationModel::writeConfigFile() : on écrit directement
+		// le fichier configuration.php sans déclencher les effets de bord de save()
+		// (purge des sessions, test SMTP, reconstruction des filtres, etc.).
+		$config = new Registry($combinedOptions);
+		$file   = JPATH_CONFIGURATION . '/configuration.php';
 
-		if ($model->save($combinedOptions))
+		$app = Factory::getApplication();
+
+		// Rendre le fichier accessible en écriture si on en est propriétaire.
+		if (Path::isOwner($file) && !Path::setPermissions($file, '0644'))
 		{
-			$updated = true;
+			$app->enqueueMessage(Text::_('COM_CONFIG_ERROR_CONFIGURATION_PHP_NOTWRITABLE'), 'notice');
+		}
+
+		$configuration = $config->toString('PHP', ['class' => 'JConfig', 'closingtag' => false]);
+
+		try
+		{
+			$updated = (bool) File::write($file, $configuration);
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error writing configuration.php : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		// Repasser le fichier en lecture seule.
+		if (Path::isOwner($file) && !Path::setPermissions($file, '0444'))
+		{
+			$app->enqueueMessage(Text::_('COM_CONFIG_ERROR_CONFIGURATION_PHP_NOTUNWRITABLE'), 'notice');
 		}
 
 		return $updated;

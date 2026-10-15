@@ -28,6 +28,7 @@ class PayboxIntegrationConfiguration extends EmundusIntegrationConfiguration
 			new StringField('rang', Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_PAYBOX_SETUP_RANG'), true, $authGroup),
 			new StringField('identifiant', Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_PAYBOX_SETUP_IDENTIFIANT'), true, $authGroup),
 			new PasswordField('hmac_key', Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_PAYBOX_SETUP_HMAC_KEY'), true, $authGroup),
+			// todo: use a path to the key instead of the key itself
 			new StringField('public_key', Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_PAYBOX_SETUP_PUBLIC_KEY'), true, $authGroup),
 			new ChoiceField('mode', Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_PAYBOX_SETUP_MODE'), $modeChoices, true, false, $configGroup),
 			new StringField('endpoint', Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_PAYBOX_SETUP_ENDPOINT'), false, $configGroup),

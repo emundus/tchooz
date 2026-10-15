@@ -14,7 +14,6 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\Database\DatabaseInterface;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Fixtures\SampleData\Data\FakeData;
-use Tchooz\Fixtures\SampleData\Data\ProgramFixtures;
 use Tchooz\Fixtures\SampleData\Seeders\ApplicationFileSeeder;
 use Tchooz\Fixtures\SampleData\Seeders\CampaignSeeder;
 use Tchooz\Fixtures\SampleData\Seeders\ContactSeeder;
@@ -125,7 +124,7 @@ final class SampleDataSeeder
 		}
 
 		$stats['campaigns'] = $campaignCount > 0
-			? $this->campaignSeeder->seed($this->loadSeededPrograms(), $this->ownerUserId, $campaignCount)
+			? $this->campaignSeeder->seed($this->programSeeder->loadSeeded(), $this->ownerUserId, $campaignCount)
 			: 0;
 
 		// Organizations first, so contacts can be associated to them.
@@ -144,7 +143,7 @@ final class SampleDataSeeder
 			throw new \RuntimeException('No published campaigns found — seed programs first.');
 		}
 
-		$startIndex = $this->existingSampleUserCount();
+		$startIndex = $this->userSeeder->countExisting();
 		$remaining  = $userCount;
 		$batchSize  = max(1, $batchSize);
 
@@ -245,39 +244,6 @@ final class SampleDataSeeder
 	}
 
 	/**
-	 * Load the seeded programs (id + code) so procedural campaigns can be
-	 * distributed across them: the showcase codes declared in ProgramFixtures plus
-	 * any procedural programs produced by ProgramSeeder.
-	 *
-	 * @return  array<int, array{id: int, code: string}>
-	 */
-	private function loadSeededPrograms(): array
-	{
-		$codes = array_column(ProgramFixtures::programs(), 'code');
-
-		$query = $this->db->getQuery(true)
-			->select([$this->db->quoteName('id'), $this->db->quoteName('code')])
-			->from($this->db->quoteName('#__emundus_setup_programmes'))
-			->where($this->db->quoteName('code') . ' LIKE ' . $this->db->quote(ProgramSeeder::PROCEDURAL_CODE_PREFIX . '%'));
-
-		if (!empty($codes))
-		{
-			$quotedCodes = array_map([$this->db, 'quote'], $codes);
-			$query->extendWhere('OR', $this->db->quoteName('code') . ' IN (' . implode(',', $quotedCodes) . ')');
-		}
-
-		$this->db->setQuery($query);
-
-		$programs = [];
-		foreach ($this->db->loadObjectList() ?: [] as $row)
-		{
-			$programs[] = ['id' => (int) $row->id, 'code' => (string) $row->code];
-		}
-
-		return $programs;
-	}
-
-	/**
 	 * Published campaigns with a random popularity weight (1..10) so a few
 	 * campaigns end up much fuller than others — "weighted realistic".
 	 *
@@ -328,16 +294,5 @@ final class SampleDataSeeder
 		}
 
 		return $weights;
-	}
-
-	private function existingSampleUserCount(): int
-	{
-		$query = $this->db->getQuery(true)
-			->select('COUNT(*)')
-			->from($this->db->quoteName('#__users'))
-			->where($this->db->quoteName('email') . ' LIKE ' . $this->db->quote('%@sample.emundus.fr'));
-		$this->db->setQuery($query);
-
-		return (int) $this->db->loadResult();
 	}
 }

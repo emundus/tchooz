@@ -2366,4 +2366,48 @@ class Com_EmundusPostflightTasks
 
 		return true;
 	}
+
+	#[PostflightAttribute(name: "Clear DomPDF fonts cache")]
+	public function clearDompdfFontsCache(): bool
+	{
+		try
+		{
+			$fontsDir = JPATH_LIBRARIES . '/emundus/vendor/dompdf/dompdf/lib/fonts';
+
+			if (!is_dir($fontsDir))
+			{
+				return true;
+			}
+
+			$filesToDelete = [];
+
+			$installedFonts = $fontsDir . '/installed-fonts.json';
+			if (file_exists($installedFonts))
+			{
+				$filesToDelete[] = $installedFonts;
+			}
+
+			$cachedFonts = glob($fontsDir . '/emundus_unicode_normal_*');
+			if (!empty($cachedFonts))
+			{
+				$filesToDelete = array_merge($filesToDelete, $cachedFonts);
+			}
+
+			foreach ($filesToDelete as $file)
+			{
+				if (is_file($file))
+				{
+					unlink($file);
+				}
+			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Failed to clear DomPDF fonts cache: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
+			return false;
+		}
+
+		return true;
+	}
 }

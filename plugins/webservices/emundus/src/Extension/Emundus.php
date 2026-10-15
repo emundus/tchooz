@@ -13,6 +13,7 @@ namespace Joomla\Plugin\WebServices\Emundus\Extension;
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Event\Application\BeforeApiRouteEvent;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Router\Route;
@@ -53,6 +54,9 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 	 */
 	public function onBeforeApiRoute(BeforeApiRouteEvent $event): void
 	{
+		// Joomla logs uncaught API exceptions in the "error" category, which has no logger by default
+		Log::addLogger(['text_file' => 'com_emundus.api.errors.php'], Log::ALL, ['error']);
+
 		if(file_exists(JPATH_SITE.'/libraries/emundus/vendor/autoload.php'))
 		{
 			require_once JPATH_SITE.'/libraries/emundus/vendor/autoload.php';

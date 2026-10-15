@@ -102,6 +102,20 @@ final class UserSeeder
 	}
 
 	/**
+	 * Users previously produced by this seeder, used as the email index offset of the next run.
+	 */
+	public function countExisting(): int
+	{
+		$query = $this->db->getQuery(true)
+			->select('COUNT(*)')
+			->from($this->db->quoteName('#__users'))
+			->where($this->db->quoteName('email') . ' LIKE ' . $this->db->quote('%@sample.emundus.fr'));
+		$this->db->setQuery($query);
+
+		return (int) $this->db->loadResult();
+	}
+
+	/**
 	 * Insert rows in chunks using a single multi-row statement per chunk.
 	 *
 	 * @param   object[]  $rows

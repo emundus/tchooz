@@ -104,6 +104,14 @@
 					@remove-filter="onRemoveFilter(appliedFilter)"
 					@filter-changed="onFilterChanged"
 				></DateFilter>
+				<OrderlistFilter
+					v-else-if="appliedFilter.type === 'orderlist'"
+					:filter="appliedFilter"
+					:menu-id="menuId"
+					class="tw-w-full"
+					@remove-filter="onRemoveFilter(appliedFilter)"
+					@filter-changed="onFilterChanged"
+				></OrderlistFilter>
 				<TimeFilter
 					v-else-if="appliedFilter.type === 'time'"
 					:filter="appliedFilter"
@@ -167,6 +175,7 @@ import MultiSelect from '@/components/Filters/MultiSelectFilter.vue';
 import AdvancedSelect from '@/components/Filters/AdvancedSelect.vue';
 import DateFilter from '@/components/Filters/DateFilter.vue';
 import TimeFilter from '@/components/Filters/TimeFilter.vue';
+import OrderlistFilter from '@/components/Filters/OrderlistFilter.vue';
 import DefaultFilter from '@/components/Filters/DefaultFilter.vue';
 import filtersService from '@/services/filters.js';
 import Popover from '@/components/Popover.vue';
@@ -198,6 +207,7 @@ export default {
 		AdvancedSelect,
 		MultiSelect,
 		TimeFilter,
+		OrderlistFilter,
 		DefaultFilter,
 		Popover,
 	},
@@ -358,12 +368,16 @@ export default {
 					case 'date':
 						newFilter.value = ['', ''];
 						break;
+					case 'orderlist':
+						newFilter.value = [];
+						newFilter.andorOperator = 'AND';
+						break;
 					default:
 						newFilter.value = '';
 						break;
 				}
 
-				if (newFilter.type === 'select' && newFilter.values.length < 1) {
+				if (['select', 'orderlist'].includes(newFilter.type) && newFilter.values.length < 1) {
 					filtersService.getFilterValues(newFilter.id).then((values) => {
 						newFilter.values = values;
 
@@ -430,6 +444,9 @@ export default {
 					} else {
 						filter.value = [];
 					}
+				} else if (filter.type === 'orderlist') {
+					filter.value = [];
+					filter.andorOperator = 'AND';
 				} else if (filter.type === 'date' || filter.type === 'time') {
 					filter.value = ['', ''];
 				} else {
@@ -580,7 +597,7 @@ export default {
 									}
 								});
 
-								if (filter.values.length < 1 && filter.type === 'select') {
+								if (filter.values.length < 1 && ['select', 'orderlist'].includes(filter.type)) {
 									filter.values = await filtersService.getFilterValues(filter.id);
 								}
 							}

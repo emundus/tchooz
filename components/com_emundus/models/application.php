@@ -42,6 +42,7 @@ use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
+use Tchooz\Services\Fabrik\ReadonlyElementStorage;
 use Tchooz\Services\FilePreviewService;
 use Tchooz\Transformers\ApplicationChoicesTransformer;
 use Dompdf\Dompdf;
@@ -1704,7 +1705,7 @@ class EmundusModelApplication extends ListModel
 
 				try {
 					$this->_db->setQuery($query);
-					$elements = $this->_db->loadObjectList();
+					$elements = (new ReadonlyElementStorage())->displayAsDateSource($this->_db->loadObjectList());
 				}
 				catch (Exception $e) {
 					return $e->getMessage();
@@ -2334,7 +2335,7 @@ class EmundusModelApplication extends ListModel
 
 						try {
 							$this->_db->setQuery($query);
-							$elements = $this->_db->loadObjectList();
+							$elements = (new ReadonlyElementStorage())->displayAsDateSource($this->_db->loadObjectList());
 						}
 						catch (Exception $e) {
 							Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
@@ -3356,7 +3357,7 @@ class EmundusModelApplication extends ListModel
 
 					try {
 						$this->_db->setQuery($query);
-						$elements = $this->_db->loadObjectList();
+						$elements = (new ReadonlyElementStorage())->displayAsDateSource($this->_db->loadObjectList());
 					}
 					catch (Exception $e) {
 						Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
@@ -3722,7 +3723,6 @@ class EmundusModelApplication extends ListModel
 								}
 								$forms .= '</tbody></table></p>';
 							}
-
 
 							// TABLEAU DE PLUSIEURS LIGNES sans tenir compte du nombre de lignes
 						}
@@ -4490,7 +4490,7 @@ class EmundusModelApplication extends ListModel
 											$element->content = '';
 										}
 
-										if($element->plugin === 'dropdown')
+										if($element->plugin === 'dropdown' || $element->plugin === 'radiobutton')
 										{
 											$params = json_decode($element->params);
 											$index  = array_search($element->content, $params->sub_options->sub_values);
@@ -4594,7 +4594,7 @@ class EmundusModelApplication extends ListModel
 
 					$this->_db->setQuery($query);
 
-					$elements = $this->_db->loadObjectList();
+					$elements = (new ReadonlyElementStorage())->displayAsDateSource($this->_db->loadObjectList());
 
 					if (count($elements) > 0) {
 						$forms .= ($options['show_group_label'] == 1) ? '<h3>' . Text::_($itemg->label) . '</h3>' : '';
@@ -5475,6 +5475,11 @@ class EmundusModelApplication extends ListModel
 			}
 
 			if ($deleted) {
+				if (!class_exists('EmundusHelperAccess')) {
+					require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+				}
+				\EmundusHelperAccess::clearFnumAccessCache();
+
 				$query->clear()
 					->select('label')
 					->from('#__emundus_setup_groups')
@@ -5528,6 +5533,11 @@ class EmundusModelApplication extends ListModel
 			}
 
 			if ($deleted) {
+				if (!class_exists('EmundusHelperAccess')) {
+					require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+				}
+				\EmundusHelperAccess::clearFnumAccessCache();
+
 				$query->clear()
 					->select('name')
 					->from('#__users')

@@ -340,6 +340,85 @@ class EmundusViewEvaluation extends JViewLegacy
 						natsort($keys);
 					}
 
+					// Batch the per-row lookups up front: the list has one row per (file, evaluator, step),
+					// so resolving ccids, evaluated state, associated dates, eval-action access and comment
+					// counts once — instead of once per row inside the loop — removes the dominant N+1.
+					$fnums      = array_column($this->users, 'fnum');
+					$ccidByFnum = EmundusHelperFiles::getIdsFromFnums($fnums);
+
+					// Step data for every distinct evaluation step present (getStepData is request-memoized).
+					$stepDataById = [];
+					foreach ($this->users as $u)
+					{
+						$sid = $u['evaluations_step_id'] ?? null;
+						if (!empty($sid) && !array_key_exists($sid, $stepDataById))
+						{
+							$sd                 = $m_workflow->getStepData($sid);
+							$stepDataById[$sid] = !empty($sd) ? $sd : null;
+						}
+					}
+
+					$associatedDates = ($display_associated_date == 1) ? $m_files->getAssociatedDates($fnums, $this->_user->id) : [];
+
+					// Evaluated state, one membership query per distinct step. Keyed step_id + ccid because
+					// isEvaluated() is per (step, ccid): the same ccid can appear under two steps.
+					$evaluatedByKey = [];
+					if ($display_state_column == 1)
+					{
+						$ccidsByStep = [];
+						foreach ($this->users as $u)
+						{
+							$sid = $u['evaluations_step_id'] ?? null;
+							if (!empty($sid) && !empty($stepDataById[$sid]))
+							{
+								$ccid = $ccidByFnum[$u['fnum']] ?? 0;
+								if (!empty($ccid))
+								{
+									$ccidsByStep[$sid][$ccid] = $u['fnum'];
+								}
+							}
+						}
+						foreach ($ccidsByStep as $sid => $ccidMap)
+						{
+							foreach ($m_workflow->isEvaluatedBatch($stepDataById[$sid], $this->_user->id, $ccidMap) as $ccid => $ev)
+							{
+								$evaluatedByKey[$sid . '_' . $ccid] = $ev;
+							}
+						}
+					}
+
+					// No-fnum evaluation-action access (r/u/c/d), resolved once per distinct action id
+					// (default 5 plus each step's action id) rather than 3-4 times per row.
+					$evalActionIds = [5];
+					foreach ($stepDataById as $sd)
+					{
+						if (!empty($sd->action_id))
+						{
+							$evalActionIds[] = (int) $sd->action_id;
+						}
+					}
+					$accessByActionId = [];
+					foreach (array_unique($evalActionIds) as $aid)
+					{
+						$accessByActionId[$aid] = [
+							'r' => EmundusHelperAccess::asAccessAction($aid, 'r', $this->_user->id),
+							'u' => EmundusHelperAccess::asAccessAction($aid, 'u', $this->_user->id),
+							'c' => EmundusHelperAccess::asAccessAction($aid, 'c', $this->_user->id),
+							'd' => EmundusHelperAccess::asAccessAction($aid, 'd', $this->_user->id),
+						];
+					}
+
+					// Comment counts per fnum in a single query instead of one per fnum after the loop.
+					$commentCountByFnum = [];
+					if (isset($this->colsSup['commentaire']))
+					{
+						$allComments = $m_files->getCommentsByFnum($fnums);
+						if (is_array($allComments))
+						{
+							$commentCountByFnum = array_count_values(array_column($allComments, 'fnum'));
+						}
+					}
+
 					foreach ($this->users as $user)
 					{
 						$usObj       = new stdClass();
@@ -360,11 +439,11 @@ class EmundusViewEvaluation extends JViewLegacy
 						$current_row_form = $this->formid;
 						if (!empty($step_data))
 						{
-							$ccid = EmundusHelperFiles::getIdFromFnum($user['fnum']);
+							$ccid = $ccidByFnum[$user['fnum']] ?? 0;
 
 							if ($display_state_column == 1)
 							{
-								$is_evaluated = $m_workflow->isEvaluated($step_data, $this->_user->id, $ccid);
+								$is_evaluated = $evaluatedByKey[$user['evaluations_step_id'] . '_' . $ccid] ?? false;
 								$user['evaluated'] = $is_evaluated ? Text::_('COM_EMUNDUS_EVALUATION_EVALUATED') : Text::_('COM_EMUNDUS_EVALUATION_TO_EVALUATE');
 							}
 
@@ -384,7 +463,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 						if ($display_associated_date == 1)
 						{
-							$associated_date         = $m_files->getAssociatedDate($user['fnum'], $this->_user->id);
+							$associated_date         = $associatedDates[$user['fnum']] ?? '';
 							$user['associated_date'] = !empty($associated_date) ? EmundusHelperDate::displayDate($associated_date, 'DATE_FORMAT_LC3') : '';
 						}
 
@@ -479,17 +558,24 @@ class EmundusViewEvaluation extends JViewLegacy
 									$link_edit     = '';
 									$delete_button = '';
 
-									if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction($action_id, 'r', $this->_user->id))
+									$evalAccess = $accessByActionId[$action_id] ?? [
+										'r' => EmundusHelperAccess::asAccessAction($action_id, 'r', $this->_user->id),
+										'u' => EmundusHelperAccess::asAccessAction($action_id, 'u', $this->_user->id),
+										'c' => EmundusHelperAccess::asAccessAction($action_id, 'c', $this->_user->id),
+										'd' => EmundusHelperAccess::asAccessAction($action_id, 'd', $this->_user->id),
+									];
+
+									if ($evaluators_can_see_other_eval || $evalAccess['r'])
 									{
 										$link_view = '<a href="' . $form_url_view . $user['evaluation_id'] . '" target="_blank" data-remote="' . $form_url_view . $user['evaluation_id'] . '" id="em_form_eval_' . $i . '-' . $user['evaluation_id'] . '"><span class="material-symbols-outlined tw-cursor-pointer" title="' . Text::_('COM_EMUNDUS_DETAILS') . '">visibility</span></a>';
 									}
 
-									if (EmundusHelperAccess::asAccessAction($action_id, 'u', $this->_user->id) || (EmundusHelperAccess::asAccessAction($action_id, 'c', $this->_user->id) && $user['evaluator_id'] == $this->_user->id))
+									if ($evalAccess['u'] || ($evalAccess['c'] && $user['evaluator_id'] == $this->_user->id))
 									{
 										$link_edit = '<a href="' . $this->form_url_edit . $user['evaluation_id'] . '" target="_blank"><span class="material-symbols-outlined tw-cursor-pointer" title="' . Text::_('COM_EMUNDUS_ACTIONS_EDIT') . '">edit</span></a>';
 									}
 
-									if (EmundusHelperAccess::asAccessAction($action_id, 'd', $this->_user->id))
+									if ($evalAccess['d'])
 									{
 										$delete_button = '<span 
 											title="' . Text::_("COM_EMUNDUS_EVALUATIONS_DELETE_SELECTED_EVALUATIONS") . '"
@@ -615,7 +701,7 @@ class EmundusViewEvaluation extends JViewLegacy
 					{
 						foreach ($fnumArray as $fnum)
 						{
-							$notifications_comments        = sizeof($m_files->getCommentsByFnum([$fnum]));
+							$notifications_comments        = $commentCountByFnum[$fnum] ?? 0;
 							$this->colsSup['commentaire'][$fnum] = '<p class="messenger__notifications_counter">' . $notifications_comments . '</p> ';
 						}
 					}

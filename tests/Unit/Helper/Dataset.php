@@ -699,7 +699,7 @@ class Dataset
 		$upload_id = 0;
 
 		if (!empty($fnum)) {
-			$filename = $user_id . '-' . $campaign_id . '-unittest' . rand(0, 100) . '.pdf';
+			$filename = $user_id . '-' . $campaign_id . '-unittest' . uniqid() . '.pdf';
 			$localFilename = 'Unit Test file.pdf';
 
 			

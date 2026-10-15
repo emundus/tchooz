@@ -43,13 +43,6 @@ class FileuploadsController extends ApiController
 		return parent::displayList();
 	}
 
-	public function displayItem($id = null)
-	{
-		$item = $this->getModel('fileupload')->getItem($id);
-
-		return parent::displayItem($item);
-	}
-
 	/**
 	 * Streams the physical upload file as a download.
 	 *

@@ -23,6 +23,7 @@
 namespace Tchooz\Services\Export\Pdf;
 
 use Dompdf\Options;
+use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die;
 
@@ -114,5 +115,90 @@ final class PdfFont
 		}
 
 		return $style . $html;
+	}
+
+	/**
+	 * Absolute path to the Dompdf font cache directory where registered fonts and
+	 * installed-fonts.json are written.
+	 */
+	private static function fontCacheDir(): string
+	{
+		return JPATH_LIBRARIES . '/emundus/vendor/dompdf/dompdf/lib/fonts';
+	}
+
+	/**
+	 * Drop the cached Unicode font when it no longer matches the current deployment.
+	 *
+	 * Dompdf names the cache file after md5() of the @font-face `src` URL (see
+	 * FontMetrics::registerFont), and that URL embeds the absolute font path. The
+	 * hash therefore changes whenever the deployment path changes (local vs Docker,
+	 * one site/database vs another). A cache left over from another environment
+	 * points installed-fonts.json at a file that does not exist here, so Dompdf
+	 * cannot load the font and renders "??" for non-Latin glyphs. Clearing the
+	 * stale cache lets Dompdf rebuild it for the current path on the next render.
+	 */
+	public static function ensureFontCacheIsFresh(): void
+	{
+		if (!self::isAvailable())
+		{
+			return;
+		}
+
+		$fontDir       = self::fontCacheDir();
+		$installedFile = $fontDir . '/installed-fonts.json';
+		$expectedEntry = 'emundus_unicode_normal_' . md5('file://' . self::fontPath());
+
+		if (self::isFontCacheValid($installedFile, $fontDir, $expectedEntry))
+		{
+			return;
+		}
+
+		self::clearFontCache($fontDir, $installedFile);
+	}
+
+	/**
+	 * The cache is valid only when installed-fonts.json points the Unicode family
+	 * at the entry expected for the current path AND the matching .ufm / .ttf files
+	 * are present on disk.
+	 */
+	private static function isFontCacheValid(string $installedFile, string $fontDir, string $expectedEntry): bool
+	{
+		if (!is_file($installedFile)
+			|| !is_file($fontDir . '/' . $expectedEntry . '.ufm')
+			|| !is_file($fontDir . '/' . $expectedEntry . '.ttf'))
+		{
+			return false;
+		}
+
+		$installed = json_decode((string) @file_get_contents($installedFile), true);
+
+		return isset($installed[self::FAMILY]['normal']) && $installed[self::FAMILY]['normal'] === $expectedEntry;
+	}
+
+	/**
+	 * Remove installed-fonts.json and every emundus_unicode_normal_* artefact so
+	 * Dompdf regenerates them for the current environment.
+	 */
+	private static function clearFontCache(string $fontDir, string $installedFile): void
+	{
+		try
+		{
+			if (is_file($installedFile))
+			{
+				unlink($installedFile);
+			}
+
+			foreach (glob($fontDir . '/emundus_unicode_normal_*') ?: [] as $file)
+			{
+				if (is_file($file))
+				{
+					unlink($file);
+				}
+			}
+		}
+		catch (\Throwable $e)
+		{
+			Log::add('Could not clear stale Dompdf font cache: ' . $e->getMessage(), Log::WARNING, 'com_emundus.export.pdf');
+		}
 	}
 }

@@ -192,7 +192,17 @@ class EmundusViewFiles extends JViewLegacy
 				$post  = json_decode($post, true);
 				$fnums = $post['fnums'];
 
-				if ($fnums == 'all')
+				$is_evaluation_view = ($post['view'] ?? '') === 'evaluation';
+				if ($fnums == 'all' && $is_evaluation_view)
+				{
+					// Every row of the evaluation view, as it lists them, so the export keeps the same evaluations.
+					$fnums = array_map(fn($row) => (object) [
+						'fnum'          => $row['fnum'],
+						'step_id'       => $row['evaluations_step_id'] ?? 0,
+						'evaluation_id' => $row['evaluation_id'] ?? 0,
+					], (new EmundusModelEvaluation())->getUsers(null, $this->user->id, true));
+				}
+				else if ($fnums == 'all')
 				{
 					$m_files     = new EmundusModelFiles;
 					$fnums       = $m_files->getAllFnums();
@@ -204,15 +214,28 @@ class EmundusViewFiles extends JViewLegacy
 					$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 				}
 
-				$fnums = array_values(array_filter(
+				$selected_rows = array_map(fn($fnum) => [
+					'step_id'       => (int) ($fnum->step_id ?? 0),
+					'evaluation_id' => (int) ($fnum->evaluation_id ?? 0),
+				], $fnums);
+
+				$fnums = array_values(array_unique(array_filter(
 					array_map(fn($fnum) => $fnum->fnum, $fnums),
 					fn($fnum) => !empty($fnum) && $fnum !== 'em-check-all'
-				));
+				)));
 
 				$fnum_array = EmundusHelperAccess::asAccessActionOnFnums($exportAction->getId(), CrudEnum::CREATE->value, $this->user->id, $fnums);
 
 				// Store the fnums in the session
 				$this->app->setUserState('com_emundus.files.export.fnums', $fnum_array);
+
+				// Always written, so an export never inherits the rows of a previous one.
+				$evaluation_row_ids = [];
+				if ($is_evaluation_view)
+				{
+					$evaluation_row_ids = EmundusModelEvaluation::getExportEvaluationRowIds($fnum_array, $selected_rows);
+				}
+				$this->app->setUserState('com_emundus.files.export.evaluation_row_ids', $evaluation_row_ids);
 
 				$this->fnumsCount = count($fnum_array);
 

@@ -30,7 +30,8 @@ use Tchooz\Synchronizers\MappingTransportInterface;
  * Choreography:
  *   - existing → eMundus is the source of truth (SACEM): PATCH the mapped vendor fields that differ
  *     from Sofis; then, if the default bank account (BankAccountId) does not match the file IBAN,
- *     create the new bank account flagged as default;
+ *     make the file's bank account the default: PATCH it when the vendor already has it (e.g. back
+ *     to a previous IBAN), otherwise create it flagged as default;
  *   - not existing → create the vendor (ERP generates VendorAccountNumber), persist the
  *     SIRET → VendorAccountNumber correspondence, then create the bank account (which becomes the
  *     default — no explicit vendor update needed for a brand-new vendor).
@@ -39,6 +40,8 @@ class VendorObject extends AbstractSofisObject implements SelfExecutingMappingOb
 {
 	private const ENTITY = 'VendorsV2';
 
+	// TODO: extract the bank account logic (fields, search, default PATCH, POST) into its own mapping
+	//  object, run as a child task of the vendor sync once parent/child async task scheduling lands.
 	private const BANK_ENTITY           = 'VendorBankAccounts';
 	private const BANK_ACCOUNT_ID_FIELD = 'VendorBankAccountId';
 
@@ -145,9 +148,9 @@ class VendorObject extends AbstractSofisObject implements SelfExecutingMappingOb
 				return true;
 			}
 
-			$this->debug('Vendor ' . $vendorAccountNumber . ' bank account changed, creating bank account ' . $bankAccountId);
+			$this->debug('Vendor ' . $vendorAccountNumber . ' default bank account changed to ' . $bankAccountId);
 
-			$this->createBankAccount($transport, $vendorAccountNumber, $data, $bankAccountId);
+			$this->setDefaultBankAccount($transport, $vendorAccountNumber, $data, $bankAccountId);
 
 			return true;
 		}
@@ -238,6 +241,40 @@ class VendorObject extends AbstractSofisObject implements SelfExecutingMappingOb
 	private function buildVendorPayload(array $data): array
 	{
 		return $this->collectMappedFields($data, self::GROUP_VENDOR);
+	}
+
+	/**
+	 * Make the file's bank account the vendor's default: an account already known to Sofis (same id)
+	 * cannot be POSTed again, so it is PATCHed back to default; otherwise it is created as default.
+	 *
+	 * @throws \Exception
+	 */
+	protected function setDefaultBankAccount(MappingTransportInterface $transport, string $vendorAccountNumber, array $data, string $bankAccountId): void
+	{
+		$dataAreaId = (string) ($data['dataAreaId'] ?? '');
+
+		$existing = $this->search($transport, self::BANK_ENTITY, $this->buildFilter([
+			'VendorAccountNumber'       => $vendorAccountNumber,
+			self::BANK_ACCOUNT_ID_FIELD => $bankAccountId,
+			'dataAreaId'                => $dataAreaId,
+		]));
+
+		if (empty($existing))
+		{
+			$this->createBankAccount($transport, $vendorAccountNumber, $data, $bankAccountId);
+
+			return;
+		}
+
+		$this->debug('Vendor ' . $vendorAccountNumber . ' already has bank account ' . $bankAccountId . ', setting it as default');
+
+		// Same key order as the vendor PATCH (VendorAccountNumber first) for the MARIO gateway.
+		$key = $this->key([
+			'VendorAccountNumber'       => $vendorAccountNumber,
+			self::BANK_ACCOUNT_ID_FIELD => $bankAccountId,
+			'dataAreaId'                => (string) ($existing[0]->dataAreaId ?? $dataAreaId),
+		]);
+		$this->patch($transport, self::BANK_ENTITY, $key, ['IsDefaultBankAccount' => 'Yes']);
 	}
 
 	/**

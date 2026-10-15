@@ -2,6 +2,7 @@
 
 namespace Tchooz\Fixtures;
 
+use Tchooz\Fixtures\Evaluations\EvaluationsScenario;
 use Tchooz\Fixtures\SampleData\SampleDataScenario;
 
 /**
@@ -25,6 +26,7 @@ final class FixtureRegistry
 	 */
 	private const SCENARIOS = [
 		SampleDataScenario::class,
+		EvaluationsScenario::class,
 	];
 
 	/**

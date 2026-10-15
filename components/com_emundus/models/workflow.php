@@ -57,6 +57,37 @@ class EmundusModelWorkflow extends JModelList
 
 	private EmundusHelperCache $h_cache;
 
+	/**
+	 * Request-scoped memo for getStepData() keyed by step id (only the $cid === null shape, matching
+	 * the persistent workflow_steps cache). The model is re-instantiated across loops (evaluator list,
+	 * workflow walks) that refetch the same tiny set of steps per file, and the persistent h_cache only
+	 * helps when Joomla caching is enabled — this static makes the dedup hold even when it is off.
+	 * Cleared wherever the workflow_steps cache is invalidated so an edited step is never served stale.
+	 *
+	 * @var array<int, object>
+	 */
+	private static array $step_data_cache = [];
+
+	/**
+	 * Request-scoped memo for getEvaluatorSteps(), keyed user_id + read_only flag. The evaluator/
+	 * evaluated list filters resolve it once per step query via _moduleBuildWhere(), so a list over
+	 * N steps otherwise re-walks every workflow N times for the same user. Cleared alongside the
+	 * step cache so a workflow/step edit never serves a stale step set.
+	 *
+	 * @var array<string, array>
+	 */
+	private static array $evaluator_steps_cache = [];
+
+	/**
+	 * Request-scoped memos for getWorkflows() and getWorkflow(), keyed by their arguments. The filter
+	 * builders and evaluation list walk the same workflows/steps several times per request; these
+	 * collapse the repeated workflow-row + step-id fetches. Cleared with the step cache on edits.
+	 *
+	 * @var array<string, array>
+	 */
+	private static array $workflows_cache = [];
+	private static array $workflow_cache = [];
+
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
@@ -486,6 +517,10 @@ class EmundusModelWorkflow extends JModelList
 			$updated = false;
 		} else {
 			$this->h_cache->set('workflow_steps', null);
+			self::$step_data_cache = [];
+			self::$evaluator_steps_cache = [];
+			self::$workflows_cache = [];
+			self::$workflow_cache = [];
 		}
 
 		return $updated;
@@ -600,6 +635,25 @@ class EmundusModelWorkflow extends JModelList
 	{
 		$workflows = [];
 
+		$allowed_order_by = ['esw.id', 'esw.label'];
+		$allowed_order    = ['ASC', 'DESC'];
+
+		if (!in_array($order_by, $allowed_order_by))
+		{
+			$order_by = 'esw.id';
+		}
+
+		if (!in_array($order, $allowed_order))
+		{
+			$order = 'DESC';
+		}
+
+		$cache_key = implode('|', [implode(',', (array) $ids), (int) $limit, (int) $page, implode(',', (array) $programs), $order_by, $order, $search, (int) $displayNoAssociated]);
+		if (array_key_exists($cache_key, self::$workflows_cache))
+		{
+			return self::$workflows_cache[$cache_key];
+		}
+
 		$query = $this->db->getQuery(true);
 
 		$query->select('esw.*, GROUP_CONCAT(eswp.program_id) as programme_ids')
@@ -614,6 +668,8 @@ class EmundusModelWorkflow extends JModelList
 
 		if (!empty($programs) && !in_array('all', $programs))
 		{
+			$programs = array_unique(array_map('intval', $programs));
+
 			if($displayNoAssociated)
 			{
 				$query->where('(' . $this->db->quoteName('eswp.program_id') . ' IN (' . implode(',', $programs) . ') OR ' . $this->db->quoteName('eswp.program_id') . ' IS NULL)');
@@ -636,19 +692,6 @@ class EmundusModelWorkflow extends JModelList
 			$query->setLimit($limit, $offset);
 		}
 
-		$allowed_order_by = ['esw.id', 'esw.label'];
-		$allowed_order    = ['ASC', 'DESC'];
-
-		if (!in_array($order_by, $allowed_order_by))
-		{
-			$order_by = 'esw.id';
-		}
-
-		if (!in_array($order, $allowed_order))
-		{
-			$order = 'DESC';
-		}
-
 		$query->order($this->db->quoteName($order_by) . ' ' . $order);
 
 		try
@@ -666,6 +709,8 @@ class EmundusModelWorkflow extends JModelList
 			Log::add('Error while fetching workflows: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 		}
 
+		self::$workflows_cache[$cache_key] = $workflows;
+
 		return $workflows;
 	}
 
@@ -677,6 +722,12 @@ class EmundusModelWorkflow extends JModelList
 	public function getWorkflow($id = 0, array $program_ids = [], bool $displayed_archived = false): array
 	{
 		$workflowData = [];
+
+		$cache_key = $id . '|' . implode(',', $program_ids) . '|' . (int) $displayed_archived;
+		if (array_key_exists($cache_key, self::$workflow_cache))
+		{
+			return self::$workflow_cache[$cache_key];
+		}
 
 		if (!empty($id) || !empty($program_ids))
 		{
@@ -757,6 +808,8 @@ class EmundusModelWorkflow extends JModelList
 				}
 			}
 		}
+
+		self::$workflow_cache[$cache_key] = $workflowData;
 
 		return $workflowData;
 	}
@@ -847,10 +900,16 @@ class EmundusModelWorkflow extends JModelList
 	{
 		$data = new stdClass();
 
+		if (!empty($id) && $cid === null && array_key_exists($id, self::$step_data_cache)) {
+			return self::$step_data_cache[$id];
+		}
+
 		$stepsCache = $this->h_cache->get('workflow_steps');
 		$stepsCache = is_array($stepsCache) ? $stepsCache : [];
 
 		if (!empty($id) && isset($stepsCache[$id]) && $cid === null) {
+			self::$step_data_cache[$id] = $stepsCache[$id];
+
 			return $stepsCache[$id];
 		}
 
@@ -939,6 +998,7 @@ class EmundusModelWorkflow extends JModelList
 				if ($cid === null) {
 					$stepsCache[$id] = $data;
 					$this->h_cache->set('workflow_steps', $stepsCache);
+					self::$step_data_cache[$id] = $data;
 				}
 			}
 			else
@@ -994,6 +1054,12 @@ class EmundusModelWorkflow extends JModelList
 
 		if (!empty($user_id))
 		{
+			$cache_key = $user_id . '_' . (int) $read_only_steps;
+			if (array_key_exists($cache_key, self::$evaluator_steps_cache))
+			{
+				return self::$evaluator_steps_cache[$cache_key];
+			}
+
 			$workflows = $this->getWorkflows();
 
 			if (!class_exists('EmundusHelperAccess'))
@@ -1013,6 +1079,8 @@ class EmundusModelWorkflow extends JModelList
 					}
 				}
 			}
+
+			self::$evaluator_steps_cache[$cache_key] = $steps;
 		}
 
 		return $steps;
@@ -1130,6 +1198,87 @@ class EmundusModelWorkflow extends JModelList
 		}
 
 		return $evaluated;
+	}
+
+	/**
+	 * @param   int     $step_id
+	 * @param   int     $ccid
+	 * @param   string  $view
+	 * @param   int     $evaluatorId
+	 *
+	 * @return array
+	 */
+	/**
+	 * Batch variant of isEvaluated(): resolves the evaluated state for many candidatures of the
+	 * SAME step in a single membership query, then still dispatches the per-file onIsEvaluated
+	 * event (plugins may override the flag per file). The fnum is reused from the caller so no
+	 * extra getFnumFromId() round-trip is needed.
+	 *
+	 * @param   object             $step
+	 * @param   int                $user_id
+	 * @param   array<int,string>  $ccid_to_fnum  Candidature id => fnum
+	 *
+	 * @return array<int,bool> Map ccid => evaluated
+	 */
+	public function isEvaluatedBatch(object $step, int $user_id, array $ccid_to_fnum): array
+	{
+		$evaluated_by_ccid = [];
+
+		$ccids = array_values(array_unique(array_filter(array_map('intval', array_keys($ccid_to_fnum)))));
+		if (empty($step->id) || empty($user_id) || empty($ccids))
+		{
+			// Preserve isEvaluated()'s "false when step/user/ccid missing" contract.
+			foreach ($ccid_to_fnum as $ccid => $fnum)
+			{
+				$evaluated_by_ccid[(int) $ccid] = false;
+			}
+
+			return $evaluated_by_ccid;
+		}
+
+		$evaluated_set = [];
+		if (!empty($step->table))
+		{
+			$has_edition_access = EmundusHelperAccess::asAccessAction($step->action_id, 'c', $user_id);
+
+			$query = $this->db->createQuery();
+			$query->select('DISTINCT ccid')
+				->from($this->db->quoteName($step->table))
+				->where('step_id = ' . (int) $step->id)
+				->andWhere('ccid IN (' . implode(',', $ccids) . ')');
+
+			if ($step->multiple && $has_edition_access)
+			{
+				$query->andWhere('evaluator = ' . (int) $user_id);
+			}
+
+			try
+			{
+				$this->db->setQuery($query);
+				$evaluated_set = array_flip(array_map('intval', $this->db->loadColumn() ?: []));
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error while checking if files are evaluated: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+			}
+		}
+
+		PluginHelper::importPlugin('emundus');
+		$dispatcher = Factory::getApplication()->getDispatcher();
+
+		foreach ($ccid_to_fnum as $ccid => $fnum)
+		{
+			$ccid      = (int) $ccid;
+			$evaluated = isset($evaluated_set[$ccid]);
+
+			$onIsEvaluated = new GenericEvent('onCallEventHandler', ['onIsEvaluated', ['step' => $step, 'user_id' => $user_id, 'fnum' => $fnum, 'evaluated' => &$evaluated]]);
+			$dispatcher->dispatch('onCallEventHandler', $onIsEvaluated);
+
+			$evaluated_by_ccid[$ccid] = $evaluated;
+			unset($evaluated);
+		}
+
+		return $evaluated_by_ccid;
 	}
 
 	/**
