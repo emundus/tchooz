@@ -109,6 +109,10 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 			$this->app->redirect('/');
 		}
 
+		$updateRight = EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'u', $user->id, $fnum);
+		$createRight = EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'c', $user->id, $fnum);
+		$readRight = EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'r', $user->id, $fnum);
+
 		$current_url = $currentLangPath . '/evaluation-step-form?view=' . $view . '&formid=' . $form_model->getId() . '&tmpl=component&iframe=1&' . $db_table_name . '___ccid=' . $ccid . '&' . $db_table_name . '___step_id=' . $step_id;
 		if (!empty($current_row_id))
 		{
@@ -130,10 +134,10 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 				$this->app->enqueueMessage(Text::_('ERROR_NOT_FOUND'), 'error');
 				$this->app->redirect('/');
 			}
-
+			
 			if ($evaluationRow->evaluator != $user->id)
 			{
-				if (EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'u', $user->id, $fnum))
+				if ($updateRight)
 				{
 					// nothing to do, user can access
 				}
@@ -141,11 +145,12 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 				{
 					if ($step->getMultiple() === 0)
 					{
-						if (EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'c', $user->id, $fnum))
+						// If create right but no read right user cannot see evaluation
+						if ($createRight && !$readRight)
 						{
-							// case 1, nothing to do, redirect will be done later
+							echo Text::_('COM_EMUNDUS_EVALUATION_NO_READ_ACCESS');die;
 						}
-						else if (EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'r', $user->id, $fnum))
+						else if ($readRight)
 						{
 							$view = 'details';
 						}
@@ -157,7 +162,7 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 					}
 					else
 					{
-						if (EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'r', $user->id, $fnum))
+						if ($readRight)
 						{
 							$view = 'details';
 						}
