@@ -1317,10 +1317,15 @@ class EmundusModelEvaluation extends JModelList
 				}
 			}
 		} else {
-			$list = $this->getEvaluationsList();
+			// The average is sorted in PHP: every row is needed before the page is cut.
+			$list = $this->getEvaluationsList($order_by_average ? 0 : $limit, $limitstart);
 
 			if ($order_by_average) {
 				$list = $this->sortByEvaluationAverage($list, $user_id);
+
+				if ($limit > 0) {
+					$list = array_slice($list, $limitstart, $limit);
+				}
 			}
 		}
 
@@ -1330,13 +1335,13 @@ class EmundusModelEvaluation extends JModelList
 	private function sortByEvaluationAverage(array $list, $user_id): array
 	{
 		$averageByFnums   = $this->getEvaluationAverageByFnum(array_column($list, 'fnum'), $user_id);
-		$filter_order_Dir = $this->app->getSession()->get('filter_order_Dir');
+		$filter_order_Dir = strtoupper((string) $this->app->getSession()->get('filter_order_Dir'));
 
 		usort($list, function ($a, $b) use ($averageByFnums, $filter_order_Dir) {
 			$avgA = $averageByFnums[$a['fnum']] ?? 0;
 			$avgB = $averageByFnums[$b['fnum']] ?? 0;
 
-			if ($filter_order_Dir === 'asc') {
+			if ($filter_order_Dir === 'ASC') {
 				return $avgA <=> $avgB;
 			} else {
 				return $avgB <=> $avgA;
@@ -1543,13 +1548,14 @@ class EmundusModelEvaluation extends JModelList
 	 * Evaluation list without step: one row per file. The full result is loaded for the total
 	 * (getTotal()), the page is sliced from it.
 	 *
+	 * @param   int  $limit       Rows of the page, 0 for every row.
+	 * @param   int  $limitstart
+	 *
 	 * @return array
 	 */
-	function getEvaluationsList()
+	function getEvaluationsList(int $limit = 0, int $limitstart = 0)
 	{
 		$evaluations_list = [];
-
-		$session = $this->app->getSession();
 
 		$list_query = $this->buildEvaluationsListQuery();
 		$query      = 'SELECT ' . $list_query['select'] . $list_query['body'] . $this->_buildContentOrderBy();
@@ -1561,10 +1567,9 @@ class EmundusModelEvaluation extends JModelList
 			$this->_applicants = array_merge($this->_applicants, $res);
 			$evaluations_list  = $res;
 
-			$limit = (int) $session->get('limit');
 			if ($limit > 0)
 			{
-				$evaluations_list = array_slice($res, (int) $session->get('limitstart'), $limit);
+				$evaluations_list = array_slice($res, $limitstart, $limit);
 			}
 		}
 		catch (Exception $e)
