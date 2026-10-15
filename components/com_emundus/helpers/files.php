@@ -24,6 +24,7 @@ use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Favorite\FavoriteFileRepository;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 
 if(!class_exists('EmundusHelperCache'))
 {
@@ -433,6 +434,28 @@ class EmundusHelperFiles
 		}
 
 		return $results;
+	}
+
+	/**
+	 * SQL expression displaying an orderlist value, stored as "value1","value2", as its ordered labels.
+	 *
+	 * @param   string       $column
+	 * @param   object|null  $element_attribs  Decoded params of the orderlist element
+	 *
+	 * @return string
+	 */
+	public static function orderlistLabelsSelect(string $column, ?object $element_attribs): string
+	{
+		$db     = Factory::getContainer()->get('DatabaseDriver');
+		$select = 'REPLACE(' . $column . ', ' . $db->quote('","') . ', ' . $db->quote('", "') . ')';
+
+		foreach ($element_attribs->sub_options->sub_values ?? [] as $key => $value)
+		{
+			$label  = Text::_($element_attribs->sub_options->sub_labels[$key] ?? $value);
+			$select = 'REPLACE(' . $select . ', ' . $db->quote('"' . $value . '"') . ', ' . $db->quote($label) . ')';
+		}
+
+		return $select;
 	}
 
 	public static function getCurrentCampaign()
@@ -4995,7 +5018,7 @@ class EmundusHelperFiles
 												}
 												$child_table_alias = !empty($child_table_alias) && !is_numeric($child_table_alias) ? $child_table_alias : $child_table;
 
-												$where['q'] .= ' AND ' . $this->writeQueryWithOperator($child_table_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type'], $fabrik_element_data);
+												$where['q'] .= ' AND ' . $this->writeQueryWithOperator($child_table_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type'], $fabrik_element_data, $filter['andorOperator'] ?? 'OR');
 											}
 										}
 										else
@@ -5017,7 +5040,7 @@ class EmundusHelperFiles
 										}
 										$db_table_name_alias = !empty($db_table_name_alias) && !is_numeric($db_table_name_alias) ? $db_table_name_alias : $fabrik_element_data['db_table_name'];
 
-										$where['q'] .= ' AND ' . $this->writeQueryWithOperator($db_table_name_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type'], $fabrik_element_data);
+										$where['q'] .= ' AND ' . $this->writeQueryWithOperator($db_table_name_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type'], $fabrik_element_data, $filter['andorOperator'] ?? 'OR');
 									}
 								} else {
 									dump($fabrik_element_data);
@@ -5904,6 +5927,11 @@ class EmundusHelperFiles
 	{
 		$query = '1=1';
 
+		if (($fabrik_element_data['plugin'] ?? null) === ElementPluginEnum::ORDERLIST->value)
+		{
+			return $this->orderlistRanksQuery($element, $values, $operator, $andor);
+		}
+
 		if (!empty($element) && (!empty($values) || $values == '0') && !empty($operator))
 		{
 			$db = Factory::getContainer()->get('DatabaseDriver');
@@ -6126,6 +6154,57 @@ class EmundusHelperFiles
 		}
 
 		return $query;
+	}
+
+	/**
+	 * Condition on the ranks of an orderlist value. Each criterion is true when one of its choices is at its rank.
+	 *
+	 * @param   string  $element
+	 * @param   mixed   $values    List of ['values' => choices, 'rank' => position starting at 1]
+	 * @param   string  $operator  '!=' negates the whole condition
+	 * @param   string  $andor     How the criteria are combined, AND or OR
+	 *
+	 * @return string
+	 */
+	private function orderlistRanksQuery(string $element, $values, $operator, $andor): string
+	{
+		$db         = Factory::getContainer()->get('DatabaseDriver');
+		$conditions = [];
+
+		// FIND_IN_SET gives the position of the choice in the comma separated list, once the quotes removed
+		$positions = 'REPLACE(' . $element . ', ' . $db->quote('"') . ', ' . $db->quote('') . ')';
+
+		foreach (is_array($values) ? $values : [] as $criterion)
+		{
+			if (!is_array($criterion) || empty($criterion['values']) || !is_array($criterion['values']) || (int) ($criterion['rank'] ?? 0) < 1)
+			{
+				continue;
+			}
+			$rank = (int) $criterion['rank'];
+
+			$choices = [];
+			foreach ($criterion['values'] as $choice)
+			{
+				if (is_scalar($choice) && $choice !== '')
+				{
+					$choices[] = 'FIND_IN_SET(' . $db->quote((string) $choice) . ', ' . $positions . ') = ' . $rank;
+				}
+			}
+
+			if (!empty($choices))
+			{
+				$conditions[] = '(' . implode(' OR ', $choices) . ')';
+			}
+		}
+
+		if (empty($conditions))
+		{
+			return '1=1';
+		}
+
+		$condition = '(' . implode(strtoupper((string) $andor) === 'OR' ? ' OR ' : ' AND ', $conditions) . ')';
+
+		return $operator === '!=' ? '(NOT ' . $condition . ' OR ' . $element . ' IS NULL)' : $condition;
 	}
 
 	private function notInQuery($element, $values, $fabrik_element_data)

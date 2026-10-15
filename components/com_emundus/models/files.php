@@ -44,6 +44,7 @@ use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 
 /**
  * Class EmundusModelFiles
@@ -310,6 +311,20 @@ class EmundusModelFiles extends JModelLegacy
 								Text::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 						}
 						$this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
+					}
+				}
+				elseif ($def_elmt->element_plugin == ElementPluginEnum::ORDERLIST->value) {
+					$element_attribs = json_decode($def_elmt->element_attribs);
+
+					if ($group_params->repeat_group_button == 1) {
+						$this->_elements_default[] = '(
+                                    SELECT GROUP_CONCAT(' . EmundusHelperFiles::orderlistLabelsSelect($def_elmt->table_join . '.' . $def_elmt->element_name, $element_attribs) . ' SEPARATOR " | ")
+                                    FROM ' . $def_elmt->table_join . '
+                                    WHERE ' . $def_elmt->table_join . '.parent_id = ' . $def_elmt->tab_name . '.id
+                                  ) AS `' . $def_elmt->table_join . '___' . $def_elmt->element_name . '`';
+					}
+					else {
+						$this->_elements_default[] = EmundusHelperFiles::orderlistLabelsSelect($def_elmt->tab_name . '.' . $def_elmt->element_name, $element_attribs) . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
 					}
 				}
 				elseif ($def_elmt->element_plugin == 'radiobutton') {

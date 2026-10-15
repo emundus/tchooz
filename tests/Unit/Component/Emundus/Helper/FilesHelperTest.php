@@ -16,6 +16,7 @@ use Joomla\CMS\Menu\SiteMenu;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 
 require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
 
@@ -528,5 +529,77 @@ class FilesHelperTest extends UnitTestCase
 	public function testEvaluatedByConditionWithoutEvaluationStepMatchesNothing(): void
 	{
 		$this->assertSame('FALSE', self::callPrivateMethod($this->helper, 'evaluatedByCondition', [[], [1]]), 'Without step, no file is evaluated by anyone');
+	}
+
+	/**
+	 * @covers EmundusHelperFiles::writeQueryWithOperator
+	 */
+	public function testWriteQueryWithOperatorOnOrderlistMatchesChoicesAtTheirRank(): void
+	{
+		$stored = '"A","C","B"';
+
+		$this->assertTrue($this->orderlistConditionMatches($stored, [['values' => ['A'], 'rank' => 1]]), 'A is ranked first');
+		$this->assertFalse($this->orderlistConditionMatches($stored, [['values' => ['A'], 'rank' => 2]]), 'A is not ranked second');
+		$this->assertTrue($this->orderlistConditionMatches($stored, [['values' => ['B', 'A'], 'rank' => 1]]), 'One of the choices of a criterion is enough');
+		$this->assertTrue($this->orderlistConditionMatches('A,C,B', [['values' => ['B'], 'rank' => 3]]), 'Values stored without quotes are handled');
+		$this->assertFalse($this->orderlistConditionMatches(null, [['values' => ['A'], 'rank' => 1]]), 'A file without value does not match');
+	}
+
+	/**
+	 * @covers EmundusHelperFiles::writeQueryWithOperator
+	 */
+	public function testWriteQueryWithOperatorOnOrderlistCombinesCriteria(): void
+	{
+		$stored   = '"A","C","B"';
+		$criteria = [['values' => ['C'], 'rank' => 2], ['values' => ['C'], 'rank' => 1]];
+
+		$this->assertFalse($this->orderlistConditionMatches($stored, $criteria, '=', 'AND'), 'With AND, every criterion must match');
+		$this->assertTrue($this->orderlistConditionMatches($stored, $criteria, '=', 'OR'), 'With OR, one criterion is enough');
+		$this->assertFalse($this->orderlistConditionMatches($stored, $criteria, '=', 'unknown'), 'An unknown combination falls back to AND');
+	}
+
+	/**
+	 * @covers EmundusHelperFiles::writeQueryWithOperator
+	 */
+	public function testWriteQueryWithOperatorOnOrderlistNegatesTheCondition(): void
+	{
+		$this->assertFalse($this->orderlistConditionMatches('"A","C","B"', [['values' => ['A'], 'rank' => 1]], '!='), 'A is ranked first');
+		$this->assertTrue($this->orderlistConditionMatches('"A","C","B"', [['values' => ['B'], 'rank' => 1]], '!='), 'B is not ranked first');
+		$this->assertTrue($this->orderlistConditionMatches(null, [['values' => ['A'], 'rank' => 1]], '!='), 'A file without value has no choice ranked first');
+	}
+
+	/**
+	 * @covers EmundusHelperFiles::writeQueryWithOperator
+	 */
+	public function testWriteQueryWithOperatorOnOrderlistIgnoresIncompleteCriteria(): void
+	{
+		$orderlist = ['plugin' => ElementPluginEnum::ORDERLIST->value];
+
+		$this->assertSame('1=1', $this->helper->writeQueryWithOperator('t.v', [], '=', ElementPluginEnum::ORDERLIST->value, $orderlist));
+		$this->assertSame('1=1', $this->helper->writeQueryWithOperator('t.v', [['values' => ['A'], 'rank' => ''], ['values' => [], 'rank' => 1], ['values' => 'A', 'rank' => 1], ['values' => [''], 'rank' => 1], 'A'], '=', ElementPluginEnum::ORDERLIST->value, $orderlist));
+		$this->assertTrue($this->orderlistConditionMatches('"A","B"', [['values' => ['B'], 'rank' => 2], ['values' => ['A'], 'rank' => 0]]), 'Only complete criteria are applied');
+		$this->assertFalse($this->orderlistConditionMatches('"A","B"', [['values' => ["A' OR '1'='1"], 'rank' => 1]]), 'Choice values are escaped');
+	}
+
+	/**
+	 * @covers EmundusHelperFiles::orderlistLabelsSelect
+	 */
+	public function testOrderlistLabelsSelectDisplaysOrderedLabels(): void
+	{
+		$attribs = (object) ['sub_options' => (object) ['sub_values' => ['1', '2', '3'], 'sub_labels' => ['Master A', "Master l'B", 'Master C']]];
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$db->setQuery('SELECT ' . EmundusHelperFiles::orderlistLabelsSelect('t.v', $attribs) . ' FROM (SELECT ' . $db->quote('"3","1","2"') . ' AS v) AS t');
+
+		$this->assertSame("Master C, Master A, Master l'B", $db->loadResult());
+	}
+
+	private function orderlistConditionMatches(?string $stored, array $criteria, string $operator = '=', string $andor = 'AND'): bool
+	{
+		$db        = Factory::getContainer()->get('DatabaseDriver');
+		$condition = $this->helper->writeQueryWithOperator('t.v', $criteria, $operator, ElementPluginEnum::ORDERLIST->value, ['plugin' => ElementPluginEnum::ORDERLIST->value], $andor);
+		$db->setQuery('SELECT COUNT(*) FROM (SELECT ' . ($stored === null ? 'NULL' : $db->quote($stored)) . ' AS v) AS t WHERE ' . $condition);
+
+		return (int) $db->loadResult() === 1;
 	}
 }

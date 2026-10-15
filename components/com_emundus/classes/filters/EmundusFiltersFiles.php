@@ -9,6 +9,7 @@ use Joomla\CMS\Log\Log;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 
 class EmundusFiltersFiles extends EmundusFilters
 {
@@ -1075,7 +1076,7 @@ class EmundusFiltersFiles extends EmundusFilters
 							$new_default_filter['default'] = true;
 							if (empty($new_default_filter['value']))
 							{
-								$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
+								$new_default_filter['value'] = match ($new_default_filter['type']) { 'select' => ['all'], ElementPluginEnum::ORDERLIST->value => [], default => '' };
 							}
 							$new_default_filter['andorOperator'] = 'OR';
 							$new_default_filter['operator']      = '=';
@@ -1084,6 +1085,11 @@ class EmundusFiltersFiles extends EmundusFilters
 							{
 								$new_default_filter['operator'] = 'IN';
 								$new_default_filter['values']   = $this->getFabrikElementValuesFromElementId($filter['id'], false);
+							}
+							elseif ($new_default_filter['type'] === ElementPluginEnum::ORDERLIST->value)
+							{
+								$new_default_filter['values'] = $this->getFabrikElementValuesFromElementId($filter['id'], false);
+								$new_default_filter['andorOperator'] = 'AND';
 							}
 							$found = true;
 							break;
@@ -1115,7 +1121,7 @@ class EmundusFiltersFiles extends EmundusFilters
 								$new_default_filter['default'] = true;
 								if (empty($new_default_filter['value']))
 								{
-									$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
+									$new_default_filter['value'] = match ($new_default_filter['type']) { 'select' => ['all'], ElementPluginEnum::ORDERLIST->value => [], default => '' };
 								}
 								$new_default_filter['andorOperator'] = 'OR';
 								$new_default_filter['operator']      = '=';
@@ -1124,6 +1130,11 @@ class EmundusFiltersFiles extends EmundusFilters
 								{
 									$new_default_filter['operator'] = 'IN';
 									$new_default_filter['values']   = $this->getFabrikElementValuesFromElementId($element['id'], false);
+								}
+								elseif ($new_default_filter['type'] === ElementPluginEnum::ORDERLIST->value)
+								{
+									$new_default_filter['values'] = $this->getFabrikElementValuesFromElementId($element['id'], false);
+									$new_default_filter['andorOperator'] = 'AND';
 								}
 								else
 								{
@@ -1224,7 +1235,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				// find filter in filters
 				foreach ($this->filters as $i_filter => $filter) {
 					if ($filter['id'] == $session_filter['id']) {
-						if ($filter['type'] == 'select' && empty($filter['values'])) {
+						if (in_array($filter['type'], ['select', ElementPluginEnum::ORDERLIST->value]) && empty($filter['values'])) {
 							$filter['values'] = $this->getFabrikElementValuesFromElementId($filter['id'], false);
 							$this->filters[$i_filter] = $filter;
 						}
