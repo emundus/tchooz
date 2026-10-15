@@ -22,6 +22,7 @@ class ChoicesAddonConfiguration extends EmundusAddonConfiguration
 	 */
 	public const VISIBLE_STATES = 'visible_states';
 
+	public const REJECTED_VISIBLES = 'rejected_can_be_viewed';
 	/**
 	 * When enabled, choices stay editable outside the phases the choices step is bound to.
 	 */
@@ -57,6 +58,7 @@ class ChoicesAddonConfiguration extends EmundusAddonConfiguration
 				->setHelpText(Text::sprintf('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_VISIBLE_STATES_HELP', implode(', ', $this->getSystemRequiredLabels()))),
 			new ChoiceField('status_when_refused', Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_STATUS_REFUSED_LABEL'), $this->getStatusChoices(), false, false, $configGroup),
 			new ChoiceField('status_when_accepted', Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_STATUS_ACCEPTED_LABEL'), $this->getStatusChoices(), false, false, $configGroup),
+			new BooleanField(self::REJECTED_VISIBLES, Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_REJECTED_VISIBLES_LABEL'), false, $configGroup),
 			new BooleanField(self::APPLICANT_CAN_UPDATE_ANYTIME, Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_APPLICANT_CAN_UPDATE_ANYTIME_LABEL'), false, $configGroup),
 			new BooleanField(self::APPLICANT_CAN_SEE_REASON, Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_APPLICANT_CAN_SEE_REASON'), false, $configGroup),
 			new NumericField(self::DEFAULT_MAX, Text::_('COM_EMUNDUS_CHOICES_ADDON_PARAMETER_DEFAULT_MAX_LABEL'), false, $configGroup),

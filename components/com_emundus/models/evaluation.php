@@ -26,7 +26,10 @@ use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Emails\TagEntity;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\Emails\TagTypeEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Services\Addons\Configurations\ChoicesAddonConfiguration;
 use Tchooz\Traits\TraitDispatcher;
 use Tchooz\Transformers\PHPWord\HtmlListTransformer;
 use Tchooz\Transformers\PHPWord\HtmlStyleTransformer;
@@ -1663,6 +1666,9 @@ class EmundusModelEvaluation extends JModelList
 	 */
 	private function buildEvaluationsListQuery(array $steps = [], int $user_id = 0, array $selected_evaluators = []): array
 	{
+		$addonRepository        = new AddonRepository();
+		$choicesAddon           = $addonRepository->getByName(AddonEnum::CHOICES->value);
+
 		$select   = 'jecc.fnum, jecc.applicant_id, jecc.short_reference, ss.step, ss.value as status, CASE WHEN eu.is_anonym = 1 OR jecc.anonymous = 1 THEN "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" ELSE concat(upper(trim(eu.lastname))," ",eu.firstname) END as name, ss.class as status_class, sp.code, eu.is_anonym, jecc.anonymous,  eir.reference';
 		$group_by = ' GROUP BY jecc.fnum ';
 
@@ -1677,6 +1683,11 @@ class EmundusModelEvaluation extends JModelList
 			'eta'  => 'jos_emundus_tag_assoc',
 			'eir'  => 'jos_emundus_internal_reference',
 		];
+
+		if(!empty($choicesAddon) && $choicesAddon->isActivated())
+		{
+			$already_joined_tables['eccc'] = 'jos_emundus_campaign_candidature_choices';
+		}
 
 		$table = '';
 		if (!empty($steps))
@@ -1754,11 +1765,23 @@ class EmundusModelEvaluation extends JModelList
 			$select .= ', ' . implode(',', $this->_elements_default);
 		}
 
-		$body = ' FROM #__emundus_campaign_candidature as jecc
-					LEFT JOIN #__emundus_campaign_candidature_choices as eccc on eccc.fnum = jecc.fnum
-					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
-					LEFT JOIN #__emundus_setup_campaigns as esc on (esc.id = jecc.campaign_id OR esc.id = eccc.campaign_id)
-					LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
+		$setupCampaignsJoin = 'LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id';
+		if (!empty($choicesAddon) && $choicesAddon->isActivated())
+		{
+			static $rejectedChoicesVisible = null;
+			if ($rejectedChoicesVisible === null)
+			{
+				$rejectedChoicesVisible = $choicesAddon->getParam(ChoicesAddonConfiguration::REJECTED_VISIBLES, 'configuration') == 1;
+			}
+
+			$applicationChoicesJoinCondition = $rejectedChoicesVisible ? 'esc.id = eccc.campaign_id' : '(esc.id = eccc.campaign_id AND eccc.state <> 2)';
+			$setupCampaignsJoin = 'LEFT JOIN #__emundus_campaign_candidature_choices as eccc on eccc.fnum = jecc.fnum LEFT JOIN #__emundus_setup_campaigns as esc on (esc.id = jecc.campaign_id OR '.$applicationChoicesJoinCondition.')';
+		}
+
+		$body   = ' FROM #__emundus_campaign_candidature as jecc
+					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status';
+		$body .= ' ' . $setupCampaignsJoin;
+		$body .= ' LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.id = esc.program_id
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
