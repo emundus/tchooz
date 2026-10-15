@@ -75,6 +75,11 @@ If you want to update a specific component, you can use the following command:
 docker exec -it [web_service_name] php cli/joomla.php tchooz:update -n --component=[component_name]
 ```
 
+To fill the database with sample data (applicants, files, evaluations…), see [fixtures.md](fixtures.md):
+```shell
+docker exec -it [web_service_name] php cli/joomla.php tchooz:fixtures --list
+```
+
 To run an interactive shell in a container
 ```shell
 docker exec -it [web_service_name] /bin/bash

@@ -898,9 +898,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		    $logo_base64 = '';
 		    try
 		    {
-			    $logo = EmundusHelperEmails::getLogo(false,$item->training);
+				$path = JPATH_SITE.'/images/custom/';
+			    $logo = EmundusHelperEmails::getLogo(true,$item->training);
 			    $type = pathinfo($logo, PATHINFO_EXTENSION);
-			    if ($data = file_get_contents($logo))
+			    if ($data = file_get_contents($path.$logo))
 			    {
 				    $logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
 			    }
@@ -1078,9 +1079,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	    $htmldata .= "
 			<style>
 					@page { 
-						margin: 150px 25px; 
+						margin: 115px 25px; 
 					}
-					header { position: fixed; top: -140px; left: 0px; right: 0px; }
+					header { position: fixed; top: -110px; left: 0px; right: 0px; }
 					header hr {
 						border: none;
 						height: 1px;
@@ -1114,7 +1115,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                       padding-left: 16px;
                     }
                     td{
-                    	font-size: 12px;
+                    	font-size: 11px;
+                    	line-height: 0.8;
                     }
                     .pdf-forms{
                    	   border-spacing: 0;
@@ -1157,16 +1159,22 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                        width:70%; 
                        border-right: solid 1px #A4A4A4;
                     }
-                    .pdf-forms td.background-light{
-                       width: auto;
-                    }
                     .pdf-forms tr td[colspan='2']{
                        border-right: solid 1px #A4A4A4;
                     }
                     .pdf-forms tr:last-child td{
                        border-bottom: solid 1px #A4A4A4;
                     }
-                    .pdf-forms tr:last-child td.background-light{
+                    .pdf-forms td.background-light{
+					    border-right: unset !important;
+					}
+					.pdf-forms th.background{
+					    border-right: unset !important;
+					}
+					.pdf-forms th:last-child.background{
+					    border-right: solid 1px #A4A4A4 !important;
+					}
+                    .pdf-forms td:last-child.background-light{
                        border-right: solid 1px #A4A4A4 !important;
                     }
                     .pdf-attachments{
@@ -1530,7 +1538,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     			</script>';
 	    $htmldata .= '</body></html>';
 
-	    $filename = EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . $file_lbl . '.pdf';
+	    $filename = EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . $file_lbl . '_' . rand(1,100000) . '.pdf';
 
 		/** DOMPDF */
 	    $options = new Options();

@@ -38,12 +38,16 @@ use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterStatusChangeDefinition;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagAddDefinition;
 use Tchooz\Enums\Actions\ActionEnum;
+use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Enums\Export\ExportModeEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
+use Tchooz\Services\Addons\Configurations\ChoicesAddonConfiguration;
 
 /**
  * Class EmundusModelFiles
@@ -310,6 +314,20 @@ class EmundusModelFiles extends JModelLegacy
 								Text::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 						}
 						$this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
+					}
+				}
+				elseif ($def_elmt->element_plugin == ElementPluginEnum::ORDERLIST->value) {
+					$element_attribs = json_decode($def_elmt->element_attribs);
+
+					if ($group_params->repeat_group_button == 1) {
+						$this->_elements_default[] = '(
+                                    SELECT GROUP_CONCAT(' . EmundusHelperFiles::orderlistLabelsSelect($def_elmt->table_join . '.' . $def_elmt->element_name, $element_attribs) . ' SEPARATOR " | ")
+                                    FROM ' . $def_elmt->table_join . '
+                                    WHERE ' . $def_elmt->table_join . '.parent_id = ' . $def_elmt->tab_name . '.id
+                                  ) AS `' . $def_elmt->table_join . '___' . $def_elmt->element_name . '`';
+					}
+					else {
+						$this->_elements_default[] = EmundusHelperFiles::orderlistLabelsSelect($def_elmt->tab_name . '.' . $def_elmt->element_name, $element_attribs) . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
 					}
 				}
 				elseif ($def_elmt->element_plugin == 'radiobutton') {
@@ -690,6 +708,9 @@ class EmundusModelFiles extends JModelLegacy
 			$em_other_columns = array();
 		}
 
+		$addonRepository        = new AddonRepository();
+		$choicesAddon           = $addonRepository->getByName(AddonEnum::CHOICES->value);
+
 		$select = 'select jecc.fnum, jecc.short_reference, ss.step, ss.value as status, ss.class as status_class, ' .
 			'CASE WHEN eu.is_anonym = 1 OR jecc.anonymous = 1 THEN "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" ELSE concat(upper(trim(eu.lastname)), " ", eu.firstname) END AS name, ' .
 			'jecc.applicant_id, jecc.campaign_id, eu.is_anonym, jecc.anonymous,  eir.reference ';
@@ -697,7 +718,6 @@ class EmundusModelFiles extends JModelLegacy
 		// prevent double left join on query
 		$already_joined_tables = [
 			'jecc' => 'jos_emundus_campaign_candidature',
-			'eccc' => 'jos_emundus_campaign_candidature_choices',
 			'ss'   => 'jos_emundus_setup_status',
 			'esc'  => 'jos_emundus_setup_campaigns',
 			'escm'  => 'jos_emundus_setup_campaigns_more',
@@ -707,6 +727,11 @@ class EmundusModelFiles extends JModelLegacy
 			'eta'  => 'jos_emundus_tag_assoc',
 			'eir'  => 'jos_emundus_internal_reference',
 		];
+
+		if(!empty($choicesAddon) && $choicesAddon->isActivated())
+		{
+			$already_joined_tables['eccc'] = 'jos_emundus_campaign_candidature_choices';
+		}
 
 		if (in_array('unread_messages', $em_other_columns)) {
 			$already_joined_tables['ec'] = 'jos_emundus_chatroom';
@@ -787,11 +812,24 @@ class EmundusModelFiles extends JModelLegacy
 			$select .= ', ' . implode(',', $this->_elements_default);
 		}
 
+		$setupCampaignsJoin = 'LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id';
+		if (!empty($choicesAddon) && $choicesAddon->isActivated())
+		{
+			static $rejectedChoicesVisible = null;
+			if ($rejectedChoicesVisible === null)
+			{
+				$rejectedChoicesVisible = $choicesAddon->getParam(ChoicesAddonConfiguration::REJECTED_VISIBLES, 'configuration') == 1;
+			}
+
+			$applicationChoicesJoinCondition = $rejectedChoicesVisible ? 'esc.id = eccc.campaign_id' : '(esc.id = eccc.campaign_id AND eccc.state <> 2)';
+			$setupCampaignsJoin = 'LEFT JOIN #__emundus_campaign_candidature_choices as eccc on eccc.fnum = jecc.fnum LEFT JOIN #__emundus_setup_campaigns as esc on (esc.id = jecc.campaign_id OR '.$applicationChoicesJoinCondition.')';
+		}
+
+
 		$query = ' FROM #__emundus_campaign_candidature as jecc
-                    LEFT JOIN #__emundus_campaign_candidature_choices as eccc on eccc.fnum = jecc.fnum
-                    LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
-                    LEFT JOIN #__emundus_setup_campaigns as esc on (esc.id = jecc.campaign_id OR esc.id = eccc.campaign_id)
-                    LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
+                    LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status';
+		$query .= ' ' . $setupCampaignsJoin;
+		$query .= ' LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
                     LEFT JOIN #__emundus_setup_programmes as sp on sp.id = esc.program_id
                     LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
@@ -1373,6 +1411,12 @@ class EmundusModelFiles extends JModelLegacy
 				$shared = $this->_db->execute();
 
 				if ($shared) {
+					if (!class_exists('EmundusHelperAccess'))
+					{
+						require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+					}
+					\EmundusHelperAccess::clearFnumAccessCache();
+
 					// log
 					$query->clear()
 						->select('CONCAT("Groupe ", label)')
@@ -1442,6 +1486,12 @@ class EmundusModelFiles extends JModelLegacy
 				$shared = $this->_db->execute();
 
 				if ($shared) {
+					if (!class_exists('EmundusHelperAccess'))
+					{
+						require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+					}
+					\EmundusHelperAccess::clearFnumAccessCache();
+
 					$query->clear()
 						->select('name')
 						->from($this->_db->quoteName('#__users'))
@@ -1489,6 +1539,12 @@ class EmundusModelFiles extends JModelLegacy
 
 			if($unshared = $this->_db->execute())
 			{
+				if (!class_exists('EmundusHelperAccess'))
+				{
+					require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+				}
+				\EmundusHelperAccess::clearFnumAccessCache();
+
 				$query->clear()
 					->select('name')
 					->from($this->_db->quoteName('#__users'))
@@ -5942,7 +5998,7 @@ class EmundusModelFiles extends JModelLegacy
 						unlink(JPATH_SITE.DS.'tmp'.DS.$application_form_name.'.pdf');
 					}
 
-					$file = $application_form_name.'.pdf';
+					$file = $application_form_name.'_'.rand(1,10000).'.pdf';
 				}
 			}
 
@@ -6267,6 +6323,47 @@ class EmundusModelFiles extends JModelLegacy
 		return $associated_date;
 	}
 
+	/**
+	 * Batch variant of getAssociatedDate(): one query for many fnums instead of one per row.
+	 *
+	 * @param   string[]  $fnums
+	 * @param   int       $user_id
+	 *
+	 * @return array<string,string> Map fnum => associated date (fnums without a date are omitted)
+	 */
+	public function getAssociatedDates(array $fnums, int $user_id): array
+	{
+		$dates = [];
+
+		$fnums = array_values(array_unique(array_filter($fnums)));
+		if (empty($fnums)) {
+			return $dates;
+		}
+
+		$query = $this->_db->getQuery(true);
+
+		try {
+			$quoted_fnums = array_map([$this->_db, 'quote'], $fnums);
+			$query->select($this->_db->quoteName(['fnum', 'time_date']))
+				->from($this->_db->quoteName('#__emundus_users_assoc'))
+				->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $quoted_fnums) . ')')
+				->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user_id))
+				->where($this->_db->quoteName('action_id') . ' = 1')
+				->where($this->_db->quoteName('r') . ' = 1');
+			$this->_db->setQuery($query);
+
+			foreach ($this->_db->loadAssocList() as $row) {
+				if (!empty($row['time_date'])) {
+					$dates[$row['fnum']] = $row['time_date'];
+				}
+			}
+		}
+		catch (Exception $e) {
+			Log::add('Error getting associated dates: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $dates;
+	}
 
 	public function getEvaluationsArray(array $fnums, array $steps_elements, ExportModeEnum $exportMode = ExportModeEnum::GROUP_CONCAT_DISTINCT): array
 	{

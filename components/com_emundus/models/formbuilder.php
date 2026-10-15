@@ -612,7 +612,8 @@ class EmundusModelFormbuilder extends ListModel
 
 			if ($type === 'eval')
 			{
-				$query = "CREATE TABLE IF NOT EXISTS jos_emundus_" . $prid . "_" . $increment . " (
+				$table_name = "jos_emundus_" . $prid . "_" . $increment;
+				$query = "CREATE TABLE IF NOT EXISTS " . $table_name . " (
 		            id int(11) NOT NULL AUTO_INCREMENT,
 		            time_date datetime NULL DEFAULT current_timestamp(),
 		            ccid int(11) NOT NULL,
@@ -620,7 +621,10 @@ class EmundusModelFormbuilder extends ListModel
 		            evaluator int(11) NOT NULL,
 		            updated_by int(11) NOT NULL,
 		            step_id int(11) NOT NULL,
-		            PRIMARY KEY (id)
+		            PRIMARY KEY (id),
+		            KEY " . $table_name . "_ccid_INDEX (ccid),
+		            KEY " . $table_name . "_fnum_INDEX (fnum),
+		            KEY " . $table_name . "_evaluator_INDEX (evaluator)
 		            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE " . $collation;
 			}
 			else

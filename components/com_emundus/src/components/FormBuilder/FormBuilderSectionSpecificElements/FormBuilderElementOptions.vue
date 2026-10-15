@@ -80,6 +80,9 @@
 					:placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_OPTION')"
 				/>
 			</div>
+			<p class="tw-ml-6 tw-mt-1 tw-text-xs tw-text-gray-500">
+				{{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_OPTION_HINT') }}
+			</p>
 		</div>
 	</div>
 </template>

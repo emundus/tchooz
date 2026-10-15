@@ -188,11 +188,12 @@ class Export
 	 * @param   array<ApplicationFileEntity>  $files
 	 * @param   ValueFormatEnum               $format
 	 * @param   bool                          $anonymize_data
+	 * @param   array<string, int[]>          $evaluationRowIds  Evaluation rows to keep, by table. A table left out keeps all its rows.
 	 *
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function getData(int|string $elementId, array $files, ValueFormatEnum $format = ValueFormatEnum::RAW, bool $anonymize_data = false): array
+	public function getData(int|string $elementId, array $files, ValueFormatEnum $format = ValueFormatEnum::RAW, bool $anonymize_data = false, array $evaluationRowIds = []): array
 	{
 		$result = [
 			'label' => '',
@@ -385,6 +386,12 @@ class Export
 							return $file->getFnum();
 						}, $files))) . ')')
 						->group('fnum');
+
+					if (!empty($evaluationRowIds[$element->getDbTableName()]))
+					{
+						$query->where($db->quoteName('id') . ' IN (' . implode(',', array_map('intval', $evaluationRowIds[$element->getDbTableName()])) . ')');
+					}
+
 					$db->setQuery($query);
 					$rowIdsByFnum = $db->loadObjectList('fnum');
 				}

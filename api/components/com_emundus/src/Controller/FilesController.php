@@ -89,13 +89,6 @@ class FilesController extends ApiController
 		return parent::displayList();
 	}
 
-	public function displayItem($id = null)
-	{
-		$item = $this->getModel('file')->getItem($id);
-
-		return parent::displayItem($item);
-	}
-
 	public function submit($fnum = null): static
 	{
 		Log::addLogger(['text_file' => 'com_emundus.api.php'], Log::ALL, ['com_emundus.api']);

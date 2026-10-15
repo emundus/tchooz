@@ -770,10 +770,13 @@ class EmundusControllerExport extends BaseController
 				$currentLang = $settings[AbstractOptionsSchema::LANGUAGE];
 			}
 
-			$fnums = $this->input->post->getString('fnums');
+			// The evaluation rows were picked along with the stored fnums: posted fnums carry none.
+			$evaluationRowIds = [];
+			$fnums            = $this->input->post->getString('fnums');
 			if (empty($fnums))
 			{
-				$fnums = $this->app->getUserState('com_emundus.files.export.fnums');
+				$fnums            = $this->app->getUserState('com_emundus.files.export.fnums');
+				$evaluationRowIds = $this->app->getUserState('com_emundus.files.export.evaluation_row_ids', []);
 			}
 			// Filter fnums that we can actually export
 			if (!is_array($fnums))
@@ -863,13 +866,14 @@ class EmundusControllerExport extends BaseController
 			else
 			{
 				$parameters = array_merge($parameters, [
-					'export_version' => $exportVersion,
-					'elements'       => $elements ?? [],
-					'headers'        => $headers ?? [],
-					'synthesis'      => $synthesis ?? [],
-					'attachments'    => $attachments ?? [],
-					'settings'       => $settings,
-					'lang'           => $currentLang,
+					'export_version'     => $exportVersion,
+					'elements'           => $elements ?? [],
+					'headers'            => $headers ?? [],
+					'synthesis'          => $synthesis ?? [],
+					'attachments'        => $attachments ?? [],
+					'settings'           => $settings,
+					'lang'               => $currentLang,
+					'evaluation_row_ids' => $evaluationRowIds,
 				]);
 
 				if (!empty($zipParameters))

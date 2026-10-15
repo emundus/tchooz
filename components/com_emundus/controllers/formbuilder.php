@@ -28,6 +28,7 @@ use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Services\Calculation\CalculationTemplateRegistry;
+use Tchooz\Services\Fabrik\ReadonlyElementStorage;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
 
@@ -196,6 +197,11 @@ class EmundusControllerFormbuilder extends EmundusController
 		if (!$this->m_formbuilder->UpdateParams($element, $this->user->id))
 		{
 			throw new RuntimeException(Text::_('ELEMENT_PARAMS_NOT_UPDATED'));
+		}
+
+		if (($element['plugin'] ?? '') === ElementPluginEnum::EMUNDUSREADONLY->value)
+		{
+			(new ReadonlyElementStorage())->sync((int) $element['id']);
 		}
 
 		return EmundusResponse::ok(true, Text::_('ELEMENT_PARAMS_UPDATED'));
@@ -1260,7 +1266,12 @@ class EmundusControllerFormbuilder extends EmundusController
 		$elementId = $this->input->getInt('element_id', 0);
 		$elementFormId = !empty($elementId) ? EmundusHelperFabrik::getElementById($elementId)->form_id : 0;
 
-		$formIds   = EmundusHelperFabrik::getFabrikFormsListIntendedToFiles();
+		$formIds = EmundusHelperFabrik::getFabrikFormsListIntendedToFiles();
+		$profileFormId = EmundusHelperMenu::getProfileFormId();
+		if (!empty($profileFormId))
+		{
+			$formIds[] = $profileFormId;
+		}
 		$formIds = array_diff($formIds, [$currentElementFormId]);
 
 		$excluded  = [

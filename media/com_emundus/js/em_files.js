@@ -860,7 +860,14 @@ function getUserCheckArray() {
                 fnum = $(this).attr('id').split('_')[0];
                 cid = parseInt(fnum.substr(14, 7));
                 sid = parseInt($(this).attr('data-applicant_id'));
-                fnums.push({fnum: fnum, cid: cid, sid:sid});
+                // Evaluation view only: each row is one evaluation of the file.
+                fnums.push({
+                    fnum: fnum,
+                    cid: cid,
+                    sid: sid,
+                    evaluation_id: parseInt($(this).attr('data-evalid')) || 0,
+                    step_id: parseInt($(this).attr('data-step_id')) || 0,
+                });
             });
         }
     }
@@ -4387,7 +4394,7 @@ $(document).ready(function() {
                 // Replace by fetch
                 fetch(url, {
                     method: 'POST',
-                    body: JSON.stringify({fnums: fnums}),
+                    body: JSON.stringify({fnums: fnums, view: $('#view').val()}),
                     headers: {
                         'Content-Type': 'application/json'
                     },

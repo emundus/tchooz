@@ -74,6 +74,12 @@ class FileDataConditionResolver implements ConditionTargetResolverInterface
 			$parameters[] = new YesnoField('anonymous', Text::_('COM_EMUNDUS_IS_ANONYMOUS'));
 		}
 
+		$customReferenceAddon = $addonRepository->getByName(AddonEnum::CUSTOM_REFERENCE_FORMAT->value);
+		if ($customReferenceAddon->isActivated())
+		{
+			$parameters[] = new StringField('custom_reference', Text::_('COM_EMUNDUS_REFERENCE_CUSTOM'), false);
+		}
+
 		return $parameters;
 	}
 
@@ -100,6 +106,15 @@ class FileDataConditionResolver implements ConditionTargetResolverInterface
 					$db->setQuery($query);
 					$value = $db->loadColumn();
 					break;
+				case 'custom_reference':
+					$query->select($db->quoteName('eir.reference'))
+						->from($db->quoteName('#__emundus_internal_reference', 'eir'))
+						->innerJoin($db->quoteName($this->getTableName(self::class), 'ecc') . ' ON ' . $db->quoteName('ecc.id') . ' = ' . $db->quoteName('eir.ccid'))
+						->where($db->quoteName('ecc.fnum') . ' = ' . $db->quote($fnum))
+						->where($db->quoteName('eir.active') . ' = 1');
+					$db->setQuery($query);
+					$value = $db->loadResult();
+					break;
 				default:
 					$query->select($db->quoteName($fieldName))
 						->from($db->quoteName($this->getTableName(self::class)))
@@ -121,6 +136,9 @@ class FileDataConditionResolver implements ConditionTargetResolverInterface
 		{
 			case 'id_tag':
 				$columns[] =  'eta.id_tag';
+				break;
+			case 'custom_reference':
+				$columns[] = 'eir.reference';
 				break;
 			default:
 				$columns[] = $this->getTableAlias(self::class) . '.' . $field;
@@ -147,6 +165,18 @@ class FileDataConditionResolver implements ConditionTargetResolverInterface
 					'fnum',
 					$this->getTableAlias(self::class),
 					'INNER'
+				);
+				break;
+			case 'custom_reference':
+				// LEFT so that files without a custom reference still match "is empty" conditions
+				$joins[] = new TableJoin(
+					'#__emundus_internal_reference',
+					'eir',
+					'ccid',
+					'id',
+					$this->getTableAlias(self::class),
+					'LEFT',
+					'eir.active = 1'
 				);
 				break;
 			default:

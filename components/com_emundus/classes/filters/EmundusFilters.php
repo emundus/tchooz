@@ -3,6 +3,8 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
+use Tchooz\Services\Fabrik\ReadonlyElementStorage;
 
 class EmundusFilters
 {
@@ -67,6 +69,8 @@ class EmundusFilters
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 
+			$fieldCalcTypes = $this->resolveFieldCalcElementTypes($elements, $db);
+
 			foreach($elements as $element) {
                 $label = strip_tags(Text::_($element['label']));
 				$label = !empty($label) ? $label : 'ELEMENT ' .  $element['id'];
@@ -116,6 +120,11 @@ class EmundusFilters
 						$filter['values'] = [];
 						$filter['operator'] = 'IN';
 						break;
+					case ElementPluginEnum::ORDERLIST->value:
+						$filter['type'] = ElementPluginEnum::ORDERLIST->value;
+						$filter['values'] = [];
+						$filter['value'] = [];
+						break;
 					case 'yesno':
 						$filter['type'] = 'select';
 						$filter['values'] = [
@@ -133,82 +142,26 @@ class EmundusFilters
 						$filter['type'] = 'time';
 						$filter['value'] = ['', ''];
 						break;
+					case 'emundusreadonly':
+						if ((new ReadonlyElementStorage())->getColumnTypeById((int) $element['id'])->isDate())
+						{
+							$filter['type'] = 'date';
+							$filter['value'] = ['', ''];
+						}
+						else
+						{
+							$filter['operator'] = 'LIKE';
+						}
+						break;
 					case 'field':
 					case 'calc':
-						$found_from_cache = false;
-						if ($this->h_cache->isEnabled()) {
-							$elements_filters_type = $this->h_cache->get('em-filters-elements-type');
-							if (empty($elements_filters_type)) {
-								$elements_filters_type = [];
-							}
-
-							if (!empty($elements_filters_type) && !empty($elements_filters_type[$element['id']])) {
-								$filter['type'] = $elements_filters_type[$element['id']];
-
-								switch($filter['type']) {
-									case 'number':
-										break;
-									default:
-										$filter['operator'] = 'LIKE';
-										break;
-								}
-
-								$found_from_cache = true;
-							}
-						}
-
-						if (!$found_from_cache) {
-							// field and calc maybe are integers or floats
-							// check sql column type of element and set type accordingly
-							$query->clear()
-								->select('jfl.db_table_name, jfe.name')
-								->from('jos_fabrik_elements as jfe')
-								->leftJoin('jos_fabrik_formgroup as jffg ON jffg.group_id = jfe.group_id')
-								->leftJoin('jos_fabrik_lists as jfl ON jfl.form_id = jffg.form_id')
-								->where('jfe.id = ' . $element['id']);
-
-							try {
-								$db->setQuery($query);
-								$table_infos = $db->loadAssoc();
-							} catch (Exception $e) {
-								Log::add('Failed to get infos from fabrik element id ' . $element['id'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
-							}
-
-							if (!empty($table_infos)) {
-								$query->clear()
-									->select('DATA_TYPE')
-									->from('INFORMATION_SCHEMA.COLUMNS')
-									->where('table_name = ' . $db->quote($table_infos['db_table_name']))
-									->where('column_name = ' . $db->quote($table_infos['name']));
-
-								try {
-									$db->setQuery($query);
-									$column_type = $db->loadResult();
-
-									switch($column_type) {
-										case 'int':
-										case 'tinyint':
-										case 'smallint':
-										case 'mediumint':
-										case 'bigint':
-										case 'decimal':
-										case 'float':
-										case 'double':
-											$filter['type'] = 'number';
-											break;
-										default:
-											$filter['type'] = 'text';
-											$filter['operator'] = 'LIKE';
-											break;
-									}
-
-									if ($this->h_cache->isEnabled()) {
-										$elements_filters_type[$element['id']] = $filter['type'];
-										$this->h_cache->set('em-filters-elements-type', $elements_filters_type);
-									}
-								} catch (Exception $e) {
-									Log::add('Failed to get column type from table ' . $table_infos['db_table_name'] . ' and column ' . $table_infos['name'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
-								}
+						// Type (number vs text) is resolved in one batch pass before the loop — see
+						// resolveFieldCalcElementTypes() — instead of 2 queries per element. Elements whose
+						// table/column cannot be resolved keep the defaults (text, '='), as before.
+						if (array_key_exists($element['id'], $fieldCalcTypes)) {
+							$filter['type'] = $fieldCalcTypes[$element['id']];
+							if ($fieldCalcTypes[$element['id']] !== 'number') {
+								$filter['operator'] = 'LIKE';
 							}
 						}
 
@@ -226,6 +179,109 @@ class EmundusFilters
 		}
 
 		return $created_filters;
+	}
+
+	/**
+	 * Resolves the filter type (number|text) for every field/calc element in TWO queries total,
+	 * instead of two queries per element. Only elements whose table/column resolve are returned,
+	 * so unresolved ones keep their caller defaults. Reuses the persistent cache when enabled.
+	 *
+	 * @param array $elements
+	 * @param       $db
+	 *
+	 * @return array<int,string> element id => 'number' | 'text'
+	 */
+	protected function resolveFieldCalcElementTypes(array $elements, $db): array
+	{
+		$types = [];
+
+		$ids = [];
+		foreach ($elements as $element) {
+			if (in_array($element['plugin'], ['field', 'calc'], true) && !empty($element['id'])) {
+				$ids[] = (int) $element['id'];
+			}
+		}
+		$ids = array_values(array_unique($ids));
+		if (empty($ids)) {
+			return $types;
+		}
+
+		$cached = $this->h_cache->isEnabled() ? $this->h_cache->get('em-filters-elements-type') : [];
+		$cached = is_array($cached) ? $cached : [];
+
+		$to_resolve = [];
+		foreach ($ids as $id) {
+			if (!empty($cached[$id])) {
+				$types[$id] = $cached[$id];
+			} else {
+				$to_resolve[] = $id;
+			}
+		}
+		if (empty($to_resolve)) {
+			return $types;
+		}
+
+		// One query: element id => (table, column).
+		$query = $db->getQuery(true);
+		$query->select('jfe.id, jfl.db_table_name, jfe.name')
+			->from('jos_fabrik_elements as jfe')
+			->leftJoin('jos_fabrik_formgroup as jffg ON jffg.group_id = jfe.group_id')
+			->leftJoin('jos_fabrik_lists as jfl ON jfl.form_id = jffg.form_id')
+			->where('jfe.id IN (' . implode(',', $to_resolve) . ')');
+
+		$element_columns = [];
+		$tables          = [];
+		try {
+			$db->setQuery($query);
+			foreach ($db->loadAssocList() ?: [] as $row) {
+				if (!empty($row['db_table_name']) && !empty($row['name'])) {
+					$element_columns[(int) $row['id']] = [$row['db_table_name'], $row['name']];
+					$tables[$row['db_table_name']]     = true;
+				}
+			}
+		} catch (Exception $e) {
+			Log::add('Failed to batch resolve fabrik element tables: ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+		}
+
+		// One query: column data types across all involved tables.
+		$column_types = [];
+		if (!empty($tables)) {
+			$query->clear()
+				->select('TABLE_NAME, COLUMN_NAME, DATA_TYPE')
+				->from('INFORMATION_SCHEMA.COLUMNS')
+				->where('TABLE_SCHEMA = DATABASE()')
+				->where('TABLE_NAME IN (' . implode(',', array_map([$db, 'quote'], array_keys($tables))) . ')');
+
+			try {
+				$db->setQuery($query);
+				foreach ($db->loadAssocList() ?: [] as $row) {
+					$column_types[$row['TABLE_NAME'] . '.' . $row['COLUMN_NAME']] = $row['DATA_TYPE'];
+				}
+			} catch (Exception $e) {
+				Log::add('Failed to batch resolve fabrik column types: ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+			}
+		}
+
+		$numeric_types = ['int', 'tinyint', 'smallint', 'mediumint', 'bigint', 'decimal', 'float', 'double'];
+		foreach ($to_resolve as $id) {
+			if (!isset($element_columns[$id])) {
+				// Table/column unresolved: leave to the caller defaults, exactly as before.
+				continue;
+			}
+
+			[$table, $column] = $element_columns[$id];
+			$data_type        = $column_types[$table . '.' . $column] ?? null;
+			$type             = in_array($data_type, $numeric_types, true) ? 'number' : 'text';
+
+			$types[$id]  = $type;
+			$cached[$id] = $type;
+		}
+
+		if ($this->h_cache->isEnabled()) {
+			$this->h_cache->set('em-filters-elements-type', $cached);
+		}
+
+		return $types;
 	}
 
 	protected function getAllAssociatedElements($element_id): array
@@ -392,6 +448,7 @@ class EmundusFilters
 			case 'dropdown':
 			case 'radiobutton':
 			case 'checkbox':
+			case ElementPluginEnum::ORDERLIST->value:
 				if (!empty($element['params'])) {
 					$params = json_decode($element['params'], true);
 					if (!empty($params['sub_options'])) {

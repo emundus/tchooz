@@ -477,7 +477,8 @@ class ExcelService extends Export implements ExportInterface
 							}
 
 							$elementId = $elementIds[$i];
-							$data = $this->getData($elementId, $files);
+							$evaluationRowIds = $this->options->getEvaluationRowIds();
+							$data             = $this->getData($elementId, $files, evaluationRowIds: $evaluationRowIds);
 
 							// evaluator column
 							if ($displayEvaluatorName && !empty($data['is_evaluation']) && !empty($data['db_table_name']))
@@ -495,6 +496,12 @@ class ExcelService extends Export implements ExportInterface
 										->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('d.evaluator') . ' = ' . $db->quoteName('u.id'))
 										->where($db->quoteName('d.fnum') . ' = ' . $db->quote($file->getFnum()))
 										->order('d.evaluator ASC, d.id ASC');
+
+									// Same rows as the values (Export::getData), or the pivot pairs them with the wrong evaluator.
+									if (!empty($evaluationRowIds[$data['db_table_name']]))
+									{
+										$query->where($db->quoteName('d.id') . ' IN (' . implode(',', $evaluationRowIds[$data['db_table_name']]) . ')');
+									}
 
 									$db->setQuery($query);
 									$evaluatorsName = $db->loadColumn();

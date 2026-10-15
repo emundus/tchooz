@@ -43,12 +43,16 @@ class PaymentRepository
 	 * @deprecated
 	 * @var int $payment_step_type
 	 */
-	private int $payment_step_type = 0;
+	private static int $payment_step_type = 0;
 
 	/**
+	 * Payment step-type config is global and immutable within a request. Kept static so the triplet
+	 * of lookups (action→type, type-by-code 'payment', its child types) runs once per request instead
+	 * of on every `new PaymentRepository()` — which StepEntity::isPaymentStep() does per step.
+	 *
 	 * @var array<StepTypeEntity> $paymentStepTypes
 	 */
-	private array $paymentStepTypes = [];
+	private static array $paymentStepTypes = [];
 
 	private \EmundusHelperCache $h_cache;
 
@@ -96,24 +100,24 @@ class PaymentRepository
 	 */
 	public function getPaymentStepTypes(): array
 	{
-		if (empty($this->paymentStepTypes))
+		if (empty(self::$paymentStepTypes))
 		{
 			$stepTypeRepository = new StepTypeRepository();
 			$paymentStepType = $stepTypeRepository->getStepTypeByCode('payment');
 			if (!empty($paymentStepType))
 			{
-				$this->paymentStepTypes[] = $paymentStepType;
+				self::$paymentStepTypes[] = $paymentStepType;
 				$subStepTypes = $stepTypeRepository->getChildStepTypes($paymentStepType->getId());
 
 				foreach ($subStepTypes as $subStepType)
 				{
 					assert($subStepType instanceof StepTypeEntity);
-					$this->paymentStepTypes[] = $subStepType;
+					self::$paymentStepTypes[] = $subStepType;
 				}
 			}
 		}
 
-		return $this->paymentStepTypes;
+		return self::$paymentStepTypes;
 	}
 
 	/**
@@ -138,6 +142,11 @@ class PaymentRepository
 	 */
 	private function setPaymentStepTypeId(): void
 	{
+		if (!empty(self::$payment_step_type))
+		{
+			return;
+		}
+
 		$payment_action_id = $this->getActionId();
 
 		$query = $this->db->createQuery();
@@ -147,7 +156,7 @@ class PaymentRepository
 			->where('esa.id = ' . $this->db->quote($payment_action_id));
 
 		$this->db->setQuery($query);
-		$this->payment_step_type = (int)$this->db->loadResult();
+		self::$payment_step_type = (int)$this->db->loadResult();
 	}
 
 	/**
@@ -156,7 +165,7 @@ class PaymentRepository
 	 */
 	public function getPaymentStepTypeId(): int
 	{
-		return $this->payment_step_type;
+		return self::$payment_step_type;
 	}
 
 	/**
