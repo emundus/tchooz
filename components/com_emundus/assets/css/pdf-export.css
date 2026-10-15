@@ -9,14 +9,17 @@
 * {
     font-family: Inter, Arial, sans-serif;
 }
-header { position: fixed; right: 0;width: 100%}
+header { position: fixed; right: 0;left: 0;width: 100%; }
 header hr {
     border: none;
     height: 1px;
     background-color: #A4A4A4;
 }
-header table {
+header table td {
     text-align: right;
+}
+header table td.header-logo-cell {
+    text-align: left;
 }
 .page-break { page-break-before: always; }
 hr {
@@ -46,7 +49,8 @@ h3.group{
     padding-left: 16px;
 }
 td{
-    font-size: 12px;
+    font-size: 11px;
+    line-height: 0.8;
 }
 .pdf-forms{
     border-spacing: 0;
@@ -89,16 +93,22 @@ table.pdf-forms{
     width:70%;
     border-right: solid 1px #A4A4A4;
 }
-.pdf-forms td.background-light{
-    width: auto;
-}
 .pdf-forms tr td[colspan='2']{
     border-right: solid 1px #A4A4A4;
 }
 .pdf-forms tr:last-child td{
     border-bottom: solid 1px #A4A4A4;
 }
-.pdf-forms tr:last-child td.background-light{
+.pdf-forms td.background-light{
+    border-right: unset !important;
+}
+.pdf-forms th.background{
+    border-right: unset !important;
+}
+.pdf-forms th:last-child.background{
+    border-right: solid 1px #A4A4A4 !important;
+}
+.pdf-forms td:last-child.background-light{
     border-right: solid 1px #A4A4A4 !important;
 }
 .pdf-attachments{
@@ -433,4 +443,5 @@ table.pdf-forms{
     max-width: 200px;
     white-space: break-spaces;
     color: white;
+    line-height: 1.2;
 }
