@@ -11,7 +11,6 @@
 namespace Joomla\Component\Emundus\Api\View\Transactions;
 
 use Joomla\CMS\MVC\View\JsonApiView as BaseApiView;
-use Joomla\Component\Emundus\Administrator\Model\TransactionModel;
 use Joomla\Component\Emundus\Api\Serializer\EmundusSerializer;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -89,13 +88,5 @@ class JsonapiView extends BaseApiView
 	public function displayList(?array $items = null)
 	{
 		return parent::displayList();
-	}
-
-	public function displayItem($item = null)
-	{
-		$model = new TransactionModel();
-		$item = $model->getItem();
-
-		return parent::displayItem($item);
 	}
 }

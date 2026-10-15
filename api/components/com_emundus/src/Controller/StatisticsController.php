@@ -54,12 +54,4 @@ class StatisticsController extends ApiController
 	{
 		return parent::displayList();
 	}
-	
-
-	public function displayItem($id = null)
-	{
-		$item = $this->getModel('statistic')->getItem($id);
-
-		return parent::displayItem($item);
-	}
 }
