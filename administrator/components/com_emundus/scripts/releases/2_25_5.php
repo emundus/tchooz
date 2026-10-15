@@ -11,6 +11,9 @@
 namespace scripts;
 
 use EmundusHelperUpdate;
+use Tchooz\Enums\Addons\AddonEnum;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Services\Addons\Configurations\ChoicesAddonConfiguration;
 
 class Release2_25_5Installer extends ReleaseInstaller
 {
@@ -30,6 +33,7 @@ class Release2_25_5Installer extends ReleaseInstaller
 			$this->tasks[] = EmundusHelperUpdate::disableEmundusPlugins('emunduswaitingroom', 'system');
 
 			$this->indexEvaluationTables();
+			$this->updateChoicesConfiguration();
 
 			$result['status'] = !in_array(false, $this->tasks);
 		}
@@ -74,6 +78,27 @@ class Release2_25_5Installer extends ReleaseInstaller
 				if (isset($columns[$column]) && !preg_match('/text|blob/i', $columns[$column]))
 				{
 					$this->tasks[] = EmundusHelperUpdate::addColumnIndex($table, $column)['status'];
+				}
+			}
+		}
+	}
+
+	private function updateChoicesConfiguration(): void
+	{
+		$addonRepository = new AddonRepository();
+		$choicesAddon = $addonRepository->getByName(AddonEnum::CHOICES->value);
+		if(!empty($choicesAddon))
+		{
+			$rejectedVisiblesParameter = $choicesAddon->getParam(ChoicesAddonConfiguration::REJECTED_VISIBLES, 'configuration');
+			if(is_null($rejectedVisiblesParameter))
+			{
+				$choicesAddonParams = $choicesAddon->getParams();
+				if(isset($choicesAddonParams['configuration']))
+				{
+					$choicesAddonParams['configuration'][ChoicesAddonConfiguration::REJECTED_VISIBLES] = 1;
+					$choicesAddon->setParams($choicesAddonParams);
+
+					$this->tasks[] = $addonRepository->flush($choicesAddon);
 				}
 			}
 		}
