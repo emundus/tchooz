@@ -40,6 +40,7 @@ use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Profile\ProfileRepository;
+use Tchooz\Services\Fabrik\ReadonlyElementStorage;
 
 /**
  * Emundus Fabrik Helper
@@ -3454,6 +3455,17 @@ class EmundusHelperFabrik
 		$isRaw = $return === ValueFormatEnum::RAW;
 		$params      = json_decode($fabrik_element['params']);
 		$groupParams = json_decode($fabrik_element['group_params']);
+
+		// A read-only element stored in a date column holds its source raw value, formatted the way the source does
+		if ($plugin === ElementPluginEnum::EMUNDUSREADONLY)
+		{
+			$dateSource = (new ReadonlyElementStorage())->getDateSource((int) $fabrik_element['id']);
+			if ($dateSource !== null)
+			{
+				$plugin = $dateSource->getPlugin();
+				$params = $dateSource->getParams();
+			}
+		}
 
 		if (self::$sharedFabrikRepository === null)
 		{

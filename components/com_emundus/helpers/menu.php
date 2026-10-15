@@ -517,6 +517,34 @@ class EmundusHelperMenu
 		return (int) $matches[1];
 	}
 
+	/**
+	 * The fabrik form behind the applicant profile space, reached through the "mon-profil" menu.
+	 */
+	public static function getProfileFormId(): ?int
+	{
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('link'))
+			->from($db->quoteName('#__menu'))
+			->where($db->quoteName('alias') . ' = ' . $db->quote('mon-profil'))
+			->where($db->quoteName('published') . ' = 1')
+			->where($db->quoteName('client_id') . ' = 0');
+
+		try
+		{
+			$db->setQuery($query);
+
+			return self::getFormIdFromLink($db->loadResult());
+		}
+		catch (Exception $e)
+		{
+			Log::add('Failed to get profile form id: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+
+			return null;
+		}
+	}
+
 	public static function getSpecialCharacters(): array
 	{
 		return array('=', '&', ',', '#', '_', '*', ';', '!', '?', ':', '+', '$', '\'', ' ', '£', ')', '(', '@', '%');
