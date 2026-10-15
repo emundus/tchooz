@@ -28,6 +28,7 @@ use Tchooz\Entities\Actions\GroupAccessEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterStatusChangeDefinition;
 use Tchooz\Enums\CrudEnum;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Entities\Groups\GroupEntity;
 use Tchooz\Exception\EmundusException;
 use Tchooz\Repositories\Actions\ActionRepository;
@@ -1098,9 +1099,9 @@ class EmundusHelperEvents
 					$elements = array_merge($group->getPublishedElements(), $elements);
 				}
 
-				// Remove parent_id element
-				$elements = array_filter($elements, function ($element) use ($table) {
-					return $element->getElement()->name !== 'parent_id';
+				// Remove parent_id and read-only elements
+				$elements = array_filter($elements, function ($element) {
+					return $element->getElement()->name !== 'parent_id' && $element->getElement()->plugin !== ElementPluginEnum::EMUNDUSREADONLY->value;
 				});
 
 				// Check if data stored in session
@@ -1254,7 +1255,7 @@ class EmundusHelperEvents
 									foreach ($groups as $group)
 									{
 										$group_params = json_decode($group->gparams);
-										if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1 && !in_array($group->name, ['id', 'parent_id', 'fnum', 'user', 'date_time']))
+										if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1 && !in_array($group->name, ['id', 'parent_id', 'fnum', 'user', 'date_time']) && $group->plugin !== ElementPluginEnum::EMUNDUSREADONLY->value)
 										{
 											$query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id = ' . $group->group_id . ' AND table_key LIKE "id" AND table_join_key LIKE "parent_id"';
 											$db->setQuery($query);

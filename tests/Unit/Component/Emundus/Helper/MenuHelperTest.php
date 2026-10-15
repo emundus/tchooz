@@ -538,6 +538,28 @@ class MenuHelperTest extends UnitTestCase
 	}
 
 	/**
+	 * @covers EmundusHelperMenu::getProfileFormId
+	 */
+	public function testGetProfileFormId_WhenMonProfilMenuExists_ReturnsItsFormId(): void
+	{
+		$query = $this->db->getQuery(true)
+			->select('link')
+			->from('#__menu')
+			->where('alias = ' . $this->db->quote('mon-profil'))
+			->where('published = 1')
+			->where('client_id = 0');
+		$this->db->setQuery($query);
+		$link = $this->db->loadResult();
+		if (empty($link))
+		{
+			$this->markTestSkipped('No published "mon-profil" menu on this platform');
+		}
+
+		$this->assertSame(EmundusHelperMenu::getFormIdFromLink($link), EmundusHelperMenu::getProfileFormId());
+		$this->assertNotNull(EmundusHelperMenu::getProfileFormId());
+	}
+
+	/**
 	 * @covers EmundusHelperMenu::getLanguageSefPrefix
 	 */
 	public function testGetLanguageSefPrefixIsDeterministic(): void

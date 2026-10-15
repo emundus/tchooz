@@ -10,7 +10,7 @@
  *  - The source element id is stored as an integer reference.
  *  - The source element must belong to a form whose underlying table
  *    contains an `fnum` column (candidature / gestion) or to the profile
- *    table when `source_category = profile`.
+ *    table (#__emundus_users), read for the applicant owning the fnum.
  *  - Access is checked at render time via EmundusHelperAccess::asAccessAction
  *    on the current fnum, and never from the payload alone.
  *
@@ -24,21 +24,26 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
-use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Enums\Export\ExportModeEnum;
+use Tchooz\Enums\Fabrik\ReadonlyStorageTypeEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
+use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Services\Automation\Condition\FormDataConditionResolver;
+use Tchooz\Services\Fabrik\ReadonlyElementStorage;
 
 require_once JPATH_SITE . '/components/com_emundus/helpers/access.php';
+require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
 
 class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 {
 	protected $fieldDesc = 'TEXT';
+
+	private ?ReadonlyStorageTypeEnum $storageType = null;
 
 	public function __construct(&$subject, $config = array())
 	{
@@ -62,9 +67,56 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 		$displayData->name        = $this->getHTMLName($repeatCounter);
 		$displayData->value       = $this->getFormattedValue($data, (int) $repeatCounter);
 		$displayData->rawValue    = $this->getRawValue($data, (int) $repeatCounter);
+		$displayData->storedValue = $this->getStorageType()->isDate() ? (string) $displayData->rawValue : $displayData->value;
 		$displayData->placeholder = (string) $params->get('empty_placeholder', '');
 
 		return $layout->render($displayData);
+	}
+
+	/**
+	 * The column type is kept in sync by ReadonlyElementStorage only, so Fabrik admin never proposes to alter it.
+	 */
+	public function getFieldDescription()
+	{
+		return $this->getStorageType()->value;
+	}
+
+	/**
+	 * A date column only accepts a valid date or NULL: the posted value is the source raw value.
+	 */
+	public function storeDatabaseFormat($val, $data)
+	{
+		$storageType = $this->getStorageType();
+		if (!$storageType->isDate())
+		{
+			return parent::storeDatabaseFormat($val, $data);
+		}
+
+		if (is_array($val))
+		{
+			$val = reset($val);
+		}
+
+		$val = trim((string) $val);
+		if ($val === '')
+		{
+			return null;
+		}
+
+		$format = $storageType === ReadonlyStorageTypeEnum::DATE ? 'Y-m-d' : 'Y-m-d H:i:s';
+		$date   = DateTime::createFromFormat('!Y-m-d H:i:s', $val) ?: DateTime::createFromFormat('!Y-m-d', $val);
+
+		return $date !== false ? $date->format($format) : null;
+	}
+
+	private function getStorageType(): ReadonlyStorageTypeEnum
+	{
+		if ($this->storageType === null)
+		{
+			$this->storageType = (new ReadonlyElementStorage())->getColumnTypeById((int) $this->getId());
+		}
+
+		return $this->storageType;
 	}
 
 	public function renderListData($data, stdClass &$thisRow, $opts = [])
@@ -161,18 +213,30 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 			return '';
 		}
 
-		if (!$this->isTableAllowed($fabrikElement->getDbTableName()))
+		$sourceTable     = $fabrikElement->getDbTableName();
+		$isProfileSource = $sourceTable === (new EmundusUserRepository(false))->getTableName(EmundusUserRepository::class);
+		if (!$isProfileSource && !$this->isTableAllowed($sourceTable))
 		{
-			Log::add('access DENIED for source ' . $sourceId . ' on fnum ' . $fnum . ': table ' . $fabrikElement->getDbTableName() . ' is not allowed', Log::WARNING, 'com_emundus.fabrik.readonly');
+			Log::add('access DENIED for source ' . $sourceId . ' on fnum ' . $fnum . ': table ' . $sourceTable . ' is not allowed', Log::WARNING, 'com_emundus.fabrik.readonly');
 			return '';
+		}
+
+		$applicantId = null;
+		if ($isProfileSource)
+		{
+			$applicantId = EmundusHelperFiles::getApplicantIdFromFileId($fnum, 'fnum');
+			if (empty($applicantId))
+			{
+				return '';
+			}
 		}
 
 		if ($adaptToRepetitions)
 		{
-			return $this->getRepetitionValue($fabrikElement, $fnum, $repeatCounter, $format);
+			return $this->getRepetitionValue($fabrikElement, $fnum, $applicantId, $repeatCounter, $format);
 		}
 
-		$context = new ActionTargetEntity($user, $fnum);
+		$context = empty($applicantId) ? new ActionTargetEntity($user, $fnum) : new ActionTargetEntity($user, null, $applicantId);
 		$fabrikForm = $fabrikRepository->getFormFromElementId($sourceId);
 		$fieldName = $fabrikForm->getId() . '.' . $sourceId;
 
@@ -192,8 +256,9 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 	 * Pick the value at $repeatCounter from a source element living in a joined
 	 * repeating group. Uses LEFT_JOIN export mode so the helper returns the
 	 * per-repetition list instead of a CSV string.
+	 * A profile source is keyed by the applicant id instead of the fnum.
 	 */
-	private function getRepetitionValue($fabrikElement, string $fnum, int $repeatCounter, ValueFormatEnum $format = ValueFormatEnum::FORMATTED): string
+	private function getRepetitionValue($fabrikElement, string $fnum, ?int $applicantId, int $repeatCounter, ValueFormatEnum $format = ValueFormatEnum::FORMATTED): string
 	{
 		try
 		{
@@ -204,14 +269,14 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 
 			$values = (new \EmundusHelperFabrik())->getFabrikElementValues(
 				$fabrikElement->toArray(false),
-				[$fnum],
+				empty($applicantId) ? [$fnum] : [],
 				0,
 				$format,
-				0,
+				$applicantId ?? 0,
 				ExportModeEnum::LEFT_JOIN
 			);
 
-			$bag = $values[$fabrikElement->getId()][$fnum]['val'] ?? null;
+			$bag = $values[$fabrikElement->getId()][$applicantId ?? $fnum]['val'] ?? null;
 			if (!is_array($bag))
 			{
 				return '';
@@ -231,49 +296,14 @@ class PlgFabrik_ElementEmundusreadonly extends PlgFabrik_Element
 	}
 
 	/**
-	 * Whitelist check:
-	 *  - application / management → the table must expose a `fnum` column.
-	 *  - joined repeating sub-table → its parent (via #__fabrik_joins) must
-	 *    expose a `fnum` column. Without this, sources living in a repeating
-	 *    group would always be rejected even though their parent form is a
-	 *    valid candidate/management form.
+	 * Whitelist check for application / management sources: the table must expose a `fnum` column.
+	 * The table is the main table of the source list, even for an element living in a repeating group.
 	 */
 	private function isTableAllowed(string $tableName): bool
 	{
-		$db      = Factory::getContainer()->get('DatabaseDriver');
-		$columns = $db->getTableColumns($tableName, false);
+		$columns = Factory::getContainer()->get('DatabaseDriver')->getTableColumns($tableName, false);
 
-		if (!is_array($columns))
-		{
-			return false;
-		}
-
-		if (array_key_exists('fnum', $columns))
-		{
-			return true;
-		}
-
-		if (!array_key_exists('parent_id', $columns))
-		{
-			return false;
-		}
-
-		$query = $db->createQuery()
-			->select($db->quoteName('join_from_table'))
-			->from($db->quoteName('#__fabrik_joins'))
-			->where($db->quoteName('table_join') . ' = :tableName')
-			->bind(':tableName', $tableName, ParameterType::STRING);
-		$db->setQuery($query);
-		$parentTable = $db->loadResult();
-
-		if (empty($parentTable))
-		{
-			return false;
-		}
-
-		$parentColumns = $db->getTableColumns($parentTable, false);
-
-		return is_array($parentColumns) && array_key_exists('fnum', $parentColumns);
+		return is_array($columns) && array_key_exists('fnum', $columns);
 	}
 
 	/**

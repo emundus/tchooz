@@ -4,6 +4,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
+use Tchooz\Services\Fabrik\ReadonlyElementStorage;
 
 class EmundusFilters
 {
@@ -140,6 +141,17 @@ class EmundusFilters
 					case 'time':
 						$filter['type'] = 'time';
 						$filter['value'] = ['', ''];
+						break;
+					case 'emundusreadonly':
+						if ((new ReadonlyElementStorage())->getColumnTypeById((int) $element['id'])->isDate())
+						{
+							$filter['type'] = 'date';
+							$filter['value'] = ['', ''];
+						}
+						else
+						{
+							$filter['operator'] = 'LIKE';
+						}
 						break;
 					case 'field':
 					case 'calc':
