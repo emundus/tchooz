@@ -81,6 +81,10 @@ class EmundusHelperFiles
 	 * @var array<int, array>
 	 */
 	private static array $fabrikElementDataCache = [];
+
+	/**
+	 * @var array<string, array> keyed by element|group|list
+	 */
 	private static array $joinInformationsCache = [];
 
 	/**
@@ -5345,20 +5349,10 @@ class EmundusHelperFiles
 											$step_table_alias = 'jee_' . $table_index;
 											$already_joined[$step_table_alias] = $step_data->table;
 
-											if (!empty($caller_params['step_id'])) {
-												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step_data->table) . ' ON ' . $db->quoteName($step_data->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step_data->table . '.step_id') . ' = ' . $db->quote($caller_params['step_id']) . ' ';
-											} else {
-												$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step_data->table) . ' ON ' . $db->quoteName($step_data->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step_data->table . '.step_id') . ' = ' . $db->quote($step_id) . ' ';
-											}
+											$where['join'] .= ' LEFT JOIN ' . $db->quoteName($step_data->table) . ' ON ' . $db->quoteName($step_data->table . '.fnum') . ' = ' . $db->quoteName('jecc.fnum') . ' AND ' . $db->quoteName($step_data->table . '.step_id') . ' = ' . $db->quote($step_id) . ' ';
 										}
 
-										if (!empty($caller_params['step_id'])) {
-											if ($caller_params['step_id'] == $step_id) {
-												$program_ids = array_merge($program_ids, $step_data->programs);
-											}
-										} else {
-											$program_ids = array_merge($program_ids, $step_data->programs);
-										}
+										$program_ids = array_merge($program_ids, $step_data->programs);
 									}
 
 									if (!empty($program_ids)) {
@@ -5381,10 +5375,6 @@ class EmundusHelperFiles
 									if (!empty($steps)) {
 										foreach ($steps as $step) {
 											if (in_array('0', $evaluated_values) && in_array('1', $evaluated_values)) {
-												continue;
-											}
-
-											if (!empty($caller_params['step_id']) && $step->id != $caller_params['step_id']) {
 												continue;
 											}
 
@@ -5498,16 +5488,6 @@ class EmundusHelperFiles
 			$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', 1, '=');
 		}
 
-		if (!empty($caller_params['step_id'])) {
-			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
-			$m_workflow = new EmundusModelWorkflow();
-			$step_data = $m_workflow->getStepData($caller_params['step_id']);
-
-			if (!empty($step_data->programs)) {
-				$where['q'] .= ' AND ' . $this->writeQueryWithOperator('sp.id', $step_data->programs, 'IN');
-			}
-		}
-
 		return $where;
 	}
 
@@ -5596,9 +5576,11 @@ class EmundusHelperFiles
 
 		if (!empty($element_id))
 		{
-			if (array_key_exists($element_id, self::$joinInformationsCache))
+			// The group fallback below depends on group and list, so they are part of the key.
+			$cache_key = (int) $element_id . '|' . (int) $group_id . '|' . (int) $list_id;
+			if (array_key_exists($cache_key, self::$joinInformationsCache))
 			{
-				return self::$joinInformationsCache[$element_id];
+				return self::$joinInformationsCache[$cache_key];
 			}
 
 			$db    = Factory::getContainer()->get('DatabaseDriver');
@@ -5619,8 +5601,6 @@ class EmundusHelperFiles
 					Log::add('Failed to retreive join informations in filter context ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
-
-			self::$joinInformationsCache[$element_id] = $data;
 
 			if ((empty($data) || empty($data['join_from_table'])) && !empty($group_id))
 			{
@@ -5644,6 +5624,9 @@ class EmundusHelperFiles
 					Log::add('Failed to retreive join informations in filter context ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
+
+			$data = is_array($data) ? $data : [];
+			self::$joinInformationsCache[$cache_key] = $data;
 		}
 		else if (!empty($group_id))
 		{
