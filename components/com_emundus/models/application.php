@@ -3723,7 +3723,6 @@ class EmundusModelApplication extends ListModel
 								$forms .= '</tbody></table></p>';
 							}
 
-
 							// TABLEAU DE PLUSIEURS LIGNES sans tenir compte du nombre de lignes
 						}
 						elseif ((int) $g_params->repeated === 1 || (int) $g_params->repeat_group_button === 1) {
@@ -4490,7 +4489,7 @@ class EmundusModelApplication extends ListModel
 											$element->content = '';
 										}
 
-										if($element->plugin === 'dropdown')
+										if($element->plugin === 'dropdown' || $element->plugin === 'radiobutton')
 										{
 											$params = json_decode($element->params);
 											$index  = array_search($element->content, $params->sub_options->sub_values);

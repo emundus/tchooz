@@ -613,10 +613,12 @@ class PdfService extends Export implements ExportInterface
 
 		$logo_base64 = $this->buildLogo($applicationFile);
 
-		$columns = [];
+		$columns       = [];
+		$columnClasses = [];
 		if ($logo_base64 !== '')
 		{
-			$columns[] = $this->parser->createImg($logo_base64, 'auto', 60);
+			$columnClasses[0] = 'header-logo-cell';
+			$columns[]                      = $this->parser->createImg($logo_base64, 'auto', 60);
 		}
 
 		// Fixed header
@@ -637,7 +639,7 @@ class PdfService extends Export implements ExportInterface
 		$header .= $this->parser->createHeader(sizeof($sub_column));
 		$header .= $this->parser->createTable();
 
-		$header .= $this->parser->addTableRow($columns);
+		$header .= $this->parser->addTableRow($columns, false, $columnClasses);
 		$header .= $this->parser::TABLE_CLOSE_TAG . $this->parser::HR_TAG . $this->parser::HEADER_CLOSE_TAG;
 		//
 
@@ -646,36 +648,17 @@ class PdfService extends Export implements ExportInterface
 		{
 			$header .= $this->parser->createTable();
 
-			/*
-			if (!empty($item->avatar) && is_image_ext($item->avatar) && ($allowed_attachments === true || in_array('10', $allowed_attachments)))
-			{
-				if (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar))
-				{
-					$avatar = EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar;
-				}
-				elseif (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar))
-				{
-					$avatar = EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar;
-				}
-
-				if (!empty($avatar))
-				{
-					$type          = pathinfo($avatar, PATHINFO_EXTENSION);
-					$data          = file_get_contents($avatar);
-					$avatar_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-
-					$htmldata .= '<tr><td><img style="border-radius: 50%" src="' . $avatar_base64 . '" width="auto" height="60" align="right"/></td></tr>';
-				}
-			}*/
-
-			$header .= $this->parser->addTableRow([$this->parser->createTitle(Text::_('PDF_HEADER_INFO_DOSSIER'), 3)]);
-
 			foreach ($custom_headers as $custom_header)
 			{
 				$customHeaderData = $this->getData($custom_header, [$applicationFile], ValueFormatEnum::FORMATTED, $anonymize_data);
 
 				if ($custom_header === 'stickers')
 				{
+					if(empty($customHeaderData['data'][$applicationFile->getFnum()]))
+					{
+						continue;
+					}
+
 					$header .= $this->parser->createTable();
 
 					$header .= $this->parser->addTableRow([$customHeaderData['data'][$applicationFile->getFnum()]]);
@@ -751,6 +734,10 @@ class PdfService extends Export implements ExportInterface
 
 	private function renderPdf(string $html, string $filename): bool|int
 	{
+		// Drop any font cache left over from another deployment path (local/Docker,
+		// other site) before configuring Dompdf, otherwise non-Latin text renders "??".
+		PdfFont::ensureFontCacheIsFresh();
+
 		$options = new Options();
 		PdfFont::configureOptions($options);
 		$options->set('isPhpEnabled', true);

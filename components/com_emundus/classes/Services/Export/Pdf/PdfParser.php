@@ -43,28 +43,28 @@ class PdfParser
 
 	public function createHeader(int $columns): string
 	{
-		$topMargin = 120;
+		$topMargin = 90;
 
 		// Columns is between 1 and 5
 		switch ($columns) {
 			case 1:
-				$topMargin = 90;
+				$topMargin = 60;
 				break;
 			case 2:
-				$topMargin = 115;
+				$topMargin = 85;
 				break;
 			case 3:
-				$topMargin = 145;
+				$topMargin = 115;
 				break;
 			case 4:
-				$topMargin = 170;
+				$topMargin = 140;
 				break;
 			case 5:
-				$topMargin = 205;
+				$topMargin = 175;
 				break;
 		}
 
-		$pageMargin = $topMargin + 15;
+		$pageMargin = $topMargin + 10;
 
 		$header = '<style>@page { margin-top: ' . $pageMargin . 'px !important; }</style>';
 		$header .= '<header style="top: -' . $topMargin . 'px;">';
@@ -101,13 +101,14 @@ class PdfParser
 		return '<' . $tag . (!empty($id) ? ' id="' . $id . '"' : '') . '>' . $content . '</' . $tag . '>';
 	}
 
-	public function addTableRow(array $columns, bool $isHeader = false): string
+	public function addTableRow(array $columns, bool $isHeader = false, array $columnClasses = []): string
 	{
 		$rowHtml = '<tr>';
 		$tag     = $isHeader ? 'th' : 'td';
 
-		foreach ($columns as $column) {
-			$rowHtml .= '<' . $tag . '>' . $column . '</' . $tag . '>';
+		foreach ($columns as $index => $column) {
+			$class   = !empty($columnClasses[$index]) ? ' class="' . $columnClasses[$index] . '"' : '';
+			$rowHtml .= '<' . $tag . $class . '>' . $column . '</' . $tag . '>';
 		}
 
 		$rowHtml .= '</tr>';
