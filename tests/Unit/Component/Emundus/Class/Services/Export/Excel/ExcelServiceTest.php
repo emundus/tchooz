@@ -508,6 +508,29 @@ class ExcelServiceTest extends UnitTestCase
 	}
 
 	/**
+	 * Restricted to the rows picked in the evaluation view, the export keeps those rows only, and the
+	 * evaluator column follows the same restriction.
+	 *
+	 * @covers \Tchooz\Services\Export\Excel\ExcelService::export()
+	 * @covers \Tchooz\Services\Export\Export::getData()
+	 * @return void
+	 */
+	public function testPivotByEvaluationKeepsOnlyTheRestrictedRows(): void
+	{
+		$evaluation = $this->createEvaluationFormWithTextarea();
+		[$lowId, $highId] = $this->createEvaluators();
+
+		$this->insertEvaluation($evaluation['table'], $evaluation['column'], $lowId, 'Avis réservé.');
+		$highRowId = $this->insertEvaluation($evaluation['table'], $evaluation['column'], $highId, 'Avis favorable.');
+
+		$rows = $this->exportPivotByEvaluation($evaluation, [$evaluation['table'] => [$highRowId]]);
+
+		$this->assertCount(1, $rows, 'Seule l\'évaluation retenue est exportée');
+		$this->assertSame('Eval HIGH', $rows[0]['evaluator'], 'La colonne évaluateur suit la même restriction');
+		$this->assertSame('Avis favorable.', $rows[0]['value']);
+	}
+
+	/**
 	 * @return array{form_id: int, table: string, element_id: int, column: string}
 	 */
 	private function createEvaluationFormWithTextarea(): array
@@ -558,7 +581,7 @@ class ExcelServiceTest extends UnitTestCase
 		return [$first, $second];
 	}
 
-	private function insertEvaluation(string $table, string $column, int $evaluatorId, ?string $value): void
+	private function insertEvaluation(string $table, string $column, int $evaluatorId, ?string $value): int
 	{
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true)
@@ -576,13 +599,17 @@ class ExcelServiceTest extends UnitTestCase
 			'step_id'    => 0,
 			$column      => $value,
 		];
-		$db->insertObject($table, $row);
+		$db->insertObject($table, $row, 'id');
+
+		return (int) $row->id;
 	}
 
 	/**
+	 * @param   array<string, int[]>  $evaluationRowIds
+	 *
 	 * @return array<int, array{evaluator: string, value: string}>
 	 */
-	private function exportPivotByEvaluation(array $evaluation): array
+	private function exportPivotByEvaluation(array $evaluation, array $evaluationRowIds = []): array
 	{
 		$coord            = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
 		$exportEntity     = new ExportEntity(0, new \DateTime(), $coord, '', ExportFormatEnum::XLSX, null, null, 0);
@@ -602,6 +629,7 @@ class ExcelServiceTest extends UnitTestCase
 				'pivot_scope'  => PivotScopeEnum::EVALUATION->value,
 				'pivot_target' => $evaluation['form_id'],
 			],
+			'evaluation_row_ids' => $evaluationRowIds,
 		];
 
 		$service = new ExcelService([$this->dataset['fnum']], $coord, $options, $exportEntity);

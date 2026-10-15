@@ -18,6 +18,8 @@ class ExcelOptions extends ExportOptions
 {
 	private array $synthesis = [];
 
+	private array $evaluationRowIds = [];
+
 	const DEFAULT_SYNTHESIS = [
 		HeadersEnum::FNUM,
 		HeadersEnum::STATUS,
@@ -74,6 +76,10 @@ class ExcelOptions extends ExportOptions
 		}
 		$excelOptions->setSettings((new ExcelOptionsSchema())->cast(is_array($rawSettings) ? $rawSettings : []));
 
+		// Decoded from a queued task, the map comes back as nested objects.
+		$evaluationRowIds = json_decode(json_encode($options->evaluation_row_ids ?? []), true);
+		$excelOptions->setEvaluationRowIds(is_array($evaluationRowIds) ? $evaluationRowIds : []);
+
 		return $excelOptions;
 	}
 
@@ -85,6 +91,24 @@ class ExcelOptions extends ExportOptions
 	public function setSynthesis(array $synthesis): void
 	{
 		$this->synthesis = $synthesis;
+	}
+
+	/**
+	 * Evaluation rows the export is restricted to, by evaluation table. A table left out is exported in full.
+	 *
+	 * @return array<string, int[]>
+	 */
+	public function getEvaluationRowIds(): array
+	{
+		return $this->evaluationRowIds;
+	}
+
+	/**
+	 * @param   array<string, int[]>  $evaluationRowIds
+	 */
+	public function setEvaluationRowIds(array $evaluationRowIds): void
+	{
+		$this->evaluationRowIds = array_map(fn($ids) => array_map('intval', (array) $ids), $evaluationRowIds);
 	}
 
 	/**

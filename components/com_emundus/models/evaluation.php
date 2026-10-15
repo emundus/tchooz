@@ -1455,6 +1455,61 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 	/**
+	 * Evaluation rows an export from the evaluation view is restricted to, by evaluation table: the
+	 * rows picked in the view, kept only when they belong to the given files. A table left out of the
+	 * result is exported in full.
+	 *
+	 * @param   string[]  $fnums          Files whose access is already checked.
+	 * @param   array     $selected_rows  Rows picked in the view, as {step_id, evaluation_id}.
+	 *
+	 * @return array<string, int[]>
+	 */
+	public static function getExportEvaluationRowIds(array $fnums, array $selected_rows): array
+	{
+		$row_ids     = [];
+		$ids_by_step = [];
+
+		foreach ($selected_rows as $row) {
+			if (!empty($row['step_id']) && !empty($row['evaluation_id'])) {
+				$ids_by_step[(int) $row['step_id']][] = (int) $row['evaluation_id'];
+			}
+		}
+
+		if (empty($fnums) || empty($ids_by_step)) {
+			return $row_ids;
+		}
+
+		if (!class_exists('EmundusModelWorkflow')) {
+			require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
+		}
+		$m_workflow = new EmundusModelWorkflow();
+		$db         = Factory::getContainer()->get('DatabaseDriver');
+		$query      = $db->getQuery(true);
+
+		foreach ($ids_by_step as $step_id => $ids) {
+			$step_data = $m_workflow->getStepData($step_id);
+			if (empty($step_data) || empty($step_data->table)) {
+				continue;
+			}
+
+			$query->clear()
+				->select($db->quoteName('id'))
+				->from($db->quoteName($step_data->table))
+				->where($db->quoteName('id') . ' IN (' . implode(',', array_unique($ids)) . ')')
+				->where($db->quoteName('step_id') . ' = ' . (int) $step_id)
+				->where($db->quoteName('fnum') . ' IN (' . implode(',', array_map([$db, 'quote'], $fnums)) . ')');
+			$db->setQuery($query);
+			$valid_ids = array_map('intval', $db->loadColumn());
+
+			if (!empty($valid_ids)) {
+				$row_ids[$step_data->table] = array_merge($row_ids[$step_data->table] ?? [], $valid_ids);
+			}
+		}
+
+		return $row_ids;
+	}
+
+	/**
 	 * Evaluation list without step: one row per file. The full result is loaded for the total
 	 * (getTotal()), the page is sliced from it.
 	 *
