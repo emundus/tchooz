@@ -238,7 +238,8 @@ abstract class AbstractSofisObject extends AbstractMappingObject
 	}
 
 	/**
-	 * Build an OData composite key segment, e.g. (dataAreaId='FOND',VendorAccountNumber='F-FD-1').
+	 * Build an OData composite key segment, e.g. (VendorAccountNumber%3D%27F-FD-1%27%2CdataAreaId%3D%27fond%27).
+	 * The MARIO gateway only routes the key when "=", "'" and "," are percent-encoded (parentheses stay raw).
 	 *
 	 * @param array<string,string> $keyParts
 	 */
@@ -248,10 +249,10 @@ abstract class AbstractSofisObject extends AbstractMappingObject
 
 		foreach ($keyParts as $field => $value)
 		{
-			$parts[] = $field . "='" . str_replace("'", "''", $value) . "'";
+			$parts[] = rawurlencode($field . "='" . str_replace("'", "''", $value) . "'");
 		}
 
-		return '(' . implode(',', $parts) . ')';
+		return '(' . implode('%2C', $parts) . ')';
 	}
 
 	/**
