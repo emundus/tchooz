@@ -1477,8 +1477,9 @@ class EmundusModelEvaluation extends JModelList
 
 	/**
 	 * Evaluation rows an export from the evaluation view is restricted to, by evaluation table: the
-	 * rows picked in the view, kept only when they belong to the given files. A table left out of the
-	 * result is exported in full.
+	 * rows picked in the view, kept only when they belong to the given files. Every step of the picked
+	 * rows has its table in the result, with an empty list when none of its rows is valid, so the
+	 * export keeps none of them. A table left out of the result is exported in full.
 	 *
 	 * @param   string[]  $fnums          Files whose access is already checked.
 	 * @param   array     $selected_rows  Rows picked in the view, as {step_id, evaluation_id}.
@@ -1491,7 +1492,12 @@ class EmundusModelEvaluation extends JModelList
 		$ids_by_step = [];
 
 		foreach ($selected_rows as $row) {
-			if (!empty($row['step_id']) && !empty($row['evaluation_id'])) {
+			if (empty($row['step_id'])) {
+				continue;
+			}
+
+			$ids_by_step[(int) $row['step_id']] ??= [];
+			if (!empty($row['evaluation_id'])) {
 				$ids_by_step[(int) $row['step_id']][] = (int) $row['evaluation_id'];
 			}
 		}
@@ -1513,6 +1519,11 @@ class EmundusModelEvaluation extends JModelList
 				continue;
 			}
 
+			$row_ids[$step_data->table] ??= [];
+			if (empty($ids)) {
+				continue;
+			}
+
 			$query->clear()
 				->select($db->quoteName('id'))
 				->from($db->quoteName($step_data->table))
@@ -1522,9 +1533,7 @@ class EmundusModelEvaluation extends JModelList
 			$db->setQuery($query);
 			$valid_ids = array_map('intval', $db->loadColumn());
 
-			if (!empty($valid_ids)) {
-				$row_ids[$step_data->table] = array_merge($row_ids[$step_data->table] ?? [], $valid_ids);
-			}
+			$row_ids[$step_data->table] = array_merge($row_ids[$step_data->table], $valid_ids);
 		}
 
 		return $row_ids;

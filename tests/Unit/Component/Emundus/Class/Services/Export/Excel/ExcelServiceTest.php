@@ -531,6 +531,29 @@ class ExcelServiceTest extends UnitTestCase
 	}
 
 	/**
+	 * Restricted to an empty list, as when no row picked in the evaluation view is an evaluation,
+	 * the export keeps none of the evaluations of the table.
+	 *
+	 * @covers \Tchooz\Services\Export\Excel\ExcelService::export()
+	 * @covers \Tchooz\Services\Export\Export::getData()
+	 * @return void
+	 */
+	public function testPivotByEvaluationKeepsNoRowWhenTheRestrictionIsEmpty(): void
+	{
+		$evaluation = $this->createEvaluationFormWithTextarea();
+		[$lowId, $highId] = $this->createEvaluators();
+
+		$this->insertEvaluation($evaluation['table'], $evaluation['column'], $lowId, 'Avis réservé.');
+		$this->insertEvaluation($evaluation['table'], $evaluation['column'], $highId, 'Avis favorable.');
+
+		$rows = $this->exportPivotByEvaluation($evaluation, [$evaluation['table'] => []]);
+
+		$this->assertNotContains('Eval LOW', array_column($rows, 'evaluator'), 'Aucune évaluation n\'est exportée');
+		$this->assertNotContains('Eval HIGH', array_column($rows, 'evaluator'), 'Aucune évaluation n\'est exportée');
+		$this->assertSame([], array_values(array_filter(array_column($rows, 'value'))), 'Aucune valeur d\'évaluation n\'est exportée');
+	}
+
+	/**
 	 * @return array{form_id: int, table: string, element_id: int, column: string}
 	 */
 	private function createEvaluationFormWithTextarea(): array

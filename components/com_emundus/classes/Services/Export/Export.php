@@ -184,11 +184,27 @@ class Export
 	}
 
 	/**
+	 * @param   string  $column  Quoted id column.
+	 * @param   int[]   $ids     Rows to keep; none when empty.
+	 *
+	 * @return string
+	 */
+	protected static function buildRowIdsCondition(string $column, array $ids): string
+	{
+		if (empty($ids))
+		{
+			return '1 = 0';
+		}
+
+		return $column . ' IN (' . implode(',', array_map('intval', $ids)) . ')';
+	}
+
+	/**
 	 * @param   int|string                    $elementId
 	 * @param   array<ApplicationFileEntity>  $files
 	 * @param   ValueFormatEnum               $format
 	 * @param   bool                          $anonymize_data
-	 * @param   array<string, int[]>          $evaluationRowIds  Evaluation rows to keep, by table. A table left out keeps all its rows.
+	 * @param   array<string, int[]>          $evaluationRowIds  Evaluation rows to keep, by table. A table left out keeps all its rows, a table with an empty list keeps none.
 	 *
 	 * @return array
 	 * @throws \Exception
@@ -387,9 +403,9 @@ class Export
 						}, $files))) . ')')
 						->group('fnum');
 
-					if (!empty($evaluationRowIds[$element->getDbTableName()]))
+					if (array_key_exists($element->getDbTableName(), $evaluationRowIds))
 					{
-						$query->where($db->quoteName('id') . ' IN (' . implode(',', array_map('intval', $evaluationRowIds[$element->getDbTableName()])) . ')');
+						$query->where(self::buildRowIdsCondition($db->quoteName('id'), $evaluationRowIds[$element->getDbTableName()]));
 					}
 
 					$db->setQuery($query);

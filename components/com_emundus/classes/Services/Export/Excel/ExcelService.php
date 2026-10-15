@@ -498,9 +498,9 @@ class ExcelService extends Export implements ExportInterface
 										->order('d.evaluator ASC, d.id ASC');
 
 									// Same rows as the values (Export::getData), or the pivot pairs them with the wrong evaluator.
-									if (!empty($evaluationRowIds[$data['db_table_name']]))
+									if (array_key_exists($data['db_table_name'], $evaluationRowIds))
 									{
-										$query->where($db->quoteName('d.id') . ' IN (' . implode(',', $evaluationRowIds[$data['db_table_name']]) . ')');
+										$query->where(self::buildRowIdsCondition($db->quoteName('d.id'), $evaluationRowIds[$data['db_table_name']]));
 									}
 
 									$db->setQuery($query);

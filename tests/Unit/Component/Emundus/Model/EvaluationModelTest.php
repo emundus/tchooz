@@ -144,6 +144,45 @@ class EvaluationModelTest extends UnitTestCase
 	}
 
 	/**
+	 * A picked step keeps its table in the result even when none of its picked rows is an evaluation,
+	 * so the export keeps none of that table instead of all of it.
+	 *
+	 * @covers EmundusModelEvaluation::getExportEvaluationRowIds
+	 * @return void
+	 */
+	public function testGetExportEvaluationRowIdsKeepsAnEmptyListForAStepWithoutValidRow(): void
+	{
+		$fixtures = $this->createTwoTablesFixtures();
+		[$step_a, $step_b] = $fixtures['step_ids'];
+		[$file_1, $file_2, $file_3] = $fixtures['files'];
+
+		$m_workflow = new \EmundusModelWorkflow();
+		$table_a    = $m_workflow->getStepData($step_a)->table;
+		$table_b    = $m_workflow->getStepData($step_b)->table;
+
+		$this->db->setQuery('SELECT id FROM ' . $this->db->quoteName($table_a) . ' WHERE fnum = ' . $this->db->quote($file_2));
+		$file_2_row = (int) $this->db->loadResult();
+
+		$only_unevaluated = \EmundusModelEvaluation::getExportEvaluationRowIds([$file_3], [
+			['step_id' => $step_a, 'evaluation_id' => 0],
+			['step_id' => $step_b, 'evaluation_id' => 0],
+		]);
+		$outside_files    = \EmundusModelEvaluation::getExportEvaluationRowIds([$file_1], [
+			['step_id' => $step_a, 'evaluation_id' => $file_2_row],
+		]);
+		$picked           = \EmundusModelEvaluation::getExportEvaluationRowIds([$file_2, $file_3], [
+			['step_id' => $step_a, 'evaluation_id' => $file_2_row],
+			['step_id' => $step_a, 'evaluation_id' => 0],
+		]);
+
+		$this->clearFixtures($fixtures);
+
+		$this->assertSame([$table_a => [], $table_b => []], $only_unevaluated, 'Each picked step keeps its table, with no row');
+		$this->assertSame([$table_a => []], $outside_files, 'A row of a file outside the export is not kept');
+		$this->assertSame([$table_a => [$file_2_row]], $picked, 'The picked evaluation is kept');
+	}
+
+	/**
 	 * Workflow with two evaluation steps, each with its own form and table, on the dataset program.
 	 * Three submitted files: in step A, file 1 evaluated twice and file 2 once; nothing in step B.
 	 *
