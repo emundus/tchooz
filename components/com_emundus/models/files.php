@@ -1373,6 +1373,12 @@ class EmundusModelFiles extends JModelLegacy
 				$shared = $this->_db->execute();
 
 				if ($shared) {
+					if (!class_exists('EmundusHelperAccess'))
+					{
+						require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+					}
+					\EmundusHelperAccess::clearFnumAccessCache();
+
 					// log
 					$query->clear()
 						->select('CONCAT("Groupe ", label)')
@@ -1442,6 +1448,12 @@ class EmundusModelFiles extends JModelLegacy
 				$shared = $this->_db->execute();
 
 				if ($shared) {
+					if (!class_exists('EmundusHelperAccess'))
+					{
+						require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+					}
+					\EmundusHelperAccess::clearFnumAccessCache();
+
 					$query->clear()
 						->select('name')
 						->from($this->_db->quoteName('#__users'))
@@ -1489,6 +1501,12 @@ class EmundusModelFiles extends JModelLegacy
 
 			if($unshared = $this->_db->execute())
 			{
+				if (!class_exists('EmundusHelperAccess'))
+				{
+					require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+				}
+				\EmundusHelperAccess::clearFnumAccessCache();
+
 				$query->clear()
 					->select('name')
 					->from($this->_db->quoteName('#__users'))
@@ -6267,6 +6285,47 @@ class EmundusModelFiles extends JModelLegacy
 		return $associated_date;
 	}
 
+	/**
+	 * Batch variant of getAssociatedDate(): one query for many fnums instead of one per row.
+	 *
+	 * @param   string[]  $fnums
+	 * @param   int       $user_id
+	 *
+	 * @return array<string,string> Map fnum => associated date (fnums without a date are omitted)
+	 */
+	public function getAssociatedDates(array $fnums, int $user_id): array
+	{
+		$dates = [];
+
+		$fnums = array_values(array_unique(array_filter($fnums)));
+		if (empty($fnums)) {
+			return $dates;
+		}
+
+		$query = $this->_db->getQuery(true);
+
+		try {
+			$quoted_fnums = array_map([$this->_db, 'quote'], $fnums);
+			$query->select($this->_db->quoteName(['fnum', 'time_date']))
+				->from($this->_db->quoteName('#__emundus_users_assoc'))
+				->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $quoted_fnums) . ')')
+				->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user_id))
+				->where($this->_db->quoteName('action_id') . ' = 1')
+				->where($this->_db->quoteName('r') . ' = 1');
+			$this->_db->setQuery($query);
+
+			foreach ($this->_db->loadAssocList() as $row) {
+				if (!empty($row['time_date'])) {
+					$dates[$row['fnum']] = $row['time_date'];
+				}
+			}
+		}
+		catch (Exception $e) {
+			Log::add('Error getting associated dates: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $dates;
+	}
 
 	public function getEvaluationsArray(array $fnums, array $steps_elements, ExportModeEnum $exportMode = ExportModeEnum::GROUP_CONCAT_DISTINCT): array
 	{

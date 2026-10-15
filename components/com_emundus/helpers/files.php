@@ -71,6 +71,78 @@ class EmundusHelperFiles
 		LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum
 		LEFT JOIN #__emundus_internal_reference as eir on eir.ccid=jecc.id and eir.active = 1 ';
 
+	/**
+	 * Request-scoped memos for fabrik element/join metadata, keyed by element id. This config is
+	 * immutable within a request, yet _moduleBuildWhere() resolves it once per applied filter on
+	 * every step query — so an evaluation list over N steps repeats the same ~F lookups N times.
+	 * Caching turns that N×F into F.
+	 *
+	 * @var array<int, array>
+	 */
+	private static array $fabrikElementDataCache = [];
+	private static array $joinInformationsCache = [];
+
+	/**
+	 * Request-scoped memo for the evaluators-filter candidature-id set in _moduleBuildWhere().
+	 * It depends only on the user, the selected evaluators and the operator — never on the step
+	 * being queried — yet an evaluation list resolves it once per step query. Keyed user|operator|value.
+	 *
+	 * @var array<string, array>
+	 */
+	private static array $evaluatorFilterCcidsCache = [];
+
+	/**
+	 * Request-scoped memo for the #__fabrik_joins lookup used when resolving element join tables.
+	 * Deterministic by (table_join, join_from_table, list_id); the evaluation list resolves the same
+	 * joins once per step query, so caching turns that per-step repeat into a single lookup.
+	 *
+	 * @var array<string, array|null>
+	 */
+	private static array $fabrikJoinCache = [];
+
+	/**
+	 * Request-scoped memo for isTableLinkedToCampaignCandidature(): whether a table has an `fnum`
+	 * column. Deterministic per table name; resolved once per element/filter on every step query
+	 * otherwise. Keyed by table name.
+	 *
+	 * @var array<string, bool>
+	 */
+	private static array $tableLinkedToFnumCache = [];
+
+	/**
+	 * Memoized #__fabrik_joins lookup: the join row linking $join_from_table to $table_join for a
+	 * given fabrik list, on table_key 'id'. Returns the row (assoc) or null. Request-scoped cache.
+	 */
+	public function getFabrikJoinLookup($table_join, $join_from_table, $list_id)
+	{
+		$cache_key = $table_join . '|' . $join_from_table . '|' . $list_id;
+		if (array_key_exists($cache_key, self::$fabrikJoinCache))
+		{
+			return self::$fabrikJoinCache[$cache_key];
+		}
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+		$query->select('*')
+			->from('#__fabrik_joins')
+			->where('table_join = ' . $db->quote($table_join))
+			->andWhere('join_from_table = ' . $db->quote($join_from_table))
+			->andWhere('table_key = ' . $db->quote('id'))
+			->andWhere('list_id = ' . $db->quote($list_id));
+
+		$result = null;
+		try {
+			$db->setQuery($query);
+			$result = $db->loadAssoc();
+		} catch (Exception $e) {
+			Log::add('Failed fabrik join lookup: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		self::$fabrikJoinCache[$cache_key] = $result;
+
+		return $result;
+	}
+
 	/*
     ** @description Clear session and reinit values by default
     */
@@ -4854,16 +4926,7 @@ class EmundusHelperFiles
 											{
 												$already_join_alias = !is_numeric($already_join_alias) ? $already_join_alias : $already_joined_table_name;
 
-												$query->clear()
-													->select('*')
-													->from('#__fabrik_joins')
-													->where('table_join = ' . $db->quote($already_joined_table_name))
-													->andWhere('join_from_table = ' . $db->quote($fabrik_element_data['db_table_name']))
-													->andWhere('table_key = ' . $db->quote('id'))
-													->andWhere('list_id = ' . $db->quote($fabrik_element_data['list_id']));
-
-												$db->setQuery($query);
-												$join_informations = $db->loadAssoc();
+												$join_informations = $this->getFabrikJoinLookup($already_joined_table_name, $fabrik_element_data['db_table_name'], $fabrik_element_data['list_id']);
 
 												if (!empty($join_informations))
 												{
@@ -5445,6 +5508,11 @@ class EmundusHelperFiles
 
 		if (!empty($element_id))
 		{
+			if (array_key_exists($element_id, self::$fabrikElementDataCache))
+			{
+				return self::$fabrikElementDataCache[$element_id];
+			}
+
 			/**
 			 * I need, list id, form id, groupd id and group params, table name and element name
 			 */
@@ -5485,6 +5553,8 @@ class EmundusHelperFiles
 			{
 				$data['db_table_name'] = $data['fabrik_table_join'];
 			}
+
+			self::$fabrikElementDataCache[$element_id] = $data;
 		}
 
 		return $data;
@@ -5496,6 +5566,11 @@ class EmundusHelperFiles
 
 		if (!empty($element_id))
 		{
+			if (array_key_exists($element_id, self::$joinInformationsCache))
+			{
+				return self::$joinInformationsCache[$element_id];
+			}
+
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 			if (!empty($element_id))
@@ -5514,6 +5589,8 @@ class EmundusHelperFiles
 					Log::add('Failed to retreive join informations in filter context ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
+
+			self::$joinInformationsCache[$element_id] = $data;
 
 			if ((empty($data) || empty($data['join_from_table'])) && !empty($group_id))
 			{
@@ -7173,6 +7250,11 @@ class EmundusHelperFiles
 
 		if (!empty($table_name))
 		{
+			if (array_key_exists($table_name, self::$tableLinkedToFnumCache))
+			{
+				return self::$tableLinkedToFnumCache[$table_name];
+			}
+
 			// check if table has a column named 'fnum'
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
@@ -7191,6 +7273,8 @@ class EmundusHelperFiles
 				{
 					$linked = true;
 				}
+
+				self::$tableLinkedToFnumCache[$table_name] = $linked;
 			}
 			catch (Exception $e)
 			{
@@ -7288,6 +7372,41 @@ class EmundusHelperFiles
 		}
 
 		return $id;
+	}
+
+	/**
+	 * Batch resolution of fnums into their candidature ids.
+	 *
+	 * @param   string[]  $fnums
+	 *
+	 * @return array<string,int> Map fnum => candidature id
+	 */
+	public static function getIdsFromFnums(array $fnums): array
+	{
+		$ids = [];
+
+		$fnums = array_values(array_unique(array_filter($fnums)));
+		if (empty($fnums)) {
+			return $ids;
+		}
+
+		$db     = Factory::getContainer()->get('DatabaseDriver');
+		$query  = $db->getQuery(true);
+		$quoted = array_map([$db, 'quote'], $fnums);
+		$query->select($db->quoteName(['fnum', 'id']))
+			->from('#__emundus_campaign_candidature')
+			->where($db->quoteName('fnum') . ' IN (' . implode(',', $quoted) . ')');
+
+		try {
+			$db->setQuery($query);
+			foreach ($db->loadAssocList() as $row) {
+				$ids[$row['fnum']] = (int) $row['id'];
+			}
+		} catch (Exception $e) {
+			Log::add('Failed to get ids from fnums : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $ids;
 	}
 
 	/**
