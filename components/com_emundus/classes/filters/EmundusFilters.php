@@ -3,6 +3,7 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 
 class EmundusFilters
 {
@@ -115,6 +116,11 @@ class EmundusFilters
 						$filter['type'] = 'select';
 						$filter['values'] = [];
 						$filter['operator'] = 'IN';
+						break;
+					case ElementPluginEnum::ORDERLIST->value:
+						$filter['type'] = ElementPluginEnum::ORDERLIST->value;
+						$filter['values'] = [];
+						$filter['value'] = [];
 						break;
 					case 'yesno':
 						$filter['type'] = 'select';
@@ -392,6 +398,7 @@ class EmundusFilters
 			case 'dropdown':
 			case 'radiobutton':
 			case 'checkbox':
+			case ElementPluginEnum::ORDERLIST->value:
 				if (!empty($element['params'])) {
 					$params = json_decode($element['params'], true);
 					if (!empty($params['sub_options'])) {
