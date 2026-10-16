@@ -18,6 +18,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Enums\Addons\AddonEnum;
 use Tchooz\Enums\CrudEnum;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
@@ -613,6 +614,12 @@ class EmundusViewEvaluation extends JViewLegacy
 								{
 									$params         = json_decode($userObj->params);
 									$userObj->radio = array_combine($params->sub_options->sub_labels, $params->sub_options->sub_values);
+								}
+
+								$plugin = ElementPluginEnum::tryFrom($userObj->type);
+								if ($plugin->isDateField())
+								{
+									$userObj->val = EmundusHelperDate::displayDate($value, 'DATE_FORMAT_LC5');
 								}
 
 							}
