@@ -25,6 +25,9 @@ enum AccessLevelEnum: int
 
 	case PUBLIC = 1;
 
+	/* DEPRECATED */
+	case FORMS = 11;
+
 	public function getMethodName(): string
 	{
 		return match ($this)

@@ -130,7 +130,7 @@ class PurchaseOrderObject extends AbstractSofisObject implements SelfExecutingMa
 	{
 		$fnum = (string) $context->getFile();
 		$data = MappingService::getJsonFromMapping($mapping, $context);
-		$data['SiretNumber'] = $this->normalizeSiret($data['SiretNumber'] ?? '');
+		$data['SiretNumber'] = $this->normalizeIdentifier($data['SiretNumber'] ?? '');
 
 		// A purchase order is a financial document: never create a second header for the same file.
 		// The line may still be missing though (a previous run failing between the two POSTs), so we

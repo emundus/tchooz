@@ -171,7 +171,7 @@ class Release2_12_0Installer extends ReleaseInstaller
 				$query->clear()
 					->select('parent_id')
 					->from($this->db->quoteName('#__menu'))
-					->where($this->db->quoteName('link') . ' = ' . $this->db->quote('index.php?option=com_emundus&task=export_pdf&fnums={fnums}&user={applicant_id}'))
+					->where($this->db->quoteName('link') . ' LIKE ' . $this->db->quote('%option=com_emundus&task=export_pdf&fnums={fnums}&user={applicant_id}'))
 					->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote('actions'));
 				$this->db->setQuery($query);
 				$parent_id = $this->db->loadResult();

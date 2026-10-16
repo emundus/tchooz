@@ -40,6 +40,9 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 this.calc();
             }.bind(this));
 
+            // Stored value may predate a change of observed values or rounding params
+            this.calc();
+
         },
 
         addObserveEvent: function(element_to_observe) {
@@ -77,15 +80,9 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 let elementWeight = parseFloat(element.weight) || 0;
 
                 if (this.form.formElements[element.element]) {
-                    let elementValue = this.form.formElements[element.element].getValue();
-
-                    if (isNaN(elementValue) || elementValue === '') {
-                        weightedValues.push({value: 0, weight: elementWeight});
-                    } else {
-                        // normalize value to averageOver
-                        elementValue = (parseFloat(elementValue) * this.averageOver) / element.max;
-                        weightedValues.push({value: parseFloat(elementValue), weight: elementWeight});
-                    }
+                    // normalize value to averageOver
+                    let elementValue = (this.getNumericValue(this.form.formElements[element.element]) * this.averageOver) / element.max;
+                    weightedValues.push({value: elementValue, weight: elementWeight});
                 } else {
                     this.form.repeatGroupMarkers.each(function (index, group_id) {
 
@@ -94,14 +91,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
                         for (let i = 0; i < index; i++) {
                             if (this.form.formElements[element.element + '_' + i] && this.form.formElements[element.element + '_' + i].groupid == group_id) {
-                                let elementValue = this.form.formElements[element.element + '_' + i].getValue();
-
-                                if (isNaN(elementValue) || elementValue === '') {
-                                    repeat_sum += 0;
-                                } else {
-                                    elementValue = (parseFloat(elementValue) * this.averageOver) / element.max;
-                                    repeat_sum += parseFloat(elementValue);
-                                }
+                                repeat_sum += (this.getNumericValue(this.form.formElements[element.element + '_' + i]) * this.averageOver) / element.max;
                                 nb_repeat++;
                             }
                         }
@@ -121,11 +111,47 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 weightedSum += item.value * item.weight;
             });
 
-            let average = parseFloat(weightedSum / this.weight).toFixed(2);
+            let average = this.roundAverage(weightedSum / this.weight);
+
+            if (this.getValue() === average) {
+                return;
+            }
 
             // set average value
             this.update(average);
             this.element.dispatchEvent(new Event('change'));
+        },
+
+        getNumericValue: function (elementModel) {
+            // Masked inputs (numeric element) display "10,5" or "1 000,5", the unmasked value is always "10.5"
+            let value = elementModel.mask && typeof elementModel.mask.unmaskedValue === 'string'
+                ? elementModel.mask.unmaskedValue
+                : String(elementModel.getValue() ?? '').replace(/[\s\u00A0\u202F]/g, '').replace(',', '.');
+
+            value = parseFloat(value);
+
+            return isNaN(value) ? 0 : value;
+        },
+
+        roundAverage: function (value) {
+            const decimals = Math.max(0, Math.min(2, parseInt(this.options.decimals ?? 2, 10) || 0));
+            const factor = Math.pow(10, decimals);
+            // Strip float noise before ceil/floor, otherwise 12.3 * 10 = 123.00000000000001 is ceiled to 124
+            const scaled = parseFloat((value * factor).toFixed(6));
+
+            let rounded;
+            switch (this.options.rounding) {
+                case 'ceil':
+                    rounded = Math.ceil(scaled) / factor;
+                    break;
+                case 'floor':
+                    rounded = Math.floor(scaled) / factor;
+                    break;
+                default:
+                    rounded = Math.round(scaled) / factor;
+            }
+
+            return rounded.toFixed(decimals);
         }
     });
 

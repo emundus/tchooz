@@ -14,6 +14,9 @@ use Joomla\Utilities\ArrayHelper;
  */
 class PlgFabrik_ElementAverage extends PlgFabrik_Element
 {
+	// Bound by the DECIMAL(10,2) column
+	public const MAX_DECIMALS = 2;
+
 	/**
 	 * Get database field description
 	 *
@@ -41,8 +44,10 @@ class PlgFabrik_ElementAverage extends PlgFabrik_Element
 		$displayData->type = 'text';
 		$displayData->id   = $this->getHTMLId($repeatCounter);
 
+		$decimals           = $this->getDecimals();
 		$value              = $this->getValue($data, $repeatCounter);
-		$displayData->value = !empty($value) ? $value : "0.00";
+		$displayData->value = number_format((float) $value, $decimals, '.', '');
+		$displayData->step  = 10 ** -$decimals;
 
 		return $layout->render($displayData);
 	}
@@ -61,9 +66,21 @@ class PlgFabrik_ElementAverage extends PlgFabrik_Element
 		$opts   = $this->getElementJSOptions($repeatCounter);
 
 		$opts->average_over = (int) $params->get('average_over', 20);
+		$opts->decimals     = $this->getDecimals();
+		$opts->rounding     = $this->getRounding();
 		$opts->elements_to_observe = $this->getObservedFields();
 
 		return array('FbAverage', $id, $opts);
+	}
+
+	private function getDecimals(): int
+	{
+		return max(0, min(self::MAX_DECIMALS, (int) $this->getParams()->get('decimals', self::MAX_DECIMALS)));
+	}
+
+	private function getRounding(): string
+	{
+		return (string) $this->getParams()->get('rounding', 'round');
 	}
 
 	private function getObservedFields(): array
@@ -137,7 +154,8 @@ class PlgFabrik_ElementAverage extends PlgFabrik_Element
 		{
 			foreach ($observedFields as $field)
 			{
-				$element = $field['element'];
+				$element      = $field['element'];
+				$elementModel = $this->getFormModel()->getElement($element) ?: null;
 
 				$value = ArrayHelper::getValue($data, $element . '_raw');
 				if ($this->getGroup()->canRepeat())
@@ -147,20 +165,56 @@ class PlgFabrik_ElementAverage extends PlgFabrik_Element
 
 				if (is_array($value))
 				{
-					$value = array_sum($value) / count($value);
+					$value = array_map(fn($v) => $this->toNumber($v, $elementModel), $value);
+					$value = !empty($value) ? array_sum($value) / count($value) : 0;
+				}
+				else
+				{
+					$value = $this->toNumber($value, $elementModel);
 				}
 
 				$fieldValues[] = [
-					'value'  => (float) $value,
+					'value'  => $value,
 					'max'    => (float) $field['max'],
 					'weight' => (float) $field['weight']
 				];
 			}
 
-			$average = self::calculateAverage($fieldValues, $averageOver);
+			$average = self::roundAverage(self::calculateAverage($fieldValues, $averageOver), $this->getDecimals(), $this->getRounding());
 		}
 
 		return $average;
+	}
+
+	/**
+	 * Submitted values keep the observed element's display format (e.g. "10,5" or "1 000,5" for numeric)
+	 *
+	 * @param   mixed                   $value
+	 * @param   PlgFabrik_Element|null  $elementModel
+	 *
+	 * @return float
+	 */
+	private function toNumber(mixed $value, ?PlgFabrik_Element $elementModel = null): float
+	{
+		if (is_array($value) || $value === null || $value === '')
+		{
+			return 0.0;
+		}
+
+		if ($elementModel instanceof PlgFabrik_ElementNumeric)
+		{
+			return $elementModel->storeDatabaseFormat($value, []);
+		}
+
+		return self::parseNumber((string) $value);
+	}
+
+	public static function parseNumber(string $value): float
+	{
+		$value = preg_replace('/[\s\x{00A0}\x{202F}]/u', '', $value);
+		$value = str_replace(',', '.', $value);
+
+		return is_numeric($value) ? (float) $value : 0.0;
 	}
 
 	/**
@@ -200,5 +254,28 @@ class PlgFabrik_ElementAverage extends PlgFabrik_Element
 		}
 
 		return $average;
+	}
+
+	/**
+	 * @param   float   $value
+	 * @param   int     $decimals
+	 * @param   string  $rounding  round, ceil or floor
+	 *
+	 * @return float
+	 */
+	public static function roundAverage(float $value, int $decimals = self::MAX_DECIMALS, string $rounding = 'round'): float
+	{
+		$decimals = max(0, min(self::MAX_DECIMALS, $decimals));
+		$factor   = 10 ** $decimals;
+
+		// Strip float noise before ceil/floor, otherwise 12.3 * 10 = 123.00000000000001 is ceiled to 124
+		$scaled = round($value * $factor, 6);
+
+		return match ($rounding)
+		{
+			'ceil' => ceil($scaled) / $factor,
+			'floor' => floor($scaled) / $factor,
+			default => round($value, $decimals),
+		};
 	}
 }

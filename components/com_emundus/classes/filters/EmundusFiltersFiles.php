@@ -9,6 +9,7 @@ use Joomla\CMS\Log\Log;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 
 class EmundusFiltersFiles extends EmundusFilters
 {
@@ -1004,29 +1005,33 @@ class EmundusFiltersFiles extends EmundusFilters
 			$m_workflow = new EmundusModelWorkflow();
 			$steps = $m_workflow->getEvaluatorSteps($this->user->id);
 
-			$at_least_one = false;
+			$step_ids_by_table = [];
 			foreach($steps as $step)
 			{
 				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asAccessAction($step->action_id, 'u', $this->user->id))
 				{
-					$at_least_one = true;
+					$step_ids_by_table[$step->table][] = (int) $step->id;
+				}
+			}
+			$at_least_one = !empty($step_ids_by_table);
 
-					$query->clear()
-						->select('ju.id as value, CONCAT(ju.name, " ", ju.email ) as label')
-						->from('#__users as ju')
-						->leftJoin($step->table . ' AS eval_table ON eval_table.evaluator = ju.id')
-						->where('eval_table.step_id = ' . $step->id)
-						->group('ju.id');
+			foreach ($step_ids_by_table as $table => $step_ids)
+			{
+				$query->clear()
+					->select('ju.id as value, CONCAT(ju.name, " ", ju.email ) as label')
+					->from('#__users as ju')
+					->leftJoin($table . ' AS eval_table ON eval_table.evaluator = ju.id')
+					->where('eval_table.step_id IN (' . implode(',', $step_ids) . ')')
+					->group('ju.id');
 
-					try
-					{
-						$db->setQuery($query);
-						$evaluators = array_merge($evaluators, $db->loadAssocList());
-					}
-					catch (Exception $e)
-					{
-						Log::add('Failed to get evaluators associated to profiles that current' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
-					}
+				try
+				{
+					$db->setQuery($query);
+					$evaluators = array_merge($evaluators, $db->loadAssocList());
+				}
+				catch (Exception $e)
+				{
+					Log::add('Failed to get evaluators associated to profiles that current' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
 				}
 			}
 			
@@ -1071,7 +1076,7 @@ class EmundusFiltersFiles extends EmundusFilters
 							$new_default_filter['default'] = true;
 							if (empty($new_default_filter['value']))
 							{
-								$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
+								$new_default_filter['value'] = match ($new_default_filter['type']) { 'select' => ['all'], ElementPluginEnum::ORDERLIST->value => [], default => '' };
 							}
 							$new_default_filter['andorOperator'] = 'OR';
 							$new_default_filter['operator']      = '=';
@@ -1080,6 +1085,11 @@ class EmundusFiltersFiles extends EmundusFilters
 							{
 								$new_default_filter['operator'] = 'IN';
 								$new_default_filter['values']   = $this->getFabrikElementValuesFromElementId($filter['id'], false);
+							}
+							elseif ($new_default_filter['type'] === ElementPluginEnum::ORDERLIST->value)
+							{
+								$new_default_filter['values'] = $this->getFabrikElementValuesFromElementId($filter['id'], false);
+								$new_default_filter['andorOperator'] = 'AND';
 							}
 							$found = true;
 							break;
@@ -1111,7 +1121,7 @@ class EmundusFiltersFiles extends EmundusFilters
 								$new_default_filter['default'] = true;
 								if (empty($new_default_filter['value']))
 								{
-									$new_default_filter['value'] = $new_default_filter['type'] === 'select' ? ['all'] : '';
+									$new_default_filter['value'] = match ($new_default_filter['type']) { 'select' => ['all'], ElementPluginEnum::ORDERLIST->value => [], default => '' };
 								}
 								$new_default_filter['andorOperator'] = 'OR';
 								$new_default_filter['operator']      = '=';
@@ -1120,6 +1130,11 @@ class EmundusFiltersFiles extends EmundusFilters
 								{
 									$new_default_filter['operator'] = 'IN';
 									$new_default_filter['values']   = $this->getFabrikElementValuesFromElementId($element['id'], false);
+								}
+								elseif ($new_default_filter['type'] === ElementPluginEnum::ORDERLIST->value)
+								{
+									$new_default_filter['values'] = $this->getFabrikElementValuesFromElementId($element['id'], false);
+									$new_default_filter['andorOperator'] = 'AND';
 								}
 								else
 								{
@@ -1220,7 +1235,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				// find filter in filters
 				foreach ($this->filters as $i_filter => $filter) {
 					if ($filter['id'] == $session_filter['id']) {
-						if ($filter['type'] == 'select' && empty($filter['values'])) {
+						if (in_array($filter['type'], ['select', ElementPluginEnum::ORDERLIST->value]) && empty($filter['values'])) {
 							$filter['values'] = $this->getFabrikElementValuesFromElementId($filter['id'], false);
 							$this->filters[$i_filter] = $filter;
 						}

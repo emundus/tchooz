@@ -72,11 +72,8 @@ class EmundusHelperExport
 
 		if ($result) {
 
-			$result = EMUNDUS_PATH_ABS . $sid . DS . $fnum;
 			if (!empty($override_filename)) {
 				$result .= $override_filename . '.pdf';
-			} else {
-				$result .= '_application.pdf';
 			}
 		}
 

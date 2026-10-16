@@ -88,11 +88,4 @@ class TransactionsController extends ApiController
 
 		return parent::displayList();
 	}
-
-	public function displayItem($id = null)
-	{
-		$item = $this->getModel('transaction')->getItem($id);
-
-		return parent::displayItem($item);
-	}
 }

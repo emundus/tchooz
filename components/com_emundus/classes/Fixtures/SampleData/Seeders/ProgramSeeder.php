@@ -137,6 +137,38 @@ final class ProgramSeeder
 	}
 
 	/**
+	 * Programs produced by this seeder: the showcase codes declared in ProgramFixtures plus any
+	 * procedural programs.
+	 *
+	 * @return  array<int, array{id: int, code: string}>
+	 */
+	public function loadSeeded(): array
+	{
+		$codes = array_column(ProgramFixtures::programs(), 'code');
+
+		$query = $this->db->getQuery(true)
+			->select([$this->db->quoteName('id'), $this->db->quoteName('code')])
+			->from($this->db->quoteName('#__emundus_setup_programmes'))
+			->where($this->db->quoteName('code') . ' LIKE ' . $this->db->quote(self::PROCEDURAL_CODE_PREFIX . '%'));
+
+		if (!empty($codes))
+		{
+			$quotedCodes = array_map([$this->db, 'quote'], $codes);
+			$query->extendWhere('OR', $this->db->quoteName('code') . ' IN (' . implode(',', $quotedCodes) . ')');
+		}
+
+		$this->db->setQuery($query);
+
+		$programs = [];
+		foreach ($this->db->loadObjectList() ?: [] as $row)
+		{
+			$programs[] = ['id' => (int) $row->id, 'code' => (string) $row->code];
+		}
+
+		return $programs;
+	}
+
+	/**
 	 * Build one procedural program row with a stable, index-based code.
 	 */
 	private function buildProceduralProgram(int $index): object

@@ -100,7 +100,12 @@ requirejs(['fab/fabrik'], function () {
     'empty': function (a, b, plugin) {
       // check if a is empty
         if (!Array.isArray(a)) {
-          return (a === null || a === undefined || a === '' || a === 0 || a === false || a === '0');
+          if(plugin !== 'numeric') {
+            return (a === null || a === undefined || a === '' || a === 0 || a === false || a === '0');
+          }
+          else {
+            return (a === null || a === undefined || a === '' || a === false);
+          }
         }
         else {
           return a.length === 0;
@@ -109,7 +114,12 @@ requirejs(['fab/fabrik'], function () {
     '!empty': function (a, b, plugin) {
         // check if a is not empty
         if (!Array.isArray(a)) {
+          if(plugin !== 'numeric') {
             return (a !== null && a !== undefined && a !== '' && a !== 0 && a !== false && a !== '0');
+          }
+          else {
+            return (a !== null && a !== undefined && a !== '' && a !== false);
+          }
         }
         else {
             return a.length > 0;
@@ -834,7 +844,7 @@ requirejs(['fab/fabrik'], function () {
   function addOption(field, params) {
     params = JSON.parse(params);
 
-    if(field.plugin === 'fabrikcheckbox')
+    if(field.plugin === 'fabrikcheckbox' || field.plugin === 'fabrikradiobutton')
     {
       const options = field.subElements;
       params.forEach((p) => {
@@ -895,7 +905,7 @@ requirejs(['fab/fabrik'], function () {
     const values = params.map((param) => {
       return param.primary_key.toString();
     });
-    if(field.plugin === 'fabrikcheckbox')
+    if(field.plugin === 'fabrikcheckbox' || field.plugin === 'fabrikradiobutton')
     {
       const options = field.subElements;
       for (let i = options.length - 1; i >= 0; i--) {
@@ -920,7 +930,7 @@ requirejs(['fab/fabrik'], function () {
 
   function sortSelect(field) {
     let selElem = field.element;
-    if(field.plugin === 'fabrikcheckbox')
+    if(field.plugin === 'fabrikcheckbox' || field.plugin === 'fabrikradiobutton')
     {
       let subOptionsInOrder = field.subElements;
       for (let i = 0; i <= subOptionsInOrder.length - 1; i++) {

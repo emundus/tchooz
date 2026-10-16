@@ -20,8 +20,11 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Favorite\FavoriteFileRepository;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 
 if(!class_exists('EmundusHelperCache'))
 {
@@ -38,6 +41,108 @@ if(!class_exists('EmundusHelperCache'))
  */
 class EmundusHelperFiles
 {
+	/**
+	 * Tables joined by COUNT_FROM, by alias, for the filter values count.
+	 */
+	private const COUNT_ALREADY_JOINED = [
+		'jecc' => 'jos_emundus_campaign_candidature',
+		'eccc' => 'jos_emundus_campaign_candidature_choices',
+		'ss'   => 'jos_emundus_setup_status',
+		'esc'  => 'jos_emundus_setup_campaigns',
+		'escm' => 'jos_emundus_setup_campaigns_more',
+		'sp'   => 'jos_emundus_setup_programmes',
+		'u'    => 'jos_users',
+		'eu'   => 'jos_emundus_users',
+		'eta'  => 'jos_emundus_tag_assoc',
+		'eir'  => 'jos_emundus_internal_reference',
+	];
+
+	/**
+	 * Same joins as the files and evaluation lists (EmundusModelFiles::getAllUsers(), EmundusModelEvaluation::getEvaluationsList()),
+	 * so a file listed through one of its application choices is counted too.
+	 */
+	private const COUNT_FROM = 'FROM #__emundus_campaign_candidature as jecc
+		LEFT JOIN #__emundus_campaign_candidature_choices as eccc on eccc.fnum = jecc.fnum
+		LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
+		LEFT JOIN #__emundus_setup_campaigns as esc on (esc.id = jecc.campaign_id OR esc.id = eccc.campaign_id)
+		LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
+		LEFT JOIN #__emundus_setup_programmes as sp on sp.id = esc.program_id
+		LEFT JOIN #__users as u on u.id = jecc.applicant_id
+		LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
+		LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum
+		LEFT JOIN #__emundus_internal_reference as eir on eir.ccid=jecc.id and eir.active = 1 ';
+
+	/**
+	 * Request-scoped memos for fabrik element/join metadata, keyed by element id. This config is
+	 * immutable within a request, yet _moduleBuildWhere() resolves it once per applied filter on
+	 * every step query — so an evaluation list over N steps repeats the same ~F lookups N times.
+	 * Caching turns that N×F into F.
+	 *
+	 * @var array<int, array>
+	 */
+	private static array $fabrikElementDataCache = [];
+	private static array $joinInformationsCache = [];
+
+	/**
+	 * Request-scoped memo for the evaluators-filter candidature-id set in _moduleBuildWhere().
+	 * It depends only on the user, the selected evaluators and the operator — never on the step
+	 * being queried — yet an evaluation list resolves it once per step query. Keyed user|operator|value.
+	 *
+	 * @var array<string, array>
+	 */
+	private static array $evaluatorFilterCcidsCache = [];
+
+	/**
+	 * Request-scoped memo for the #__fabrik_joins lookup used when resolving element join tables.
+	 * Deterministic by (table_join, join_from_table, list_id); the evaluation list resolves the same
+	 * joins once per step query, so caching turns that per-step repeat into a single lookup.
+	 *
+	 * @var array<string, array|null>
+	 */
+	private static array $fabrikJoinCache = [];
+
+	/**
+	 * Request-scoped memo for isTableLinkedToCampaignCandidature(): whether a table has an `fnum`
+	 * column. Deterministic per table name; resolved once per element/filter on every step query
+	 * otherwise. Keyed by table name.
+	 *
+	 * @var array<string, bool>
+	 */
+	private static array $tableLinkedToFnumCache = [];
+
+	/**
+	 * Memoized #__fabrik_joins lookup: the join row linking $join_from_table to $table_join for a
+	 * given fabrik list, on table_key 'id'. Returns the row (assoc) or null. Request-scoped cache.
+	 */
+	public function getFabrikJoinLookup($table_join, $join_from_table, $list_id)
+	{
+		$cache_key = $table_join . '|' . $join_from_table . '|' . $list_id;
+		if (array_key_exists($cache_key, self::$fabrikJoinCache))
+		{
+			return self::$fabrikJoinCache[$cache_key];
+		}
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+		$query->select('*')
+			->from('#__fabrik_joins')
+			->where('table_join = ' . $db->quote($table_join))
+			->andWhere('join_from_table = ' . $db->quote($join_from_table))
+			->andWhere('table_key = ' . $db->quote('id'))
+			->andWhere('list_id = ' . $db->quote($list_id));
+
+		$result = null;
+		try {
+			$db->setQuery($query);
+			$result = $db->loadAssoc();
+		} catch (Exception $e) {
+			Log::add('Failed fabrik join lookup: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		self::$fabrikJoinCache[$cache_key] = $result;
+
+		return $result;
+	}
 
 	/*
     ** @description Clear session and reinit values by default
@@ -329,6 +434,28 @@ class EmundusHelperFiles
 		}
 
 		return $results;
+	}
+
+	/**
+	 * SQL expression displaying an orderlist value, stored as "value1","value2", as its ordered labels.
+	 *
+	 * @param   string       $column
+	 * @param   object|null  $element_attribs  Decoded params of the orderlist element
+	 *
+	 * @return string
+	 */
+	public static function orderlistLabelsSelect(string $column, ?object $element_attribs): string
+	{
+		$db     = Factory::getContainer()->get('DatabaseDriver');
+		$select = 'REPLACE(' . $column . ', ' . $db->quote('","') . ', ' . $db->quote('", "') . ')';
+
+		foreach ($element_attribs->sub_options->sub_values ?? [] as $key => $value)
+		{
+			$label  = Text::_($element_attribs->sub_options->sub_labels[$key] ?? $value);
+			$select = 'REPLACE(' . $select . ', ' . $db->quote('"' . $value . '"') . ', ' . $db->quote($label) . ')';
+		}
+
+		return $select;
 	}
 
 	public static function getCurrentCampaign()
@@ -4772,7 +4899,7 @@ class EmundusHelperFiles
 						continue;
 					}
 
-					if ((!is_array($filter['value']) || !in_array('all', $filter['value'], true)) && (!empty($filter['value']) || $filter['value'] == '0'))
+					if (self::isFilterActive($filter))
 					{
 						$filter_id = str_replace(['default-filter-', 'filter-'], '', $filter['id']);
 
@@ -4804,7 +4931,7 @@ class EmundusHelperFiles
 													if (!in_array($parent_table, $already_joined))
 													{
 														$already_joined[] = $parent_table;
-														$where['join']    .= ' LEFT JOIN ' . $db->quoteName($parent_table) . ' ON ' . $parent_table . '.fnum = jecc.fnum ';
+														$where['join']    .= ' LEFT JOIN ' . $db->quoteName($parent_table) . ' ON ' . $parent_table . '.fnum = jecc.fnum ' . $this->listedStepJoinCondition($parent_table, $caller_params);
 													}
 
 													if (!in_array($fabrik_element_data['db_table_name'], $already_joined))
@@ -4822,16 +4949,7 @@ class EmundusHelperFiles
 											{
 												$already_join_alias = !is_numeric($already_join_alias) ? $already_join_alias : $already_joined_table_name;
 
-												$query->clear()
-													->select('*')
-													->from('#__fabrik_joins')
-													->where('table_join = ' . $db->quote($already_joined_table_name))
-													->andWhere('join_from_table = ' . $db->quote($fabrik_element_data['db_table_name']))
-													->andWhere('table_key = ' . $db->quote('id'))
-													->andWhere('list_id = ' . $db->quote($fabrik_element_data['list_id']));
-
-												$db->setQuery($query);
-												$join_informations = $db->loadAssoc();
+												$join_informations = $this->getFabrikJoinLookup($already_joined_table_name, $fabrik_element_data['db_table_name'], $fabrik_element_data['list_id']);
 
 												if (!empty($join_informations))
 												{
@@ -4866,7 +4984,7 @@ class EmundusHelperFiles
 												if (!in_array($parent_table, $already_joined))
 												{
 													$already_joined[] = $parent_table;
-													$where['join']    .= ' LEFT JOIN ' . $db->quoteName($parent_table) . ' ON ' . $parent_table . '.fnum = jecc.fnum ';
+													$where['join']    .= ' LEFT JOIN ' . $db->quoteName($parent_table) . ' ON ' . $parent_table . '.fnum = jecc.fnum ' . $this->listedStepJoinCondition($parent_table, $caller_params);
 												}
 												else
 												{
@@ -4900,7 +5018,7 @@ class EmundusHelperFiles
 												}
 												$child_table_alias = !empty($child_table_alias) && !is_numeric($child_table_alias) ? $child_table_alias : $child_table;
 
-												$where['q'] .= ' AND ' . $this->writeQueryWithOperator($child_table_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type'], $fabrik_element_data);
+												$where['q'] .= ' AND ' . $this->writeQueryWithOperator($child_table_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type'], $fabrik_element_data, $filter['andorOperator'] ?? 'OR');
 											}
 										}
 										else
@@ -4914,7 +5032,7 @@ class EmundusHelperFiles
 										if (!in_array($fabrik_element_data['db_table_name'], $already_joined))
 										{
 											$already_joined[] = $fabrik_element_data['db_table_name'];
-											$where['join']    .= ' LEFT JOIN ' . $db->quoteName($fabrik_element_data['db_table_name']) . ' ON ' . $fabrik_element_data['db_table_name'] . '.fnum = jecc.fnum ';
+											$where['join']    .= ' LEFT JOIN ' . $db->quoteName($fabrik_element_data['db_table_name']) . ' ON ' . $fabrik_element_data['db_table_name'] . '.fnum = jecc.fnum ' . $this->listedStepJoinCondition($fabrik_element_data['db_table_name'], $caller_params);
 										}
 										else
 										{
@@ -4922,7 +5040,7 @@ class EmundusHelperFiles
 										}
 										$db_table_name_alias = !empty($db_table_name_alias) && !is_numeric($db_table_name_alias) ? $db_table_name_alias : $fabrik_element_data['db_table_name'];
 
-										$where['q'] .= ' AND ' . $this->writeQueryWithOperator($db_table_name_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type'], $fabrik_element_data);
+										$where['q'] .= ' AND ' . $this->writeQueryWithOperator($db_table_name_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type'], $fabrik_element_data, $filter['andorOperator'] ?? 'OR');
 									}
 								} else {
 									dump($fabrik_element_data);
@@ -5048,7 +5166,7 @@ class EmundusHelperFiles
 									}
 									else
 									{
-										$setup_groups_alias = array_search('jos_emundus_setup_groups_repeat_course', $already_joined);
+										$setup_groups_alias = array_search('jos_emundus_setup_groups', $already_joined);
 									}
 
 									if ($filter['andorOperator'] === 'AND' && is_array($filter['value']) && sizeof($filter['value']) > 1) {
@@ -5110,7 +5228,7 @@ class EmundusHelperFiles
 										$users_assoc_alias = 'jeua';
 										$where['join'] .= ' LEFT JOIN #__emundus_users_assoc as jeua on jeua.fnum = ' . $jecc_alias . '.fnum AND action_id = 1';
 									} else {
-										$users_assoc_alias = array_search('jos_emundus_group_assoc', $already_joined);
+										$users_assoc_alias = array_search('jos_emundus_users_assoc', $already_joined);
 									}
 
 									if ($filter['andorOperator'] === 'AND' && is_array($filter['value']) && sizeof($filter['value']) > 1) {
@@ -5255,10 +5373,14 @@ class EmundusHelperFiles
 
 									require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 									$m_workflow = new EmundusModelWorkflow();
-									$steps = $m_workflow->getEvaluatorSteps($user->id);
+									$steps = $caller_params['evaluator_steps'] ?? $m_workflow->getEvaluatorSteps($user->id);
+									// The value is a list ([1], [0] or both): a list is never == 1.
+									$evaluated_values = (array) $filter['value'];
+									$listed_step_ids  = $caller_params['listed_step_ids'] ?? [];
+									$step_conditions  = [];
 									if (!empty($steps)) {
 										foreach ($steps as $step) {
-											if (is_array($filter['value']) && in_array('0', $filter['value']) && in_array('1', $filter['value'])) {
+											if (in_array('0', $evaluated_values) && in_array('1', $evaluated_values)) {
 												continue;
 											}
 
@@ -5266,79 +5388,54 @@ class EmundusHelperFiles
 												continue;
 											}
 
-											$ccids = $m_workflow->getEvaluatedFilesByUser($step, $user->id);
+											if (!empty($listed_step_ids) && !in_array($step->id, $listed_step_ids)) {
+												continue;
+											}
 
-											if ($filter['value'] == 1) {
+											$ccids = $caller_params['evaluated_files'][$step->id] ?? $m_workflow->getEvaluatedFilesByUser($step, $user->id);
+
+											if (in_array('1', $evaluated_values)) {
 												if (empty($ccids)) {
-													if ($filter['operator'] === 'IN') {
-														$where['q'] .= ' AND 1=2';
-													} else {
-														$where['q'] .= ' AND 1=1';
-													}
+													$condition = $filter['operator'] === 'IN' ? '1=2' : '1=1';
 												} else {
-													$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.id', $ccids, $filter['operator']);
+													$condition = $this->writeQueryWithOperator('jecc.id', $ccids, $filter['operator']);
 												}
 											} else {
 												if (empty($ccids)) {
-													if ($filter['operator'] === 'IN') {
-														$where['q'] .= ' AND 1=1';
-													} else {
-														$where['q'] .= ' AND 1=2';
-													}
+													$condition = $filter['operator'] === 'IN' ? '1=1' : '1=2';
 												} else {
-													$operator = $filter['operator'] === 'IN' ? 'NOT IN' : 'IN';
-													$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.id', $ccids, $operator);
+													$operator  = $filter['operator'] === 'IN' ? 'NOT IN' : 'IN';
+													$condition = $this->writeQueryWithOperator('jecc.id', $ccids, $operator);
 												}
+											}
+
+											if (!empty($listed_step_ids)) {
+												$step_conditions[(int) $step->id] = $condition;
+											} else {
+												$where['q'] .= ' AND ' . $condition;
 											}
 										}
 									}
 
+									// Rows listed through the listed_step join: each row only answers to its own step's condition.
+									if (!empty($listed_step_ids) && !empty($step_conditions)) {
+										$by_step = [];
+										foreach ($listed_step_ids as $listed_step_id) {
+											$by_step[] = '(listed_step.step_id = ' . (int) $listed_step_id . (isset($step_conditions[(int) $listed_step_id]) ? ' AND ' . $step_conditions[(int) $listed_step_id] : '') . ')';
+										}
+										$where['q'] .= ' AND (' . implode(' OR ', $by_step) . ')';
+									}
+
 									break;
 								case 'evaluators':
-									require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
-									$m_workflow = new EmundusModelWorkflow();
-									$steps = $m_workflow->getEvaluatorSteps($user->id);
+									$evaluator_ids = array_filter(array_map('intval', (array) $filter['value']));
 
-									$evaluator_row_ids = [];
-									if (!empty($steps) && !empty($filter['value'])) {
-										foreach ($steps as $step) {
-											$query = $db->createQuery();
-											$query->select('jecc.id')
-												->from($db->quoteName('jos_emundus_campaign_candidature', 'jecc'))
-												->leftJoin($db->quoteName($step->table, 'eval') . ' ON eval.ccid = jecc.id AND eval.step_id = ' . $db->quote($step->id))
-												->where('jecc.published = 1');
+									if (!empty($evaluator_ids)) {
+										$steps     = $caller_params['evaluator_steps'] ?? $this->getEvaluatorSteps((int) $user->id);
+										$condition = $this->evaluatedByCondition($steps, $evaluator_ids);
 
-											if ($filter['operator'] === 'IN') {
-												if (is_array($filter['value'])) {
-													$query->where('evaluator IN (' . implode(',', $filter['value']) . ')');
-												} else {
-													$query->where('evaluator = ' . $db->quote($filter['value']));
-												}
-											} else {
-												if (is_array($filter['value'])) {
-													$query->where('evaluator NOT IN (' . implode(',', $filter['value']) . ') OR evaluator IS NULL');
-												} else {
-													$query->where('evaluator != ' . $db->quote($filter['value']) . ' OR evaluator IS NULL');
-												}
-											}
-
-											$db->setQuery($query);
-											$ccids = $db->loadColumn();
-
-											if (!empty($ccids)) {
-												$evaluator_row_ids = array_merge($evaluator_row_ids, $ccids);
-											}
-										}
-
-										if (!empty($evaluator_row_ids)) {
-											$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.id', $evaluator_row_ids, 'IN');
-										} else {
-											if ($filter['operator'] === 'IN') {
-												$where['q'] .= ' AND 1=2';
-											} else {
-												$where['q'] .= ' AND 1=1';
-											}
-										}
+										// NOT IN means evaluated by none of them, so it negates the whole condition rather than each row.
+										$where['q'] .= ' AND ' . ($filter['operator'] === 'NOT IN' ? 'NOT ' : '') . $condition;
 									}
 									break;
 								case 'application_choices':
@@ -5407,12 +5504,38 @@ class EmundusHelperFiles
 		return $where;
 	}
 
+	/**
+	 * Restriction of an evaluation table joined on the files to the rows' steps, when the caller
+	 * lists one row per step (listed_step_ids, see EmundusModelEvaluation::buildListedStepsJoins()):
+	 * a criterion of an evaluation form then only applies to the evaluations of its own steps, as
+	 * the list columns do.
+	 *
+	 * @param   string  $table
+	 * @param   array   $caller_params
+	 *
+	 * @return string
+	 */
+	private function listedStepJoinCondition(string $table, array $caller_params): string
+	{
+		if (empty($caller_params['listed_step_ids']) || !str_starts_with($table, 'jos_emundus_evaluations_'))
+		{
+			return '';
+		}
+
+		return ' AND ' . $table . '.step_id = listed_step.step_id';
+	}
+
 	public function getFabrikElementData(int $element_id): array
 	{
 		$data = [];
 
 		if (!empty($element_id))
 		{
+			if (array_key_exists($element_id, self::$fabrikElementDataCache))
+			{
+				return self::$fabrikElementDataCache[$element_id];
+			}
+
 			/**
 			 * I need, list id, form id, groupd id and group params, table name and element name
 			 */
@@ -5453,6 +5576,8 @@ class EmundusHelperFiles
 			{
 				$data['db_table_name'] = $data['fabrik_table_join'];
 			}
+
+			self::$fabrikElementDataCache[$element_id] = $data;
 		}
 
 		return $data;
@@ -5464,6 +5589,11 @@ class EmundusHelperFiles
 
 		if (!empty($element_id))
 		{
+			if (array_key_exists($element_id, self::$joinInformationsCache))
+			{
+				return self::$joinInformationsCache[$element_id];
+			}
+
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 			if (!empty($element_id))
@@ -5482,6 +5612,8 @@ class EmundusHelperFiles
 					Log::add('Failed to retreive join informations in filter context ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
+
+			self::$joinInformationsCache[$element_id] = $data;
 
 			if ((empty($data) || empty($data['join_from_table'])) && !empty($group_id))
 			{
@@ -5795,6 +5927,11 @@ class EmundusHelperFiles
 	{
 		$query = '1=1';
 
+		if (($fabrik_element_data['plugin'] ?? null) === ElementPluginEnum::ORDERLIST->value)
+		{
+			return $this->orderlistRanksQuery($element, $values, $operator, $andor);
+		}
+
 		if (!empty($element) && (!empty($values) || $values == '0') && !empty($operator))
 		{
 			$db = Factory::getContainer()->get('DatabaseDriver');
@@ -6019,6 +6156,57 @@ class EmundusHelperFiles
 		return $query;
 	}
 
+	/**
+	 * Condition on the ranks of an orderlist value. Each criterion is true when one of its choices is at its rank.
+	 *
+	 * @param   string  $element
+	 * @param   mixed   $values    List of ['values' => choices, 'rank' => position starting at 1]
+	 * @param   string  $operator  '!=' negates the whole condition
+	 * @param   string  $andor     How the criteria are combined, AND or OR
+	 *
+	 * @return string
+	 */
+	private function orderlistRanksQuery(string $element, $values, $operator, $andor): string
+	{
+		$db         = Factory::getContainer()->get('DatabaseDriver');
+		$conditions = [];
+
+		// FIND_IN_SET gives the position of the choice in the comma separated list, once the quotes removed
+		$positions = 'REPLACE(' . $element . ', ' . $db->quote('"') . ', ' . $db->quote('') . ')';
+
+		foreach (is_array($values) ? $values : [] as $criterion)
+		{
+			if (!is_array($criterion) || empty($criterion['values']) || !is_array($criterion['values']) || (int) ($criterion['rank'] ?? 0) < 1)
+			{
+				continue;
+			}
+			$rank = (int) $criterion['rank'];
+
+			$choices = [];
+			foreach ($criterion['values'] as $choice)
+			{
+				if (is_scalar($choice) && $choice !== '')
+				{
+					$choices[] = 'FIND_IN_SET(' . $db->quote((string) $choice) . ', ' . $positions . ') = ' . $rank;
+				}
+			}
+
+			if (!empty($choices))
+			{
+				$conditions[] = '(' . implode(' OR ', $choices) . ')';
+			}
+		}
+
+		if (empty($conditions))
+		{
+			return '1=1';
+		}
+
+		$condition = '(' . implode(strtoupper((string) $andor) === 'OR' ? ' OR ' : ' AND ', $conditions) . ')';
+
+		return $operator === '!=' ? '(NOT ' . $condition . ' OR ' . $element . ' IS NULL)' : $condition;
+	}
+
 	private function notInQuery($element, $values, $fabrik_element_data)
 	{
 		$query       = '1=1';
@@ -6026,7 +6214,7 @@ class EmundusHelperFiles
 
 		$db = Factory::getContainer()->get('DatabaseDriver');
 
-		if ($fabrik_element_data['plugin'] === 'checkbox')
+		if (($fabrik_element_data['plugin'] ?? null) === 'checkbox')
 		{
 			if (is_array($values))
 			{
@@ -6110,7 +6298,7 @@ class EmundusHelperFiles
 
 		if ($simple_case)
 		{
-			if ($fabrik_element_data['plugin'] === 'checkbox')
+			if (($fabrik_element_data['plugin'] ?? null) === 'checkbox')
 			{
 				$values = explode(',', $values);
 				foreach ($values as $key => $value)
@@ -6135,6 +6323,491 @@ class EmundusHelperFiles
 		}
 
 		return $query;
+	}
+
+	/**
+	 * Whether a session filter restricts the files: it has a value, '0' included, other than 'all'.
+	 */
+	private static function isFilterActive(array $filter): bool
+	{
+		$value = $filter['value'] ?? null;
+
+		return (!is_array($value) || !in_array('all', $value, true)) && (!empty($value) || $value == '0');
+	}
+
+	/**
+	 * @return array  Evaluation steps the user can create or read, from EmundusModelWorkflow::getEvaluatorSteps().
+	 */
+	private function getEvaluatorSteps(int $user_id): array
+	{
+		if (!class_exists('EmundusModelWorkflow'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/models/workflow.php';
+		}
+
+		return (new EmundusModelWorkflow())->getEvaluatorSteps($user_id);
+	}
+
+	/**
+	 * Condition true when the file has an evaluation by one of the evaluators in one of the steps.
+	 * One EXISTS per evaluation table, covering every step stored in it.
+	 *
+	 * @param   array  $steps          Steps with their id and evaluation table.
+	 * @param   int[]  $evaluator_ids
+	 *
+	 * @return string
+	 */
+	private function evaluatedByCondition(array $steps, array $evaluator_ids): string
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		$step_ids_by_table = [];
+		foreach ($steps as $step)
+		{
+			if (!empty($step->table))
+			{
+				$step_ids_by_table[$step->table][] = (int) $step->id;
+			}
+		}
+
+		$exists = [];
+		foreach ($step_ids_by_table as $table => $step_ids)
+		{
+			$exists[] = 'EXISTS (SELECT 1 FROM ' . $db->quoteName($table, 'evaluated_by') . '
+				WHERE evaluated_by.ccid = jecc.id
+				AND evaluated_by.step_id IN (' . implode(',', $step_ids) . ')
+				AND evaluated_by.evaluator IN (' . implode(',', array_map('intval', $evaluator_ids)) . '))';
+		}
+
+		return empty($exists) ? 'FALSE' : '(' . implode(' OR ', $exists) . ')';
+	}
+
+	/**
+	 * Data the evaluation filters need in _moduleBuildWhere(), computed once for every count of a
+	 * call instead of once per counted filter: the user's evaluation steps when the evaluators or
+	 * evaluated filter is active, and the files evaluated in each step when the evaluated one is.
+	 *
+	 * @param   int    $user_id
+	 * @param   array  $session_filters  Session filters (em-applied-filters).
+	 *
+	 * @return array{evaluator_steps?: array, evaluated_files?: array<int, int[]>}
+	 */
+	private function prepareEvaluationFilterParams(int $user_id, array $session_filters): array
+	{
+		$active = [];
+		foreach ($session_filters as $filter)
+		{
+			if (in_array($filter['uid'] ?? '', ['evaluators', 'evaluated'], true) && self::isFilterActive($filter))
+			{
+				$active[$filter['uid']] = true;
+			}
+		}
+
+		if (empty($active))
+		{
+			return [];
+		}
+
+		$params = ['evaluator_steps' => $this->getEvaluatorSteps($user_id)];
+
+		if (!empty($active['evaluated']))
+		{
+			if (!class_exists('EmundusModelWorkflow'))
+			{
+				require_once JPATH_ROOT . '/components/com_emundus/models/workflow.php';
+			}
+
+			$m_workflow = new EmundusModelWorkflow();
+			foreach ($params['evaluator_steps'] as $step)
+			{
+				$params['evaluated_files'][$step->id] = $m_workflow->getEvaluatedFilesByUser($step, $user_id);
+			}
+		}
+
+		return $params;
+	}
+
+	/**
+	 * Files view count: files matching the other filters, by value.
+	 *
+	 * @return array<string, array{count: int}>|null  Null when the count failed.
+	 */
+	private function countFilesByValue(array $applied_filter, string $column, array $already_joined, string $leftJoins, array $where_params, $menu_item, User $user): ?array
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		$checkbox        = $applied_filter['plugin'] === 'checkbox';
+		$whereConditions = $this->_moduleBuildWhere($already_joined, 'files', $where_params, [$applied_filter['uid']], $menu_item, $user);
+		$count_query     = $this->buildCountQuery($column, 'jecc.id', $checkbox);
+
+		$query = $count_query['select'] . ' ' . self::COUNT_FROM . $leftJoins;
+		$query .= $whereConditions['join'];
+		$query .= ' WHERE u.block=0 ' . $whereConditions['q'];
+		$query .= $count_query['group'];
+
+		try
+		{
+			$db->setQuery($query);
+			$rows = $db->loadAssocList();
+
+			return $checkbox ? self::countItemsByOption($this->addCheckboxItems($rows)) : $this->sumCountsByValue($rows);
+		}
+		catch (Exception $e)
+		{
+			Log::add('Failed to get available values for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+
+			return null;
+		}
+	}
+
+	/**
+	 * Evaluation view count: what the evaluation list returns for each value, i.e. for every step
+	 * it lists, the step's evaluations (or the file itself when it has none), joined and filtered
+	 * as EmundusModelEvaluation::getEvaluationsList() does. A criterion of the step's form and the
+	 * evaluators filter then apply to the same evaluation, as in the list.
+	 *
+	 * The steps sharing an evaluation table are counted in one query, through
+	 * EmundusModelEvaluation::buildListedStepsJoins().
+	 *
+	 * @param   object[]  $listed_steps         From loadListedEvaluationSteps().
+	 * @param   int[]     $selected_evaluators  From EmundusModelEvaluation::getSelectedEvaluators().
+	 *
+	 * @return array<string, array{count: int}>|null  value => count, summed over the steps. Null when the count failed.
+	 */
+	private function countEvaluationsByValue(array $applied_filter, array $listed_steps, array $selected_evaluators, array $where_params, $menu_item, User $user): ?array
+	{
+		$db       = Factory::getContainer()->get('DatabaseDriver');
+		$checkbox = $applied_filter['plugin'] === 'checkbox';
+
+		if (empty($listed_steps))
+		{
+			// Nothing is listed: every value is at 0, unless the filter has no count at all.
+			$already_joined = self::COUNT_ALREADY_JOINED;
+			$leftJoins      = '';
+
+			return empty($this->resolveCountColumn($applied_filter, $already_joined, $leftJoins)) ? null : [];
+		}
+
+		$steps_by_table = [];
+		foreach ($listed_steps as $step_data)
+		{
+			$steps_by_table[$step_data->table][] = $step_data;
+		}
+
+		$element_table = is_numeric($applied_filter['id']) ? ($this->getFabrikElementData((int) $applied_filter['id'])['db_table_name'] ?? '') : '';
+
+		$counts          = [];
+		$items_by_option = [];
+		foreach ($steps_by_table as $table => $steps)
+		{
+			// A criterion of another evaluation form has no value on this table's rows (see listedStepJoinCondition()).
+			if (str_starts_with($element_table, 'jos_emundus_evaluations_') && $element_table !== $table)
+			{
+				continue;
+			}
+
+			// The step table is joined first so a criterion of its form resolves on that join.
+			$already_joined = self::COUNT_ALREADY_JOINED + [$table => $table];
+			$leftJoins      = '';
+			$column         = $this->resolveCountColumn($applied_filter, $already_joined, $leftJoins);
+
+			if (empty($column))
+			{
+				return null;
+			}
+
+			// A file without evaluation is listed once per step: its item is told apart by step.
+			$list_item = 'IF(' . $table . '.id IS NULL, CONCAT(listed_step.step_id, ' . $db->quote(':') . ', jecc.fnum), ' . $table . '.id)';
+
+			// The workflow_steps filter is already applied by listed_step; through _moduleBuildWhere it would
+			// also join the other steps' tables, multiplying the counted rows by their evaluations.
+			$step_params     = ['listed_step_ids' => array_map(fn($step) => (int) $step->id, $steps)];
+			$whereConditions = $this->_moduleBuildWhere($already_joined, 'files', $where_params + $step_params, [$applied_filter['uid'], 'workflow_steps'], $menu_item, $user);
+			$count_query     = $this->buildCountQuery($column, $list_item, $checkbox);
+
+			$query = $count_query['select'] . ' ' . self::COUNT_FROM;
+			$query .= EmundusModelEvaluation::buildListedStepsJoins($steps, (int) $user->id);
+			$query .= $leftJoins;
+			$query .= $whereConditions['join'];
+			// Unlike the files list, the evaluation list keeps the files of blocked applicants.
+			$query .= ' WHERE 1=1 ' . $whereConditions['q'];
+			$query .= EmundusModelEvaluation::buildSelectedEvaluatorsCondition($steps[0], $selected_evaluators);
+			$query .= $count_query['group'];
+
+			try
+			{
+				$db->setQuery($query);
+				$rows = $db->loadAssocList();
+
+				if ($checkbox)
+				{
+					$items_by_option = $this->addCheckboxItems($rows, $items_by_option, $table . ':');
+				}
+				else
+				{
+					$counts = $this->sumCountsByValue($rows, $counts);
+				}
+			}
+			catch (Exception $e)
+			{
+				Log::add('Failed to count evaluations of ' . $table . ' for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+
+				return null;
+			}
+		}
+
+		return $checkbox ? self::countItemsByOption($items_by_option) : $counts;
+	}
+
+	/**
+	 * Steps the evaluation list goes through, with an evaluation table.
+	 *
+	 * @return object[]  Steps from EmundusModelWorkflow::getStepData().
+	 */
+	private function loadListedEvaluationSteps(array $session_filters, int $user_id): array
+	{
+		if (!class_exists('EmundusModelEvaluation'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/models/evaluation.php';
+		}
+		if (!class_exists('EmundusModelWorkflow'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/models/workflow.php';
+		}
+
+		$m_workflow = new EmundusModelWorkflow();
+
+		$steps = [];
+		foreach (EmundusModelEvaluation::getEvaluationStepIds($session_filters, $user_id) as $step_id)
+		{
+			$step_data = $m_workflow->getStepData($step_id);
+			if (!empty($step_data->table))
+			{
+				$steps[] = $step_data;
+			}
+		}
+
+		return $steps;
+	}
+
+	/**
+	 * Select and grouping of a count query. A checkbox value is stored as a JSON list
+	 * ('["x","y"]'), so it cannot be grouped by option in SQL: its query returns the distinct
+	 * (item, stored value) pairs instead, counted by option with addCheckboxItems().
+	 *
+	 * @param   string  $column    Counted column.
+	 * @param   string  $item      Expression identifying a listed item (file or evaluation).
+	 * @param   bool    $checkbox
+	 *
+	 * @return array{select: string, group: string}
+	 */
+	private function buildCountQuery(string $column, string $item, bool $checkbox): array
+	{
+		if ($checkbox)
+		{
+			return ['select' => 'SELECT DISTINCT ' . $item . ' as item, ' . $column . ' as count_value', 'group' => ''];
+		}
+
+		return ['select' => 'SELECT ' . $column . ' as count_value, COUNT(DISTINCT ' . $item . ') as count', 'group' => ' GROUP BY ' . $column];
+	}
+
+	/**
+	 * Add up count rows by value.
+	 *
+	 * @param   array  $rows    {count_value, count}
+	 * @param   array  $counts  Counts to add to.
+	 *
+	 * @return array<string, array{count: int}>
+	 */
+	private function sumCountsByValue(array $rows, array $counts = []): array
+	{
+		foreach ($rows as $row)
+		{
+			if ($row['count_value'] === null)
+			{
+				continue;
+			}
+
+			$counts[$row['count_value']]['count'] = ($counts[$row['count_value']]['count'] ?? 0) + (int) $row['count'];
+		}
+
+		return $counts;
+	}
+
+	/**
+	 * Collect, for each checkbox option, the items holding it. An item holding the option in
+	 * several rows (repeat group, several evaluations) is kept once.
+	 *
+	 * @param   array   $rows             {item, count_value}
+	 * @param   array   $items_by_option  Items to add to.
+	 * @param   string  $item_prefix      Prefix of the item keys, to tell apart items of different queries.
+	 *
+	 * @return array<string, array<string, true>>  option => item key => true
+	 */
+	private function addCheckboxItems(array $rows, array $items_by_option = [], string $item_prefix = ''): array
+	{
+		foreach ($rows as $row)
+		{
+			if ($row['count_value'] === null)
+			{
+				continue;
+			}
+
+			foreach ((array) (json_decode($row['count_value'], true) ?: []) as $option)
+			{
+				if (is_scalar($option))
+				{
+					$items_by_option[$option][$item_prefix . $row['item']] = true;
+				}
+			}
+		}
+
+		return $items_by_option;
+	}
+
+	/**
+	 * @param   array<string, array<string, true>>  $items_by_option  From addCheckboxItems().
+	 *
+	 * @return array<string, array{count: int}>
+	 */
+	private static function countItemsByOption(array $items_by_option): array
+	{
+		return array_map(fn(array $items) => ['count' => count($items)], $items_by_option);
+	}
+
+	/**
+	 * Column a select filter is counted on, adding to $leftJoins the joins it needs from the
+	 * candidature. Null when the filter has no countable column.
+	 *
+	 * @param   array   $applied_filter
+	 * @param   array   $already_joined  alias => table, completed with the tables joined here.
+	 * @param   string  $leftJoins       Completed with the joins written here.
+	 *
+	 * @return string|null
+	 */
+	private function resolveCountColumn(array $applied_filter, array &$already_joined, string &$leftJoins): ?string
+	{
+		$table_column_to_count = null;
+
+		if (!is_numeric($applied_filter['id']))
+		{
+			switch ($applied_filter['uid'])
+			{
+				case 'status':
+					$table_column_to_count = 'jecc.status';
+					break;
+				case 'campaigns':
+					$table_column_to_count = 'jecc.campaign_id';
+					break;
+				case 'programmes':
+				case 'programs':
+					$table_column_to_count = 'sp.id';
+					break;
+				case 'tags':
+					$table_column_to_count = 'eta.id_tag';
+					break;
+				case 'years':
+					$table_column_to_count = 'esc.year';
+					break;
+				case 'published':
+					$table_column_to_count = 'jecc.published';
+					break;
+			}
+		}
+		else
+		{
+			$fabrik_element_data = $this->getFabrikElementData($applied_filter['id']);
+
+			if (!empty($fabrik_element_data))
+			{
+				if ($fabrik_element_data['group_params']['repeat_group_button'] == 1)
+				{
+					$join_informations = $this->getJoinInformations($fabrik_element_data['element_id']);
+
+					if (!empty($join_informations))
+					{
+						$fabrik_element_data['db_table_name'] = $join_informations['table_join'];
+					}
+				}
+
+				$table_alias = $fabrik_element_data['db_table_name'];
+				if (!in_array($fabrik_element_data['db_table_name'], $already_joined))
+				{
+					$table_column_to_count = $table_alias . '.' . $fabrik_element_data['name'];
+					$joins                 = $this->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $fabrik_element_data['db_table_name']);
+
+					if (!empty($joins))
+					{
+						$leftJoins = $this->writeJoins($joins, $already_joined);
+					}
+					else
+					{
+						if (!empty($fabrik_element_data['group_params']) && $fabrik_element_data['group_params']['repeat_group_button'] == 1)
+						{
+							$group_join_informations = $this->getJoinInformations(0, $fabrik_element_data['group_id']);
+							$joins                   = $this->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $group_join_informations['table_join']);
+
+							if (!empty($joins))
+							{
+								$leftJoins .= $this->writeJoins($joins, $already_joined);
+
+								// get joins last entry table_join
+								$table_to_join = end($joins)['table_join'];
+								$joins         = $this->findJoinsBetweenTablesRecursively($table_to_join, $fabrik_element_data['db_table_name']);
+
+								if (!empty($joins))
+								{
+									$leftJoins .= $this->writeJoins($joins, $already_joined);
+
+									foreach ($joins as $join)
+									{
+										if ($join['table_join'] === $fabrik_element_data['db_table_name'])
+										{
+											$table_column_to_count = $join['table_join'] . '.' . $join['table_join_key'];
+										}
+									}
+								}
+								else
+								{
+									if (!empty($join_informations['params']))
+									{
+										$join_informations['params'] = json_decode($join_informations['params'], true);
+
+										if ($join_informations['params']['type'] === 'element')
+										{
+											$joins     = [
+												[
+													'table_key'       => 'id',
+													'join_from_table' => $fabrik_element_data['db_table_name'],
+													'table_join'      => $table_to_join,
+													'table_join_key'  => $join_informations['params']['join-label']
+												]
+											];
+											$leftJoins .= $this->writeJoins($joins, $already_joined);
+
+											$table_column_to_count = $table_to_join . '.' . $join_informations['params']['join-label'];
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					$key = array_search($fabrik_element_data['db_table_name'], $already_joined);
+
+					if (!is_numeric($key))
+					{
+						$table_alias = $key;
+					}
+				}
+
+				$table_column_to_count = $table_alias . '.' . $fabrik_element_data['name'];
+			}
+		}
+
+		return $table_column_to_count;
 	}
 
 	/*
@@ -6178,293 +6851,83 @@ class EmundusHelperFiles
 			$fnum_assoc_to_user   = $m_users->getApplicantsAssoc($user_id);
 			$user_fnums_assoc     = array_merge($fnum_assoc_to_groups, $fnum_assoc_to_user);
 
+			$user            = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
+			$session_filters = $app->getSession()->get('em-applied-filters', []);
+			$where_params    = [
+				'eval'       => !empty($menu_item) && $menu_item->query['view'] == 'evaluation',
+				'code'       => $user_programmes,
+				'fnum_assoc' => $user_fnums_assoc,
+			] + $this->prepareEvaluationFilterParams((int) $user_id, $session_filters);
+
+			$listed_steps        = [];
+			$selected_evaluators = [];
+			if ($where_params['eval'])
+			{
+				$listed_steps        = $this->loadListedEvaluationSteps($session_filters, (int) $user_id);
+				$selected_evaluators = EmundusModelEvaluation::getSelectedEvaluators($session_filters);
+			}
+
 			foreach ($applied_filters as $applied_filter_key => $applied_filter)
 			{
-				if (!empty($applied_filter) && $applied_filter['type'] === 'select')
+				if (empty($applied_filter) || $applied_filter['type'] !== 'select')
 				{
-					$leftJoins      = '';
-					$already_joined = [
-						'jecc' => 'jos_emundus_campaign_candidature',
-						'ss'   => 'jos_emundus_setup_status',
-						'esc'  => 'jos_emundus_setup_campaigns',
-						'sp'   => 'jos_emundus_setup_programmes',
-						'u'    => 'jos_users',
-						'eu'   => 'jos_emundus_users',
-						'eta'  => 'jos_emundus_tag_assoc',
-						'ga'   => 'jos_emundus_group_assoc',
-						'grc'  => 'jos_emundus_setup_groups_repeat_course',
-						'sg'   => 'jos_emundus_setup_groups'
-					];
+					continue;
+				}
 
-					$available_values      = [];
-					$table_column_to_count = null;
-					if (!is_numeric($applied_filter['id']))
+				if ($where_params['eval'])
+				{
+					// The column is resolved per evaluation table there.
+					$available_values = $this->countEvaluationsByValue($applied_filter, $listed_steps, $selected_evaluators, $where_params, $menu_item, $user);
+				}
+				else
+				{
+					$leftJoins             = '';
+					$already_joined        = self::COUNT_ALREADY_JOINED;
+					$table_column_to_count = $this->resolveCountColumn($applied_filter, $already_joined, $leftJoins);
+
+					if (empty($table_column_to_count))
 					{
-						switch ($applied_filter['uid'])
-						{
-							case 'status':
-								$table_column_to_count = 'jecc.status';
-								break;
-							case 'campaigns':
-								$table_column_to_count = 'jecc.campaign_id';
-								break;
-							case 'programmes':
-							case 'programs':
-								$table_column_to_count = 'sp.id';
-								break;
-							case 'tags':
-								$table_column_to_count = 'eta.id_tag';
-								break;
-							case 'years':
-								$table_column_to_count = 'esc.year';
-								break;
-							case 'published':
-								$table_column_to_count = 'jecc.published';
-								break;
-						}
+						continue;
 					}
-					else
+
+					$available_values = $this->countFilesByValue($applied_filter, $table_column_to_count, $already_joined, $leftJoins, $where_params, $menu_item, $user);
+				}
+
+				// A failed count leaves the values without count, so they stay displayed rather than hidden at 0.
+				if ($available_values === null)
+				{
+					continue;
+				}
+
+				if (empty($applied_filter['values']))
+				{
+					if (!class_exists('EmundusFiltersFiles'))
 					{
-						$fabrik_element_data = $this->getFabrikElementData($applied_filter['id']);
+						require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php');
+					}
 
-						if (!empty($fabrik_element_data))
+					if (!isset($filters_files))
+					{
+						try
 						{
-							if ($fabrik_element_data['group_params']['repeat_group_button'] == 1)
-							{
-								$join_informations = $this->getJoinInformations($fabrik_element_data['element_id']);
+							$filters_files = new EmundusFiltersFiles([], true);
+						}
+						catch (Exception $e)
+						{
+							// exception means that the user is not logged in or has not enough access, should have never happened
+							Log::add('Failed to get available values for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
-								if (!empty($join_informations))
-								{
-									$fabrik_element_data['db_table_name'] = $join_informations['table_join'];
-								}
-							}
-
-							$table_alias = $fabrik_element_data['db_table_name'];
-							if (!in_array($fabrik_element_data['db_table_name'], $already_joined))
-							{
-								$table_column_to_count = $table_alias . '.' . $fabrik_element_data['name'];
-								$joins                 = $this->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $fabrik_element_data['db_table_name']);
-
-								if (!empty($joins))
-								{
-									$leftJoins = $this->writeJoins($joins, $already_joined);
-								}
-								else
-								{
-									if (!empty($fabrik_element_data['group_params']) && $fabrik_element_data['group_params']['repeat_group_button'] == 1)
-									{
-										$group_join_informations = $this->getJoinInformations(0, $fabrik_element_data['group_id']);
-										$joins                   = $this->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $group_join_informations['table_join']);
-
-										if (!empty($joins))
-										{
-											$leftJoins .= $this->writeJoins($joins, $already_joined);
-
-											// get joins last entry table_join
-											$table_to_join = end($joins)['table_join'];
-											$joins         = $this->findJoinsBetweenTablesRecursively($table_to_join, $fabrik_element_data['db_table_name']);
-
-											if (!empty($joins))
-											{
-												$leftJoins .= $this->writeJoins($joins, $already_joined);
-
-												foreach ($joins as $join)
-												{
-													if ($join['table_join'] === $fabrik_element_data['db_table_name'])
-													{
-														$table_column_to_count = $join['table_join'] . '.' . $join['table_join_key'];
-													}
-												}
-											}
-											else
-											{
-												if (!empty($join_informations['params']))
-												{
-													$join_informations['params'] = json_decode($join_informations['params'], true);
-
-													if ($join_informations['params']['type'] === 'element')
-													{
-														$joins     = [
-															[
-																'table_key'       => 'id',
-																'join_from_table' => $fabrik_element_data['db_table_name'],
-																'table_join'      => $table_to_join,
-																'table_join_key'  => $join_informations['params']['join-label']
-															]
-														];
-														$leftJoins .= $this->writeJoins($joins, $already_joined);
-
-														$table_column_to_count = $table_to_join . '.' . $join_informations['params']['join-label'];
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-							else
-							{
-								$key = array_search($fabrik_element_data['db_table_name'], $already_joined);
-
-								if (!is_numeric($key))
-								{
-									$table_alias = $key;
-								}
-							}
-
-							$table_column_to_count = $table_alias . '.' . $fabrik_element_data['name'];
+							return [];
 						}
 					}
 
-					if (!empty($table_column_to_count))
-					{
-						$db = Factory::getContainer()->get('DatabaseDriver');
+					$applied_filter['values'] = $filters_files->getFabrikElementValuesFromElementId($applied_filter['id']);
+				}
 
-						if ($applied_filter['plugin'] === 'checkbox')
-						{ // checkbox is a specific case because data is registered as following example '["x", "y",... "n"]', so we can not count like other columns
-							$query = 'SELECT ' . $table_column_to_count . '
-                            FROM #__emundus_campaign_candidature as jecc
-                            LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
-                            LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
-                            LEFT JOIN #__emundus_setup_programmes as sp on sp.id = esc.program_id
-                            LEFT JOIN #__users as u on u.id = jecc.applicant_id
-                            LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
-                            LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
-
-							if (!empty($leftJoins))
-							{
-								$query .= $leftJoins;
-							}
-
-							$whereConditions = $this->_moduleBuildWhere($already_joined, 'files', ['code' => $user_programmes, 'fnum_assoc' => $user_fnums_assoc], [$applied_filter['uid']], $menu_item);
-
-							$query .= $whereConditions['join'];
-							$query .= ' WHERE u.block=0 ' . $whereConditions['q'];
-							$query .= ' GROUP BY ' . $table_column_to_count . ' ORDER BY ' . $table_column_to_count . ' ASC';
-
-							try
-							{
-								$db->setQuery($query);
-								$all_values = $db->loadColumn();
-							}
-							catch (Exception $e)
-							{
-								Log::add('Failed to get available values for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
-							}
-
-
-							$available_values = [];
-							foreach ($all_values as $value)
-							{
-								$row_values = json_decode($value);
-
-								if (!empty($row_values))
-								{
-									foreach ($row_values as $row_value)
-									{
-										if (!isset($available_values[$row_value]))
-										{
-											$available_values[$row_value] = ['count' => 1];
-										}
-										else
-										{
-											$available_values[$row_value]['count']++;
-										}
-									}
-								}
-							}
-						}
-						else
-						{
-							$where_params = [];
-							$query = 'SELECT ' . $table_column_to_count . ' as count_value, COUNT(DISTINCT jecc.fnum) as count
-                            FROM #__emundus_campaign_candidature as jecc
-                            LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
-                            LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
-                            LEFT JOIN #__emundus_setup_programmes as sp on sp.id = esc.program_id
-                            LEFT JOIN #__users as u on u.id = jecc.applicant_id
-                            LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
-                            LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum
-                            LEFT JOIN #__emundus_group_assoc as ga on ga.fnum = jecc.fnum 
-                            LEFT JOIN #__emundus_setup_groups_repeat_course as grc on grc.course = esc.training
-                            LEFT JOIN #__emundus_setup_groups as sg on grc.parent_id = sg.id';
-
-							if (!empty($leftJoins))
-							{
-								$query .= $leftJoins;
-							}
-
-							$where_params['eval'] = false;
-							if (!empty($menu_item)) {
-								if ($menu_item->query['view'] == 'evaluation') {
-									$where_params['eval'] = true;
-								}
-							}
-
-							$where_params['code'] = $user_programmes;
-							$where_params['fnum_assoc'] = $user_fnums_assoc;
-
-							$whereConditions = $this->_moduleBuildWhere($already_joined, 'files', $where_params, [$applied_filter['uid']], $menu_item);
-
-							$query .= $whereConditions['join'];
-							$query .= ' WHERE u.block=0 ' . $whereConditions['q'];
-							$query .= ' GROUP BY ' . $table_column_to_count . ' ORDER BY ' . $table_column_to_count . ' ASC';
-
-							try
-							{
-								$db->setQuery($query);
-								$available_values = $db->loadAssocList('count_value');
-							}
-							catch (Exception $e)
-							{
-								Log::add('Failed to get available values for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
-								$available_values = [];
-							}
-						}
-
-						if (!empty($available_values))
-						{
-							if (empty($applied_filter['values']))
-							{
-								if (!class_exists('EmundusFiltersFiles'))
-								{
-									require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php');
-								}
-
-								if (!isset($filters_files))
-								{
-									try
-									{
-										$filters_files = new EmundusFiltersFiles([], true);
-									}
-									catch (Exception $e)
-									{
-										// exception means that the user is not logged in or has not enough access, should have never happened
-										Log::add('Failed to get available values for filter ' . $applied_filter['uid'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-
-										return [];
-									}
-								}
-
-								$applied_filter['values'] = $filters_files->getFabrikElementValuesFromElementId($applied_filter['id']);
-							}
-
-							if (!empty($applied_filter['values']))
-							{
-								foreach ($applied_filter['values'] as $key => $value)
-								{
-									if (isset($available_values[$value['value']]))
-									{
-										$applied_filters[$applied_filter_key]['values'][$key]['count'] = $available_values[$value['value']]['count'];
-									}
-									else
-									{
-										$applied_filters[$applied_filter_key]['values'][$key]['count'] = 0;
-									}
-								}
-							}
-						}
-					}
+				// Values absent from the counts had no result: 0.
+				foreach ($applied_filter['values'] ?? [] as $key => $value)
+				{
+					$applied_filters[$applied_filter_key]['values'][$key]['count'] = $available_values[$value['value']]['count'] ?? 0;
 				}
 			}
 		}
@@ -6866,6 +7329,11 @@ class EmundusHelperFiles
 
 		if (!empty($table_name))
 		{
+			if (array_key_exists($table_name, self::$tableLinkedToFnumCache))
+			{
+				return self::$tableLinkedToFnumCache[$table_name];
+			}
+
 			// check if table has a column named 'fnum'
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
@@ -6884,6 +7352,8 @@ class EmundusHelperFiles
 				{
 					$linked = true;
 				}
+
+				self::$tableLinkedToFnumCache[$table_name] = $linked;
 			}
 			catch (Exception $e)
 			{
@@ -6981,6 +7451,41 @@ class EmundusHelperFiles
 		}
 
 		return $id;
+	}
+
+	/**
+	 * Batch resolution of fnums into their candidature ids.
+	 *
+	 * @param   string[]  $fnums
+	 *
+	 * @return array<string,int> Map fnum => candidature id
+	 */
+	public static function getIdsFromFnums(array $fnums): array
+	{
+		$ids = [];
+
+		$fnums = array_values(array_unique(array_filter($fnums)));
+		if (empty($fnums)) {
+			return $ids;
+		}
+
+		$db     = Factory::getContainer()->get('DatabaseDriver');
+		$query  = $db->getQuery(true);
+		$quoted = array_map([$db, 'quote'], $fnums);
+		$query->select($db->quoteName(['fnum', 'id']))
+			->from('#__emundus_campaign_candidature')
+			->where($db->quoteName('fnum') . ' IN (' . implode(',', $quoted) . ')');
+
+		try {
+			$db->setQuery($query);
+			foreach ($db->loadAssocList() as $row) {
+				$ids[$row['fnum']] = (int) $row['id'];
+			}
+		} catch (Exception $e) {
+			Log::add('Failed to get ids from fnums : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $ids;
 	}
 
 	/**

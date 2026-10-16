@@ -29,6 +29,14 @@ use Joomla\CMS\Log\Log;
  */
 class EmundusHelperFilters
 {
+	/**
+	 * Request-scoped memo for getElementsByGroups(), keyed by its arguments. The result is pure
+	 * fabrik metadata (immutable within a request), yet the evaluation element resolution calls it
+	 * repeatedly with the same group sets across steps. Keyed groups|summary|hidden|excluded.
+	 *
+	 * @var array<string, array>
+	 */
+	private static array $elementsByGroupsCache = [];
 
 	/*
 	* @param 			query results
@@ -344,6 +352,11 @@ class EmundusHelperFilters
 	 **/
 	static function getElementsByGroups($groups, $show_in_list_summary = 1, $hidden = 0, $exclude_plugins = [])
 	{
+		$cache_key = $groups . '|' . $show_in_list_summary . '|' . $hidden . '|' . implode(',', (array) $exclude_plugins);
+		if (array_key_exists($cache_key, self::$elementsByGroupsCache)) {
+			return self::$elementsByGroupsCache[$cache_key];
+		}
+
 		$db = Factory::getDBO();
 
 		$elements = array();
@@ -377,6 +390,8 @@ class EmundusHelperFilters
 		catch (Exception $e) {
 			throw $e;
 		}
+
+		self::$elementsByGroupsCache[$cache_key] = $elements;
 
 		return $elements;
 	}
