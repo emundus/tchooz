@@ -5542,7 +5542,7 @@ class EmundusHelperFiles
 			try
 			{
 				$db->setQuery($query);
-				$data = $db->loadAssoc();
+				$data = $db->loadAssoc() ?: [];
 			}
 			catch (Exception $e)
 			{

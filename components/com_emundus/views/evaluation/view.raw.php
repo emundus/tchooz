@@ -186,7 +186,15 @@ class EmundusViewEvaluation extends JViewLegacy
 				if (!empty($m_evaluation->fnum_assoc) || !empty($m_evaluation->code))
 				{
 					// get applications files
-					$this->users = $m_evaluation->getUsers($this->cfnum);
+					try
+					{
+						$this->users = $m_evaluation->getUsers($this->cfnum);
+					}
+					catch (Exception $e)
+					{
+						$this->users = array();
+						$this->app->enqueueMessage(Text::_('COM_EMUNDUS_ERROR_OCCURED'), 'error');
+					}
 				}
 				else
 				{
@@ -616,8 +624,8 @@ class EmundusViewEvaluation extends JViewLegacy
 									$userObj->radio = array_combine($params->sub_options->sub_labels, $params->sub_options->sub_values);
 								}
 
-								$plugin = ElementPluginEnum::tryFrom($userObj->type);
-								if ($plugin->isDateField())
+								$plugin = ElementPluginEnum::tryFromString($userObj->type);
+								if ($plugin?->isDateField())
 								{
 									$userObj->val = EmundusHelperDate::displayDate($value, 'DATE_FORMAT_LC5');
 								}
