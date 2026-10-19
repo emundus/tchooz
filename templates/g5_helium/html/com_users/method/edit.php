@@ -39,7 +39,7 @@ $hideSubmit   = !$this->renderOptions['show_submit'] && !$this->isEditExisting
 <div class="tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card tw-mb-6">
     <a
         class="tw-mb-4 tw-text-link-regular tw-cursor-pointer tw-font-semibold tw-flex tw-items-center tw-group"
-        href="<?php echo JRoute::_('index.php?option=com_users&view=profile&layout=edit') ?>"
+        href="<?php echo $cancelURL ?>"
     >
         <span class="material-symbols-outlined tw-mr-1">navigate_before</span>
         <span class="group-hover:tw-underline"><?php echo Text::_('GO_BACK'); ?></span>
