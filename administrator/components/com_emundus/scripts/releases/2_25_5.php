@@ -41,7 +41,7 @@ class Release2_25_5Installer extends ReleaseInstaller
 
 			$result['status'] = !in_array(false, $this->tasks);
 		}
-		catch (\Exception $e)
+		catch (\Throwable $e)
 		{
 			$result['status']  = false;
 			$result['message'] = $e->getMessage();
@@ -136,10 +136,15 @@ class Release2_25_5Installer extends ReleaseInstaller
 				$this->tasks[] = $this->db->updateObject('#__modules', $update, 'id');
 			}
 
-			$params = json_decode($campaignLoggedModule->params);
+			$params = json_decode($campaignLoggedModule->params ?? '');
+			if(!is_object($params))
+			{
+				$params = new \stdClass();
+			}
+
 			if(empty($params->mod_em_campaign_article_logged))
 			{
-				$articleId = $this->createEmptyArticle('campaigns-logged', 'Campaigns logged', $params->mod_em_campaign_intro, $query);
+				$articleId = $this->createEmptyArticle($query, 'campaigns-logged', 'Campaigns logged', (string) ($params->mod_em_campaign_intro ?? ''));
 
 				if(!empty($articleId))
 				{
@@ -172,7 +177,11 @@ class Release2_25_5Installer extends ReleaseInstaller
 					$falangTranslation = $this->db->loadObject();
 					if(!empty($falangTranslation) && !empty($falangTranslation->id))
 					{
-						$falangParams = json_decode($falangTranslation->value);
+						$falangParams = json_decode($falangTranslation->value ?? '');
+						if(!is_object($falangParams))
+						{
+							$falangParams = new \stdClass();
+						}
 						$falangParams->mod_em_campaign_article_logged = $articleId;
 
 						$update = (object) [
@@ -197,7 +206,7 @@ class Release2_25_5Installer extends ReleaseInstaller
 	 * Create an empty com_content article using Joomla's ArticleModel so the
 	 * asset_id is built through the standard asset system. Idempotent by alias.
 	 */
-	private function createEmptyArticle(string $alias, string $title, string $content = '', QueryInterface $query): int
+	private function createEmptyArticle(QueryInterface $query, string $alias, string $title, string $content = ''): int
 	{
 		// Reuse existing article if it already exists (script may re-run)
 		$query->clear()

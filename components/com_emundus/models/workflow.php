@@ -88,6 +88,19 @@ class EmundusModelWorkflow extends JModelList
 	private static array $workflows_cache = [];
 	private static array $workflow_cache = [];
 
+	/**
+	 * Callers write into the steps they get (campaign dates, file entry status), so the memos above
+	 * hand out copies instead of the cached objects.
+	 */
+	private static function copyCached(mixed $value): mixed
+	{
+		if (is_object($value)) {
+			return clone $value;
+		}
+
+		return is_array($value) ? array_map([self::class, 'copyCached'], $value) : $value;
+	}
+
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
@@ -651,7 +664,7 @@ class EmundusModelWorkflow extends JModelList
 		$cache_key = implode('|', [implode(',', (array) $ids), (int) $limit, (int) $page, implode(',', (array) $programs), $order_by, $order, $search, (int) $displayNoAssociated]);
 		if (array_key_exists($cache_key, self::$workflows_cache))
 		{
-			return self::$workflows_cache[$cache_key];
+			return self::copyCached(self::$workflows_cache[$cache_key]);
 		}
 
 		$query = $this->db->getQuery(true);
@@ -709,7 +722,7 @@ class EmundusModelWorkflow extends JModelList
 			Log::add('Error while fetching workflows: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 		}
 
-		self::$workflows_cache[$cache_key] = $workflows;
+		self::$workflows_cache[$cache_key] = self::copyCached($workflows);
 
 		return $workflows;
 	}
@@ -726,7 +739,7 @@ class EmundusModelWorkflow extends JModelList
 		$cache_key = $id . '|' . implode(',', $program_ids) . '|' . (int) $displayed_archived;
 		if (array_key_exists($cache_key, self::$workflow_cache))
 		{
-			return self::$workflow_cache[$cache_key];
+			return self::copyCached(self::$workflow_cache[$cache_key]);
 		}
 
 		if (!empty($id) || !empty($program_ids))
@@ -809,7 +822,7 @@ class EmundusModelWorkflow extends JModelList
 			}
 		}
 
-		self::$workflow_cache[$cache_key] = $workflowData;
+		self::$workflow_cache[$cache_key] = self::copyCached($workflowData);
 
 		return $workflowData;
 	}
@@ -901,16 +914,16 @@ class EmundusModelWorkflow extends JModelList
 		$data = new stdClass();
 
 		if (!empty($id) && $cid === null && array_key_exists($id, self::$step_data_cache)) {
-			return self::$step_data_cache[$id];
+			return self::copyCached(self::$step_data_cache[$id]);
 		}
 
 		$stepsCache = $this->h_cache->get('workflow_steps');
 		$stepsCache = is_array($stepsCache) ? $stepsCache : [];
 
 		if (!empty($id) && isset($stepsCache[$id]) && $cid === null) {
-			self::$step_data_cache[$id] = $stepsCache[$id];
+			self::$step_data_cache[$id] = self::copyCached($stepsCache[$id]);
 
-			return $stepsCache[$id];
+			return self::copyCached(self::$step_data_cache[$id]);
 		}
 
 		$query = $this->db->createQuery();
@@ -998,7 +1011,7 @@ class EmundusModelWorkflow extends JModelList
 				if ($cid === null) {
 					$stepsCache[$id] = $data;
 					$this->h_cache->set('workflow_steps', $stepsCache);
-					self::$step_data_cache[$id] = $data;
+					self::$step_data_cache[$id] = self::copyCached($data);
 				}
 			}
 			else
@@ -1057,7 +1070,7 @@ class EmundusModelWorkflow extends JModelList
 			$cache_key = $user_id . '_' . (int) $read_only_steps;
 			if (array_key_exists($cache_key, self::$evaluator_steps_cache))
 			{
-				return self::$evaluator_steps_cache[$cache_key];
+				return self::copyCached(self::$evaluator_steps_cache[$cache_key]);
 			}
 
 			$workflows = $this->getWorkflows();
@@ -1080,7 +1093,7 @@ class EmundusModelWorkflow extends JModelList
 				}
 			}
 
-			self::$evaluator_steps_cache[$cache_key] = $steps;
+			self::$evaluator_steps_cache[$cache_key] = self::copyCached($steps);
 		}
 
 		return $steps;

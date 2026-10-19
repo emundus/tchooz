@@ -47,6 +47,14 @@ class CustomReferenceFormatAddonHandler extends AbstractAddonHandler
 
 			$db->setQuery($query);
 			$tasks[] = $db->execute();
+
+			$availableTags = ['SHORT_REFERENCE', 'REFERENCE', 'FULL_REFERENCE'];
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_tags'))
+				->set($db->quoteName('published') . ' = ' . $db->quote($intState))
+				->where($db->quoteName('tag') . ' IN (' . implode(',', $db->quote($availableTags)) . ')');
+			$db->setQuery($query);
+			$tasks[] = $db->execute();
 		} catch (\Exception $e) {
 			$tasks[] = false;
 		}
