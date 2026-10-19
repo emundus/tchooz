@@ -70,13 +70,6 @@ class EmundusHelperExport
 
 		$result = application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order, null, $override_filename, $elements, $attachments, $current_user_id);
 
-		if ($result) {
-
-			if (!empty($override_filename)) {
-				$result .= $override_filename . '.pdf';
-			}
-		}
-
 		return $result;
 	}
 

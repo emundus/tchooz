@@ -56,6 +56,17 @@ use Dompdf\Options;
 class EmundusModelApplication extends ListModel
 {
 	/**
+	 * Clears the per-request fnum access cache, loading the legacy access helper first if needed.
+	 */
+	private function clearFnumAccessCache(): void
+	{
+		if (!class_exists('EmundusHelperAccess')) {
+			require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+		}
+		\EmundusHelperAccess::clearFnumAccessCache();
+	}
+
+	/**
 	 * Application context
 	 *
 	 * @var \Joomla\CMS\Application\CMSApplication
@@ -5475,10 +5486,7 @@ class EmundusModelApplication extends ListModel
 			}
 
 			if ($deleted) {
-				if (!class_exists('EmundusHelperAccess')) {
-					require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
-				}
-				\EmundusHelperAccess::clearFnumAccessCache();
+				$this->clearFnumAccessCache();
 
 				$query->clear()
 					->select('label')
@@ -5533,10 +5541,7 @@ class EmundusModelApplication extends ListModel
 			}
 
 			if ($deleted) {
-				if (!class_exists('EmundusHelperAccess')) {
-					require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
-				}
-				\EmundusHelperAccess::clearFnumAccessCache();
+				$this->clearFnumAccessCache();
 
 				$query->clear()
 					->select('name')

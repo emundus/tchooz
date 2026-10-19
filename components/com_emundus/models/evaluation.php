@@ -1317,10 +1317,15 @@ class EmundusModelEvaluation extends JModelList
 				}
 			}
 		} else {
-			$list = $this->getEvaluationsList();
+			// The average is sorted in PHP: every row is needed before the page is cut.
+			$list = $this->getEvaluationsList($order_by_average ? 0 : $limit, $limitstart);
 
 			if ($order_by_average) {
 				$list = $this->sortByEvaluationAverage($list, $user_id);
+
+				if ($limit > 0) {
+					$list = array_slice($list, $limitstart, $limit);
+				}
 			}
 		}
 
@@ -1330,13 +1335,13 @@ class EmundusModelEvaluation extends JModelList
 	private function sortByEvaluationAverage(array $list, $user_id): array
 	{
 		$averageByFnums   = $this->getEvaluationAverageByFnum(array_column($list, 'fnum'), $user_id);
-		$filter_order_Dir = $this->app->getSession()->get('filter_order_Dir');
+		$filter_order_Dir = strtoupper((string) $this->app->getSession()->get('filter_order_Dir'));
 
 		usort($list, function ($a, $b) use ($averageByFnums, $filter_order_Dir) {
 			$avgA = $averageByFnums[$a['fnum']] ?? 0;
 			$avgB = $averageByFnums[$b['fnum']] ?? 0;
 
-			if ($filter_order_Dir === 'asc') {
+			if ($filter_order_Dir === 'ASC') {
 				return $avgA <=> $avgB;
 			} else {
 				return $avgB <=> $avgA;
@@ -1477,8 +1482,9 @@ class EmundusModelEvaluation extends JModelList
 
 	/**
 	 * Evaluation rows an export from the evaluation view is restricted to, by evaluation table: the
-	 * rows picked in the view, kept only when they belong to the given files. A table left out of the
-	 * result is exported in full.
+	 * rows picked in the view, kept only when they belong to the given files. Every step of the picked
+	 * rows has its table in the result, with an empty list when none of its rows is valid, so the
+	 * export keeps none of them. A table left out of the result is exported in full.
 	 *
 	 * @param   string[]  $fnums          Files whose access is already checked.
 	 * @param   array     $selected_rows  Rows picked in the view, as {step_id, evaluation_id}.
@@ -1491,7 +1497,12 @@ class EmundusModelEvaluation extends JModelList
 		$ids_by_step = [];
 
 		foreach ($selected_rows as $row) {
-			if (!empty($row['step_id']) && !empty($row['evaluation_id'])) {
+			if (empty($row['step_id'])) {
+				continue;
+			}
+
+			$ids_by_step[(int) $row['step_id']] ??= [];
+			if (!empty($row['evaluation_id'])) {
 				$ids_by_step[(int) $row['step_id']][] = (int) $row['evaluation_id'];
 			}
 		}
@@ -1513,6 +1524,11 @@ class EmundusModelEvaluation extends JModelList
 				continue;
 			}
 
+			$row_ids[$step_data->table] ??= [];
+			if (empty($ids)) {
+				continue;
+			}
+
 			$query->clear()
 				->select($db->quoteName('id'))
 				->from($db->quoteName($step_data->table))
@@ -1522,9 +1538,7 @@ class EmundusModelEvaluation extends JModelList
 			$db->setQuery($query);
 			$valid_ids = array_map('intval', $db->loadColumn());
 
-			if (!empty($valid_ids)) {
-				$row_ids[$step_data->table] = array_merge($row_ids[$step_data->table] ?? [], $valid_ids);
-			}
+			$row_ids[$step_data->table] = array_merge($row_ids[$step_data->table], $valid_ids);
 		}
 
 		return $row_ids;
@@ -1534,13 +1548,14 @@ class EmundusModelEvaluation extends JModelList
 	 * Evaluation list without step: one row per file. The full result is loaded for the total
 	 * (getTotal()), the page is sliced from it.
 	 *
+	 * @param   int  $limit       Rows of the page, 0 for every row.
+	 * @param   int  $limitstart
+	 *
 	 * @return array
 	 */
-	function getEvaluationsList()
+	function getEvaluationsList(int $limit = 0, int $limitstart = 0)
 	{
 		$evaluations_list = [];
-
-		$session = $this->app->getSession();
 
 		$list_query = $this->buildEvaluationsListQuery();
 		$query      = 'SELECT ' . $list_query['select'] . $list_query['body'] . $this->_buildContentOrderBy();
@@ -1552,10 +1567,9 @@ class EmundusModelEvaluation extends JModelList
 			$this->_applicants = array_merge($this->_applicants, $res);
 			$evaluations_list  = $res;
 
-			$limit = (int) $session->get('limit');
 			if ($limit > 0)
 			{
-				$evaluations_list = array_slice($res, (int) $session->get('limitstart'), $limit);
+				$evaluations_list = array_slice($res, $limitstart, $limit);
 			}
 		}
 		catch (Exception $e)
@@ -1563,8 +1577,7 @@ class EmundusModelEvaluation extends JModelList
 			Log::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . str_replace('#_', 'jos', $query) . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			// An empty list would read as "no file": the failure must reach the user.
-			// todo: we should throw an error, but we have to ensure every front endpoints will handle it correctly
-			// throw new Exception(Text::_('COM_EMUNDUS_ERROR_OCCURED'), 500, $e);
+			throw new Exception(Text::_('COM_EMUNDUS_ERROR_OCCURED'), 500, $e);
 		}
 
 		return $evaluations_list;

@@ -602,4 +602,37 @@ class FilesHelperTest extends UnitTestCase
 
 		return (int) $db->loadResult() === 1;
 	}
+
+	/**
+	 * A first lookup without the group must not hide the join found through the group afterwards.
+	 *
+	 * @covers EmundusHelperFiles::getJoinInformations
+	 * @return void
+	 */
+	public function testGetJoinInformationsFindsTheGroupJoinAfterALookupWithoutTheGroup(): void
+	{
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true)
+			->select('fj.group_id, fj.list_id, fe.id AS element_id')
+			->from($db->quoteName('#__fabrik_joins', 'fj'))
+			->join('INNER', $db->quoteName('#__fabrik_elements', 'fe') . ' ON fe.group_id = fj.group_id')
+			->join('LEFT', $db->quoteName('#__fabrik_joins', 'own') . ' ON own.element_id = fe.id')
+			->where('fj.element_id = 0')
+			->where('fj.group_id > 0')
+			->where($db->quoteName('fj.join_from_table') . ' <> ' . $db->quote(''))
+			->where('own.id IS NULL');
+		$db->setQuery($query, 0, 1);
+		$repeat = $db->loadAssoc();
+
+		if (empty($repeat))
+		{
+			$this->markTestSkipped('No repeat group in the test database');
+		}
+
+		$withoutGroup = $this->helper->getJoinInformations((int) $repeat['element_id']);
+		$withGroup    = $this->helper->getJoinInformations((int) $repeat['element_id'], (int) $repeat['group_id'], (int) $repeat['list_id']);
+
+		$this->assertSame([], $withoutGroup, 'The element has no join of its own');
+		$this->assertNotEmpty($withGroup['join_from_table'] ?? null, 'The join of the group is found despite the previous lookup');
+	}
 }

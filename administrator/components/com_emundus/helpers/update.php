@@ -4916,7 +4916,7 @@ class EmundusHelperUpdate
 	 *
 	 * @return bool
 	 */
-	public static function addSelectableProviderTag(string $tag, string $description_en, string $description_fr): bool
+	public static function addSelectableProviderTag(string $tag, string $description_en, string $description_fr, bool $published = true): bool
 	{
 		$db    = Factory::getDbo();
 		$query = $db->getQuery(true);
@@ -4937,7 +4937,7 @@ class EmundusHelperUpdate
 				'tag'         => $tag,
 				'request'     => '[' . $tag . ']',
 				'description' => $description_fr,
-				'published'   => 1,
+				'published'   => $published ? 1 : 0,
 			];
 
 			if (!$db->insertObject('#__emundus_setup_tags', $row, 'id'))

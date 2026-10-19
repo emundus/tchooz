@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package         Joomla.Administrator
+ * @package         Joomla.Site
  * @subpackage      com_users
  *
  * @copyright   (C) 2022 Open Source Matters, Inc. <https://www.joomla.org>
@@ -15,10 +15,9 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Users\Administrator\Helper\Mfa as MfaHelper;
-use Joomla\Component\Users\Administrator\Model\MethodsModel;
-use Joomla\Component\Users\Administrator\View\Methods\HtmlView;
+use Joomla\Component\Users\Site\Model\MethodsModel;
+use Joomla\Component\Users\Site\View\Methods\HtmlView;
 
 /** @var HtmlView $this */
 
@@ -98,11 +97,11 @@ $canDelete  = MfaHelper::canDeleteMethod($this->user);
 						<?php endif; ?>
                     </div>
                     <div class="com-users-methods-list-method-title">
-                        <h3>
+                        <h2 class="h4 p-0 m-0">
                             <label class="me-1 flex-grow-1 tw-font-bold">
 								<?php echo $method['display'] ?>
                             </label>
-                        </h3>
+                        </h2>
                     </div>
                 </div>
 
@@ -125,12 +124,12 @@ $canDelete  = MfaHelper::canDeleteMethod($this->user);
                                             </div>
 										<?php else : ?>
                                             <div class="tw-flex tw-justify-between tw-items-center tw-w-full">
-                                            <h4 class="com-users-methods-list-method-record-title-container mb-1 fs-3 tw-w-full">
+                                            <h3 class="com-users-methods-list-method-record-title-container mb-1 fs-3 tw-w-full">
                                             <span class="com-users-methods-list-method-record-title fw-bold">
                                                 <?php echo $this->escape($record->title); ?>
                                             </span>
-                                            </h4>
-											<?php if ($methodName !== 'backupcodes' && ($canAddEdit || $canDelete)) : ?>
+                                            </h3>
+												<?php if ($methodName !== 'backupcodes' && ($canAddEdit || $canDelete)) : ?>
                                                 <div
                                                     class="com-users-methods-list-method-record-actions my-2 d-flex flex-row flex-wrap tw-justify-end align-content-center align-items-start tw-gap-1 tw-w-full">
 													<?php if ($canAddEdit) : ?>
