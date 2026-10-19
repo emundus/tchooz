@@ -57,7 +57,32 @@ catch (Exception $e)
 }
 
 ?>
-<div class="tw-mt-6 tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card">
+<style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #em-backupcodes-print,
+        #em-backupcodes-print * {
+            visibility: visible;
+        }
+
+        #em-backupcodes-print {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            border: 0;
+            box-shadow: none;
+        }
+
+        .em-no-print {
+            display: none !important;
+        }
+    }
+</style>
+<div id="em-backupcodes-print" class="tw-mt-6 tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card">
     <h2>
 		<?php echo Text::_('COM_USERS_USER_BACKUPCODES') ?>
     </h2>
@@ -102,7 +127,27 @@ catch (Exception $e)
         </a>
     </div>-->
 
-    <div class="tw-w-full tw-flex tw-justify-end tw-mt-4">
+    <div class="em-no-print tw-w-full tw-flex tw-justify-end tw-gap-2 tw-mt-4">
+        <button type="button" class="tw-btn tw-btn-secondary tw-w-fit" onclick="window.print()">
+			<?php echo Text::_('JGLOBAL_PRINT'); ?>
+        </button>
+        <script>
+            (function () {
+                // Override the page title only while printing so the PDF is named after the backup
+                // codes instead of the homepage menu item the component is rendered under.
+                var printTitle = <?php echo json_encode(Text::_('COM_USERS_USER_BACKUPCODES')); ?>;
+                var originalTitle = document.title;
+
+                window.addEventListener('beforeprint', function () {
+                    originalTitle = document.title;
+                    document.title = printTitle;
+                });
+
+                window.addEventListener('afterprint', function () {
+                    document.title = originalTitle;
+                });
+            })();
+        </script>
         <a class="tw-btn tw-btn-primary tw-w-fit"
            href="<?php echo Route::_('index.php?option=com_users&view=profile&layout=edit') ?>">
 			<?php echo Text::_('COM_USERS_MFA_VALIDATE'); ?>

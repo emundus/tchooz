@@ -92,9 +92,10 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$mapping['onAfterInitialise'] = 'onAfterInitialise';
 		if ($app->isClient('site') || $app->isClient('administrator'))
 		{
-			$mapping['onBeforeCompileHead']              = 'injectLazyJS';
-			$mapping['onAfterRender']                    = 'onAfterRender';
-			$mapping['onComUsersCaptiveValidateSuccess'] = 'onComUsersCaptiveValidateSuccess';
+			$mapping['onBeforeCompileHead']                = 'injectLazyJS';
+			$mapping['onAfterRender']                      = 'onAfterRender';
+			$mapping['onComUsersCaptiveValidateSuccess']   = 'onComUsersCaptiveValidateSuccess';
+			$mapping['onComUsersControllerMethodBeforeSave'] = 'onComUsersControllerMethodBeforeSave';
 		}
 
 		if ($app->isClient('site'))
@@ -132,6 +133,44 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		}
 
 		$this->getApplication()->redirect($returnUrl);
+	}
+
+	/**
+	 * Flag the activation of a user's first MFA method so we can land them on their freshly
+	 * generated backup codes right after.
+	 *
+	 * Since the Joomla 5.4.7 open-redirect hardening (#2095), com_users sends the user to the
+	 * homepage after saving an MFA method instead of the methods/backup-codes page. Joomla fires
+	 * no "after save" event we could hook to override that redirect, so we detect the first method
+	 * here (before it is stored, while the user still has no MFA record) and consume the flag on
+	 * the next request in onAfterRender() to redirect them to their backup codes.
+	 */
+	public function onComUsersControllerMethodBeforeSave(EventInterface $event): void
+	{
+		$app      = $this->getApplication();
+		$input    = $app->getInput();
+		$userId   = (int) $input->getInt('user_id', 0);
+		$recordId = (int) $input->getInt('id', 0);
+
+		// Only brand-new methods (id = 0) can be the user's first one.
+		if ($userId <= 0 || $recordId > 0)
+		{
+			return;
+		}
+
+		// If the user has no MFA record yet, storing this method will also generate their backup codes.
+		$db    = $this->getDatabase();
+		$query = $db->createQuery()
+			->select('COUNT(*)')
+			->from($db->quoteName('#__user_mfa'))
+			->where($db->quoteName('user_id') . ' = :user_id')
+			->bind(':user_id', $userId, ParameterType::INTEGER);
+		$db->setQuery($query);
+
+		if ((int) $db->loadResult() === 0)
+		{
+			$app->getSession()->set('emundus.pending_backupcodes_user', $userId);
+		}
 	}
 
 	/**
@@ -549,6 +588,41 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			]
 		]);
 		$dispatcher->dispatch('onCallEventHandler', $onAfterRender);
+
+		// Redirect to the backup codes right after the user activated their first MFA method.
+		// The flag is set in onComUsersControllerMethodBeforeSave() on the previous request; see
+		// that method for why this cannot be done in com_users directly.
+		$user = $app->getIdentity();
+		if ($user instanceof User && !$user->guest)
+		{
+			$session       = $app->getSession();
+			$pendingUserId = (int) $session->get('emundus.pending_backupcodes_user', 0);
+
+			if ($pendingUserId > 0 && $pendingUserId === (int) $user->id)
+			{
+				// Consume the flag first so we never loop back onto the backup codes page.
+				$session->set('emundus.pending_backupcodes_user', 0);
+
+				$db    = $this->getDatabase();
+				$query = $db->createQuery()
+					->select($db->quoteName('id'))
+					->from($db->quoteName('#__user_mfa'))
+					->where($db->quoteName('user_id') . ' = :user_id')
+					->where($db->quoteName('method') . ' = ' . $db->quote('backupcodes'))
+					->bind(':user_id', $pendingUserId, ParameterType::INTEGER);
+				$db->setQuery($query);
+				$backupCodesId = (int) $db->loadResult();
+
+				if ($backupCodesId > 0)
+				{
+					// Raw index.php URL (not routed): the router would append the active homepage
+					// Itemid, which makes com_users render inside the homepage menu item and lists
+					// the user's files below the backup codes. Without an Itemid it renders standalone.
+					$url = 'index.php?option=com_users&task=method.edit&id=' . $backupCodesId . '&user_id=' . $pendingUserId;
+					$app->redirect($url);
+				}
+			}
+		}
 
 		// Manage 2fa
 		$user = $app->getIdentity();

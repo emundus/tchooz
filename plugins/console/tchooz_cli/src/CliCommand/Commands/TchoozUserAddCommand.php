@@ -209,6 +209,29 @@ class TchoozUserAddCommand extends AbstractCommand
     }
 
     /**
+     * Method to check that a record exists by its id in a given table
+     *
+     * @param   string   $table  name of the table (with #__ prefix)
+     * @param   integer  $id     id to look for
+     *
+     * @return  boolean
+     *
+     * @since   4.0.0
+     */
+    protected function recordExists($table, $id): bool
+    {
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('id'))
+            ->from($db->quoteName($table))
+            ->where($db->quoteName('id') . ' = :id')
+            ->bind(':id', $id, \Joomla\Database\ParameterType::INTEGER);
+        $db->setQuery($query);
+
+        return !empty($db->loadResult());
+    }
+
+    /**
      * Method to get groupId by groupName
      *
      * @param   string  $groupName  name of group
@@ -321,14 +344,14 @@ class TchoozUserAddCommand extends AbstractCommand
             $groups = explode(',', $groups);
 
             foreach ($groups as $group) {
-                $groupId = $this->getGroupId($group);
+                $groupId = is_numeric($group) ? (int) $group : $this->getGroupId($group);
 
-                if (empty($groupId)) {
+                if (empty($groupId) || !$this->recordExists('#__usergroups', $groupId)) {
                     $this->ioStyle->error("Invalid group name '" . $group . "'");
                     throw new InvalidOptionException("Invalid group name " . $group);
                 }
 
-                $groupList[] = $this->getGroupId($group);
+                $groupList[] = $groupId;
             }
 
             return $groupList;
@@ -377,14 +400,14 @@ class TchoozUserAddCommand extends AbstractCommand
             $profiles = explode(',', $profiles);
 
             foreach ($profiles as $profile) {
-                $groupId = $this->getProfileId($profile);
+                $groupId = is_numeric($profile) ? (int) $profile : $this->getProfileId($profile);
 
-                if (empty($groupId)) {
+                if (empty($groupId) || !$this->recordExists('#__emundus_setup_profiles', $groupId)) {
                     $this->ioStyle->error("Invalid profile name '" . $profile . "'");
                     throw new InvalidOptionException("Invalid profile name " . $profile);
                 }
 
-                $profileList[] = $this->getProfileId($profile);
+                $profileList[] = $groupId;
             }
 
             return $profileList;
@@ -426,14 +449,14 @@ class TchoozUserAddCommand extends AbstractCommand
 			$emundusGroups = explode(',', $emundusGroups);
 
 			foreach ($emundusGroups as $group) {
-				$groupId = $this->getEmundusGroupId($group);
+				$groupId = is_numeric($group) ? (int) $group : $this->getEmundusGroupId($group);
 
-				if (empty($groupId)) {
+				if (empty($groupId) || !$this->recordExists('#__emundus_setup_groups', $groupId)) {
 					$this->ioStyle->error("Invalid group name '" . $group . "'");
 					throw new InvalidOptionException("Invalid group name " . $group);
 				}
 
-				$groupsList[] = $this->getEmundusGroupId($group);
+				$groupsList[] = $groupId;
 			}
 
 			return $groupsList;

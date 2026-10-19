@@ -17,6 +17,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Enums\CrudEnum;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Providers\DateProvider;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileAccessRepository;
@@ -412,12 +413,18 @@ class EmundusViewFiles extends HtmlView
 						$userObj->id           = $elements[$key]['fabrik_id'];
 						$userObj->params       = $elements[$key]['params'];
 						$line[$key]            = $userObj;
-
+						
 						// Radiobuttons are a strange beast, we need to get all of the values
 						if ($userObj->type == 'radiobutton')
 						{
 							$params         = json_decode($userObj->params);
 							$userObj->radio = array_combine($params->sub_options->sub_labels, $params->sub_options->sub_values);
+						}
+
+						$plugin = ElementPluginEnum::tryFromString($userObj->type);
+						if ($plugin?->isDateField())
+						{
+							$userObj->val = EmundusHelperDate::displayDate($value, 'DATE_FORMAT_LC5');
 						}
 					}
 					else

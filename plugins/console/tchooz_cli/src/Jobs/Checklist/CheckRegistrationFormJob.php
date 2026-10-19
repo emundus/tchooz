@@ -98,7 +98,7 @@ class CheckRegistrationFormJob extends TchoozChecklistJob
 		Log::add('Check registration form check completed.', Log::INFO, 'tchooz');
 	}
 
-	private function is307RegistrationForm(): string
+	private function is307RegistrationForm(): bool
 	{
 		$db    = $this->databaseService->getDatabase();
 		$query = $db->getQuery(true);
@@ -141,8 +141,7 @@ class CheckRegistrationFormJob extends TchoozChecklistJob
 
 	/**
 	 * Copies the fabrik_forms row of $formToMigrate onto a new auto-incremented id, then repoints every
-	 * reference (fabrik_lists, fabrik_formgroup, menu links, emundus_setup_formlist, emundus_setup_form_rules)
-	 * from the old id to the new one. Wrapped in a transaction: any failure rolls everything back.
+	 * reference (see repointFormReferences()) from the old id to the new one. Wrapped in a transaction: any failure rolls everything back.
 	 *
 	 * @return array Report of what happened (old id, new id, affected rows per table).
 	 * @throws \Exception
@@ -182,11 +181,7 @@ class CheckRegistrationFormJob extends TchoozChecklistJob
 			$this->logStep('Copied fabrik_forms ' . $oldId . ' into new form ' . $newId);
 
 			// 2. Repoint every reference from the old id to the new id.
-			$report['updates']['jos_fabrik_lists']             = $this->updateFormId('#__fabrik_lists', $oldId, $newId);
-			$report['updates']['jos_fabrik_formgroup']         = $this->updateFormId('#__fabrik_formgroup', $oldId, $newId);
-			$report['updates']['jos_menu']                     = $this->updateMenuLink($oldId, $newId);
-			$report['updates']['jos_emundus_setup_formlist']   = $this->updateFormId('#__emundus_setup_formlist', $oldId, $newId);
-			$report['updates']['jos_emundus_setup_form_rules'] = $this->updateFormId('#__emundus_setup_form_rules', $oldId, $newId);
+			$report['updates'] = $this->repointFormReferences($oldId, $newId);
 
 			// 3. Delete the old fabrik_forms row so id $oldId is free (all references now point to $newId).
 			$query = $db->getQuery(true);
@@ -214,8 +209,7 @@ class CheckRegistrationFormJob extends TchoozChecklistJob
 
 	/**
 	 * Moves the fabrik_forms row $fromId onto the now-free id $toId (changing its primary key) and repoints
-	 * every reference (fabrik_lists, fabrik_formgroup, menu links, emundus_setup_formlist,
-	 * emundus_setup_form_rules) accordingly. Wrapped in a transaction: any failure rolls everything back.
+	 * every reference (see repointFormReferences()) accordingly. Wrapped in a transaction: any failure rolls everything back.
 	 *
 	 * @return array Report of what happened (from id, to id, affected rows per table).
 	 * @throws \Exception
@@ -243,11 +237,7 @@ class CheckRegistrationFormJob extends TchoozChecklistJob
 			$this->logStep('Moved fabrik_forms ' . $fromId . ' to ' . $toId);
 
 			// 2. Repoint every reference from $fromId to $toId.
-			$report['updates']['jos_fabrik_lists']             = $this->updateFormId('#__fabrik_lists', $fromId, $toId);
-			$report['updates']['jos_fabrik_formgroup']         = $this->updateFormId('#__fabrik_formgroup', $fromId, $toId);
-			$report['updates']['jos_menu']                     = $this->updateMenuLink($fromId, $toId);
-			$report['updates']['jos_emundus_setup_formlist']   = $this->updateFormId('#__emundus_setup_formlist', $fromId, $toId);
-			$report['updates']['jos_emundus_setup_form_rules'] = $this->updateFormId('#__emundus_setup_form_rules', $fromId, $toId);
+			$report['updates'] = $this->repointFormReferences($fromId, $toId);
 
 			$db->transactionCommit();
 		}
@@ -262,6 +252,26 @@ class CheckRegistrationFormJob extends TchoozChecklistJob
 		$this->logStep('Move of form ' . $fromId . ' to ' . $toId . ' completed.');
 
 		return $report;
+	}
+
+	/**
+	 * Repoints every reference to the form $oldId onto $newId and returns the affected rows per table.
+	 *
+	 * @return array<string, int>
+	 */
+	private function repointFormReferences(int $oldId, int $newId): array
+	{
+		return [
+			'jos_fabrik_lists'             => $this->updateFormId('#__fabrik_lists', $oldId, $newId),
+			'jos_fabrik_formgroup'         => $this->updateFormId('#__fabrik_formgroup', $oldId, $newId),
+			'jos_emundus_setup_formlist'   => $this->updateFormId('#__emundus_setup_formlist', $oldId, $newId),
+			'jos_emundus_setup_form_rules' => $this->updateFormId('#__emundus_setup_form_rules', $oldId, $newId),
+			'jos_emundus_setup_languages'  => $this->updateFormTranslations('#__emundus_setup_languages', $oldId, $newId),
+			'jos_falang_content'           => $this->updateFormTranslations('#__falang_content', $oldId, $newId),
+			'jos_menu'                     => $this->updateMenuLink($oldId, $newId),
+			'jos_menu (params)'            => $this->updateFormLinksInParams('#__menu', $oldId, $newId),
+			'jos_modules (params)'         => $this->updateFormLinksInParams('#__modules', $oldId, $newId),
+		];
 	}
 
 	/**
@@ -285,7 +295,29 @@ class CheckRegistrationFormJob extends TchoozChecklistJob
 	}
 
 	/**
-	 * Rewrites the Fabrik form menu links from the old form id to the new one and returns affected rows.
+	 * Repoints the translations of the form label and intro (reference_table fabrik_forms) and returns affected rows.
+	 */
+	private function updateFormTranslations(string $table, int $oldId, int $newId): int
+	{
+		$db    = $this->databaseService->getDatabase();
+		$query = $db->getQuery(true);
+
+		$query->update($db->qn($table))
+			->set($db->qn('reference_id') . ' = ' . $newId)
+			->where($db->qn('reference_table') . ' = ' . $db->q('fabrik_forms'))
+			->where($db->qn('reference_id') . ' = ' . $oldId);
+		$db->setQuery($query);
+		$db->execute();
+
+		$affected = $db->getAffectedRows();
+		$this->logStep($table . ': ' . $affected . ' translation(s) of form ' . $oldId . ' -> ' . $newId);
+
+		return $affected;
+	}
+
+	/**
+	 * Rewrites the Fabrik form menu links from the old form id to the new one, extra query parameters
+	 * included, and returns affected rows.
 	 */
 	private function updateMenuLink(int $oldId, int $newId): int
 	{
@@ -295,13 +327,35 @@ class CheckRegistrationFormJob extends TchoozChecklistJob
 
 		$query = $db->getQuery(true);
 		$query->update($db->qn('#__menu'))
-			->set($db->qn('link') . ' = ' . $db->q($newLink))
-			->where($db->qn('link') . ' = ' . $db->q($oldLink));
+			->set($db->qn('link') . ' = CONCAT(' . $db->q($newLink) . ', SUBSTRING(' . $db->qn('link') . ', ' . (strlen($oldLink) + 1) . '))')
+			->where('(' . $db->qn('link') . ' = ' . $db->q($oldLink) . ' OR ' . $db->qn('link') . ' LIKE ' . $db->q($oldLink . '&%') . ')');
 		$db->setQuery($query);
 		$db->execute();
 
 		$affected = $db->getAffectedRows();
 		$this->logStep('jos_menu: ' . $affected . ' link(s) ' . $oldLink . ' -> ' . $newLink);
+
+		return $affected;
+	}
+
+	/**
+	 * Rewrites the links to the old form stored in the params of $table (e.g. com_emundus_programme_candidate_link,
+	 * link_register) and returns affected rows. The id must not be followed by a digit, so 307 does not match 3070.
+	 */
+	private function updateFormLinksInParams(string $table, int $oldId, int $newId): int
+	{
+		$db      = $this->databaseService->getDatabase();
+		$pattern = $db->q('formid=' . $oldId . '([^0-9]|$)');
+
+		$query = $db->getQuery(true);
+		$query->update($db->qn($table))
+			->set($db->qn('params') . ' = REGEXP_REPLACE(' . $db->qn('params') . ', ' . $pattern . ', ' . $db->q('formid=' . $newId . '$1') . ')')
+			->where($db->qn('params') . ' REGEXP ' . $pattern);
+		$db->setQuery($query);
+		$db->execute();
+
+		$affected = $db->getAffectedRows();
+		$this->logStep($table . ': ' . $affected . ' params with a link to form ' . $oldId . ' -> ' . $newId);
 
 		return $affected;
 	}

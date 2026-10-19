@@ -91,6 +91,8 @@ class EmundusHelperFabrik
 
 	private static ?FabrikRepository $sharedFabrikRepository = null;
 
+	private static ?ReadonlyElementStorage $sharedReadonlyStorage = null;
+
 	public function __construct()
 	{
 		Log::addLogger(['text_file' => 'com_emundus.fabrik.helper.php'], Log::ALL, ['com_emundus.fabrik.helper']);
@@ -3459,7 +3461,11 @@ class EmundusHelperFabrik
 		// A read-only element stored in a date column holds its source raw value, formatted the way the source does
 		if ($plugin === ElementPluginEnum::EMUNDUSREADONLY)
 		{
-			$dateSource = (new ReadonlyElementStorage())->getDateSource((int) $fabrik_element['id']);
+			if (self::$sharedReadonlyStorage === null)
+			{
+				self::$sharedReadonlyStorage = new ReadonlyElementStorage();
+			}
+			$dateSource = self::$sharedReadonlyStorage->getDateSource((int) $fabrik_element['id']);
 			if ($dateSource !== null)
 			{
 				$plugin = $dateSource->getPlugin();

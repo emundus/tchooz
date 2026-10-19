@@ -898,10 +898,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		    $logo_base64 = '';
 		    try
 		    {
-				$path = JPATH_SITE.'/images/custom/';
-			    $logo = EmundusHelperEmails::getLogo(true,$item->training);
+				$logo = EmundusHelperEmails::getLogo(false, $item->training, true);
 			    $type = pathinfo($logo, PATHINFO_EXTENSION);
-			    if ($data = file_get_contents($path.$logo))
+			    if ($data = file_get_contents($logo))
 			    {
 				    $logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
 			    }
@@ -1538,7 +1537,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     			</script>';
 	    $htmldata .= '</body></html>';
 
-	    $filename = EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . $file_lbl . '_' . rand(1,100000) . '.pdf';
+	    $filename = EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . $file_lbl . '.pdf';
 
 		/** DOMPDF */
 	    $options = new Options();
@@ -1553,7 +1552,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		    $dompdf->render();
 
 		    if($output) {
-			    $dompdf->stream($filename, array("Attachment" => false));
+			    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+			    header('Pragma: no-cache');
+			    header('Expires: 0');
+			    $dompdf->stream($fnum . $file_lbl . '.pdf', array("Attachment" => false));
 		    } else {
 			    file_put_contents($filename, $dompdf->output());
 			    return $filename;

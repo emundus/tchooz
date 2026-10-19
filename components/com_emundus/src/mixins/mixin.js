@@ -113,14 +113,9 @@ var mixin = {
 			}
 			return false;
 		},
-		checkMaxMinlength(event, maxlength, minlength = null) {
+		checkMaxlength(event, maxlength) {
 			if (event.target.textContent.length >= maxlength && event.keyCode != 8) {
 				event.preventDefault();
-			}
-			if (minlength !== null) {
-				if (event.target.textContent.length <= minlength && event.keyCode == 8) {
-					event.preventDefault();
-				}
 			}
 		},
 		differencesBetweenObjetcs(obj1, obj2, propsToCompare = null) {

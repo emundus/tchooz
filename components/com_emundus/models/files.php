@@ -56,6 +56,18 @@ class EmundusModelFiles extends JModelLegacy
 {
 	private $app;
 
+	/**
+	 * Clears the per-request fnum access cache, loading the legacy access helper first if needed.
+	 */
+	private function clearFnumAccessCache(): void
+	{
+		if (!class_exists('EmundusHelperAccess'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+		}
+		\EmundusHelperAccess::clearFnumAccessCache();
+	}
+
 	protected $_db;
 	/**
 	 * @var null
@@ -1411,11 +1423,7 @@ class EmundusModelFiles extends JModelLegacy
 				$shared = $this->_db->execute();
 
 				if ($shared) {
-					if (!class_exists('EmundusHelperAccess'))
-					{
-						require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
-					}
-					\EmundusHelperAccess::clearFnumAccessCache();
+					$this->clearFnumAccessCache();
 
 					// log
 					$query->clear()
@@ -1486,11 +1494,7 @@ class EmundusModelFiles extends JModelLegacy
 				$shared = $this->_db->execute();
 
 				if ($shared) {
-					if (!class_exists('EmundusHelperAccess'))
-					{
-						require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
-					}
-					\EmundusHelperAccess::clearFnumAccessCache();
+					$this->clearFnumAccessCache();
 
 					$query->clear()
 						->select('name')
@@ -1539,11 +1543,7 @@ class EmundusModelFiles extends JModelLegacy
 
 			if($unshared = $this->_db->execute())
 			{
-				if (!class_exists('EmundusHelperAccess'))
-				{
-					require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
-				}
-				\EmundusHelperAccess::clearFnumAccessCache();
+				$this->clearFnumAccessCache();
 
 				$query->clear()
 					->select('name')
@@ -5998,7 +5998,7 @@ class EmundusModelFiles extends JModelLegacy
 						unlink(JPATH_SITE.DS.'tmp'.DS.$application_form_name.'.pdf');
 					}
 
-					$file = $application_form_name.'_'.rand(1,10000).'.pdf';
+					$file = $application_form_name.'.pdf';
 				}
 			}
 

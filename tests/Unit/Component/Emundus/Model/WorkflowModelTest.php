@@ -444,6 +444,32 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertEquals(1, $foundStep->action_id, 'The action id for applicant step should be 1 for default applicant step');
 	}
 
+	/**
+	 * Callers write campaign or file data into the step they get: the next caller still gets the
+	 * stored step.
+	 *
+	 * @covers EmundusModelWorkflow::getStepData
+	 * @covers EmundusModelWorkflow::getWorkflow
+	 * @return void
+	 */
+	public function testGetStepDataIsNotChangedByWhatACallerWritesInIt(): void
+	{
+		$workflow_data = $this->createSampleWorkflow(1);
+		$step_id       = $workflow_data['steps'][0]->id;
+
+		$step                   = $this->model->getStepData($step_id);
+		$step->written_by_caller = true;
+
+		$workflow                                = $this->model->getWorkflow($workflow_data['workflow']->id);
+		$workflow['steps'][0]->written_by_caller = true;
+
+		$again         = $this->model->getStepData($step_id);
+		$workflowAgain = $this->model->getWorkflow($workflow_data['workflow']->id);
+
+		$this->assertObjectNotHasProperty('written_by_caller', $again, 'The step is not changed by what the first caller wrote');
+		$this->assertObjectNotHasProperty('written_by_caller', $workflowAgain['steps'][0], 'The workflow steps are not changed by what a caller wrote');
+	}
+
 	private function createSampleWorkflow(int $type = 1): array
 	{
 		$workflow_id = $this->model->add();
