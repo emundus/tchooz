@@ -5998,7 +5998,7 @@ class EmundusModelFiles extends JModelLegacy
 						unlink(JPATH_SITE.DS.'tmp'.DS.$application_form_name.'.pdf');
 					}
 
-					$file = $application_form_name.'_'.rand(1,10000).'.pdf';
+					$file = $application_form_name.'.pdf';
 				}
 			}
 
