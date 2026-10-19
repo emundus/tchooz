@@ -421,8 +421,8 @@ class EmundusViewFiles extends HtmlView
 							$userObj->radio = array_combine($params->sub_options->sub_labels, $params->sub_options->sub_values);
 						}
 
-						$plugin = ElementPluginEnum::tryFrom($userObj->type);
-						if ($plugin->isDateField())
+						$plugin = ElementPluginEnum::tryFromString($userObj->type);
+						if ($plugin?->isDateField())
 						{
 							$userObj->val = EmundusHelperDate::displayDate($value, 'DATE_FORMAT_LC5');
 						}

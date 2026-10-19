@@ -923,7 +923,7 @@ class EmundusModelWorkflow extends JModelList
 		if (!empty($id) && isset($stepsCache[$id]) && $cid === null) {
 			self::$step_data_cache[$id] = self::copyCached($stepsCache[$id]);
 
-			return $stepsCache[$id];
+			return self::copyCached(self::$step_data_cache[$id]);
 		}
 
 		$query = $this->db->createQuery();

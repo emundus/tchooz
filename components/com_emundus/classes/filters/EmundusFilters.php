@@ -71,6 +71,9 @@ class EmundusFilters
 
 			$fieldCalcTypes = $this->resolveFieldCalcElementTypes($elements, $db);
 
+			// Reused across the loop: constructing it per element rebuilds a FabrikRepository + factory each time.
+			$readonlyStorage = new ReadonlyElementStorage();
+
 			foreach($elements as $element) {
                 $label = strip_tags(Text::_($element['label']));
 				$label = !empty($label) ? $label : 'ELEMENT ' .  $element['id'];
@@ -143,7 +146,7 @@ class EmundusFilters
 						$filter['value'] = ['', ''];
 						break;
 					case 'emundusreadonly':
-						if ((new ReadonlyElementStorage())->getColumnTypeById((int) $element['id'])->isDate())
+						if ($readonlyStorage->getColumnTypeById((int) $element['id'])->isDate())
 						{
 							$filter['type'] = 'date';
 							$filter['value'] = ['', ''];

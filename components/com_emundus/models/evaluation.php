@@ -1577,8 +1577,7 @@ class EmundusModelEvaluation extends JModelList
 			Log::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . str_replace('#_', 'jos', $query) . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			// An empty list would read as "no file": the failure must reach the user.
-			// todo: we should throw an error, but we have to ensure every front endpoints will handle it correctly
-			// throw new Exception(Text::_('COM_EMUNDUS_ERROR_OCCURED'), 500, $e);
+			throw new Exception(Text::_('COM_EMUNDUS_ERROR_OCCURED'), 500, $e);
 		}
 
 		return $evaluations_list;

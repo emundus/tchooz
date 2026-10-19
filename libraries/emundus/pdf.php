@@ -898,10 +898,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		    $logo_base64 = '';
 		    try
 		    {
-				$path = JPATH_SITE.'/images/custom/';
-			    $logo = EmundusHelperEmails::getLogo(true,$item->training);
+				$logo = EmundusHelperEmails::getLogo(false, $item->training, true);
 			    $type = pathinfo($logo, PATHINFO_EXTENSION);
-			    if ($data = file_get_contents($path.$logo))
+			    if ($data = file_get_contents($logo))
 			    {
 				    $logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
 			    }
