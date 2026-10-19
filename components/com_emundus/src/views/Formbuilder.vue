@@ -39,7 +39,7 @@
 						ref="formTitle"
 						@focusout="updateFormTitle"
 						@keyup.enter="updateFormTitleKeyup"
-						@keydown="(event) => checkMaxMinlength(event, 100, 3)"
+						@keydown="(event) => checkMaxlength(event, 100)"
 						:placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_FORM_TITLE_ADD')"
 					>
 						{{ title }}
@@ -384,6 +384,8 @@ import settingsService from '@/services/settings.js';
 import History from '@/views/History.vue';
 import ContactForm from '@/views/Contacts/ContactForm.vue';
 
+const MIN_FORM_TITLE_LENGTH = 3;
+
 export default {
 	name: 'FormBuilder',
 	components: {
@@ -572,6 +574,14 @@ export default {
 			}
 		},
 		updateFormTitle() {
+			const newTitle = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, ' ');
+			if (newTitle.length < MIN_FORM_TITLE_LENGTH) {
+				this.tipToast(this.translate('COM_EMUNDUS_FORM_BUILDER_FORM_TITLE_MIN_LENGTH'), 'error');
+				const previousTitle = this.profile_id == 0 ? this.pages[0].label : this.title;
+				this.$refs.formTitle.innerText = previousTitle;
+				return;
+			}
+
 			if (this.profile_id == 0) {
 				formService.getPageObject(this.pages[0].id).then((response) => {
 					const fabrikPage = response.data;
