@@ -117,7 +117,7 @@ $this->getDocument()->getWebAssetManager()
                     <?php endif; ?>
 	                <?php if (count($this->records) > 1) : ?>
                         <div id="users-mfa-captive-form-choose-another">
-                            <a class="hover:tw-underline tw-cursor-pointer" href="<?php echo Route::_('index.php?option=com_users&view=captive&task=select') ?>">
+                            <a class="hover:tw-underline tw-cursor-pointer" href="<?php echo Route::_('index.php?option=com_users&view=captive&task=captive.select') ?>">
 				                <?php echo Text::_('COM_USERS_MFA_USE_DIFFERENT_METHOD'); ?>
                             </a>
                         </div>
