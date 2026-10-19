@@ -5602,6 +5602,8 @@ class EmundusHelperFiles
 				}
 			}
 
+			self::$joinInformationsCache[$element_id] = $data;
+
 			if ((empty($data) || empty($data['join_from_table'])) && !empty($group_id))
 			{
 				$query->clear()

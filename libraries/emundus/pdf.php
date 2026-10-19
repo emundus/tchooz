@@ -1537,7 +1537,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     			</script>';
 	    $htmldata .= '</body></html>';
 
-	    $filename = EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . $file_lbl . '.pdf';
+	    $filename = EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . $file_lbl . '_' . rand(1,100000) . '.pdf';
 
 		/** DOMPDF */
 	    $options = new Options();
