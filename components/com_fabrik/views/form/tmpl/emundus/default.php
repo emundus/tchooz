@@ -188,7 +188,7 @@ endif;
 </div>
 
 <div
-    class="emundus-form !tw-p-6 tw-rounded-coordinator-cards tw-shadow-standard tw-border tw-border-neutral-300 !tw-bg-white <?php echo $pageClass; ?>">
+    class="emundus-form !tw-p-6 tw-rounded-applicant-cards tw-shadow-standard tw-border tw-border-neutral-300 !tw-bg-white <?php echo $pageClass; ?>">
     <?php if ($form->id == $profile_form) : ?>
         <iframe id="background-shapes-profile" alt="<?= Text::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
     <?php endif; ?>

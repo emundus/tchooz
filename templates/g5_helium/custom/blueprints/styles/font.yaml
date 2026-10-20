@@ -12,26 +12,104 @@ form:
       type: input.text
       label: H1 font size
       default: '32px'
+    weight-h1:
+      type: input.text
+      label: H1 font weight
+      default: '500'
+    text-transform-h1:
+      type: select.select
+      label: H1 text transform
+      default: 'none'
+      options:
+        uppercase: Uppercase
+        lowercase: Lowercase
+        capitalize: Capitalize
+        none: None
     size-h2:
       type: input.text
       label: H2 font size
       default: '24px'
+    weight-h2:
+      type: input.text
+      label: H2 font weight
+      default: '500'
+    text-transform-h2:
+      type: select.select
+      label: H2 text transform
+      default: 'none'
+      options:
+        uppercase: Uppercase
+        lowercase: Lowercase
+        capitalize: Capitalize
+        none: None
     size-h3:
       type: input.text
       label: H3 font size
       default: '18px'
+    weight-h3:
+      type: input.text
+      label: H3 font weight
+      default: '500'
+    text-transform-h3:
+      type: select.select
+      label: H3 text transform
+      default: 'none'
+      options:
+        uppercase: Uppercase
+        lowercase: Lowercase
+        capitalize: Capitalize
+        none: None
     size-h4:
       type: input.text
       label: H4 font size
       default: '16px'
+    weight-h4:
+      type: input.text
+      label: H4 font weight
+      default: '500'
+    text-transform-h4:
+      type: select.select
+      label: H4 text transform
+      default: 'none'
+      options:
+        uppercase: Uppercase
+        lowercase: Lowercase
+        capitalize: Capitalize
+        none: None
     size-h5:
       type: input.text
       label: H5 font size
       default: '12px'
+    weight-h5:
+      type: input.text
+      label: H5 font weight
+      default: '500'
+    text-transform-h5:
+      type: select.select
+      label: H5 text transform
+      default: 'none'
+      options:
+        uppercase: Uppercase
+        lowercase: Lowercase
+        capitalize: Capitalize
+        none: None
     size-h6:
       type: input.text
       label: H6 font size
       default: '10px'
+    weight-h6:
+      type: input.text
+      label: H6 font weight
+      default: '500'
+    text-transform-h6:
+      type: select.select
+      label: H6 text transform
+      default: 'none'
+      options:
+        uppercase: Uppercase
+        lowercase: Lowercase
+        capitalize: Capitalize
+        none: None
     family-text:
       type: input.fonts
       label: Body Font
@@ -40,6 +118,19 @@ form:
       type: input.text
       label: Text and button font size
       default: '16px'
+    weight-body:
+      type: input.text
+      label: Body font weight
+      default: '500'
+    text-transform-button:
+      type: select.select
+      label: Button text transform
+      default: 'none'
+      options:
+        uppercase: Uppercase
+        lowercase: Lowercase
+        capitalize: Capitalize
+        none: None
     xxs-size:
       type: input.text
       label: XXS Size

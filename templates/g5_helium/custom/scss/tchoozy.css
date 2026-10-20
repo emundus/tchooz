@@ -27,6 +27,10 @@
   background-image: var(--display-wide-background);
 }
 
+#background-shapes {
+  display: var(--tchoozy-cards);
+}
+
 
 /* body-expressions */
 .angry {

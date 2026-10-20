@@ -59,6 +59,8 @@ configuration:
       400: 'gantry-theme://fonts/lato/lato-regular/lato-regular-webfont'
       200italic: 'gantry-theme://fonts/lato/lato-lightitalic/lato-lightitalic-webfont'
       200: 'gantry-theme://fonts/lato/lato-light/lato-light-webfont'
+    Montserrat:
+      500: 'gantry-theme://fonts/montserrat/montserrat'
 
   css:
     compiler: '\Gantry\Component\Stylesheet\ScssCompiler'

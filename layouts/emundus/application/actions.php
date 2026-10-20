@@ -55,7 +55,7 @@ if (!empty($actions))
 	<div class="tw-relative emundus-application-file-actions-wrapper" data-fnum="<?= $fnum; ?>" data-ccid="<?= $application->getId(); ?>">
 
         <?php if ($context === 'single') : ?>
-            <button type="button" class="tw-w-auto tw-items-center tw-gap-1 tw-rounded-coordinator tw-btn-secondary emundus-application-file-actions" style="line-height: 1.5rem;"
+            <button type="button" class="tw-w-auto tw-items-center tw-gap-1 tw-rounded-applicant tw-btn-secondary emundus-application-file-actions" style="line-height: 1.5rem;"
                     aria-haspopup="true" aria-expanded="false">
                 <?=  Text::_('COM_EMUNDUS_ACTIONS'); ?>
                 <span class="material-symbols-outlined popover-toggle-btn not-to-close-modal tw-cursor-pointer" aria-hidden="true">keyboard_arrow_down</span>
@@ -67,7 +67,7 @@ if (!empty($actions))
                  more_vert
              </span>
         <?php endif; ?>
-		<div class="emundus-application-file-actions-container tw-fixed tw-bg-white tw-shadow-md tw-rounded-coordinator tw-p-2 tw-hidden tw-flex tw-flex-col tw-z-50" data-fnum="<?= $fnum; ?>" role="menu" aria-label="<?= Text::_('COM_EMUNDUS_ACTIONS'); ?>">
+		<div class="emundus-application-file-actions-container tw-fixed tw-bg-white tw-shadow-md tw-rounded-applicant tw-p-2 tw-hidden tw-flex tw-flex-col tw-z-50" data-fnum="<?= $fnum; ?>" role="menu" aria-label="<?= Text::_('COM_EMUNDUS_ACTIONS'); ?>">
 			<?php
             foreach ($actions as $action)
 			{

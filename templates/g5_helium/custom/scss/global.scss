@@ -336,7 +336,7 @@ body > .g-container {
       & > button {
         color: var(--link-regular);
         padding: 0 !important;
-        text-transform: none;
+        text-transform: var(--em-applicant-text-transform-button);
         letter-spacing: 0;
         margin-bottom: 0;
 
@@ -1073,7 +1073,7 @@ footer#g-footer > .g-container {
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      border-radius: 8px;
+      border-radius: var(--em-applicant-br-cards);
       margin: 0;
 
 
