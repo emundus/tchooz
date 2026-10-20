@@ -648,6 +648,59 @@ class EmundusControllerGroups extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function associateusers(): EmundusResponse
+	{
+		$groupIds = $this->input->getString('group_ids', '');
+		$userIds  = $this->input->getString('user_ids', '');
+
+		$groupIds = array_values(array_filter(array_map('intval', explode(',', $groupIds)), fn($id) => $id > 0));
+		$userIds  = array_values(array_filter(array_map('intval', explode(',', $userIds)), fn($id) => $id > 0));
+
+		if (empty($groupIds))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_GROUP_ID_REQUIRED'));
+		}
+
+		if (empty($userIds))
+		{
+			throw new InvalidArgumentException(Text::_('COM_EMUNDUS_GROUPS_USERS_REQUIRED'));
+		}
+
+		$emundusUserRepository = new EmundusUserRepository();
+
+		$associated = 0;
+		foreach ($groupIds as $groupId)
+		{
+			$group = $this->groupRepository->getById($groupId);
+			if (empty($group))
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_GROUP_NOT_FOUND'), 404);
+			}
+
+			// Skip users already member of the group to avoid duplicate associations.
+			$existingUsers   = $emundusUserRepository->getUsersByGroup($groupId);
+			$existingUserIds = array_map(fn($user) => $user->getUser()->id, $existingUsers);
+
+			foreach ($userIds as $userId)
+			{
+				if (in_array($userId, $existingUserIds))
+				{
+					continue;
+				}
+
+				if (!$emundusUserRepository->associateGroup($groupId, $userId))
+				{
+					throw new Exception(Text::_('COM_EMUNDUS_GROUPS_ERROR_ASSOCIATING_USERS'), 500);
+				}
+
+				$associated++;
+			}
+		}
+
+		return EmundusResponse::ok(['associated' => $associated], Text::_('COM_EMUNDUS_GROUPS_USERS_ASSOCIATED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
 	public function deletegroup(): EmundusResponse
 	{
 		$id = $this->input->getInt('id', 0);

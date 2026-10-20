@@ -557,6 +557,7 @@ import ProgramDetails from '@/components/Campaigns/ProgramDetails.vue';
 import EventDetails from '@/components/Events/EventDetails.vue';
 import EmailDetails from '@/components/Emails/EmailDetails.vue';
 import GroupDetails from '@/components/Groups/GroupDetails.vue';
+import AssociateUsersModal from '@/components/Groups/AssociateUsersModal.vue';
 import Import from '@/components/Campaigns/Import.vue';
 import SaveRequest from '@/views/Sign/SaveRequest.vue';
 import UpdateApplicationChoiceState from '@/components/Application/UpdateApplicationChoiceState.vue';
@@ -608,6 +609,7 @@ export default {
 		CampaignDetails,
 		ProgramDetails,
 		GroupDetails,
+		AssociateUsersModal,
 		EventDetails,
 		EmailDetails,
 		SaveRequest,
@@ -686,6 +688,7 @@ export default {
 				EventDetails,
 				EmailDetails,
 				GroupDetails,
+				AssociateUsersModal,
 				Import,
 				SaveRequest,
 				UpdateApplicationChoiceState,

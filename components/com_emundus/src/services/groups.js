@@ -116,4 +116,19 @@ export default {
 			};
 		}
 	},
+
+	async associateUsers(groupIds, userIds) {
+		try {
+			return await client.post('associateusers', {
+				group_ids: Array.isArray(groupIds) ? groupIds.join(',') : groupIds,
+				user_ids: Array.isArray(userIds) ? userIds.join(',') : userIds,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+				msg: e.message,
+			};
+		}
+	},
 };
