@@ -2315,6 +2315,11 @@ class EmundusModelFiles extends JModelLegacy
 			$this->_db->setQuery($query);
 			$fnumInfos = $this->_db->loadAssoc();
 
+			if(is_null($fnumInfos))
+			{
+				$fnumInfos = [];
+			}
+
 			$anonymize_data = EmundusHelperFiles::shouldAnonymize($user_id, $fnumInfos['is_anonym'] == 1, $fnumInfos['anonymous'] == 1, $check_is_anonym);
 			if ($anonymize_data) {
 				$fnumInfos['name']  = $fnum;
