@@ -51,6 +51,7 @@ export default {
 									confirm: 'COM_EMUNDUS_ONBOARD_GROUPS_DUPLICATE_CONFIRM',
 									input: 'text',
 									inputLabel: 'COM_EMUNDUS_ONBOARD_GROUPS_DUPLICATE_NAME_INPUT_LABEL',
+									iconLabel: 'content_copy',
 								},
 								{
 									action: 'index.php?option=com_emundus&view=groups&layout=form&id=%id%',
@@ -72,6 +73,17 @@ export default {
 										operator: '=',
 										value: true,
 									},
+									iconLabel: 'delete',
+								},
+								{
+									action: 'associateusers',
+									label: 'COM_EMUNDUS_GROUPS_USERS_ASSOCIATE_ADD_USER',
+									controller: 'groups',
+									name: 'associate_users',
+									type: 'modal',
+									component: 'AssociateUsersModal',
+									multiple: true,
+									iconLabel: 'group_add',
 								},
 								{
 									action: 'show',
