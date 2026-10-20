@@ -113,8 +113,53 @@
     font-feature-settings: 'liga';
 }
 
+@font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url(/templates/g5_helium/fonts/montserrat/montserrat.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 body {
     font-family: var(--em-profile-font), Inter, sans-serif;
+}
+
+h1:not(.em-coordinator h1) {
+    font-weight: var(--em-applicant-weight-h1) !important;
+    text-transform: var(--em-applicant-text-transform-h1);
+}
+
+h2:not(.em-coordinator h2) {
+    font-weight: var(--em-applicant-weight-h2) !important;
+    text-transform: var(--em-applicant-text-transform-h2);
+}
+
+h3:not(.em-coordinator h3) {
+    font-weight: var(--em-applicant-weight-h3) !important;
+    text-transform: var(--em-applicant-text-transform-h3);
+}
+
+h4:not(.em-coordinator h4) {
+    font-weight: var(--em-applicant-weight-h4) !important;
+    text-transform: var(--em-applicant-text-transform-h4);
+}
+
+h5:not(.em-coordinator h5) {
+    font-weight: var(--em-applicant-weight-h5) !important;
+    text-transform: var(--em-applicant-text-transform-h5);
+}
+
+h6:not(.em-coordinator h6) {
+    font-weight: var(--em-applicant-weight-h6) !important;
+    text-transform: var(--em-applicant-text-transform-h6);
+}
+
+p:not(.em-coordinator p) {
+    font-size: 16px;
+    line-height: 140%;
+    font-weight: 500;
 }
 
 ::selection {

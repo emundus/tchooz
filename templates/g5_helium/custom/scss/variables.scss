@@ -142,12 +142,27 @@
   --em-coordinator-h6: #{$coordinator-size-h6};
 
   --em-applicant-font-size: #{$font-font-size};
+  --em-applicant-weight: #{$font-weight-body};
   --em-applicant-h1: #{$font-size-h1};
+  --em-applicant-weight-h1: #{$font-weight-h1};
+  --em-applicant-text-transform-h1: #{$font-text-transform-h1};
   --em-applicant-h2: #{$font-size-h2};
+  --em-applicant-weight-h2: #{$font-weight-h2};
+  --em-applicant-text-transform-h2: #{$font-text-transform-h2};
   --em-applicant-h3: #{$font-size-h3};
+  --em-applicant-weight-h3: #{$font-weight-h3};
+  --em-applicant-text-transform-h3: #{$font-text-transform-h3};
   --em-applicant-h4: #{$font-size-h4};
+  --em-applicant-weight-h4: #{$font-weight-h4};
+  --em-applicant-text-transform-h4: #{$font-text-transform-h4};
   --em-applicant-h5: #{$font-size-h5};
+  --em-applicant-weight-h5: #{$font-weight-h5};
+  --em-applicant-text-transform-h5: #{$font-text-transform-h5};
   --em-applicant-h6: #{$font-size-h6};
+  --em-applicant-weight-h6: #{$font-weight-h6};
+  --em-applicant-text-transform-h6: #{$font-text-transform-h6};
+
+  --em-applicant-text-transform-button: #{$font-text-transform-button};
 
   /* FONT COLOR */
   --em-coordinator-title-color: #{$coordinator-title-color};
@@ -396,6 +411,8 @@
 
   //TCHOOZY - Easter egg
   --display-hiding: #{$tchoozy-hiding};
+
+  --tchoozy-cards: #{$tchoozy-cards};
 
   //TCHOOZY - Coordinators
   --logged-homepage: #{$tchoozy-logged-homepage};

@@ -924,14 +924,13 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                         <table class="em-mb-12 applications_list_view--tables">
                             <thead>
                             <tr>
-                                <th></th>
-                                <th style="width: 23.75%;"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION_NAME') ?></th>
-                                <th style="width: 23.75%;"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_LAST_UPDATE') ?></th>
+                                <th colspan="2"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION_NAME') ?></th>
+                                <th colspan="2"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_LAST_UPDATE') ?></th>
 								<?php if ($show_progress == 1) : ?>
-                                    <th style="width: 23.75%;"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED') ?></th>
+                                    <th colspan="2"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED') ?></th>
 								<?php endif; ?>
-                                <th style="width: 23.75%;"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_STATUS') ?></th>
-                                <th style="width: 5%;"></th>
+                                <th colspan="2"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_STATUS') ?></th>
+                                <th colspan="1"></th>
                             </tr>
                             </thead>
                         </table>
@@ -946,19 +945,21 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                 <tbody>
                                 <?php if (($show_show_campaigns && $applicant_can_renew) || ($show_add_application && $applicant_can_renew)) : ?>
                                     <tr class="em-pointer list-application-add">
-                                        <td>
+                                        <td colspan="2">
                                             <?php if ($mod_em_campaign_display_svg == 1) : ?>
                                                 <div id="background-shapes"
                                                      alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
                                             <?php endif; ?>
                                             <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
                                         </td>
-                                        <td></td>
-                                        <td>
+                                        <td colspan="2"></td>
+                                        <td colspan="2">
                                             <span class="material-symbols-outlined tw-w-fit">add_circle</span>
                                         </td>
-                                        <td></td>
-                                        <td></td>
+                                        <?php if ($show_progress == 1) : ?>
+                                            <td colspan="2"></td>
+                                        <?php endif; ?>
+                                        <td colspan="1"></td>
                                     </tr>
                                 <?php endif; ?>
 								<?php foreach ($files as $application) : ?>
@@ -971,7 +972,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
                                             <tr class="em-pointer"
                                                 id="application_content<?php echo $application->fnum ?>"
                                                 onclick="openFile(event,'<?php echo $application->first_page_url ?>')">
-                                                <td style="width: 23.75%;">
+                                                <td colspan="2">
 													<?php if ($mod_em_campaign_display_svg == 1) : ?>
                                                         <div id="background-shapes"
                                                              alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
@@ -1006,7 +1007,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 													    </div>
 													<?php endif; ?>
                                                 </td>
-                                                <td style="width: 23.75%;">
+                                                <td colspan="2">
 													<?php if (!empty($application->updated) || !empty($application->submitted_date)) : ?>
                                                         <div>
                                                             <p class="em-applicant-default-font em-text-neutral-900 em-font-size-14">
@@ -1020,12 +1021,12 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 													<?php endif; ?>
                                                 </td>
 												<?php if ($show_progress == 1) : ?>
-                                                    <td style="width: 23.75%;">
+                                                    <td colspan="2">
                                                         <p class="em-applicant-default-font em-text-neutral-900 em-font-size-14"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
                                                             %</p>
                                                     </td>
 												<?php endif; ?>
-                                                <td style="width: 23.75%;">
+                                                <td colspan="2">
                                                     <div>
 														<?php
 														if (empty($application->class))
@@ -1063,7 +1064,7 @@ $sanitizer = HtmlSanitizerSingleton::getInstance();
 														<?php endif; ?>
                                                     </div>
                                                 </td>
-                                                <td style="width: 5%;">
+                                                <td colspan="1">
                                                     <div class="mod_emundus_applications__container"
                                                          id="actions_button_<?php echo $application->fnum ?>_container_list_tab<?php echo $key ?>">
                                                         <?php

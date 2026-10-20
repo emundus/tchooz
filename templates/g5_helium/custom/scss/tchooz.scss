@@ -1383,7 +1383,7 @@ input:focus + .em-slider {
 .em-light-tabs{
   padding: 12px 10px;
   border-bottom: solid 1px var(--transparent);
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--em-default-br) var(--em-default-br) 0 0;
 }
 .em-light-tabs:hover {
     background-color: var(--neutral-300);
@@ -2121,7 +2121,7 @@ button.em-swal-delete-button:hover{
   position: absolute;
   height: 100%;
   width: 100%;
-  border-radius: 16px;
+  border-radius: var(--em-applicant-br-cards);
   transform: rotate(3deg);
   opacity: 0.3;
   transition: transform .3s;
@@ -2296,6 +2296,12 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
 /*******************
  *    Peps liste   *
  *******************/
+#applications_list_view table
+{
+  width: 100%;
+  table-layout: fixed;
+  margin-left: 0 !important;
+}
 
 #applications_list_view table:first-child thead tr th:first-child {
   padding-left: 32px;
@@ -2308,10 +2314,9 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
 
 #applications_list_view table tbody tr {
   box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
-  border-radius: 8px;
+  border-radius: var(--em-applicant-br-cards);
 
   td {
-    padding: var(--p-16) var(--p-32);
     position:relative;
     background: var(--neutral-0);
 
@@ -2321,11 +2326,11 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
   }
 
   td:first-child {
-    border-radius: 8px 0 0 8px;
+    border-radius: var(--em-applicant-br-cards) 0 0 var(--em-applicant-br-cards);
   }
 
   td:last-child {
-    border-radius: 0 8px 8px 0;
+    border-radius: 0 var(--em-applicant-br-cards) var(--em-applicant-br-cards) 0;
   }
 }
 

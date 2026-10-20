@@ -129,6 +129,15 @@ form:
         url("/media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg"): Enabled
         none: Disabled
 
+    cards:
+      type: select.select
+      label: All illustrations on cards
+      default: block
+      description: Shapes as cards background
+      options:
+        block: Enabled
+        none: Disabled
+
     # Coordinators
     logged-homepage:
       type: select.select

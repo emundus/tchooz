@@ -11,7 +11,6 @@
 namespace scripts;
 
 use EmundusHelperUpdate;
-use scripts\ReleaseInstaller;
 
 class Release2_25_7Installer extends ReleaseInstaller
 {
@@ -31,6 +30,8 @@ class Release2_25_7Installer extends ReleaseInstaller
 			$this->conditionValueText();
 
 			$this->updateNationalityDatas();
+
+			$this->addYamlVariables();
 
 			$result['status'] = !in_array(false, $this->tasks);
 		}
@@ -86,4 +87,24 @@ class Release2_25_7Installer extends ReleaseInstaller
 		}
 	}
 
+	private function addYamlVariables(): void
+	{
+		\EmundusHelperUpdate::addYamlVariable('cards', 'block', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+
+		\EmundusHelperUpdate::addYamlVariable('weight-h1', '500', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+		\EmundusHelperUpdate::addYamlVariable('weight-h2', '500', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+		\EmundusHelperUpdate::addYamlVariable('weight-h3', '500', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+		\EmundusHelperUpdate::addYamlVariable('weight-h4', '500', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+		\EmundusHelperUpdate::addYamlVariable('weight-h5', '500', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+		\EmundusHelperUpdate::addYamlVariable('weight-h6', '500', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+		\EmundusHelperUpdate::addYamlVariable('weight-body', '500', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+
+		\EmundusHelperUpdate::addYamlVariable('text-transform-h1', 'none', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+		\EmundusHelperUpdate::addYamlVariable('text-transform-h2', 'none', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+		\EmundusHelperUpdate::addYamlVariable('text-transform-h3', 'none', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+		\EmundusHelperUpdate::addYamlVariable('text-transform-h4', 'none', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+		\EmundusHelperUpdate::addYamlVariable('text-transform-h5', 'none', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+		\EmundusHelperUpdate::addYamlVariable('text-transform-h6', 'none', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+		\EmundusHelperUpdate::addYamlVariable('text-transform-button', 'none', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+	}
 }
