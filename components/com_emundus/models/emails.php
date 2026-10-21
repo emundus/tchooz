@@ -2801,6 +2801,10 @@ class EmundusModelEmails extends JModelList
 		if (!empty($data)) {
 			$data['created_by'] = $user_id;
 
+			if (isset($data['category']) && !is_null($data['category'])) {
+				$data['category'] = trim($data['category']);
+			}
+
 			$query->insert($this->_db->quoteName('#__emundus_setup_emails'))
 				->columns($this->_db->quoteName(array_keys($data)))
 				->values(implode(',', $this->_db->quote(array_values($data))));
@@ -2950,6 +2954,9 @@ class EmundusModelEmails extends JModelList
 
 			foreach ($data as $key => $val) {
 				if (!is_null($val)) {
+					if ($key === 'category') {
+						$val = trim($val);
+					}
 					$insert   = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 					$fields[] = $insert;
 				}

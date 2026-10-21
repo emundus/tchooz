@@ -35,6 +35,8 @@ class Release2_25_7Installer extends ReleaseInstaller
 
 			$this->updateApplicantStepTypeWording();
 
+			$this->trimEmailCategories();
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Throwable $e)
@@ -116,6 +118,23 @@ class Release2_25_7Installer extends ReleaseInstaller
 		$query->update($this->db->qn('#__emundus_setup_step_types'))
 			->set($this->db->qn('label') . ' = ' . $this->db->q('Déposant'))
 			->where('TRIM(' . $this->db->qn('label') . ') = ' . $this->db->q('Candidat'));
+		$this->db->setQuery($query);
+		$this->tasks[] = $this->db->execute();
+	}
+
+	/**
+	 * Trim leading and trailing whitespace from existing email categories.
+	 * Idempotent: only rows whose category differs from its trimmed value are updated.
+	 *
+	 * @throws \Exception
+	 */
+	private function trimEmailCategories(): void
+	{
+		$query = $this->db->createQuery();
+		$query->update($this->db->qn('#__emundus_setup_emails'))
+			->set($this->db->qn('category') . ' = TRIM(' . $this->db->qn('category') . ')')
+			->where($this->db->qn('category') . ' IS NOT NULL')
+			->where($this->db->qn('category') . ' != TRIM(' . $this->db->qn('category') . ')');
 		$this->db->setQuery($query);
 		$this->tasks[] = $this->db->execute();
 	}
