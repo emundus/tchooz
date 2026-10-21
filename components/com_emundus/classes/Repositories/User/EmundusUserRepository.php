@@ -63,6 +63,23 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 			throw new \Exception('EmundusUserEntity must have a valid User associated to flush.');
 		}
 
+		$this->db->setQuery('SHOW COLUMNS FROM ' . $this->db->quoteName($this->tableName) . ' WHERE ' . $this->db->quoteName('Field') . ' = ' . $this->db->quote('birth_date'));
+		$birthDateColumn = $this->db->loadAssoc();
+		$birthDateType   = strtolower($birthDateColumn['Type'] ?? '');
+
+		if (stripos($birthDateType, 'datetime') !== false)
+		{
+			$birthDateFormat = 'Y-m-d H:i:s';
+		}
+		elseif (stripos($birthDateType, 'date') !== false)
+		{
+			$birthDateFormat = 'Y-m-d';
+		}
+		else
+		{
+			$birthDateFormat = 'd/m/Y';
+		}
+
 		$data = (object)[
 			'user_id'       => $emundusUserEntity->getUser()->id,
 			'firstname'     => $emundusUserEntity->getFirstname(),
@@ -70,7 +87,7 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 			'profile_picture' => $emundusUserEntity->getProfilePicture(),
 			'user_category' => $emundusUserEntity->getUserCategory()?->getId(),
 			'is_anonym'     => $emundusUserEntity->isAnonym() ? 1 : 0,
-			'birth_date'      => $emundusUserEntity->getBirthDate()?->format('d/m/Y')
+			'birth_date'      => $emundusUserEntity->getBirthDate()?->format($birthDateFormat)
 		];
 
 		try {

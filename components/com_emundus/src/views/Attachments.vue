@@ -646,7 +646,7 @@ export default {
 				this.attachments.forEach((attachment, key) => {
 					if (attachment.aid == selectedAttachment.aid) {
 						this.resetOrder();
-						this.attachments[key][permission] = this.attachments[key][permission] === '1' ? '0' : '1';
+						this.attachments[key][permission] = this.attachments[key][permission] == '1' ? '0' : '1';
 
 						let formData = new FormData();
 						formData.append('fnum', this.displayedFnum);

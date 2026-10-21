@@ -2114,7 +2114,7 @@ class EmundusController extends JControllerLegacy
 					{
 						die (Text::_('ACCESS_DENIED'));
 					}
-					elseif (empty($fileInfo) || $fileInfo->can_be_viewed != 1)
+					elseif ((empty($fileInfo) || $fileInfo->can_be_viewed != 1) && $urltab[$cpt - 2] !== 'profile')
 					{
 						die (Text::_('ACCESS_DENIED'));
 					}
