@@ -33,6 +33,8 @@ class Release2_25_7Installer extends ReleaseInstaller
 
 			$this->addYamlVariables();
 
+			$this->updateApplicantStepTypeWording();
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Throwable $e)
@@ -97,7 +99,7 @@ class Release2_25_7Installer extends ReleaseInstaller
 		\EmundusHelperUpdate::addYamlVariable('weight-h4', '500', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
 		\EmundusHelperUpdate::addYamlVariable('weight-h5', '500', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
 		\EmundusHelperUpdate::addYamlVariable('weight-h6', '500', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
-		\EmundusHelperUpdate::addYamlVariable('weight-body', '500', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+		\EmundusHelperUpdate::addYamlVariable('weight-body', '400', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
 
 		\EmundusHelperUpdate::addYamlVariable('text-transform-h1', 'none', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
 		\EmundusHelperUpdate::addYamlVariable('text-transform-h2', 'none', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
@@ -106,5 +108,15 @@ class Release2_25_7Installer extends ReleaseInstaller
 		\EmundusHelperUpdate::addYamlVariable('text-transform-h5', 'none', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
 		\EmundusHelperUpdate::addYamlVariable('text-transform-h6', 'none', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
 		\EmundusHelperUpdate::addYamlVariable('text-transform-button', 'none', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'font', false, true, false);
+	}
+
+	private function updateApplicantStepTypeWording(): void
+	{
+		$query = $this->db->createQuery();
+		$query->update($this->db->qn('#__emundus_setup_step_types'))
+			->set($this->db->qn('label') . ' = ' . $this->db->q('Déposant'))
+			->where('TRIM(' . $this->db->qn('label') . ') = ' . $this->db->q('Candidat'));
+		$this->db->setQuery($query);
+		$this->tasks[] = $this->db->execute();
 	}
 }
