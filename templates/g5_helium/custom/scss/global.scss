@@ -2536,13 +2536,7 @@ tr.fabrikFilterContainer {
   }
 }
 
-.fabrikForm legend {
-  color: var(--em-primary-color);
-  font-weight: 700;
-  display: contents;
-}
-
-.fabrikForm legend {
+.fabrikForm legend:not(.visually-hidden) {
   color: var(--em-primary-color);
   font-weight: 700;
   display: contents;
