@@ -76,18 +76,6 @@
       "version": "18f50c"
     },
     {
-      "name": "com_menus.batch-body",
-      "type": "script",
-      "uri": "com_menus/default-batch-body.min.js",
-      "dependencies": [
-        "core"
-      ],
-      "attributes": {
-        "type": "module"
-      },
-      "version": "457f2a"
-    },
-    {
       "name": "com_menus.admin-menus",
       "type": "script",
       "uri": "com_menus/admin-menus-default.min.js",
@@ -98,6 +86,18 @@
         "type": "module"
       },
       "version": "8c28f6"
+    },
+    {
+      "name": "com_menus.batch-body",
+      "type": "script",
+      "uri": "com_menus/default-batch-body.min.js",
+      "dependencies": [
+        "core"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "version": "457f2a"
     }
   ]
 }
