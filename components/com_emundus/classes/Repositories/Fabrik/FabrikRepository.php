@@ -987,7 +987,8 @@ class FabrikRepository
 			->select('ffg.group_id AS source_group_id, fg.*')
 			->from($this->db->quoteName('#__fabrik_formgroup', 'ffg'))
 			->leftJoin($this->db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $this->db->quoteName('fg.id') . ' = ' . $this->db->quoteName('ffg.group_id'))
-			->where('ffg.form_id = ' . $oldFormId);
+			->where('ffg.form_id = ' . $oldFormId)
+			->order('ffg.ordering');
 		$this->db->setQuery($query);
 		$groups = $this->db->loadObjectList();
 
@@ -1074,7 +1075,7 @@ class FabrikRepository
 
 			if (!empty($oldIntroKey))
 			{
-				$intro_to_duplicate[$language->sef] = LanguageFactory::getTranslation($group->label, $language->lang_code);
+				$intro_to_duplicate[$language->sef] = LanguageFactory::getTranslation($oldIntroKey, $language->lang_code);
 				if (is_null($intro_to_duplicate[$language->sef]))
 				{
 					$intro_to_duplicate[$language->sef] = '';
