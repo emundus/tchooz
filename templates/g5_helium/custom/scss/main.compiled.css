@@ -169069,7 +169069,7 @@ h6:not(.em-coordinator h6) {
 p:not(.em-coordinator p) {
     font-size: 16px;
     line-height: 140%;
-    font-weight: 500;
+    font-weight: var(--em-applicant-weight);
 }
 
 ::-moz-selection {
