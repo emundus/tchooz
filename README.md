@@ -68,7 +68,9 @@ Manage your application campaigns and calls for proposals simply
 
 ### PHP
 
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.2-8892BF.svg)](https://php.net/)
+[![Php][Php-min-badge]][Php-url]
+[![Php][Php-reco-badge]][Php-url]
+[![Php][Php-not-compatible-badge]][Php-url]
 
 ### NodeJS
 
@@ -111,3 +113,11 @@ https://roadmap.tchooz.app
 [Node-min-badge]: https://img.shields.io/badge/min-18.x-orange
 
 [Node-reco-badge]: https://img.shields.io/badge/recommended-20.x-green
+
+[Php-min-badge]: https://img.shields.io/badge/min-8.2.35-orange
+
+[Php-reco-badge]: https://img.shields.io/badge/recommended-8.3.36-green
+
+[Php-not-compatible-badge]: https://img.shields.io/badge/not_compatible-8.4-red
+
+[Php-url]: https://www.php.net/
