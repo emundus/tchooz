@@ -1,6 +1,8 @@
 # Start of Tchooz .htaccess file (BASE)
 ############################################
 
+php_value session.upload_progress.enabled Off
+
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 
