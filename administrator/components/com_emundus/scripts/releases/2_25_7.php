@@ -73,21 +73,36 @@ class Release2_25_7Installer extends ReleaseInstaller
 			['label_fr' => 'Hong Kong', 'label_en' => 'Hong Kong Chinese'],
 		];
 
-		foreach ($nationalities as $nationality)
+		try
 		{
-			$query = $this->db->createQuery();
-			$query->select('COUNT(' . $this->db->quoteName('id') . ')')
-				->from($this->db->quoteName('data_nationality'))
-				->where($this->db->quoteName('label_fr') . ' = ' . $this->db->quote($nationality['label_fr']));
-			$this->db->setQuery($query);
+			$this->db->setQuery('SHOW COLUMNS FROM ' . $this->db->quoteName('data_nationality') . ' WHERE ' . $this->db->quoteName('Field') . ' = ' . $this->db->quote('published'));
+			$hasPublished = !empty($this->db->loadResult());
 
-			if ((int) $this->db->loadResult() > 0)
+			foreach ($nationalities as $nationality)
 			{
-				continue;
-			}
+				$query = $this->db->createQuery();
+				$query->select('COUNT(' . $this->db->quoteName('id') . ')')
+					->from($this->db->quoteName('data_nationality'))
+					->where($this->db->quoteName('label_fr') . ' = ' . $this->db->quote($nationality['label_fr']));
+				$this->db->setQuery($query);
 
-			$data = (object) $nationality;
-			$this->tasks[] = $this->db->insertObject('data_nationality', $data);
+				if ((int) $this->db->loadResult() > 0)
+				{
+					continue;
+				}
+
+				if ($hasPublished)
+				{
+					$nationality['published'] = 1;
+				}
+
+				$data = (object) $nationality;
+				$this->db->insertObject('data_nationality', $data);
+			}
+		}
+		catch (\Throwable $e)
+		{
+			$this->app->enqueueMessage('Impossible de mettre à jour les nationalités : ' . $e->getMessage(), 'warning');
 		}
 	}
 
