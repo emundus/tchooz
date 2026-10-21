@@ -1164,6 +1164,13 @@ class EmundusHelperEvents
 								}
 								else
 								{
+									// For list-based elements, only fill if the value matches a declared sub_option
+									$sub_values = (array) ($elt->getParams()->get('sub_options.sub_values') ?? []);
+									if (!EmundusHelperEvents::listValueMatchesSubOptions($elt->getElement()->plugin, $sub_values, $alias_value['raw']))
+									{
+										continue;
+									}
+
 									$formModel->data[$elt->getFullName()]          = $alias_value['raw'];
 									$formModel->data[$elt->getFullName() . '_raw'] = $alias_value['raw'];
 								}
@@ -1217,6 +1224,7 @@ class EmundusHelperEvents
 								$parent_id = $stored['id'];
 								unset($stored['id']);
 								unset($stored['fnum']);
+								unset($stored['time_date']);
 
 								foreach ($stored as $key => $store)
 								{
@@ -1243,6 +1251,13 @@ class EmundusHelperEvents
 											$store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
 										}
 
+										// For list-based elements, only fill if the value matches a declared sub_option
+										$eltParams  = json_decode($elt->params);
+										$sub_values = (array) ($eltParams->sub_options->sub_values ?? []);
+										if (!EmundusHelperEvents::listValueMatchesSubOptions($elt->plugin, $sub_values, $store))
+										{
+											continue;
+										}
 
 										$formModel->data[$table->db_table_name . '___' . $key]          = $store;
 										$formModel->data[$table->db_table_name . '___' . $key . '_raw'] = $store;
@@ -1323,6 +1338,13 @@ class EmundusHelperEvents
 											}
 											else
 											{
+												// For list-based elements, only fill if the value matches a declared sub_option
+												$sub_values = (array) ($element->getParams()->get('sub_options.sub_values') ?? []);
+												if (!EmundusHelperEvents::listValueMatchesSubOptions($element->getElement()->plugin, $sub_values, $profile_details->{$elt_name}))
+												{
+													continue;
+												}
+
 												$formModel->data[$element->getFullName()]          = $profile_details->{$elt_name};
 												$formModel->data[$element->getFullName() . '_raw'] = $profile_details->{$elt_name};
 											}
@@ -2580,6 +2602,43 @@ class EmundusHelperEvents
 		}
 
 		return $logged;
+	}
+
+	/**
+	 * For list-based elements (radiobutton/dropdown/checkbox), checks that every raw value
+	 * belongs to the element's declared sub_options. Non-list plugins always pass.
+	 *
+	 * @param   string  $plugin      Fabrik element plugin name
+	 * @param   array   $sub_values  Declared sub_option values
+	 * @param   mixed   $raw_value   Raw value to fill (scalar or JSON array for checkbox)
+	 *
+	 * @return  bool  true if the value may be filled, false if it should be skipped
+	 */
+	public static function listValueMatchesSubOptions(string $plugin, array $sub_values, $raw_value): bool
+	{
+		if (!in_array($plugin, ['radiobutton', 'dropdown', 'checkbox']))
+		{
+			return true;
+		}
+
+		// Checkbox values may be stored as a JSON array
+		$raw_decoded = json_decode($raw_value, true);
+		$values      = is_array($raw_decoded) ? $raw_decoded : [$raw_value];
+
+		if (empty($values))
+		{
+			return false;
+		}
+
+		foreach ($values as $value)
+		{
+			if (!in_array($value, $sub_values))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public static function getFormElements($formId, int $elementId = 0, bool $searchHidden = false, array $excludedNames = ['fnum', 'time_date', 'user', 'date_time'], array $excludedPlugins = ['display', 'internalid']): array
