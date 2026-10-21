@@ -9300,4 +9300,116 @@ class EmundusModelApplication extends ListModel
 
         return $file;
     }
+
+	/**
+	 * insert a line for "fiche individuelle"
+	 */
+	public function createLinesForNewCollaborator($key, $user): void
+	{
+		if (!empty($key) && !empty($user))
+		{
+			Log::add('create line for ' . $user . ' and key ' . $key, Log::INFO, 'com_emundus.custom');
+
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			try
+			{
+				$query->select('fnum, campaign_id')
+					->from($db->quoteName('#__emundus_files_request'))
+					->where($db->quoteName('keyid') . ' = ' . $db->quote($key));
+				$db->setQuery($query);
+				$file_request = $db->loadObject();
+
+				if (!empty($file_request->fnum))
+				{
+					$email_elt = 'e_1077_11597';
+
+					switch ($file_request->campaign_id)
+					{
+						case 13:
+							$group = 1713;
+							$table = '#__emundus_1009_08';
+							break;
+						case 17:
+							$group     = 1869;
+							$table     = '#__emundus_1017_05';
+							$email_elt = 'e_1069_11577';
+							break;
+						default:
+							$group = 1065;
+							$table = '#__emundus_1009_08';
+							break;
+					}
+
+					$query->clear()
+						->select('id')
+						->from($db->quoteName($table))
+						->where($db->quoteName('fnum') . ' = ' . $db->quote($file_request->fnum));
+					$db->setQuery($query);
+					$rowid = $db->loadResult();
+
+					if (empty($rowid))
+					{
+						$insert = [
+							'time_date' => date('Y-m-d H:i:s'),
+							'fnum'      => $file_request->fnum,
+							'user'      => $user
+						];
+
+						$insert = (object) $insert;
+						$db->insertObject($table, $insert);
+
+						$rowid = $db->insertid();
+					}
+
+					if (!empty($rowid))
+					{
+						$query->clear()
+							->select('id')
+							->from($db->quoteName($table . '_' . $group . '_repeat'))
+							->where($db->quoteName('parent_id') . ' = ' . $db->quote($rowid))
+							->where($db->quoteName('user') . ' = ' . $db->quote($user));
+						$db->setQuery($query);
+						$repeatid = $db->loadResult();
+
+						if (empty($repeatid))
+						{
+							$query->clear()
+								->select('eu.firstname,eu.lastname,u.email')
+								->from($db->quoteName('#__users', 'u'))
+								->leftJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('u.id'))
+								->where($db->quoteName('u.id') . ' = ' . $db->quote($user));
+							$db->setQuery($query);
+							$e_user = $db->loadObject();
+
+							$insert = [
+								'parent_id'   => $rowid,
+								'user'        => $user,
+								'e_1065_8869' => $e_user->lastname,
+								'e_1065_8873' => $e_user->firstname,
+								$email_elt    => $e_user->email,
+							];
+
+							$insert = (object) $insert;
+							$db->insertObject($table . '_' . $group . '_repeat', $insert);
+						}
+					}
+
+
+					$query->clear()
+						->insert($db->quoteName('#__emundus_users_assoc'))
+						->columns(array($db->quoteName('fnum'), $db->quoteName('user_id'), $db->quoteName('action_id'), $db->quoteName('r'), $db->quoteName('c')))
+						->values($db->quote($file_request->fnum) . ', ' . $db->quote($user) . ', 10, 1, 1');
+
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+			catch
+			(Exception $e) {
+				Log::add('Error on onAfterAcceptCollab.php: ' . $e->getMessage(), JLog::ERROR, 'emundus');
+			}
+		}
+	}
 }
