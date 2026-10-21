@@ -230,6 +230,7 @@ $data['user'] = $this->_user->id;
         user-select: none !important;;
     }
 
+    <?php if (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum) && $this->euser->applicant != 1 && $this->context === 'default'): ?>
     #aside-comment-section #comments {
         height: calc(100vh - 120px);
         overflow: scroll;
@@ -282,6 +283,7 @@ $data['user'] = $this->_user->id;
             }
         }
     }
+    <?php endif; ?>
 
     .comment-icon {
         transition: all .3s;

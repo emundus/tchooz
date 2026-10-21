@@ -24,26 +24,35 @@
 						{{ selectedFile.fnum }}
 					</p>
 				</div>
-				<div v-if="fnums.length > 1" class="tw-flex tw-items-center">
+				<div class="tw-flex tw-items-center tw-gap-4">
 					<span
-						class="material-symbols-outlined tw-text-base"
-						:class="{ 'tw-cursor-disabled': currentFnumIndex === 0, 'tw-cursor-pointer': currentFnumIndex !== 0 }"
-						:style="{ color: currentFnumIndex === 0 ? 'var(--neutral-500)' : 'white' }"
-						@click="openPreviousFnum"
-						>navigate_before</span
+						v-if="canAccessComments && selected !== 'comments'"
+						class="material-symbols-outlined tw-cursor-pointer tw-text-base tw-text-white"
+						:title="showCommentAside ? translate('CLOSE') : translate('COM_EMUNDUS_COMMENTS')"
+						@click="toggleCommentAside"
+						>{{ showCommentAside ? 'close' : 'comment' }}</span
 					>
-					<!-- Display current index / total -->
-					<span class="tw-mx-2 tw-text-sm tw-text-white"> {{ currentFnumIndex + 1 }} / {{ fnums.length }} </span>
-					<span
-						class="material-symbols-outlined tw-text-base"
-						:class="{
-							'tw-cursor-disabled': currentFnumIndex === fnums.length - 1,
-							'tw-cursor-pointer': currentFnumIndex !== fnums.length - 1,
-						}"
-						:style="{ color: currentFnumIndex === fnums.length - 1 ? 'var(--neutral-500)' : 'white' }"
-						@click="openNextFnum"
-						>navigate_next</span
-					>
+					<div v-if="fnums.length > 1" class="tw-flex tw-items-center">
+						<span
+							class="material-symbols-outlined tw-text-base"
+							:class="{ 'tw-cursor-disabled': currentFnumIndex === 0, 'tw-cursor-pointer': currentFnumIndex !== 0 }"
+							:style="{ color: currentFnumIndex === 0 ? 'var(--neutral-500)' : 'white' }"
+							@click="openPreviousFnum"
+							>navigate_before</span
+						>
+						<!-- Display current index / total -->
+						<span class="tw-mx-2 tw-text-sm tw-text-white"> {{ currentFnumIndex + 1 }} / {{ fnums.length }} </span>
+						<span
+							class="material-symbols-outlined tw-text-base"
+							:class="{
+								'tw-cursor-disabled': currentFnumIndex === fnums.length - 1,
+								'tw-cursor-pointer': currentFnumIndex !== fnums.length - 1,
+							}"
+							:style="{ color: currentFnumIndex === fnums.length - 1 ? 'var(--neutral-500)' : 'white' }"
+							@click="openNextFnum"
+							>navigate_next</span
+						>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -88,6 +97,26 @@
 								<span class="material-symbols-outlined">contact_page</span>
 							</button>
 						</div>
+
+						<aside
+							v-if="canAccessComments"
+							id="aside-comment-section"
+							class="tw-fixed tw-right-0 tw-bg-[#f8f8f8] tw-shadow tw-ease-out"
+							:class="{ closed: !showCommentAside }"
+						>
+							<!-- Comments -->
+							<div class="tw-h-full">
+								<ModalComments
+									:defaultCcid="ccid"
+									:fnum="selectedFile.fnum"
+									:user="$props.user"
+									:access="access['10']"
+									:applicants-allowed-to-comment="$props.applicantsAllowedToComment"
+									:no-focus="true"
+									@opened-aside="showCommentAside = true"
+								/>
+							</div>
+						</aside>
 
 						<div v-for="tab in tabs" :key="tab.name">
 							<div v-if="tab.name === 'application' && selected === 'application'" v-html="applicationform"></div>
@@ -139,6 +168,7 @@ import Evaluations from '@/views/Evaluations.vue';
 import filesService from '@/services/files.js';
 import errors from '@/mixins/errors.js';
 import Comments from '@/views/Comments.vue';
+import ModalComments from '@/components/Files/Comments.vue';
 import Modal from '@/components/Modal.vue';
 import fileService from '@/services/file.js';
 import Messages from './Messenger/Messages.vue';
@@ -154,6 +184,7 @@ export default {
 		Attachments,
 		Modal,
 		Evaluations,
+		ModalComments,
 	},
 	props: {
 		file: Object | String,
@@ -195,6 +226,7 @@ export default {
 		applicationform: '',
 		selected: 'application',
 		openSynthesis: false,
+		showCommentAside: false,
 
 		tabs: [
 			{
@@ -265,6 +297,9 @@ export default {
 	},
 
 	methods: {
+		toggleCommentAside() {
+			this.showCommentAside = !this.showCommentAside;
+		},
 		addEventListeners() {
 			window.addEventListener('openSingleApplicationWithFnum', (e) => {
 				this.showModal = true;
@@ -508,6 +543,10 @@ export default {
 				this.getApplicationForm();
 			}
 
+			if (tabName === 'comments') {
+				this.showCommentAside = false;
+			}
+
 			this.selected = tabName;
 
 			let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
@@ -529,6 +568,9 @@ export default {
 		},
 		tabsICanAccessTo() {
 			return this.tabs.filter((tab) => this.access[tab.access].r || this.access[tab.access].c);
+		},
+		canAccessComments() {
+			return !!(this.access && this.access['10'] && (this.access['10'].r || this.access['10'].c));
 		},
 		currentFnumIndex() {
 			if (typeof this.selectedFile === 'string') {
@@ -615,5 +657,33 @@ export default {
 	padding: 0;
 	width: 0;
 	height: 0;
+}
+</style>
+
+<style scoped>
+#aside-comment-section {
+	top: 56px;
+	height: calc(100vh - 56px);
+	width: 420px;
+	z-index: 15;
+	transition: all 0.3s ease-out;
+	overflow: visible;
+
+	#comments {
+		height: calc(100vh - 56px);
+		overflow: scroll;
+	}
+
+	#filter-comments {
+		flex-direction: column;
+
+		select {
+			margin-top: var(--em-spacing-2);
+		}
+	}
+
+	&.closed {
+		right: -420px;
+	}
 }
 </style>

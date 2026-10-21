@@ -23,7 +23,11 @@
 					{{ translate('COM_EMUNDUS_COMMENTS_CLOSED_THREAD') }}
 				</option>
 			</select>
-			<select v-model="filterVisibleToApplicant" v-if="!isApplicant" class="tw-rounded-applicant">
+			<select
+				v-model="filterVisibleToApplicant"
+				v-if="!isApplicant && applicantsAllowedToComment"
+				class="tw-rounded-applicant"
+			>
 				<option value="all">
 					{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT') }}
 				</option>
@@ -445,8 +449,13 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		noFocus: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	mixins: [mixins, alerts],
+	emits: ['opened-aside'],
 	data: () => ({
 		ccid: 0,
 		comments: [],
@@ -506,21 +515,25 @@ export default {
 			});
 
 			document.addEventListener('focusOnCommentElement', (event) => {
-				if (event.detail.targetId !== null && event.detail.targetId > 0) {
-					const foundComment = this.parentComments.find((comment) => {
-						return comment.target_id == event.detail.targetId;
-					});
+				if (!this.$props.noFocus) {
+					if (event.detail.targetId !== null && event.detail.targetId > 0) {
+						const foundComment = this.parentComments.find((comment) => {
+							return comment.target_id == event.detail.targetId;
+						});
 
-					if (foundComment) {
-						this.openedCommentId = foundComment.id;
-						const commentElement = document.getElementById(`file-comment-${foundComment.id}`);
-						if (commentElement) {
-							commentElement.scrollIntoView({ behavior: 'smooth' });
+						if (foundComment) {
+							this.openedCommentId = foundComment.id;
+							const commentElement = document.getElementById(`file-comment-${foundComment.id}`);
+							if (commentElement) {
+								commentElement.scrollIntoView({ behavior: 'smooth' });
+							}
 						}
+					} else {
+						this.openedCommentId = 0;
 					}
-				} else {
-					this.openedCommentId = 0;
 				}
+
+				this.$emit('openedAside');
 			});
 		},
 		dispatchCommentsLoaded() {

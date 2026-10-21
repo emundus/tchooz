@@ -201,7 +201,7 @@ $datas = [
 				'user'      => $this->_user->id,
 				'fullname'  => $this->_user->name,
 				'applicant' => $applicant,
-                'applicantsAllowedToComment' => ComponentHelper::getParams('com_emundus')->get('allow_applicant_to_comment', false) ? 1 : 0,
+                'applicantsAllowedToComment' => ComponentHelper::getParams('com_emundus')->get('allow_applicant_to_comment', false) ? true : false,
 				'ratio'     => $this->modal_ratio,
 				'tabs'      => $this->modal_tabs,
 				'type'      => 'evaluation',
@@ -218,6 +218,7 @@ $datas = [
             </div>
 
             <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+            <script src="media/com_emundus/js/comment.js?<?php echo $hash ?>"></script>
             <script>
                 function clickOpenfile(fnum, fnums = '') {
                     fnums = fnums.split('|');
