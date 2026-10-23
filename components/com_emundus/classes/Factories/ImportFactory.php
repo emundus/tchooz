@@ -21,6 +21,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Services\ApplicationFile\ApplicationFileCustomFieldsService;
+use Tchooz\Services\Import\ImportModelGenerator;
 
 class ImportFactory
 {
@@ -454,10 +455,18 @@ class ImportFactory
 				break;
 			case 'databasejoin':
 				$query = $this->db->createQuery()
-					->select([$this->db->quoteName($params['join_key_column'], 'value'), $this->db->quoteName($params['join_val_column'], 'label')])
+					->select('COUNT(*)')
 					->from($this->db->quoteName($params['join_db_name']));
 				$this->db->setQuery($query);
-				$options = $this->db->loadObjectList();
+
+				// Large referentials would exhaust memory: the column is left free-text, raw values are accepted on import
+				if ((int) $this->db->loadResult() <= ImportModelGenerator::MAX_REFERENTIAL_ENTRIES)
+				{
+					$query->clear('select')
+						->select([$this->db->quoteName($params['join_key_column'], 'value'), $this->db->quoteName($params['join_val_column'], 'label')]);
+					$this->db->setQuery($query);
+					$options = $this->db->loadObjectList();
+				}
 				break;
 		}
 
@@ -469,10 +478,10 @@ class ImportFactory
 
 	private function sanitizeSheetTitle(string $title): string
 	{
-		$title = str_replace(Worksheet::getInvalidCharacters(), '', $title);
+		$title = str_replace(Worksheet::getInvalidCharacters(), '', strip_tags($title));
 		$title = preg_replace('/\s+|-/', '_', $title);
 
-		return substr($title, 0, 31);
+		return mb_substr($title, 0, 31);
 	}
 
 	private function createDataSheet(Spreadsheet $spreadsheet, string $label, array $options, string $cell, bool $validators = true): void
@@ -517,7 +526,7 @@ class ImportFactory
 				$validation->setError('La valeur n\'est pas dans la liste');
 				$validation->setPromptTitle('Choisir dans la liste');
 				$validation->setPrompt('Veuillez sélectionner une option dans la liste');
-				$validation->setFormula1($sheet_name . '!$C$2:$C$' . (count($options) + 1));
+				$validation->setFormula1("'" . str_replace("'", "''", $sheet_name) . "'!\$C\$2:\$C\$" . (count($options) + 1));
 			}
 		}
 		catch (\Throwable $e)
