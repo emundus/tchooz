@@ -50,8 +50,8 @@
 						:plugins="editorPlugins"
 						:toolbar-classes="['tw-bg-white']"
 						:editor-content-classes="['tw-bg-white tw-mb-2']"
-						@input="updated = true"
-						@paste="updated = true"
+						@input="onEditorInput"
+						@paste="onEditorInput"
 					/>
 				</div>
 				<button class="btn btn-primary tw-float-right tw-mt-3" v-if="updated" @click="saveContent">
@@ -152,6 +152,7 @@ export default {
 			previousContent: '',
 			initContent: '',
 			clearNotif: false,
+			loadingContent: false,
 		};
 	},
 
@@ -184,9 +185,15 @@ export default {
 					params: params,
 				})
 				.then((response) => {
+					// Absorb the editor's content normalization as the baseline so the
+					// initial load is not mistaken for a user change.
+					this.loadingContent = true;
 					this.form.content = response.data.data.introtext;
 					this.form.published = response.data.data.published;
 					this.dynamicComponent++;
+					this.$nextTick(() => {
+						this.loadingContent = false;
+					});
 				});
 		},
 
@@ -261,6 +268,14 @@ export default {
 			return true;
 		},
 
+		// The editor emits input when content is injected programmatically on load.
+		// Only flag a real change: current content differs from the loaded one.
+		onEditorInput() {
+			if (this.form.content !== this.initContent) {
+				this.updated = true;
+			}
+		},
+
 		async updateArticleNotif() {
 			const response = await axios.get(
 				'index.php?option=com_emundus&controller=settings&task=updateArticleNeedToModify',
@@ -289,9 +304,15 @@ export default {
 		},
 		'form.content': {
 			handler: function (newVal) {
-				if (this.initContent === '') {
+				// While loading an article, keep the baseline in sync with the editor's
+				// (re)normalized content and never flag it as an unsaved change.
+				if (this.loadingContent) {
 					this.initContent = newVal;
+					this.previousContent = newVal;
+					this.updated = false;
+					return;
 				}
+
 				if (this.previousContent !== newVal) {
 					if (this.initContent !== newVal) {
 						this.clearNotif = true;
