@@ -28,11 +28,13 @@ use Joomla\CMS\User\UserHelper;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Factories\ImportFactory;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
+use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileCustomFieldsService;
 use Tchooz\Services\ApplicationFile\ApplicationFileService;
 
@@ -4219,6 +4221,9 @@ class EmundusModelCampaign extends ListModel
 					}
 					$m_users = new EmundusModelUsers();
 
+					$stepRepository            = new StepRepository();
+					$evaluationStepsByCampaign = [$campaign_id => $stepRepository->getEvaluationStepsByCampaign($campaign_id)];
+
 					foreach ($rows_to_import as $row)
 					{
 						$origin_datas = [];
@@ -4390,7 +4395,10 @@ class EmundusModelCampaign extends ListModel
 							$datas  = array_filter($row, function ($key) {
 								return is_array($key);
 							});
-							$status = false;
+							$status          = false;
+							$evaluationDatas = [];
+							$fileCampaignId  = $importApplicationEntity->getCampaignId();
+							$evaluationStepsByCampaign[$fileCampaignId] ??= $stepRepository->getEvaluationStepsByCampaign($fileCampaignId);
 							if (!empty($datas))
 							{
 								$datas = $importFactory->formatDatas($datas);
@@ -4401,6 +4409,12 @@ class EmundusModelCampaign extends ListModel
 										$datas[$table] = $customFieldsService->filterImportableValues($datas[$table]);
 									}
 								}
+
+								// Evaluation step tables are written once the file exists, scoped to their step
+								$evaluationTables = $evaluationStepsByCampaign[$campaign_id] + $evaluationStepsByCampaign[$fileCampaignId];
+								$evaluationDatas  = array_intersect_key($datas, $evaluationTables);
+								$datas            = array_diff_key($datas, $evaluationDatas);
+
 								$importApplicationEntity->setData($datas);
 							}
 
@@ -4424,6 +4438,11 @@ class EmundusModelCampaign extends ListModel
 
 										$tag_ids = array_filter(array_unique($tag_ids));
 										$applicationFileService->assignTags($fnum, $tag_ids, $user_id);
+									}
+
+									if (!empty($evaluationDatas))
+									{
+										$this->importEvaluationDatas($applicationFileRepository, $evaluationDatas, $evaluationStepsByCampaign[$fileCampaignId], $importApplicationEntity, $row['evaluator'] ?? '', $user_id);
 									}
 								}
 								else
@@ -4502,6 +4521,89 @@ class EmundusModelCampaign extends ListModel
 		Log::add('Import of ' . count($files_not_imported) . ' files not done', Log::INFO, 'com_emundus.import');
 
 		return ['files_imported' => $files_imported, 'files_not_imported' => $files_not_imported];
+	}
+
+	/**
+	 * @param   array<string, array>             $evaluationDatas  imported values by evaluation table, may contain the chosen step_id
+	 * @param   array<string, array<StepEntity>> $stepsByTable     evaluation steps of the file campaign
+	 */
+	private function importEvaluationDatas(ApplicationFileRepository $applicationFileRepository, array $evaluationDatas, array $stepsByTable, ApplicationFileEntity $applicationFile, string $evaluatorValue, int $user_id): void
+	{
+		$fnum      = $applicationFile->getFnum();
+		$evaluator = $user_id;
+
+		$evaluatorValue = trim($evaluatorValue);
+		if ($evaluatorValue !== '')
+		{
+			$evaluator = $this->getImportEvaluatorId($evaluatorValue);
+			if (empty($evaluator))
+			{
+				Log::add('Evaluator ' . $evaluatorValue . ' not found, evaluation data of file ' . $fnum . ' not imported', Log::WARNING, 'com_emundus.import');
+
+				return;
+			}
+		}
+
+		foreach ($evaluationDatas as $table => $tableDatas)
+		{
+			$candidateSteps = $stepsByTable[$table] ?? [];
+			$chosenStepId   = (int) ($tableDatas['step_id'] ?? 0);
+			unset($tableDatas['step_id']);
+
+			if (count($candidateSteps) === 1)
+			{
+				$step = $candidateSteps[0];
+			}
+			else
+			{
+				$matchingSteps = array_values(array_filter($candidateSteps, fn($candidate) => $candidate->getId() === $chosenStepId));
+				$step          = $matchingSteps[0] ?? null;
+			}
+
+			if (empty($step))
+			{
+				Log::add('No evaluation step resolved for table ' . $table . ' (' . count($candidateSteps) . ' candidate(s), step_id ' . $chosenStepId . ') on file ' . $fnum . ', data not imported', Log::WARNING, 'com_emundus.import');
+				continue;
+			}
+
+			try
+			{
+				if (!$applicationFileRepository->insertDatas($tableDatas, $table, $fnum, $applicationFile->getId(), $user_id, $step, $evaluator))
+				{
+					Log::add('Failed to insert evaluation data into ' . $table . ' (step ' . $step->getId() . ') for file ' . $fnum, Log::ERROR, 'com_emundus.import');
+				}
+			}
+			catch (\Exception $e)
+			{
+				Log::add('Failed to insert evaluation data into ' . $table . ' (step ' . $step->getId() . ') for file ' . $fnum . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.import');
+			}
+		}
+	}
+
+	/**
+	 * @param   string  $value  user id, "Label [id]" or email
+	 */
+	private function getImportEvaluatorId(string $value): int
+	{
+		if (preg_match('/\[(\d+)\]/', $value, $matches))
+		{
+			$value = $matches[1];
+		}
+
+		$query = $this->_db->getQuery(true)
+			->select($this->_db->quoteName('id'))
+			->from($this->_db->quoteName('#__users'));
+		if (ctype_digit($value))
+		{
+			$query->where($this->_db->quoteName('id') . ' = ' . (int) $value);
+		}
+		else
+		{
+			$query->where($this->_db->quoteName('email') . ' = ' . $this->_db->quote($value));
+		}
+		$this->_db->setQuery($query);
+
+		return (int) $this->_db->loadResult();
 	}
 
 	public function getAllCampaignElements(): array

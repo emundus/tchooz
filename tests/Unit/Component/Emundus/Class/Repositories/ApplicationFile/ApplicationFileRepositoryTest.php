@@ -6,7 +6,12 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Workflow\StepEntity;
+use Tchooz\Entities\Workflow\WorkflowEntity;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Workflow\StepRepository;
+use Tchooz\Repositories\Workflow\StepTypeRepository;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
 
 /**
  * @package     Unit\Component\Emundus\Class\Repositories\ApplicationFile
@@ -546,5 +551,78 @@ class ApplicationFileRepositoryTest extends UnitTestCase
 	{
 		$query = $this->repository->buildQuery();
 		$this->assertInstanceOf(\Joomla\Database\QueryInterface::class, $query, 'buildQuery doit retourner une instance de QueryInterface');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileRepository::insertDatas
+	 * @return void
+	 */
+	public function testInsertDatasInEvaluationStep(): void
+	{
+		$step  = $this->createEvaluationStep(0);
+		$table = $step->getTable();
+		$this->assertNotEmpty($table, 'Evaluation step should be linked to a form table');
+
+		$inserted = $this->repository->insertDatas(['ccid' => $this->dataset['ccid']], $table, $this->dataset['fnum'], $this->dataset['ccid'], $this->dataset['coordinator'], $step);
+		$this->assertTrue($inserted, 'Evaluation data should be inserted');
+
+		$rows = $this->getEvaluationRows($table, $step->getId());
+		$this->assertCount(1, $rows);
+		$this->assertEquals($this->dataset['coordinator'], $rows[0]->evaluator, 'Evaluator defaults to the importing user');
+		$this->assertEquals($this->dataset['coordinator'], $rows[0]->updated_by);
+		$this->assertEquals($this->dataset['ccid'], $rows[0]->ccid);
+
+		$this->repository->insertDatas(['ccid' => $this->dataset['ccid']], $table, $this->dataset['fnum'], $this->dataset['ccid'], $this->dataset['coordinator'], $step, $this->dataset['applicant']);
+		$rows = $this->getEvaluationRows($table, $step->getId());
+		$this->assertCount(1, $rows, 'Same step, not multiple: the existing row is updated');
+		$this->assertEquals($this->dataset['applicant'], $rows[0]->evaluator);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileRepository::insertDatas
+	 * @return void
+	 */
+	public function testInsertDatasInMultipleEvaluationStep(): void
+	{
+		$step  = $this->createEvaluationStep(1);
+		$table = $step->getTable();
+
+		$this->repository->insertDatas(['ccid' => $this->dataset['ccid']], $table, $this->dataset['fnum'], $this->dataset['ccid'], $this->dataset['coordinator'], $step);
+		$this->repository->insertDatas(['ccid' => $this->dataset['ccid']], $table, $this->dataset['fnum'], $this->dataset['ccid'], $this->dataset['coordinator'], $step);
+		$this->assertCount(1, $this->getEvaluationRows($table, $step->getId()), 'Same evaluator: the existing row is updated');
+
+		$this->repository->insertDatas(['ccid' => $this->dataset['ccid']], $table, $this->dataset['fnum'], $this->dataset['ccid'], $this->dataset['coordinator'], $step, $this->dataset['applicant']);
+		$this->assertCount(2, $this->getEvaluationRows($table, $step->getId()), 'Multiple step: one row per evaluator');
+	}
+
+	private function createEvaluationStep(int $multiple): StepEntity
+	{
+		$this->refreshDataset();
+		$workflow = new WorkflowEntity(0, 'Test Workflow import evaluation', 1, [], [$this->dataset['program']['programme_id']]);
+		(new WorkflowRepository())->save($workflow);
+
+		if (!class_exists('EmundusModelForm'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/models/form.php';
+		}
+		$evalFormId = (new \EmundusModelForm())->createFormEval(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
+
+		$stepRepository = new StepRepository();
+		$step           = new StepEntity(0, $workflow->getId(), 'Evaluation step', (new StepTypeRepository())->getStepTypeById(2), null, $evalFormId, [1], 0, $multiple, 1, 1);
+		$stepRepository->save($step);
+
+		return $stepRepository->getStepById($step->getId());
+	}
+
+	private function getEvaluationRows(string $table, int $stepId): array
+	{
+		$query = $this->db->getQuery(true)
+			->select('*')
+			->from($this->db->quoteName($table))
+			->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($this->dataset['fnum']))
+			->where($this->db->quoteName('step_id') . ' = ' . $stepId);
+		$this->db->setQuery($query);
+
+		return $this->db->loadObjectList();
 	}
 }

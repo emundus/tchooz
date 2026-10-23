@@ -9,6 +9,7 @@ use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Workflow\StepEntity;
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Factories\Workflow\StepFactory;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Traits\TraitTable;
 
 #[TableAttribute(table: 'jos_emundus_setup_workflows_steps', alias: 'steps')]
@@ -128,6 +129,70 @@ class StepRepository
 		}
 
 		return $steps;
+	}
+
+	/**
+	 * Evaluation steps of the published workflows applied to a campaign (its program and linked programs), grouped by form table
+	 *
+	 * @param   int  $campaignId
+	 *
+	 * @return array<string, array<StepEntity>>
+	 * @throws \Exception
+	 */
+	public function getEvaluationStepsByCampaign(int $campaignId): array
+	{
+		$stepsByTable = [];
+
+		if (empty($campaignId))
+		{
+			return $stepsByTable;
+		}
+
+		$query = $this->db->createQuery();
+		$query->select($this->db->quoteName('program_id'))
+			->from($this->db->quoteName('#__emundus_setup_campaigns'))
+			->where($this->db->quoteName('id') . ' = ' . $campaignId);
+		$this->db->setQuery($query);
+		$programIds = array_filter([(int) $this->db->loadResult()]);
+
+		$programIds = array_unique(array_merge($programIds, (new CampaignRepository())->getLinkedProgramsIds($campaignId)));
+		if (empty($programIds))
+		{
+			return $stepsByTable;
+		}
+
+		try
+		{
+			$query->clear()
+				->select('s.*, GROUP_CONCAT(DISTINCT es.status) AS entry_status, f.db_table_name AS ' . $this->db->quoteName('table') . ', f.id AS table_id')
+				->from($this->db->quoteName($this->tableName, 's'))
+				->innerJoin($this->db->quoteName('#__emundus_setup_workflows', 'w') . ' ON ' . $this->db->quoteName('w.id') . ' = ' . $this->db->quoteName('s.workflow_id'))
+				->innerJoin($this->db->quoteName('#__emundus_setup_workflows_programs', 'wp') . ' ON ' . $this->db->quoteName('wp.workflow_id') . ' = ' . $this->db->quoteName('w.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'es') . ' ON ' . $this->db->quoteName('s.id') . ' = ' . $this->db->quoteName('es.step_id'))
+				->innerJoin($this->db->quoteName('#__fabrik_lists', 'f') . ' ON ' . $this->db->quoteName('s.form_id') . ' = ' . $this->db->quoteName('f.form_id'))
+				->where($this->db->quoteName('w.published') . ' = 1')
+				->whereIn($this->db->quoteName('wp.program_id'), $programIds)
+				->order($this->db->quoteName('s.ordering') . ' ASC')
+				->group('s.id');
+
+			$this->db->setQuery($query);
+			$steps = StepFactory::fromDbObjects($this->db->loadObjectList());
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error while fetching evaluation steps for campaign ID ' . $campaignId . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.step');
+			throw new \Exception(Text::_('COM_EMUNDUS_ERROR_FETCHING_STEPS'));
+		}
+
+		foreach ($steps as $step)
+		{
+			if ($step->isEvaluationStep() && !empty($step->getTable()))
+			{
+				$stepsByTable[$step->getTable()][] = $step;
+			}
+		}
+
+		return $stepsByTable;
 	}
 
 	/**

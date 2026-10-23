@@ -2,6 +2,8 @@
 
 namespace Unit\Component\Emundus\Class\Repositories\Workflow;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\StepTypeEntity;
@@ -89,5 +91,39 @@ class StepRepositoryTest extends UnitTestCase
 		// Expect an exception when saving a step without a workflow ID
 		$this->expectException(\InvalidArgumentException::class);
 		$this->repository->save($step);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Workflow\StepRepository::getEvaluationStepsByCampaign
+	 * @return void
+	 */
+	public function testGetEvaluationStepsByCampaign()
+	{
+		$this->refreshDataset();
+		$workflow = new WorkflowEntity(0, 'Test Workflow evaluation steps', 1, [], [$this->dataset['program']['programme_id']]);
+		(new WorkflowRepository())->save($workflow);
+
+		if (!class_exists('EmundusModelForm'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/models/form.php';
+		}
+		$evalFormId = (new \EmundusModelForm())->createFormEval(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
+		$this->assertNotEmpty($evalFormId, 'Evaluation form should be created');
+
+		$applicantStep = new StepEntity(0, $workflow->getId(), 'Applicant step', $this->applicantStepType, 1000, null, [0], 1, 0, 1, 1);
+		$this->repository->save($applicantStep);
+
+		$evaluationStep = new StepEntity(0, $workflow->getId(), 'Evaluation step', $this->stepTypeRepository->getStepTypeById(2), null, $evalFormId, [1], 0, 0, 1, 2);
+		$this->repository->save($evaluationStep);
+
+		$stepsByTable = $this->repository->getEvaluationStepsByCampaign($this->dataset['campaign']);
+
+		$this->assertCount(1, $stepsByTable, 'Only the evaluation step table should be returned');
+		$table = array_key_first($stepsByTable);
+		$this->assertNotEmpty($table, 'Steps should be indexed by their form table');
+		$this->assertCount(1, $stepsByTable[$table]);
+		$this->assertSame($evaluationStep->getId(), $stepsByTable[$table][0]->getId());
+
+		$this->assertEmpty($this->repository->getEvaluationStepsByCampaign(0), 'No campaign, no steps');
 	}
 }

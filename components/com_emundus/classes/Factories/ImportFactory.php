@@ -20,6 +20,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Tchooz\Factories\Language\LanguageFactory;
+use Tchooz\Repositories\Workflow\StepRepository;
 use Tchooz\Services\ApplicationFile\ApplicationFileCustomFieldsService;
 
 class ImportFactory
@@ -37,7 +38,8 @@ class ImportFactory
 		'lastname',
 		'firstname',
 		'fnum',
-		'tags'
+		'tags',
+		'evaluator'
 	];
 
 	private string $delimiter = ',';
@@ -167,19 +169,11 @@ class ImportFactory
 					$column_name = $column;
 				}
 
-				// We have to check if the column name is valid and not already used
-				if (in_array($column_name, $this->valid_column_names) && !in_array($column_name, $this->columns))
+				// Keyed by the CSV column position, unknown columns are skipped without shifting the next ones
+				$is_known_column = in_array($column_name, $this->valid_column_names) || count(explode('___', $column_name)) > 1;
+				if ($is_known_column && !in_array($column_name, $this->columns))
 				{
-					$this->columns[] = $column_name;
-				}
-				else
-				{
-					// We check if we have a table name after explode ___
-					$column_name = explode('___', $column_name);
-					if (count($column_name) > 1 && !in_array($column_name, $this->columns))
-					{
-						$this->columns[] = implode('___', $column_name);
-					}
+					$this->columns[$column_number] = $column_name;
 				}
 
 				$this->orig_columns[] = $orig_column_name;
@@ -349,6 +343,13 @@ class ImportFactory
 			}
 			$elements = EmundusHelperFiles::getElements(array($campaign['training']), array($campaign['id']), [], null, $model_options['evaluations']);
 
+			$evaluationStepsByTable = [];
+			if ($model_options['evaluations'])
+			{
+				$evaluationStepsByTable = (new StepRepository())->getEvaluationStepsByCampaign((int) $campaign['id']);
+				$elements               = array_filter($elements, fn($element) => empty($element->programme_code) || isset($evaluationStepsByTable[$element->table_name]));
+			}
+
 			$cell = 'A';
 			if ($model_options['status'])
 			{
@@ -399,6 +400,28 @@ class ImportFactory
 					$model_options['validators']
 				);
 				$cell++;
+			}
+
+			if ($model_options['evaluations'])
+			{
+				$dataSheet->setCellValue($cell . '1', Text::_('COM_EMUNDUS_IMPORT_EVALUATOR') . ' [evaluator]');
+				$cell++;
+
+				$importedTables = array_unique(array_column($elements, 'table_label', 'table_name'));
+				foreach ($importedTables as $table => $tableLabel)
+				{
+					// The step has to be chosen only when the form is shared by several steps of the campaign workflows
+					if (count($evaluationStepsByTable[$table] ?? []) < 2)
+					{
+						continue;
+					}
+
+					$stepLabel = Text::sprintf('COM_EMUNDUS_IMPORT_EVALUATION_STEP', $tableLabel);
+					$dataSheet->setCellValue($cell . '1', $stepLabel . ' [' . $table . '___step_id]');
+					$stepOptions = array_map(fn($step) => (object) ['value' => $step->getId(), 'label' => $step->getLabel()], $evaluationStepsByTable[$table]);
+					$this->createDataSheet($spreadsheet, $stepLabel, $stepOptions, $cell, $model_options['validators']);
+					$cell++;
+				}
 			}
 
 			foreach ($elements as $element)

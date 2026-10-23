@@ -11,6 +11,7 @@ use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\ApplicationFile\StatusEntity;
+use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Factories\ApplicationFile\ApplicationFileFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
@@ -560,7 +561,11 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 		return $timestamp !== false ? date('Y-m-d H:i:s', $timestamp) : null;
 	}
 
-	public function insertDatas(array $datas, string $table, string $fnum, int $ccid, int $user_id = 0): bool
+	/**
+	 * @param   StepEntity|null  $step       evaluation step owning the table, rows are then scoped to the step (and to the evaluator for multiple steps)
+	 * @param   int              $evaluator  defaults to $user_id, only used with $step
+	 */
+	public function insertDatas(array $datas, string $table, string $fnum, int $ccid, int $user_id = 0, ?StepEntity $step = null, int $evaluator = 0): bool
 	{
 		$result = false;
 
@@ -576,15 +581,28 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 			return true;
 		}
 
+		$row_columns    = ['user' => $user_id];
+		$row_conditions = [];
+		if (!empty($step))
+		{
+			$evaluator      = !empty($evaluator) ? $evaluator : $user_id;
+			$row_columns    = ['step_id' => $step->getId(), 'evaluator' => $evaluator, 'updated_by' => $user_id];
+			$row_conditions = ['step_id' => $step->getId()];
+			if ($step->getMultiple())
+			{
+				$row_conditions['evaluator'] = $evaluator;
+			}
+		}
+
 		$parent_table = $this->getRepeatJoin($table);
 
 		if (empty($parent_table))
 		{
 			$date_columns = $this->getDateColumns($table);
-			$row_id       = $this->getRowId($table, $fnum);
+			$row_id       = $this->getRowId($table, $fnum, $row_conditions);
 
 			$datas['time_date'] = date('Y-m-d H:i:s');
-			$datas['user']      = $user_id;
+			$datas              = array_merge($datas, $row_columns);
 			$datas['fnum']      = $fnum;
 			if ($this->haveCcidColumn($table))
 			{
@@ -686,15 +704,14 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 		{
 			$repeat_inserts = [];
 
-			$parent_id = $this->getRowId($parent_table, $fnum);
+			$parent_id = $this->getRowId($parent_table, $fnum, $row_conditions);
 			if (empty($parent_id))
 			{
-				$parent_datas = [
+				$parent_datas = array_merge([
 					'time_date' => date('Y-m-d H:i:s'),
 					'fnum'      => $fnum,
-					'user'      => $user_id
-				];
-				if ($this->haveCcidColumn($table))
+				], $row_columns);
+				if ($this->haveCcidColumn($parent_table))
 				{
 					$parent_datas['ccid'] = $ccid;
 				}
@@ -769,13 +786,18 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 		return $this->db->loadResult();
 	}
 
-	private function getRowId(string $table, string $fnum): int
+	private function getRowId(string $table, string $fnum, array $conditions = []): int
 	{
 		$this->query->clear()
 			->select('id')
 			->from($this->db->quoteName($table))
 			->where($this->db->quoteName('fnum') . ' = :fnum')
 			->bind(':fnum', $fnum);
+
+		foreach ($conditions as $column => $value)
+		{
+			$this->query->where($this->db->quoteName($column) . ' = ' . (int) $value);
+		}
 		$this->db->setQuery($this->query);
 
 		return (int) $this->db->loadResult();
