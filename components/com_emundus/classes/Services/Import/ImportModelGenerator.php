@@ -46,7 +46,9 @@ final class ImportModelGenerator
 	public const MODEL_DIRECTORY = 'tmp/import_models/';
 
 	public const MAX_DATA_VALIDATION_ROWS = 1000;
+	public const MAX_REFERENTIAL_ENTRIES = 10000;
 	private const MAX_INLINE_FORMULA_LENGTH = 255;
+	private const MAX_PROMPT_LENGTH = 255;
 
 	private const REFERENTIAL_VALUE_COLUMN   = 'A';
 	private const REFERENTIAL_LABEL_COLUMN   = 'B';
@@ -267,16 +269,26 @@ final class ImportModelGenerator
 
 		$entries = $isReferential ? $column['referential']['entries'] : $column['values'];
 
+		// Writing a huge list sheet exhausts memory: the column stays free-text, values and labels are resolved on import
+		if (count($entries) > self::MAX_REFERENTIAL_ENTRIES)
+		{
+			return;
+		}
+
 		if (!$isReferential)
 		{
-			$inline = '"' . implode(',', array_map(static fn(array $v) => (string) $v['value'], $entries)) . '"';
+			$values = array_map(static fn(array $v) => (string) $v['value'], $entries);
+			$inline = '"' . implode(',', $values) . '"';
 
-			if (strlen($inline) <= self::MAX_INLINE_FORMULA_LENGTH)
+			// An inline list has no escaping: a comma splits the value, a quote breaks the formula
+			$inlineSafe = !array_filter($values, static fn(string $v) => strpbrk($v, ',"') !== false);
+
+			if ($inlineSafe && strlen($inline) <= self::MAX_INLINE_FORMULA_LENGTH)
 			{
 				$validation = $this->newListValidation($sheet, $columnLetter, $column);
 				$validation->setShowInputMessage(true);
 				$validation->setPromptTitle(Text::_('COM_EMUNDUS_IMPORT_MODEL_CHOOSE_VALUE'));
-				$validation->setPrompt($this->buildListPromptText($entries));
+				$validation->setPrompt(mb_substr($this->buildListPromptText($entries), 0, self::MAX_PROMPT_LENGTH));
 				$validation->setFormula1($inline);
 
 				return;
@@ -388,14 +400,16 @@ final class ImportModelGenerator
 	private function uniqueSheetTitle(Spreadsheet $spreadsheet, string $desired): string
 	{
 		$clean = trim((string) preg_replace('/[\\\\\/?*\[\]:]/', ' ', $desired));
-		$base  = substr($clean !== '' ? $clean : 'Ref', 0, 31);
+		// Excel also rejects titles starting or ending with an apostrophe
+		$clean = trim($clean, "' ");
+		$base  = mb_substr($clean !== '' ? $clean : 'Ref', 0, 31);
 
 		$title = $base;
 		$index = 1;
 		while ($spreadsheet->sheetNameExists($title))
 		{
 			$suffix = '_' . $index;
-			$title  = substr($base, 0, 31 - strlen($suffix)) . $suffix;
+			$title  = mb_substr($base, 0, 31 - strlen($suffix)) . $suffix;
 			$index++;
 		}
 
@@ -493,7 +507,7 @@ final class ImportModelGenerator
 		$resolved = Text::_($key);
 		$candidate = ($resolved === $key) ? $default : $resolved;
 
-		return substr($candidate, 0, 31) ?: $default;
+		return mb_substr($candidate, 0, 31) ?: $default;
 	}
 
 	/**
